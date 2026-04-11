@@ -11,7 +11,7 @@ Accept: application/json
 ### Создать помещение 1 — кабинет
 POST {{host}}/api/room
 Content-Type: application/json
-Accept: applicati
+Accept: application/json
 
 {
   "name": "Office 101",

@@ -14,9 +14,9 @@ public class RoomController : ControllerBase
     private readonly AppDbContext _context;
     private readonly RoomCalculationService _roomCalculationService;
 
-    public RoomController(AppDbContext contextб , RoomCalculationService roomCalculationService)
+    public RoomController(AppDbContext context , RoomCalculationService roomCalculationService)
     {
-        _context = contextб;
+        _context = context;
         _roomCalculationService = roomCalculationService;
     }
 
@@ -40,7 +40,7 @@ public class RoomController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<IEnumerable<RoomResponse>>> GetRoom(int id)
+    public async Task<ActionResult<RoomResponse>> GetRoom(int id)
     {
         var room = await _context.Rooms.FindAsync(id);
         
@@ -84,7 +84,7 @@ public class RoomController : ControllerBase
             IndoorTemperatureC = room.IndoorTemperatureC,
             OutdoorTemperatureC = room.OutdoorTemperatureC
         };
-        return CreatedAtAction(nameof(GetRooms), new { id = room.Id }, response);
+        return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
     }
     
     [HttpGet("{id}/calculate")]
