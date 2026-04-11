@@ -1,0 +1,11 @@
+﻿namespace AssistantEngineer.Models;
+
+public class Window
+{
+    public int Id { get; set; }
+
+    public int RoomId { get; set; }
+    public double AreaM2 { get; set; }
+
+    public Room Room { get; set; } = null!;
+}

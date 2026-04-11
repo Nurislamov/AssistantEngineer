@@ -12,4 +12,6 @@ public class Room
     
     public double IndoorTemperatureC { get; set; }
     public double OutdoorTemperatureC { get; set; }
+    
+    public List<Window> Windows { get; set; } = [];
 }

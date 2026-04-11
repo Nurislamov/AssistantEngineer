@@ -95,9 +95,61 @@ public class RoomController : ControllerBase
         if (room == null)
             return NotFound();
 
-        var result = _roomCalculationService.Calculate(room);
+        var windows = await _context.Windows
+            .Where(w => w.RoomId == id)
+            .ToListAsync();
+
+        var result = _roomCalculationService.Calculate(room, windows);
 
         return Ok(result);
+    }
+    
+    [HttpGet("{roomId}/windows")]
+    public async Task<ActionResult<IEnumerable<WindowResponse>>> GetWindows(int roomId)
+    {
+        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+
+        if (!roomExists)
+            return NotFound($"Room with id {roomId} not found.");
+
+        var windows = await _context.Windows
+            .Where(w => w.RoomId == roomId)
+            .Select(w => new WindowResponse
+            {
+                Id = w.Id,
+                RoomId = w.RoomId,
+                AreaM2 = w.AreaM2
+            })
+            .ToListAsync();
+
+        return Ok(windows);
+    }
+    
+    [HttpPost("{roomId}/windows")]
+    public async Task<ActionResult<WindowResponse>> AddWindow(int roomId, CreateWindowRequest request)
+    {
+        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+
+        if (!roomExists)
+            return NotFound($"Room with id {roomId} not found.");
+
+        var window = new Window
+        {
+            RoomId = roomId,
+            AreaM2 = request.AreaM2
+        };
+
+        _context.Windows.Add(window);
+        await _context.SaveChangesAsync();
+
+        var response = new WindowResponse
+        {
+            Id = window.Id,
+            RoomId = window.RoomId,
+            AreaM2 = window.AreaM2
+        };
+
+        return Ok(response);
     }
 }
 

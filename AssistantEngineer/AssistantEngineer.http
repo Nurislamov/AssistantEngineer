@@ -54,3 +54,25 @@ Accept: application/json
 ### Рассчитать тепловую нагрузку для помещения 2
 GET {{host}}/api/room/2/calculate
 Accept: application/json
+
+### Добавить окно 1
+POST http://localhost:5218/api/room/1/windows
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 3.2
+}
+
+### Добавить окно 2
+POST http://localhost:5218/api/room/1/windows
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 5.2
+}
+
+### Получить все окна
+GET http://localhost:5218/api/room/1/windows
+Accept: application/json
