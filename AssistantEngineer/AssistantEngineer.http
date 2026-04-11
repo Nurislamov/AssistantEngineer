@@ -1,0 +1,22 @@
+@host = http://localhost:5218
+
+### Получить все помещения
+GET {{host}}/api/room
+Accept: application/json
+
+### Получить помещение по id
+GET {{host}}/api/room/1
+Accept: application/json
+
+### Создать помещение
+POST {{host}}/api/room
+Content-Type: application/json
+
+{
+  "name": "Office 101",
+  "area": 25,
+  "volume": 75,
+  "height": 3,
+  "indoorTemperature": 24,
+  "outdoorTemperature": 38
+}
