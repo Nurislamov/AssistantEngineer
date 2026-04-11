@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AssistantEngineer.Data;
+using AssistantEngineer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// регистрация сервиса расчёта
+builder.Services.AddScoped<RoomCalculationService>();
 
 var app = builder.Build();
 

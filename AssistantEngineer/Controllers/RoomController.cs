@@ -1,5 +1,6 @@
 ﻿using AssistantEngineer.Data;
 using AssistantEngineer.Models;
+using AssistantEngineer.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Controllers;
@@ -9,10 +10,12 @@ namespace AssistantEngineer.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly RoomCalculationService _roomCalculationService;
 
-    public RoomController(AppDbContext context)
+    public RoomController(AppDbContext contextб , RoomCalculationService roomCalculationService)
     {
-        _context = context;
+        _context = contextб;
+        _roomCalculationService = roomCalculationService;
     }
 
     [HttpGet("{id}")]
@@ -32,6 +35,19 @@ public class RoomController : ControllerBase
         _context.Rooms.Add(room);
         await  _context.SaveChangesAsync();
         return CreatedAtRoute(nameof(GetRoom), new { id = room.Id }, room);
+    }
+    
+    [HttpGet("{id}/calculate")]
+    public async Task<ActionResult<RoomCalculationResult>> CalculateRoom(int id)
+    {
+        var room = await _context.Rooms.FindAsync(id);
+
+        if (room == null)
+            return NotFound();
+
+        var result = _roomCalculationService.Calculate(room);
+
+        return Ok(result);
     }
 }
 

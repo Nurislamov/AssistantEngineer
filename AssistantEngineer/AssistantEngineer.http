@@ -20,3 +20,7 @@ Content-Type: application/json
   "indoorTemperature": 24,
   "outdoorTemperature": 38
 }
+
+### Получить расчет помещения
+GET {{host}}/api/room/1/calculate
+Accept: application/json
