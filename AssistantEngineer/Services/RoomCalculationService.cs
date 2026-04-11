@@ -6,24 +6,29 @@ public class RoomCalculationService
 {
     public RoomCalculationResult Calculate(Room room)
     {
-        const double baseLoadPerSquareMeter = 100.0;
+        const double baseCoolingLoadWPerM2  = 100.0;
 
-        var deltaTemperature = Math.Abs(room.OutdoorTemperature - room.IndoorTemperature);
+        var deltaTemperatureC = 
+            Math.Abs(room.OutdoorTemperatureC - room.IndoorTemperatureC);
 
-        var heightFactor = room.Height > 0 ? room.Height / 3.0 : 1.0;
-        var temperatureFactor = 1.0 + (deltaTemperature * 0.02);
+        var heightAdjustmentFactor  = 
+            room.HeightM > 0 ? room.HeightM / 3.0 : 1.0;
+        
+        var temperatureAdjustmentFactor  = 
+            1.0 + (deltaTemperatureC * 0.02);
 
-        var heatLoadWatts = room.Area * baseLoadPerSquareMeter * heightFactor * temperatureFactor;
+        var coolingLoadW  = 
+            room.AreaM2 * baseCoolingLoadWPerM2  * heightAdjustmentFactor  * temperatureAdjustmentFactor ;
 
         return new RoomCalculationResult
         {
             RoomId = room.Id,
-            HeatLoadWatts = Math.Round(heatLoadWatts, 2),
-            HeatLoadKilowatts = Math.Round(heatLoadWatts / 1000.0, 2),
-            DeltaTemperature = deltaTemperature,
-            BaseLoadPerSquareMeter = baseLoadPerSquareMeter,
-            HeightFactor = Math.Round(heightFactor, 2),
-            TemperatureFactor = Math.Round(temperatureFactor, 2)
+            HeatLoadWatts = Math.Round(coolingLoadW , 2),
+            HeatLoadKilowatts = Math.Round(coolingLoadW  / 1000.0, 2),
+            DeltaTemperature = deltaTemperatureC,
+            BaseLoadPerSquareMeter = baseCoolingLoadWPerM2 ,
+            HeightFactor = Math.Round(heightAdjustmentFactor , 2),
+            TemperatureFactor = Math.Round(temperatureAdjustmentFactor , 2)
         };
     }
 }

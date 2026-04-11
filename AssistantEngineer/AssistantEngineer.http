@@ -8,19 +8,49 @@ Accept: application/json
 GET {{host}}/api/room/1
 Accept: application/json
 
-### Создать помещение
+### Создать помещение 1 — кабинет
 POST {{host}}/api/room
 Content-Type: application/json
+Accept: applicati
 
 {
   "name": "Office 101",
-  "area": 25,
-  "volume": 75,
-  "height": 3,
-  "indoorTemperature": 24,
-  "outdoorTemperature": 38
+  "areaM2": 24,
+  "heightM": 3.0,
+  "indoorTemperatureC": 24,
+  "outdoorTemperatureC": 38
 }
 
-### Получить расчет помещения
+### Создать помещение 2 — переговорная
+POST {{host}}/api/room
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Meeting Room",
+  "areaM2": 42,
+  "heightM": 3.2,
+  "indoorTemperatureC": 23,
+  "outdoorTemperatureC": 36
+}
+
+### Создать помещение 3 — серверная
+POST {{host}}/api/room
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Server Room",
+  "areaM2": 18,
+  "heightM": 3.0,
+  "indoorTemperatureC": 20,
+  "outdoorTemperatureC": 40
+}
+
+### Рассчитать тепловую нагрузку для помещения 1
 GET {{host}}/api/room/1/calculate
+Accept: application/json
+
+### Рассчитать тепловую нагрузку для помещения 2
+GET {{host}}/api/room/2/calculate
 Accept: application/json
