@@ -8,4 +8,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     public DbSet<Room> Rooms { get; set; }
     public  DbSet<Window> Windows { get; set; }
+    public DbSet<Wall> Walls { get; set; }
 }

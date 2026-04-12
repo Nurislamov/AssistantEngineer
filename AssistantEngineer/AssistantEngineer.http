@@ -76,3 +76,17 @@ Accept: application/json
 ### Получить все окна
 GET http://localhost:5218/api/room/1/windows
 Accept: application/json
+
+### Добавить стену
+POST http://localhost:5218/api/room/1/walls
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 12.5,
+  "isExternal": true
+}
+
+###Получить стены комнаты
+GET http://localhost:5218/api/room/1/walls
+Accept: application/json

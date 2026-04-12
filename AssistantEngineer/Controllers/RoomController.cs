@@ -98,8 +98,12 @@ public class RoomController : ControllerBase
         var windows = await _context.Windows
             .Where(w => w.RoomId == id)
             .ToListAsync();
+        
+        var walls = await _context.Walls
+            .Where(w => w.RoomId == id)
+            .ToListAsync();
 
-        var result = _roomCalculationService.Calculate(room, windows);
+        var result = _roomCalculationService.Calculate(room, windows, walls);
 
         return Ok(result);
     }
@@ -150,6 +154,57 @@ public class RoomController : ControllerBase
         };
 
         return Ok(response);
+    }
+    
+    [HttpPost("{roomId}/walls")]
+    public async Task<ActionResult<WallResponse>> AddWall(int roomId, CreateWallRequest request)
+    {
+        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+
+        if (!roomExists)
+            return NotFound($"Room with id {roomId} not found.");
+
+        var wall = new Wall
+        {
+            RoomId = roomId,
+            AreaM2 = request.AreaM2,
+            IsExternal = request.IsExternal
+        };
+
+        _context.Walls.Add(wall);
+        await _context.SaveChangesAsync();
+
+        var response = new WallResponse
+        {
+            Id = wall.Id,
+            RoomId = wall.RoomId,
+            AreaM2 = wall.AreaM2,
+            IsExternal = wall.IsExternal
+        };
+
+        return Ok(response);
+    }
+    
+    [HttpGet("{roomId}/walls")]
+    public async Task<ActionResult<IEnumerable<WallResponse>>> GetWalls(int roomId)
+    {
+        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+
+        if (!roomExists)
+            return NotFound($"Room with id {roomId} not found.");
+
+        var walls = await _context.Walls
+            .Where(w => w.RoomId == roomId)
+            .Select(w => new WallResponse
+            {
+                Id = w.Id,
+                RoomId = w.RoomId,
+                AreaM2 = w.AreaM2,
+                IsExternal = w.IsExternal
+            })
+            .ToListAsync();
+
+        return Ok(walls);
     }
 }
 

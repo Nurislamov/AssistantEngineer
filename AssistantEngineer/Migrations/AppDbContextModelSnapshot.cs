@@ -53,6 +53,30 @@ namespace AssistantEngineer.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("AssistantEngineer.Models.Wall", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("AreaM2")
+                        .HasColumnType("double precision");
+
+                    b.Property<bool>("IsExternal")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Walls");
+                });
+
             modelBuilder.Entity("AssistantEngineer.Models.Window", b =>
                 {
                     b.Property<int>("Id")
@@ -72,6 +96,17 @@ namespace AssistantEngineer.Migrations
                     b.HasIndex("RoomId");
 
                     b.ToTable("Windows");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Wall", b =>
+                {
+                    b.HasOne("AssistantEngineer.Models.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("AssistantEngineer.Models.Window", b =>

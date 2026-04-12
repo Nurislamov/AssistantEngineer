@@ -4,10 +4,14 @@ namespace AssistantEngineer.Services;
 
 public class RoomCalculationService
 {
-    public RoomCalculationResult Calculate(Room room, IEnumerable<Window> windows)
+    public RoomCalculationResult Calculate(
+        Room room, 
+        IEnumerable<Window> windows,
+        IEnumerable<Wall> walls)
     {
         const double baseCoolingLoadWPerM2 = 100.0;
         const double windowCoolingLoadWPerM2 = 250.0;
+        const double externalWallLoadWPerM2 = 60.0;
 
         var deltaTemperatureC =
             Math.Abs(room.OutdoorTemperatureC - room.IndoorTemperatureC);
@@ -25,17 +29,32 @@ public class RoomCalculationService
 
         var windowHeatGainW =
             totalWindowAreaM2 * windowCoolingLoadWPerM2;
+        
+        var totalWallAreaM2 = walls.Sum(w => w.AreaM2);
+        var externalWallAreaM2 = walls
+            .Where(w => w.IsExternal)
+            .Sum(w => w.AreaM2);
 
-        var totalHeatLoadW = baseRoomLoadW + windowHeatGainW;
+        var wallHeatGainW = externalWallAreaM2 * externalWallLoadWPerM2;
+
+        var totalHeatLoadW = baseRoomLoadW + windowHeatGainW + wallHeatGainW;
 
         return new RoomCalculationResult
         {
             RoomId = room.Id,
+            
             BaseRoomLoadW = Math.Round(baseRoomLoadW, 2),
+            
             TotalWindowAreaM2 = Math.Round(totalWindowAreaM2, 2),
             WindowHeatGainW = Math.Round(windowHeatGainW, 2),
+            
+            TotalWallAreaM2 = Math.Round(totalWallAreaM2, 2),
+            ExternalWallAreaM2 = Math.Round(externalWallAreaM2, 2),
+            WallHeatGainW = Math.Round(wallHeatGainW, 2),
+            
             TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
             TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2),
+            
             DeltaTemperatureC = deltaTemperatureC,
             HeightAdjustmentFactor = Math.Round(heightAdjustmentFactor, 2),
             TemperatureAdjustmentFactor = Math.Round(temperatureAdjustmentFactor, 2)
