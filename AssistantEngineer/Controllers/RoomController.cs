@@ -36,7 +36,8 @@ public class RoomController : ControllerBase
                 OutdoorTemperatureC = room.OutdoorTemperatureC,
                 PeopleCount = room.PeopleCount,
                 EquipmentLoadW = room.EquipmentLoadW,
-                LightingLoadW = room.LightingLoadW
+                LightingLoadW = room.LightingLoadW,
+                FloorId = room.FloorId
             })
             .ToListAsync();
         
@@ -62,7 +63,8 @@ public class RoomController : ControllerBase
             OutdoorTemperatureC = room.OutdoorTemperatureC,
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = room.EquipmentLoadW,
-            LightingLoadW = room.LightingLoadW
+            LightingLoadW = room.LightingLoadW,
+            FloorId = room.FloorId
         });
     }
 

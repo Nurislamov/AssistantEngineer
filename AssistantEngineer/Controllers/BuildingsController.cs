@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Contracts;
+using AssistantEngineer.Contracts;
 using AssistantEngineer.Contracts.Results;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
@@ -16,7 +16,7 @@ public class BuildingsController : ControllerBase
     private readonly StructureCalculationService _structureCalculationService;
 
     public BuildingsController(
-        AppDbContext context,  
+        AppDbContext context,
         StructureCalculationService structureCalculationService)
     {
         _context = context;
@@ -24,7 +24,7 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpPost("{projectId}")]
-    public async Task<ActionResult<Building>> CreateBuilding(int projectId, CreateBuildingRequest request)
+    public async Task<ActionResult<BuildingResponse>> CreateBuilding(int projectId, CreateBuildingRequest request)
     {
         var projectExists = await _context.Projects.AnyAsync(p => p.Id == projectId);
         if (!projectExists)
@@ -39,19 +39,45 @@ public class BuildingsController : ControllerBase
         _context.Buildings.Add(building);
         await _context.SaveChangesAsync();
 
-        return Ok(building);
+        var response = ToResponse(building);
+        return CreatedAtAction(nameof(GetBuilding), new { id = building.Id }, response);
     }
 
     [HttpGet("{projectId}")]
-    public async Task<ActionResult<IEnumerable<Building>>> GetBuildings(int projectId)
+    public async Task<ActionResult<IEnumerable<BuildingResponse>>> GetBuildings(int projectId)
     {
         var buildings = await _context.Buildings
             .Where(b => b.ProjectId == projectId)
+            .Select(building => new BuildingResponse
+            {
+                Id = building.Id,
+                Name = building.Name,
+                ProjectId = building.ProjectId
+            })
             .ToListAsync();
 
         return Ok(buildings);
     }
-    
+
+    [HttpGet("by-id/{id}")]
+    public async Task<ActionResult<BuildingResponse>> GetBuilding(int id)
+    {
+        var building = await _context.Buildings
+            .Where(building => building.Id == id)
+            .Select(building => new BuildingResponse
+            {
+                Id = building.Id,
+                Name = building.Name,
+                ProjectId = building.ProjectId
+            })
+            .FirstOrDefaultAsync();
+
+        if (building == null)
+            return NotFound();
+
+        return Ok(building);
+    }
+
     [HttpGet("{buildingId}/calculate")]
     public async Task<ActionResult<BuildingCalculationResult>> CalculateBuilding(int buildingId)
     {
@@ -61,5 +87,15 @@ public class BuildingsController : ControllerBase
             return NotFound();
 
         return Ok(result);
+    }
+
+    private static BuildingResponse ToResponse(Building building)
+    {
+        return new BuildingResponse
+        {
+            Id = building.Id,
+            Name = building.Name,
+            ProjectId = building.ProjectId
+        };
     }
 }

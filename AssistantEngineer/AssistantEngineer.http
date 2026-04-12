@@ -1,5 +1,222 @@
 @host = http://localhost:5218
+@missingProjectId = 999999
+@missingBuildingId = 999999
+@missingFloorId = 999999
 @missingRoomId = 999999
+
+### Health: get projects
+GET {{host}}/api/projects
+Accept: application/json
+
+> {%
+client.test("GET projects returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(Array.isArray(response.body), "Expected array response");
+});
+%}
+
+### Negative: invalid project validation
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "A"
+}
+
+> {%
+client.test("Invalid project returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### Create project
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Cooling Load Study"
+}
+
+> {%
+client.test("Create project returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated project id");
+    client.assert(response.body.name === "Cooling Load Study", "Expected project name");
+});
+
+client.global.set("projectId", response.body.id);
+%}
+
+### Get project by id
+GET {{host}}/api/projects/{{projectId}}
+Accept: application/json
+
+> {%
+client.test("GET project by id returns response DTO", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("projectId"), "Expected project id");
+    client.assert(response.body.name === "Cooling Load Study", "Expected project name");
+    client.assert(response.body.buildings === undefined, "Project response should not expose navigation properties");
+});
+%}
+
+### Negative: add building to missing project
+POST {{host}}/api/buildings/{{missingProjectId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Ghost Building"
+}
+
+> {%
+client.test("Building for missing project returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Negative: invalid building validation
+POST {{host}}/api/buildings/{{projectId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ""
+}
+
+> {%
+client.test("Invalid building returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### Create building
+POST {{host}}/api/buildings/{{projectId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Main Building"
+}
+
+> {%
+client.test("Create building returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated building id");
+    client.assert(response.body.name === "Main Building", "Expected building name");
+    client.assert(response.body.projectId == client.global.get("projectId"), "Expected projectId");
+});
+
+client.global.set("buildingId", response.body.id);
+%}
+
+### Get building by id
+GET {{host}}/api/buildings/by-id/{{buildingId}}
+Accept: application/json
+
+> {%
+client.test("GET building by id returns response DTO", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("buildingId"), "Expected building id");
+    client.assert(response.body.name === "Main Building", "Expected building name");
+    client.assert(response.body.projectId == client.global.get("projectId"), "Expected projectId");
+    client.assert(response.body.project === undefined, "Building response should not expose navigation properties");
+    client.assert(response.body.floors === undefined, "Building response should not expose navigation properties");
+});
+%}
+
+### Get project buildings
+GET {{host}}/api/buildings/{{projectId}}
+Accept: application/json
+
+> {%
+client.test("GET project buildings returns created building", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.some(function (building) {
+        return building.id == client.global.get("buildingId");
+    }), "Expected created building in list");
+});
+%}
+
+### Negative: add floor to missing building
+POST {{host}}/api/floors/{{missingBuildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Ghost Floor"
+}
+
+> {%
+client.test("Floor for missing building returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Negative: invalid floor validation
+POST {{host}}/api/floors/{{buildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ""
+}
+
+> {%
+client.test("Invalid floor returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### Create floor
+POST {{host}}/api/floors/{{buildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Floor 1"
+}
+
+> {%
+client.test("Create floor returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated floor id");
+    client.assert(response.body.name === "Floor 1", "Expected floor name");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+});
+
+client.global.set("floorId", response.body.id);
+%}
+
+### Get floor by id
+GET {{host}}/api/floors/by-id/{{floorId}}
+Accept: application/json
+
+> {%
+client.test("GET floor by id returns response DTO", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("floorId"), "Expected floor id");
+    client.assert(response.body.name === "Floor 1", "Expected floor name");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.building === undefined, "Floor response should not expose navigation properties");
+    client.assert(response.body.rooms === undefined, "Floor response should not expose navigation properties");
+});
+%}
+
+### Get building floors
+GET {{host}}/api/floors/{{buildingId}}
+Accept: application/json
+
+> {%
+client.test("GET building floors returns created floor", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.some(function (floor) {
+        return floor.id == client.global.get("floorId");
+    }), "Expected created floor in list");
+});
+%}
 
 ### Health: get all rooms
 GET {{host}}/api/room
@@ -22,6 +239,16 @@ client.test("GET missing room returns 404", function () {
 });
 %}
 
+### Negative: calculate missing room
+GET {{host}}/api/room/{{missingRoomId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate missing room returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
 ### Negative: invalid room validation
 POST {{host}}/api/room
 Content-Type: application/json
@@ -35,7 +262,8 @@ Accept: application/json
   "outdoorTemperatureC": 101,
   "peopleCount": -1,
   "equipmentLoadW": -10,
-  "lightingLoadW": -5
+  "lightingLoadW": -5,
+  "floorId": 0
 }
 
 > {%
@@ -44,7 +272,30 @@ client.test("Invalid room returns 400", function () {
 });
 %}
 
-### Create room with internal heat gains
+### Negative: create room for missing floor
+POST {{host}}/api/room
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Ghost Room",
+  "areaM2": 24,
+  "heightM": 3.0,
+  "indoorTemperatureC": 24,
+  "outdoorTemperatureC": 38,
+  "peopleCount": 4,
+  "equipmentLoadW": 900,
+  "lightingLoadW": 320,
+  "floorId": {{missingFloorId}}
+}
+
+> {%
+client.test("Room for missing floor returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Create primary room with internal heat gains
 POST {{host}}/api/room
 Content-Type: application/json
 Accept: application/json
@@ -57,17 +308,20 @@ Accept: application/json
   "outdoorTemperatureC": 38,
   "peopleCount": 4,
   "equipmentLoadW": 900,
-  "lightingLoadW": 320
+  "lightingLoadW": 320,
+  "floorId": {{floorId}}
 }
 
 > {%
-client.test("Create room returns 201 and created payload", function () {
+client.test("Create primary room returns 201 and created payload", function () {
     client.assert(response.status === 201, "Expected 201 Created");
     client.assert(response.body.id > 0, "Expected generated room id");
+    client.assert(response.body.name === "Load Lab", "Expected room name");
     client.assert(response.body.volumeM3 === 72, "Expected volumeM3 72");
     client.assert(response.body.peopleCount === 4, "Expected peopleCount 4");
     client.assert(response.body.equipmentLoadW === 900, "Expected equipmentLoadW 900");
     client.assert(response.body.lightingLoadW === 320, "Expected lightingLoadW 320");
+    client.assert(response.body.floorId == client.global.get("floorId"), "Expected floorId");
 });
 
 client.global.set("roomId", response.body.id);
@@ -89,15 +343,16 @@ client.test("GET created room returns all room fields", function () {
     client.assert(response.body.peopleCount === 4, "Expected peopleCount 4");
     client.assert(response.body.equipmentLoadW === 900, "Expected equipmentLoadW 900");
     client.assert(response.body.lightingLoadW === 320, "Expected lightingLoadW 320");
+    client.assert(response.body.floorId == client.global.get("floorId"), "Expected floorId");
 });
 %}
 
-### Calculate room before windows and walls
+### Calculate primary room before windows and walls
 GET {{host}}/api/room/{{roomId}}/calculate
 Accept: application/json
 
 > {%
-client.test("Calculate room includes internal heat gains before envelope gains", function () {
+client.test("Calculate primary room includes internal heat gains before envelope gains", function () {
     client.assert(response.status === 200, "Expected 200 OK");
     client.assert(response.body.baseRoomLoadW === 3072, "Expected baseRoomLoadW 3072");
     client.assert(response.body.totalWindowAreaM2 === 0, "Expected no windows");
@@ -171,6 +426,16 @@ Accept: application/json
 
 > {%
 client.test("Window for missing room returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Negative: get windows for missing room
+GET {{host}}/api/room/{{missingRoomId}}/windows
+Accept: application/json
+
+> {%
+client.test("GET windows for missing room returns 404", function () {
     client.assert(response.status === 404, "Expected 404 Not Found");
 });
 %}
@@ -256,6 +521,16 @@ client.test("Wall for missing room returns 404", function () {
 });
 %}
 
+### Negative: get walls for missing room
+GET {{host}}/api/room/{{missingRoomId}}/walls
+Accept: application/json
+
+> {%
+client.test("GET walls for missing room returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
 ### Get room walls
 GET {{host}}/api/room/{{roomId}}/walls
 Accept: application/json
@@ -269,12 +544,12 @@ client.test("GET room walls returns external and internal walls", function () {
 });
 %}
 
-### Calculate room with windows, walls, and internal heat gains
+### Calculate primary room with windows, walls, and internal heat gains
 GET {{host}}/api/room/{{roomId}}/calculate
 Accept: application/json
 
 > {%
-client.test("Calculate room returns complete heat load", function () {
+client.test("Calculate primary room returns complete heat load", function () {
     client.assert(response.status === 200, "Expected 200 OK");
     client.assert(response.body.baseRoomLoadW === 3072, "Expected baseRoomLoadW 3072");
     client.assert(response.body.totalWindowAreaM2 === 5, "Expected totalWindowAreaM2 5");
@@ -294,12 +569,95 @@ client.test("Calculate room returns complete heat load", function () {
 });
 %}
 
-### Negative: calculate missing room
-GET {{host}}/api/room/{{missingRoomId}}/calculate
+### Create second room on the same floor for aggregate checks
+POST {{host}}/api/room
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Small Office",
+  "areaM2": 10,
+  "heightM": 3.0,
+  "indoorTemperatureC": 24,
+  "outdoorTemperatureC": 24,
+  "peopleCount": 1,
+  "equipmentLoadW": 0,
+  "lightingLoadW": 0,
+  "floorId": {{floorId}}
+}
+
+> {%
+client.test("Create second room returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated room id");
+    client.assert(response.body.floorId == client.global.get("floorId"), "Expected floorId");
+});
+
+client.global.set("secondRoomId", response.body.id);
+%}
+
+### Calculate second room
+GET {{host}}/api/room/{{secondRoomId}}/calculate
 Accept: application/json
 
 > {%
-client.test("Calculate missing room returns 404", function () {
+client.test("Calculate second room returns expected simple heat load", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.baseRoomLoadW === 1000, "Expected baseRoomLoadW 1000");
+    client.assert(response.body.peopleHeatGainW === 130, "Expected peopleHeatGainW 130");
+    client.assert(response.body.internalHeatGainW === 130, "Expected internalHeatGainW 130");
+    client.assert(response.body.totalHeatLoadW === 1130, "Expected totalHeatLoadW 1130");
+    client.assert(response.body.totalHeatLoadKw === 1.13, "Expected totalHeatLoadKw 1.13");
+});
+%}
+
+### Calculate floor aggregate
+GET {{host}}/api/floors/{{floorId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate floor aggregates room loads", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.floorId == client.global.get("floorId"), "Expected floorId");
+    client.assert(response.body.floorName === "Floor 1", "Expected floor name");
+    client.assert(response.body.roomsCount === 2, "Expected two rooms");
+    client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
+    client.assert(response.body.totalHeatLoadKw === 8.3, "Expected totalHeatLoadKw 8.3");
+});
+%}
+
+### Negative: calculate missing floor
+GET {{host}}/api/floors/{{missingFloorId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate missing floor returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Calculate building aggregate
+GET {{host}}/api/buildings/{{buildingId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate building aggregates floor loads", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.buildingName === "Main Building", "Expected building name");
+    client.assert(response.body.floorsCount === 1, "Expected one floor");
+    client.assert(response.body.roomsCount === 2, "Expected two rooms");
+    client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
+    client.assert(response.body.totalHeatLoadKw === 8.3, "Expected totalHeatLoadKw 8.3");
+});
+%}
+
+### Negative: calculate missing building
+GET {{host}}/api/buildings/{{missingBuildingId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate missing building returns 404", function () {
     client.assert(response.status === 404, "Expected 404 Not Found");
 });
 %}

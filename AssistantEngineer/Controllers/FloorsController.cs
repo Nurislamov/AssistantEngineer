@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Contracts;
+using AssistantEngineer.Contracts;
 using AssistantEngineer.Contracts.Results;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
@@ -24,7 +24,7 @@ public class FloorsController : ControllerBase
     }
 
     [HttpPost("{buildingId}")]
-    public async Task<ActionResult<Floor>> CreateFloor(int buildingId, CreateFloorRequest request)
+    public async Task<ActionResult<FloorResponse>> CreateFloor(int buildingId, CreateFloorRequest request)
     {
         var buildingExists = await _context.Buildings.AnyAsync(b => b.Id == buildingId);
         if (!buildingExists)
@@ -39,17 +39,43 @@ public class FloorsController : ControllerBase
         _context.Floors.Add(floor);
         await _context.SaveChangesAsync();
 
-        return Ok(floor);
+        var response = ToResponse(floor);
+        return CreatedAtAction(nameof(GetFloor), new { id = floor.Id }, response);
     }
 
     [HttpGet("{buildingId}")]
-    public async Task<ActionResult<IEnumerable<Floor>>> GetFloors(int buildingId)
+    public async Task<ActionResult<IEnumerable<FloorResponse>>> GetFloors(int buildingId)
     {
         var floors = await _context.Floors
             .Where(f => f.BuildingId == buildingId)
+            .Select(floor => new FloorResponse
+            {
+                Id = floor.Id,
+                Name = floor.Name,
+                BuildingId = floor.BuildingId
+            })
             .ToListAsync();
 
         return Ok(floors);
+    }
+
+    [HttpGet("by-id/{id}")]
+    public async Task<ActionResult<FloorResponse>> GetFloor(int id)
+    {
+        var floor = await _context.Floors
+            .Where(floor => floor.Id == id)
+            .Select(floor => new FloorResponse
+            {
+                Id = floor.Id,
+                Name = floor.Name,
+                BuildingId = floor.BuildingId
+            })
+            .FirstOrDefaultAsync();
+
+        if (floor == null)
+            return NotFound();
+
+        return Ok(floor);
     }
 
     [HttpGet("{floorId}/calculate")]
@@ -61,5 +87,15 @@ public class FloorsController : ControllerBase
             return NotFound();
 
         return Ok(result);
+    }
+
+    private static FloorResponse ToResponse(Floor floor)
+    {
+        return new FloorResponse
+        {
+            Id = floor.Id,
+            Name = floor.Name,
+            BuildingId = floor.BuildingId
+        };
     }
 }
