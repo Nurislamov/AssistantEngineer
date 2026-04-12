@@ -21,6 +21,67 @@ namespace AssistantEngineer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AssistantEngineer.Models.Building", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Buildings");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Floor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BuildingId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuildingId");
+
+                    b.ToTable("Floors");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Projects");
+                });
+
             modelBuilder.Entity("AssistantEngineer.Models.Room", b =>
                 {
                     b.Property<int>("Id")
@@ -34,6 +95,9 @@ namespace AssistantEngineer.Migrations
 
                     b.Property<double>("EquipmentLoadW")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("FloorId")
+                        .HasColumnType("integer");
 
                     b.Property<double>("HeightM")
                         .HasColumnType("double precision");
@@ -58,6 +122,8 @@ namespace AssistantEngineer.Migrations
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FloorId");
 
                     b.ToTable("Rooms");
                 });
@@ -107,6 +173,39 @@ namespace AssistantEngineer.Migrations
                     b.ToTable("Windows");
                 });
 
+            modelBuilder.Entity("AssistantEngineer.Models.Building", b =>
+                {
+                    b.HasOne("AssistantEngineer.Models.Project", "Project")
+                        .WithMany("Buildings")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Floor", b =>
+                {
+                    b.HasOne("AssistantEngineer.Models.Building", "Building")
+                        .WithMany("Floors")
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Building");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Room", b =>
+                {
+                    b.HasOne("AssistantEngineer.Models.Floor", "Floor")
+                        .WithMany("Rooms")
+                        .HasForeignKey("FloorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Floor");
+                });
+
             modelBuilder.Entity("AssistantEngineer.Models.Wall", b =>
                 {
                     b.HasOne("AssistantEngineer.Models.Room", "Room")
@@ -127,6 +226,21 @@ namespace AssistantEngineer.Migrations
                         .IsRequired();
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Building", b =>
+                {
+                    b.Navigation("Floors");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Floor", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Models.Project", b =>
+                {
+                    b.Navigation("Buildings");
                 });
 
             modelBuilder.Entity("AssistantEngineer.Models.Room", b =>

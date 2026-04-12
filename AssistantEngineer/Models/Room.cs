@@ -18,4 +18,7 @@ public class Room
 
     public List<Window> Windows { get; set; } = [];
     public List<Wall> Walls { get; set; } = [];
+    
+    public int FloorId { get; set; }
+    public Floor Floor { get; set; } = null!;
 }

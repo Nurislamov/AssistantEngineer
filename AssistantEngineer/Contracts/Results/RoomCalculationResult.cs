@@ -1,4 +1,6 @@
-﻿public class RoomCalculationResult
+﻿namespace AssistantEngineer.Contracts.Results;
+
+public class RoomCalculationResult
 {
     public int RoomId { get; set; }
 

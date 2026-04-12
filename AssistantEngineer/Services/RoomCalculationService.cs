@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Models;
+﻿using AssistantEngineer.Contracts.Results;
+using AssistantEngineer.Models;
 
 namespace AssistantEngineer.Services;
 

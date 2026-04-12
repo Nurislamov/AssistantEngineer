@@ -15,4 +15,6 @@ public class RoomResponse
     public int PeopleCount { get; set; }
     public double EquipmentLoadW { get; set; }
     public double LightingLoadW { get; set; }
+    
+    public int FloorId { get; set; }
 }

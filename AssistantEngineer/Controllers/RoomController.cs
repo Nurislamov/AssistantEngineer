@@ -1,4 +1,5 @@
 ﻿using AssistantEngineer.Contracts;
+using AssistantEngineer.Contracts.Results;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
 using AssistantEngineer.Services;
@@ -68,9 +69,16 @@ public class RoomController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RoomResponse>> CreateRoom(CreateRoomRequest request)
     {
+        var floorExists = 
+            await _context.Floors.AnyAsync(f => f.Id == request.FloorId);
+        
+        if (!floorExists)
+            return NotFound($"Floor with id {request.FloorId} not found.");
+        
         var room = new Room
         {
             Name = request.Name,
+            FloorId = request.FloorId,
             AreaM2 = request.AreaM2,
             HeightM = request.HeightM,
             VolumeM3 = request.AreaM2 * request.HeightM,
@@ -94,7 +102,8 @@ public class RoomController : ControllerBase
             OutdoorTemperatureC = room.OutdoorTemperatureC,
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = room.EquipmentLoadW,
-            LightingLoadW = room.LightingLoadW
+            LightingLoadW = room.LightingLoadW,
+            FloorId = room.FloorId
         };
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
     }

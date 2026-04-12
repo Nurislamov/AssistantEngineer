@@ -28,4 +28,7 @@ public class CreateRoomRequest
 
     [Range(0, 1_000_000)]
     public double LightingLoadW { get; set; }
+    
+    [Range(1, int.MaxValue)]
+    public int FloorId { get; set; }
 }
