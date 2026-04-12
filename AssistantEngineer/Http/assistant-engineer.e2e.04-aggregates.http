@@ -1,0 +1,80 @@
+@host = http://localhost:5218
+@missingProjectId = 999999
+@missingBuildingId = 999999
+@missingFloorId = 999999
+@missingRoomId = 999999
+
+# Run the assistant-engineer.e2e files in numeric order when a request depends on variables from earlier files.
+
+### Calculate floor aggregate
+GET {{host}}/api/floors/{{floorId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate floor aggregates room loads", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.floorId == client.global.get("floorId"), "Expected floorId");
+    client.assert(response.body.floorName === "Floor 1", "Expected floor name");
+    client.assert(response.body.roomsCount === 2, "Expected two rooms");
+    client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
+    client.assert(response.body.totalHeatLoadKw === 8.3, "Expected totalHeatLoadKw 8.3");
+    client.assert(response.body.designReserveFactor === 1.1, "Expected designReserveFactor 1.1");
+    client.assert(response.body.designCapacityW === 9132.2, "Expected designCapacityW 9132.2");
+    client.assert(response.body.designCapacityKw === 9.13, "Expected designCapacityKw 9.13");
+});
+%}
+
+### Get floor after aggregate calculation
+GET {{host}}/api/floors/by-id/{{floorId}}
+Accept: application/json
+
+> {%
+client.test("GET floor includes saved design capacity", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.designReserveFactor === 1.1, "Expected saved designReserveFactor 1.1");
+    client.assert(response.body.designCapacityW === 9132.2, "Expected saved designCapacityW 9132.2");
+    client.assert(response.body.designCapacityKw === 9.13, "Expected saved designCapacityKw 9.13");
+});
+%}
+
+### Negative: calculate missing floor
+GET {{host}}/api/floors/{{missingFloorId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate missing floor returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Calculate building aggregate
+GET {{host}}/api/buildings/{{buildingId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate building aggregates floor loads", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.buildingName === "Main Building", "Expected building name");
+    client.assert(response.body.floorsCount === 1, "Expected one floor");
+    client.assert(response.body.roomsCount === 2, "Expected two rooms");
+    client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
+    client.assert(response.body.totalHeatLoadKw === 8.3, "Expected totalHeatLoadKw 8.3");
+    client.assert(response.body.designReserveFactor === 1.1, "Expected designReserveFactor 1.1");
+    client.assert(response.body.designCapacityW === 9132.2, "Expected designCapacityW 9132.2");
+    client.assert(response.body.designCapacityKw === 9.13, "Expected designCapacityKw 9.13");
+});
+%}
+
+### Get building after aggregate calculation
+GET {{host}}/api/buildings/by-id/{{buildingId}}
+Accept: application/json
+
+> {%
+client.test("GET building includes saved design capacity", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.designReserveFactor === 1.1, "Expected saved designReserveFactor 1.1");
+    client.assert(response.body.designCapacityW === 9132.2, "Expected saved designCapacityW 9132.2");
+    client.assert(response.body.designCapacityKw === 9.13, "Expected saved designCapacityKw 9.13");
+});
+%}

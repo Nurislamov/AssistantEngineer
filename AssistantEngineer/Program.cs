@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using AssistantEngineer.Data;
-using AssistantEngineer.Services;
+using AssistantEngineer.Services.Calculations;
+using AssistantEngineer.Services.Reports;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +15,8 @@ builder.Services.AddOpenApi();
 
 // регистрация сервиса расчёта
 builder.Services.AddScoped<RoomCalculationService>();
-builder.Services.AddScoped<StructureCalculationService>();
-builder.Services.AddScoped<BuildingReportService>();
+builder.Services.AddScoped<AggregateCalculationService>();
+builder.Services.AddScoped<BuildingReportDataService>();
 builder.Services.AddScoped<ExcelReportService>();
 
 var app = builder.Build();

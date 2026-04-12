@@ -1,0 +1,43 @@
+@host = http://localhost:5218
+@missingProjectId = 999999
+@missingBuildingId = 999999
+@missingFloorId = 999999
+@missingRoomId = 999999
+
+# Run the assistant-engineer.e2e files in numeric order when a request depends on variables from earlier files.
+
+### Download building Excel report
+GET {{host}}/api/buildings/{{buildingId}}/report/excel
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+> {%
+client.test("Download building Excel report returns xlsx file", function () {
+    var contentType = String(response.headers.valueOf("Content-Type") || "");
+    var contentDisposition = String(response.headers.valueOf("Content-Disposition") || "");
+
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(contentType.indexOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") >= 0, "Expected xlsx content type, got " + contentType);
+    client.assert(contentDisposition.indexOf("attachment") >= 0, "Expected attachment content disposition, got " + contentDisposition);
+    client.assert(contentDisposition.indexOf(".xlsx") >= 0, "Expected xlsx filename, got " + contentDisposition);
+});
+%}
+
+### Negative: download missing building Excel report
+GET {{host}}/api/buildings/{{missingBuildingId}}/report/excel
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+> {%
+client.test("Download missing building Excel report returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Negative: calculate missing building
+GET {{host}}/api/buildings/{{missingBuildingId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate missing building returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}

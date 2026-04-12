@@ -1,0 +1,75 @@
+@host = http://localhost:5218
+@missingProjectId = 999999
+@missingBuildingId = 999999
+@missingFloorId = 999999
+@missingRoomId = 999999
+
+### Health: get projects
+GET {{host}}/api/projects
+Accept: application/json
+
+> {%
+client.test("GET projects returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(Array.isArray(response.body), "Expected array response");
+});
+%}
+
+### Negative: invalid project validation
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "A"
+}
+
+> {%
+client.test("Invalid project returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### Negative: get missing project by id
+GET {{host}}/api/projects/{{missingProjectId}}
+Accept: application/json
+
+> {%
+client.test("GET missing project by id returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Create project
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Cooling Load Study"
+}
+
+> {%
+client.test("Create project returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(Boolean(response.headers.valueOf("Location")), "Expected Location header");
+    client.assert(response.body.id > 0, "Expected generated project id");
+    client.assert(response.body.name === "Cooling Load Study", "Expected project name");
+    client.assert(response.body.buildings === undefined, "Project response should not expose navigation properties");
+});
+
+client.global.set("projectId", response.body.id);
+%}
+
+### Get project by id
+GET {{host}}/api/projects/{{projectId}}
+Accept: application/json
+
+> {%
+client.test("GET project by id returns response DTO", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("projectId"), "Expected project id");
+    client.assert(response.body.name === "Cooling Load Study", "Expected project name");
+    client.assert(response.body.buildings === undefined, "Project response should not expose navigation properties");
+});
+%}

@@ -1,5 +1,5 @@
-using AssistantEngineer.Models;
-using AssistantEngineer.Services;
+﻿using AssistantEngineer.Models;
+using AssistantEngineer.Services.Calculations;
 
 namespace AssistantEngineer.Tests;
 
@@ -33,7 +33,7 @@ public class RoomCalculationServiceTests
         Assert.Equal(0, result.InternalHeatGainW);
         Assert.Equal(2400, result.TotalHeatLoadW);
         Assert.Equal(2.4, result.TotalHeatLoadKw);
-        Assert.Equal(1.1, result.ReserveFactor);
+        Assert.Equal(1.1, result.DesignReserveFactor);
         Assert.Equal(2640, result.DesignCapacityW);
         Assert.Equal(2.64, result.DesignCapacityKw);
         Assert.Equal(10, result.DeltaTemperatureC);

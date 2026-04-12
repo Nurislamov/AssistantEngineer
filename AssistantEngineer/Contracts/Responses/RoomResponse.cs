@@ -1,6 +1,6 @@
-﻿namespace AssistantEngineer.Models;
+namespace AssistantEngineer.Contracts.Responses;
 
-public class Room
+public class RoomResponse
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -19,10 +19,6 @@ public class Room
     public double DesignReserveFactor { get; set; }
     public double DesignCapacityW { get; set; }
     public double DesignCapacityKw { get; set; }
-
-    public List<Window> Windows { get; set; } = [];
-    public List<Wall> Walls { get; set; } = [];
     
     public int FloorId { get; set; }
-    public Floor Floor { get; set; } = null!;
 }

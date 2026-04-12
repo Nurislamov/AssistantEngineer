@@ -1,0 +1,98 @@
+@host = http://localhost:5218
+@missingProjectId = 999999
+@missingBuildingId = 999999
+@missingFloorId = 999999
+@missingRoomId = 999999
+
+# Run the assistant-engineer.e2e files in numeric order when a request depends on variables from earlier files.
+
+### Negative: add floor to missing building
+POST {{host}}/api/floors/{{missingBuildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Ghost Floor"
+}
+
+> {%
+client.test("Floor for missing building returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Negative: invalid floor validation
+POST {{host}}/api/floors/{{buildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ""
+}
+
+> {%
+client.test("Invalid floor returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### Create floor
+POST {{host}}/api/floors/{{buildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Floor 1"
+}
+
+> {%
+client.test("Create floor returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(Boolean(response.headers.valueOf("Location")), "Expected Location header");
+    client.assert(response.body.id > 0, "Expected generated floor id");
+    client.assert(response.body.name === "Floor 1", "Expected floor name");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.building === undefined, "Floor response should not expose navigation properties");
+    client.assert(response.body.rooms === undefined, "Floor response should not expose navigation properties");
+});
+
+client.global.set("floorId", response.body.id);
+%}
+
+### Negative: get missing floor by id
+GET {{host}}/api/floors/by-id/{{missingFloorId}}
+Accept: application/json
+
+> {%
+client.test("GET missing floor by id returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Get floor by id
+GET {{host}}/api/floors/by-id/{{floorId}}
+Accept: application/json
+
+> {%
+client.test("GET floor by id returns response DTO", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("floorId"), "Expected floor id");
+    client.assert(response.body.name === "Floor 1", "Expected floor name");
+    client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.building === undefined, "Floor response should not expose navigation properties");
+    client.assert(response.body.rooms === undefined, "Floor response should not expose navigation properties");
+});
+%}
+
+### Get building floors
+GET {{host}}/api/floors/{{buildingId}}
+Accept: application/json
+
+> {%
+client.test("GET building floors returns created floor", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.some(function (floor) {
+        return floor.id == client.global.get("floorId");
+    }), "Expected created floor in list");
+});
+%}

@@ -1,5 +1,5 @@
-using AssistantEngineer.Contracts;
-using AssistantEngineer.Services;
+﻿using AssistantEngineer.Contracts.Reports;
+using AssistantEngineer.Services.Reports;
 using ClosedXML.Excel;
 
 namespace AssistantEngineer.Tests;
@@ -11,7 +11,7 @@ public class ExcelReportServiceTests
     {
         // Arrange
         var service = new ExcelReportService();
-        var report = new BuildingReportDto
+        var report = new BuildingReport
         {
             ProjectName = "Project 1",
             BuildingName = "Building 1",
@@ -20,26 +20,26 @@ public class ExcelReportServiceTests
             RoomsCount = 1,
             TotalHeatLoadW = 2330,
             TotalHeatLoadKw = 2.33,
-            ReserveFactor = 1.1,
+            DesignReserveFactor = 1.1,
             DesignCapacityW = 2563,
             DesignCapacityKw = 2.56,
             FloorSummaries =
             [
-                new BuildingFloorSummaryDto
+                new FloorReportSummary
                 {
                     FloorId = 1,
                     FloorName = "Floor 1",
                     RoomsCount = 1,
                     TotalHeatLoadW = 2330,
                     TotalHeatLoadKw = 2.33,
-                    ReserveFactor = 1.1,
+                    DesignReserveFactor = 1.1,
                     DesignCapacityW = 2563,
                     DesignCapacityKw = 2.56
                 }
             ],
             Rooms =
             [
-                new BuildingRoomReportRowDto
+                new RoomReportRow
                 {
                     RoomId = 1,
                     ProjectName = "Project 1",
@@ -63,14 +63,14 @@ public class ExcelReportServiceTests
                     InternalHeatGainW = 230,
                     TotalHeatLoadW = 2330,
                     TotalHeatLoadKw = 2.33,
-                    ReserveFactor = 1.1,
+                    DesignReserveFactor = 1.1,
                     DesignCapacityW = 2563,
                     DesignCapacityKw = 2.56
                 }
             ],
             Windows =
             [
-                new WindowReportRowDto
+                new WindowReportRow
                 {
                     WindowId = 1,
                     RoomId = 1,
@@ -81,7 +81,7 @@ public class ExcelReportServiceTests
             ],
             Walls =
             [
-                new WallReportRowDto
+                new WallReportRow
                 {
                     WallId = 1,
                     RoomId = 1,

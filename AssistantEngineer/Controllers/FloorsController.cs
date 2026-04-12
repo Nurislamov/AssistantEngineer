@@ -1,8 +1,9 @@
-using AssistantEngineer.Contracts;
-using AssistantEngineer.Contracts.Results;
+﻿using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Contracts.Requests;
+using AssistantEngineer.Contracts.Responses;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
-using AssistantEngineer.Services;
+using AssistantEngineer.Services.Calculations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,14 +14,14 @@ namespace AssistantEngineer.Controllers;
 public class FloorsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly StructureCalculationService _structureCalculationService;
+    private readonly AggregateCalculationService _aggregateCalculationService;
 
     public FloorsController(
         AppDbContext context,
-        StructureCalculationService structureCalculationService)
+        AggregateCalculationService aggregateCalculationService)
     {
         _context = context;
-        _structureCalculationService = structureCalculationService;
+        _aggregateCalculationService = aggregateCalculationService;
     }
 
     [HttpPost("{buildingId}")]
@@ -53,7 +54,7 @@ public class FloorsController : ControllerBase
                 Id = floor.Id,
                 Name = floor.Name,
                 BuildingId = floor.BuildingId,
-                ReserveFactor = floor.ReserveFactor,
+                DesignReserveFactor = floor.DesignReserveFactor,
                 DesignCapacityW = floor.DesignCapacityW,
                 DesignCapacityKw = floor.DesignCapacityKw
             })
@@ -72,7 +73,7 @@ public class FloorsController : ControllerBase
                 Id = floor.Id,
                 Name = floor.Name,
                 BuildingId = floor.BuildingId,
-                ReserveFactor = floor.ReserveFactor,
+                DesignReserveFactor = floor.DesignReserveFactor,
                 DesignCapacityW = floor.DesignCapacityW,
                 DesignCapacityKw = floor.DesignCapacityKw
             })
@@ -87,12 +88,12 @@ public class FloorsController : ControllerBase
     [HttpGet("{floorId}/calculate")]
     public async Task<ActionResult<FloorCalculationResult>> CalculateFloor(int floorId)
     {
-        var result = await _structureCalculationService.CalculateFloorAsync(floorId);
+        var floorCalculationResult = await _aggregateCalculationService.CalculateFloorAsync(floorId);
 
-        if (result == null)
+        if (floorCalculationResult == null)
             return NotFound();
 
-        return Ok(result);
+        return Ok(floorCalculationResult);
     }
 
     private static FloorResponse ToResponse(Floor floor)
@@ -102,7 +103,7 @@ public class FloorsController : ControllerBase
             Id = floor.Id,
             Name = floor.Name,
             BuildingId = floor.BuildingId,
-            ReserveFactor = floor.ReserveFactor,
+            DesignReserveFactor = floor.DesignReserveFactor,
             DesignCapacityW = floor.DesignCapacityW,
             DesignCapacityKw = floor.DesignCapacityKw
         };

@@ -1,4 +1,5 @@
-using AssistantEngineer.Contracts;
+﻿using AssistantEngineer.Contracts.Requests;
+using AssistantEngineer.Contracts.Responses;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
 using Microsoft.AspNetCore.Mvc;

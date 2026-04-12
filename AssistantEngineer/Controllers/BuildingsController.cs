@@ -1,8 +1,10 @@
-using AssistantEngineer.Contracts;
-using AssistantEngineer.Contracts.Results;
+﻿using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Contracts.Requests;
+using AssistantEngineer.Contracts.Responses;
 using AssistantEngineer.Data;
 using AssistantEngineer.Models;
-using AssistantEngineer.Services;
+using AssistantEngineer.Services.Calculations;
+using AssistantEngineer.Services.Reports;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,19 +15,19 @@ namespace AssistantEngineer.Controllers;
 public class BuildingsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly StructureCalculationService _structureCalculationService;
-    private readonly BuildingReportService _buildingReportService;
+    private readonly AggregateCalculationService _aggregateCalculationService;
+    private readonly BuildingReportDataService _buildingReportDataService;
     private readonly ExcelReportService _excelReportService;
 
     public BuildingsController(
         AppDbContext context,
-        StructureCalculationService structureCalculationService,
-        BuildingReportService buildingReportService,
+        AggregateCalculationService aggregateCalculationService,
+        BuildingReportDataService buildingReportDataService,
         ExcelReportService excelReportService)
     {
         _context = context;
-        _structureCalculationService = structureCalculationService;
-        _buildingReportService = buildingReportService;
+        _aggregateCalculationService = aggregateCalculationService;
+        _buildingReportDataService = buildingReportDataService;
         _excelReportService = excelReportService;
     }
 
@@ -59,7 +61,7 @@ public class BuildingsController : ControllerBase
                 Id = building.Id,
                 Name = building.Name,
                 ProjectId = building.ProjectId,
-                ReserveFactor = building.ReserveFactor,
+                DesignReserveFactor = building.DesignReserveFactor,
                 DesignCapacityW = building.DesignCapacityW,
                 DesignCapacityKw = building.DesignCapacityKw
             })
@@ -78,7 +80,7 @@ public class BuildingsController : ControllerBase
                 Id = building.Id,
                 Name = building.Name,
                 ProjectId = building.ProjectId,
-                ReserveFactor = building.ReserveFactor,
+                DesignReserveFactor = building.DesignReserveFactor,
                 DesignCapacityW = building.DesignCapacityW,
                 DesignCapacityKw = building.DesignCapacityKw
             })
@@ -93,23 +95,23 @@ public class BuildingsController : ControllerBase
     [HttpGet("{buildingId}/calculate")]
     public async Task<ActionResult<BuildingCalculationResult>> CalculateBuilding(int buildingId)
     {
-        var result = await _structureCalculationService.CalculateBuildingAsync(buildingId);
+        var buildingCalculationResult = await _aggregateCalculationService.CalculateBuildingAsync(buildingId);
 
-        if (result == null)
+        if (buildingCalculationResult == null)
             return NotFound();
 
-        return Ok(result);
+        return Ok(buildingCalculationResult);
     }
 
     [HttpGet("{buildingId}/report/excel")]
     public async Task<IActionResult> DownloadExcelReport(int buildingId)
     {
-        var calculation = await _structureCalculationService.CalculateBuildingAsync(buildingId);
+        var buildingCalculationResult = await _aggregateCalculationService.CalculateBuildingAsync(buildingId);
 
-        if (calculation == null)
+        if (buildingCalculationResult == null)
             return NotFound();
 
-        var report = await _buildingReportService.BuildReportAsync(buildingId);
+        var report = await _buildingReportDataService.BuildReportAsync(buildingId);
 
         if (report == null)
             return NotFound();
@@ -130,7 +132,7 @@ public class BuildingsController : ControllerBase
             Id = building.Id,
             Name = building.Name,
             ProjectId = building.ProjectId,
-            ReserveFactor = building.ReserveFactor,
+            DesignReserveFactor = building.DesignReserveFactor,
             DesignCapacityW = building.DesignCapacityW,
             DesignCapacityKw = building.DesignCapacityKw
         };
