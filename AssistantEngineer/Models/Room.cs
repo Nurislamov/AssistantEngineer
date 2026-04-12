@@ -16,6 +16,10 @@ public class Room
     public double EquipmentLoadW { get; set; }
     public double LightingLoadW { get; set; }
 
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
+
     public List<Window> Windows { get; set; } = [];
     public List<Wall> Walls { get; set; } = [];
     

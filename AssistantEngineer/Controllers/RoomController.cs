@@ -37,6 +37,9 @@ public class RoomController : ControllerBase
                 PeopleCount = room.PeopleCount,
                 EquipmentLoadW = room.EquipmentLoadW,
                 LightingLoadW = room.LightingLoadW,
+                ReserveFactor = room.ReserveFactor,
+                DesignCapacityW = room.DesignCapacityW,
+                DesignCapacityKw = room.DesignCapacityKw,
                 FloorId = room.FloorId
             })
             .ToListAsync();
@@ -64,6 +67,9 @@ public class RoomController : ControllerBase
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = room.EquipmentLoadW,
             LightingLoadW = room.LightingLoadW,
+            ReserveFactor = room.ReserveFactor,
+            DesignCapacityW = room.DesignCapacityW,
+            DesignCapacityKw = room.DesignCapacityKw,
             FloorId = room.FloorId
         });
     }
@@ -105,6 +111,9 @@ public class RoomController : ControllerBase
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = room.EquipmentLoadW,
             LightingLoadW = room.LightingLoadW,
+            ReserveFactor = room.ReserveFactor,
+            DesignCapacityW = room.DesignCapacityW,
+            DesignCapacityKw = room.DesignCapacityKw,
             FloorId = room.FloorId
         };
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
@@ -127,6 +136,11 @@ public class RoomController : ControllerBase
             .ToListAsync();
 
         var result = _roomCalculationService.Calculate(room, windows, walls);
+        room.ReserveFactor = result.ReserveFactor;
+        room.DesignCapacityW = result.DesignCapacityW;
+        room.DesignCapacityKw = result.DesignCapacityKw;
+
+        await _context.SaveChangesAsync();
 
         return Ok(result);
     }

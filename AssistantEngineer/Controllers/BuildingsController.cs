@@ -58,7 +58,10 @@ public class BuildingsController : ControllerBase
             {
                 Id = building.Id,
                 Name = building.Name,
-                ProjectId = building.ProjectId
+                ProjectId = building.ProjectId,
+                ReserveFactor = building.ReserveFactor,
+                DesignCapacityW = building.DesignCapacityW,
+                DesignCapacityKw = building.DesignCapacityKw
             })
             .ToListAsync();
 
@@ -74,7 +77,10 @@ public class BuildingsController : ControllerBase
             {
                 Id = building.Id,
                 Name = building.Name,
-                ProjectId = building.ProjectId
+                ProjectId = building.ProjectId,
+                ReserveFactor = building.ReserveFactor,
+                DesignCapacityW = building.DesignCapacityW,
+                DesignCapacityKw = building.DesignCapacityKw
             })
             .FirstOrDefaultAsync();
 
@@ -98,6 +104,11 @@ public class BuildingsController : ControllerBase
     [HttpGet("{buildingId}/report/excel")]
     public async Task<IActionResult> DownloadExcelReport(int buildingId)
     {
+        var calculation = await _structureCalculationService.CalculateBuildingAsync(buildingId);
+
+        if (calculation == null)
+            return NotFound();
+
         var report = await _buildingReportService.BuildReportAsync(buildingId);
 
         if (report == null)
@@ -118,7 +129,10 @@ public class BuildingsController : ControllerBase
         {
             Id = building.Id,
             Name = building.Name,
-            ProjectId = building.ProjectId
+            ProjectId = building.ProjectId,
+            ReserveFactor = building.ReserveFactor,
+            DesignCapacityW = building.DesignCapacityW,
+            DesignCapacityKw = building.DesignCapacityKw
         };
     }
 }

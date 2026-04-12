@@ -51,6 +51,21 @@ public class StructureCalculationServiceTests
         Assert.Equal(2, result.RoomsCount);
         Assert.Equal(4730, result.TotalHeatLoadW);
         Assert.Equal(4.73, result.TotalHeatLoadKw);
+        Assert.Equal(1.1, result.ReserveFactor);
+        Assert.Equal(5203, result.DesignCapacityW);
+        Assert.Equal(5.2, result.DesignCapacityKw);
+
+        var storedFloor = await context.Floors.FindAsync(floor.Id);
+        var storedRooms = await context.Rooms
+            .Where(room => room.FloorId == floor.Id)
+            .OrderBy(room => room.Id)
+            .ToListAsync();
+
+        Assert.NotNull(storedFloor);
+        Assert.Equal(5203, storedFloor.DesignCapacityW);
+        Assert.Equal(5.2, storedFloor.DesignCapacityKw);
+        Assert.Equal(2563, storedRooms[0].DesignCapacityW);
+        Assert.Equal(2640, storedRooms[1].DesignCapacityW);
     }
 
     [Fact]
@@ -102,6 +117,21 @@ public class StructureCalculationServiceTests
         Assert.Equal(2, result.RoomsCount);
         Assert.Equal(2930, result.TotalHeatLoadW);
         Assert.Equal(2.93, result.TotalHeatLoadKw);
+        Assert.Equal(1.1, result.ReserveFactor);
+        Assert.Equal(3223, result.DesignCapacityW);
+        Assert.Equal(3.22, result.DesignCapacityKw);
+
+        var storedBuilding = await context.Buildings.FindAsync(building.Id);
+        var storedFloors = await context.Floors
+            .Where(floor => floor.BuildingId == building.Id)
+            .OrderBy(floor => floor.Id)
+            .ToListAsync();
+
+        Assert.NotNull(storedBuilding);
+        Assert.Equal(3223, storedBuilding.DesignCapacityW);
+        Assert.Equal(3.22, storedBuilding.DesignCapacityKw);
+        Assert.Equal(2563, storedFloors[0].DesignCapacityW);
+        Assert.Equal(660, storedFloors[1].DesignCapacityW);
     }
 
     private static StructureCalculationService CreateService(AppDbContext context)

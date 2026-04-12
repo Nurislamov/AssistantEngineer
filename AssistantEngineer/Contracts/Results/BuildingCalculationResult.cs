@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Contracts.Results;
+namespace AssistantEngineer.Contracts.Results;
 
 public class BuildingCalculationResult
 {
@@ -8,4 +8,8 @@ public class BuildingCalculationResult
     public int RoomsCount { get; set; }
     public double TotalHeatLoadW { get; set; }
     public double TotalHeatLoadKw { get; set; }
+
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
 }

@@ -8,5 +8,9 @@ public class Building
     public int ProjectId { get; set; }
     public Project Project { get; set; } = null!;
 
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
+
     public List<Floor> Floors { get; set; } = [];
 }

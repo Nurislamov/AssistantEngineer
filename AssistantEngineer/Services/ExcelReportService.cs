@@ -43,6 +43,12 @@ public class ExcelReportService
         worksheet.Cell(8, 2).Value = report.TotalHeatLoadW;
         worksheet.Cell(9, 1).Value = "Total heat load, kW";
         worksheet.Cell(9, 2).Value = report.TotalHeatLoadKw;
+        worksheet.Cell(10, 1).Value = "Reserve factor";
+        worksheet.Cell(10, 2).Value = report.ReserveFactor;
+        worksheet.Cell(11, 1).Value = "Design capacity, W";
+        worksheet.Cell(11, 2).Value = report.DesignCapacityW;
+        worksheet.Cell(12, 1).Value = "Design capacity, kW";
+        worksheet.Cell(12, 2).Value = report.DesignCapacityKw;
 
         worksheet.Column(1).Style.Font.Bold = true;
         worksheet.Columns().AdjustToContents();
@@ -53,7 +59,16 @@ public class ExcelReportService
         IReadOnlyCollection<BuildingFloorSummaryDto> floorSummaries)
     {
         var worksheet = workbook.Worksheets.Add("Floors");
-        WriteHeader(worksheet, "Floor ID", "Floor", "Rooms count", "Total heat load, W", "Total heat load, kW");
+        WriteHeader(
+            worksheet,
+            "Floor ID",
+            "Floor",
+            "Rooms count",
+            "Total heat load, W",
+            "Total heat load, kW",
+            "Reserve factor",
+            "Design capacity, W",
+            "Design capacity, kW");
 
         var row = 2;
         foreach (var floor in floorSummaries)
@@ -63,10 +78,13 @@ public class ExcelReportService
             worksheet.Cell(row, 3).Value = floor.RoomsCount;
             worksheet.Cell(row, 4).Value = floor.TotalHeatLoadW;
             worksheet.Cell(row, 5).Value = floor.TotalHeatLoadKw;
+            worksheet.Cell(row, 6).Value = floor.ReserveFactor;
+            worksheet.Cell(row, 7).Value = floor.DesignCapacityW;
+            worksheet.Cell(row, 8).Value = floor.DesignCapacityKw;
             row++;
         }
 
-        FormatTable(worksheet, columnCount: 5);
+        FormatTable(worksheet, columnCount: 8);
     }
 
     private static void AddRoomsWorksheet(
@@ -97,7 +115,10 @@ public class ExcelReportService
             "Wall gain, W",
             "Internal gain, W",
             "Total load, W",
-            "Total load, kW");
+            "Total load, kW",
+            "Reserve factor",
+            "Design capacity, W",
+            "Design capacity, kW");
 
         var row = 2;
         foreach (var room in rooms)
@@ -124,10 +145,13 @@ public class ExcelReportService
             worksheet.Cell(row, 20).Value = room.InternalHeatGainW;
             worksheet.Cell(row, 21).Value = room.TotalHeatLoadW;
             worksheet.Cell(row, 22).Value = room.TotalHeatLoadKw;
+            worksheet.Cell(row, 23).Value = room.ReserveFactor;
+            worksheet.Cell(row, 24).Value = room.DesignCapacityW;
+            worksheet.Cell(row, 25).Value = room.DesignCapacityKw;
             row++;
         }
 
-        FormatTable(worksheet, columnCount: 22);
+        FormatTable(worksheet, columnCount: 25);
     }
 
     private static void AddWindowsWorksheet(

@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Contracts.Results;
+namespace AssistantEngineer.Contracts.Results;
 
 public class RoomCalculationResult
 {
@@ -24,4 +24,8 @@ public class RoomCalculationResult
     public double DeltaTemperatureC { get; set; }
     public double HeightAdjustmentFactor { get; set; }
     public double TemperatureAdjustmentFactor { get; set; }
+
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
 }

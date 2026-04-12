@@ -33,6 +33,9 @@ public class RoomCalculationServiceTests
         Assert.Equal(0, result.InternalHeatGainW);
         Assert.Equal(2400, result.TotalHeatLoadW);
         Assert.Equal(2.4, result.TotalHeatLoadKw);
+        Assert.Equal(1.1, result.ReserveFactor);
+        Assert.Equal(2640, result.DesignCapacityW);
+        Assert.Equal(2.64, result.DesignCapacityKw);
         Assert.Equal(10, result.DeltaTemperatureC);
         Assert.Equal(1, result.HeightAdjustmentFactor);
         Assert.Equal(1.2, result.TemperatureAdjustmentFactor);
@@ -65,6 +68,8 @@ public class RoomCalculationServiceTests
         Assert.Equal(2400, result.BaseRoomLoadW);
         Assert.Equal(3275, result.TotalHeatLoadW);
         Assert.Equal(3.28, result.TotalHeatLoadKw);
+        Assert.Equal(3602.5, result.DesignCapacityW);
+        Assert.Equal(3.6, result.DesignCapacityKw);
     }
 
     [Fact]
@@ -95,6 +100,8 @@ public class RoomCalculationServiceTests
         Assert.Equal(2400, result.BaseRoomLoadW);
         Assert.Equal(3600, result.TotalHeatLoadW);
         Assert.Equal(3.6, result.TotalHeatLoadKw);
+        Assert.Equal(3960, result.DesignCapacityW);
+        Assert.Equal(3.96, result.DesignCapacityKw);
     }
 
     [Fact]
@@ -125,6 +132,8 @@ public class RoomCalculationServiceTests
         Assert.Equal(2400, result.BaseRoomLoadW);
         Assert.Equal(2400, result.TotalHeatLoadW);
         Assert.Equal(2.4, result.TotalHeatLoadKw);
+        Assert.Equal(2640, result.DesignCapacityW);
+        Assert.Equal(2.64, result.DesignCapacityKw);
     }
 
     [Fact]
@@ -153,6 +162,8 @@ public class RoomCalculationServiceTests
         Assert.Equal(2400, result.BaseRoomLoadW);
         Assert.Equal(3490, result.TotalHeatLoadW);
         Assert.Equal(3.49, result.TotalHeatLoadKw);
+        Assert.Equal(3839, result.DesignCapacityW);
+        Assert.Equal(3.84, result.DesignCapacityKw);
     }
 
     [Fact]
@@ -194,6 +205,8 @@ public class RoomCalculationServiceTests
         Assert.Equal(230, result.InternalHeatGainW);
         Assert.Equal(2330, result.TotalHeatLoadW);
         Assert.Equal(2.33, result.TotalHeatLoadKw);
+        Assert.Equal(2563, result.DesignCapacityW);
+        Assert.Equal(2.56, result.DesignCapacityKw);
     }
 
     [Fact]

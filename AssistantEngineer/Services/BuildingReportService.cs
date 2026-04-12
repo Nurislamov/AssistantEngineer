@@ -104,7 +104,10 @@ public class BuildingReportService
                 WallHeatGainW = calculation.WallHeatGainW,
                 InternalHeatGainW = calculation.InternalHeatGainW,
                 TotalHeatLoadW = calculation.TotalHeatLoadW,
-                TotalHeatLoadKw = calculation.TotalHeatLoadKw
+                TotalHeatLoadKw = calculation.TotalHeatLoadKw,
+                ReserveFactor = calculation.ReserveFactor,
+                DesignCapacityW = calculation.DesignCapacityW,
+                DesignCapacityKw = calculation.DesignCapacityKw
             });
         }
 
@@ -113,12 +116,16 @@ public class BuildingReportService
             {
                 var floorRooms = rooms.Where(room => room.FloorId == floor.Id).ToList();
                 var totalHeatLoadW = floorRooms.Sum(room => roomCalculations[room.Id].TotalHeatLoadW);
+                var totalDesignCapacityW = floorRooms.Sum(room => roomCalculations[room.Id].DesignCapacityW);
 
                 return new BuildingFloorSummaryDto
                 {
                     FloorId = floor.Id,
                     FloorName = floor.Name,
                     RoomsCount = floorRooms.Count,
+                    ReserveFactor = RoomCalculationService.DefaultReserveFactor,
+                    DesignCapacityW = Math.Round(totalDesignCapacityW, 2),
+                    DesignCapacityKw = Math.Round(totalDesignCapacityW / 1000.0, 2),
                     TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
                     TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2)
                 };
@@ -161,6 +168,7 @@ public class BuildingReportService
             .ToList();
 
         var totalHeatLoadW = roomCalculations.Values.Sum(calculation => calculation.TotalHeatLoadW);
+        var totalDesignCapacityW = roomCalculations.Values.Sum(calculation => calculation.DesignCapacityW);
 
         return new BuildingReportDto
         {
@@ -171,6 +179,9 @@ public class BuildingReportService
             RoomsCount = rooms.Count,
             TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
             TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2),
+            ReserveFactor = RoomCalculationService.DefaultReserveFactor,
+            DesignCapacityW = Math.Round(totalDesignCapacityW, 2),
+            DesignCapacityKw = Math.Round(totalDesignCapacityW / 1000.0, 2),
             FloorSummaries = floorSummaries,
             Rooms = roomRows,
             Windows = windowRows,

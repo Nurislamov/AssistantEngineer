@@ -1,10 +1,12 @@
-﻿using AssistantEngineer.Contracts.Results;
+using AssistantEngineer.Contracts.Results;
 using AssistantEngineer.Models;
 
 namespace AssistantEngineer.Services;
 
 public class RoomCalculationService
 {
+    public const double DefaultReserveFactor = 1.10;
+
     public RoomCalculationResult Calculate(
         Room room,
         IEnumerable<Window> windows,
@@ -14,6 +16,7 @@ public class RoomCalculationService
         const double windowCoolingLoadWPerM2 = 250.0;
         const double externalWallLoadWPerM2 = 60.0;
         const double peopleHeatGainWPerPerson = 130.0;
+        const double reserveFactor = DefaultReserveFactor;
 
         var deltaTemperatureC =
             Math.Abs(room.OutdoorTemperatureC - room.IndoorTemperatureC);
@@ -47,6 +50,9 @@ public class RoomCalculationService
         var totalHeatLoadW =
             baseRoomLoadW + windowHeatGainW + wallHeatGainW + internalHeatGainW;
 
+        var designCapacityW = totalHeatLoadW * reserveFactor;
+        var designCapacityKw = designCapacityW / 1000.0;
+
         return new RoomCalculationResult
         {
             RoomId = room.Id,
@@ -67,6 +73,10 @@ public class RoomCalculationService
 
             TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
             TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2),
+
+            ReserveFactor = reserveFactor,
+            DesignCapacityW = Math.Round(designCapacityW, 2),
+            DesignCapacityKw = Math.Round(designCapacityKw, 2),
 
             DeltaTemperatureC = deltaTemperatureC,
             HeightAdjustmentFactor = Math.Round(heightAdjustmentFactor, 2),

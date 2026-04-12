@@ -15,6 +15,10 @@ public class RoomResponse
     public int PeopleCount { get; set; }
     public double EquipmentLoadW { get; set; }
     public double LightingLoadW { get; set; }
+
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
     
     public int FloorId { get; set; }
 }

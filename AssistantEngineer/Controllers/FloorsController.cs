@@ -52,7 +52,10 @@ public class FloorsController : ControllerBase
             {
                 Id = floor.Id,
                 Name = floor.Name,
-                BuildingId = floor.BuildingId
+                BuildingId = floor.BuildingId,
+                ReserveFactor = floor.ReserveFactor,
+                DesignCapacityW = floor.DesignCapacityW,
+                DesignCapacityKw = floor.DesignCapacityKw
             })
             .ToListAsync();
 
@@ -68,7 +71,10 @@ public class FloorsController : ControllerBase
             {
                 Id = floor.Id,
                 Name = floor.Name,
-                BuildingId = floor.BuildingId
+                BuildingId = floor.BuildingId,
+                ReserveFactor = floor.ReserveFactor,
+                DesignCapacityW = floor.DesignCapacityW,
+                DesignCapacityKw = floor.DesignCapacityKw
             })
             .FirstOrDefaultAsync();
 
@@ -95,7 +101,10 @@ public class FloorsController : ControllerBase
         {
             Id = floor.Id,
             Name = floor.Name,
-            BuildingId = floor.BuildingId
+            BuildingId = floor.BuildingId,
+            ReserveFactor = floor.ReserveFactor,
+            DesignCapacityW = floor.DesignCapacityW,
+            DesignCapacityKw = floor.DesignCapacityKw
         };
     }
 }

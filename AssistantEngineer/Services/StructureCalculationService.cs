@@ -21,7 +21,6 @@ public class StructureCalculationService
     public async Task<FloorCalculationResult?> CalculateFloorAsync(int floorId)
     {
         var floor = await _context.Floors
-            .AsNoTracking()
             .FirstOrDefaultAsync(f => f.Id == floorId);
 
         if (floor == null)
@@ -29,25 +28,23 @@ public class StructureCalculationService
 
         var rooms = await _context.Rooms
             .Where(r => r.FloorId == floorId)
-            .AsNoTracking()
             .ToListAsync();
 
-        var totalHeatLoadW = await CalculateRoomsTotalHeatLoadAsync(rooms);
+        var roomResults = await CalculateRoomsAsync(rooms);
+        var result = BuildFloorResult(floor, rooms, roomResults);
 
-        return new FloorCalculationResult
-        {
-            FloorId = floor.Id,
-            FloorName = floor.Name,
-            RoomsCount = rooms.Count,
-            TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
-            TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2)
-        };
+        floor.ReserveFactor = result.ReserveFactor;
+        floor.DesignCapacityW = result.DesignCapacityW;
+        floor.DesignCapacityKw = result.DesignCapacityKw;
+
+        await _context.SaveChangesAsync();
+
+        return result;
     }
 
     public async Task<BuildingCalculationResult?> CalculateBuildingAsync(int buildingId)
     {
         var building = await _context.Buildings
-            .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == buildingId);
 
         if (building == null)
@@ -55,7 +52,6 @@ public class StructureCalculationService
 
         var floors = await _context.Floors
             .Where(f => f.BuildingId == buildingId)
-            .AsNoTracking()
             .ToListAsync();
 
         var floorIds = floors
@@ -64,26 +60,53 @@ public class StructureCalculationService
 
         var rooms = await _context.Rooms
             .Where(r => floorIds.Contains(r.FloorId))
-            .AsNoTracking()
             .ToListAsync();
 
-        var totalHeatLoadW = await CalculateRoomsTotalHeatLoadAsync(rooms);
+        var roomResults = await CalculateRoomsAsync(rooms);
 
-        return new BuildingCalculationResult
+        foreach (var floor in floors)
+        {
+            var floorRooms = rooms
+                .Where(room => room.FloorId == floor.Id)
+                .ToList();
+
+            var floorResult = BuildFloorResult(floor, floorRooms, roomResults);
+            floor.ReserveFactor = floorResult.ReserveFactor;
+            floor.DesignCapacityW = floorResult.DesignCapacityW;
+            floor.DesignCapacityKw = floorResult.DesignCapacityKw;
+        }
+
+        var totalHeatLoadW = roomResults.Values.Sum(result => result.TotalHeatLoadW);
+        var totalDesignCapacityW = roomResults.Values.Sum(result => result.DesignCapacityW);
+
+        var result = new BuildingCalculationResult
         {
             BuildingId = building.Id,
             BuildingName = building.Name,
             FloorsCount = floors.Count,
             RoomsCount = rooms.Count,
             TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
-            TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2)
+            TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2),
+            ReserveFactor = RoomCalculationService.DefaultReserveFactor,
+            DesignCapacityW = Math.Round(totalDesignCapacityW, 2),
+            DesignCapacityKw = Math.Round(totalDesignCapacityW / 1000.0, 2)
         };
+
+        building.ReserveFactor = result.ReserveFactor;
+        building.DesignCapacityW = result.DesignCapacityW;
+        building.DesignCapacityKw = result.DesignCapacityKw;
+
+        await _context.SaveChangesAsync();
+
+        return result;
     }
 
-    private async Task<double> CalculateRoomsTotalHeatLoadAsync(IReadOnlyCollection<Room> rooms)
+    private async Task<Dictionary<int, RoomCalculationResult>> CalculateRoomsAsync(IReadOnlyCollection<Room> rooms)
     {
+        var results = new Dictionary<int, RoomCalculationResult>();
+
         if (rooms.Count == 0)
-            return 0;
+            return results;
 
         var roomIds = rooms
             .Select(room => room.Id)
@@ -101,18 +124,41 @@ public class StructureCalculationService
                 .ToListAsync())
             .ToLookup(wall => wall.RoomId);
 
-        double totalHeatLoadW = 0;
-
         foreach (var room in rooms)
         {
-            var roomResult = _roomCalculationService.Calculate(
+            var result = _roomCalculationService.Calculate(
                 room,
                 windowsByRoomId[room.Id],
                 wallsByRoomId[room.Id]);
 
-            totalHeatLoadW += roomResult.TotalHeatLoadW;
+            room.ReserveFactor = result.ReserveFactor;
+            room.DesignCapacityW = result.DesignCapacityW;
+            room.DesignCapacityKw = result.DesignCapacityKw;
+
+            results[room.Id] = result;
         }
 
-        return totalHeatLoadW;
+        return results;
+    }
+
+    private static FloorCalculationResult BuildFloorResult(
+        Floor floor,
+        IReadOnlyCollection<Room> rooms,
+        IReadOnlyDictionary<int, RoomCalculationResult> roomResults)
+    {
+        var totalHeatLoadW = rooms.Sum(room => roomResults[room.Id].TotalHeatLoadW);
+        var totalDesignCapacityW = rooms.Sum(room => roomResults[room.Id].DesignCapacityW);
+
+        return new FloorCalculationResult
+        {
+            FloorId = floor.Id,
+            FloorName = floor.Name,
+            RoomsCount = rooms.Count,
+            TotalHeatLoadW = Math.Round(totalHeatLoadW, 2),
+            TotalHeatLoadKw = Math.Round(totalHeatLoadW / 1000.0, 2),
+            ReserveFactor = RoomCalculationService.DefaultReserveFactor,
+            DesignCapacityW = Math.Round(totalDesignCapacityW, 2),
+            DesignCapacityKw = Math.Round(totalDesignCapacityW / 1000.0, 2)
+        };
     }
 }

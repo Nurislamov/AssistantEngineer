@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Contracts;
+namespace AssistantEngineer.Contracts;
 
 public class BuildingRoomReportRowDto
 {
@@ -28,6 +28,10 @@ public class BuildingRoomReportRowDto
     public double WindowHeatGainW { get; set; }
     public double WallHeatGainW { get; set; }
     public double InternalHeatGainW { get; set; }
+
+    public double ReserveFactor { get; set; }
+    public double DesignCapacityW { get; set; }
+    public double DesignCapacityKw { get; set; }
 
     public double TotalHeatLoadW { get; set; }
     public double TotalHeatLoadKw { get; set; }
