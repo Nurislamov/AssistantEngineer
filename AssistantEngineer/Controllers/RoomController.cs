@@ -32,7 +32,10 @@ public class RoomController : ControllerBase
                 HeightM = room.HeightM,
                 VolumeM3 = room.VolumeM3,
                 IndoorTemperatureC = room.IndoorTemperatureC,
-                OutdoorTemperatureC = room.OutdoorTemperatureC
+                OutdoorTemperatureC = room.OutdoorTemperatureC,
+                PeopleCount = room.PeopleCount,
+                EquipmentLoadW = room.EquipmentLoadW,
+                LightingLoadW = room.LightingLoadW
             })
             .ToListAsync();
         
@@ -55,7 +58,10 @@ public class RoomController : ControllerBase
             HeightM = room.HeightM,
             VolumeM3 = room.VolumeM3,
             IndoorTemperatureC = room.IndoorTemperatureC,
-            OutdoorTemperatureC = room.OutdoorTemperatureC
+            OutdoorTemperatureC = room.OutdoorTemperatureC,
+            PeopleCount = room.PeopleCount,
+            EquipmentLoadW = room.EquipmentLoadW,
+            LightingLoadW = room.LightingLoadW
         });
     }
 
@@ -65,11 +71,14 @@ public class RoomController : ControllerBase
         var room = new Room
         {
             Name = request.Name,
-            AreaM2 =  request.AreaM2,
-            HeightM =  request.HeightM,
+            AreaM2 = request.AreaM2,
+            HeightM = request.HeightM,
             VolumeM3 = request.AreaM2 * request.HeightM,
             IndoorTemperatureC = request.IndoorTemperatureC,
-            OutdoorTemperatureC = request.OutdoorTemperatureC
+            OutdoorTemperatureC = request.OutdoorTemperatureC,
+            PeopleCount = request.PeopleCount,
+            EquipmentLoadW = request.EquipmentLoadW,
+            LightingLoadW = request.LightingLoadW
         };
         _context.Rooms.Add(room);
         await  _context.SaveChangesAsync();

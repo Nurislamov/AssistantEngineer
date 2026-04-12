@@ -32,10 +32,16 @@ namespace AssistantEngineer.Migrations
                     b.Property<double>("AreaM2")
                         .HasColumnType("double precision");
 
+                    b.Property<double>("EquipmentLoadW")
+                        .HasColumnType("double precision");
+
                     b.Property<double>("HeightM")
                         .HasColumnType("double precision");
 
                     b.Property<double>("IndoorTemperatureC")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("LightingLoadW")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
@@ -44,6 +50,9 @@ namespace AssistantEngineer.Migrations
 
                     b.Property<double>("OutdoorTemperatureC")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("PeopleCount")
+                        .HasColumnType("integer");
 
                     b.Property<double>("VolumeM3")
                         .HasColumnType("double precision");
@@ -101,7 +110,7 @@ namespace AssistantEngineer.Migrations
             modelBuilder.Entity("AssistantEngineer.Models.Wall", b =>
                 {
                     b.HasOne("AssistantEngineer.Models.Room", "Room")
-                        .WithMany()
+                        .WithMany("Walls")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -122,6 +131,8 @@ namespace AssistantEngineer.Migrations
 
             modelBuilder.Entity("AssistantEngineer.Models.Room", b =>
                 {
+                    b.Navigation("Walls");
+
                     b.Navigation("Windows");
                 });
 #pragma warning restore 612, 618

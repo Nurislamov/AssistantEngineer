@@ -18,5 +18,14 @@ public class CreateRoomRequest
     public double IndoorTemperatureC { get; set; }
 
     [Range(-60, 100)]
-    public double OutdoorTemperatureC { get; set; }   
+    public double OutdoorTemperatureC { get; set; }
+
+    [Range(0, 1000)]
+    public int PeopleCount { get; set; }
+
+    [Range(0, 1_000_000)]
+    public double EquipmentLoadW { get; set; }
+
+    [Range(0, 1_000_000)]
+    public double LightingLoadW { get; set; }
 }
