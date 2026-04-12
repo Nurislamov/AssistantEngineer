@@ -14,13 +14,19 @@ public class BuildingsController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly StructureCalculationService _structureCalculationService;
+    private readonly BuildingReportService _buildingReportService;
+    private readonly ExcelReportService _excelReportService;
 
     public BuildingsController(
         AppDbContext context,
-        StructureCalculationService structureCalculationService)
+        StructureCalculationService structureCalculationService,
+        BuildingReportService buildingReportService,
+        ExcelReportService excelReportService)
     {
         _context = context;
         _structureCalculationService = structureCalculationService;
+        _buildingReportService = buildingReportService;
+        _excelReportService = excelReportService;
     }
 
     [HttpPost("{projectId}")]
@@ -87,6 +93,23 @@ public class BuildingsController : ControllerBase
             return NotFound();
 
         return Ok(result);
+    }
+
+    [HttpGet("{buildingId}/report/excel")]
+    public async Task<IActionResult> DownloadExcelReport(int buildingId)
+    {
+        var report = await _buildingReportService.BuildReportAsync(buildingId);
+
+        if (report == null)
+            return NotFound();
+
+        var content = _excelReportService.GenerateBuildingReport(report);
+        var fileName = $"building-{buildingId}-report.xlsx";
+
+        return File(
+            content,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            fileName);
     }
 
     private static BuildingResponse ToResponse(Building building)

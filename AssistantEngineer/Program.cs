@@ -15,6 +15,8 @@ builder.Services.AddOpenApi();
 // регистрация сервиса расчёта
 builder.Services.AddScoped<RoomCalculationService>();
 builder.Services.AddScoped<StructureCalculationService>();
+builder.Services.AddScoped<BuildingReportService>();
+builder.Services.AddScoped<ExcelReportService>();
 
 var app = builder.Build();
 

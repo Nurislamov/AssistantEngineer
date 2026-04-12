@@ -30,6 +30,16 @@ client.test("Invalid project returns 400", function () {
 });
 %}
 
+### Negative: get missing project by id
+GET {{host}}/api/projects/{{missingProjectId}}
+Accept: application/json
+
+> {%
+client.test("GET missing project by id returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
 ### Create project
 POST {{host}}/api/projects
 Content-Type: application/json
@@ -42,8 +52,10 @@ Accept: application/json
 > {%
 client.test("Create project returns 201", function () {
     client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(Boolean(response.headers.valueOf("Location")), "Expected Location header");
     client.assert(response.body.id > 0, "Expected generated project id");
     client.assert(response.body.name === "Cooling Load Study", "Expected project name");
+    client.assert(response.body.buildings === undefined, "Project response should not expose navigation properties");
 });
 
 client.global.set("projectId", response.body.id);
@@ -104,12 +116,25 @@ Accept: application/json
 > {%
 client.test("Create building returns 201", function () {
     client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(Boolean(response.headers.valueOf("Location")), "Expected Location header");
     client.assert(response.body.id > 0, "Expected generated building id");
     client.assert(response.body.name === "Main Building", "Expected building name");
     client.assert(response.body.projectId == client.global.get("projectId"), "Expected projectId");
+    client.assert(response.body.project === undefined, "Building response should not expose navigation properties");
+    client.assert(response.body.floors === undefined, "Building response should not expose navigation properties");
 });
 
 client.global.set("buildingId", response.body.id);
+%}
+
+### Negative: get missing building by id
+GET {{host}}/api/buildings/by-id/{{missingBuildingId}}
+Accept: application/json
+
+> {%
+client.test("GET missing building by id returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
 %}
 
 ### Get building by id
@@ -182,12 +207,25 @@ Accept: application/json
 > {%
 client.test("Create floor returns 201", function () {
     client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(Boolean(response.headers.valueOf("Location")), "Expected Location header");
     client.assert(response.body.id > 0, "Expected generated floor id");
     client.assert(response.body.name === "Floor 1", "Expected floor name");
     client.assert(response.body.buildingId == client.global.get("buildingId"), "Expected buildingId");
+    client.assert(response.body.building === undefined, "Floor response should not expose navigation properties");
+    client.assert(response.body.rooms === undefined, "Floor response should not expose navigation properties");
 });
 
 client.global.set("floorId", response.body.id);
+%}
+
+### Negative: get missing floor by id
+GET {{host}}/api/floors/by-id/{{missingFloorId}}
+Accept: application/json
+
+> {%
+client.test("GET missing floor by id returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
 %}
 
 ### Get floor by id
@@ -649,6 +687,32 @@ client.test("Calculate building aggregates floor loads", function () {
     client.assert(response.body.roomsCount === 2, "Expected two rooms");
     client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
     client.assert(response.body.totalHeatLoadKw === 8.3, "Expected totalHeatLoadKw 8.3");
+});
+%}
+
+### Download building Excel report
+GET {{host}}/api/buildings/{{buildingId}}/report/excel
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+> {%
+client.test("Download building Excel report returns xlsx file", function () {
+    var contentType = String(response.headers.valueOf("Content-Type") || "");
+    var contentDisposition = String(response.headers.valueOf("Content-Disposition") || "");
+
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(contentType.indexOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") >= 0, "Expected xlsx content type, got " + contentType);
+    client.assert(contentDisposition.indexOf("attachment") >= 0, "Expected attachment content disposition, got " + contentDisposition);
+    client.assert(contentDisposition.indexOf(".xlsx") >= 0, "Expected xlsx filename, got " + contentDisposition);
+});
+%}
+
+### Negative: download missing building Excel report
+GET {{host}}/api/buildings/{{missingBuildingId}}/report/excel
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+> {%
+client.test("Download missing building Excel report returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
 });
 %}
 
