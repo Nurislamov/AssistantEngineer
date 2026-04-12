@@ -27,6 +27,10 @@ public class RoomCalculationServiceTests
         Assert.Equal(0, result.TotalWallAreaM2);
         Assert.Equal(0, result.ExternalWallAreaM2);
         Assert.Equal(0, result.WallHeatGainW);
+        Assert.Equal(0, result.PeopleHeatGainW);
+        Assert.Equal(0, result.EquipmentHeatGainW);
+        Assert.Equal(0, result.LightingHeatGainW);
+        Assert.Equal(0, result.InternalHeatGainW);
         Assert.Equal(2400, result.TotalHeatLoadW);
         Assert.Equal(2.4, result.TotalHeatLoadKw);
         Assert.Equal(10, result.DeltaTemperatureC);
@@ -124,6 +128,75 @@ public class RoomCalculationServiceTests
     }
 
     [Fact]
+    public void Calculate_WithInternalHeatGains_ReturnsExpectedInternalHeatGain()
+    {
+        // Arrange
+        var service = new RoomCalculationService();
+        var room = CreateRoom(
+            id: 1,
+            areaM2: 20,
+            heightM: 3,
+            indoorTemperatureC: 24,
+            outdoorTemperatureC: 34,
+            peopleCount: 3,
+            equipmentLoadW: 500,
+            lightingLoadW: 200);
+
+        // Act
+        var result = service.Calculate(room, windows:[], walls:[]);
+
+        // Assert
+        Assert.Equal(390, result.PeopleHeatGainW);
+        Assert.Equal(500, result.EquipmentHeatGainW);
+        Assert.Equal(200, result.LightingHeatGainW);
+        Assert.Equal(1090, result.InternalHeatGainW);
+        Assert.Equal(2400, result.BaseRoomLoadW);
+        Assert.Equal(3490, result.TotalHeatLoadW);
+        Assert.Equal(3.49, result.TotalHeatLoadKw);
+    }
+
+    [Fact]
+    public void Calculate_WithWindowsWallsAndInternalHeatGains_ReturnsExpectedTotalHeatLoad()
+    {
+        // Arrange
+        var service = new RoomCalculationService();
+        var room = CreateRoom(
+            id: 1,
+            areaM2: 10,
+            heightM: 3,
+            indoorTemperatureC: 24,
+            outdoorTemperatureC: 24,
+            peopleCount: 1,
+            equipmentLoadW: 70,
+            lightingLoadW: 30);
+
+        var windows = new List<Window>
+        {
+            new() { Id = 1, RoomId = 1, AreaM2 = 2 }
+        };
+
+        var walls = new List<Wall>
+        {
+            new() { Id = 1, RoomId = 1, AreaM2 = 10, IsExternal = true },
+            new() { Id = 2, RoomId = 1, AreaM2 = 5, IsExternal = false }
+        };
+
+        // Act
+        var result = service.Calculate(room, windows, walls);
+
+        // Assert
+        Assert.Equal(1000, result.BaseRoomLoadW);
+        Assert.Equal(2, result.TotalWindowAreaM2);
+        Assert.Equal(500, result.WindowHeatGainW);
+        Assert.Equal(15, result.TotalWallAreaM2);
+        Assert.Equal(10, result.ExternalWallAreaM2);
+        Assert.Equal(600, result.WallHeatGainW);
+        Assert.Equal(230, result.InternalHeatGainW);
+        Assert.Equal(2330, result.TotalHeatLoadW);
+        Assert.Equal(2.33, result.TotalHeatLoadKw);
+    }
+
+    [Fact]
     public void Calculate_WithHigherTemperatureDifference_IncreasesLoad()
     {
         // Arrange
@@ -205,7 +278,10 @@ public class RoomCalculationServiceTests
         double areaM2,
         double heightM,
         double indoorTemperatureC,
-        double outdoorTemperatureC)
+        double outdoorTemperatureC,
+        int peopleCount = 0,
+        double equipmentLoadW = 0,
+        double lightingLoadW = 0)
     {
         return new Room
         {
@@ -215,7 +291,10 @@ public class RoomCalculationServiceTests
             HeightM = heightM,
             VolumeM3 = areaM2 * heightM,
             IndoorTemperatureC = indoorTemperatureC,
-            OutdoorTemperatureC = outdoorTemperatureC
+            OutdoorTemperatureC = outdoorTemperatureC,
+            PeopleCount = peopleCount,
+            EquipmentLoadW = equipmentLoadW,
+            LightingLoadW = lightingLoadW
         };
     }
 }

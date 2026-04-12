@@ -91,7 +91,10 @@ public class RoomController : ControllerBase
             HeightM = room.HeightM,
             VolumeM3 = room.VolumeM3,
             IndoorTemperatureC = room.IndoorTemperatureC,
-            OutdoorTemperatureC = room.OutdoorTemperatureC
+            OutdoorTemperatureC = room.OutdoorTemperatureC,
+            PeopleCount = room.PeopleCount,
+            EquipmentLoadW = room.EquipmentLoadW,
+            LightingLoadW = room.LightingLoadW
         };
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
     }
@@ -216,5 +219,3 @@ public class RoomController : ControllerBase
         return Ok(walls);
     }
 }
-
-    
