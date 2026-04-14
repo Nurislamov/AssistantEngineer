@@ -1,0 +1,314 @@
+@host = http://localhost:5218
+@missingRoomId = 999999
+@missingEquipmentId = 999999
+
+# This file is self-contained and can be run independently.
+
+### Prepare run-specific filter values
+GET {{host}}/api/projects
+Accept: application/json
+
+> {%
+client.test("Prepare equipment run variables", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+});
+
+const suffix = String(Date.now()).slice(-8);
+client.global.set("equipmentSystemType", "SplitE2E" + suffix);
+client.global.set("equipmentUnitType", "WallE2E" + suffix);
+client.global.set("equipmentUnsupportedSystemType", "VRFE2E" + suffix);
+client.global.set("equipmentUnsupportedUnitType", "CassE2E" + suffix);
+%}
+
+### Create project for equipment flow
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Equipment Flow Project"
+}
+
+> {%
+client.test("Create equipment project returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated project id");
+});
+client.global.set("equipmentProjectId", response.body.id);
+%}
+
+### Create building for equipment flow
+POST {{host}}/api/buildings/{{equipmentProjectId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Equipment Flow Building"
+}
+
+> {%
+client.test("Create equipment building returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated building id");
+});
+client.global.set("equipmentBuildingId", response.body.id);
+%}
+
+### Create floor for equipment flow
+POST {{host}}/api/floors/{{equipmentBuildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Equipment Flow Floor"
+}
+
+> {%
+client.test("Create equipment floor returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated floor id");
+});
+client.global.set("equipmentFloorId", response.body.id);
+%}
+
+### Create room for equipment flow
+POST {{host}}/api/rooms
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Equipment Flow Room",
+  "areaM2": 24,
+  "heightM": 3.0,
+  "indoorTemperatureC": 24,
+  "outdoorTemperatureC": 38,
+  "peopleCount": 4,
+  "equipmentLoadW": 900,
+  "lightingLoadW": 320,
+  "floorId": {{equipmentFloorId}}
+}
+
+> {%
+client.test("Create equipment room returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated room id");
+});
+client.global.set("equipmentRoomId", response.body.id);
+%}
+
+### Add window 1
+POST {{host}}/api/rooms/{{equipmentRoomId}}/windows
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 3.2
+}
+
+> {%
+client.test("Add equipment room window 1 returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### Add window 2
+POST {{host}}/api/rooms/{{equipmentRoomId}}/windows
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 1.8
+}
+
+> {%
+client.test("Add equipment room window 2 returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### Add external wall
+POST {{host}}/api/rooms/{{equipmentRoomId}}/walls
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 18.5,
+  "isExternal": true
+}
+
+> {%
+client.test("Add equipment room external wall returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### Add internal wall
+POST {{host}}/api/rooms/{{equipmentRoomId}}/walls
+Content-Type: application/json
+Accept: application/json
+
+{
+  "areaM2": 12,
+  "isExternal": false
+}
+
+> {%
+client.test("Add equipment room internal wall returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### Calculate room before equipment selection
+GET {{host}}/api/rooms/{{equipmentRoomId}}/calculate
+Accept: application/json
+
+> {%
+client.test("Calculate equipment room returns 200", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.designCapacityKw > 0, "Expected positive designCapacityKw");
+});
+client.global.set("equipmentRoomDesignCapacityKw", response.body.designCapacityKw);
+%}
+
+### Negative: get missing equipment catalog item
+GET {{host}}/api/equipment-catalog-items/{{missingEquipmentId}}
+Accept: application/json
+
+> {%
+client.test("GET missing equipment catalog item returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}
+
+### Create active equipment item below required capacity
+POST {{host}}/api/equipment-catalog-items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "manufacturer": "CoolTech",
+  "systemType": "{{equipmentSystemType}}",
+  "unitType": "{{equipmentUnitType}}",
+  "modelName": "WM-7.5",
+  "nominalCoolingCapacityKw": 7.5,
+  "isActive": true
+}
+
+> {%
+client.test("Create low-capacity equipment returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated item id");
+});
+%}
+
+### Create active equipment item that should be selected
+POST {{host}}/api/equipment-catalog-items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "manufacturer": "CoolTech",
+  "systemType": "{{equipmentSystemType}}",
+  "unitType": "{{equipmentUnitType}}",
+  "modelName": "WM-8.0",
+  "nominalCoolingCapacityKw": 8.0,
+  "isActive": true
+}
+
+> {%
+client.test("Create selectable equipment returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated item id");
+    client.assert(response.body.nominalCoolingCapacityKw === 8.0, "Expected nominalCoolingCapacityKw 8.0");
+});
+client.global.set("selectedEquipmentCatalogItemId", response.body.id);
+%}
+
+### Create inactive equipment item with larger capacity
+POST {{host}}/api/equipment-catalog-items
+Content-Type: application/json
+Accept: application/json
+
+{
+  "manufacturer": "CoolTech",
+  "systemType": "{{equipmentSystemType}}",
+  "unitType": "{{equipmentUnitType}}",
+  "modelName": "WM-10.0-INACTIVE",
+  "nominalCoolingCapacityKw": 10.0,
+  "isActive": false
+}
+
+> {%
+client.test("Create inactive equipment returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.isActive === false, "Expected inactive item");
+});
+%}
+
+### Get created equipment by id
+GET {{host}}/api/equipment-catalog-items/{{selectedEquipmentCatalogItemId}}
+Accept: application/json
+
+> {%
+client.test("GET equipment by id returns created item", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.id == client.global.get("selectedEquipmentCatalogItemId"), "Expected selected item id");
+    client.assert(response.body.systemType === client.global.get("equipmentSystemType"), "Expected run-specific systemType");
+    client.assert(response.body.unitType === client.global.get("equipmentUnitType"), "Expected run-specific unitType");
+});
+%}
+
+### Select equipment for equipment flow room
+POST {{host}}/api/rooms/{{equipmentRoomId}}/select-equipment
+Content-Type: application/json
+Accept: application/json
+
+{
+  "systemType": "{{equipmentSystemType}}",
+  "unitType": "{{equipmentUnitType}}"
+}
+
+> {%
+client.test("Select equipment returns smallest suitable active item", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.roomId == client.global.get("equipmentRoomId"), "Expected roomId");
+    client.assert(response.body.selectedCatalogItemId == client.global.get("selectedEquipmentCatalogItemId"), "Expected selected catalog item id");
+    client.assert(response.body.selectedModelName === "WM-8.0", "Expected selected model");
+    client.assert(response.body.selectedNominalCoolingCapacityKw === 8.0, "Expected selected nominal capacity 8.0");
+    client.assert(response.body.capacityReserveKw >= 0, "Expected non-negative capacity reserve");
+});
+%}
+
+### Negative: select equipment for unsupported filters
+POST {{host}}/api/rooms/{{equipmentRoomId}}/select-equipment
+Content-Type: application/json
+Accept: application/json
+
+{
+  "systemType": "{{equipmentUnsupportedSystemType}}",
+  "unitType": "{{equipmentUnsupportedUnitType}}"
+}
+
+> {%
+client.test("Select equipment with unsupported filters returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+    client.assert(response.body === "No suitable equipment found for the specified room and filters.", "Expected no-suitable-equipment message");
+});
+%}
+
+### Negative: select equipment for missing room
+POST {{host}}/api/rooms/{{missingRoomId}}/select-equipment
+Content-Type: application/json
+Accept: application/json
+
+{
+  "systemType": "{{equipmentSystemType}}",
+  "unitType": "{{equipmentUnitType}}"
+}
+
+> {%
+client.test("Select equipment for missing room returns 404", function () {
+    client.assert(response.status === 404, "Expected 404 Not Found");
+    client.assert(String(response.body).indexOf("Room with id") >= 0, "Expected missing-room message");
+});
+%}

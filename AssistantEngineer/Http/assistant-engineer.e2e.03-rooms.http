@@ -4,7 +4,58 @@
 @missingFloorId = 999999
 @missingRoomId = 999999
 
-# Run the assistant-engineer.e2e files in numeric order when a request depends on variables from earlier files.
+# This file is self-contained and can be run independently.
+
+### Setup: create project for room flow
+POST {{host}}/api/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Room Flow Project"
+}
+
+> {%
+client.test("Setup project for rooms returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated project id");
+});
+client.global.set("projectId", response.body.id);
+%}
+
+### Setup: create building for room flow
+POST {{host}}/api/buildings/{{projectId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Room Flow Building"
+}
+
+> {%
+client.test("Setup building for rooms returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated building id");
+});
+client.global.set("buildingId", response.body.id);
+%}
+
+### Setup: create floor for room flow
+POST {{host}}/api/floors/{{buildingId}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Room Flow Floor"
+}
+
+> {%
+client.test("Setup floor for rooms returns 201", function () {
+    client.assert(response.status === 201, "Expected 201 Created");
+    client.assert(response.body.id > 0, "Expected generated floor id");
+});
+client.global.set("floorId", response.body.id);
+%}
 
 ### Health: get all rooms
 GET {{host}}/api/rooms

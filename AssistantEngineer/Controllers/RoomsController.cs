@@ -15,11 +15,16 @@ public class RoomsController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly RoomCalculationService _roomCalculationService;
+    private readonly EquipmentSelectionService _equipmentSelectionService;
 
-    public RoomsController(AppDbContext context, RoomCalculationService roomCalculationService)
+    public RoomsController(
+        AppDbContext context,
+        RoomCalculationService roomCalculationService,
+        EquipmentSelectionService equipmentSelectionService)
     {
         _context = context;
         _roomCalculationService = roomCalculationService;
+        _equipmentSelectionService = equipmentSelectionService;
     }
 
     [HttpGet]
@@ -44,18 +49,18 @@ public class RoomsController : ControllerBase
                 FloorId = room.FloorId
             })
             .ToListAsync();
-        
+
         return Ok(rooms);
     }
-    
+
     [HttpGet("{id}")]
     public async Task<ActionResult<RoomResponse>> GetRoom(int id)
     {
         var room = await _context.Rooms.FindAsync(id);
-        
-        if(room == null)
+
+        if (room == null)
             return NotFound();
-        
+
         return Ok(new RoomResponse
         {
             Id = room.Id,
@@ -78,12 +83,12 @@ public class RoomsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RoomResponse>> CreateRoom(CreateRoomRequest request)
     {
-        var floorExists = 
+        var floorExists =
             await _context.Floors.AnyAsync(f => f.Id == request.FloorId);
-        
+
         if (!floorExists)
             return NotFound($"Floor with id {request.FloorId} not found.");
-        
+
         var room = new Room
         {
             Name = request.Name,
@@ -98,7 +103,7 @@ public class RoomsController : ControllerBase
             LightingLoadW = request.LightingLoadW
         };
         _context.Rooms.Add(room);
-        await  _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
         var response = new RoomResponse
         {
@@ -119,7 +124,7 @@ public class RoomsController : ControllerBase
         };
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
     }
-    
+
     [HttpGet("{id}/calculate")]
     public async Task<ActionResult<RoomCalculationResult>> CalculateRoom(int id)
     {
@@ -131,7 +136,7 @@ public class RoomsController : ControllerBase
         var windows = await _context.Windows
             .Where(w => w.RoomId == id)
             .ToListAsync();
-        
+
         var walls = await _context.Walls
             .Where(w => w.RoomId == id)
             .ToListAsync();
@@ -145,7 +150,7 @@ public class RoomsController : ControllerBase
 
         return Ok(result);
     }
-    
+
     [HttpGet("{roomId}/windows")]
     public async Task<ActionResult<IEnumerable<WindowResponse>>> GetWindows(int roomId)
     {
@@ -166,7 +171,7 @@ public class RoomsController : ControllerBase
 
         return Ok(windows);
     }
-    
+
     [HttpPost("{roomId}/windows")]
     public async Task<ActionResult<WindowResponse>> AddWindow(int roomId, CreateWindowRequest request)
     {
@@ -193,7 +198,7 @@ public class RoomsController : ControllerBase
 
         return Ok(response);
     }
-    
+
     [HttpPost("{roomId}/walls")]
     public async Task<ActionResult<WallResponse>> AddWall(int roomId, CreateWallRequest request)
     {
@@ -222,7 +227,7 @@ public class RoomsController : ControllerBase
 
         return Ok(response);
     }
-    
+
     [HttpGet("{roomId}/walls")]
     public async Task<ActionResult<IEnumerable<WallResponse>>> GetWalls(int roomId)
     {
@@ -243,5 +248,25 @@ public class RoomsController : ControllerBase
             .ToListAsync();
 
         return Ok(walls);
+    }
+
+    [HttpPost("{roomId}/select-equipment")]
+    public async Task<ActionResult<EquipmentSelectionResult>> SelectEquipment(
+        int roomId,
+        EquipmentSelectionRequest request)
+    {
+        var roomExists = await _context.Rooms.AnyAsync(room => room.Id == roomId);
+        if (!roomExists)
+            return NotFound($"Room with id {roomId} not found.");
+
+        var result = await _equipmentSelectionService.SelectForRoomAsync(
+            roomId,
+            request.SystemType,
+            request.UnitType);
+
+        if (result == null)
+            return NotFound("No suitable equipment found for the specified room and filters.");
+
+        return Ok(result);
     }
 }
