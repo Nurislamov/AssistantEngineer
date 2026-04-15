@@ -1,6 +1,7 @@
 using AssistantEngineer.Contracts.Calculations;
 using AssistantEngineer.Contracts.Reports;
 using AssistantEngineer.Data;
+using AssistantEngineer.Models;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,8 +20,17 @@ public class BuildingReportDataService
         _roomCalculationService = roomCalculationService;
     }
 
-    public async Task<BuildingReport?> BuildReportAsync(int buildingId)
+    public async Task<BuildingReport?> BuildReportAsync(
+        int buildingId,
+        string? systemType = null,
+        string? unitType = null)
     {
+        var requestedSystemType = systemType?.Trim();
+        var requestedUnitType = unitType?.Trim();
+        var equipmentSelectionRequested =
+            !string.IsNullOrWhiteSpace(requestedSystemType) &&
+            !string.IsNullOrWhiteSpace(requestedUnitType);
+
         var building = await _context.Buildings
             .Include(b => b.Project)
             .AsNoTracking()
@@ -69,6 +79,17 @@ public class BuildingReportDataService
         var windowsByRoomId = windows.ToLookup(w => w.RoomId);
         var wallsByRoomId = walls.ToLookup(w => w.RoomId);
 
+        List<EquipmentCatalogItem> equipmentCatalogItems = equipmentSelectionRequested
+            ? await _context.EquipmentCatalogItems
+                .Where(item =>
+                    item.IsActive &&
+                    item.SystemType == requestedSystemType &&
+                    item.UnitType == requestedUnitType)
+                .OrderBy(item => item.NominalCoolingCapacityKw)
+                .AsNoTracking()
+                .ToListAsync()
+            : [];
+
         var roomRows = new List<RoomReportRow>();
         var roomCalculations = new Dictionary<int, RoomCalculationResult>();
 
@@ -81,6 +102,10 @@ public class BuildingReportDataService
 
             roomCalculations[room.Id] = calculation;
             var floorName = floorsById[room.FloorId].Name;
+
+            var selectedItem = equipmentSelectionRequested
+                ? SelectEquipment(equipmentCatalogItems, calculation.DesignCapacityKw)
+                : null;
 
             roomRows.Add(new RoomReportRow
             {
@@ -108,7 +133,17 @@ public class BuildingReportDataService
                 TotalHeatLoadKw = calculation.TotalHeatLoadKw,
                 DesignReserveFactor = calculation.DesignReserveFactor,
                 DesignCapacityW = calculation.DesignCapacityW,
-                DesignCapacityKw = calculation.DesignCapacityKw
+                DesignCapacityKw = calculation.DesignCapacityKw,
+                RequestedSystemType = equipmentSelectionRequested ? requestedSystemType! : string.Empty,
+                RequestedUnitType = equipmentSelectionRequested ? requestedUnitType! : string.Empty,
+                SelectedCatalogItemId = selectedItem?.Id,
+                SelectedManufacturer = selectedItem?.Manufacturer ?? string.Empty,
+                SelectedModelName = selectedItem?.ModelName ?? string.Empty,
+                SelectedNominalCoolingCapacityKw = selectedItem?.NominalCoolingCapacityKw,
+                SelectionReserveKw = selectedItem == null
+                    ? null
+                    : Math.Round(selectedItem.NominalCoolingCapacityKw - calculation.DesignCapacityKw, 2),
+                EquipmentSelected = selectedItem != null
             });
         }
 
@@ -171,6 +206,19 @@ public class BuildingReportDataService
         var totalHeatLoadW = roomCalculations.Values.Sum(calculation => calculation.TotalHeatLoadW);
         var totalDesignCapacityW = roomCalculations.Values.Sum(calculation => calculation.DesignCapacityW);
 
+        var roomsWithSelectionCount = roomRows.Count(r => r.EquipmentSelected);
+        var roomsWithoutSelectionCount = equipmentSelectionRequested
+            ? roomRows.Count - roomsWithSelectionCount
+            : 0;
+
+        double? totalSelectedCapacityKw = equipmentSelectionRequested
+            ? Math.Round(
+                roomRows
+                    .Where(r => r.SelectedNominalCoolingCapacityKw.HasValue)
+                    .Sum(r => r.SelectedNominalCoolingCapacityKw!.Value),
+                2)
+            : null;
+
         return new BuildingReport
         {
             ProjectName = building.Project.Name,
@@ -186,7 +234,21 @@ public class BuildingReportDataService
             FloorSummaries = floorSummaries,
             Rooms = roomRows,
             Windows = windowRows,
-            Walls = wallRows
+            Walls = wallRows,
+            EquipmentSelectionRequested = equipmentSelectionRequested,
+            RequestedSystemType = equipmentSelectionRequested ? requestedSystemType! : string.Empty,
+            RequestedUnitType = equipmentSelectionRequested ? requestedUnitType! : string.Empty,
+            RoomsWithSelectionCount = roomsWithSelectionCount,
+            RoomsWithoutSelectionCount = roomsWithoutSelectionCount,
+            TotalSelectedCapacityKw = totalSelectedCapacityKw
         };
+    }
+
+    private static EquipmentCatalogItem? SelectEquipment(
+        IReadOnlyCollection<EquipmentCatalogItem> equipmentCatalogItems,
+        double designCapacityKw)
+    {
+        return equipmentCatalogItems.FirstOrDefault(item =>
+            item.NominalCoolingCapacityKw >= designCapacityKw);
     }
 }

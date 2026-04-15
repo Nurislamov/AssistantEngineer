@@ -279,6 +279,46 @@ client.test("Select equipment returns smallest suitable active item", function (
 });
 %}
 
+### Get building report with equipment selection
+GET {{host}}/api/buildings/{{equipmentBuildingId}}/report?systemType={{equipmentSystemType}}&unitType={{equipmentUnitType}}
+Accept: application/json
+
+> {%
+client.test("Building report with equipment selection includes selected room equipment", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.equipmentSelectionRequested === true, "Expected equipment selection request");
+    client.assert(response.body.requestedSystemType === client.global.get("equipmentSystemType"), "Expected requested system type");
+    client.assert(response.body.requestedUnitType === client.global.get("equipmentUnitType"), "Expected requested unit type");
+    client.assert(response.body.roomsWithSelectionCount === 1, "Expected one room with equipment");
+    client.assert(response.body.roomsWithoutSelectionCount === 0, "Expected no rooms without equipment");
+    client.assert(response.body.totalSelectedCapacityKw === 8.0, "Expected total selected capacity 8.0");
+    client.assert(response.body.rooms.length === 1, "Expected one room row");
+
+    var room = response.body.rooms[0];
+    client.assert(room.roomId == client.global.get("equipmentRoomId"), "Expected report room id");
+    client.assert(room.requestedSystemType === client.global.get("equipmentSystemType"), "Expected room requested system type");
+    client.assert(room.requestedUnitType === client.global.get("equipmentUnitType"), "Expected room requested unit type");
+    client.assert(room.equipmentSelected === true, "Expected selected equipment");
+    client.assert(room.selectedCatalogItemId == client.global.get("selectedEquipmentCatalogItemId"), "Expected selected catalog item id");
+    client.assert(room.selectedModelName === "WM-8.0", "Expected selected model");
+    client.assert(room.selectedNominalCoolingCapacityKw === 8.0, "Expected selected nominal capacity");
+    client.assert(room.selectionReserveKw >= 0, "Expected non-negative selection reserve");
+});
+%}
+
+### Download building Excel report with equipment selection
+GET {{host}}/api/buildings/{{equipmentBuildingId}}/report/excel?systemType={{equipmentSystemType}}&unitType={{equipmentUnitType}}
+Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+> {%
+client.test("Download building Excel report with equipment selection returns xlsx file", function () {
+    var contentType = String(response.headers.valueOf("Content-Type") || "");
+
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(contentType.indexOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") >= 0, "Expected xlsx content type, got " + contentType);
+});
+%}
+
 ### Negative: select equipment for unsupported filters
 POST {{host}}/api/rooms/{{equipmentRoomId}}/select-equipment
 Content-Type: application/json

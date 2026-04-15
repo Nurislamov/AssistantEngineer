@@ -16,8 +16,17 @@ public class BuildingReport
     public double TotalHeatLoadW { get; set; }
     public double TotalHeatLoadKw { get; set; }
 
-    public List<FloorReportSummary> FloorSummaries { get; set; } = new();
-    public List<RoomReportRow> Rooms { get; set; } = new();
-    public List<WindowReportRow> Windows { get; set; } = new();
-    public List<WallReportRow> Walls { get; set; } = new();
+    public List<FloorReportSummary> FloorSummaries { get; set; } = [];
+    public List<RoomReportRow> Rooms { get; set; } = [];
+    public List<WindowReportRow> Windows { get; set; } = [];
+    public List<WallReportRow> Walls { get; set; } = [];
+
+    public bool EquipmentSelectionRequested { get; set; }
+    public string RequestedSystemType { get; set; } = string.Empty;
+    public string RequestedUnitType { get; set; } = string.Empty;
+
+    public int RoomsWithSelectionCount { get; set; }
+    public int RoomsWithoutSelectionCount { get; set; }
+
+    public double? TotalSelectedCapacityKw { get; set; }
 }

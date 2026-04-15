@@ -23,6 +23,12 @@ public class ExcelReportServiceTests
             DesignReserveFactor = 1.1,
             DesignCapacityW = 2563,
             DesignCapacityKw = 2.56,
+            EquipmentSelectionRequested = true,
+            RequestedSystemType = "Split",
+            RequestedUnitType = "WallMounted",
+            RoomsWithSelectionCount = 1,
+            RoomsWithoutSelectionCount = 0,
+            TotalSelectedCapacityKw = 2.8,
             FloorSummaries =
             [
                 new FloorReportSummary
@@ -65,7 +71,15 @@ public class ExcelReportServiceTests
                     TotalHeatLoadKw = 2.33,
                     DesignReserveFactor = 1.1,
                     DesignCapacityW = 2563,
-                    DesignCapacityKw = 2.56
+                    DesignCapacityKw = 2.56,
+                    RequestedSystemType = "Split",
+                    RequestedUnitType = "WallMounted",
+                    EquipmentSelected = true,
+                    SelectedCatalogItemId = 7,
+                    SelectedManufacturer = "ACME",
+                    SelectedModelName = "WM-2.8",
+                    SelectedNominalCoolingCapacityKw = 2.8,
+                    SelectionReserveKw = 0.24
                 }
             ],
             Windows =
@@ -116,13 +130,28 @@ public class ExcelReportServiceTests
         Assert.Equal(1.1, summary.Cell(10, 2).GetDouble());
         Assert.Equal(2563, summary.Cell(11, 2).GetDouble());
         Assert.Equal(2.56, summary.Cell(12, 2).GetDouble());
+        Assert.Equal("Yes", summary.Cell(13, 2).GetString());
+        Assert.Equal("Split", summary.Cell(14, 2).GetString());
+        Assert.Equal("WallMounted", summary.Cell(15, 2).GetString());
+        Assert.Equal(1, summary.Cell(16, 2).GetDouble());
+        Assert.Equal(0, summary.Cell(17, 2).GetDouble());
+        Assert.Equal(2.8, summary.Cell(18, 2).GetDouble());
 
         var rooms = workbook.Worksheet("Rooms");
         Assert.Equal("Room ID", rooms.Cell(1, 1).GetString());
+        Assert.Equal("Selection reserve, kW", rooms.Cell(1, 33).GetString());
         Assert.Equal("Room 1", rooms.Cell(2, 5).GetString());
         Assert.Equal(2330, rooms.Cell(2, 21).GetDouble());
         Assert.Equal(1.1, rooms.Cell(2, 23).GetDouble());
         Assert.Equal(2563, rooms.Cell(2, 24).GetDouble());
         Assert.Equal(2.56, rooms.Cell(2, 25).GetDouble());
+        Assert.Equal("Split", rooms.Cell(2, 26).GetString());
+        Assert.Equal("WallMounted", rooms.Cell(2, 27).GetString());
+        Assert.Equal("Yes", rooms.Cell(2, 28).GetString());
+        Assert.Equal(7, rooms.Cell(2, 29).GetDouble());
+        Assert.Equal("ACME", rooms.Cell(2, 30).GetString());
+        Assert.Equal("WM-2.8", rooms.Cell(2, 31).GetString());
+        Assert.Equal(2.8, rooms.Cell(2, 32).GetDouble());
+        Assert.Equal(0.24, rooms.Cell(2, 33).GetDouble());
     }
 }

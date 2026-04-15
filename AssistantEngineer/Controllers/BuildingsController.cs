@@ -1,4 +1,5 @@
 ﻿using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Contracts.Reports;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
 using AssistantEngineer.Data;
@@ -32,7 +33,9 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpPost("{projectId}")]
-    public async Task<ActionResult<BuildingResponse>> CreateBuilding(int projectId, CreateBuildingRequest request)
+    public async Task<ActionResult<BuildingResponse>> CreateBuilding(
+        int projectId,
+        CreateBuildingRequest request)
     {
         var projectExists = await _context.Projects.AnyAsync(p => p.Id == projectId);
         if (!projectExists)
@@ -95,7 +98,8 @@ public class BuildingsController : ControllerBase
     [HttpGet("{buildingId}/calculate")]
     public async Task<ActionResult<BuildingCalculationResult>> CalculateBuilding(int buildingId)
     {
-        var buildingCalculationResult = await _aggregateCalculationService.CalculateBuildingAsync(buildingId);
+        var buildingCalculationResult =
+            await _aggregateCalculationService.CalculateBuildingAsync(buildingId);
 
         if (buildingCalculationResult == null)
             return NotFound();
@@ -104,14 +108,18 @@ public class BuildingsController : ControllerBase
     }
 
     [HttpGet("{buildingId}/report/excel")]
-    public async Task<IActionResult> DownloadExcelReport(int buildingId)
+    public async Task<IActionResult> DownloadExcelReport(
+        int buildingId,
+        [FromQuery] string? systemType,
+        [FromQuery] string? unitType)
     {
-        var buildingCalculationResult = await _aggregateCalculationService.CalculateBuildingAsync(buildingId);
+        if (HasPartialEquipmentSelectionFilter(systemType, unitType))
+            return BadRequest("Both systemType and unitType must be provided to include equipment selection.");
 
-        if (buildingCalculationResult == null)
-            return NotFound();
-
-        var report = await _buildingReportDataService.BuildReportAsync(buildingId);
+        var report = await _buildingReportDataService.BuildReportAsync(
+            buildingId,
+            systemType,
+            unitType);
 
         if (report == null)
             return NotFound();
@@ -123,6 +131,31 @@ public class BuildingsController : ControllerBase
             content,
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             fileName);
+    }
+
+    [HttpGet("{buildingId}/report")]
+    public async Task<ActionResult<BuildingReport>> GetReport(
+        int buildingId,
+        [FromQuery] string? systemType,
+        [FromQuery] string? unitType)
+    {
+        if (HasPartialEquipmentSelectionFilter(systemType, unitType))
+            return BadRequest("Both systemType and unitType must be provided to include equipment selection.");
+
+        var report = await _buildingReportDataService.BuildReportAsync(
+            buildingId,
+            systemType,
+            unitType);
+
+        if (report == null)
+            return NotFound();
+
+        return Ok(report);
+    }
+
+    private static bool HasPartialEquipmentSelectionFilter(string? systemType, string? unitType)
+    {
+        return string.IsNullOrWhiteSpace(systemType) != string.IsNullOrWhiteSpace(unitType);
     }
 
     private static BuildingResponse ToResponse(Building building)

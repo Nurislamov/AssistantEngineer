@@ -101,7 +101,8 @@ public class AggregateCalculationService
         return result;
     }
 
-    private async Task<Dictionary<int, RoomCalculationResult>> CalculateRoomsAsync(IReadOnlyCollection<Room> rooms)
+    private async Task<Dictionary<int, RoomCalculationResult>> CalculateRoomsAsync(
+        IReadOnlyCollection<Room> rooms)
     {
         var results = new Dictionary<int, RoomCalculationResult>();
 

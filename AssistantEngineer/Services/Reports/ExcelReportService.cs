@@ -49,6 +49,20 @@ public class ExcelReportService
         worksheet.Cell(11, 2).Value = report.DesignCapacityW;
         worksheet.Cell(12, 1).Value = "Design capacity, kW";
         worksheet.Cell(12, 2).Value = report.DesignCapacityKw;
+        worksheet.Cell(13, 1).Value = "Equipment selection requested";
+        worksheet.Cell(13, 2).Value = report.EquipmentSelectionRequested ? "Yes" : "No";
+        worksheet.Cell(14, 1).Value = "Requested system type";
+        worksheet.Cell(14, 2).Value = report.RequestedSystemType;
+        worksheet.Cell(15, 1).Value = "Requested unit type";
+        worksheet.Cell(15, 2).Value = report.RequestedUnitType;
+        worksheet.Cell(16, 1).Value = "Rooms with selected equipment";
+        worksheet.Cell(16, 2).Value = report.RoomsWithSelectionCount;
+        worksheet.Cell(17, 1).Value = "Rooms without selected equipment";
+        worksheet.Cell(17, 2).Value = report.RoomsWithoutSelectionCount;
+        worksheet.Cell(18, 1).Value = "Total selected capacity, kW";
+
+        if (report.TotalSelectedCapacityKw.HasValue)
+            worksheet.Cell(18, 2).Value = report.TotalSelectedCapacityKw.Value;
 
         worksheet.Column(1).Style.Font.Bold = true;
         worksheet.Columns().AdjustToContents();
@@ -118,7 +132,15 @@ public class ExcelReportService
             "Total load, kW",
             "Reserve factor",
             "Design capacity, W",
-            "Design capacity, kW");
+            "Design capacity, kW",
+            "Requested system type",
+            "Requested unit type",
+            "Equipment selected",
+            "Selected catalog item ID",
+            "Selected manufacturer",
+            "Selected model",
+            "Selected cooling capacity, kW",
+            "Selection reserve, kW");
 
         var row = 2;
         foreach (var room in rooms)
@@ -148,10 +170,26 @@ public class ExcelReportService
             worksheet.Cell(row, 23).Value = room.DesignReserveFactor;
             worksheet.Cell(row, 24).Value = room.DesignCapacityW;
             worksheet.Cell(row, 25).Value = room.DesignCapacityKw;
+            worksheet.Cell(row, 26).Value = room.RequestedSystemType;
+            worksheet.Cell(row, 27).Value = room.RequestedUnitType;
+            worksheet.Cell(row, 28).Value = room.EquipmentSelected ? "Yes" : "No";
+
+            if (room.SelectedCatalogItemId.HasValue)
+                worksheet.Cell(row, 29).Value = room.SelectedCatalogItemId.Value;
+
+            worksheet.Cell(row, 30).Value = room.SelectedManufacturer;
+            worksheet.Cell(row, 31).Value = room.SelectedModelName;
+
+            if (room.SelectedNominalCoolingCapacityKw.HasValue)
+                worksheet.Cell(row, 32).Value = room.SelectedNominalCoolingCapacityKw.Value;
+
+            if (room.SelectionReserveKw.HasValue)
+                worksheet.Cell(row, 33).Value = room.SelectionReserveKw.Value;
+
             row++;
         }
 
-        FormatTable(worksheet, columnCount: 25);
+        FormatTable(worksheet, columnCount: 33);
     }
 
     private static void AddWindowsWorksheet(

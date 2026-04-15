@@ -6,6 +6,30 @@
 
 # Run the assistant-engineer.e2e files in numeric order when a request depends on variables from earlier files.
 
+### Get building JSON report
+GET {{host}}/api/buildings/{{buildingId}}/report
+Accept: application/json
+
+> {%
+client.test("Get building JSON report returns calculation and report rows", function () {
+    client.assert(response.status === 200, "Expected 200 OK");
+    client.assert(response.body.projectName === "Aggregate Flow Project", "Expected project name from aggregate setup");
+    client.assert(response.body.buildingName === "Main Building", "Expected building name");
+    client.assert(response.body.floorsCount === 1, "Expected one floor");
+    client.assert(response.body.roomsCount === 2, "Expected two rooms");
+    client.assert(response.body.totalHeatLoadW === 8302, "Expected totalHeatLoadW 8302");
+    client.assert(response.body.designCapacityKw === 9.13, "Expected designCapacityKw 9.13");
+    client.assert(response.body.equipmentSelectionRequested === false, "Expected no equipment selection request");
+    client.assert(response.body.roomsWithSelectionCount === 0, "Expected no selected rooms");
+    client.assert(response.body.roomsWithoutSelectionCount === 0, "Expected no unselected count when selection is not requested");
+    client.assert(response.body.totalSelectedCapacityKw === null, "Expected null totalSelectedCapacityKw without selection request");
+    client.assert(response.body.floorSummaries.length === 1, "Expected one floor summary");
+    client.assert(response.body.rooms.length === 2, "Expected two room rows");
+    client.assert(response.body.windows.length === 2, "Expected two window rows");
+    client.assert(response.body.walls.length === 2, "Expected two wall rows");
+});
+%}
+
 ### Download building Excel report
 GET {{host}}/api/buildings/{{buildingId}}/report/excel
 Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
@@ -19,6 +43,17 @@ client.test("Download building Excel report returns xlsx file", function () {
     client.assert(contentType.indexOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") >= 0, "Expected xlsx content type, got " + contentType);
     client.assert(contentDisposition.indexOf("attachment") >= 0, "Expected attachment content disposition, got " + contentDisposition);
     client.assert(contentDisposition.indexOf(".xlsx") >= 0, "Expected xlsx filename, got " + contentDisposition);
+});
+%}
+
+### Negative: report with incomplete equipment filter
+GET {{host}}/api/buildings/{{buildingId}}/report?systemType=Split
+Accept: application/json
+
+> {%
+client.test("Report with incomplete equipment filter returns 400", function () {
+    client.assert(response.status === 400, "Expected 400 Bad Request");
+    client.assert(response.body === "Both systemType and unitType must be provided to include equipment selection.", "Expected incomplete-filter message");
 });
 %}
 
