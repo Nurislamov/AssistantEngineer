@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
-using AssistantEngineer.Contracts.Calculations;
 using AssistantEngineer.Contracts.Reports;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
+using AssistantEngineer.Domain.Contracts.Calculations;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc.Testing;
 

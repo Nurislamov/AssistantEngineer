@@ -1,11 +1,9 @@
-using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Application.Services.Rooms;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Contracts.Calculations;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AssistantEngineer.Controllers;
 
@@ -13,140 +11,52 @@ namespace AssistantEngineer.Controllers;
 [Route("api/rooms")]
 public class RoomsController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly RoomCalculationService _roomCalculationService;
+    private readonly RoomApplicationService _rooms;
     private readonly EquipmentSelectionService _equipmentSelectionService;
 
     public RoomsController(
-        AppDbContext context,
-        RoomCalculationService roomCalculationService,
+        RoomApplicationService rooms,
         EquipmentSelectionService equipmentSelectionService)
     {
-        _context = context;
-        _roomCalculationService = roomCalculationService;
+        _rooms = rooms;
         _equipmentSelectionService = equipmentSelectionService;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RoomResponse>>> GetRooms()
     {
-        var rooms = await _context.Rooms
-            .Select(room => new RoomResponse
-            {
-                Id = room.Id,
-                Name = room.Name,
-                AreaM2 = room.AreaM2,
-                HeightM = room.HeightM,
-                VolumeM3 = room.VolumeM3,
-                IndoorTemperatureC = room.IndoorTemperatureC,
-                OutdoorTemperatureC = room.OutdoorTemperatureC,
-                PeopleCount = room.PeopleCount,
-                EquipmentLoadW = room.EquipmentLoadW,
-                LightingLoadW = room.LightingLoadW,
-                DesignReserveFactor = room.DesignReserveFactor,
-                DesignCapacityW = room.DesignCapacityW,
-                DesignCapacityKw = room.DesignCapacityKw,
-                FloorId = room.FloorId
-            })
-            .ToListAsync();
-
-        return Ok(rooms);
+        return Ok(await _rooms.GetAllAsync());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<RoomResponse>> GetRoom(int id)
     {
-        var room = await _context.Rooms.FindAsync(id);
+        var room = await _rooms.GetByIdAsync(id);
 
         if (room == null)
             return NotFound();
 
-        return Ok(new RoomResponse
-        {
-            Id = room.Id,
-            Name = room.Name,
-            AreaM2 = room.AreaM2,
-            HeightM = room.HeightM,
-            VolumeM3 = room.VolumeM3,
-            IndoorTemperatureC = room.IndoorTemperatureC,
-            OutdoorTemperatureC = room.OutdoorTemperatureC,
-            PeopleCount = room.PeopleCount,
-            EquipmentLoadW = room.EquipmentLoadW,
-            LightingLoadW = room.LightingLoadW,
-            DesignReserveFactor = room.DesignReserveFactor,
-            DesignCapacityW = room.DesignCapacityW,
-            DesignCapacityKw = room.DesignCapacityKw,
-            FloorId = room.FloorId
-        });
+        return Ok(room);
     }
 
     [HttpPost]
     public async Task<ActionResult<RoomResponse>> CreateRoom(CreateRoomRequest request)
     {
-        var floorExists =
-            await _context.Floors.AnyAsync(f => f.Id == request.FloorId);
+        var response = await _rooms.CreateAsync(request);
 
-        if (!floorExists)
+        if (response == null)
             return NotFound($"Floor with id {request.FloorId} not found.");
 
-        var room = new Room
-        {
-            Name = request.Name,
-            FloorId = request.FloorId,
-            AreaM2 = request.AreaM2,
-            HeightM = request.HeightM,
-            VolumeM3 = request.AreaM2 * request.HeightM,
-            IndoorTemperatureC = request.IndoorTemperatureC,
-            OutdoorTemperatureC = request.OutdoorTemperatureC,
-            PeopleCount = request.PeopleCount,
-            EquipmentLoadW = request.EquipmentLoadW,
-            LightingLoadW = request.LightingLoadW
-        };
-        _context.Rooms.Add(room);
-        await _context.SaveChangesAsync();
-
-        var response = new RoomResponse
-        {
-            Id = room.Id,
-            Name = room.Name,
-            AreaM2 = room.AreaM2,
-            HeightM = room.HeightM,
-            VolumeM3 = room.VolumeM3,
-            IndoorTemperatureC = room.IndoorTemperatureC,
-            OutdoorTemperatureC = room.OutdoorTemperatureC,
-            PeopleCount = room.PeopleCount,
-            EquipmentLoadW = room.EquipmentLoadW,
-            LightingLoadW = room.LightingLoadW,
-            DesignReserveFactor = room.DesignReserveFactor,
-            DesignCapacityW = room.DesignCapacityW,
-            DesignCapacityKw = room.DesignCapacityKw,
-            FloorId = room.FloorId
-        };
-        return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, response);
+        return CreatedAtAction(nameof(GetRoom), new { id = response.Id }, response);
     }
 
     [HttpGet("{id}/calculate")]
     public async Task<ActionResult<RoomCalculationResult>> CalculateRoom(int id)
     {
-        var room = await _context.Rooms.FindAsync(id);
+        var result = await _rooms.CalculateAsync(id);
 
-        if (room == null)
+        if (result == null)
             return NotFound();
-
-        var windows = await _context.Windows
-            .Where(w => w.RoomId == id)
-            .ToListAsync();
-
-        var walls = await _context.Walls
-            .Where(w => w.RoomId == id)
-            .ToListAsync();
-
-        var result = _roomCalculationService.Calculate(room, windows, walls);
-        room.DesignReserveFactor = result.DesignReserveFactor;
-        room.DesignCapacityW = result.DesignCapacityW;
-        room.DesignCapacityKw = result.DesignCapacityKw;
-
-        await _context.SaveChangesAsync();
 
         return Ok(result);
     }
@@ -154,20 +64,10 @@ public class RoomsController : ControllerBase
     [HttpGet("{roomId}/windows")]
     public async Task<ActionResult<IEnumerable<WindowResponse>>> GetWindows(int roomId)
     {
-        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+        var windows = await _rooms.GetWindowsAsync(roomId);
 
-        if (!roomExists)
+        if (windows == null)
             return NotFound($"Room with id {roomId} not found.");
-
-        var windows = await _context.Windows
-            .Where(w => w.RoomId == roomId)
-            .Select(w => new WindowResponse
-            {
-                Id = w.Id,
-                RoomId = w.RoomId,
-                AreaM2 = w.AreaM2
-            })
-            .ToListAsync();
 
         return Ok(windows);
     }
@@ -175,26 +75,10 @@ public class RoomsController : ControllerBase
     [HttpPost("{roomId}/windows")]
     public async Task<ActionResult<WindowResponse>> AddWindow(int roomId, CreateWindowRequest request)
     {
-        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+        var response = await _rooms.AddWindowAsync(roomId, request);
 
-        if (!roomExists)
+        if (response == null)
             return NotFound($"Room with id {roomId} not found.");
-
-        var window = new Window
-        {
-            RoomId = roomId,
-            AreaM2 = request.AreaM2
-        };
-
-        _context.Windows.Add(window);
-        await _context.SaveChangesAsync();
-
-        var response = new WindowResponse
-        {
-            Id = window.Id,
-            RoomId = window.RoomId,
-            AreaM2 = window.AreaM2
-        };
 
         return Ok(response);
     }
@@ -202,28 +86,10 @@ public class RoomsController : ControllerBase
     [HttpPost("{roomId}/walls")]
     public async Task<ActionResult<WallResponse>> AddWall(int roomId, CreateWallRequest request)
     {
-        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+        var response = await _rooms.AddWallAsync(roomId, request);
 
-        if (!roomExists)
+        if (response == null)
             return NotFound($"Room with id {roomId} not found.");
-
-        var wall = new Wall
-        {
-            RoomId = roomId,
-            AreaM2 = request.AreaM2,
-            IsExternal = request.IsExternal
-        };
-
-        _context.Walls.Add(wall);
-        await _context.SaveChangesAsync();
-
-        var response = new WallResponse
-        {
-            Id = wall.Id,
-            RoomId = wall.RoomId,
-            AreaM2 = wall.AreaM2,
-            IsExternal = wall.IsExternal
-        };
 
         return Ok(response);
     }
@@ -231,21 +97,10 @@ public class RoomsController : ControllerBase
     [HttpGet("{roomId}/walls")]
     public async Task<ActionResult<IEnumerable<WallResponse>>> GetWalls(int roomId)
     {
-        var roomExists = await _context.Rooms.AnyAsync(r => r.Id == roomId);
+        var walls = await _rooms.GetWallsAsync(roomId);
 
-        if (!roomExists)
+        if (walls == null)
             return NotFound($"Room with id {roomId} not found.");
-
-        var walls = await _context.Walls
-            .Where(w => w.RoomId == roomId)
-            .Select(w => new WallResponse
-            {
-                Id = w.Id,
-                RoomId = w.RoomId,
-                AreaM2 = w.AreaM2,
-                IsExternal = w.IsExternal
-            })
-            .ToListAsync();
 
         return Ok(walls);
     }
@@ -255,8 +110,8 @@ public class RoomsController : ControllerBase
         int roomId,
         EquipmentSelectionRequest request)
     {
-        var roomExists = await _context.Rooms.AnyAsync(room => room.Id == roomId);
-        if (!roomExists)
+        var room = await _rooms.GetByIdAsync(roomId);
+        if (room == null)
             return NotFound($"Room with id {roomId} not found.");
 
         var result = await _equipmentSelectionService.SelectForRoomAsync(

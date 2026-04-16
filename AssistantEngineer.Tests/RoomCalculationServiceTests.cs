@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Models;
+﻿using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Services.Calculations;
 using AssistantEngineer.Services.Calculations;
 
 namespace AssistantEngineer.Tests;

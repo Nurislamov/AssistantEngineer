@@ -1,8 +1,9 @@
+using AssistantEngineer.Application.Services.Equipment;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
 using AssistantEngineer.Controllers;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Equipment;
+using AssistantEngineer.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,7 @@ public class EquipmentCatalogControllerTests
     {
         // Arrange
         await using var context = CreateContext();
-        var controller = new EquipmentCatalogController(context);
+        var controller = new EquipmentCatalogController(new CoolingEquipmentCatalogService(context));
         var request = new CreateEquipmentCatalogItemRequest
         {
             Manufacturer = "ACME",
@@ -58,7 +59,7 @@ public class EquipmentCatalogControllerTests
     {
         // Arrange
         await using var context = CreateContext();
-        var controller = new EquipmentCatalogController(context);
+        var controller = new EquipmentCatalogController(new CoolingEquipmentCatalogService(context));
 
         // Act
         var actionResult = await controller.GetById(999);
@@ -73,7 +74,7 @@ public class EquipmentCatalogControllerTests
         // Arrange
         await using var context = CreateContext();
         context.EquipmentCatalogItems.AddRange(
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 1,
                 Manufacturer = "ACME",
@@ -83,7 +84,7 @@ public class EquipmentCatalogControllerTests
                 NominalCoolingCapacityKw = 3.5,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 2,
                 Manufacturer = "ACME",
@@ -93,7 +94,7 @@ public class EquipmentCatalogControllerTests
                 NominalCoolingCapacityKw = 7.1,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 3,
                 Manufacturer = "ACME",
@@ -103,7 +104,7 @@ public class EquipmentCatalogControllerTests
                 NominalCoolingCapacityKw = 2.6,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 4,
                 Manufacturer = "ACME",
@@ -115,7 +116,7 @@ public class EquipmentCatalogControllerTests
             });
         await context.SaveChangesAsync();
 
-        var controller = new EquipmentCatalogController(context);
+        var controller = new EquipmentCatalogController(new CoolingEquipmentCatalogService(context));
 
         // Act
         var actionResult = await controller.GetAll();

@@ -1,11 +1,9 @@
-﻿using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Application.Services.Floors;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Contracts.Calculations;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AssistantEngineer.Controllers;
 
@@ -13,71 +11,38 @@ namespace AssistantEngineer.Controllers;
 [Route("api/[controller]")]
 public class FloorsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly FloorApplicationService _floors;
     private readonly AggregateCalculationService _aggregateCalculationService;
 
     public FloorsController(
-        AppDbContext context,
+        FloorApplicationService floors,
         AggregateCalculationService aggregateCalculationService)
     {
-        _context = context;
+        _floors = floors;
         _aggregateCalculationService = aggregateCalculationService;
     }
 
     [HttpPost("{buildingId}")]
     public async Task<ActionResult<FloorResponse>> CreateFloor(int buildingId, CreateFloorRequest request)
     {
-        var buildingExists = await _context.Buildings.AnyAsync(b => b.Id == buildingId);
-        if (!buildingExists)
+        var response = await _floors.CreateAsync(buildingId, request);
+
+        if (response == null)
             return NotFound($"Building with id {buildingId} not found.");
 
-        var floor = new Floor
-        {
-            Name = request.Name,
-            BuildingId = buildingId
-        };
-
-        _context.Floors.Add(floor);
-        await _context.SaveChangesAsync();
-
-        var response = ToResponse(floor);
-        return CreatedAtAction(nameof(GetFloor), new { id = floor.Id }, response);
+        return CreatedAtAction(nameof(GetFloor), new { id = response.Id }, response);
     }
 
     [HttpGet("{buildingId}")]
     public async Task<ActionResult<IEnumerable<FloorResponse>>> GetFloors(int buildingId)
     {
-        var floors = await _context.Floors
-            .Where(f => f.BuildingId == buildingId)
-            .Select(floor => new FloorResponse
-            {
-                Id = floor.Id,
-                Name = floor.Name,
-                BuildingId = floor.BuildingId,
-                DesignReserveFactor = floor.DesignReserveFactor,
-                DesignCapacityW = floor.DesignCapacityW,
-                DesignCapacityKw = floor.DesignCapacityKw
-            })
-            .ToListAsync();
-
-        return Ok(floors);
+        return Ok(await _floors.GetByBuildingIdAsync(buildingId));
     }
 
     [HttpGet("by-id/{id}")]
     public async Task<ActionResult<FloorResponse>> GetFloor(int id)
     {
-        var floor = await _context.Floors
-            .Where(floor => floor.Id == id)
-            .Select(floor => new FloorResponse
-            {
-                Id = floor.Id,
-                Name = floor.Name,
-                BuildingId = floor.BuildingId,
-                DesignReserveFactor = floor.DesignReserveFactor,
-                DesignCapacityW = floor.DesignCapacityW,
-                DesignCapacityKw = floor.DesignCapacityKw
-            })
-            .FirstOrDefaultAsync();
+        var floor = await _floors.GetByIdAsync(id);
 
         if (floor == null)
             return NotFound();
@@ -94,18 +59,5 @@ public class FloorsController : ControllerBase
             return NotFound();
 
         return Ok(floorCalculationResult);
-    }
-
-    private static FloorResponse ToResponse(Floor floor)
-    {
-        return new FloorResponse
-        {
-            Id = floor.Id,
-            Name = floor.Name,
-            BuildingId = floor.BuildingId,
-            DesignReserveFactor = floor.DesignReserveFactor,
-            DesignCapacityW = floor.DesignCapacityW,
-            DesignCapacityKw = floor.DesignCapacityKw
-        };
     }
 }

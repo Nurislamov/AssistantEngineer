@@ -1,7 +1,10 @@
+using AssistantEngineer.Application.Services.Rooms;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Controllers;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Services.Calculations;
+using AssistantEngineer.Domain.Services.Equipment;
+using AssistantEngineer.Infrastructure.Data;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -54,8 +57,13 @@ public class RoomsControllerEquipmentSelectionTests
     private static RoomsController CreateController(AppDbContext context)
     {
         var roomCalculationService = new RoomCalculationService();
-        var equipmentSelectionService = new EquipmentSelectionService(context, roomCalculationService);
-        return new RoomsController(context, roomCalculationService, equipmentSelectionService);
+        var coolingEquipmentSelector = new CoolingEquipmentSelector();
+        var roomApplicationService = new RoomApplicationService(context, roomCalculationService);
+        var equipmentSelectionService = new EquipmentSelectionService(
+            context,
+            roomCalculationService,
+            coolingEquipmentSelector);
+        return new RoomsController(roomApplicationService, equipmentSelectionService);
     }
 
     private static AppDbContext CreateContext()

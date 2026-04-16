@@ -1,5 +1,8 @@
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Equipment;
+using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Services.Calculations;
+using AssistantEngineer.Domain.Services.Equipment;
+using AssistantEngineer.Infrastructure.Data;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +34,7 @@ public class EquipmentSelectionServiceTests
         await using var context = CreateContext();
         var room = await SeedSimpleRoomAsync(context);
 
-        context.EquipmentCatalogItems.Add(new EquipmentCatalogItem
+        context.EquipmentCatalogItems.Add(new CoolingEquipmentCatalogItem
         {
             Id = 1,
             Manufacturer = "ACME",
@@ -63,7 +66,7 @@ public class EquipmentSelectionServiceTests
         var room = await SeedRoomWithEnvelopeAndInternalLoadsAsync(context);
 
         context.EquipmentCatalogItems.AddRange(
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 1,
                 Manufacturer = "ACME",
@@ -73,7 +76,7 @@ public class EquipmentSelectionServiceTests
                 NominalCoolingCapacityKw = 2.4,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 2,
                 Manufacturer = "ACME",
@@ -83,7 +86,7 @@ public class EquipmentSelectionServiceTests
                 NominalCoolingCapacityKw = 2.6,
                 IsActive = false
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 3,
                 Manufacturer = "ACME",
@@ -93,7 +96,7 @@ public class EquipmentSelectionServiceTests
                 NominalCoolingCapacityKw = 2.8,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 4,
                 Manufacturer = "ACME",
@@ -103,7 +106,7 @@ public class EquipmentSelectionServiceTests
                 NominalCoolingCapacityKw = 2.8,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 5,
                 Manufacturer = "ACME",
@@ -113,7 +116,7 @@ public class EquipmentSelectionServiceTests
                 NominalCoolingCapacityKw = 3.5,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 6,
                 Manufacturer = "CoolTech",
@@ -149,7 +152,10 @@ public class EquipmentSelectionServiceTests
 
     private static EquipmentSelectionService CreateService(AppDbContext context)
     {
-        return new EquipmentSelectionService(context, new RoomCalculationService());
+        return new EquipmentSelectionService(
+            context,
+            new RoomCalculationService(),
+            new CoolingEquipmentSelector());
     }
 
     private static AppDbContext CreateContext()

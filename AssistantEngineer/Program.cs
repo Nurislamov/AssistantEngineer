@@ -1,25 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AssistantEngineer.Data;
-using AssistantEngineer.Services.Calculations;
-using AssistantEngineer.Services.Reports;
+using AssistantEngineer.Application;
+using AssistantEngineer.Infrastructure;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (!builder.Environment.IsEnvironment("Testing"))
-{
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-}
-
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddOpenApi();
-
-builder.Services.AddScoped<RoomCalculationService>();
-builder.Services.AddScoped<AggregateCalculationService>();
-builder.Services.AddScoped<BuildingReportDataService>();
-builder.Services.AddScoped<ExcelReportService>();
-builder.Services.AddScoped<EquipmentSelectionService>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.EnvironmentName);
 
 var app = builder.Build();
 

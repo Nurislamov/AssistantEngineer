@@ -1,5 +1,6 @@
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Services.Calculations;
+using AssistantEngineer.Infrastructure.Data;
 using AssistantEngineer.Services.Calculations;
 using Microsoft.EntityFrameworkCore;
 

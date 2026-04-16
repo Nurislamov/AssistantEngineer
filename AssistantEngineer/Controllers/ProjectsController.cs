@@ -1,9 +1,7 @@
-﻿using AssistantEngineer.Contracts.Requests;
+using AssistantEngineer.Application.Services.Projects;
+using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AssistantEngineer.Controllers;
 
@@ -11,66 +9,34 @@ namespace AssistantEngineer.Controllers;
 [Route("api/[controller]")]
 public class ProjectsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ProjectApplicationService _projects;
 
-    public ProjectsController(AppDbContext context)
+    public ProjectsController(ProjectApplicationService projects)
     {
-        _context = context;
+        _projects = projects;
     }
 
     [HttpPost]
     public async Task<ActionResult<ProjectResponse>> CreateProject(CreateProjectRequest request)
     {
-        var project = new Project
-        {
-            Name = request.Name
-        };
-
-        _context.Projects.Add(project);
-        await _context.SaveChangesAsync();
-
-        var response = ToResponse(project);
-        return CreatedAtAction(nameof(GetProject), new { id = project.Id }, response);
+        var response = await _projects.CreateAsync(request);
+        return CreatedAtAction(nameof(GetProject), new { id = response.Id }, response);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProjectResponse>>> GetProjects()
     {
-        var projects = await _context.Projects
-            .Select(project => new ProjectResponse
-            {
-                Id = project.Id,
-                Name = project.Name
-            })
-            .ToListAsync();
-
-        return Ok(projects);
+        return Ok(await _projects.GetAllAsync());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ProjectResponse>> GetProject(int id)
     {
-        var project = await _context.Projects
-            .Where(project => project.Id == id)
-            .Select(project => new ProjectResponse
-            {
-                Id = project.Id,
-                Name = project.Name
-            })
-            .FirstOrDefaultAsync();
+        var project = await _projects.GetByIdAsync(id);
 
         if (project == null)
             return NotFound();
 
         return Ok(project);
-    }
-
-    private static ProjectResponse ToResponse(Project project)
-    {
-        return new ProjectResponse
-        {
-            Id = project.Id,
-            Name = project.Name
-        };
     }
 }

@@ -1,13 +1,12 @@
-﻿using AssistantEngineer.Contracts.Calculations;
+using AssistantEngineer.Application.Services.Buildings;
 using AssistantEngineer.Contracts.Reports;
 using AssistantEngineer.Contracts.Requests;
 using AssistantEngineer.Contracts.Responses;
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Contracts.Calculations;
+using AssistantEngineer.Infrastructure.Services.Reports;
 using AssistantEngineer.Services.Calculations;
 using AssistantEngineer.Services.Reports;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AssistantEngineer.Controllers;
 
@@ -15,18 +14,18 @@ namespace AssistantEngineer.Controllers;
 [Route("api/[controller]")]
 public class BuildingsController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly BuildingApplicationService _buildings;
     private readonly AggregateCalculationService _aggregateCalculationService;
     private readonly BuildingReportDataService _buildingReportDataService;
     private readonly ExcelReportService _excelReportService;
 
     public BuildingsController(
-        AppDbContext context,
+        BuildingApplicationService buildings,
         AggregateCalculationService aggregateCalculationService,
         BuildingReportDataService buildingReportDataService,
         ExcelReportService excelReportService)
     {
-        _context = context;
+        _buildings = buildings;
         _aggregateCalculationService = aggregateCalculationService;
         _buildingReportDataService = buildingReportDataService;
         _excelReportService = excelReportService;
@@ -37,57 +36,24 @@ public class BuildingsController : ControllerBase
         int projectId,
         CreateBuildingRequest request)
     {
-        var projectExists = await _context.Projects.AnyAsync(p => p.Id == projectId);
-        if (!projectExists)
+        var response = await _buildings.CreateAsync(projectId, request);
+
+        if (response == null)
             return NotFound($"Project with id {projectId} not found.");
 
-        var building = new Building
-        {
-            Name = request.Name,
-            ProjectId = projectId
-        };
-
-        _context.Buildings.Add(building);
-        await _context.SaveChangesAsync();
-
-        var response = ToResponse(building);
-        return CreatedAtAction(nameof(GetBuilding), new { id = building.Id }, response);
+        return CreatedAtAction(nameof(GetBuilding), new { id = response.Id }, response);
     }
 
     [HttpGet("{projectId}")]
     public async Task<ActionResult<IEnumerable<BuildingResponse>>> GetBuildings(int projectId)
     {
-        var buildings = await _context.Buildings
-            .Where(b => b.ProjectId == projectId)
-            .Select(building => new BuildingResponse
-            {
-                Id = building.Id,
-                Name = building.Name,
-                ProjectId = building.ProjectId,
-                DesignReserveFactor = building.DesignReserveFactor,
-                DesignCapacityW = building.DesignCapacityW,
-                DesignCapacityKw = building.DesignCapacityKw
-            })
-            .ToListAsync();
-
-        return Ok(buildings);
+        return Ok(await _buildings.GetByProjectIdAsync(projectId));
     }
 
     [HttpGet("by-id/{id}")]
     public async Task<ActionResult<BuildingResponse>> GetBuilding(int id)
     {
-        var building = await _context.Buildings
-            .Where(building => building.Id == id)
-            .Select(building => new BuildingResponse
-            {
-                Id = building.Id,
-                Name = building.Name,
-                ProjectId = building.ProjectId,
-                DesignReserveFactor = building.DesignReserveFactor,
-                DesignCapacityW = building.DesignCapacityW,
-                DesignCapacityKw = building.DesignCapacityKw
-            })
-            .FirstOrDefaultAsync();
+        var building = await _buildings.GetByIdAsync(id);
 
         if (building == null)
             return NotFound();
@@ -156,18 +122,5 @@ public class BuildingsController : ControllerBase
     private static bool HasPartialEquipmentSelectionFilter(string? systemType, string? unitType)
     {
         return string.IsNullOrWhiteSpace(systemType) != string.IsNullOrWhiteSpace(unitType);
-    }
-
-    private static BuildingResponse ToResponse(Building building)
-    {
-        return new BuildingResponse
-        {
-            Id = building.Id,
-            Name = building.Name,
-            ProjectId = building.ProjectId,
-            DesignReserveFactor = building.DesignReserveFactor,
-            DesignCapacityW = building.DesignCapacityW,
-            DesignCapacityKw = building.DesignCapacityKw
-        };
     }
 }

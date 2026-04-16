@@ -1,5 +1,9 @@
+using AssistantEngineer.Application.Services.Buildings;
 using AssistantEngineer.Controllers;
-using AssistantEngineer.Data;
+using AssistantEngineer.Domain.Services.Calculations;
+using AssistantEngineer.Domain.Services.Equipment;
+using AssistantEngineer.Infrastructure.Data;
+using AssistantEngineer.Infrastructure.Services.Reports;
 using AssistantEngineer.Services.Calculations;
 using AssistantEngineer.Services.Reports;
 using Microsoft.AspNetCore.Mvc;
@@ -52,12 +56,17 @@ public class BuildingsControllerReportTests
     private static BuildingsController CreateController(AppDbContext context)
     {
         var roomCalculationService = new RoomCalculationService();
+        var coolingEquipmentSelector = new CoolingEquipmentSelector();
         var aggregateCalculationService = new AggregateCalculationService(context, roomCalculationService);
-        var buildingReportDataService = new BuildingReportDataService(context, roomCalculationService);
+        var buildingReportDataService = new BuildingReportDataService(
+            context,
+            roomCalculationService,
+            coolingEquipmentSelector);
+        var buildingApplicationService = new BuildingApplicationService(context);
         var excelReportService = new ExcelReportService();
 
         return new BuildingsController(
-            context,
+            buildingApplicationService,
             aggregateCalculationService,
             buildingReportDataService,
             excelReportService);

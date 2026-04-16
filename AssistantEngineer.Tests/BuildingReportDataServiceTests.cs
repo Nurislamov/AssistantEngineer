@@ -1,5 +1,8 @@
-using AssistantEngineer.Data;
-using AssistantEngineer.Models;
+using AssistantEngineer.Domain.Equipment;
+using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Services.Calculations;
+using AssistantEngineer.Domain.Services.Equipment;
+using AssistantEngineer.Infrastructure.Data;
 using AssistantEngineer.Services.Calculations;
 using AssistantEngineer.Services.Reports;
 using Microsoft.EntityFrameworkCore;
@@ -122,7 +125,7 @@ public class BuildingReportDataServiceTests
             new Wall { Id = 1, RoomId = 1, AreaM2 = 10, IsExternal = true },
             new Wall { Id = 2, RoomId = 1, AreaM2 = 5, IsExternal = false });
         context.EquipmentCatalogItems.AddRange(
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 1,
                 Manufacturer = "ACME",
@@ -132,7 +135,7 @@ public class BuildingReportDataServiceTests
                 NominalCoolingCapacityKw = 2.6,
                 IsActive = true
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 2,
                 Manufacturer = "ACME",
@@ -142,7 +145,7 @@ public class BuildingReportDataServiceTests
                 NominalCoolingCapacityKw = 3.5,
                 IsActive = false
             },
-            new EquipmentCatalogItem
+            new CoolingEquipmentCatalogItem
             {
                 Id = 3,
                 Manufacturer = "ACME",
@@ -190,7 +193,10 @@ public class BuildingReportDataServiceTests
 
     private static BuildingReportDataService CreateService(AppDbContext context)
     {
-        return new BuildingReportDataService(context, new RoomCalculationService());
+        return new BuildingReportDataService(
+            context,
+            new RoomCalculationService(),
+            new CoolingEquipmentSelector());
     }
 
     private static AppDbContext CreateContext()

@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssistantEngineer\AssistantEngineer.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Application\AssistantEngineer.Application.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Domain\AssistantEngineer.Domain.csproj" />
   </ItemGroup>
 
 </Project>
