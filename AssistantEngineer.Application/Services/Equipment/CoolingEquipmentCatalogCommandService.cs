@@ -1,0 +1,74 @@
+using AssistantEngineer.Application.Abstractions;
+using AssistantEngineer.Application.Contracts.Requests;
+using AssistantEngineer.Application.Contracts.Responses;
+using AssistantEngineer.Domain.Equipment;
+using AssistantEngineer.Domain.Primitives;
+using AssistantEngineer.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace AssistantEngineer.Application.Services.Equipment;
+
+public class CoolingEquipmentCatalogCommandService
+{
+    private readonly IEquipmentCatalogRepository _catalog;
+    private readonly IAppDbContext _context;
+    private readonly ILogger<CoolingEquipmentCatalogCommandService> _logger;
+
+    public CoolingEquipmentCatalogCommandService(
+        IEquipmentCatalogRepository catalog,
+        IAppDbContext context,
+        ILogger<CoolingEquipmentCatalogCommandService>? logger = null)
+    {
+        _catalog = catalog;
+        _context = context;
+        _logger = logger ?? NullLogger<CoolingEquipmentCatalogCommandService>.Instance;
+    }
+
+    public async Task<Result<EquipmentCatalogItemResponse>> CreateAsync(
+        CreateEquipmentCatalogItemRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation(
+            "Creating cooling equipment catalog item {Manufacturer} {ModelName}.",
+            request.Manufacturer,
+            request.ModelName);
+
+        var powerResult = Power.FromWatts(request.NominalCoolingCapacityKw * 1000);
+        if (powerResult.IsFailure)
+        {
+            _logger.LogWarning(
+                "Cooling equipment catalog item creation failed for {Manufacturer} {ModelName}: {Error}.",
+                request.Manufacturer,
+                request.ModelName,
+                powerResult.Error);
+            return Result<EquipmentCatalogItemResponse>.Failure(powerResult);
+        }
+
+        var itemResult = CoolingEquipmentCatalogItem.Create(
+            request.Manufacturer,
+            request.SystemType,
+            request.UnitType,
+            request.ModelName,
+            powerResult.Value,
+            request.IsActive);
+
+        if (itemResult.IsFailure)
+        {
+            _logger.LogWarning(
+                "Cooling equipment catalog item creation failed for {Manufacturer} {ModelName}: {Error}.",
+                request.Manufacturer,
+                request.ModelName,
+                itemResult.Error);
+            return Result<EquipmentCatalogItemResponse>.Failure(itemResult);
+        }
+
+        _catalog.Add(itemResult.Value);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation(
+            "Created cooling equipment catalog item {CatalogItemId}.",
+            itemResult.Value.Id);
+        return Result<EquipmentCatalogItemResponse>.Success(ApplicationMapper.ToResponse(itemResult.Value));
+    }
+}

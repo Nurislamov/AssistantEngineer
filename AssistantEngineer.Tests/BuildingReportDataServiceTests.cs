@@ -1,0 +1,237 @@
+﻿using AssistantEngineer.Application.Abstractions;
+using AssistantEngineer.Application.Contracts.Calculations;
+using AssistantEngineer.Application.Services.Calculations;
+using AssistantEngineer.Application.Services.Equipment;
+using AssistantEngineer.Application.Services.Reports;
+using AssistantEngineer.Domain.Equipment;
+using AssistantEngineer.Domain.Models;
+using AssistantEngineer.Domain.Primitives;
+using AssistantEngineer.Domain.ValueObjects;
+
+namespace AssistantEngineer.Tests;
+
+public class BuildingReportDataServiceTests
+{
+    private static readonly DateTimeOffset FixedReportTime = new(2026, 4, 19, 8, 30, 0, TimeSpan.Zero);
+
+    [Fact]
+    public async Task BuildReportAsyncReturnsPopulatedBuildingReport()
+    {
+        var project = DomainInvariantTests.CreateProject("Headquarters");
+        var building = DomainInvariantTests.CreateBuilding(project, "Main");
+        Assert.True(project.AddBuilding(building).IsSuccess);
+
+        var floor = building.AddFloor("Level 1").Value;
+        var room = floor.AddRoom(
+            "Office 101",
+            Area.FromSquareMeters(20).Value,
+            3,
+            Temperature.FromCelsius(22).Value,
+            Temperature.FromCelsius(35).Value,
+            peopleCount: 2).Value;
+        Assert.True(room.AddWall(
+            Area.FromSquareMeters(12).Value,
+            isExternal: true,
+            ThermalTransmittance.FromValue(1.2).Value,
+            CardinalDirection.South).IsSuccess);
+        Assert.True(room.AddWindow(
+            Area.FromSquareMeters(3).Value,
+            ThermalTransmittance.FromValue(2).Value,
+            SolarHeatGainCoefficient.FromValue(0.5).Value,
+            CardinalDirection.South).IsSuccess);
+
+        var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
+        var service = CreateService(building, roomCalculator);
+
+        var result = await service.BuildReportAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("Headquarters", result.Value.ProjectName);
+        Assert.Equal("Main", result.Value.BuildingName);
+        Assert.Equal(1, result.Value.FloorsCount);
+        Assert.Equal(1, result.Value.RoomsCount);
+        Assert.Single(result.Value.FloorSummaries);
+        Assert.Single(result.Value.Rooms);
+        Assert.Single(result.Value.Windows);
+        Assert.Single(result.Value.Walls);
+        Assert.False(result.Value.EquipmentSelectionRequested);
+        Assert.Equal(FixedReportTime.UtcDateTime, result.Value.GeneratedAtUtc);
+    }
+
+    [Fact]
+    public async Task BuildReportAsyncReturnsNotFoundWhenBuildingDoesNotExist()
+    {
+        var project = DomainInvariantTests.CreateProject("Headquarters");
+        var building = DomainInvariantTests.CreateBuilding(project, "Main");
+        var service = CreateService(building);
+
+        var result = await service.BuildReportAsync(999);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
+    }
+
+    [Fact]
+    public async Task BuildHeatingReportAsyncReturnsHeatingLoads()
+    {
+        var project = DomainInvariantTests.CreateProject("Headquarters");
+        var climateZone = ClimateZone.Create(
+            "Cold climate",
+            Temperature.FromCelsius(35).Value,
+            Temperature.FromCelsius(-15).Value).Value;
+        var building = Building.Create("Main", project, climateZone).Value;
+        Assert.True(project.AddBuilding(building).IsSuccess);
+
+        var floor = building.AddFloor("Level 1").Value;
+        var room = floor.AddRoom(
+            "Office 101",
+            Area.FromSquareMeters(20).Value,
+            3,
+            Temperature.FromCelsius(22).Value,
+            Temperature.FromCelsius(5).Value).Value;
+        Assert.True(room.AddWall(
+            Area.FromSquareMeters(12).Value,
+            isExternal: true,
+            ThermalTransmittance.FromValue(1.2).Value,
+            CardinalDirection.South).IsSuccess);
+
+        var service = CreateService(building);
+
+        var result = await service.BuildHeatingReportAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("Headquarters", result.Value.ProjectName);
+        Assert.Equal("Main", result.Value.BuildingName);
+        Assert.Equal(nameof(HeatingLoadCalculationMethod.En12831), result.Value.CalculationMethod);
+        Assert.Equal(1, result.Value.RoomsCount);
+        Assert.Single(result.Value.Rooms);
+        Assert.Equal(-15, result.Value.OutdoorDesignTemperatureC);
+        Assert.True(result.Value.TotalDesignHeatingLoadW > 0);
+        Assert.Equal(FixedReportTime.UtcDateTime, result.Value.GeneratedAtUtc);
+    }
+
+    [Fact]
+    public async Task BuildHeatingReportAsyncSummarizesTemperaturesAcrossAllRooms()
+    {
+        var project = DomainInvariantTests.CreateProject("Headquarters");
+        var building = Building.Create("Main", project).Value;
+        Assert.True(project.AddBuilding(building).IsSuccess);
+
+        var floor = building.AddFloor("Level 1").Value;
+        var firstRoom = floor.AddRoom(
+            "Office 101",
+            Area.FromSquareMeters(20).Value,
+            3,
+            Temperature.FromCelsius(20).Value,
+            Temperature.FromCelsius(-10).Value).Value;
+        var secondRoom = floor.AddRoom(
+            "Office 102",
+            Area.FromSquareMeters(20).Value,
+            3,
+            Temperature.FromCelsius(24).Value,
+            Temperature.FromCelsius(-20).Value).Value;
+        foreach (var room in new[] { firstRoom, secondRoom })
+        {
+            Assert.True(room.AddWall(
+                Area.FromSquareMeters(12).Value,
+                isExternal: true,
+                ThermalTransmittance.FromValue(1.2).Value,
+                CardinalDirection.South).IsSuccess);
+        }
+
+        var service = CreateService(building);
+
+        var result = await service.BuildHeatingReportAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal(2, result.Value.RoomsCount);
+        Assert.Equal(
+            WeightedAverage(result.Value.Rooms, room => room.IndoorDesignTemperatureC),
+            result.Value.IndoorDesignTemperatureC,
+            precision: 2);
+        Assert.Equal(
+            WeightedAverage(result.Value.Rooms, room => room.OutdoorDesignTemperatureC),
+            result.Value.OutdoorDesignTemperatureC,
+            precision: 2);
+        Assert.NotEqual(result.Value.Rooms[0].IndoorDesignTemperatureC, result.Value.IndoorDesignTemperatureC);
+        Assert.NotEqual(result.Value.Rooms[0].OutdoorDesignTemperatureC, result.Value.OutdoorDesignTemperatureC);
+    }
+
+    private static BuildingReportDataService CreateService(
+        Building building,
+        IRoomCoolingLoadCalculator? roomCalculator = null)
+    {
+        roomCalculator ??= CalculationTestFactory.CreateRoomCoolingLoadCalculator();
+        var calculationService = new BuildingReportCalculationService(
+            CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
+            roomCalculator,
+            new CoolingEquipmentSelector(roomCalculator),
+            CalculationTestFactory.CreateHeatingLoadCalculator());
+        var reportGenerator = new BuildingReportGenerator(new FixedTimeProvider(FixedReportTime));
+
+        return new BuildingReportDataService(
+            new BuildingRepositoryStub(building),
+            new EmptyPreferencesRepository(),
+            new EmptyEquipmentCatalogRepository(),
+            CalculationTestFactory.CreateIso52016ClimateDataValidator(),
+            calculationService,
+            reportGenerator);
+    }
+
+    private static double WeightedAverage(
+        IReadOnlyCollection<RoomHeatingLoadResult> rooms,
+        Func<RoomHeatingLoadResult, double> valueSelector)
+    {
+        var totalWeight = rooms.Sum(room => room.TotalDesignHeatingLoadW);
+        return rooms.Sum(room => valueSelector(room) * room.TotalDesignHeatingLoadW) / totalWeight;
+    }
+
+    private sealed class BuildingRepositoryStub : IBuildingRepository
+    {
+        private readonly Building _building;
+
+        public BuildingRepositoryStub(Building building) => _building = building;
+
+        public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(id == _building.Id ? _building : null);
+
+        public Task<Building?> GetByIdAsync(int id, bool includeClimateZone = false, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<Building?> GetWithFloorsAsync(int id, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<Building?> GetForCalculationAsync(int id, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<Building>> ListByProjectIdAsync(int projectId, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public void Add(Building building) => throw new NotSupportedException();
+    }
+
+    private sealed class EmptyPreferencesRepository : ICalculationPreferencesRepository
+    {
+        public Task<CalculationPreferences?> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<CalculationPreferences?>(null);
+    }
+
+    private sealed class EmptyEquipmentCatalogRepository : IEquipmentCatalogRepository
+    {
+        public Task<IReadOnlyList<CoolingEquipmentCatalogItem>> ListActiveByTypeAsync(
+            string systemType,
+            string unitType,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<CoolingEquipmentCatalogItem>>([]);
+
+        public Task<CoolingEquipmentCatalogItem?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<CoolingEquipmentCatalogItem>> ListAsync(CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public void Add(CoolingEquipmentCatalogItem item) => throw new NotSupportedException();
+    }
+}
+
+

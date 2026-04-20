@@ -1,0 +1,65 @@
+using AssistantEngineer.Application.Abstractions;
+using AssistantEngineer.Application.Abstractions.Repositories;
+using AssistantEngineer.Infrastructure.Data;
+using AssistantEngineer.Infrastructure.Data.Repositories;
+using AssistantEngineer.Infrastructure.Services.Benchmarks;
+using AssistantEngineer.Infrastructure.Services.Climate;
+using AssistantEngineer.Infrastructure.Services.Reports;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AssistantEngineer.Infrastructure;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string environmentName)
+    {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "Connection string 'DefaultConnection' is not configured. Use user-secrets or ConnectionStrings__DefaultConnection.");
+        }
+
+        services.AddDbContext<AppDbContext>(options =>
+        {
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
+                npgsqlOptions.EnableRetryOnFailure();
+            });
+
+            if (environmentName == "Development")
+                options.EnableSensitiveDataLogging();
+        });
+
+        services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IClimateZoneRepository, ClimateZoneRepository>();
+        services.AddScoped<IBuildingRepository, BuildingRepository>();
+        services.AddScoped<IFloorRepository, FloorRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
+        services.AddScoped<IEquipmentCatalogRepository, EquipmentCatalogRepository>();
+        services.AddScoped<ICalculationPreferencesRepository, CalculationPreferencesRepository>();
+        services.AddScoped<IBuildingReportExporter, ExcelReportService>();
+        services.AddScoped<IClimateDataRepository, ClimateDataRepository>();
+        services.AddScoped<IEnergyPlusResultParser, EnergyPlusResultParser>();
+        services.AddScoped<IAnnualClimateDataRepository, AnnualClimateDataRepository>();
+        services.AddScoped<IAnnualClimateDataProvider, AnnualClimateDataProvider>();
+        
+        var energyPlusSection = configuration.GetSection("EnergyPlus");
+        services.Configure<EnergyPlusBenchmarkOptions>(options =>
+        {
+            energyPlusSection.Bind(options);
+        });
+        services.AddScoped<IEnergyPlusBenchmarkRunner, EnergyPlusBenchmarkRunner>();
+        services.AddScoped<IEnergyPlusModelExporter, EnergyPlusModelExporter>();
+
+        return services;
+    }
+}
