@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
@@ -105,12 +106,7 @@ public sealed class BuildingArchetypeService
     }
 }
 
-public sealed class CreateBuildingFromArchetypeRequest
-{
-    public string ArchetypeCode { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public int? ClimateZoneId { get; set; }
-}
+
 
 public sealed record BuildingArchetypeSummary(
     string Code,

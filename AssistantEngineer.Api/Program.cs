@@ -27,6 +27,7 @@ builder.Services.AddRequestTimeouts(options =>
         Timeout = TimeSpan.FromSeconds(defaultRequestTimeoutSeconds),
         TimeoutStatusCode = StatusCodes.Status503ServiceUnavailable
     };
+
     options.AddPolicy(RequestPolicies.LongRunning, new RequestTimeoutPolicy
     {
         Timeout = TimeSpan.FromSeconds(longRunningRequestTimeoutSeconds),
@@ -51,15 +52,22 @@ builder.Services.AddEquipmentModule();
 builder.Services.AddReportingModule();
 builder.Services.AddBenchmarksModule(builder.Configuration);
 builder.Services.AddPersistence(builder.Configuration, builder.Environment.EnvironmentName);
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment()) app.MapOpenApi();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseRequestTimeouts();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
 
 public partial class Program;

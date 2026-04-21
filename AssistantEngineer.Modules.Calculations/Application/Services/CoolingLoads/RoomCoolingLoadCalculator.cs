@@ -7,39 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 
-public interface IRoomCoolingLoadCalculator
-{
-    Task<RoomCalculationResult> CalculateAsync(
-        Room room,
-        CalculationPreferences? preferences = null,
-        CancellationToken cancellationToken = default);
-
-    Task<RoomCalculationResult> CalculateAsync(
-        Room room,
-        CoolingLoadCalculationMethod method,
-        CalculationPreferences? preferences = null,
-        CancellationToken cancellationToken = default);
-}
-
-public interface IRoomCoolingLoadCalculationStrategy
-{
-    CoolingLoadCalculationMethod Method { get; }
-
-    Task<RoomCalculationResult> CalculateAsync(
-        Room room,
-        CalculationPreferences? preferences = null,
-        CancellationToken cancellationToken = default);
-}
-
-public sealed class CoolingLoadCalculationOptions
-{
-    public double DefaultCoolingSafetyFactor { get; init; } = 1.10;
-    public double SimplifiedVolumeLoadWPerM3 { get; init; } = 35.0;
-    public double SimplifiedInternalWallLoadWPerM2 { get; init; } = 30.0;
-    public double SimplifiedNorthExternalWallLoadWPerM2 { get; init; } = 30.0;
-    public double SimplifiedExternalWallLoadWPerM2 { get; init; } = 60.0;
-}
-
 public sealed class RoomCoolingLoadCalculator : IRoomCoolingLoadCalculator
 {
     private readonly IReadOnlyDictionary<CoolingLoadCalculationMethod, IRoomCoolingLoadCalculationStrategy> _strategies;

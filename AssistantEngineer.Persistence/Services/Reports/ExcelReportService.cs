@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
 using ClosedXML.Excel;

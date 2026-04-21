@@ -1,7 +1,5 @@
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;

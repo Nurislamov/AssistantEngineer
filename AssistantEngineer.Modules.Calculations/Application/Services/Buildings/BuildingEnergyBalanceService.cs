@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;

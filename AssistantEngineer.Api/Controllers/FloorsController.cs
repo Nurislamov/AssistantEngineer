@@ -2,9 +2,10 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Services.Floors;
-using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
+using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,16 @@ public class FloorsController : ControllerBase
 {
     private readonly FloorCommandService _command;
     private readonly FloorQueryService _query;
+    private readonly FloorCalculationService _calculation;
 
-    public FloorsController(FloorCommandService command, FloorQueryService query)
+    public FloorsController(
+        FloorCommandService command,
+        FloorQueryService query,
+        FloorCalculationService calculation)
     {
         _command = command;
         _query = query;
+        _calculation = calculation;
     }
 
     [HttpPost("{buildingId:int}")]
@@ -44,7 +50,9 @@ public class FloorsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<FloorResponse>> GetById(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<FloorResponse>> GetById(
+        int id,
+        CancellationToken cancellationToken)
     {
         var result = await _query.GetByIdAsync(id, cancellationToken);
         return result.ToActionResult();
@@ -54,10 +62,10 @@ public class FloorsController : ControllerBase
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<FloorCalculationResult>> Calculate(
         int id,
-        [FromQuery] CoolingLoadCalculationMethodDto method,
-        CancellationToken cancellationToken)
+        [FromQuery] CoolingLoadCalculationMethodDto method = CoolingLoadCalculationMethodDto.Simplified,
+        CancellationToken cancellationToken = default)
     {
-        var result = await _query.CalculateAsync(id, method.ToDomain(), cancellationToken);
+        var result = await _calculation.CalculateAsync(id, method.ToDomain(), cancellationToken);
         return result.ToActionResult();
     }
 }

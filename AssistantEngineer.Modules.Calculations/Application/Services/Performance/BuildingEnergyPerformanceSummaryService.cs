@@ -1,8 +1,9 @@
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Performance;
@@ -156,54 +157,4 @@ public sealed class BuildingEnergyPerformanceSummaryService
 
     private static double Round(double value) =>
         Math.Round(Math.Max(0, value), 2, MidpointRounding.AwayFromZero);
-}
-
-public sealed class BuildingEnergyPerformanceRequest
-{
-    public HeatingSystemEnergyRequest HeatingSystem { get; set; } = new();
-    public CoolingSystemEnergyRequest CoolingSystem { get; set; } = new();
-    public EnergyCarrierType HeatingCarrier { get; set; } = EnergyCarrierType.NaturalGas;
-    public EnergyCarrierType CoolingCarrier { get; set; } = EnergyCarrierType.Electricity;
-    public bool IncludeDomesticHotWater { get; set; }
-    public DomesticHotWaterDemandRequest? DomesticHotWater { get; set; }
-    public DomesticHotWaterSystemRequest DomesticHotWaterSystem { get; set; } = new();
-    public EnergyCarrierType DomesticHotWaterCarrier { get; set; } = EnergyCarrierType.NaturalGas;
-    public Dictionary<EnergyCarrierType, EnergyCarrierFactors>? CarrierFactorOverrides { get; set; }
-}
-
-public sealed class DomesticHotWaterSystemRequest
-{
-    public double GenerationEfficiency { get; set; } = 0.9;
-}
-
-public sealed record BuildingEnergyPerformanceSummary(
-    int BuildingId,
-    string BuildingName,
-    int Year,
-    double FloorAreaM2,
-    IReadOnlyList<BuildingEnergyEndUseSummary> EndUses,
-    double TotalUsefulEnergyKWh,
-    double TotalFinalEnergyKWh,
-    double TotalPrimaryEnergyKWh,
-    double TotalCo2Kg,
-    double FinalEnergyIntensityKWhPerM2Year,
-    double PrimaryEnergyIntensityKWhPerM2Year,
-    double Co2IntensityKgPerM2Year);
-
-public sealed record BuildingEnergyEndUseSummary(
-    BuildingEnergyEndUse EndUse,
-    EnergyCarrierType Carrier,
-    double UsefulEnergyKWh,
-    double FinalEnergyKWh,
-    double PrimaryEnergyFactor,
-    double Co2KgPerKWh,
-    double PrimaryEnergyKWh,
-    double Co2Kg,
-    bool HasInvalidCarrier);
-
-public enum BuildingEnergyEndUse
-{
-    Heating,
-    Cooling,
-    DomesticHotWater
 }

@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -35,18 +36,3 @@ public sealed class HeatingSystemEnergyService
     private static double Round(double value) =>
         Math.Round(Math.Max(0, value), 2, MidpointRounding.AwayFromZero);
 }
-
-public sealed class HeatingSystemEnergyRequest
-{
-    public double GenerationEfficiency { get; set; } = 0.92;
-    public double DistributionEfficiency { get; set; } = 0.95;
-    public double EmissionEfficiency { get; set; } = 0.97;
-}
-
-public sealed record HeatingSystemEnergyResult(
-    double UsefulHeatingDemandKWh,
-    double FinalHeatingEnergyKWh,
-    double TotalSystemEfficiency,
-    double GenerationLossKWh,
-    double DistributionLossKWh,
-    double EmissionLossKWh);

@@ -1,5 +1,4 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;

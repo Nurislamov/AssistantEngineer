@@ -1,9 +1,10 @@
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
-using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
-using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
+using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.SharedKernel.ValueObjects;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
@@ -108,8 +109,10 @@ public sealed class Iso52016ReferenceBenchmarkService
         var climateZone = CreateClimateZone("Reference solar climate", summer: 35, winter: 5);
         var building = CreateReferenceBuilding(climateZone, "Reference solar box", includeSouthWindow: true);
         var weather = CreateAnnualWeather(climateZone, temperature: 22, directSolar: 550, diffuseSolar: 90);
+
         var unshaded = await CreateCalculator(weather, _options)
             .CalculateBuildingEnergyNeedsAsync(building, year: weather.Year, cancellationToken: cancellationToken);
+
         var shadedOptions = new Iso52016EnergyNeedOptions
         {
             DefaultWeatherYear = _options.DefaultWeatherYear,
@@ -131,14 +134,16 @@ public sealed class Iso52016ReferenceBenchmarkService
             DiffuseSolarShareUnaffectedByShading = _options.DiffuseSolarShareUnaffectedByShading,
             LatitudeDegrees = _options.LatitudeDegrees
         };
+
         var shaded = await CreateCalculator(weather, shadedOptions)
             .CalculateBuildingEnergyNeedsAsync(building, year: weather.Year, cancellationToken: cancellationToken);
+
         if (unshaded is null || shaded is null)
             throw new InvalidOperationException("Reference benchmark weather data must be complete.");
 
         var solarReductionPercent = unshaded.Breakdown.SolarGainsKWh > 0
             ? (unshaded.Breakdown.SolarGainsKWh - shaded.Breakdown.SolarGainsKWh) /
-            unshaded.Breakdown.SolarGainsKWh * 100
+              unshaded.Breakdown.SolarGainsKWh * 100
             : 0;
 
         return CreateResult(
@@ -189,6 +194,7 @@ public sealed class Iso52016ReferenceBenchmarkService
             ["SolarGainsKWh"] = Round(energyNeed.Breakdown.SolarGainsKWh),
             ["InternalGainsKWh"] = Round(energyNeed.Breakdown.InternalGainsKWh)
         };
+
         if (additionalMetrics is not null)
         {
             foreach (var metric in additionalMetrics)
@@ -216,8 +222,10 @@ public sealed class Iso52016ReferenceBenchmarkService
                 var actual = actualMetrics.TryGetValue(metric.Key, out var value)
                     ? value
                     : double.NaN;
+
                 var passed = double.IsFinite(actual) &&
-                    Math.Abs(actual - metric.Value.ExpectedValue) <= metric.Value.AbsoluteTolerance;
+                             Math.Abs(actual - metric.Value.ExpectedValue) <= metric.Value.AbsoluteTolerance;
+
                 return new Iso52016ReferenceBenchmarkAssertion(
                     $"{metric.Key} matches locked benchmark fixture",
                     actual,
@@ -295,6 +303,7 @@ public sealed class Iso52016ReferenceBenchmarkService
             var daylightFactor = hourOfDay is >= 7 and <= 17
                 ? Math.Sin(Math.PI * (hourOfDay - 6) / 12.0)
                 : 0;
+
             _ = weather.AddHourlyData(
                 hour,
                 temperature,
@@ -327,22 +336,3 @@ public sealed class Iso52016ReferenceBenchmarkService
                     : null);
     }
 }
-
-public sealed record Iso52016ReferenceBenchmarkResult(
-    string CaseId,
-    string Description,
-    bool Passed,
-    IReadOnlyDictionary<string, double> Metrics,
-    IReadOnlyList<Iso52016ReferenceBenchmarkAssertion> Assertions);
-
-public sealed record Iso52016ReferenceBenchmarkAssertion(
-    string Name,
-    double Actual,
-    string Operator,
-    double Expected,
-    double Tolerance,
-    bool Passed);
-
-public sealed record Iso52016BenchmarkMetricExpectation(
-    double ExpectedValue,
-    double AbsoluteTolerance);

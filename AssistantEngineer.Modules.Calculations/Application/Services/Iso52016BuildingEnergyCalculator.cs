@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using Microsoft.Extensions.Logging;

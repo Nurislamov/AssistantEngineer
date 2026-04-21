@@ -5,7 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
-using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;

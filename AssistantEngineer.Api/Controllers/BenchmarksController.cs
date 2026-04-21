@@ -2,7 +2,7 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
-using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;

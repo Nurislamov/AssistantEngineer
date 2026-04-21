@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Buildings.Domain.Enums;
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 
 public enum CoolingLoadCalculationMethodDto
 {

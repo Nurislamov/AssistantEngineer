@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -40,21 +41,3 @@ public sealed class CoolingSystemEnergyService
     private static double Round(double value) =>
         Math.Round(Math.Max(0, value), 2, MidpointRounding.AwayFromZero);
 }
-
-public sealed class CoolingSystemEnergyRequest
-{
-    public double SeasonalCop { get; set; } = 3.2;
-    public double DistributionEfficiency { get; set; } = 0.95;
-    public double EmissionEfficiency { get; set; } = 0.98;
-    public double AuxiliaryEnergyKWh { get; set; }
-}
-
-public sealed record CoolingSystemEnergyResult(
-    double UsefulCoolingDemandKWh,
-    double DeliveredCoolingKWh,
-    double CompressorElectricityKWh,
-    double AuxiliaryElectricityKWh,
-    double FinalCoolingElectricityKWh,
-    double SeasonalCop,
-    double DistributionLossKWh,
-    double EmissionLossKWh);

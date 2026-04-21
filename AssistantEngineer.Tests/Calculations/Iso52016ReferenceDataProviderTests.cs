@@ -1,15 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
-using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
-using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Calculations.Application.Services;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Caching.Memory;
 

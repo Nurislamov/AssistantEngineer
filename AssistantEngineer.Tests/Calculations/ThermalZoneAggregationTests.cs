@@ -1,12 +1,6 @@
 using System.Reflection;
-using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
-using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
 using AssistantEngineer.SharedKernel.ValueObjects;
 
 namespace AssistantEngineer.Tests;

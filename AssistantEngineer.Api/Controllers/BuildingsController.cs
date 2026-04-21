@@ -2,7 +2,6 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
-using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;

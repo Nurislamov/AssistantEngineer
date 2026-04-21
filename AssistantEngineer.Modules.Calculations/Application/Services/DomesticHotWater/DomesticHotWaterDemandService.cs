@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
@@ -150,38 +151,3 @@ public sealed class DomesticHotWaterDemandService
     private static double RoundHourly(double value) =>
         Math.Round(value, 4, MidpointRounding.AwayFromZero);
 }
-
-public sealed class DomesticHotWaterDemandRequest
-{
-    public int PeopleCount { get; set; }
-    public double LitersPerPersonDay { get; set; } = 40;
-    public double ColdWaterTemperatureC { get; set; } = 10;
-    public double HotWaterTemperatureC { get; set; } = 60;
-    public int Year { get; set; } = 2020;
-    public double DistributionLossFactor { get; set; } = 0.1;
-    public double StorageLossKWhPerDay { get; set; }
-    public double CirculationLossKWhPerDay { get; set; }
-    public bool IncludeHourlyProfile { get; set; }
-    public IReadOnlyList<double>? WeekdayDrawProfile { get; set; }
-    public IReadOnlyList<double>? WeekendDrawProfile { get; set; }
-    public HashSet<DateOnly> HolidayDates { get; set; } = new();
-}
-
-public sealed record DomesticHotWaterDemandResult(
-    double DailyVolumeLiters,
-    double DailyEnergyKWh,
-    IReadOnlyList<DomesticHotWaterMonthlyDemand> MonthlyDemand,
-    IReadOnlyList<DomesticHotWaterHourlyDemand> HourlyDemand,
-    double AnnualVolumeLiters,
-    double AnnualEnergyKWh);
-
-public sealed record DomesticHotWaterMonthlyDemand(
-    int Month,
-    double VolumeLiters,
-    double EnergyKWh);
-
-public sealed record DomesticHotWaterHourlyDemand(
-    int HourOfYear,
-    int Month,
-    double VolumeLiters,
-    double EnergyKWh);

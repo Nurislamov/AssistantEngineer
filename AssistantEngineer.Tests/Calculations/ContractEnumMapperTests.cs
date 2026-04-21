@@ -1,12 +1,8 @@
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
-using AssistantEngineer.Modules.Equipment.Application.Mappers;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
 
 namespace AssistantEngineer.Tests;
 

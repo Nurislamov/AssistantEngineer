@@ -1,16 +1,14 @@
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
-using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
-using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
+using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AssistantEngineer.Tests;
