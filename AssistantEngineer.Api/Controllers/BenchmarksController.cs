@@ -1,10 +1,9 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application;
-using AssistantEngineer.Application.Abstractions;
-using AssistantEngineer.Application.Contracts.Benchmarks;
-using AssistantEngineer.Application.Contracts.Common;
-using AssistantEngineer.Application.Services.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
+using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Services;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 

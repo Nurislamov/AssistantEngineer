@@ -20,4 +20,25 @@
       <PackageReference Include="Microsoft.Extensions.Options" Version="11.0.0-preview.3.26207.106" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Abstractions\Benchmarks\" />
+      <Folder Include="Abstractions\Persistence\" />
+      <Folder Include="Abstractions\Reports\" />
+      <Folder Include="Abstractions\Repositories\" />
+      <Folder Include="Contracts\Benchmarks\" />
+      <Folder Include="Contracts\Calculations\" />
+      <Folder Include="Contracts\Common\" />
+      <Folder Include="Contracts\Reports\" />
+      <Folder Include="Contracts\Requests\" />
+      <Folder Include="Contracts\Responses\" />
+      <Folder Include="Services\Buildings\" />
+      <Folder Include="Services\Calculations\Analytics\" />
+      <Folder Include="Services\Calculations\Common\Profiles\" />
+      <Folder Include="Services\Calculations\CoolingLoads\Abstractions\" />
+      <Folder Include="Services\Climate\" />
+      <Folder Include="Services\Floors\" />
+      <Folder Include="Services\Projects\" />
+      <Folder Include="Services\Rooms\" />
+    </ItemGroup>
+
 </Project>

@@ -1,8 +1,7 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application.Contracts.Requests;
-using AssistantEngineer.Application.Contracts.Responses;
-using AssistantEngineer.Application.Services.Climate;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 

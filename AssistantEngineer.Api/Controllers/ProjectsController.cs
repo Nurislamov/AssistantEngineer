@@ -1,7 +1,7 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Application.Contracts.Requests;
-using AssistantEngineer.Application.Contracts.Responses;
-using AssistantEngineer.Application.Services.Projects;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Services.Projects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;

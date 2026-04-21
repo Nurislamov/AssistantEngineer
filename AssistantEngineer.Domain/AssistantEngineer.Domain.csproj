@@ -6,4 +6,15 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Equipment\" />
+      <Folder Include="Models\Climate\" />
+      <Folder Include="Models\Construction\" />
+      <Folder Include="Models\Schedules\" />
+      <Folder Include="Models\ThermalZones\" />
+      <Folder Include="Models\Ventilation\" />
+      <Folder Include="Primitives\" />
+      <Folder Include="ValueObjects\" />
+    </ItemGroup>
+
 </Project>

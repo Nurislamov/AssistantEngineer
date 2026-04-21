@@ -1,16 +1,15 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application.Abstractions;
-using AssistantEngineer.Application.Contracts.Responses;
-using AssistantEngineer.Application.Services.Buildings;
-using AssistantEngineer.Application.Services.Calculations.Analytics;
-using AssistantEngineer.Application.Services.Calculations.CoolingSystems;
-using AssistantEngineer.Application.Services.Calculations.DomesticHotWater;
-using AssistantEngineer.Application.Services.Calculations.HeatingSystems;
-using AssistantEngineer.Application.Services.Calculations.Iso52016;
-using AssistantEngineer.Application.Services.Calculations.Performance;
-using AssistantEngineer.Domain.Models;
-using AssistantEngineer.Domain.Primitives;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
+using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
+using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
+using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 

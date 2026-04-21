@@ -1,7 +1,11 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Filters;
-using AssistantEngineer.Application;
-using AssistantEngineer.Infrastructure;
+using AssistantEngineer.Modules.Benchmarks;
+using AssistantEngineer.Modules.Buildings;
+using AssistantEngineer.Modules.Calculations;
+using AssistantEngineer.Modules.Equipment;
+using AssistantEngineer.Modules.Reporting;
+using AssistantEngineer.Persistence;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,8 +45,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddApplication(builder.Configuration);
-builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.EnvironmentName);
+builder.Services.AddBuildingsModule();
+builder.Services.AddCalculationsModule(builder.Configuration);
+builder.Services.AddEquipmentModule();
+builder.Services.AddReportingModule();
+builder.Services.AddBenchmarksModule(builder.Configuration);
+builder.Services.AddPersistence(builder.Configuration, builder.Environment.EnvironmentName);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

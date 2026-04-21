@@ -22,10 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AssistantEngineer.Domain\AssistantEngineer.Domain.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Application\AssistantEngineer.Application.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.SharedKernel\AssistantEngineer.SharedKernel.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Buildings\AssistantEngineer.Modules.Buildings.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Calculations\AssistantEngineer.Modules.Calculations.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Persistence\AssistantEngineer.Persistence.csproj" />
     <ProjectReference Include="..\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

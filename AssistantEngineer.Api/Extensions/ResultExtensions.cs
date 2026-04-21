@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using AssistantEngineer.Domain.Primitives;
+using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Extensions;

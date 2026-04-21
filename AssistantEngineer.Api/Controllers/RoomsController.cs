@@ -1,12 +1,14 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application.Contracts.Calculations;
-using AssistantEngineer.Application.Contracts.Common;
-using AssistantEngineer.Application.Contracts.Requests;
-using AssistantEngineer.Application.Contracts.Responses;
-using AssistantEngineer.Application;
-using AssistantEngineer.Application.Services.Equipment;
-using AssistantEngineer.Application.Services.Rooms;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Services.Rooms;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Mappers;
+using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Equipment.Application.Services;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 

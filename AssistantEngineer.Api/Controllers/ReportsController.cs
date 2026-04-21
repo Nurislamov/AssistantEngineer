@@ -1,11 +1,11 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application;
-using AssistantEngineer.Application.Abstractions;
-using AssistantEngineer.Application.Contracts.Common;
-using AssistantEngineer.Application.Contracts.Reports;
-using AssistantEngineer.Application.Services.Buildings;
-using AssistantEngineer.Application.Services.Reports;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Mappers;
+using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
+using AssistantEngineer.Modules.Reporting.Application.Abstractions;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
+using AssistantEngineer.Modules.Reporting.Application.Services;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
