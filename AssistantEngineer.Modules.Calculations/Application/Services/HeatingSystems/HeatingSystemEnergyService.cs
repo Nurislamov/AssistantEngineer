@@ -1,5 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
-using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;

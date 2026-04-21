@@ -1,14 +1,10 @@
-using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
-
-public interface IVentilationHeatTransferCalculator
-{
-    double Calculate(Room room, VentilationCalculationContext context);
-    double CalculateMechanical(Room room, VentilationCalculationContext context);
-    double CalculateInfiltration(Room room, VentilationCalculationContext context);
-}
 
 public sealed class VentilationHeatTransferCalculator : IVentilationHeatTransferCalculator
 {
@@ -70,18 +66,3 @@ public sealed class VentilationHeatTransferCalculator : IVentilationHeatTransfer
     }
 
 }
-
-public enum VentilationCalculationMethod
-{
-    FixedAirChanges,
-    Occupancy,
-    TemperatureWind,
-    Custom
-}
-
-public sealed record VentilationCalculationContext(
-    VentilationCalculationMethod Method,
-    double IndoorTemperatureC,
-    double OutdoorTemperatureC,
-    double WindSpeedMPerS = 0,
-    double? CustomHeatTransferCoefficientWPerK = null);

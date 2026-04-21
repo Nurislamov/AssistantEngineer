@@ -1,11 +1,8 @@
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Performance;
-
-public interface IEnergyCarrierFactorProvider
-{
-    Result<EnergyCarrierFactors> Get(EnergyCarrierType carrierType);
-}
 
 public sealed class EnergyCarrierFactorProvider : IEnergyCarrierFactorProvider
 {
@@ -25,17 +22,3 @@ public sealed class EnergyCarrierFactorProvider : IEnergyCarrierFactorProvider
             ? Result<EnergyCarrierFactors>.Success(factors)
             : Result<EnergyCarrierFactors>.Validation($"Energy carrier '{carrierType}' is not supported.");
 }
-
-public enum EnergyCarrierType
-{
-    Electricity,
-    NaturalGas,
-    DistrictHeat,
-    Biomass,
-    FuelOil,
-    Propane
-}
-
-public sealed record EnergyCarrierFactors(
-    double PrimaryEnergyFactor,
-    double Co2KgPerKWh);

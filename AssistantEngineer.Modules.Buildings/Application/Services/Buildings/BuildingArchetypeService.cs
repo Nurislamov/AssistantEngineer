@@ -105,13 +105,3 @@ public sealed class BuildingArchetypeService
         return Result<BuildingResponse>.Success(BuildingsMapper.ToResponse(building.Value));
     }
 }
-
-
-
-public sealed record BuildingArchetypeSummary(
-    string Code,
-    string DisplayName,
-    RoomType Type,
-    int RoomsCount,
-    double RoomAreaM2,
-    double RoomHeightM);

@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using Microsoft.Extensions.Options;
 

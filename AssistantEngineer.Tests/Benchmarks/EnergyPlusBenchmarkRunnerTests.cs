@@ -1,6 +1,6 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.SharedKernel.Primitives;
-using AssistantEngineer.Persistence.Services.Benchmarks;
+using AssistantEngineer.Infrastructure.Services.Benchmarks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 

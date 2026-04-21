@@ -1,13 +1,6 @@
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
-
-public interface IHourlyProfileAggregator
-{
-    List<double> SumProfiles(
-        IEnumerable<IReadOnlyList<double>> profiles,
-        CancellationToken cancellationToken = default);
-
-    int FindPeakHour(IReadOnlyList<double> hourlyHeatLoadW);
-}
 
 public sealed class HourlyProfileAggregator : IHourlyProfileAggregator
 {

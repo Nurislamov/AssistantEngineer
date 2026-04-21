@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
+using AssistantEngineer.Modules.Benchmarks.Application.Options;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,38 +1,20 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
-using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
-
-public sealed class Iso52016EnergyNeedOptions
-{
-    public int DefaultWeatherYear { get; init; } = 2020;
-    public double DefaultHeatingSetbackC { get; init; } = 17.0;
-    public double DefaultCoolingSetpointC { get; init; } = 26.0;
-    public double DefaultCoolingSetbackC { get; init; } = 30.0;
-    public double DefaultAirChangesPerHour { get; init; } = 0.5;
-    public double AirHeatCapacityWhPerM3K { get; init; } = 0.34;
-    public double InternalHeatCapacityJPerM2K { get; init; } = 10_000.0;
-    public double DefaultSolarUtilizationFactor { get; init; } = 0.75;
-    public double DefaultWindowFrameAreaFraction { get; init; } = 0.25;
-    public double DefaultDirectSolarShadingReductionFactor { get; init; } = 1.0;
-    public double DefaultOverhangDepthM { get; init; } = 0;
-    public double DefaultSideFinDepthM { get; init; } = 0;
-    public double DefaultWindowRevealDepthM { get; init; } = 0;
-    public double DefaultWindowHeightM { get; init; } = 1.5;
-    public double DefaultWindowWidthM { get; init; } = 1.5;
-    public double MinimumDirectSolarShadingReductionFactor { get; init; } = 0.15;
-    public double DiffuseSolarShareUnaffectedByShading { get; init; } = 0.3;
-    public double LatitudeDegrees { get; init; } = 41.0;
-}
 
 public sealed class Iso52016HourlySteadyStateCalculator
 {
@@ -546,34 +528,3 @@ public sealed class Iso52016HourlySteadyStateCalculator
         double HeatingSetpointC,
         double CoolingSetpointC);
 }
-
-public sealed record Iso52016AnnualEnergyNeedResult(
-    int BuildingId,
-    string BuildingName,
-    int Year,
-    IReadOnlyList<Iso52016HourlyEnergyNeed> HourlyResults,
-    IReadOnlyList<Iso52016MonthlyEnergyNeed> MonthlyResults,
-    double AnnualHeatingDemandKWh,
-    double AnnualCoolingDemandKWh,
-    Iso52016EnergyBalanceBreakdown Breakdown);
-
-public sealed record Iso52016EnergyBalanceBreakdown(
-    double SolarGainsKWh,
-    double InternalGainsKWh,
-    double HeatingInputKWh,
-    double CoolingExtractedKWh);
-
-public sealed record Iso52016MonthlyEnergyNeed(
-    int Month,
-    double HeatingDemandKWh,
-    double CoolingDemandKWh);
-
-public sealed record Iso52016HourlyEnergyNeed(
-    int HourOfYear,
-    int Month,
-    double HeatingLoadW,
-    double CoolingLoadW,
-    double OperativeTemperatureC,
-    double OutdoorTemperatureC,
-    double InternalGainsW,
-    double SolarGainsW);

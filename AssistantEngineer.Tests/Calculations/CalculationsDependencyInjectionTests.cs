@@ -1,5 +1,8 @@
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;

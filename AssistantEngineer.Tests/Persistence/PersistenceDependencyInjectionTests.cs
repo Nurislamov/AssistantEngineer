@@ -1,7 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
-using AssistantEngineer.Persistence;
-using AssistantEngineer.Persistence.Data;
-using AssistantEngineer.Persistence.Services.Benchmarks;
+using AssistantEngineer.Infrastructure;
+using AssistantEngineer.Infrastructure.Data;
+using AssistantEngineer.Infrastructure.Services.Benchmarks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

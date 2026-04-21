@@ -28,7 +28,7 @@
     <ProjectReference Include="..\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
     <ProjectReference Include="..\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
     <ProjectReference Include="..\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Persistence\AssistantEngineer.Persistence.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
     <ProjectReference Include="..\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
   </ItemGroup>
 

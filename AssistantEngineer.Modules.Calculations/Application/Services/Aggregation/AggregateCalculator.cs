@@ -3,7 +3,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
-using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

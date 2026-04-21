@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Modules.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Modules.Benchmarks", "AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj", "{507B813F-004D-485D-B8BA-1D514C93A0EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Persistence", "AssistantEngineer.Persistence\AssistantEngineer.Persistence.csproj", "{3F9C498F-48A5-4CBB-992B-9AEEC5EF1EB2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Infrastructure", "AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj", "{3F9C498F-48A5-4CBB-992B-9AEEC5EF1EB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

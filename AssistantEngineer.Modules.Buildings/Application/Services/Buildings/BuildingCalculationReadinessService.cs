@@ -1,4 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
@@ -86,23 +88,4 @@ public sealed class BuildingCalculationReadinessService
 
     private static BuildingCalculationReadinessIssue Warning(string path, string message) =>
         new(BuildingCalculationReadinessSeverity.Warning, path, message);
-}
-
-public sealed class BuildingCalculationReadinessReport
-{
-    public int BuildingId { get; set; }
-    public string BuildingName { get; set; } = string.Empty;
-    public bool IsReady { get; set; }
-    public List<BuildingCalculationReadinessIssue> Issues { get; set; } = new();
-}
-
-public sealed record BuildingCalculationReadinessIssue(
-    BuildingCalculationReadinessSeverity Severity,
-    string Path,
-    string Message);
-
-public enum BuildingCalculationReadinessSeverity
-{
-    Warning,
-    Error
 }

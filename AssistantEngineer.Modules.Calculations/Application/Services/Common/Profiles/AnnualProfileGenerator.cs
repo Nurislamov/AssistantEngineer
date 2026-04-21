@@ -1,9 +1,8 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Models.Profiles;
 
-public interface IAnnualProfileGenerator
-{
-    AnnualProfile Generate(AnnualProfileRequest request);
-}
+namespace AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
 
 public sealed class AnnualProfileGenerator : IAnnualProfileGenerator
 {
@@ -38,15 +37,3 @@ public sealed class AnnualProfileGenerator : IAnnualProfileGenerator
             throw new ArgumentException("Daily profile values must be finite and between 0 and 1.", parameterName);
     }
 }
-
-public sealed record AnnualProfileRequest(
-    string Name,
-    int Year,
-    IReadOnlyList<double> WeekdayProfile,
-    IReadOnlyList<double> WeekendProfile,
-    IReadOnlySet<DateOnly> HolidayDates);
-
-public sealed record AnnualProfile(
-    string Name,
-    int Year,
-    IReadOnlyList<double> Values);

@@ -17,10 +17,5 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\Enums\" />
-    <Folder Include="Domain\Preferences\" />
-  </ItemGroup>
-
+  
 </Project>

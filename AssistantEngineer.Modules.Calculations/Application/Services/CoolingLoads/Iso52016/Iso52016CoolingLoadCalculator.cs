@@ -5,7 +5,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Construction;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
-using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

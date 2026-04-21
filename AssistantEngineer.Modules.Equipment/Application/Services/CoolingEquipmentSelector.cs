@@ -4,20 +4,9 @@ using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
+using AssistantEngineer.Modules.Equipment.Abstractions;
 
 namespace AssistantEngineer.Modules.Equipment.Application.Services;
-
-public interface ICoolingEquipmentSelector
-{
-    Task<EquipmentSelectionResult?> SelectForRoomAsync(
-        Room room,
-        string systemType,
-        string unitType,
-        IEnumerable<CoolingEquipmentCatalogItem> catalog,
-        CoolingLoadCalculationMethod method = CoolingLoadCalculationMethod.Simplified,
-        CalculationPreferences? preferences = null,
-        CancellationToken cancellationToken = default);
-}
 
 public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
 {

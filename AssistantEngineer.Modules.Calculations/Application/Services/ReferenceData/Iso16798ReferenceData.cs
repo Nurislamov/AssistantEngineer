@@ -1,11 +1,8 @@
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
-
-public interface IIso16798ReferenceData
-{
-    Iso16798RoomDefaults GetRoomDefaults(RoomType roomType);
-}
 
 public sealed class Iso16798ReferenceData : IIso16798ReferenceData
 {
@@ -21,9 +18,3 @@ public sealed class Iso16798ReferenceData : IIso16798ReferenceData
             _ => new(125, 10, 10, 0.8)
         };
 }
-
-public sealed record Iso16798RoomDefaults(
-    double SensibleHeatGainPerPersonW,
-    double EquipmentGainWPerM2,
-    double LightingGainWPerM2,
-    double MinimumVentilationLitersPerSecondM2);

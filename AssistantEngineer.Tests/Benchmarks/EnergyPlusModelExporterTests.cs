@@ -4,7 +4,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
-using AssistantEngineer.Persistence.Services.Benchmarks;
+using AssistantEngineer.Infrastructure.Services.Benchmarks;
 
 namespace AssistantEngineer.Tests;
 

@@ -1,12 +1,12 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
-using AssistantEngineer.Modules.Equipment.Application.Services;
 using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
+using AssistantEngineer.Modules.Equipment.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Models;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;
