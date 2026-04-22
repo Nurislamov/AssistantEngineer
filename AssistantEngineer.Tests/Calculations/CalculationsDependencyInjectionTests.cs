@@ -59,11 +59,8 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<BuildingCoolingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingEnergyBalanceService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IBuildingsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IFloorsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyAnalysisFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IDomesticHotWaterFacade>(services, ServiceLifetime.Scoped);
     }
 
     [Fact]

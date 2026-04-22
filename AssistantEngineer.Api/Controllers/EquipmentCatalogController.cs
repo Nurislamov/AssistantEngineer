@@ -1,7 +1,7 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Equipment.Application.Facades;
+using AssistantEngineer.Modules.Equipment.Application.Services;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,15 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/equipment-catalog")]
 public class EquipmentCatalogController : ControllerBase
 {
-    private readonly IEquipmentCatalogFacade _catalog;
+    private readonly CoolingEquipmentCatalogCommandService _command;
+    private readonly CoolingEquipmentCatalogQueryService _query;
 
-    public EquipmentCatalogController(IEquipmentCatalogFacade catalog)
+    public EquipmentCatalogController(
+        CoolingEquipmentCatalogCommandService command,
+        CoolingEquipmentCatalogQueryService query)
     {
-        _catalog = catalog;
+        _command = command;
+        _query = query;
     }
 
     [HttpPost]
@@ -24,7 +28,7 @@ public class EquipmentCatalogController : ControllerBase
         [FromBody] CreateEquipmentCatalogItemRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _catalog.CreateAsync(request, cancellationToken);
+        var result = await _command.CreateAsync(request, cancellationToken);
         return result.ToCreatedResult(nameof(GetById), item => item.Id);
     }
 
@@ -33,14 +37,14 @@ public class EquipmentCatalogController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
-        var result = await _catalog.GetByIdAsync(id, cancellationToken);
+        var result = await _query.GetByIdAsync(id, cancellationToken);
         return result.ToActionResult();
     }
 
     [HttpGet]
     public async Task<ActionResult<List<EquipmentCatalogItemResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var result = await _catalog.GetAllAsync(cancellationToken);
+        var result = await _query.GetAllAsync(cancellationToken);
         return result.ToOkResult();
     }
 }

@@ -1,5 +1,4 @@
 using AssistantEngineer.Modules.Buildings;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
@@ -22,10 +21,6 @@ public class BuildingsDependencyInjectionTests
         AssertServiceLifetime<BuildingCalculationReadinessService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingArchetypeService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EpwAnnualClimateDataImportService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IProjectsFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IBuildingArchetypesFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IBuildingReadinessFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IAnnualClimateDataFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IValidateOptions<BuildingArchetypeCatalogOptions>>(services, ServiceLifetime.Singleton);
     }
 
@@ -41,6 +36,7 @@ public class BuildingsDependencyInjectionTests
 
         using var provider = services.BuildServiceProvider();
         var options = provider.GetRequiredService<IOptions<BuildingArchetypeCatalogOptions>>().Value;
+        Assert.Equal(1, options.FormatVersion);
         Assert.Single(options.Archetypes);
         Assert.Equal("test-office", options.Archetypes[0].Code);
         Assert.Equal(2, options.Archetypes[0].RoomsCount);
@@ -52,6 +48,7 @@ public class BuildingsDependencyInjectionTests
     {
         var services = new ServiceCollection();
         var configurationValues = CreateValidArchetypeConfiguration();
+        configurationValues["Buildings:ArchetypeCatalog:FormatVersion"] = "2";
         configurationValues["Buildings:ArchetypeCatalog:Archetypes:0:RoomsCount"] = "0";
         configurationValues["Buildings:ArchetypeCatalog:Archetypes:0:RoomAreaM2"] = "-25";
         configurationValues["Buildings:ArchetypeCatalog:Archetypes:0:WindowShgc"] = "1.2";
@@ -65,6 +62,7 @@ public class BuildingsDependencyInjectionTests
         var exception = Assert.Throws<OptionsValidationException>(() =>
             provider.GetRequiredService<IOptions<BuildingArchetypeCatalogOptions>>().Value);
 
+        Assert.Contains(exception.Failures, failure => failure.Contains("Buildings:ArchetypeCatalog:FormatVersion"));
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].RoomsCount"));
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].RoomAreaM2"));
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].WindowShgc"));
@@ -83,6 +81,7 @@ public class BuildingsDependencyInjectionTests
     private static Dictionary<string, string?> CreateValidArchetypeConfiguration() =>
         new()
         {
+            ["Buildings:ArchetypeCatalog:FormatVersion"] = "1",
             ["Buildings:ArchetypeCatalog:Archetypes:0:Code"] = "test-office",
             ["Buildings:ArchetypeCatalog:Archetypes:0:DisplayName"] = "Test office",
             ["Buildings:ArchetypeCatalog:Archetypes:0:Type"] = "Office",

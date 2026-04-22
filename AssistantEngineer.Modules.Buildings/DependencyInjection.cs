@@ -1,5 +1,4 @@
 using System.Reflection;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
@@ -37,10 +36,6 @@ public static class DependencyInjection
         services.AddScoped<RoomCommandService>();
         services.AddScoped<RoomQueryService>();
         services.AddScoped<EpwAnnualClimateDataImportService>();
-        services.AddScoped<IProjectsFacade, ProjectsFacade>();
-        services.AddScoped<IBuildingArchetypesFacade, BuildingArchetypesFacade>();
-        services.AddScoped<IBuildingReadinessFacade, BuildingReadinessFacade>();
-        services.AddScoped<IAnnualClimateDataFacade, AnnualClimateDataFacade>();
 
         return services;
     }

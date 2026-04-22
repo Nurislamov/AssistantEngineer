@@ -83,13 +83,10 @@ public static class DependencyInjection
         services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<BuildingHeatingLoadService>();
         services.AddScoped<BuildingEnergyBalanceService>();
-        services.AddScoped<IBuildingsFacade, BuildingsFacade>();
 
         services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
-        services.AddScoped<IFloorsFacade, FloorsFacade>();
         services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
-        services.AddScoped<IDomesticHotWaterFacade, DomesticHotWaterFacade>();
 
         return services;
     }

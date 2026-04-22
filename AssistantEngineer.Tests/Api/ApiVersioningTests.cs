@@ -52,6 +52,10 @@ public class ApiVersioningTests
         nameof(BuildingsController.GetByProject),
         "~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
     [InlineData(
+        typeof(BuildingsController),
+        nameof(BuildingsController.CreateFromArchetype),
+        "~/api/v{version:apiVersion}/projects/{projectId:int}/buildings/from-archetype")]
+    [InlineData(
         typeof(FloorsController),
         nameof(FloorsController.Create),
         "~/api/v{version:apiVersion}/buildings/{buildingId:int}/floors")]

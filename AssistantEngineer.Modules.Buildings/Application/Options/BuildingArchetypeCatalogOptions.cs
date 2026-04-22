@@ -4,6 +4,7 @@ namespace AssistantEngineer.Modules.Buildings.Application.Options;
 
 public sealed class BuildingArchetypeCatalogOptions
 {
+    public int FormatVersion { get; init; } = 1;
     public List<BuildingArchetypeOptions> Archetypes { get; init; } = new();
 }
 

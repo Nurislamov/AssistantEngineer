@@ -1,6 +1,5 @@
 using AssistantEngineer.Modules.Equipment;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions;
-using AssistantEngineer.Modules.Equipment.Application.Facades;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +18,6 @@ public class EquipmentDependencyInjectionTests
         AssertServiceLifetime<CoolingEquipmentCatalogCommandService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<CoolingEquipmentCatalogQueryService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EquipmentSelectionService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IRoomsFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IEquipmentCatalogFacade>(services, ServiceLifetime.Scoped);
     }
 
     private static void AssertServiceLifetime<TService>(

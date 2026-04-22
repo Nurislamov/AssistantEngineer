@@ -1,6 +1,6 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
+using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +11,11 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/buildings/{buildingId:int}/readiness")]
 public class BuildingReadinessController : ControllerBase
 {
-    private readonly IBuildingReadinessFacade _readiness;
+    private const int DefaultWeatherYear = 2020;
 
-    public BuildingReadinessController(IBuildingReadinessFacade readiness)
+    private readonly BuildingCalculationReadinessService _readiness;
+
+    public BuildingReadinessController(BuildingCalculationReadinessService readiness)
     {
         _readiness = readiness;
     }
@@ -24,7 +26,10 @@ public class BuildingReadinessController : ControllerBase
         [FromQuery] int? weatherYear,
         CancellationToken cancellationToken)
     {
-        var result = await _readiness.CheckAsync(buildingId, weatherYear, cancellationToken);
+        var result = await _readiness.CheckAsync(
+            buildingId,
+            weatherYear ?? DefaultWeatherYear,
+            cancellationToken);
         return result.ToActionResult();
     }
 }

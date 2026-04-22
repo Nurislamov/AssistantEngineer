@@ -5,13 +5,22 @@ namespace AssistantEngineer.Modules.Buildings.Application.Options;
 
 public sealed class BuildingArchetypeCatalogOptionsValidator : IValidateOptions<BuildingArchetypeCatalogOptions>
 {
+    private const int SupportedFormatVersion = 1;
+    private const string SectionPath = "Buildings:ArchetypeCatalog";
+
     public ValidateOptionsResult Validate(string? name, BuildingArchetypeCatalogOptions options)
     {
         var failures = new List<string>();
 
+        if (options.FormatVersion != SupportedFormatVersion)
+        {
+            failures.Add(
+                $"{SectionPath}:FormatVersion must be {SupportedFormatVersion}. Actual value: {options.FormatVersion}.");
+        }
+
         if (options.Archetypes.Count == 0)
         {
-            failures.Add("At least one building archetype must be configured.");
+            failures.Add($"{SectionPath}:Archetypes must contain at least one building archetype.");
             return ValidateOptionsResult.Fail(failures);
         }
 
@@ -19,23 +28,23 @@ public sealed class BuildingArchetypeCatalogOptionsValidator : IValidateOptions<
         for (var index = 0; index < options.Archetypes.Count; index++)
         {
             var archetype = options.Archetypes[index];
-            var path = $"Archetypes[{index}]";
+            var path = $"{SectionPath}:Archetypes[{index}]";
 
             RequireNonEmpty(archetype.Code, $"{path}.Code", failures);
             RequireNonEmpty(archetype.DisplayName, $"{path}.DisplayName", failures);
             RequireDefinedEnum(archetype.Type, $"{path}.Type", failures);
-            RequirePositive(archetype.RoomsCount, $"{path}.RoomsCount", failures);
-            RequirePositive(archetype.RoomAreaM2, $"{path}.RoomAreaM2", failures);
-            RequirePositive(archetype.RoomHeightM, $"{path}.RoomHeightM", failures);
-            RequireFinite(archetype.IndoorTemperatureC, $"{path}.IndoorTemperatureC", failures);
-            RequireNonNegative(archetype.PeopleCount, $"{path}.PeopleCount", failures);
-            RequireNonNegative(archetype.EquipmentLoadWPerM2, $"{path}.EquipmentLoadWPerM2", failures);
-            RequireNonNegative(archetype.LightingLoadWPerM2, $"{path}.LightingLoadWPerM2", failures);
-            RequirePositive(archetype.ExternalWallAreaFactor, $"{path}.ExternalWallAreaFactor", failures);
-            RequirePositive(archetype.ExternalWallUValue, $"{path}.ExternalWallUValue", failures);
-            RequireNonNegative(archetype.WindowAreaM2Minimum, $"{path}.WindowAreaM2Minimum", failures);
-            RequireNonNegative(archetype.WindowAreaFactor, $"{path}.WindowAreaFactor", failures);
-            RequirePositive(archetype.WindowUValue, $"{path}.WindowUValue", failures);
+            RequireInRange(archetype.RoomsCount, 1, 10_000, $"{path}.RoomsCount", failures);
+            RequireInRange(archetype.RoomAreaM2, 0.1, 10_000, $"{path}.RoomAreaM2", failures);
+            RequireInRange(archetype.RoomHeightM, 1, 20, $"{path}.RoomHeightM", failures);
+            RequireInRange(archetype.IndoorTemperatureC, -50, 80, $"{path}.IndoorTemperatureC", failures);
+            RequireInRange(archetype.PeopleCount, 0, 10_000, $"{path}.PeopleCount", failures);
+            RequireInRange(archetype.EquipmentLoadWPerM2, 0, 5_000, $"{path}.EquipmentLoadWPerM2", failures);
+            RequireInRange(archetype.LightingLoadWPerM2, 0, 5_000, $"{path}.LightingLoadWPerM2", failures);
+            RequireInRange(archetype.ExternalWallAreaFactor, 0.01, 100, $"{path}.ExternalWallAreaFactor", failures);
+            RequireInRange(archetype.ExternalWallUValue, 0.01, 10, $"{path}.ExternalWallUValue", failures);
+            RequireInRange(archetype.WindowAreaM2Minimum, 0, 1_000, $"{path}.WindowAreaM2Minimum", failures);
+            RequireRatio(archetype.WindowAreaFactor, $"{path}.WindowAreaFactor", failures);
+            RequireInRange(archetype.WindowUValue, 0.01, 10, $"{path}.WindowUValue", failures);
             RequireRatio(archetype.WindowShgc, $"{path}.WindowShgc", failures);
             RequireDefinedEnum(archetype.OddRoomOrientation, $"{path}.OddRoomOrientation", failures);
             RequireDefinedEnum(archetype.EvenRoomOrientation, $"{path}.EvenRoomOrientation", failures);
@@ -62,34 +71,16 @@ public sealed class BuildingArchetypeCatalogOptionsValidator : IValidateOptions<
             failures.Add($"{path} must be a defined {typeof(TEnum).Name} value.");
     }
 
-    private static void RequirePositive(int value, string path, List<string> failures)
+    private static void RequireInRange(int value, int minimum, int maximum, string path, List<string> failures)
     {
-        if (value <= 0)
-            failures.Add($"{path} must be greater than zero.");
+        if (value < minimum || value > maximum)
+            failures.Add($"{path} must be between {minimum} and {maximum}. Actual value: {value}.");
     }
 
-    private static void RequireNonNegative(int value, string path, List<string> failures)
+    private static void RequireInRange(double value, double minimum, double maximum, string path, List<string> failures)
     {
-        if (value < 0)
-            failures.Add($"{path} cannot be negative.");
-    }
-
-    private static void RequirePositive(double value, string path, List<string> failures)
-    {
-        if (!double.IsFinite(value) || value <= 0)
-            failures.Add($"{path} must be a finite value greater than zero.");
-    }
-
-    private static void RequireNonNegative(double value, string path, List<string> failures)
-    {
-        if (!double.IsFinite(value) || value < 0)
-            failures.Add($"{path} must be a finite non-negative value.");
-    }
-
-    private static void RequireFinite(double value, string path, List<string> failures)
-    {
-        if (!double.IsFinite(value))
-            failures.Add($"{path} must be a finite value.");
+        if (!double.IsFinite(value) || value < minimum || value > maximum)
+            failures.Add($"{path} must be between {minimum} and {maximum}. Actual value: {value}.");
     }
 
     private static void RequireRatio(double value, string path, List<string> failures)

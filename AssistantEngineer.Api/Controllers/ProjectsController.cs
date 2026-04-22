@@ -1,7 +1,7 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
+using AssistantEngineer.Modules.Buildings.Application.Services.Projects;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,13 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/projects")]
 public class ProjectsController : ControllerBase
 {
-    private readonly IProjectsFacade _projects;
+    private readonly ProjectCommandService _command;
+    private readonly ProjectQueryService _query;
 
-    public ProjectsController(IProjectsFacade projects)
+    public ProjectsController(ProjectCommandService command, ProjectQueryService query)
     {
-        _projects = projects;
+        _command = command;
+        _query = query;
     }
 
     [HttpPost]
@@ -24,21 +26,21 @@ public class ProjectsController : ControllerBase
         [FromBody] CreateProjectRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _projects.CreateAsync(request, cancellationToken);
+        var result = await _command.CreateAsync(request, cancellationToken);
         return result.ToCreatedResult(nameof(GetById), project => project.Id);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<ProjectResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        var result = await _projects.GetAllAsync(cancellationToken);
+        var result = await _query.GetAllAsync(cancellationToken);
         return result.ToOkResult();
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ProjectResponse>> GetById(int id, CancellationToken cancellationToken)
     {
-        var result = await _projects.GetByIdAsync(id, cancellationToken);
+        var result = await _query.GetByIdAsync(id, cancellationToken);
         return result.ToActionResult();
     }
 }

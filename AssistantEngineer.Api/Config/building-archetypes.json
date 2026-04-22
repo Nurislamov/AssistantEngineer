@@ -1,6 +1,8 @@
 {
+  "$schema": "./building-archetypes.schema.json",
   "Buildings": {
     "ArchetypeCatalog": {
+      "FormatVersion": 1,
       "Archetypes": [
         {
           "Code": "office-small",
