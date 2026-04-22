@@ -2,6 +2,7 @@ using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Services;
+using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Caching.Memory;
 

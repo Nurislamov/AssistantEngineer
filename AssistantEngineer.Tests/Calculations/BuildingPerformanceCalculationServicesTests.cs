@@ -324,8 +324,9 @@ public class BuildingPerformanceCalculationServicesTests
 
         var results = await service.RunAsync();
 
-        Assert.Equal(3, results.Count);
-        Assert.All(results, result => Assert.True(result.Passed, FormatBenchmarkFailure(result)));
+        Assert.True(results.IsSuccess, results.Error);
+        Assert.Equal(3, results.Value.Count);
+        Assert.All(results.Value, result => Assert.True(result.Passed, FormatBenchmarkFailure(result)));
     }
 
     [Fact]

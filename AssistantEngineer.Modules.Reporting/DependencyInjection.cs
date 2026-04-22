@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Reporting.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class DependencyInjection
         services.AddScoped<BuildingReportCalculationService>();
         services.AddScoped<BuildingReportGenerator>();
         services.AddScoped<BuildingReportDataService>();
+        services.AddScoped<IReportsFacade, ReportsFacade>();
 
         return services;
     }

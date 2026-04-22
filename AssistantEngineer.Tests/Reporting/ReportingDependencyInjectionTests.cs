@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Reporting;
+using AssistantEngineer.Modules.Reporting.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ public class ReportingDependencyInjectionTests
         AssertServiceLifetime<BuildingReportCalculationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingReportGenerator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingReportDataService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IReportsFacade>(services, ServiceLifetime.Scoped);
     }
 
     private static void AssertServiceLifetime<TService>(

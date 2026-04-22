@@ -1,7 +1,7 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
+using AssistantEngineer.Modules.Reporting.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;

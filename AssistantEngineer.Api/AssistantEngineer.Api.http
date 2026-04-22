@@ -124,7 +124,7 @@ Accept: application/json
 ### Create building
 # Requires @projectId from an existing project.
 # climateZoneId must reference a pre-seeded ClimateZones row; EN 12831 and annual energy balance validate this.
-POST {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{projectId}}
+POST {{AssistantEngineer.Api_HostAddress}}/api/v1/projects/{{projectId}}/buildings
 Content-Type: application/json
 
 {
@@ -134,7 +134,7 @@ Content-Type: application/json
 
 ### Create floor
 # Requires @buildingId from an existing building.
-POST {{AssistantEngineer.Api_HostAddress}}/api/v1/floors/{{buildingId}}
+POST {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{buildingId}}/floors
 Content-Type: application/json
 
 {
@@ -225,12 +225,12 @@ Content-Type: application/json
 ### Cooling load for building
 # Requires an existing building with ClimateZone, floors, rooms, walls/windows as needed.
 # Iso52016 additionally requires complete ClimateData for month 7; ThermalZones are read only if pre-seeded.
-GET {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{buildingId}}/calculate?method=Iso52016
+GET {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{buildingId}}/cooling-load?method=Iso52016
 Accept: application/json
 
 ### Cooling load for building with invalid method
 # Should return 400 ValidationProblemDetails, not 500.
-GET {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{buildingId}}/calculate?method=999
+GET {{AssistantEngineer.Api_HostAddress}}/api/v1/buildings/{{buildingId}}/cooling-load?method=999
 Accept: application/json
 
 ### Heating load for building
@@ -240,7 +240,7 @@ Accept: application/json
 
 ### Cooling load for floor
 # Iso52016 requires the floor building's ClimateZone and complete ClimateData for month 7.
-GET {{AssistantEngineer.Api_HostAddress}}/api/v1/floors/{{floorId}}/calculate?method=Iso52016
+GET {{AssistantEngineer.Api_HostAddress}}/api/v1/floors/{{floorId}}/cooling-load?method=Iso52016
 Accept: application/json
 
 ### Annual energy balance
@@ -282,7 +282,7 @@ Accept: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
 ### Cooling load for room
 # Iso52016 requires the room building's ClimateZone and ClimateData with all hours 0-23 for month 7.
-GET {{AssistantEngineer.Api_HostAddress}}/api/v1/rooms/{{roomId}}/calculate?method=Iso52016
+GET {{AssistantEngineer.Api_HostAddress}}/api/v1/rooms/{{roomId}}/cooling-load?method=Iso52016
 Accept: application/json
 
 ### Heating load for room

@@ -1,11 +1,11 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Equipment.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -49,14 +49,14 @@ public class RoomsController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("{id:int}/calculate")]
+    [HttpGet("{id:int}/cooling-load")]
     [RequestTimeout(RequestPolicies.LongRunning)]
-    public async Task<ActionResult<RoomCalculationResult>> Calculate(
+    public async Task<ActionResult<RoomCalculationResult>> CalculateCoolingLoad(
         int id,
         [FromQuery] CoolingLoadCalculationMethodDto method = CoolingLoadCalculationMethodDto.Simplified,
         CancellationToken cancellationToken = default)
     {
-        var result = await _rooms.CalculateAsync(id, method, cancellationToken);
+        var result = await _rooms.CalculateCoolingLoadAsync(id, method, cancellationToken);
         return result.ToActionResult();
     }
 

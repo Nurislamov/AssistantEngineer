@@ -35,11 +35,11 @@ public class ApiRequestPolicyTests
     public static TheoryData<Type, string> LongRunningActions() =>
         new()
         {
-            { typeof(BuildingsController), nameof(BuildingsController.Calculate) },
+            { typeof(BuildingsController), nameof(BuildingsController.CalculateCoolingLoad) },
             { typeof(BuildingsController), nameof(BuildingsController.CalculateHeatingLoad) },
             { typeof(BuildingsController), nameof(BuildingsController.CalculateEnergyBalance) },
-            { typeof(FloorsController), nameof(FloorsController.Calculate) },
-            { typeof(RoomsController), nameof(RoomsController.Calculate) },
+            { typeof(FloorsController), nameof(FloorsController.CalculateCoolingLoad) },
+            { typeof(RoomsController), nameof(RoomsController.CalculateCoolingLoad) },
             { typeof(RoomsController), nameof(RoomsController.CalculateHeatingLoad) },
             { typeof(RoomsController), nameof(RoomsController.SelectEquipment) },
             { typeof(ReportsController), nameof(ReportsController.GetBuildingReport) },
@@ -50,11 +50,11 @@ public class ApiRequestPolicyTests
             { typeof(BenchmarksController), nameof(BenchmarksController.ExportEnergyPlusModel) },
             { typeof(BenchmarksController), nameof(BenchmarksController.VerifyCalculation) },
             { typeof(BenchmarksController), nameof(BenchmarksController.RunIso52016ReferenceCases) },
-            { typeof(ClimateDataController), nameof(ClimateDataController.ImportEpwWeather) },
-            { typeof(BuildingPerformanceController), nameof(BuildingPerformanceController.GetIso52016Breakdown) },
-            { typeof(BuildingPerformanceController), nameof(BuildingPerformanceController.GetEnergySignature) },
-            { typeof(BuildingPerformanceController), nameof(BuildingPerformanceController.CalculateHeatingSystemEnergy) },
-            { typeof(BuildingPerformanceController), nameof(BuildingPerformanceController.CalculateCoolingSystemEnergy) },
-            { typeof(BuildingPerformanceController), nameof(BuildingPerformanceController.CalculateSummary) }
+            { typeof(AnnualClimateDataController), nameof(AnnualClimateDataController.ImportFromEpw) },
+            { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetIso52016Breakdown) },
+            { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetEnergySignature) },
+            { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateHeatingSystemEnergy) },
+            { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateCoolingSystemEnergy) },
+            { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateSummary) }
         };
 }

@@ -1,5 +1,4 @@
 using AssistantEngineer.Api;
-using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Api.Filters;
 using Asp.Versioning;
 using AssistantEngineer.Modules.Benchmarks;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("building-archetypes.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("Config/building-archetypes.json", optional: false, reloadOnChange: true);
 
 var maxRequestBodyBytes = builder.Configuration.GetValue<long?>("RequestLimits:MaxRequestBodyBytes") ?? 1_048_576;
 var defaultRequestTimeoutSeconds = builder.Configuration.GetValue<int?>("RequestLimits:DefaultTimeoutSeconds") ?? 30;
@@ -65,10 +64,6 @@ builder.Services.AddEquipmentModule();
 builder.Services.AddReportingModule();
 builder.Services.AddBenchmarksModule(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.EnvironmentName);
-builder.Services.AddScoped<IBuildingsFacade, BuildingsFacade>();
-builder.Services.AddScoped<IRoomsFacade, RoomsFacade>();
-builder.Services.AddScoped<IReportsFacade, ReportsFacade>();
-builder.Services.AddScoped<IBenchmarksFacade, BenchmarksFacade>();
 
 builder.Services.AddOpenApi();
 

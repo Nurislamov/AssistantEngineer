@@ -6,7 +6,7 @@ using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Reporting.Application.Facades;
 
 public sealed class ReportsFacade : IReportsFacade
 {

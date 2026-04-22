@@ -1,11 +1,9 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
-using AssistantEngineer.Modules.Calculations.Application.Mappers;
-using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -17,36 +15,29 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/floors")]
 public class FloorsController : ControllerBase
 {
-    private readonly FloorCommandService _command;
-    private readonly FloorQueryService _query;
-    private readonly FloorCalculationService _calculation;
+    private readonly IFloorsFacade _floors;
 
-    public FloorsController(
-        FloorCommandService command,
-        FloorQueryService query,
-        FloorCalculationService calculation)
+    public FloorsController(IFloorsFacade floors)
     {
-        _command = command;
-        _query = query;
-        _calculation = calculation;
+        _floors = floors;
     }
 
-    [HttpPost("{buildingId:int}")]
+    [HttpPost("~/api/v{version:apiVersion}/buildings/{buildingId:int}/floors")]
     public async Task<ActionResult<FloorResponse>> Create(
         int buildingId,
         [FromBody] CreateFloorRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _command.CreateAsync(buildingId, request, cancellationToken);
+        var result = await _floors.CreateAsync(buildingId, request, cancellationToken);
         return result.ToCreatedResult(nameof(GetById), floor => floor.Id);
     }
 
-    [HttpGet("building/{buildingId:int}")]
+    [HttpGet("~/api/v{version:apiVersion}/buildings/{buildingId:int}/floors")]
     public async Task<ActionResult<List<FloorResponse>>> GetByBuilding(
         int buildingId,
         CancellationToken cancellationToken)
     {
-        var result = await _query.GetByBuildingIdAsync(buildingId, cancellationToken);
+        var result = await _floors.GetByBuildingIdAsync(buildingId, cancellationToken);
         return result.ToOkResult();
     }
 
@@ -55,18 +46,18 @@ public class FloorsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
-        var result = await _query.GetByIdAsync(id, cancellationToken);
+        var result = await _floors.GetByIdAsync(id, cancellationToken);
         return result.ToActionResult();
     }
 
-    [HttpGet("{id:int}/calculate")]
+    [HttpGet("{id:int}/cooling-load")]
     [RequestTimeout(RequestPolicies.LongRunning)]
-    public async Task<ActionResult<FloorCalculationResult>> Calculate(
+    public async Task<ActionResult<FloorCalculationResult>> CalculateCoolingLoad(
         int id,
         [FromQuery] CoolingLoadCalculationMethodDto method = CoolingLoadCalculationMethodDto.Simplified,
         CancellationToken cancellationToken = default)
     {
-        var result = await _calculation.CalculateAsync(id, method.ToDomain(), cancellationToken);
+        var result = await _floors.CalculateCoolingLoadAsync(id, method, cancellationToken);
         return result.ToActionResult();
     }
 }

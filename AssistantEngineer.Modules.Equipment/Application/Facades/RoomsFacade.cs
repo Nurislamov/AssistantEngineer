@@ -10,7 +10,7 @@ using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Equipment.Application.Facades;
 
 public sealed class RoomsFacade : IRoomsFacade
 {
@@ -40,7 +40,7 @@ public sealed class RoomsFacade : IRoomsFacade
     public Task<Result<RoomResponse>> GetByIdAsync(int id, CancellationToken cancellationToken) =>
         _query.GetByIdAsync(id, cancellationToken);
 
-    public Task<Result<RoomCalculationResult>> CalculateAsync(
+    public Task<Result<RoomCalculationResult>> CalculateCoolingLoadAsync(
         int id,
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>

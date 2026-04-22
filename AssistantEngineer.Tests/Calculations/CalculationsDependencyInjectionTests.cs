@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performanc
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
@@ -16,6 +17,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.E
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,6 +59,11 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<BuildingCoolingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingEnergyBalanceService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IFloorsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingEnergyAnalysisFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IDomesticHotWaterFacade>(services, ServiceLifetime.Scoped);
     }
 
     [Fact]

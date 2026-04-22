@@ -7,7 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 
 public sealed class BuildingsFacade : IBuildingsFacade
 {
@@ -16,22 +16,19 @@ public sealed class BuildingsFacade : IBuildingsFacade
     private readonly BuildingCoolingLoadService _coolingLoadService;
     private readonly BuildingHeatingLoadService _heatingLoadService;
     private readonly BuildingEnergyBalanceService _energyBalanceService;
-    private readonly BuildingArchetypeService _archetypes;
 
     public BuildingsFacade(
         BuildingCommandService command,
         BuildingQueryService query,
         BuildingCoolingLoadService coolingLoadService,
         BuildingHeatingLoadService heatingLoadService,
-        BuildingEnergyBalanceService energyBalanceService,
-        BuildingArchetypeService archetypes)
+        BuildingEnergyBalanceService energyBalanceService)
     {
         _command = command;
         _query = query;
         _coolingLoadService = coolingLoadService;
         _heatingLoadService = heatingLoadService;
         _energyBalanceService = energyBalanceService;
-        _archetypes = archetypes;
     }
 
     public Task<Result<BuildingResponse>> CreateAsync(
@@ -70,13 +67,4 @@ public sealed class BuildingsFacade : IBuildingsFacade
             coolingMethod.ToDomain(),
             heatingMethod.ToDomain(),
             cancellationToken);
-
-    public IReadOnlyList<BuildingArchetypeSummary> ListArchetypes() =>
-        _archetypes.ListArchetypes();
-
-    public Task<Result<BuildingResponse>> CreateFromArchetypeAsync(
-        int projectId,
-        CreateBuildingFromArchetypeRequest request,
-        CancellationToken cancellationToken) =>
-        _archetypes.CreateFromArchetypeAsync(projectId, request, cancellationToken);
 }

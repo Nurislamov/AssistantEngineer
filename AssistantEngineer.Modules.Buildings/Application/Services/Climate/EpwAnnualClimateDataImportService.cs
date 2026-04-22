@@ -1,6 +1,5 @@
 using System.Globalization;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.SharedKernel.Abstractions;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 
-public sealed class EpwWeatherImportService
+public sealed class EpwAnnualClimateDataImportService
 {
     private const int EpwHeaderLineCount = 8;
     private const int ExpectedAnnualHours = 8760;
@@ -18,23 +17,23 @@ public sealed class EpwWeatherImportService
     private readonly IClimateZoneRepository _climateZones;
     private readonly IAnnualClimateDataRepository _annualClimateData;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<EpwWeatherImportService> _logger;
+    private readonly ILogger<EpwAnnualClimateDataImportService> _logger;
 
-    public EpwWeatherImportService(
+    public EpwAnnualClimateDataImportService(
         IClimateZoneRepository climateZones,
         IAnnualClimateDataRepository annualClimateData,
         IUnitOfWork unitOfWork,
-        ILogger<EpwWeatherImportService>? logger = null)
+        ILogger<EpwAnnualClimateDataImportService>? logger = null)
     {
         _climateZones = climateZones;
         _annualClimateData = annualClimateData;
         _unitOfWork = unitOfWork;
-        _logger = logger ?? NullLogger<EpwWeatherImportService>.Instance;
+        _logger = logger ?? NullLogger<EpwAnnualClimateDataImportService>.Instance;
     }
 
     public async Task<Result<AnnualClimateDataImportResponse>> ImportAsync(
         int climateZoneId,
-        ImportEpwWeatherRequest request,
+        int year,
         Stream sourceFile,
         string sourceFileName,
         CancellationToken cancellationToken = default)
@@ -50,7 +49,7 @@ public sealed class EpwWeatherImportService
         if (parsedWeather.IsFailure)
             return Result<AnnualClimateDataImportResponse>.Failure(parsedWeather);
 
-        var annualData = AnnualClimateData.Create(climateZone, request.Year);
+        var annualData = AnnualClimateData.Create(climateZone, year);
         if (annualData.IsFailure)
             return Result<AnnualClimateDataImportResponse>.Failure(annualData);
 
@@ -81,12 +80,12 @@ public sealed class EpwWeatherImportService
             "Imported {HourlyRecordCount} EPW weather records for climate zone {ClimateZoneId}, year {Year}.",
             parsedWeather.Value.Count,
             climateZoneId,
-            request.Year);
+            year);
 
         return Result<AnnualClimateDataImportResponse>.Success(new AnnualClimateDataImportResponse
         {
             ClimateZoneId = climateZoneId,
-            Year = request.Year,
+            Year = year,
             HourlyRecordsImported = parsedWeather.Value.Count,
             SourceFileName = sourceFileName,
             ImportedFields =

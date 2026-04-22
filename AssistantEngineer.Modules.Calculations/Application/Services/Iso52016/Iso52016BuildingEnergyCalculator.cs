@@ -1,16 +1,15 @@
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace AssistantEngineer.Modules.Calculations.Application.Services;
+namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
 public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
 {

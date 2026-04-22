@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performanc
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
@@ -82,9 +83,13 @@ public static class DependencyInjection
         services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<BuildingHeatingLoadService>();
         services.AddScoped<BuildingEnergyBalanceService>();
+        services.AddScoped<IBuildingsFacade, BuildingsFacade>();
 
         services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
+        services.AddScoped<IFloorsFacade, FloorsFacade>();
+        services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
+        services.AddScoped<IDomesticHotWaterFacade, DomesticHotWaterFacade>();
 
         return services;
     }

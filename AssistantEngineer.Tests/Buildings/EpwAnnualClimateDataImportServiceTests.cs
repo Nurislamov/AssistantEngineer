@@ -3,7 +3,6 @@ using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
@@ -15,7 +14,7 @@ using AssistantEngineer.SharedKernel.ValueObjects;
 
 namespace AssistantEngineer.Tests;
 
-public class EpwWeatherImportServiceTests
+public class EpwAnnualClimateDataImportServiceTests
 {
     [Fact]
     public async Task ImportAsyncStoresAnnualClimateDataFromEpw()
@@ -31,7 +30,7 @@ public class EpwWeatherImportServiceTests
                 Temperature.FromCelsius(-10).Value).Value;
             var annualRepository = new AnnualClimateDataRepositoryStub();
             var context = new UnitOfWorkStub();
-            var service = new EpwWeatherImportService(
+            var service = new EpwAnnualClimateDataImportService(
                 new ClimateZoneRepositoryStub(climateZone),
                 annualRepository,
                 context);
@@ -39,7 +38,7 @@ public class EpwWeatherImportServiceTests
             await using var stream = File.OpenRead(epwPath);
             var result = await service.ImportAsync(
                 climateZone.Id,
-                new ImportEpwWeatherRequest { Year = 2020 },
+                year: 2020,
                 stream,
                 "weather.epw");
 
@@ -74,14 +73,14 @@ public class EpwWeatherImportServiceTests
             "Imported climate",
             Temperature.FromCelsius(35).Value,
             Temperature.FromCelsius(-10).Value).Value;
-        var service = new EpwWeatherImportService(
+        var service = new EpwAnnualClimateDataImportService(
             new ClimateZoneRepositoryStub(climateZone),
             new AnnualClimateDataRepositoryStub(),
             new UnitOfWorkStub());
 
         var result = await service.ImportAsync(
             climateZone.Id,
-            new ImportEpwWeatherRequest { Year = 2020 },
+            year: 2020,
             null!,
             "missing.epw");
 

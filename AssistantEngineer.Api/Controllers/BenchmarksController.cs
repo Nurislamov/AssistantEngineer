@@ -1,6 +1,6 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
@@ -66,6 +66,6 @@ public class BenchmarksController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _benchmarks.RunIso52016ReferenceCasesAsync(cancellationToken);
-        return Ok(result);
+        return result.ToOkResult();
     }
 }

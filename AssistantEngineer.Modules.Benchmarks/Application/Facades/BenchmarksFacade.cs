@@ -5,7 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Benchmarks.Application.Facades;
 
 public sealed class BenchmarksFacade : IBenchmarksFacade
 {
@@ -51,7 +51,7 @@ public sealed class BenchmarksFacade : IBenchmarksFacade
             request,
             cancellationToken);
 
-    public Task<IReadOnlyList<Iso52016ReferenceBenchmarkResult>> RunIso52016ReferenceCasesAsync(
+    public Task<Result<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>> RunIso52016ReferenceCasesAsync(
         CancellationToken cancellationToken) =>
         _iso52016ReferenceBenchmarkService.RunAsync(cancellationToken);
 }

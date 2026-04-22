@@ -1,9 +1,9 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ public class BuildingsController : ControllerBase
         _buildings = buildings;
     }
 
-    [HttpPost("{projectId:int}")]
+    [HttpPost("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
     public async Task<ActionResult<BuildingResponse>> Create(
         int projectId,
         [FromBody] CreateBuildingRequest request,
@@ -39,7 +39,7 @@ public class BuildingsController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("project/{projectId:int}")]
+    [HttpGet("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
     public async Task<ActionResult<List<BuildingResponse>>> GetByProject(
         int projectId,
         CancellationToken cancellationToken)
@@ -48,9 +48,9 @@ public class BuildingsController : ControllerBase
         return result.ToOkResult();
     }
 
-    [HttpGet("{id:int}/calculate")]
+    [HttpGet("{id:int}/cooling-load")]
     [RequestTimeout(RequestPolicies.LongRunning)]
-    public async Task<ActionResult<BuildingCalculationResult>> Calculate(
+    public async Task<ActionResult<BuildingCalculationResult>> CalculateCoolingLoad(
         int id,
         [FromQuery] CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken)

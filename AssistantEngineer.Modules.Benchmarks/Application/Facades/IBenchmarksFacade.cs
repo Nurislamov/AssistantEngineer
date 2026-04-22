@@ -2,7 +2,7 @@ using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Benchmarks.Application.Facades;
 
 public interface IBenchmarksFacade
 {
@@ -21,6 +21,6 @@ public interface IBenchmarksFacade
         VerificationRequest request,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<Iso52016ReferenceBenchmarkResult>> RunIso52016ReferenceCasesAsync(
+    Task<Result<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>> RunIso52016ReferenceCasesAsync(
         CancellationToken cancellationToken);
 }

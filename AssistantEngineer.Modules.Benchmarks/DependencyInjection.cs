@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
+using AssistantEngineer.Modules.Benchmarks.Application.Facades;
 using AssistantEngineer.Modules.Benchmarks.Application.Options;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<EnergyPlusModelExportService>();
         services.AddScoped<VerificationService>();
         services.AddScoped<Iso52016ReferenceBenchmarkService>();
+        services.AddScoped<IBenchmarksFacade, BenchmarksFacade>();
         services.Configure<VerificationTolerance>(options =>
         {
             configuration.GetSection("Verification").Bind(options);

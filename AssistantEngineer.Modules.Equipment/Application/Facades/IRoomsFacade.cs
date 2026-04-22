@@ -6,7 +6,7 @@ using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Equipment.Application.Facades;
 
 public interface IRoomsFacade
 {
@@ -14,7 +14,7 @@ public interface IRoomsFacade
     Task<Result<List<RoomResponse>>> GetAllAsync(CancellationToken cancellationToken);
     Task<Result<RoomResponse>> GetByIdAsync(int id, CancellationToken cancellationToken);
 
-    Task<Result<RoomCalculationResult>> CalculateAsync(
+    Task<Result<RoomCalculationResult>> CalculateCoolingLoadAsync(
         int id,
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken);

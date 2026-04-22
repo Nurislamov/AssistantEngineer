@@ -1,10 +1,10 @@
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace AssistantEngineer.Modules.Calculations.Application.Services;
+namespace AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 
 public sealed class Iso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
 {

@@ -8,6 +8,7 @@ using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
@@ -75,12 +76,12 @@ public class ApiIntegrationTests
     }
 
     [Fact]
-    public async Task GetIso52016BuildingCalculationReturnsThermalZoneBreakdown()
+    public async Task GetIso52016BuildingCoolingLoadReturnsThermalZoneBreakdown()
     {
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/buildings/0/calculate?method=Iso52016");
+        var response = await client.GetAsync("/api/v1/buildings/0/cooling-load?method=Iso52016");
 
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<BuildingCalculationResult>();
@@ -96,7 +97,7 @@ public class ApiIntegrationTests
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/buildings/0/calculate?method=999");
+        var response = await client.GetAsync("/api/v1/buildings/0/cooling-load?method=999");
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
@@ -193,6 +194,20 @@ public class ApiIntegrationTests
         Assert.Contains(result, benchmark => benchmark.CaseId == "reference-box-heating");
         Assert.Contains(result, benchmark => benchmark.CaseId == "reference-box-cooling");
         Assert.Contains(result, benchmark => benchmark.CaseId == "reference-solar-shading");
+    }
+
+    [Fact]
+    public async Task GetBuildingArchetypesUsesDedicatedResourceRoute()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/v1/building-archetypes");
+
+        response.EnsureSuccessStatusCode();
+        var archetypes = await response.Content.ReadFromJsonAsync<List<BuildingArchetypeSummary>>();
+        Assert.NotNull(archetypes);
+        Assert.NotEmpty(archetypes);
     }
 
     [Fact]

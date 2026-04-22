@@ -21,6 +21,7 @@ public class ModuleBoundaryTests
     private static readonly Assembly EquipmentAssembly = typeof(AssistantEngineer.Modules.Equipment.DependencyInjection).Assembly;
     private static readonly Assembly ReportingAssembly = typeof(AssistantEngineer.Modules.Reporting.DependencyInjection).Assembly;
     private static readonly Assembly BenchmarksAssembly = typeof(AssistantEngineer.Modules.Benchmarks.DependencyInjection).Assembly;
+    private static readonly Assembly InfrastructureAssembly = typeof(AssistantEngineer.Infrastructure.DependencyInjection).Assembly;
     private static readonly Assembly ApiAssembly = typeof(Program).Assembly;
 
     private static readonly Assembly[] ModuleAssemblies =
@@ -60,7 +61,24 @@ public class ModuleBoundaryTests
     [Fact]
     public void ApiDoesNotDependOnPersistenceLayerDetails()
     {
+        AssertNoAssemblyReferences(ApiAssembly, "AssistantEngineer.Infrastructure.Persistence");
         AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Infrastructure.Persistence");
+    }
+
+    [Fact]
+    public void InfrastructureMayReferenceApplicationModules()
+    {
+        var referencedAssemblyNames = InfrastructureAssembly
+            .GetReferencedAssemblies()
+            .Select(assemblyName => assemblyName.Name)
+            .Where(name => name is not null)
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.Contains(BuildingsAssemblyName, referencedAssemblyNames);
+        Assert.Contains(CalculationsAssemblyName, referencedAssemblyNames);
+        Assert.Contains(EquipmentAssemblyName, referencedAssemblyNames);
+        Assert.Contains(ReportingAssemblyName, referencedAssemblyNames);
+        Assert.Contains(BenchmarksAssemblyName, referencedAssemblyNames);
     }
 
     [Fact]

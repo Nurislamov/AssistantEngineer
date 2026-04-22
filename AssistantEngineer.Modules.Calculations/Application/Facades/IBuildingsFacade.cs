@@ -4,7 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Facades;
+namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 
 public interface IBuildingsFacade
 {
@@ -33,12 +33,5 @@ public interface IBuildingsFacade
         int buildingId,
         CoolingLoadCalculationMethodDto coolingMethod,
         HeatingLoadCalculationMethodDto heatingMethod,
-        CancellationToken cancellationToken);
-
-    IReadOnlyList<BuildingArchetypeSummary> ListArchetypes();
-
-    Task<Result<BuildingResponse>> CreateFromArchetypeAsync(
-        int projectId,
-        CreateBuildingFromArchetypeRequest request,
         CancellationToken cancellationToken);
 }

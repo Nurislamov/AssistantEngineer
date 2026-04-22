@@ -1,14 +1,10 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
-using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
-using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -17,56 +13,28 @@ namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/v{version:apiVersion}/building-performance")]
-public class BuildingPerformanceController : ControllerBase
+[Route("api/v{version:apiVersion}/buildings/{buildingId:int}/energy-analysis")]
+public class BuildingEnergyAnalysisController : ControllerBase
 {
-    private const int DefaultWeatherYear = 2020;
+    private readonly IBuildingEnergyAnalysisFacade _energyAnalysis;
 
-    private readonly BuildingPerformanceService _performance;
-    private readonly DomesticHotWaterDemandService _dhw;
-    private readonly BuildingCalculationReadinessService _readiness;
-
-    public BuildingPerformanceController(
-        BuildingPerformanceService performance,
-        DomesticHotWaterDemandService dhw,
-        BuildingCalculationReadinessService readiness)
+    public BuildingEnergyAnalysisController(IBuildingEnergyAnalysisFacade energyAnalysis)
     {
-        _performance = performance;
-        _dhw = dhw;
-        _readiness = readiness;
+        _energyAnalysis = energyAnalysis;
     }
 
-    [HttpGet("buildings/{buildingId:int}/readiness")]
-    public async Task<ActionResult<BuildingCalculationReadinessReport>> CheckReadiness(
-        int buildingId,
-        [FromQuery] int? weatherYear,
-        CancellationToken cancellationToken)
-    {
-        var effectiveWeatherYear = weatherYear ?? DefaultWeatherYear;
-        var result = await _readiness.CheckAsync(buildingId, effectiveWeatherYear, cancellationToken);
-        return result.ToActionResult();
-    }
-
-    [HttpPost("dhw")]
-    public ActionResult<DomesticHotWaterDemandResult> CalculateDhw(
-        [FromBody] DomesticHotWaterDemandRequest request)
-    {
-        var result = _dhw.Calculate(request);
-        return result.ToActionResult();
-    }
-
-    [HttpGet("buildings/{buildingId:int}/iso52016/breakdown")]
+    [HttpGet("iso52016/breakdown")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<Iso52016EnergyBalanceBreakdown>> GetIso52016Breakdown(
         int buildingId,
         [FromQuery] int? year,
         CancellationToken cancellationToken)
     {
-        var result = await _performance.GetIso52016BreakdownAsync(buildingId, year, cancellationToken);
+        var result = await _energyAnalysis.GetIso52016BreakdownAsync(buildingId, year, cancellationToken);
         return result.ToActionResult();
     }
 
-    [HttpGet("buildings/{buildingId:int}/energy-signature")]
+    [HttpGet("energy-signature")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<EnergySignatureResult>> GetEnergySignature(
         int buildingId,
@@ -74,7 +42,7 @@ public class BuildingPerformanceController : ControllerBase
         [FromQuery] double? heatingBaseTemperatureC,
         CancellationToken cancellationToken)
     {
-        var result = await _performance.GetEnergySignatureAsync(
+        var result = await _energyAnalysis.GetEnergySignatureAsync(
             buildingId,
             year,
             heatingBaseTemperatureC,
@@ -83,7 +51,7 @@ public class BuildingPerformanceController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPost("buildings/{buildingId:int}/heating-system-energy")]
+    [HttpPost("heating-system-energy")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<HeatingSystemEnergyResult>> CalculateHeatingSystemEnergy(
         int buildingId,
@@ -91,7 +59,7 @@ public class BuildingPerformanceController : ControllerBase
         [FromBody] HeatingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _performance.CalculateHeatingSystemEnergyAsync(
+        var result = await _energyAnalysis.CalculateHeatingSystemEnergyAsync(
             buildingId,
             year,
             request,
@@ -100,7 +68,7 @@ public class BuildingPerformanceController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPost("buildings/{buildingId:int}/cooling-system-energy")]
+    [HttpPost("cooling-system-energy")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<CoolingSystemEnergyResult>> CalculateCoolingSystemEnergy(
         int buildingId,
@@ -108,7 +76,7 @@ public class BuildingPerformanceController : ControllerBase
         [FromBody] CoolingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _performance.CalculateCoolingSystemEnergyAsync(
+        var result = await _energyAnalysis.CalculateCoolingSystemEnergyAsync(
             buildingId,
             year,
             request,
@@ -117,7 +85,7 @@ public class BuildingPerformanceController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPost("buildings/{buildingId:int}/summary")]
+    [HttpPost("summary")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<BuildingEnergyPerformanceSummary>> CalculateSummary(
         int buildingId,
@@ -125,7 +93,7 @@ public class BuildingPerformanceController : ControllerBase
         [FromBody] BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _performance.CalculateSummaryAsync(
+        var result = await _energyAnalysis.CalculateSummaryAsync(
             buildingId,
             year,
             request,

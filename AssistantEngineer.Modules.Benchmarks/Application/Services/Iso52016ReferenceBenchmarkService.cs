@@ -8,11 +8,13 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilatio
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
+// Generates deterministic internal ISO 52016 reference fixtures used by benchmark endpoints.
 public sealed class Iso52016ReferenceBenchmarkService
 {
     private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, Iso52016BenchmarkMetricExpectation>>
@@ -61,13 +63,20 @@ public sealed class Iso52016ReferenceBenchmarkService
         _options = options.Value;
     }
 
-    public async Task<IReadOnlyList<Iso52016ReferenceBenchmarkResult>> RunAsync(
+    public async Task<Result<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>> RunAsync(
         CancellationToken cancellationToken = default)
     {
-        var heating = await RunHeatingDominantCaseAsync(cancellationToken);
-        var cooling = await RunCoolingDominantCaseAsync(cancellationToken);
-        var shading = await RunShadingSensitivityCaseAsync(cancellationToken);
-        return [heating, cooling, shading];
+        try
+        {
+            var heating = await RunHeatingDominantCaseAsync(cancellationToken);
+            var cooling = await RunCoolingDominantCaseAsync(cancellationToken);
+            var shading = await RunShadingSensitivityCaseAsync(cancellationToken);
+            return Result<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>.Success([heating, cooling, shading]);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Result<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>.Failure(exception.Message);
+        }
     }
 
     private async Task<Iso52016ReferenceBenchmarkResult> RunHeatingDominantCaseAsync(CancellationToken cancellationToken)
@@ -77,14 +86,15 @@ public sealed class Iso52016ReferenceBenchmarkService
         var weather = CreateAnnualWeather(climateZone, temperature: -5, directSolar: 0, diffuseSolar: 0);
         var result = await CreateCalculator(weather, _options)
             .CalculateBuildingEnergyNeedsAsync(building, year: weather.Year, cancellationToken: cancellationToken);
+        var energyNeed = RequireEnergyNeed(result, "reference-box-heating");
 
         return CreateResult(
             "reference-box-heating",
             "Simple insulated box in constant cold weather.",
-            result!,
+            energyNeed,
             [
-                AssertGreaterThan("Annual heating demand is positive", result!.AnnualHeatingDemandKWh, 100),
-                AssertLessThan("Annual cooling demand is near zero", result.AnnualCoolingDemandKWh, 1)
+                AssertGreaterThan("Annual heating demand is positive", energyNeed.AnnualHeatingDemandKWh, 100),
+                AssertLessThan("Annual cooling demand is near zero", energyNeed.AnnualCoolingDemandKWh, 1)
             ],
             ExpectedMetrics["reference-box-heating"]);
     }
@@ -96,14 +106,15 @@ public sealed class Iso52016ReferenceBenchmarkService
         var weather = CreateAnnualWeather(climateZone, temperature: 35, directSolar: 0, diffuseSolar: 0);
         var result = await CreateCalculator(weather, _options)
             .CalculateBuildingEnergyNeedsAsync(building, year: weather.Year, cancellationToken: cancellationToken);
+        var energyNeed = RequireEnergyNeed(result, "reference-box-cooling");
 
         return CreateResult(
             "reference-box-cooling",
             "Simple insulated box in constant hot weather.",
-            result!,
+            energyNeed,
             [
-                AssertGreaterThan("Annual cooling demand is positive", result!.AnnualCoolingDemandKWh, 100),
-                AssertLessThan("Annual heating demand is near zero", result.AnnualHeatingDemandKWh, 1)
+                AssertGreaterThan("Annual cooling demand is positive", energyNeed.AnnualCoolingDemandKWh, 100),
+                AssertLessThan("Annual heating demand is near zero", energyNeed.AnnualHeatingDemandKWh, 1)
             ],
             ExpectedMetrics["reference-box-cooling"]);
     }
@@ -142,33 +153,33 @@ public sealed class Iso52016ReferenceBenchmarkService
         var shaded = await CreateCalculator(weather, shadedOptions)
             .CalculateBuildingEnergyNeedsAsync(building, year: weather.Year, cancellationToken: cancellationToken);
 
-        if (unshaded is null || shaded is null)
-            throw new InvalidOperationException("Reference benchmark weather data must be complete.");
+        var unshadedEnergyNeed = RequireEnergyNeed(unshaded, "reference-solar-shading unshaded case");
+        var shadedEnergyNeed = RequireEnergyNeed(shaded, "reference-solar-shading shaded case");
 
-        var solarReductionPercent = unshaded.Breakdown.SolarGainsKWh > 0
-            ? (unshaded.Breakdown.SolarGainsKWh - shaded.Breakdown.SolarGainsKWh) /
-              unshaded.Breakdown.SolarGainsKWh * 100
+        var solarReductionPercent = unshadedEnergyNeed.Breakdown.SolarGainsKWh > 0
+            ? (unshadedEnergyNeed.Breakdown.SolarGainsKWh - shadedEnergyNeed.Breakdown.SolarGainsKWh) /
+              unshadedEnergyNeed.Breakdown.SolarGainsKWh * 100
             : 0;
 
         return CreateResult(
             "reference-solar-shading",
             "South glazing case checks that geometric shading reduces solar gains.",
-            shaded,
+            shadedEnergyNeed,
             [
                 new Iso52016ReferenceBenchmarkAssertion(
                     "Shaded solar gains are below unshaded gains",
-                    shaded.Breakdown.SolarGainsKWh,
+                    shadedEnergyNeed.Breakdown.SolarGainsKWh,
                     "<",
-                    unshaded.Breakdown.SolarGainsKWh,
+                    unshadedEnergyNeed.Breakdown.SolarGainsKWh,
                     0,
-                    shaded.Breakdown.SolarGainsKWh < unshaded.Breakdown.SolarGainsKWh),
+                    shadedEnergyNeed.Breakdown.SolarGainsKWh < unshadedEnergyNeed.Breakdown.SolarGainsKWh),
                 AssertGreaterThan("Solar reduction is material", solarReductionPercent, 5)
             ],
             ExpectedMetrics["reference-solar-shading"],
             new Dictionary<string, double>
             {
-                ["UnshadedSolarGainsKWh"] = Round(unshaded.Breakdown.SolarGainsKWh),
-                ["ShadedSolarGainsKWh"] = Round(shaded.Breakdown.SolarGainsKWh),
+                ["UnshadedSolarGainsKWh"] = Round(unshadedEnergyNeed.Breakdown.SolarGainsKWh),
+                ["ShadedSolarGainsKWh"] = Round(shadedEnergyNeed.Breakdown.SolarGainsKWh),
                 ["SolarReductionPercent"] = Round(solarReductionPercent)
             });
     }
@@ -257,42 +268,56 @@ public sealed class Iso52016ReferenceBenchmarkService
         string name,
         bool includeSouthWindow)
     {
-        var project = Project.Create("ISO 52016 benchmark project").Value;
-        var building = Building.Create(name, project, climateZone).Value;
-        var floor = building.AddFloor("Ground").Value;
-        var room = floor.AddRoom(
-            "Reference room",
-            Area.FromSquareMeters(50).Value,
-            3,
-            Temperature.FromCelsius(21).Value,
-            Temperature.FromCelsius(climateZone.SummerDesignTemperature.Celsius).Value,
-            peopleCount: 0,
-            equipmentLoad: Power.FromWatts(0).Value,
-            lightingLoad: Power.FromWatts(0).Value,
-            type: RoomType.Office).Value;
+        var project = RequireSuccess(
+            Project.Create("ISO 52016 benchmark project"),
+            "create ISO 52016 benchmark project");
+        var building = RequireSuccess(
+            Building.Create(name, project, climateZone),
+            $"create benchmark building '{name}'");
+        var floor = RequireSuccess(
+            building.AddFloor("Ground"),
+            $"add benchmark floor to '{name}'");
+        var room = RequireSuccess(
+            floor.AddRoom(
+                "Reference room",
+                RequireSuccess(Area.FromSquareMeters(50), "create reference room area"),
+                3,
+                RequireSuccess(Temperature.FromCelsius(21), "create reference indoor temperature"),
+                RequireSuccess(
+                    Temperature.FromCelsius(climateZone.SummerDesignTemperature.Celsius),
+                    "create reference outdoor override temperature"),
+                peopleCount: 0,
+                equipmentLoad: RequireSuccess(Power.FromWatts(0), "create reference equipment load"),
+                lightingLoad: RequireSuccess(Power.FromWatts(0), "create reference lighting load"),
+                type: RoomType.Office),
+            $"add reference room to '{name}'");
 
-        _ = room.AddWall(Area.FromSquareMeters(30).Value, true, ThermalTransmittance.FromValue(0.35).Value, CardinalDirection.North);
-        _ = room.AddWall(Area.FromSquareMeters(30).Value, true, ThermalTransmittance.FromValue(0.35).Value, CardinalDirection.East);
-        _ = room.AddWall(Area.FromSquareMeters(30).Value, true, ThermalTransmittance.FromValue(0.35).Value, CardinalDirection.South);
-        _ = room.AddWall(Area.FromSquareMeters(30).Value, true, ThermalTransmittance.FromValue(0.35).Value, CardinalDirection.West);
+        AddReferenceWall(room, CardinalDirection.North);
+        AddReferenceWall(room, CardinalDirection.East);
+        AddReferenceWall(room, CardinalDirection.South);
+        AddReferenceWall(room, CardinalDirection.West);
 
         if (includeSouthWindow)
         {
-            _ = room.AddWindow(
-                Area.FromSquareMeters(8).Value,
-                ThermalTransmittance.FromValue(1.2).Value,
-                SolarHeatGainCoefficient.FromValue(0.55).Value,
-                CardinalDirection.South);
+            RequireSuccess(
+                room.AddWindow(
+                    RequireSuccess(Area.FromSquareMeters(8), "create reference window area"),
+                    RequireSuccess(ThermalTransmittance.FromValue(1.2), "create reference window U-value"),
+                    RequireSuccess(SolarHeatGainCoefficient.FromValue(0.55), "create reference window SHGC"),
+                    CardinalDirection.South),
+                "add reference south window");
         }
 
         return building;
     }
 
     private static ClimateZone CreateClimateZone(string name, double summer, double winter) =>
-        ClimateZone.Create(
-            name,
-            Temperature.FromCelsius(summer).Value,
-            Temperature.FromCelsius(winter).Value).Value;
+        RequireSuccess(
+            ClimateZone.Create(
+                name,
+                RequireSuccess(Temperature.FromCelsius(summer), $"create summer design temperature for '{name}'"),
+                RequireSuccess(Temperature.FromCelsius(winter), $"create winter design temperature for '{name}'")),
+            $"create benchmark climate zone '{name}'");
 
     private static AnnualClimateData CreateAnnualWeather(
         ClimateZone climateZone,
@@ -300,7 +325,9 @@ public sealed class Iso52016ReferenceBenchmarkService
         double directSolar,
         double diffuseSolar)
     {
-        var weather = AnnualClimateData.Create(climateZone, year: 2020).Value;
+        var weather = RequireSuccess(
+            AnnualClimateData.Create(climateZone, year: 2020),
+            $"create annual weather for climate zone {climateZone.Id}");
         for (var hour = 0; hour < 8760; hour++)
         {
             var hourOfDay = hour % 24;
@@ -308,14 +335,49 @@ public sealed class Iso52016ReferenceBenchmarkService
                 ? Math.Sin(Math.PI * (hourOfDay - 6) / 12.0)
                 : 0;
 
-            _ = weather.AddHourlyData(
-                hour,
-                temperature,
-                directSolar * daylightFactor,
-                diffuseSolar * daylightFactor);
+            RequireSuccess(
+                weather.AddHourlyData(
+                    hour,
+                    temperature,
+                    directSolar * daylightFactor,
+                    diffuseSolar * daylightFactor),
+                $"add reference weather hour {hour}");
         }
 
         return weather;
+    }
+
+    private static void AddReferenceWall(Room room, CardinalDirection orientation) =>
+        RequireSuccess(
+            room.AddWall(
+                RequireSuccess(Area.FromSquareMeters(30), $"create {orientation} reference wall area"),
+                true,
+                RequireSuccess(ThermalTransmittance.FromValue(0.35), $"create {orientation} reference wall U-value"),
+                orientation),
+            $"add {orientation} reference wall");
+
+    private static Iso52016AnnualEnergyNeedResult RequireEnergyNeed(
+        Iso52016AnnualEnergyNeedResult? result,
+        string context) =>
+        result ?? throw new InvalidOperationException(
+            $"ISO 52016 reference benchmark fixture failed during {context}: annual weather data was incomplete.");
+
+    private static T RequireSuccess<T>(Result<T> result, string context)
+    {
+        if (result.IsSuccess)
+            return result.Value;
+
+        throw new InvalidOperationException(
+            $"ISO 52016 reference benchmark fixture failed during {context}: {result.Error}");
+    }
+
+    private static void RequireSuccess(Result result, string context)
+    {
+        if (result.IsSuccess)
+            return;
+
+        throw new InvalidOperationException(
+            $"ISO 52016 reference benchmark fixture failed during {context}: {result.Error}");
     }
 
     private static double Round(double value) =>

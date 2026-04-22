@@ -101,11 +101,13 @@ public sealed class BuildingArchetypeService
             if (wall.IsFailure)
                 return Result<BuildingResponse>.Failure(wall);
 
-            _ = room.Value.AddWindow(
+            var window = room.Value.AddWindow(
                 Area.FromSquareMeters(Math.Max(archetype.WindowAreaM2Minimum, archetype.RoomAreaM2 * archetype.WindowAreaFactor)).Value,
                 ThermalTransmittance.FromValue(archetype.WindowUValue).Value,
                 SolarHeatGainCoefficient.FromValue(archetype.WindowShgc).Value,
                 GetRoomOrientation(archetype, i));
+            if (window.IsFailure)
+                return Result<BuildingResponse>.Failure(window);
         }
 
         _buildings.Add(building.Value);

@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Facades;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ public class BenchmarksDependencyInjectionTests
         AssertServiceLifetime<EnergyPlusModelExportService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<VerificationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016ReferenceBenchmarkService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBenchmarksFacade>(services, ServiceLifetime.Scoped);
     }
 
     private static void AssertServiceLifetime<TService>(

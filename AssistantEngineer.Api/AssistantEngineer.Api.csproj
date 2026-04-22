@@ -22,4 +22,11 @@
         <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Update="Config\building-archetypes.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
