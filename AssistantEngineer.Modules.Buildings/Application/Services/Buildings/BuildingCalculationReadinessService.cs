@@ -52,14 +52,14 @@ public sealed class BuildingCalculationReadinessService
                 issues.Add(Warning($"Room[{room.Id}].Windows", "Total window area is greater than 80% of room floor area."));
         }
 
-        var duplicatedZoneRoomIds = building.ThermalZones
-            .SelectMany(zone => zone.RoomIds)
-            .GroupBy(id => id)
+        var duplicatedZoneRooms = building.ThermalZones
+            .SelectMany(zone => zone.AssignedRooms)
+            .GroupBy(room => room)
             .Where(group => group.Count() > 1)
             .Select(group => group.Key)
             .ToArray();
-        foreach (var roomId in duplicatedZoneRoomIds)
-            issues.Add(Error("ThermalZones", $"Room {roomId} is assigned to multiple thermal zones."));
+        foreach (var room in duplicatedZoneRooms)
+            issues.Add(Error("ThermalZones", $"Room {room.Id} is assigned to multiple thermal zones."));
 
         if (building.ClimateZone is not null)
         {

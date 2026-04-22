@@ -7,11 +7,13 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystem
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 
@@ -25,6 +27,7 @@ public sealed class BuildingPerformanceService
     private readonly CoolingSystemEnergyService _coolingSystemEnergy;
     private readonly BuildingEnergyPerformanceSummaryService _performanceSummary;
     private readonly BuildingCalculationReadinessService _readiness;
+    private readonly Iso52016EnergyNeedOptions _energyNeedOptions;
 
     public BuildingPerformanceService(
         IBuildingRepository buildings,
@@ -34,7 +37,8 @@ public sealed class BuildingPerformanceService
         HeatingSystemEnergyService heatingSystemEnergy,
         CoolingSystemEnergyService coolingSystemEnergy,
         BuildingEnergyPerformanceSummaryService performanceSummary,
-        BuildingCalculationReadinessService readiness)
+        BuildingCalculationReadinessService readiness,
+        IOptions<Iso52016EnergyNeedOptions> energyNeedOptions)
     {
         _buildings = buildings;
         _preferences = preferences;
@@ -44,11 +48,12 @@ public sealed class BuildingPerformanceService
         _coolingSystemEnergy = coolingSystemEnergy;
         _performanceSummary = performanceSummary;
         _readiness = readiness;
+        _energyNeedOptions = energyNeedOptions.Value;
     }
 
     public async Task<Result<Iso52016EnergyBalanceBreakdown>> GetIso52016BreakdownAsync(
         int buildingId,
-        int year,
+        int? year,
         CancellationToken cancellationToken)
     {
         var energyNeed = await CalculateEnergyNeedAsync(buildingId, year, cancellationToken);
@@ -60,22 +65,22 @@ public sealed class BuildingPerformanceService
 
     public async Task<Result<EnergySignatureResult>> GetEnergySignatureAsync(
         int buildingId,
-        int year,
-        double heatingBaseTemperatureC,
+        int? year,
+        double? heatingBaseTemperatureC,
         CancellationToken cancellationToken)
     {
         var energyNeed = await CalculateEnergyNeedAsync(buildingId, year, cancellationToken);
         if (energyNeed.IsFailure)
             return Result<EnergySignatureResult>.Failure(energyNeed);
 
-        return _energySignature.Calculate(
-            energyNeed.Value,
-            heatingBaseTemperatureC == 0 ? 18 : heatingBaseTemperatureC);
+        return heatingBaseTemperatureC.HasValue
+            ? _energySignature.Calculate(energyNeed.Value, heatingBaseTemperatureC.Value)
+            : _energySignature.Calculate(energyNeed.Value);
     }
 
     public async Task<Result<HeatingSystemEnergyResult>> CalculateHeatingSystemEnergyAsync(
         int buildingId,
-        int year,
+        int? year,
         HeatingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
@@ -88,7 +93,7 @@ public sealed class BuildingPerformanceService
 
     public async Task<Result<CoolingSystemEnergyResult>> CalculateCoolingSystemEnergyAsync(
         int buildingId,
-        int year,
+        int? year,
         CoolingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
@@ -101,7 +106,7 @@ public sealed class BuildingPerformanceService
 
     public async Task<Result<BuildingEnergyPerformanceSummary>> CalculateSummaryAsync(
         int buildingId,
-        int year,
+        int? year,
         BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken)
     {
@@ -117,7 +122,7 @@ public sealed class BuildingPerformanceService
 
     private async Task<Result<Iso52016AnnualEnergyNeedResult>> CalculateEnergyNeedAsync(
         int buildingId,
-        int year,
+        int? year,
         CancellationToken cancellationToken)
     {
         var readiness = await EnsureCalculationReadyAsync(buildingId, year, cancellationToken);
@@ -132,7 +137,7 @@ public sealed class BuildingPerformanceService
         var result = await _iso52016.CalculateBuildingEnergyNeedsAsync(
             building,
             preferences,
-            year == 0 ? null : year,
+            year,
             cancellationToken);
 
         return result is null
@@ -142,7 +147,7 @@ public sealed class BuildingPerformanceService
 
     private async Task<Result<BuildingEnergyNeedContext>> CalculateEnergyNeedContextAsync(
         int buildingId,
-        int year,
+        int? year,
         CancellationToken cancellationToken)
     {
         var readiness = await EnsureCalculationReadyAsync(buildingId, year, cancellationToken);
@@ -157,7 +162,7 @@ public sealed class BuildingPerformanceService
         var result = await _iso52016.CalculateBuildingEnergyNeedsAsync(
             building,
             preferences,
-            year == 0 ? null : year,
+            year,
             cancellationToken);
 
         return result is null
@@ -167,12 +172,13 @@ public sealed class BuildingPerformanceService
 
     private async Task<Result> EnsureCalculationReadyAsync(
         int buildingId,
-        int year,
+        int? year,
         CancellationToken cancellationToken)
     {
+        var effectiveWeatherYear = year ?? _energyNeedOptions.DefaultWeatherYear;
         var report = await _readiness.CheckAsync(
             buildingId,
-            year == 0 ? 2020 : year,
+            effectiveWeatherYear,
             cancellationToken);
 
         if (report.IsFailure)
@@ -187,7 +193,7 @@ public sealed class BuildingPerformanceService
 
         return Result.Validation(
             "Building is not ready for calculation: " +
-            string.Join("; ", errors.Select(issue => $"{issue.Path}: {issue.Message}")));
+            string.Join("; ", errors.Select(issue => $"{issue.Location}: {issue.Message}")));
     }
 
     private sealed record BuildingEnergyNeedContext(

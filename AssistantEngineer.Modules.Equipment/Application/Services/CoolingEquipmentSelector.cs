@@ -4,7 +4,7 @@ using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
-using AssistantEngineer.Modules.Equipment.Abstractions;
+using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 
 namespace AssistantEngineer.Modules.Equipment.Application.Services;
 

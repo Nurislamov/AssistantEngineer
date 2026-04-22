@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
+using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using AssistantEngineer.Modules.Equipment.Domain;
@@ -236,5 +237,4 @@ public class BuildingReportDataServiceTests
         public void Add(CoolingEquipmentCatalogItem item) => throw new NotSupportedException();
     }
 }
-
 

@@ -6,20 +6,12 @@ using AssistantEngineer.Modules.Buildings.Domain.Construction;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
-
-public sealed class Iso52016CoolingLoadOptions
-{
-    public int DefaultDesignMonth { get; init; } = 7;
-    public double DefaultThermalMassWhPerM2K { get; init; } = 45.0;
-    public double DefaultVentilationAirChangesPerHour { get; init; } = 0.5;
-    public double AirHeatCapacityWhPerM3K { get; init; } = 0.34;
-    public double DefaultSolarUtilizationFactor { get; init; } = 0.75;
-    public double DefaultCoolingSafetyFactor { get; init; } = 1.10;
-}
 
 public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationStrategy
 {
@@ -29,12 +21,12 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
     private readonly ILogger<Iso52016CoolingLoadCalculator> _logger;
 
     public Iso52016CoolingLoadCalculator(
-        Iso52016CoolingLoadOptions options,
+        IOptions<Iso52016CoolingLoadOptions> options,
         IIso52016ReferenceDataProvider referenceDataProvider,
         IHourlyProfileAggregator profileAggregator,
         ILogger<Iso52016CoolingLoadCalculator>? logger = null)
     {
-        _options = options;
+        _options = options.Value;
         _referenceDataProvider = referenceDataProvider;
         _profileAggregator = profileAggregator;
         _logger = logger ?? NullLogger<Iso52016CoolingLoadCalculator>.Instance;
@@ -59,9 +51,12 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
         var outdoorTemperatureProfile = climateOutdoorTemperatureProfile is { Count: 24 }
             ? climateOutdoorTemperatureProfile
             : null;
+        var fallbackOutdoorTemperature = room.OutdoorTemperatureOverride?.Celsius ??
+            climateZone?.SummerDesignTemperature.Celsius ??
+            room.IndoorTemperature.Celsius;
         var designDeltaT = outdoorTemperatureProfile is not null
             ? outdoorTemperatureProfile.Max(outdoorTemperature => Math.Max(outdoorTemperature - room.IndoorTemperature.Celsius, 0))
-            : Math.Max(room.OutdoorTemperature.Celsius - room.IndoorTemperature.Celsius, 0);
+            : Math.Max(fallbackOutdoorTemperature - room.IndoorTemperature.Celsius, 0);
         outdoorTemperatureProfile ??= CreateOutdoorTemperatureProfile(room.IndoorTemperature.Celsius, designDeltaT);
         var reserveFactor = preferences?.CoolingSafetyFactor ?? _options.DefaultCoolingSafetyFactor;
         var solarRadiationProfiles = climateZone is not null
@@ -96,6 +91,7 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             lightingGain,
             totalLoad,
             deltaT: designDeltaT,
+            outdoorTemperatureC: outdoorTemperatureProfile[peakHour],
             heightAdjustmentFactor: room.HeightM / 3.0,
             temperatureAdjustmentFactor: outdoorTemperatureProfile[peakHour] - room.IndoorTemperature.Celsius,
             reserveFactor,
@@ -286,5 +282,3 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             layer.ThicknessM /
             3.6);
 }
-
-

@@ -1,5 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
-using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -7,6 +7,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Validation;
 
@@ -25,12 +26,12 @@ public sealed class Iso52016ClimateDataValidator
 
     public Iso52016ClimateDataValidator(
         IIso52016ReferenceDataProvider referenceDataProvider,
-        Iso52016CoolingLoadOptions options,
+        IOptions<Iso52016CoolingLoadOptions> options,
         IMemoryCache cache,
         ILogger<Iso52016ClimateDataValidator>? logger = null)
     {
         _referenceDataProvider = referenceDataProvider;
-        _options = options;
+        _options = options.Value;
         _cache = cache;
         _logger = logger ?? NullLogger<Iso52016ClimateDataValidator>.Instance;
     }
@@ -98,5 +99,3 @@ public sealed class Iso52016ClimateDataValidator
 
     private sealed record ClimateValidationCacheKey(int ClimateZoneId, int Month);
 }
-
-

@@ -7,8 +7,10 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
+using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -17,6 +19,10 @@ public class VerificationServiceTests
     [Fact]
     public async Task VerifyBuildingAsyncRunsWorkflowAndDeletesTemporaryDirectory()
     {
+        var tempDirectory = CreateTempDirectory();
+        try
+        {
+        var artifacts = CreateArtifactStore(tempDirectory);
         var building = CreateBuilding();
         var repository = new BuildingRepositoryStub(building);
         var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
@@ -26,7 +32,7 @@ public class VerificationServiceTests
             CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
             CalculationTestFactory.CreateIso52016ClimateDataValidator());
         var exporter = new ExporterStub();
-        var runner = new RunnerStub();
+        var runner = new RunnerStub(artifacts);
         var parser = new ParserStub();
         var comparator = new ComparatorStub();
         var service = new VerificationService(
@@ -35,14 +41,15 @@ public class VerificationServiceTests
             exporter,
             runner,
             parser,
-            comparator);
+            comparator,
+            artifacts);
 
         var result = await service.VerifyBuildingAsync(
             building.Id,
             CoolingLoadCalculationMethod.Simplified,
             new VerificationRequest
             {
-                WeatherFilePath = "weather.epw",
+                WeatherArtifactId = "weather.epw",
                 AdditionalArguments = ["--readvars"]
             });
 
@@ -51,15 +58,25 @@ public class VerificationServiceTests
         Assert.True(runner.Called);
         Assert.True(parser.Called);
         Assert.True(comparator.Called);
-        Assert.Equal("weather.epw", runner.Request?.WeatherFilePath);
+        Assert.Equal("weather.epw", runner.Request?.WeatherArtifactId);
+        Assert.Equal("exported-model.idf", runner.Request?.ModelArtifactId);
         Assert.Contains("--readvars", runner.Request?.AdditionalArguments ?? []);
-        Assert.False(Directory.Exists(runner.Request?.OutputDirectory));
+        Assert.False(Directory.Exists(runner.WorkingDirectory));
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Fact]
     public async Task VerifyBuildingAsyncReturnsNotFoundWithoutRunningEnergyPlus()
     {
+        var tempDirectory = CreateTempDirectory();
+        try
+        {
         var building = CreateBuilding();
+        var artifacts = CreateArtifactStore(tempDirectory);
         var repository = new BuildingRepositoryStub(building);
         var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
         var coolingService = new BuildingCoolingLoadService(
@@ -67,23 +84,29 @@ public class VerificationServiceTests
             new EmptyPreferencesRepository(),
             CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
             CalculationTestFactory.CreateIso52016ClimateDataValidator());
-        var runner = new RunnerStub();
+        var runner = new RunnerStub(artifacts);
         var service = new VerificationService(
             repository,
             coolingService,
             new ExporterStub(),
             runner,
             new ParserStub(),
-            new ComparatorStub());
+            new ComparatorStub(),
+            artifacts);
 
         var result = await service.VerifyBuildingAsync(
             999,
             CoolingLoadCalculationMethod.Simplified,
-            new VerificationRequest { WeatherFilePath = "weather.epw" });
+            new VerificationRequest { WeatherArtifactId = "weather.epw" });
 
         Assert.True(result.IsFailure);
         Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
         Assert.False(runner.Called);
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     private static Building CreateBuilding()
@@ -149,24 +172,32 @@ public class VerificationServiceTests
 
         public async Task<Result<EnergyPlusModelExportResult>> ExportAsync(
             Building building,
-            string outputPath,
+            string? runName = null,
             CancellationToken cancellationToken = default)
         {
             Called = true;
-            await File.WriteAllTextAsync(outputPath, "idf", cancellationToken);
+            await Task.CompletedTask;
             return Result<EnergyPlusModelExportResult>.Success(new EnergyPlusModelExportResult
             {
                 BuildingId = building.Id,
                 BuildingName = building.Name,
-                ModelPath = outputPath
+                ModelArtifactId = "exported-model.idf"
             });
         }
     }
 
     private sealed class RunnerStub : IEnergyPlusBenchmarkRunner
     {
+        private readonly IEnergyPlusArtifactStore _artifacts;
+
+        public RunnerStub(IEnergyPlusArtifactStore artifacts)
+        {
+            _artifacts = artifacts;
+        }
+
         public bool Called { get; private set; }
         public EnergyPlusBenchmarkRequest? Request { get; private set; }
+        public string WorkingDirectory { get; private set; } = string.Empty;
 
         public Task<Result<EnergyPlusBenchmarkResult>> RunAsync(
             EnergyPlusBenchmarkRequest request,
@@ -174,12 +205,14 @@ public class VerificationServiceTests
         {
             Called = true;
             Request = request;
-            Assert.True(File.Exists(request.ModelPath));
+            var workspace = _artifacts.CreateRunWorkspace(request.RunName);
+            Assert.True(workspace.IsSuccess, workspace.Error);
+            WorkingDirectory = workspace.Value.WorkingDirectory;
             return Task.FromResult(Result<EnergyPlusBenchmarkResult>.Success(new EnergyPlusBenchmarkResult
             {
                 Succeeded = true,
                 ExitCode = 0,
-                OutputDirectory = request.OutputDirectory
+                RunArtifactId = workspace.Value.RunArtifactId
             }));
         }
     }
@@ -220,4 +253,14 @@ public class VerificationServiceTests
             };
         }
     }
+
+    private static string CreateTempDirectory()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"assistant-engineer-tests-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(path);
+        return path;
+    }
+
+    private static LocalEnergyPlusArtifactStore CreateArtifactStore(string rootDirectory) =>
+        new(Options.Create(new EnergyPlusBenchmarkOptions { ArtifactRootDirectory = rootDirectory }));
 }

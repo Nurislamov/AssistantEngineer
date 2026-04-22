@@ -1,9 +1,9 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,16 +13,16 @@ namespace AssistantEngineer.Modules.Buildings.Application.Services.Projects;
 public class ProjectCommandService
 {
     private readonly IProjectRepository _projects;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ProjectCommandService> _logger;
 
     public ProjectCommandService(
         IProjectRepository projects,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<ProjectCommandService>? logger = null)
     {
         _projects = projects;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<ProjectCommandService>.Instance;
     }
 
@@ -41,7 +41,7 @@ public class ProjectCommandService
 
         var project = projectResult.Value;
         _projects.Add(project);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Created project {ProjectId} with name {ProjectName}.", project.Id, project.Name);
         return Result<ProjectResponse>.Success(BuildingsMapper.ToResponse(project));

@@ -3,7 +3,7 @@ using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
-using AssistantEngineer.Modules.Equipment.Abstractions;
+using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
@@ -96,5 +96,4 @@ public class EquipmentSelectionService
         return Result<EquipmentSelectionResult>.Success(result);
     }
 }
-
 

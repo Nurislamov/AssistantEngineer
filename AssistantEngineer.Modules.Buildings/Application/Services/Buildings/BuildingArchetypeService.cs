@@ -1,13 +1,15 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 
@@ -16,33 +18,40 @@ public sealed class BuildingArchetypeService
     private readonly IProjectRepository _projects;
     private readonly IClimateZoneRepository _climateZones;
     private readonly IBuildingRepository _buildings;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly BuildingArchetypeCatalogOptions _catalog;
 
     public BuildingArchetypeService(
         IProjectRepository projects,
         IClimateZoneRepository climateZones,
         IBuildingRepository buildings,
-        IAppDbContext context)
+        IUnitOfWork unitOfWork,
+        IOptions<BuildingArchetypeCatalogOptions> catalog)
     {
         _projects = projects;
         _climateZones = climateZones;
         _buildings = buildings;
-        _context = context;
+        _unitOfWork = unitOfWork;
+        _catalog = catalog.Value;
     }
 
     public IReadOnlyList<BuildingArchetypeSummary> ListArchetypes() =>
-    [
-        new("office-small", "Small office", RoomType.Office, 6, 18, 3),
-        new("residential-small", "Small residential", RoomType.Residential, 4, 20, 2.8),
-        new("retail-small", "Small retail", RoomType.Retail, 3, 40, 3.5)
-    ];
+        _catalog.Archetypes
+            .Select(archetype => new BuildingArchetypeSummary(
+                archetype.Code,
+                archetype.DisplayName,
+                archetype.Type,
+                archetype.RoomsCount,
+                archetype.RoomAreaM2,
+                archetype.RoomHeightM))
+            .ToArray();
 
     public async Task<Result<BuildingResponse>> CreateFromArchetypeAsync(
         int projectId,
         CreateBuildingFromArchetypeRequest request,
         CancellationToken cancellationToken = default)
     {
-        var archetype = ListArchetypes().FirstOrDefault(item => item.Code == request.ArchetypeCode);
+        var archetype = _catalog.Archetypes.FirstOrDefault(item => item.Code == request.ArchetypeCode);
         if (archetype is null)
             return Result<BuildingResponse>.Validation($"Unknown building archetype '{request.ArchetypeCode}'.");
 
@@ -76,32 +85,36 @@ public sealed class BuildingArchetypeService
                 $"{archetype.DisplayName} {i:00}",
                 Area.FromSquareMeters(archetype.RoomAreaM2).Value,
                 archetype.RoomHeightM,
-                Temperature.FromCelsius(archetype.Type == RoomType.Residential ? 21 : 22).Value,
-                Temperature.FromCelsius(35).Value,
-                peopleCount: archetype.Type == RoomType.Residential ? 2 : 1,
-                equipmentLoad: Power.FromWatts(archetype.RoomAreaM2 * 8).Value,
-                lightingLoad: Power.FromWatts(archetype.RoomAreaM2 * 7).Value,
-                archetype.Type);
+                Temperature.FromCelsius(archetype.IndoorTemperatureC).Value,
+                peopleCount: archetype.PeopleCount,
+                equipmentLoad: Power.FromWatts(archetype.RoomAreaM2 * archetype.EquipmentLoadWPerM2).Value,
+                lightingLoad: Power.FromWatts(archetype.RoomAreaM2 * archetype.LightingLoadWPerM2).Value,
+                type: archetype.Type);
             if (room.IsFailure)
                 return Result<BuildingResponse>.Failure(room);
 
             var wall = room.Value.AddWall(
-                Area.FromSquareMeters(archetype.RoomAreaM2 * 0.8).Value,
+                Area.FromSquareMeters(archetype.RoomAreaM2 * archetype.ExternalWallAreaFactor).Value,
                 isExternal: true,
-                ThermalTransmittance.FromValue(1.2).Value,
-                i % 2 == 0 ? CardinalDirection.East : CardinalDirection.South);
+                ThermalTransmittance.FromValue(archetype.ExternalWallUValue).Value,
+                GetRoomOrientation(archetype, i));
             if (wall.IsFailure)
                 return Result<BuildingResponse>.Failure(wall);
 
             _ = room.Value.AddWindow(
-                Area.FromSquareMeters(Math.Max(1.5, archetype.RoomAreaM2 * 0.12)).Value,
-                ThermalTransmittance.FromValue(2.2).Value,
-                SolarHeatGainCoefficient.FromValue(0.5).Value,
-                i % 2 == 0 ? CardinalDirection.East : CardinalDirection.South);
+                Area.FromSquareMeters(Math.Max(archetype.WindowAreaM2Minimum, archetype.RoomAreaM2 * archetype.WindowAreaFactor)).Value,
+                ThermalTransmittance.FromValue(archetype.WindowUValue).Value,
+                SolarHeatGainCoefficient.FromValue(archetype.WindowShgc).Value,
+                GetRoomOrientation(archetype, i));
         }
 
         _buildings.Add(building.Value);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return Result<BuildingResponse>.Success(BuildingsMapper.ToResponse(building.Value));
     }
+
+    private static CardinalDirection GetRoomOrientation(BuildingArchetypeOptions archetype, int roomNumber) =>
+        roomNumber % 2 == 0
+            ? archetype.EvenRoomOrientation
+            : archetype.OddRoomOrientation;
 }

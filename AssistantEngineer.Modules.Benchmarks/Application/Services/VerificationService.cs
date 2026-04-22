@@ -19,6 +19,7 @@ public sealed class VerificationService
     private readonly IEnergyPlusBenchmarkRunner _energyPlusBenchmarkRunner;
     private readonly IEnergyPlusResultParser _energyPlusResultParser;
     private readonly IVerificationComparator _verificationComparator;
+    private readonly IEnergyPlusArtifactStore _artifacts;
     private readonly ILogger<VerificationService> _logger;
 
     public VerificationService(
@@ -28,6 +29,7 @@ public sealed class VerificationService
         IEnergyPlusBenchmarkRunner energyPlusBenchmarkRunner,
         IEnergyPlusResultParser energyPlusResultParser,
         IVerificationComparator verificationComparator,
+        IEnergyPlusArtifactStore artifacts,
         ILogger<VerificationService>? logger = null)
     {
         _buildings = buildings;
@@ -36,6 +38,7 @@ public sealed class VerificationService
         _energyPlusBenchmarkRunner = energyPlusBenchmarkRunner;
         _energyPlusResultParser = energyPlusResultParser;
         _verificationComparator = verificationComparator;
+        _artifacts = artifacts;
         _logger = logger ?? NullLogger<VerificationService>.Instance;
     }
 
@@ -53,66 +56,63 @@ public sealed class VerificationService
         if (ourResult.IsFailure)
             return Result<VerificationReport>.Failure(ourResult);
 
-        var tempDir = Path.Combine(Path.GetTempPath(), $"ep_verify_{Guid.NewGuid():N}");
-        Directory.CreateDirectory(tempDir);
-
-        try
-        {
-            return await VerifyAgainstEnergyPlusAsync(
-                building,
-                ourResult.Value,
-                request,
-                tempDir,
-                cancellationToken);
-        }
-        finally
-        {
-            DeleteDirectoryQuietly(tempDir);
-        }
+        return await VerifyAgainstEnergyPlusAsync(
+            building,
+            ourResult.Value,
+            request,
+            cancellationToken);
     }
 
     private async Task<Result<VerificationReport>> VerifyAgainstEnergyPlusAsync(
         Building building,
         BuildingCalculationResult ourResult,
         VerificationRequest request,
-        string tempDir,
         CancellationToken cancellationToken)
     {
-        var idfPath = Path.Combine(tempDir, "model.idf");
-        var exportResult = await _energyPlusModelExporter.ExportAsync(building, idfPath, cancellationToken);
+        var exportResult = await _energyPlusModelExporter.ExportAsync(building, request.RunName, cancellationToken);
         if (exportResult.IsFailure)
             return Result<VerificationReport>.Failure(exportResult);
 
         var runResult = await _energyPlusBenchmarkRunner.RunAsync(
             new EnergyPlusBenchmarkRequest
             {
-                ModelPath = idfPath,
-                WeatherFilePath = request.WeatherFilePath,
-                OutputDirectory = tempDir,
+                ModelArtifactId = exportResult.Value.ModelArtifactId,
+                WeatherArtifactId = request.WeatherArtifactId,
+                RunName = request.RunName,
                 AdditionalArguments = request.AdditionalArguments
             },
             cancellationToken);
         if (runResult.IsFailure)
             return Result<VerificationReport>.Failure(runResult);
 
-        var epSummary = _energyPlusResultParser.Parse(tempDir);
-        var report = _verificationComparator.Compare(ourResult, epSummary);
-        return Result<VerificationReport>.Success(report);
+        try
+        {
+            var workspace = _artifacts.GetRunWorkspace(runResult.Value.RunArtifactId);
+            if (workspace.IsFailure)
+                return Result<VerificationReport>.Failure(workspace);
+
+            var epSummary = _energyPlusResultParser.Parse(workspace.Value.OutputDirectory);
+            var report = _verificationComparator.Compare(ourResult, epSummary);
+            return Result<VerificationReport>.Success(report);
+        }
+        finally
+        {
+            DeleteRunWorkspaceQuietly(runResult.Value.RunArtifactId);
+        }
     }
 
-    private void DeleteDirectoryQuietly(string path)
+    private void DeleteRunWorkspaceQuietly(string runArtifactId)
     {
         try
         {
-            if (Directory.Exists(path))
-                Directory.Delete(path, recursive: true);
+            _artifacts.DeleteRunWorkspace(runArtifactId);
         }
         catch (Exception exception)
         {
             _logger.LogWarning(
                 exception,
-                "Failed to delete EnergyPlus verification temporary directory {TempDirectory}.",
-                path);
+                "Failed to delete EnergyPlus verification run artifact {RunArtifactId}.",
+                runArtifactId);
         }
     }
 }

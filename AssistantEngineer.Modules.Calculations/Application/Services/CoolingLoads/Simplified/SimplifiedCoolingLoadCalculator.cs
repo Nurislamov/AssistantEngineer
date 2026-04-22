@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
 
@@ -12,10 +13,10 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
     private readonly ICoolingLoadReferenceData _referenceData;
 
     public SimplifiedCoolingLoadCalculator(
-        CoolingLoadCalculationOptions options,
+        IOptions<CoolingLoadCalculationOptions> options,
         ICoolingLoadReferenceData referenceData)
     {
-        _options = options;
+        _options = options.Value;
         _referenceData = referenceData;
     }
 
@@ -29,7 +30,8 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
         cancellationToken.ThrowIfCancellationRequested();
 
         var reserveFactor = GetReserveFactor(preferences);
-        var deltaT = Math.Abs(room.OutdoorTemperature.Celsius - room.IndoorTemperature.Celsius);
+        var outdoorTemperature = GetOutdoorDesignTemperature(room);
+        var deltaT = Math.Abs(outdoorTemperature - room.IndoorTemperature.Celsius);
         var baseLoad = room.CalculateVolume() * _options.SimplifiedVolumeLoadWPerM3 * GetRoomTypeLoadFactor(room.Type);
         var windowGain = room.Windows.Sum(window =>
             window.Area.SquareMeters *
@@ -60,6 +62,7 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
             lightingGain,
             totalLoad,
             deltaT,
+            outdoorTemperature,
             heightAdjustmentFactor: room.HeightM / 3.0,
             temperatureAdjustmentFactor: 1.0,
             reserveFactor,
@@ -80,6 +83,11 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
 
     private double GetReserveFactor(CalculationPreferences? preferences) =>
         preferences?.CoolingSafetyFactor ?? _options.DefaultCoolingSafetyFactor;
+
+    private double GetOutdoorDesignTemperature(Room room) =>
+        room.OutdoorTemperatureOverride?.Celsius ??
+        room.Floor.Building.ClimateZone?.SummerDesignTemperature.Celsius ??
+        _options.DefaultOutdoorCoolingDesignTemperatureC;
 
     private static double GetRoomTypeLoadFactor(RoomType roomType) =>
         roomType switch

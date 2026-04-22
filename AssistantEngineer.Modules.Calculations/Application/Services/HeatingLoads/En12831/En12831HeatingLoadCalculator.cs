@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 
@@ -14,10 +15,10 @@ public sealed class En12831HeatingLoadCalculator :
     private readonly ILogger<En12831HeatingLoadCalculator> _logger;
 
     public En12831HeatingLoadCalculator(
-        En12831HeatingLoadOptions options,
+        IOptions<En12831HeatingLoadOptions> options,
         ILogger<En12831HeatingLoadCalculator>? logger = null)
     {
-        _options = options;
+        _options = options.Value;
         _logger = logger ?? NullLogger<En12831HeatingLoadCalculator>.Instance;
     }
 
@@ -149,9 +150,10 @@ public sealed class En12831HeatingLoadCalculator :
 
     private static double Round(double value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
 
-    private static double GetOutdoorDesignTemperature(Room room) =>
+    private double GetOutdoorDesignTemperature(Room room) =>
         room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ??
-        room.OutdoorTemperature.Celsius;
+        room.OutdoorTemperatureOverride?.Celsius ??
+        _options.DefaultOutdoorHeatingDesignTemperatureC;
 
     private static double GetWallUValue(Wall wall) =>
         wall.ConstructionAssembly is { UValueWPerM2K: > 0 } assembly

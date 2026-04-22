@@ -1,10 +1,10 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,20 +16,20 @@ public class BuildingCommandService
     private readonly IProjectRepository _projects;
     private readonly IClimateZoneRepository _climateZones;
     private readonly IBuildingRepository _buildings;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<BuildingCommandService> _logger;
 
     public BuildingCommandService(
         IProjectRepository projects,
         IClimateZoneRepository climateZones,
         IBuildingRepository buildings,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<BuildingCommandService>? logger = null)
     {
         _projects = projects;
         _climateZones = climateZones;
         _buildings = buildings;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<BuildingCommandService>.Instance;
     }
 
@@ -90,7 +90,7 @@ public class BuildingCommandService
         }
 
         _buildings.Add(buildingResult.Value);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Created building {BuildingId} for project {ProjectId}.",

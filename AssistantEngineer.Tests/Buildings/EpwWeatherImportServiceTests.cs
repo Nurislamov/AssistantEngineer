@@ -1,10 +1,7 @@
 using System.Globalization;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
@@ -12,8 +9,7 @@ using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Calculations.Domain.Enums;
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 
@@ -34,15 +30,18 @@ public class EpwWeatherImportServiceTests
                 Temperature.FromCelsius(35).Value,
                 Temperature.FromCelsius(-10).Value).Value;
             var annualRepository = new AnnualClimateDataRepositoryStub();
-            var context = new AppDbContextStub();
+            var context = new UnitOfWorkStub();
             var service = new EpwWeatherImportService(
                 new ClimateZoneRepositoryStub(climateZone),
                 annualRepository,
                 context);
 
+            await using var stream = File.OpenRead(epwPath);
             var result = await service.ImportAsync(
                 climateZone.Id,
-                new ImportEpwWeatherRequest { FilePath = epwPath, Year = 2020 });
+                new ImportEpwWeatherRequest { Year = 2020 },
+                stream,
+                "weather.epw");
 
             Assert.True(result.IsSuccess, result.Error);
             Assert.Equal(8760, result.Value.HourlyRecordsImported);
@@ -69,7 +68,7 @@ public class EpwWeatherImportServiceTests
     }
 
     [Fact]
-    public async Task ImportAsyncReturnsNotFoundWhenEpwFileDoesNotExist()
+    public async Task ImportAsyncReturnsValidationWhenSourceFileIsMissing()
     {
         var climateZone = ClimateZone.Create(
             "Imported climate",
@@ -78,14 +77,16 @@ public class EpwWeatherImportServiceTests
         var service = new EpwWeatherImportService(
             new ClimateZoneRepositoryStub(climateZone),
             new AnnualClimateDataRepositoryStub(),
-            new AppDbContextStub());
+            new UnitOfWorkStub());
 
         var result = await service.ImportAsync(
             climateZone.Id,
-            new ImportEpwWeatherRequest { FilePath = "missing.epw", Year = 2020 });
+            new ImportEpwWeatherRequest { Year = 2020 },
+            null!,
+            "missing.epw");
 
         Assert.True(result.IsFailure);
-        Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
     }
 
     private static string CreateEpwContent()
@@ -178,7 +179,7 @@ public class EpwWeatherImportServiceTests
         }
     }
 
-    private sealed class AppDbContextStub : IAppDbContext
+    private sealed class UnitOfWorkStub : IUnitOfWork
     {
         public int SaveChangesCallCount { get; private set; }
 

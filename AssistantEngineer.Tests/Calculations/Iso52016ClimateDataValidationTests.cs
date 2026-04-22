@@ -1,7 +1,7 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -10,6 +10,7 @@ using AssistantEngineer.Modules.Calculations.Application.Validation;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -58,7 +59,7 @@ public class Iso52016ClimateDataValidationTests
         var provider = new CountingReferenceDataProvider(hasClimateData: true);
         var validator = new Iso52016ClimateDataValidator(
             provider,
-            new Iso52016CoolingLoadOptions(),
+            Options.Create(new Iso52016CoolingLoadOptions()),
             new MemoryCache(new MemoryCacheOptions()));
 
         var first = await validator.ValidateAsync(building, CoolingLoadCalculationMethod.Iso52016);
@@ -136,5 +137,3 @@ public class Iso52016ClimateDataValidationTests
         public double GetPeopleHeatGain(RoomType roomType) => 0;
     }
 }
-
-

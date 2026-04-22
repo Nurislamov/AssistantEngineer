@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
@@ -40,14 +41,15 @@ public static class DependencyInjection
         services.AddMemoryCache();
         services.AddSingleton(TimeProvider.System);
 
-        services.AddSingleton(new CoolingLoadCalculationOptions());
-        services.AddSingleton(new Iso52016CoolingLoadOptions());
-        services.AddSingleton(new Iso52016EnergyNeedOptions());
-        services.AddSingleton(new En12831HeatingLoadOptions());
+        services.Configure<CoolingLoadCalculationOptions>(configuration.GetSection("Calculations:CoolingLoad"));
+        services.Configure<Iso52016CoolingLoadOptions>(configuration.GetSection("Calculations:Iso52016Cooling"));
+        services.Configure<Iso52016EnergyNeedOptions>(configuration.GetSection("Calculations:Iso52016EnergyNeed"));
+        services.Configure<En12831HeatingLoadOptions>(configuration.GetSection("Calculations:HeatingLoad"));
 
         services.AddSingleton<IHourlyProfileAggregator, HourlyProfileAggregator>();
         services.AddSingleton<IAnnualProfileGenerator, AnnualProfileGenerator>();
         services.AddSingleton<IIso16798ReferenceData, Iso16798ReferenceData>();
+        services.AddSingleton<IBuildingEnvelopeReferenceData, BuildingEnvelopeReferenceData>();
         services.AddSingleton<ICoolingLoadReferenceData, CoolingLoadReferenceData>();
 
         services.AddScoped<IRoomCoolingLoadCalculationStrategy, SimplifiedCoolingLoadCalculator>();

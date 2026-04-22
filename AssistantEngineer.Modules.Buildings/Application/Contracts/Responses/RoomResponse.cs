@@ -10,7 +10,7 @@ public class RoomResponse
     public double HeightM { get; set; }
     public double VolumeM3 { get; set; }
     public double IndoorTemperatureC { get; set; }
-    public double OutdoorTemperatureC { get; set; }
+    public double? OutdoorTemperatureOverrideC { get; set; }
     public int PeopleCount { get; set; }
     public double EquipmentLoadW { get; set; }
     public double LightingLoadW { get; set; }

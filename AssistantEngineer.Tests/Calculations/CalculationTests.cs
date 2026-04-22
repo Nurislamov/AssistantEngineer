@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
@@ -7,6 +8,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Construction;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.ValueObjects;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -130,7 +132,7 @@ public class CalculationTests
                 .Select(hour => hour is 12 or 13 ? 42.0 : 22.0)
                 .ToArray());
         var calculator = new Iso52016CoolingLoadCalculator(
-            new Iso52016CoolingLoadOptions(),
+            Options.Create(new Iso52016CoolingLoadOptions()),
             provider,
             CalculationTestFactory.CreateProfileAggregator());
 
@@ -243,5 +245,3 @@ public class CalculationTests
         public double GetPeopleHeatGain(RoomType roomType) => 0;
     }
 }
-
-

@@ -1,6 +1,6 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.SharedKernel.Primitives;
-using AssistantEngineer.Infrastructure.Services.Benchmarks;
+using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tests;
 public class EnergyPlusBenchmarkRunnerTests
 {
     [Fact]
-    public async Task RunAsyncReturnsValidationWhenRequiredPathsAreMissing()
+    public async Task RunAsyncReturnsValidationWhenRequiredArtifactIdsAreMissing()
     {
         var runner = CreateRunner(new EnergyPlusBenchmarkOptions());
 
@@ -17,7 +17,7 @@ public class EnergyPlusBenchmarkRunnerTests
 
         Assert.True(result.IsFailure);
         Assert.Equal(ResultErrorType.Validation, result.ErrorType);
-        Assert.Contains("model path", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("model artifact", result.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -26,20 +26,18 @@ public class EnergyPlusBenchmarkRunnerTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var weatherPath = Path.Combine(tempDirectory, "weather.epw");
-            await File.WriteAllTextAsync(weatherPath, "weather");
-            var runner = CreateRunner(new EnergyPlusBenchmarkOptions());
+            SeedArtifact(tempDirectory, "weather.epw", "weather");
+            var runner = CreateRunner(new EnergyPlusBenchmarkOptions { ArtifactRootDirectory = tempDirectory });
 
             var result = await runner.RunAsync(new EnergyPlusBenchmarkRequest
             {
-                ModelPath = Path.Combine(tempDirectory, "missing.idf"),
-                WeatherFilePath = weatherPath,
-                OutputDirectory = Path.Combine(tempDirectory, "output")
+                ModelArtifactId = "missing.idf",
+                WeatherArtifactId = "weather.epw"
             });
 
             Assert.True(result.IsFailure);
             Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
-            Assert.Contains("model file", result.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("model artifact", result.Error, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
@@ -53,21 +51,17 @@ public class EnergyPlusBenchmarkRunnerTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var modelPath = Path.Combine(tempDirectory, "model.idf");
-            var weatherPath = Path.Combine(tempDirectory, "weather.epw");
-            await File.WriteAllTextAsync(modelPath, "model");
-            await File.WriteAllTextAsync(weatherPath, "weather");
             var runner = CreateRunner(new EnergyPlusBenchmarkOptions
             {
                 UseDocker = false,
-                ExecutablePath = ""
+                ExecutablePath = "",
+                ArtifactRootDirectory = tempDirectory
             });
 
             var result = await runner.RunAsync(new EnergyPlusBenchmarkRequest
             {
-                ModelPath = modelPath,
-                WeatherFilePath = weatherPath,
-                OutputDirectory = Path.Combine(tempDirectory, "output")
+                ModelArtifactId = "model.idf",
+                WeatherArtifactId = "weather.epw"
             });
 
             Assert.True(result.IsFailure);
@@ -86,20 +80,16 @@ public class EnergyPlusBenchmarkRunnerTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var modelPath = Path.Combine(tempDirectory, "model.idf");
-            var weatherPath = Path.Combine(tempDirectory, "weather.epw");
-            await File.WriteAllTextAsync(modelPath, "model");
-            await File.WriteAllTextAsync(weatherPath, "weather");
             var runner = CreateRunner(new EnergyPlusBenchmarkOptions
             {
-                MaxCapturedLogCharacters = 0
+                MaxCapturedLogCharacters = 0,
+                ArtifactRootDirectory = tempDirectory
             });
 
             var result = await runner.RunAsync(new EnergyPlusBenchmarkRequest
             {
-                ModelPath = modelPath,
-                WeatherFilePath = weatherPath,
-                OutputDirectory = Path.Combine(tempDirectory, "output")
+                ModelArtifactId = "model.idf",
+                WeatherArtifactId = "weather.epw"
             });
 
             Assert.True(result.IsFailure);
@@ -119,6 +109,16 @@ public class EnergyPlusBenchmarkRunnerTests
         return path;
     }
 
-    private static EnergyPlusBenchmarkRunner CreateRunner(EnergyPlusBenchmarkOptions options) =>
-        new(Options.Create(options), NullLogger<EnergyPlusBenchmarkRunner>.Instance);
+    private static EnergyPlusBenchmarkRunner CreateRunner(EnergyPlusBenchmarkOptions options)
+    {
+        var artifacts = new LocalEnergyPlusArtifactStore(Options.Create(options));
+        return new(Options.Create(options), NullLogger<EnergyPlusBenchmarkRunner>.Instance, artifacts);
+    }
+
+    private static void SeedArtifact(string rootDirectory, string artifactId, string content)
+    {
+        var artifactsDirectory = Path.Combine(rootDirectory, "artifacts");
+        Directory.CreateDirectory(artifactsDirectory);
+        File.WriteAllText(Path.Combine(artifactsDirectory, artifactId), content);
+    }
 }

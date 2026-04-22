@@ -1,8 +1,8 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,18 +13,18 @@ public class FloorCommandService
 {
     private readonly IBuildingRepository _buildings;
     private readonly IFloorRepository _floors;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<FloorCommandService> _logger;
 
     public FloorCommandService(
         IBuildingRepository buildings,
         IFloorRepository floors,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<FloorCommandService>? logger = null)
     {
         _buildings = buildings;
         _floors = floors;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<FloorCommandService>.Instance;
     }
 
@@ -54,7 +54,7 @@ public class FloorCommandService
         }
 
         _floors.Add(floorResult.Value);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Created floor {FloorId} for building {BuildingId}.", floorResult.Value.Id, buildingId);
         return Result<FloorResponse>.Success(BuildingsMapper.ToResponse(floorResult.Value));

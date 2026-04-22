@@ -2,13 +2,14 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Services.Projects;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/projects")]
-[Route("api/projects")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/projects")]
 public class ProjectsController : ControllerBase
 {
     private readonly ProjectCommandService _command;

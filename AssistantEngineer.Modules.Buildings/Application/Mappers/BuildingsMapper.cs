@@ -30,7 +30,7 @@ internal static class BuildingsMapper
             HeightM = room.HeightM,
             VolumeM3 = room.CalculateVolume(),
             IndoorTemperatureC = room.IndoorTemperature.Celsius,
-            OutdoorTemperatureC = room.OutdoorTemperature.Celsius,
+            OutdoorTemperatureOverrideC = room.OutdoorTemperatureOverride?.Celsius,
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = room.EquipmentLoad.Watts,
             LightingLoadW = room.LightingLoad.Watts,

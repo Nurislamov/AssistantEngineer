@@ -38,14 +38,14 @@ public class Floor
         Area area,
         double heightM,
         Temperature indoorTemp,
-        Temperature outdoorTemp,
+        Temperature? outdoorTemperatureOverride = null,
         int peopleCount = 0,
         Power? equipmentLoad = null,
         Power? lightingLoad = null,
         RoomType type = RoomType.Office)
     {
         var roomResult = Room.Create(
-            name, area, heightM, indoorTemp, outdoorTemp, this,
+            name, area, heightM, indoorTemp, outdoorTemperatureOverride, this,
             peopleCount, equipmentLoad, lightingLoad, type);
 
         if (roomResult.IsFailure)

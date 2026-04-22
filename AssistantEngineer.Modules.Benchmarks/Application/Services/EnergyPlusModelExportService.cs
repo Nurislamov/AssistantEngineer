@@ -29,7 +29,7 @@ public sealed class EnergyPlusModelExportService
 
         return await _energyPlusModelExporter.ExportAsync(
             building,
-            request.OutputPath,
+            request.RunName,
             cancellationToken);
     }
 }

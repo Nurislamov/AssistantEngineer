@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Equipment;
+using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 

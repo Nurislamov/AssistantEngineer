@@ -6,14 +6,15 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/floors")]
-[Route("api/floors")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/floors")]
 public class FloorsController : ControllerBase
 {
     private readonly FloorCommandService _command;

@@ -70,25 +70,28 @@ public class Building
         return Result.Success();
     }
 
-    public Result<ThermalZone> AddThermalZone(string name, IEnumerable<int> roomIds)
+    public Result<ThermalZone> AddThermalZone(string name, IEnumerable<Room> rooms)
     {
-        var ids = roomIds.Distinct().ToArray();
-        var knownRoomIds = _floors
+        var assignedRooms = rooms.Distinct().ToArray();
+        var knownRooms = _floors
             .SelectMany(floor => floor.Rooms)
-            .Select(room => room.Id)
-            .Where(id => id > 0)
             .ToHashSet();
 
-        if (knownRoomIds.Count > 0 && ids.Any(id => !knownRoomIds.Contains(id)))
-            return Result<ThermalZone>.Validation("Thermal zone room ids must belong to this building.");
+        if (assignedRooms.Any(room => !knownRooms.Contains(room)))
+            return Result<ThermalZone>.Validation("Thermal zone rooms must belong to this building.");
+
+        var assignedRoomSet = assignedRooms.ToHashSet();
+        var alreadyAssignedRooms = _thermalZones
+            .SelectMany(zone => zone.AssignedRooms)
+            .ToHashSet();
+
+        if (alreadyAssignedRooms.Overlaps(assignedRoomSet))
+            return Result<ThermalZone>.Conflict("Room cannot belong to more than one thermal zone.");
 
         if (_thermalZones.Any(zone => zone.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             return Result<ThermalZone>.Conflict($"Thermal zone with name '{name}' already exists in this building.");
 
-        if (_thermalZones.SelectMany(zone => zone.RoomIds).Intersect(ids).Any())
-            return Result<ThermalZone>.Conflict("Room cannot belong to more than one thermal zone.");
-
-        var zoneResult = ThermalZone.Create(name, ids, this);
+        var zoneResult = ThermalZone.Create(name, assignedRooms, this);
         if (zoneResult.IsFailure)
             return Result<ThermalZone>.Failure(zoneResult);
 

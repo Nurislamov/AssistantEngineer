@@ -291,33 +291,34 @@ GET {{AssistantEngineer.Api_HostAddress}}/api/v1/rooms/{{roomId}}/heating-load?m
 Accept: application/json
 
 ### Export EnergyPlus IDF model
-# Requires an existing building with floors and rooms. The API process must be allowed to write to outputPath.
+# Requires an existing building with floors and rooms. The server creates and stores the model artifact.
 POST {{AssistantEngineer.Api_HostAddress}}/api/v1/benchmarks/energyplus/buildings/{{buildingId}}/model
 Content-Type: application/json
 
 {
-  "outputPath": "D:\\EnergyPlus\\models\\demo.idf"
+  "runName": "demo"
 }
 
 ### EnergyPlus validation run
-# Requires EnergyPlus installed/configured, a valid EPW path, and an IDF path from the export request above.
+# Requires EnergyPlus installed/configured and model/weather artifacts managed by the server.
 POST {{AssistantEngineer.Api_HostAddress}}/api/v1/benchmarks/energyplus
 Content-Type: application/json
 
 {
-  "modelPath": "D:\\EnergyPlus\\models\\demo.idf",
-  "weatherFilePath": "D:\\EnergyPlus\\weather\\demo.epw",
-  "outputDirectory": "D:\\EnergyPlus\\outputs\\demo",
+  "modelArtifactId": "demo-model.idf",
+  "weatherArtifactId": "demo-weather.epw",
+  "runName": "demo",
   "additionalArguments": []
 }
 
 ### Verify internal calculation against EnergyPlus
-# Requires EnergyPlus configuration and a valid weather file.
+# Requires EnergyPlus configuration and a server-managed weather artifact.
 POST {{AssistantEngineer.Api_HostAddress}}/api/v1/benchmarks/buildings/{{buildingId}}/verify?method=Iso52016
 Content-Type: application/json
 
 {
-  "weatherFilePath": "D:\\EnergyPlus\\weather\\demo.epw",
+  "weatherArtifactId": "demo-weather.epw",
+  "runName": "demo-verify",
   "additionalArguments": []
 }
 

@@ -1,4 +1,16 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
+using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Models.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
@@ -8,13 +20,13 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.ValueObjects;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -308,7 +320,7 @@ public class BuildingPerformanceCalculationServicesTests
             new SolarRadiationService(),
             new VentilationHeatTransferCalculator(new Iso16798ReferenceData()),
             new WindowShadingService(),
-            new Iso52016EnergyNeedOptions());
+            Options.Create(new Iso52016EnergyNeedOptions()));
 
         var results = await service.RunAsync();
 

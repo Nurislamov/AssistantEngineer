@@ -1,34 +1,23 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
+using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
-using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
-using AssistantEngineer.Modules.Calculations.Application.Mappers;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/benchmarks")]
-[Route("api/benchmarks")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/benchmarks")]
 public class BenchmarksController : ControllerBase
 {
-    private readonly IEnergyPlusBenchmarkRunner _energyPlusBenchmarkRunner;
-    private readonly EnergyPlusModelExportService _energyPlusModelExportService;
-    private readonly VerificationService _verificationService;
-    private readonly Iso52016ReferenceBenchmarkService _iso52016ReferenceBenchmarkService;
+    private readonly IBenchmarksFacade _benchmarks;
 
-    public BenchmarksController(
-        IEnergyPlusBenchmarkRunner energyPlusBenchmarkRunner,
-        EnergyPlusModelExportService energyPlusModelExportService,
-        VerificationService verificationService,
-        Iso52016ReferenceBenchmarkService iso52016ReferenceBenchmarkService)
+    public BenchmarksController(IBenchmarksFacade benchmarks)
     {
-        _energyPlusBenchmarkRunner = energyPlusBenchmarkRunner;
-        _energyPlusModelExportService = energyPlusModelExportService;
-        _verificationService = verificationService;
-        _iso52016ReferenceBenchmarkService = iso52016ReferenceBenchmarkService;
+        _benchmarks = benchmarks;
     }
 
     [HttpPost("energyplus")]
@@ -37,7 +26,7 @@ public class BenchmarksController : ControllerBase
         [FromBody] EnergyPlusBenchmarkRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyPlusBenchmarkRunner.RunAsync(request, cancellationToken);
+        var result = await _benchmarks.RunEnergyPlusAsync(request, cancellationToken);
         return result.ToActionResult();
     }
 
@@ -48,7 +37,7 @@ public class BenchmarksController : ControllerBase
         [FromBody] EnergyPlusModelExportRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyPlusModelExportService.ExportBuildingModelAsync(
+        var result = await _benchmarks.ExportEnergyPlusModelAsync(
             buildingId,
             request,
             cancellationToken);
@@ -63,9 +52,9 @@ public class BenchmarksController : ControllerBase
         [FromBody] VerificationRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _verificationService.VerifyBuildingAsync(
+        var result = await _benchmarks.VerifyCalculationAsync(
             buildingId,
-            method.ToDomain(),
+            method,
             request,
             cancellationToken);
         return result.ToOkResult();
@@ -76,7 +65,7 @@ public class BenchmarksController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>> RunIso52016ReferenceCases(
         CancellationToken cancellationToken)
     {
-        var result = await _iso52016ReferenceBenchmarkService.RunAsync(cancellationToken);
+        var result = await _benchmarks.RunIso52016ReferenceCasesAsync(cancellationToken);
         return Ok(result);
     }
 }

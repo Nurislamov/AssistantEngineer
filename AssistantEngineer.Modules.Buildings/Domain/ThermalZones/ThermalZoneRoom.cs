@@ -11,10 +11,11 @@ public class ThermalZoneRoom
 
     private ThermalZoneRoom() { }
 
-    private ThermalZoneRoom(int roomId)
+    private ThermalZoneRoom(Room room)
     {
-        RoomId = roomId;
+        Room = room;
+        RoomId = room.Id;
     }
 
-    internal static ThermalZoneRoom Create(int roomId) => new(roomId);
+    internal static ThermalZoneRoom Create(Room room) => new(room);
 }

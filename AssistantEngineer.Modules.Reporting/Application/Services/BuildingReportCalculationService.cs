@@ -6,7 +6,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
-using AssistantEngineer.Modules.Equipment.Abstractions;
+using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Models;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;

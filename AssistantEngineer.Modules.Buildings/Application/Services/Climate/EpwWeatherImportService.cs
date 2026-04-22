@@ -1,9 +1,9 @@
 using System.Globalization;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -17,37 +17,36 @@ public sealed class EpwWeatherImportService
 
     private readonly IClimateZoneRepository _climateZones;
     private readonly IAnnualClimateDataRepository _annualClimateData;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<EpwWeatherImportService> _logger;
 
     public EpwWeatherImportService(
         IClimateZoneRepository climateZones,
         IAnnualClimateDataRepository annualClimateData,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<EpwWeatherImportService>? logger = null)
     {
         _climateZones = climateZones;
         _annualClimateData = annualClimateData;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<EpwWeatherImportService>.Instance;
     }
 
     public async Task<Result<AnnualClimateDataImportResponse>> ImportAsync(
         int climateZoneId,
         ImportEpwWeatherRequest request,
+        Stream sourceFile,
+        string sourceFileName,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(request.FilePath))
-            return Result<AnnualClimateDataImportResponse>.Validation("EPW file path is required.");
-
-        if (!File.Exists(request.FilePath))
-            return Result<AnnualClimateDataImportResponse>.NotFound($"EPW file '{request.FilePath}' was not found.");
+        if (sourceFile is null || !sourceFile.CanRead)
+            return Result<AnnualClimateDataImportResponse>.Validation("Readable EPW source file is required.");
 
         var climateZone = await _climateZones.GetByIdAsync(climateZoneId, cancellationToken);
         if (climateZone is null)
             return Result<AnnualClimateDataImportResponse>.NotFound($"Climate zone with id {climateZoneId} not found.");
 
-        var parsedWeather = await ParseEpwAsync(request.FilePath, cancellationToken);
+        var parsedWeather = await ParseEpwAsync(sourceFile, cancellationToken);
         if (parsedWeather.IsFailure)
             return Result<AnnualClimateDataImportResponse>.Failure(parsedWeather);
 
@@ -76,7 +75,7 @@ public sealed class EpwWeatherImportService
         }
 
         await _annualClimateData.ReplaceForClimateZoneAsync(annualData.Value, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Imported {HourlyRecordCount} EPW weather records for climate zone {ClimateZoneId}, year {Year}.",
@@ -89,7 +88,7 @@ public sealed class EpwWeatherImportService
             ClimateZoneId = climateZoneId,
             Year = request.Year,
             HourlyRecordsImported = parsedWeather.Value.Count,
-            SourcePath = Path.GetFullPath(request.FilePath),
+            SourceFileName = sourceFileName,
             ImportedFields =
             [
                 "DryBulbTemperature",
@@ -108,14 +107,13 @@ public sealed class EpwWeatherImportService
     }
 
     private static async Task<Result<IReadOnlyList<EpwWeatherHour>>> ParseEpwAsync(
-        string filePath,
+        Stream sourceFile,
         CancellationToken cancellationToken)
     {
         var result = new List<EpwWeatherHour>(ExpectedAnnualHours);
         var lineNumber = 0;
 
-        await using var stream = File.OpenRead(filePath);
-        using var reader = new StreamReader(stream);
+        using var reader = new StreamReader(sourceFile, leaveOpen: true);
 
         while (await reader.ReadLineAsync(cancellationToken) is { } line)
         {

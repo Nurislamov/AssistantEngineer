@@ -1,6 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Buildings.Application.Services.Rooms;
+using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -46,7 +46,7 @@ public class HeatingLoadValidationTests
             Temperature.FromCelsius(22).Value,
             Temperature.FromCelsius(-15).Value).Value;
 
-        var service = new RoomQueryService(
+        var service = new RoomCalculationService(
             new RoomRepositoryStub(room),
             new EmptyPreferencesRepository(),
             CalculationTestFactory.CreateRoomCoolingLoadCalculator(),
@@ -124,5 +124,4 @@ public class HeatingLoadValidationTests
     }
 
 }
-
 

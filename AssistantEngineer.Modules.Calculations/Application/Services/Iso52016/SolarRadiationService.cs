@@ -1,26 +1,8 @@
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
-
-public interface ISolarRadiationService
-{
-    /// <summary>
-    /// Пересчитывает прямую и рассеянную радиацию из горизонтальной плоскости на вертикальную поверхность заданной ориентации.
-    /// </summary>
-    /// <param name="hourlyData">Данные за час (прямая и рассеянная на горизонтальную поверхность).</param>
-    /// <param name="orientation">Ориентация поверхности.</param>
-    /// <param name="latitude">Широта местности (для расчёта углов солнца).</param>
-    /// <param name="dayOfYear">День года (1..365).</param>
-    /// <param name="hour">Час суток (0..23).</param>
-    /// <returns>Суммарная солнечная радиация на поверхность (Вт/м²).</returns>
-    double CalculateVerticalSurfaceRadiation(
-        HourlyClimateData hourlyData,
-        CardinalDirection orientation,
-        double latitude,
-        int dayOfYear,
-        int hour);
-}
 
 public class SolarRadiationService : ISolarRadiationService
 {

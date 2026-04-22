@@ -1,5 +1,7 @@
 using AssistantEngineer.Api;
+using AssistantEngineer.Api.Facades;
 using AssistantEngineer.Api.Filters;
+using Asp.Versioning;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Buildings;
 using AssistantEngineer.Modules.Calculations;
@@ -10,6 +12,8 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("building-archetypes.json", optional: false, reloadOnChange: true);
 
 var maxRequestBodyBytes = builder.Configuration.GetValue<long?>("RequestLimits:MaxRequestBodyBytes") ?? 1_048_576;
 var defaultRequestTimeoutSeconds = builder.Configuration.GetValue<int?>("RequestLimits:DefaultTimeoutSeconds") ?? 30;
@@ -40,18 +44,31 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ValidationFilter>();
     options.Filters.Add<GlobalExceptionFilter>();
 });
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = false;
+        options.ReportApiVersions = true;
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+    })
+    .AddMvc();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 
-builder.Services.AddBuildingsModule();
+builder.Services.AddBuildingsModule(builder.Configuration);
 builder.Services.AddCalculationsModule(builder.Configuration);
 builder.Services.AddEquipmentModule();
 builder.Services.AddReportingModule();
 builder.Services.AddBenchmarksModule(builder.Configuration);
-builder.Services.AddPersistence(builder.Configuration, builder.Environment.EnvironmentName);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.EnvironmentName);
+builder.Services.AddScoped<IBuildingsFacade, BuildingsFacade>();
+builder.Services.AddScoped<IRoomsFacade, RoomsFacade>();
+builder.Services.AddScoped<IReportsFacade, ReportsFacade>();
+builder.Services.AddScoped<IBenchmarksFacade, BenchmarksFacade>();
 
 builder.Services.AddOpenApi();
 

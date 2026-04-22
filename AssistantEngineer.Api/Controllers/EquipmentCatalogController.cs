@@ -2,13 +2,14 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Services;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/equipment-catalog")]
-[Route("api/equipment-catalog")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/equipment-catalog")]
 public class EquipmentCatalogController : ControllerBase
 {
     private readonly CoolingEquipmentCatalogCommandService _command;

@@ -16,7 +16,7 @@ public class Room
     public double HeightM { get; private set; }
 
     public Temperature IndoorTemperature { get; private set; } = null!;
-    public Temperature OutdoorTemperature { get; private set; } = null!;
+    public Temperature? OutdoorTemperatureOverride { get; private set; }
 
     public int PeopleCount { get; private set; }
     public Power EquipmentLoad { get; private set; } = Power.FromWatts(0).Value;
@@ -26,10 +26,6 @@ public class Room
 
     private readonly List<Window> _windows = new();
     private readonly List<Wall> _walls = new();
-    public double GetFloorUValue() => 0.3;
-    public double GetCeilingUValue() => 0.2;
-    public double GetFloorHeatCapacityKjPerM2K() => 50.0;
-    public double GetCeilingHeatCapacityKjPerM2K() => 30.0;
     public IReadOnlyCollection<Window> Windows => new ReadOnlyCollection<Window>(_windows);
     public IReadOnlyCollection<Wall> Walls => new ReadOnlyCollection<Wall>(_walls);
 
@@ -52,7 +48,7 @@ public class Room
         Area area,
         double heightM,
         Temperature indoorTemp,
-        Temperature outdoorTemp,
+        Temperature? outdoorTemperatureOverride,
         Floor floor,
         int peopleCount,
         Power equipmentLoad,
@@ -63,7 +59,7 @@ public class Room
         Area = area;
         HeightM = heightM;
         IndoorTemperature = indoorTemp;
-        OutdoorTemperature = outdoorTemp;
+        OutdoorTemperatureOverride = outdoorTemperatureOverride;
         Floor = floor;
         FloorId = floor.Id;
         PeopleCount = peopleCount;
@@ -77,7 +73,7 @@ public class Room
         Area area,
         double heightM,
         Temperature indoorTemp,
-        Temperature outdoorTemp,
+        Temperature? outdoorTemperatureOverride,
         Floor floor,
         int peopleCount = 0,
         Power? equipmentLoad = null,
@@ -97,7 +93,7 @@ public class Room
         var light = lightingLoad ?? Power.FromWatts(0).Value;
 
         return Result<Room>.Success(new Room(
-            nameResult.Value, area, heightM, indoorTemp, outdoorTemp, floor,
+            nameResult.Value, area, heightM, indoorTemp, outdoorTemperatureOverride, floor,
             peopleCount, equip, light, type));
     }
 
@@ -204,7 +200,9 @@ public class Room
         return Result.Success();
     }
     
-    public double CalculateInternalHeatCapacityKjPerK()
+    public double CalculateInternalHeatCapacityKjPerK(
+        double floorHeatCapacityKjPerM2K,
+        double ceilingHeatCapacityKjPerM2K)
     {
         var total = 0.0;
         
@@ -213,8 +211,8 @@ public class Room
             total += wall.Area.SquareMeters * wall.ConstructionAssembly!.InternalHeatCapacityKjPerM2K;
         }
         
-        total += Area.SquareMeters * GetFloorHeatCapacityKjPerM2K();
-        total += Area.SquareMeters * GetCeilingHeatCapacityKjPerM2K();
+        total += Area.SquareMeters * floorHeatCapacityKjPerM2K;
+        total += Area.SquareMeters * ceilingHeatCapacityKjPerM2K;
 
         return total;
     }

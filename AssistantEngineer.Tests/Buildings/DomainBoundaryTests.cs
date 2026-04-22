@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using System.Reflection;
 
 namespace AssistantEngineer.Tests;
@@ -98,7 +99,7 @@ public class DomainBoundaryTests
     {
         var calculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
         var room = DomainInvariantTests.CreateRoom();
-        var unsupportedMethod = (AssistantEngineer.Modules.Calculations.Domain.Enums.CoolingLoadCalculationMethod)999;
+        var unsupportedMethod = (CoolingLoadCalculationMethod)999;
 
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
             calculator.CalculateAsync(room, unsupportedMethod));

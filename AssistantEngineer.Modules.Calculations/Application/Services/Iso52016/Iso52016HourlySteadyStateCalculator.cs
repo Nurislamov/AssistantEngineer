@@ -5,14 +5,20 @@ using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
@@ -24,6 +30,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
     private readonly ISolarRadiationService _solarRadiationService;
     private readonly IVentilationHeatTransferCalculator? _ventilationCalculator;
     private readonly IWindowShadingService? _windowShadingService;
+    private readonly IBuildingEnvelopeReferenceData _envelopeReferenceData;
     private readonly Iso52016EnergyNeedOptions _options;
     private readonly ILogger<Iso52016HourlySteadyStateCalculator> _logger;
 
@@ -32,14 +39,16 @@ public sealed class Iso52016HourlySteadyStateCalculator
         ISolarRadiationService solarRadiationService,
         IVentilationHeatTransferCalculator? ventilationCalculator = null,
         IWindowShadingService? windowShadingService = null,
-        Iso52016EnergyNeedOptions? options = null,
+        IBuildingEnvelopeReferenceData? envelopeReferenceData = null,
+        IOptions<Iso52016EnergyNeedOptions>? options = null,
         ILogger<Iso52016HourlySteadyStateCalculator>? logger = null)
     {
         _climateDataProvider = climateDataProvider;
         _solarRadiationService = solarRadiationService;
         _ventilationCalculator = ventilationCalculator;
         _windowShadingService = windowShadingService;
-        _options = options ?? new Iso52016EnergyNeedOptions();
+        _envelopeReferenceData = envelopeReferenceData ?? new BuildingEnvelopeReferenceData();
+        _options = options?.Value ?? new Iso52016EnergyNeedOptions();
         _logger = logger ?? NullLogger<Iso52016HourlySteadyStateCalculator>.Instance;
     }
 
@@ -230,9 +239,10 @@ public sealed class Iso52016HourlySteadyStateCalculator
         CalculationPreferences? preferences)
     {
         var rooms = zone.Rooms;
+        var envelopeDefaults = _envelopeReferenceData.GetDefaults();
         var floorArea = rooms.Sum(room => room.Area.SquareMeters);
         var volume = rooms.Sum(room => room.CalculateVolume());
-        var transmission = rooms.Sum(GetTransmissionHeatTransferCoefficient);
+        var transmission = rooms.Sum(room => GetTransmissionHeatTransferCoefficient(room, envelopeDefaults));
         var ventilation = rooms.Sum(room =>
         {
             var airChangesPerHour = room.VentilationParameters?.AirChangesPerHour ??
@@ -243,7 +253,9 @@ public sealed class Iso52016HourlySteadyStateCalculator
                 room.CalculateVolume() *
                 heatRecoveryFactor;
         });
-        var envelopeCapacity = rooms.Sum(room => room.CalculateInternalHeatCapacityKjPerK() * 1000.0);
+        var envelopeCapacity = rooms.Sum(room => room.CalculateInternalHeatCapacityKjPerK(
+            envelopeDefaults.FloorHeatCapacityKjPerM2K,
+            envelopeDefaults.CeilingHeatCapacityKjPerM2K) * 1000.0);
         var thermalCapacity = Math.Max(
             envelopeCapacity + floorArea * GetInternalHeatCapacityJPerM2K(preferences),
             Math.Max(floorArea, 1.0) * GetInternalHeatCapacityJPerM2K(preferences));
@@ -408,14 +420,16 @@ public sealed class Iso52016HourlySteadyStateCalculator
         return people + equipment + lighting;
     }
 
-    private static double GetTransmissionHeatTransferCoefficient(Room room)
+    private static double GetTransmissionHeatTransferCoefficient(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
     {
         var envelope = room.Walls
             .Where(wall => wall.IsExternal)
             .Sum(wall => wall.Area.SquareMeters * GetWallUValue(wall));
         envelope += room.Windows.Sum(window => window.Area.SquareMeters * window.UValue.Value);
-        envelope += room.Area.SquareMeters * room.GetFloorUValue();
-        envelope += room.Area.SquareMeters * room.GetCeilingUValue();
+        envelope += room.Area.SquareMeters * envelopeDefaults.FloorUValueWPerM2K;
+        envelope += room.Area.SquareMeters * envelopeDefaults.CeilingUValueWPerM2K;
         return envelope;
     }
 
@@ -427,26 +441,20 @@ public sealed class Iso52016HourlySteadyStateCalculator
         if (building.ThermalZones.Count == 0)
             return [new ThermalZoneGroup("Building", allRooms)];
 
-        var roomsById = allRooms
-            .Where(room => room.Id > 0)
-            .ToDictionary(room => room.Id);
-        var countedRoomIds = new HashSet<int>();
+        var countedRooms = new HashSet<Room>();
         var groups = new List<ThermalZoneGroup>();
 
         foreach (var zone in building.ThermalZones.OrderBy(zone => zone.Id))
         {
-            var zoneRooms = zone.RoomIds
-                .Where(countedRoomIds.Add)
-                .Select(roomId => roomsById.TryGetValue(roomId, out var room) ? room : null)
-                .Where(room => room is not null)
-                .Select(room => room!)
+            var zoneRooms = zone.AssignedRooms
+                .Where(countedRooms.Add)
                 .ToArray();
             if (zoneRooms.Length > 0)
                 groups.Add(new ThermalZoneGroup(zone.Name, zoneRooms));
         }
 
         var unassignedRooms = allRooms
-            .Where(room => room.Id <= 0 || !countedRoomIds.Contains(room.Id))
+            .Where(room => !countedRooms.Contains(room))
             .ToArray();
         if (unassignedRooms.Length > 0)
             groups.Add(new ThermalZoneGroup("Unassigned rooms", unassignedRooms));

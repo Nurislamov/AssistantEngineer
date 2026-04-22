@@ -2,14 +2,15 @@ using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/climate-zones")]
-[Route("api/climate-zones")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/climate-zones")]
 public class ClimateDataController : ControllerBase
 {
     private readonly EpwWeatherImportService _epwWeatherImportService;
@@ -23,12 +24,19 @@ public class ClimateDataController : ControllerBase
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<AnnualClimateDataImportResponse>> ImportEpwWeather(
         int climateZoneId,
-        [FromBody] ImportEpwWeatherRequest request,
+        [FromForm] int year,
+        [FromForm] IFormFile? sourceFile,
         CancellationToken cancellationToken)
     {
+        if (sourceFile is null)
+            return BadRequest("EPW source file is required.");
+
+        await using var stream = sourceFile.OpenReadStream();
         var result = await _epwWeatherImportService.ImportAsync(
             climateZoneId,
-            request,
+            new ImportEpwWeatherRequest { Year = year },
+            stream,
+            sourceFile.FileName,
             cancellationToken);
         return result.ToActionResult();
     }

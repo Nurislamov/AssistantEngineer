@@ -3,11 +3,13 @@ using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.SharedKernel.ValueObjects;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
@@ -51,12 +53,12 @@ public sealed class Iso52016ReferenceBenchmarkService
         ISolarRadiationService solarRadiationService,
         IVentilationHeatTransferCalculator ventilationCalculator,
         IWindowShadingService windowShadingService,
-        Iso52016EnergyNeedOptions options)
+        IOptions<Iso52016EnergyNeedOptions> options)
     {
         _solarRadiationService = solarRadiationService;
         _ventilationCalculator = ventilationCalculator;
         _windowShadingService = windowShadingService;
-        _options = options;
+        _options = options.Value;
     }
 
     public async Task<IReadOnlyList<Iso52016ReferenceBenchmarkResult>> RunAsync(
@@ -179,7 +181,7 @@ public sealed class Iso52016ReferenceBenchmarkService
             _solarRadiationService,
             _ventilationCalculator,
             _windowShadingService,
-            options);
+            options: Microsoft.Extensions.Options.Options.Create(options));
 
     private static Iso52016ReferenceBenchmarkResult CreateResult(
         string caseId,

@@ -30,8 +30,8 @@ public class ThermalZoneAggregationTests
         SetEntityId(northRoom, 101);
         SetEntityId(southRoom, 102);
 
-        Assert.True(building.AddThermalZone("North zone", [northRoom.Id]).IsSuccess);
-        Assert.True(building.AddThermalZone("South zone", [southRoom.Id]).IsSuccess);
+        Assert.True(building.AddThermalZone("North zone", [northRoom]).IsSuccess);
+        Assert.True(building.AddThermalZone("South zone", [southRoom]).IsSuccess);
 
         var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
         var aggregateCalculator = CalculationTestFactory.CreateAggregateCalculator(roomCalculator);
@@ -50,7 +50,7 @@ public class ThermalZoneAggregationTests
     }
 
     [Fact]
-    public void BuildingRejectsThermalZoneWithRoomAlreadyAssignedToAnotherZone()
+    public void BuildingRejectsThermalZoneWithUnsavedRoomAlreadyAssignedToAnotherZone()
     {
         var building = DomainInvariantTests.CreateBuilding();
         var floor = building.AddFloor("Level 1").Value;
@@ -60,10 +60,10 @@ public class ThermalZoneAggregationTests
             3,
             Temperature.FromCelsius(22).Value,
             Temperature.FromCelsius(35).Value).Value;
-        SetEntityId(room, 101);
-        Assert.True(building.AddThermalZone("Zone 1", [room.Id]).IsSuccess);
+        Assert.Equal(0, room.Id);
+        Assert.True(building.AddThermalZone("Zone 1", [room]).IsSuccess);
 
-        var result = building.AddThermalZone("Zone 2", [room.Id]);
+        var result = building.AddThermalZone("Zone 2", [room]);
 
         Assert.True(result.IsFailure);
     }
@@ -75,5 +75,3 @@ public class ThermalZoneAggregationTests
         field.SetValue(entity, id);
     }
 }
-
-

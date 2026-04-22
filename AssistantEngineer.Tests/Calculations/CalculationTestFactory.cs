@@ -1,4 +1,6 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
@@ -10,6 +12,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.R
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -27,21 +30,21 @@ internal static class CalculationTestFactory
 
         return new RoomCoolingLoadCalculator(
         [
-            new SimplifiedCoolingLoadCalculator(options, referenceData),
-            new Iso52016CoolingLoadCalculator(new Iso52016CoolingLoadOptions(), new TestIso52016ReferenceDataProvider(), profileAggregator)
+            new SimplifiedCoolingLoadCalculator(Options.Create(options), referenceData),
+            new Iso52016CoolingLoadCalculator(Options.Create(new Iso52016CoolingLoadOptions()), new TestIso52016ReferenceDataProvider(), profileAggregator)
         ]);
     }
 
     public static IAggregateLoadCalculator CreateAggregateCalculator(IRoomCoolingLoadCalculator roomCoolingLoadCalculator) =>
-        new AggregateCalculator(roomCoolingLoadCalculator, CreateOptions(), CreateProfileAggregator());
+        new AggregateCalculator(roomCoolingLoadCalculator, Options.Create(CreateOptions()), CreateProfileAggregator());
 
     public static En12831HeatingLoadCalculator CreateHeatingLoadCalculator() =>
-        new(new En12831HeatingLoadOptions());
+        new(Options.Create(new En12831HeatingLoadOptions()));
 
     public static Iso52016ClimateDataValidator CreateIso52016ClimateDataValidator(bool hasClimateData = true) =>
         new(
             new TestIso52016ReferenceDataProvider(hasClimateData),
-            new Iso52016CoolingLoadOptions(),
+            Options.Create(new Iso52016CoolingLoadOptions()),
             new MemoryCache(new MemoryCacheOptions()));
 
     private sealed class TestIso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
@@ -99,5 +102,3 @@ internal static class CalculationTestFactory
             };
     }
 }
-
-

@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
@@ -14,18 +14,18 @@ public class RoomCommandService
 {
     private readonly IFloorRepository _floors;
     private readonly IRoomRepository _rooms;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<RoomCommandService> _logger;
 
     public RoomCommandService(
         IFloorRepository floors,
         IRoomRepository rooms,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<RoomCommandService>? logger = null)
     {
         _floors = floors;
         _rooms = rooms;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<RoomCommandService>.Instance;
     }
 
@@ -56,11 +56,17 @@ public class RoomCommandService
             return Result<RoomResponse>.Failure(indoorTempResult);
         }
 
-        var outdoorTempResult = Temperature.FromCelsius(request.OutdoorTemperatureC);
-        if (outdoorTempResult.IsFailure)
+        Temperature? outdoorTemperatureOverride = null;
+        if (request.OutdoorTemperatureOverrideC.HasValue)
         {
-            _logger.LogWarning("Room creation failed for floor {FloorId}: {Error}.", request.FloorId, outdoorTempResult.Error);
-            return Result<RoomResponse>.Failure(outdoorTempResult);
+            var outdoorTempResult = Temperature.FromCelsius(request.OutdoorTemperatureOverrideC.Value);
+            if (outdoorTempResult.IsFailure)
+            {
+                _logger.LogWarning("Room creation failed for floor {FloorId}: {Error}.", request.FloorId, outdoorTempResult.Error);
+                return Result<RoomResponse>.Failure(outdoorTempResult);
+            }
+
+            outdoorTemperatureOverride = outdoorTempResult.Value;
         }
 
         var equipLoad = Power.FromWatts(request.EquipmentLoadW);
@@ -82,7 +88,7 @@ public class RoomCommandService
             areaResult.Value,
             request.HeightM,
             indoorTempResult.Value,
-            outdoorTempResult.Value,
+            outdoorTemperatureOverride,
             request.PeopleCount,
             equipLoad.Value,
             lightLoad.Value,
@@ -99,7 +105,7 @@ public class RoomCommandService
         }
 
         _rooms.Add(roomResult.Value);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Created room {RoomId} for floor {FloorId}.", roomResult.Value.Id, request.FloorId);
         return Result<RoomResponse>.Success(BuildingsMapper.ToResponse(roomResult.Value));
@@ -168,7 +174,7 @@ public class RoomCommandService
             return Result<WindowResponse>.Failure(addResult);
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Added window {WindowId} to room {RoomId}.", addResult.Value.Id, roomId);
         return Result<WindowResponse>.Success(BuildingsMapper.ToResponse(addResult.Value));
@@ -214,7 +220,7 @@ public class RoomCommandService
             return Result<WallResponse>.Failure(addResult);
         }
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Added wall {WallId} to room {RoomId}.", addResult.Value.Id, roomId);
         return Result<WallResponse>.Success(BuildingsMapper.ToResponse(addResult.Value));

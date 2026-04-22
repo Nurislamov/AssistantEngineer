@@ -7,6 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 
@@ -19,12 +20,12 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
 
     public AggregateCalculator(
         IRoomCoolingLoadCalculator roomCoolingLoadCalculator,
-        CoolingLoadCalculationOptions options,
+        IOptions<CoolingLoadCalculationOptions> options,
         IHourlyProfileAggregator profileAggregator,
         ILogger<AggregateCalculator>? logger = null)
     {
         _roomCoolingLoadCalculator = roomCoolingLoadCalculator;
-        _options = options;
+        _options = options.Value;
         _profileAggregator = profileAggregator;
         _logger = logger ?? NullLogger<AggregateCalculator>.Instance;
     }
@@ -170,20 +171,14 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
         var allRooms = building.Floors
             .SelectMany(floor => floor.Rooms)
             .ToArray();
-        var roomsById = allRooms
-            .Where(room => room.Id > 0)
-            .ToDictionary(room => room.Id);
-        var countedRoomIds = new HashSet<int>();
+        var countedRooms = new HashSet<Room>();
         var zoneResults = new List<ThermalZoneCalculationResult>(building.ThermalZones.Count + 1);
 
         foreach (var zone in building.ThermalZones.OrderBy(zone => zone.Id))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var zoneRooms = zone.RoomIds
-                .Where(countedRoomIds.Add)
-                .Select(roomId => roomsById.TryGetValue(roomId, out var room) ? room : null)
-                .Where(room => room is not null)
-                .Select(room => room!)
+            var zoneRooms = zone.AssignedRooms
+                .Where(countedRooms.Add)
                 .ToArray();
 
             if (zoneRooms.Length == 0)
@@ -193,7 +188,7 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
         }
 
         var unassignedRooms = allRooms
-            .Where(room => room.Id <= 0 || !countedRoomIds.Contains(room.Id))
+            .Where(room => !countedRooms.Contains(room))
             .ToArray();
         if (unassignedRooms.Length > 0)
         {

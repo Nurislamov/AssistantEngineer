@@ -1,9 +1,9 @@
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.Persistence;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Mappers;
 using AssistantEngineer.Modules.Equipment.Domain;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -14,16 +14,16 @@ namespace AssistantEngineer.Modules.Equipment.Application.Services;
 public class CoolingEquipmentCatalogCommandService
 {
     private readonly IEquipmentCatalogRepository _catalog;
-    private readonly IAppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CoolingEquipmentCatalogCommandService> _logger;
 
     public CoolingEquipmentCatalogCommandService(
         IEquipmentCatalogRepository catalog,
-        IAppDbContext context,
+        IUnitOfWork unitOfWork,
         ILogger<CoolingEquipmentCatalogCommandService>? logger = null)
     {
         _catalog = catalog;
-        _context = context;
+        _unitOfWork = unitOfWork;
         _logger = logger ?? NullLogger<CoolingEquipmentCatalogCommandService>.Instance;
     }
 
@@ -66,7 +66,7 @@ public class CoolingEquipmentCatalogCommandService
         }
 
         _catalog.Add(itemResult.Value);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation(
             "Created cooling equipment catalog item {CatalogItemId}.",

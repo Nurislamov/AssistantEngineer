@@ -4,7 +4,8 @@ using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
-using AssistantEngineer.Infrastructure.Services.Benchmarks;
+using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -16,17 +17,19 @@ public class EnergyPlusModelExporterTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var exporter = new EnergyPlusModelExporter();
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var exporter = new EnergyPlusModelExporter(artifacts);
             var building = CreateBuilding();
-            var outputPath = Path.Combine(tempDirectory, "building.idf");
 
-            var result = await exporter.ExportAsync(building, outputPath);
+            var result = await exporter.ExportAsync(building, "building");
 
             Assert.True(result.IsSuccess);
-            Assert.Equal(outputPath, result.Value.ModelPath);
-            Assert.True(File.Exists(outputPath));
+            Assert.False(string.IsNullOrWhiteSpace(result.Value.ModelArtifactId));
+            var artifact = artifacts.GetModelArtifact(result.Value.ModelArtifactId);
+            Assert.True(artifact.IsSuccess, artifact.Error);
+            Assert.True(File.Exists(artifact.Value.FileSystemPath));
 
-            var content = await File.ReadAllTextAsync(outputPath);
+            var content = await File.ReadAllTextAsync(artifact.Value.FileSystemPath);
             Assert.Contains("Version,", content);
             Assert.Contains("Zone,", content);
             Assert.Contains("Office_101", content);
@@ -44,30 +47,24 @@ public class EnergyPlusModelExporterTests
     }
 
     [Fact]
-    public async Task ExportAsyncReturnsValidationWhenOutputPathIsMissing()
-    {
-        var exporter = new EnergyPlusModelExporter();
-
-        var result = await exporter.ExportAsync(CreateBuilding(), string.Empty);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
-        Assert.Contains("output path", result.Error, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
     public async Task ExportAsyncReturnsValidationWhenBuildingHasNoRooms()
     {
-        var exporter = new EnergyPlusModelExporter();
-        var building = DomainInvariantTests.CreateBuilding();
+        var tempDirectory = CreateTempDirectory();
+        try
+        {
+            var exporter = new EnergyPlusModelExporter(CreateArtifactStore(tempDirectory));
+            var building = DomainInvariantTests.CreateBuilding();
 
-        var result = await exporter.ExportAsync(
-            building,
-            Path.Combine(Path.GetTempPath(), "empty-building.idf"));
+            var result = await exporter.ExportAsync(building);
 
-        Assert.True(result.IsFailure);
-        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
-        Assert.Contains("room", result.Error, StringComparison.OrdinalIgnoreCase);
+            Assert.True(result.IsFailure);
+            Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+            Assert.Contains("room", result.Error, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
     }
 
     [Fact]
@@ -76,7 +73,8 @@ public class EnergyPlusModelExporterTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var exporter = new EnergyPlusModelExporter();
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var exporter = new EnergyPlusModelExporter(artifacts);
             var project = DomainInvariantTests.CreateProject("EnergyPlus project");
             var building = Building.Create("EnergyPlus building", project).Value;
             Assert.True(project.AddBuilding(building).IsSuccess);
@@ -96,12 +94,12 @@ public class EnergyPlusModelExporterTests
                     CardinalDirection.South).IsSuccess);
             }
 
-            var outputPath = Path.Combine(tempDirectory, "building.idf");
-
-            var result = await exporter.ExportAsync(building, outputPath);
+            var result = await exporter.ExportAsync(building, "building");
 
             Assert.True(result.IsSuccess);
-            var content = await File.ReadAllTextAsync(outputPath);
+            var artifact = artifacts.GetModelArtifact(result.Value.ModelArtifactId);
+            Assert.True(artifact.IsSuccess, artifact.Error);
+            var content = await File.ReadAllTextAsync(artifact.Value.FileSystemPath);
             Assert.Contains("Level_1_Office_101", content);
             Assert.Contains("Level_2_Office_101", content);
         }
@@ -117,7 +115,8 @@ public class EnergyPlusModelExporterTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-            var exporter = new EnergyPlusModelExporter();
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var exporter = new EnergyPlusModelExporter(artifacts);
             var project = DomainInvariantTests.CreateProject("EnergyPlus project");
             var building = Building.Create("EnergyPlus building", project).Value;
             Assert.True(project.AddBuilding(building).IsSuccess);
@@ -144,12 +143,12 @@ public class EnergyPlusModelExporterTests
                 isExternal: true,
                 ThermalTransmittance.FromValue(1.1).Value,
                 CardinalDirection.South).IsSuccess);
-            var outputPath = Path.Combine(tempDirectory, "adjacent.idf");
-
-            var result = await exporter.ExportAsync(building, outputPath);
+            var result = await exporter.ExportAsync(building, "adjacent");
 
             Assert.True(result.IsSuccess);
-            var content = await File.ReadAllTextAsync(outputPath);
+            var artifact = artifacts.GetModelArtifact(result.Value.ModelArtifactId);
+            Assert.True(artifact.IsSuccess, artifact.Error);
+            var content = await File.ReadAllTextAsync(artifact.Value.FileSystemPath);
             Assert.Contains("Level_1_Room_A_Wall_East", content);
             Assert.Contains("Level_1_Room_B_Wall_West", content);
             Assert.Contains("  Surface,", content);
@@ -206,4 +205,7 @@ public class EnergyPlusModelExporterTests
         Directory.CreateDirectory(path);
         return path;
     }
+
+    private static LocalEnergyPlusArtifactStore CreateArtifactStore(string rootDirectory) =>
+        new(Options.Create(new EnergyPlusBenchmarkOptions { ArtifactRootDirectory = rootDirectory }));
 }

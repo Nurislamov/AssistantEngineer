@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Controllers;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Tests;
@@ -6,17 +7,19 @@ namespace AssistantEngineer.Tests;
 public class ApiVersioningTests
 {
     [Theory]
-    [InlineData(typeof(BenchmarksController), "api/v1/benchmarks", "api/benchmarks")]
-    [InlineData(typeof(BuildingsController), "api/v1/buildings", "api/buildings")]
-    [InlineData(typeof(EquipmentCatalogController), "api/v1/equipment-catalog", "api/equipment-catalog")]
-    [InlineData(typeof(FloorsController), "api/v1/floors", "api/floors")]
-    [InlineData(typeof(ProjectsController), "api/v1/projects", "api/projects")]
-    [InlineData(typeof(ReportsController), "api/v1/reports", "api/reports")]
-    [InlineData(typeof(RoomsController), "api/v1/rooms", "api/rooms")]
-    public void ControllersExposeVersionedRouteAndCompatibilityRoute(
+    [InlineData(typeof(BenchmarksController), "api/v{version:apiVersion}/benchmarks")]
+    [InlineData(typeof(BuildingArchetypesController), "api/v{version:apiVersion}/building-performance")]
+    [InlineData(typeof(BuildingPerformanceController), "api/v{version:apiVersion}/building-performance")]
+    [InlineData(typeof(BuildingsController), "api/v{version:apiVersion}/buildings")]
+    [InlineData(typeof(ClimateDataController), "api/v{version:apiVersion}/climate-zones")]
+    [InlineData(typeof(EquipmentCatalogController), "api/v{version:apiVersion}/equipment-catalog")]
+    [InlineData(typeof(FloorsController), "api/v{version:apiVersion}/floors")]
+    [InlineData(typeof(ProjectsController), "api/v{version:apiVersion}/projects")]
+    [InlineData(typeof(ReportsController), "api/v{version:apiVersion}/reports")]
+    [InlineData(typeof(RoomsController), "api/v{version:apiVersion}/rooms")]
+    public void ControllersDeclareExplicitV1UrlSegmentRoute(
         Type controllerType,
-        string versionedRoute,
-        string compatibilityRoute)
+        string versionedRoute)
     {
         var routes = controllerType
             .GetCustomAttributes(typeof(RouteAttribute), inherit: false)
@@ -25,6 +28,14 @@ public class ApiVersioningTests
             .ToArray();
 
         Assert.Contains(versionedRoute, routes);
-        Assert.Contains(compatibilityRoute, routes);
+        Assert.DoesNotContain(routes, route => route is not null && !route.Contains("{version:apiVersion}"));
+
+        var apiVersions = controllerType
+            .GetCustomAttributes(typeof(ApiVersionAttribute), inherit: false)
+            .Cast<ApiVersionAttribute>()
+            .SelectMany(attribute => attribute.Versions)
+            .ToArray();
+
+        Assert.Contains(apiVersions, version => version.MajorVersion == 1 && version.MinorVersion == 0);
     }
 }

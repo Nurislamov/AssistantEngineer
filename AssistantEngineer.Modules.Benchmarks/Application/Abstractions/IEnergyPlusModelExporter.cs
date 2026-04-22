@@ -8,6 +8,6 @@ public interface IEnergyPlusModelExporter
 {
     Task<Result<EnergyPlusModelExportResult>> ExportAsync(
         Building building,
-        string outputPath,
+        string? runName = null,
         CancellationToken cancellationToken = default);
 }

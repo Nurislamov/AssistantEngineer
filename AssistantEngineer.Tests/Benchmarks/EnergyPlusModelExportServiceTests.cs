@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
@@ -20,12 +21,12 @@ public class EnergyPlusModelExportServiceTests
 
         var result = await service.ExportBuildingModelAsync(
             building.Id,
-            new EnergyPlusModelExportRequest { OutputPath = "model.idf" });
+            new EnergyPlusModelExportRequest { RunName = "model" });
 
         Assert.True(result.IsSuccess, result.Error);
         Assert.True(exporter.Called);
         Assert.Equal(building.Id, exporter.BuildingId);
-        Assert.Equal("model.idf", exporter.OutputPath);
+        Assert.Equal("model", exporter.RunName);
     }
 
     [Fact]
@@ -39,7 +40,7 @@ public class EnergyPlusModelExportServiceTests
 
         var result = await service.ExportBuildingModelAsync(
             999,
-            new EnergyPlusModelExportRequest { OutputPath = "model.idf" });
+            new EnergyPlusModelExportRequest { RunName = "model" });
 
         Assert.True(result.IsFailure);
         Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
@@ -94,21 +95,21 @@ public class EnergyPlusModelExportServiceTests
     {
         public bool Called { get; private set; }
         public int BuildingId { get; private set; }
-        public string OutputPath { get; private set; } = string.Empty;
+        public string? RunName { get; private set; }
 
         public Task<Result<EnergyPlusModelExportResult>> ExportAsync(
             Building building,
-            string outputPath,
+            string? runName = null,
             CancellationToken cancellationToken = default)
         {
             Called = true;
             BuildingId = building.Id;
-            OutputPath = outputPath;
+            RunName = runName;
             return Task.FromResult(Result<EnergyPlusModelExportResult>.Success(new EnergyPlusModelExportResult
             {
                 BuildingId = building.Id,
                 BuildingName = building.Name,
-                ModelPath = outputPath
+                ModelArtifactId = "model-artifact.idf"
             }));
         }
     }

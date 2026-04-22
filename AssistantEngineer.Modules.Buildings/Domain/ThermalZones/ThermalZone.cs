@@ -13,11 +13,15 @@ public class ThermalZone
 
     private readonly List<ThermalZoneRoom> _rooms = new();
     public IReadOnlyCollection<ThermalZoneRoom> Rooms => new ReadOnlyCollection<ThermalZoneRoom>(_rooms);
-    public IReadOnlyList<int> RoomIds => _rooms.Select(room => room.RoomId).ToArray();
+    public IReadOnlyCollection<Room> AssignedRooms => _rooms.Select(room => room.Room).ToArray();
+    public IReadOnlyList<int> RoomIds => _rooms
+        .Select(room => room.Room.Id > 0 ? room.Room.Id : room.RoomId)
+        .Where(roomId => roomId > 0)
+        .ToArray();
 
     private ThermalZone() { }
 
-    private ThermalZone(string name, IEnumerable<int> roomIds, Building? building = null)
+    private ThermalZone(string name, IEnumerable<Room> rooms, Building? building = null)
     {
         Name = name;
         if (building is not null)
@@ -26,31 +30,28 @@ public class ThermalZone
             BuildingId = building.Id;
         }
 
-        foreach (var roomId in roomIds)
-            _rooms.Add(ThermalZoneRoom.Create(roomId));
+        foreach (var room in rooms)
+            _rooms.Add(ThermalZoneRoom.Create(room));
     }
 
-    public static Result<ThermalZone> Create(string name, IEnumerable<int> roomIds, Building? building = null)
+    public static Result<ThermalZone> Create(string name, IEnumerable<Room> rooms, Building? building = null)
     {
         var nameResult = name.ToRequiredTrimmed("Thermal zone name");
         if (nameResult.IsFailure) return Result<ThermalZone>.Failure(nameResult);
 
-        var ids = roomIds.Distinct().ToArray();
-        if (ids.Length == 0)
+        var assignedRooms = rooms.Distinct().ToArray();
+        if (assignedRooms.Length == 0)
             return Result<ThermalZone>.Validation("Thermal zone must contain at least one room.");
 
-        if (ids.Any(id => id <= 0))
-            return Result<ThermalZone>.Validation("Thermal zone room ids must be positive.");
+        if (assignedRooms.Any(room => room is null))
+            return Result<ThermalZone>.Validation("Thermal zone rooms cannot contain null values.");
 
-        return Result<ThermalZone>.Success(new ThermalZone(nameResult.Value, ids, building));
+        return Result<ThermalZone>.Success(new ThermalZone(nameResult.Value, assignedRooms, building));
     }
     
     public IReadOnlyCollection<Room> GetRooms()
     {
-        return Building.Floors
-            .SelectMany(f => f.Rooms)
-            .Where(r => RoomIds.Contains(r.Id))
-            .ToList();
+        return AssignedRooms.ToList();
     }
     
     public double GetTotalFloorArea()
@@ -63,12 +64,18 @@ public class ThermalZone
         return GetRooms().Sum(r => r.CalculateVolume());
     }
     
-    public double GetTotalInternalHeatCapacity()
+    public double GetTotalInternalHeatCapacity(
+        double floorHeatCapacityKjPerM2K,
+        double ceilingHeatCapacityKjPerM2K)
     {
-        return GetRooms().Sum(r => r.CalculateInternalHeatCapacityKjPerK());
+        return GetRooms().Sum(r => r.CalculateInternalHeatCapacityKjPerK(
+            floorHeatCapacityKjPerM2K,
+            ceilingHeatCapacityKjPerM2K));
     }
     
-    public double GetTotalHtrOp()
+    public double GetTotalHtrOp(
+        double floorUValueWPerM2K,
+        double ceilingUValueWPerM2K)
     {
         var total = 0.0;
         foreach (var room in GetRooms())
@@ -84,8 +91,8 @@ public class ThermalZone
                 total += window.Area.SquareMeters * window.UValue.Value;
             }
             
-            total += room.Area.SquareMeters * room.GetFloorUValue();
-            total += room.Area.SquareMeters * room.GetCeilingUValue();
+            total += room.Area.SquareMeters * floorUValueWPerM2K;
+            total += room.Area.SquareMeters * ceilingUValueWPerM2K;
         }
         return total;
     }

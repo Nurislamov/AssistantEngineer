@@ -1,8 +1,11 @@
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
@@ -16,6 +19,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests;
 
@@ -37,6 +41,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IAggregateLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IAnnualProfileGenerator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IIso16798ReferenceData>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IBuildingEnvelopeReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<En12831HeatingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IRoomHeatingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingHeatingLoadCalculator>(services, ServiceLifetime.Scoped);
@@ -52,6 +57,29 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<BuildingCoolingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingEnergyBalanceService>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddCalculationsModuleBindsCalculationOptionsFromConfiguration()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Calculations:CoolingLoad:DefaultCoolingSafetyFactor"] = "1.25",
+                ["Calculations:Iso52016Cooling:DefaultDesignMonth"] = "8",
+                ["Calculations:Iso52016EnergyNeed:DefaultWeatherYear"] = "2024",
+                ["Calculations:HeatingLoad:DefaultAirChangesPerHour"] = "0.7"
+            })
+            .Build();
+
+        services.AddCalculationsModule(configuration);
+
+        using var provider = services.BuildServiceProvider();
+        Assert.Equal(1.25, provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value.DefaultCoolingSafetyFactor);
+        Assert.Equal(8, provider.GetRequiredService<IOptions<Iso52016CoolingLoadOptions>>().Value.DefaultDesignMonth);
+        Assert.Equal(2024, provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value.DefaultWeatherYear);
+        Assert.Equal(0.7, provider.GetRequiredService<IOptions<En12831HeatingLoadOptions>>().Value.DefaultAirChangesPerHour);
     }
 
     private static void AssertServiceLifetime<TService>(
