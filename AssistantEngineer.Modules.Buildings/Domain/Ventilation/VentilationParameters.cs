@@ -32,29 +32,22 @@ public class VentilationParameters
 
     public static Result<VentilationParameters> Create(
         double airChangesPerHour,
-        double heatRecoveryEfficiency = 0,
-        double infiltrationAirChangesPerHour = 0,
-        double windExposureFactor = 1,
-        double stackCoefficient = 0,
-        double windCoefficient = 0)
+        double heatRecoveryEfficiency,
+        double infiltrationAirChangesPerHour,
+        double windExposureFactor,
+        double stackCoefficient,
+        double windCoefficient)
     {
-        var airChangeCheck = Guard.AgainstNegative(airChangesPerHour, "Air changes per hour");
-        if (airChangeCheck.IsFailure) return Result<VentilationParameters>.Failure(airChangeCheck);
+        var validation = Validate(
+            airChangesPerHour,
+            heatRecoveryEfficiency,
+            infiltrationAirChangesPerHour,
+            windExposureFactor,
+            stackCoefficient,
+            windCoefficient);
 
-        var recoveryCheck = Guard.AgainstRange(heatRecoveryEfficiency, 0, 1, "Heat recovery efficiency");
-        if (recoveryCheck.IsFailure) return Result<VentilationParameters>.Failure(recoveryCheck);
-
-        var infiltrationCheck = Guard.AgainstNegative(infiltrationAirChangesPerHour, "Infiltration air changes per hour");
-        if (infiltrationCheck.IsFailure) return Result<VentilationParameters>.Failure(infiltrationCheck);
-
-        var exposureCheck = Guard.AgainstRange(windExposureFactor, 0, 5, "Wind exposure factor");
-        if (exposureCheck.IsFailure) return Result<VentilationParameters>.Failure(exposureCheck);
-
-        var stackCheck = Guard.AgainstRange(stackCoefficient, 0, 1, "Stack coefficient");
-        if (stackCheck.IsFailure) return Result<VentilationParameters>.Failure(stackCheck);
-
-        var windCheck = Guard.AgainstRange(windCoefficient, 0, 1, "Wind coefficient");
-        if (windCheck.IsFailure) return Result<VentilationParameters>.Failure(windCheck);
+        if (validation.IsFailure)
+            return Result<VentilationParameters>.Failure(validation);
 
         return Result<VentilationParameters>.Success(new VentilationParameters(
             airChangesPerHour,
@@ -63,5 +56,74 @@ public class VentilationParameters
             windExposureFactor,
             stackCoefficient,
             windCoefficient));
+    }
+
+    public static Result<VentilationParameters> Create(
+        double airChangesPerHour,
+        double heatRecoveryEfficiency = 0) =>
+        Create(
+            airChangesPerHour,
+            heatRecoveryEfficiency,
+            infiltrationAirChangesPerHour: 0,
+            windExposureFactor: 0,
+            stackCoefficient: 0,
+            windCoefficient: 0);
+
+    public Result Update(
+        double airChangesPerHour,
+        double heatRecoveryEfficiency,
+        double infiltrationAirChangesPerHour,
+        double windExposureFactor,
+        double stackCoefficient,
+        double windCoefficient)
+    {
+        var validation = Validate(
+            airChangesPerHour,
+            heatRecoveryEfficiency,
+            infiltrationAirChangesPerHour,
+            windExposureFactor,
+            stackCoefficient,
+            windCoefficient);
+
+        if (validation.IsFailure)
+            return validation;
+
+        AirChangesPerHour = airChangesPerHour;
+        HeatRecoveryEfficiency = heatRecoveryEfficiency;
+        InfiltrationAirChangesPerHour = infiltrationAirChangesPerHour;
+        WindExposureFactor = windExposureFactor;
+        StackCoefficient = stackCoefficient;
+        WindCoefficient = windCoefficient;
+
+        return Result.Success();
+    }
+
+    private static Result Validate(
+        double airChangesPerHour,
+        double heatRecoveryEfficiency,
+        double infiltrationAirChangesPerHour,
+        double windExposureFactor,
+        double stackCoefficient,
+        double windCoefficient)
+    {
+        if (airChangesPerHour < 0)
+            return Result.Validation("Air changes per hour cannot be negative.");
+
+        if (heatRecoveryEfficiency is < 0 or > 1)
+            return Result.Validation("Heat recovery efficiency must be between 0 and 1.");
+
+        if (infiltrationAirChangesPerHour < 0)
+            return Result.Validation("Infiltration air changes per hour cannot be negative.");
+
+        if (windExposureFactor is < 0 or > 5)
+            return Result.Validation("Wind exposure factor must be between 0 and 5.");
+
+        if (stackCoefficient is < 0 or > 5)
+            return Result.Validation("Stack coefficient must be between 0 and 5.");
+
+        if (windCoefficient is < 0 or > 5)
+            return Result.Validation("Wind coefficient must be between 0 and 5.");
+
+        return Result.Success();
     }
 }

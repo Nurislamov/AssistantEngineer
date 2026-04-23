@@ -14,6 +14,22 @@ public interface IBuildingEnergyAnalysisFacade
         int? year,
         CancellationToken cancellationToken);
 
+    Task<Result<Iso52016HourlyResultsResponse>> GetIso52016HourlyResultsAsync(
+        int buildingId,
+        int? year,
+        int? month,
+        CancellationToken cancellationToken);
+
+    Task<Result<Iso52016MonthlyResultsResponse>> GetIso52016MonthlyResultsAsync(
+        int buildingId,
+        int? year,
+        CancellationToken cancellationToken);
+
+    Task<Result<Iso52016MonthlyResultsResponse>> GetIso52016MonthlyMethodResultsAsync(
+        int buildingId,
+        int? year,
+        CancellationToken cancellationToken);
+
     Task<Result<EnergySignatureResult>> GetEnergySignatureAsync(
         int buildingId,
         int? year,

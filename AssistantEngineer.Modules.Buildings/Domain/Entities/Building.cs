@@ -91,11 +91,21 @@ public class Building
         if (_thermalZones.Any(zone => zone.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             return Result<ThermalZone>.Conflict($"Thermal zone with name '{name}' already exists in this building.");
 
-        var zoneResult = ThermalZone.Create(name, assignedRooms, this);
+        var zoneResult = ThermalZone.Create(name, this, assignedRooms);
         if (zoneResult.IsFailure)
             return Result<ThermalZone>.Failure(zoneResult);
 
         _thermalZones.Add(zoneResult.Value);
         return Result<ThermalZone>.Success(zoneResult.Value);
+    }
+    
+    public Result RemoveThermalZone(int thermalZoneId)
+    {
+        var thermalZone = _thermalZones.FirstOrDefault(x => x.Id == thermalZoneId);
+        if (thermalZone is null)
+            return Result.NotFound($"Thermal zone with id {thermalZoneId} not found.");
+
+        _thermalZones.Remove(thermalZone);
+        return Result.Success();
     }
 }

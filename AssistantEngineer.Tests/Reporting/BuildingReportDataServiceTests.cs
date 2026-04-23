@@ -205,6 +205,12 @@ public class BuildingReportDataServiceTests
         public Task<Building?> GetWithFloorsAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<Building?> GetWithThermalZonesAndRoomsAsync(int id, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(id == _building.Id ? _building : null);
+
+        public Task<Building?> GetByThermalZoneIdAsync(int thermalZoneId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(_building.ThermalZones.Any(zone => zone.Id == thermalZoneId) ? _building : null);
+
         public Task<Building?> GetForCalculationAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
@@ -237,4 +243,3 @@ public class BuildingReportDataServiceTests
         public void Add(CoolingEquipmentCatalogItem item) => throw new NotSupportedException();
     }
 }
-

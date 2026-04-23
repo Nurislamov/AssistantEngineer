@@ -1,4 +1,5 @@
 using System.Reflection;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using FluentValidation;
@@ -13,6 +14,8 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddScoped<ICoolingEquipmentSelector, CoolingEquipmentSelector>();
+        services.AddScoped<ICoolingEquipmentCatalogSizingProvider, CoolingEquipmentCatalogSizingProvider>();
+
         services.AddScoped<CoolingEquipmentCatalogCommandService>();
         services.AddScoped<CoolingEquipmentCatalogQueryService>();
         services.AddScoped<EquipmentSelectionService>();

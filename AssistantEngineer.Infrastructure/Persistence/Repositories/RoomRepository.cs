@@ -29,6 +29,8 @@ internal sealed class RoomRepository : IRoomRepository
             .Include(room => room.VentilationParameters)
             .Include(room => room.Windows)
             .Include(room => room.Walls)
+                .ThenInclude(wall => wall.AdjacentRoom)
+            .Include(room => room.Walls)
                 .ThenInclude(wall => wall.ConstructionAssembly)
                     .ThenInclude(assembly => assembly!.Layers)
                         .ThenInclude(layer => layer.Material)
@@ -42,6 +44,11 @@ internal sealed class RoomRepository : IRoomRepository
     public async Task<Room?> GetWithWallsAsync(int id, CancellationToken cancellationToken = default) =>
         await _context.Rooms
             .Include(room => room.Walls)
+            .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
+
+    public async Task<Room?> GetWithVentilationAsync(int id, CancellationToken cancellationToken = default) =>
+        await _context.Rooms
+            .Include(room => room.VentilationParameters)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
 
     public async Task<IReadOnlyList<Room>> ListAsync(CancellationToken cancellationToken = default) =>

@@ -1,12 +1,12 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Filters;
 using Asp.Versioning;
+using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Buildings;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Equipment;
 using AssistantEngineer.Modules.Reporting;
-using AssistantEngineer.Infrastructure;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 

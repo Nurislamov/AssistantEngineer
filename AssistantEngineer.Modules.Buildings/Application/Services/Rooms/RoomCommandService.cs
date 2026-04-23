@@ -1,8 +1,10 @@
-using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -208,11 +210,39 @@ public class RoomCommandService
             return Result<WallResponse>.Failure(uValueResult);
         }
 
+        Room? adjacentRoom = null;
+        var boundaryType = request.BoundaryType.ToDomain();
+
+        if (boundaryType is WallBoundaryType.AdjacentConditioned or WallBoundaryType.AdjacentUnconditioned)
+        {
+            if (!request.AdjacentRoomId.HasValue)
+                return Result<WallResponse>.Validation("AdjacentRoomId is required for adjacent wall boundary types.");
+
+            adjacentRoom = await _rooms.GetByIdAsync(request.AdjacentRoomId.Value, cancellationToken);
+            if (adjacentRoom is null)
+            {
+                _logger.LogWarning("Wall creation failed because adjacent room {AdjacentRoomId} was not found.", request.AdjacentRoomId.Value);
+                return Result<WallResponse>.NotFound($"Adjacent room with id {request.AdjacentRoomId.Value} not found.");
+            }
+
+            if (adjacentRoom.Id == room.Id)
+                return Result<WallResponse>.Validation("A wall cannot reference the same room as its adjacent room.");
+
+            var sourceFloor = await _floors.GetByIdAsync(room.FloorId, cancellationToken);
+            var adjacentFloor = await _floors.GetByIdAsync(adjacentRoom.FloorId, cancellationToken);
+            if (sourceFloor is null || adjacentFloor is null)
+                return Result<WallResponse>.Validation("Unable to validate adjacent room building ownership.");
+
+            if (sourceFloor.BuildingId != adjacentFloor.BuildingId)
+                return Result<WallResponse>.Validation("Adjacent room must belong to the same building.");
+        }
+
         var addResult = room.AddWall(
             areaResult.Value,
-            request.IsExternal,
             uValueResult.Value,
-            BuildingsContractEnumMapper.ToDomain(request.Orientation));
+            BuildingsContractEnumMapper.ToDomain(request.Orientation),
+            boundaryType,
+            adjacentRoom);
 
         if (addResult.IsFailure)
         {

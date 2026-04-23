@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 
 namespace AssistantEngineer.Modules.Buildings.Application.Mappers;
 
@@ -67,6 +68,25 @@ internal static class BuildingsMapper
             IsExternal = wall.IsExternal,
             UValue = wall.UValue.Value,
             Orientation = wall.Orientation.ToContract(),
-            RoomId = wall.RoomId
+            BoundaryType = wall.BoundaryType.ToContract(),
+            RoomId = wall.RoomId,
+            AdjacentRoomId = wall.AdjacentRoomId
+        };
+
+    public static ThermalZoneResponse ToResponse(ThermalZone thermalZone) =>
+        new()
+        {
+            Id = thermalZone.Id,
+            Name = thermalZone.Name,
+            BuildingId = thermalZone.BuildingId,
+            Rooms = thermalZone.AssignedRooms
+                .OrderBy(room => room.Id)
+                .Select(room => new ThermalZoneRoomResponse
+                {
+                    Id = room.Id,
+                    Name = room.Name,
+                    FloorId = room.FloorId
+                })
+                .ToList()
         };
 }

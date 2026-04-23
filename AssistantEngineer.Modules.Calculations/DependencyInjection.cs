@@ -6,11 +6,11 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceD
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Options;
-using AssistantEngineer.Modules.Calculations.Application.Services;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Services.Comfort;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
@@ -24,8 +24,10 @@ using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.E
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
+using AssistantEngineer.Modules.Calculations.Application.Services.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.Configuration;
@@ -45,11 +47,15 @@ public static class DependencyInjection
         services.Configure<CoolingLoadCalculationOptions>(configuration.GetSection("Calculations:CoolingLoad"));
         services.Configure<Iso52016CoolingLoadOptions>(configuration.GetSection("Calculations:Iso52016Cooling"));
         services.Configure<Iso52016EnergyNeedOptions>(configuration.GetSection("Calculations:Iso52016EnergyNeed"));
+        services.Configure<Iso52016MonthlyEnergyNeedOptions>(configuration.GetSection("Calculations:Iso52016MonthlyEnergyNeed"));
         services.Configure<En12831HeatingLoadOptions>(configuration.GetSection("Calculations:HeatingLoad"));
+        services.Configure<En16798ProfileOptions>(configuration.GetSection("Calculations:En16798Profiles"));
+        services.Configure<NaturalVentilationOptions>(configuration.GetSection("Calculations:NaturalVentilation"));
 
         services.AddSingleton<IHourlyProfileAggregator, HourlyProfileAggregator>();
         services.AddSingleton<IAnnualProfileGenerator, AnnualProfileGenerator>();
         services.AddSingleton<IIso16798ReferenceData, Iso16798ReferenceData>();
+        services.AddSingleton<IEn16798ProfileCatalog, En16798ProfileCatalog>();
         services.AddSingleton<IBuildingEnvelopeReferenceData, BuildingEnvelopeReferenceData>();
         services.AddSingleton<ICoolingLoadReferenceData, CoolingLoadReferenceData>();
 
@@ -68,8 +74,16 @@ public static class DependencyInjection
         services.AddScoped<ISolarRadiationService, SolarRadiationService>();
         services.AddScoped<IWindowShadingService, WindowShadingService>();
         services.AddScoped<IVentilationHeatTransferCalculator, VentilationHeatTransferCalculator>();
+        services.AddScoped<INaturalVentilationOpeningControlService, NaturalVentilationOpeningControlService>();
+        services.AddScoped<INaturalVentilationAirflowService, NaturalVentilationAirflowService>();
+        services.AddScoped<NaturalVentilationPreviewService>();
         services.AddScoped<Iso52016HourlySteadyStateCalculator>();
+        services.AddScoped<Iso52016MonthlyQuasiSteadyStateCalculator>();
 
+        services.AddScoped<En16798ProfileService>();
+        services.AddScoped<BuildingComfortMetricsService>();
+        services.AddScoped<BuildingZoneComfortMetricsService>();
+        services.AddScoped<BuildingRoomComfortMetricsService>();
         services.AddScoped<EnergySignatureService>();
         services.AddScoped<DomesticHotWaterDemandService>();
         services.AddScoped<HeatingSystemEnergyService>();
@@ -77,16 +91,30 @@ public static class DependencyInjection
         services.AddSingleton<IEnergyCarrierFactorProvider, EnergyCarrierFactorProvider>();
         services.AddScoped<BuildingEnergyPerformanceSummaryService>();
         services.AddScoped<BuildingPerformanceService>();
-
+        services.AddScoped<BuildingPeakSizingService>();
+        services.AddScoped<BuildingReferenceDesignDayService>();
+        services.AddScoped<BuildingSyntheticDesignDayService>();
+        services.AddScoped<BuildingAutosizingService>();
+        services.AddScoped<CatalogAutosizingRankingService>();
+        services.AddScoped<BuildingCatalogAutosizingService>();
+        services.AddScoped<EquipmentRecommendationService>();
+        services.AddScoped<EquipmentRecommendationComparisonService>();
+        services.AddScoped<EquipmentRecommendationReportService>();
+        services.AddScoped<EquipmentRecommendationComparisonReportService>();
+        
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
-
+        services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
+        services.AddScoped<IBuildingComfortAnalysisFacade, BuildingComfortAnalysisFacade>();
+        services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
+        services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
+        services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
+        
         services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<BuildingHeatingLoadService>();
         services.AddScoped<BuildingEnergyBalanceService>();
 
         services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
-        services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
 
         return services;
     }

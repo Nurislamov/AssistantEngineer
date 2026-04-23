@@ -1,8 +1,8 @@
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.SharedKernel.Primitives;
-using AssistantEngineer.SharedKernel.ValueObjects;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
+using AssistantEngineer.SharedKernel.Primitives;
+using AssistantEngineer.SharedKernel.ValueObjects;
 using System.Collections.ObjectModel;
 
 namespace AssistantEngineer.Modules.Buildings.Domain.Entities;
@@ -31,7 +31,7 @@ public class Room
 
     public int FloorId { get; private set; }
     public Floor Floor { get; private set; } = null!;
-    
+
     public int? OccupancyScheduleId { get; private set; }
     public HourlySchedule? OccupancySchedule { get; private set; }
     public int? EquipmentScheduleId { get; private set; }
@@ -93,8 +93,16 @@ public class Room
         var light = lightingLoad ?? Power.FromWatts(0).Value;
 
         return Result<Room>.Success(new Room(
-            nameResult.Value, area, heightM, indoorTemp, outdoorTemperatureOverride, floor,
-            peopleCount, equip, light, type));
+            nameResult.Value,
+            area,
+            heightM,
+            indoorTemp,
+            outdoorTemperatureOverride,
+            floor,
+            peopleCount,
+            equip,
+            light,
+            type));
     }
 
     public double CalculateVolume() => Area.SquareMeters * HeightM;
@@ -130,15 +138,31 @@ public class Room
         return Result.Success();
     }
 
-    public Result<Wall> AddWall(Area area, bool isExternal, ThermalTransmittance uValue, CardinalDirection orientation)
+    public Result<Wall> AddWall(
+        Area area,
+        ThermalTransmittance uValue,
+        CardinalDirection orientation,
+        WallBoundaryType boundaryType = WallBoundaryType.External,
+        Room? adjacentRoom = null)
     {
-        var wall = Wall.Create(area, isExternal, uValue, orientation, this);
+        var wall = Wall.Create(area, uValue, orientation, boundaryType, this, adjacentRoom);
         if (wall.IsFailure)
             return Result<Wall>.Failure(wall);
 
         _walls.Add(wall.Value);
         return Result<Wall>.Success(wall.Value);
     }
+
+    public Result<Wall> AddWall(
+        Area area,
+        bool isExternal,
+        ThermalTransmittance uValue,
+        CardinalDirection orientation) =>
+        AddWall(
+            area,
+            uValue,
+            orientation,
+            isExternal ? WallBoundaryType.External : WallBoundaryType.Adiabatic);
 
     public Result RemoveWall(int wallId)
     {
@@ -199,18 +223,16 @@ public class Room
         VentilationParametersId = ventilationParameters?.Id;
         return Result.Success();
     }
-    
+
     public double CalculateInternalHeatCapacityKjPerK(
         double floorHeatCapacityKjPerM2K,
         double ceilingHeatCapacityKjPerM2K)
     {
         var total = 0.0;
-        
+
         foreach (var wall in Walls.Where(w => w.ConstructionAssembly != null))
-        {
             total += wall.Area.SquareMeters * wall.ConstructionAssembly!.InternalHeatCapacityKjPerM2K;
-        }
-        
+
         total += Area.SquareMeters * floorHeatCapacityKjPerM2K;
         total += Area.SquareMeters * ceilingHeatCapacityKjPerM2K;
 

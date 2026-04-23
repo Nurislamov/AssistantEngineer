@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
@@ -29,6 +30,7 @@ public sealed class BuildingCalculationReadinessService
 
         var issues = new List<BuildingCalculationReadinessIssue>();
         var rooms = building.Floors.SelectMany(floor => floor.Rooms).ToArray();
+        var roomsById = rooms.ToDictionary(room => room.Id);
 
         if (building.ClimateZone is null)
             issues.Add(Error("Building.ClimateZone", "Building climate zone is required."));
@@ -50,6 +52,41 @@ public sealed class BuildingCalculationReadinessService
             var totalWindowArea = room.Windows.Sum(window => window.Area.SquareMeters);
             if (totalWindowArea > room.Area.SquareMeters * 0.8)
                 issues.Add(Warning($"Room[{room.Id}].Windows", "Total window area is greater than 80% of room floor area."));
+
+            foreach (var wall in room.Walls)
+            {
+                if (wall.BoundaryType is WallBoundaryType.AdjacentConditioned or WallBoundaryType.AdjacentUnconditioned)
+                {
+                    if (!wall.AdjacentRoomId.HasValue)
+                    {
+                        issues.Add(Error(
+                            $"Room[{room.Id}].Wall[{wall.Id}]",
+                            "Adjacent wall boundary type requires AdjacentRoomId."));
+                        continue;
+                    }
+
+                    if (!roomsById.TryGetValue(wall.AdjacentRoomId.Value, out var adjacentRoom))
+                    {
+                        issues.Add(Error(
+                            $"Room[{room.Id}].Wall[{wall.Id}]",
+                            $"Adjacent room {wall.AdjacentRoomId.Value} must belong to the same building."));
+                        continue;
+                    }
+
+                    if (adjacentRoom.Id == room.Id)
+                    {
+                        issues.Add(Error(
+                            $"Room[{room.Id}].Wall[{wall.Id}]",
+                            "A wall cannot reference the same room as its adjacent room."));
+                    }
+                }
+                else if (wall.AdjacentRoomId.HasValue)
+                {
+                    issues.Add(Warning(
+                        $"Room[{room.Id}].Wall[{wall.Id}]",
+                        "AdjacentRoomId is set for a non-adjacent wall boundary type."));
+                }
+            }
         }
 
         var duplicatedZoneRooms = building.ThermalZones
@@ -58,6 +95,7 @@ public sealed class BuildingCalculationReadinessService
             .Where(group => group.Count() > 1)
             .Select(group => group.Key)
             .ToArray();
+
         foreach (var room in duplicatedZoneRooms)
             issues.Add(Error("ThermalZones", $"Room {room.Id} is assigned to multiple thermal zones."));
 
@@ -67,6 +105,7 @@ public sealed class BuildingCalculationReadinessService
                 building.ClimateZone.Id,
                 weatherYear,
                 cancellationToken);
+
             var annualHourCount = annualData?.HourlyData.Count ?? 0;
             if (annualHourCount != 8760)
                 issues.Add(Warning("AnnualClimateData", $"ISO 52016 annual calculation expects 8760 weather hours; found {annualHourCount}."));

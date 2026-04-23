@@ -95,9 +95,9 @@ public sealed class BuildingArchetypeService
 
             var wall = room.Value.AddWall(
                 Area.FromSquareMeters(archetype.RoomAreaM2 * archetype.ExternalWallAreaFactor).Value,
-                isExternal: true,
                 ThermalTransmittance.FromValue(archetype.ExternalWallUValue).Value,
-                GetRoomOrientation(archetype, i));
+                GetRoomOrientation(archetype, i),
+                WallBoundaryType.External);
             if (wall.IsFailure)
                 return Result<BuildingResponse>.Failure(wall);
 

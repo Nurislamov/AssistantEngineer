@@ -32,7 +32,6 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<ClimateData> ClimateData { get; set; } = null!;
     public DbSet<HourlyClimateData> HourlyClimateData { get; set; } = null!;
     public DbSet<ThermalZone> ThermalZones { get; set; } = null!;
-    public DbSet<ThermalZoneRoom> ThermalZoneRooms { get; set; } = null!;
     public DbSet<AnnualClimateData> AnnualClimateData { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

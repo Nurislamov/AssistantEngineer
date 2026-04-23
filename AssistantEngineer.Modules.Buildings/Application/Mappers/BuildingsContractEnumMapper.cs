@@ -59,6 +59,28 @@ public static class BuildingsContractEnumMapper
             _ => throw UnsupportedEnumValue(direction)
         };
 
+    public static WallBoundaryType ToDomain(this WallBoundaryTypeDto boundaryType) =>
+        boundaryType switch
+        {
+            WallBoundaryTypeDto.External => WallBoundaryType.External,
+            WallBoundaryTypeDto.Ground => WallBoundaryType.Ground,
+            WallBoundaryTypeDto.Adiabatic => WallBoundaryType.Adiabatic,
+            WallBoundaryTypeDto.AdjacentConditioned => WallBoundaryType.AdjacentConditioned,
+            WallBoundaryTypeDto.AdjacentUnconditioned => WallBoundaryType.AdjacentUnconditioned,
+            _ => throw UnsupportedEnumValue(boundaryType)
+        };
+
+    public static WallBoundaryTypeDto ToContract(this WallBoundaryType boundaryType) =>
+        boundaryType switch
+        {
+            WallBoundaryType.External => WallBoundaryTypeDto.External,
+            WallBoundaryType.Ground => WallBoundaryTypeDto.Ground,
+            WallBoundaryType.Adiabatic => WallBoundaryTypeDto.Adiabatic,
+            WallBoundaryType.AdjacentConditioned => WallBoundaryTypeDto.AdjacentConditioned,
+            WallBoundaryType.AdjacentUnconditioned => WallBoundaryTypeDto.AdjacentUnconditioned,
+            _ => throw UnsupportedEnumValue(boundaryType)
+        };
+
     private static ArgumentOutOfRangeException UnsupportedEnumValue<TEnum>(TEnum value)
         where TEnum : struct, Enum =>
         new(nameof(value), value, $"Unsupported {typeof(TEnum).Name} value.");

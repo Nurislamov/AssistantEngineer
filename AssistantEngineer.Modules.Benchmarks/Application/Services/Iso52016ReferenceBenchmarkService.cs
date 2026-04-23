@@ -351,9 +351,9 @@ public sealed class Iso52016ReferenceBenchmarkService
         RequireSuccess(
             room.AddWall(
                 RequireSuccess(Area.FromSquareMeters(30), $"create {orientation} reference wall area"),
-                true,
                 RequireSuccess(ThermalTransmittance.FromValue(0.35), $"create {orientation} reference wall U-value"),
-                orientation),
+                orientation,
+                WallBoundaryType.External),
             $"add {orientation} reference wall");
 
     private static Iso52016AnnualEnergyNeedResult RequireEnergyNeed(

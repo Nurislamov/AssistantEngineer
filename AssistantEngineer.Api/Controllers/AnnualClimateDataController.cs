@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 using Asp.Versioning;
@@ -13,13 +14,18 @@ namespace AssistantEngineer.Api.Controllers;
 public class AnnualClimateDataController : ControllerBase
 {
     private readonly EpwAnnualClimateDataImportService _epwImport;
+    private readonly PvgisAnnualClimateDataImportService _pvgisImport;
 
-    public AnnualClimateDataController(EpwAnnualClimateDataImportService epwImport)
+    public AnnualClimateDataController(
+        EpwAnnualClimateDataImportService epwImport,
+        PvgisAnnualClimateDataImportService pvgisImport)
     {
         _epwImport = epwImport;
+        _pvgisImport = pvgisImport;
     }
 
     [HttpPost("epw")]
+    [Consumes("multipart/form-data")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<AnnualClimateDataImportResponse>> ImportFromEpw(
         int climateZoneId,
@@ -37,6 +43,22 @@ public class AnnualClimateDataController : ControllerBase
             stream,
             sourceFile.FileName,
             cancellationToken);
+
+        return result.ToActionResult();
+    }
+
+    [HttpPost("pvgis")]
+    [RequestTimeout(RequestPolicies.LongRunning)]
+    public async Task<ActionResult<AnnualClimateDataImportResponse>> ImportFromPvgis(
+        int climateZoneId,
+        [FromBody] ImportPvgisWeatherRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _pvgisImport.ImportAsync(
+            climateZoneId,
+            request,
+            cancellationToken);
+
         return result.ToActionResult();
     }
 }

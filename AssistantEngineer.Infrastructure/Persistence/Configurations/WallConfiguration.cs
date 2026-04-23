@@ -18,17 +18,22 @@ public class WallConfiguration : IEntityTypeConfiguration<Wall>
 
         builder.OwnsOne(w => w.UValue, u =>
         {
-            u.Property(u => u.Value).HasColumnName("UValue").IsRequired();
+            u.Property(value => value.Value).HasColumnName("UValue").IsRequired();
         });
 
         builder.Property(w => w.IsExternal).IsRequired();
-        builder.Property(w => w.Orientation).IsRequired();
-        builder.Property(w => w.Orientation).HasConversion<string>();
+        builder.Property(w => w.Orientation).IsRequired().HasConversion<string>();
+        builder.Property(w => w.BoundaryType).IsRequired().HasConversion<string>();
 
         builder.HasOne(w => w.Room)
             .WithMany(r => r.Walls)
             .HasForeignKey(w => w.RoomId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(w => w.AdjacentRoom)
+            .WithMany()
+            .HasForeignKey(w => w.AdjacentRoomId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(w => w.ConstructionAssembly)
             .WithMany()

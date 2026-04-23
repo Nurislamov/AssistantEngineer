@@ -41,6 +41,20 @@ public static class ResultExtensions
         return ErrorResult(result);
     }
 
+    public static ActionResult ToActionResult(this Result result)
+    {
+        if (result.IsSuccess)
+            return new NoContentResult();
+
+        return result.ErrorType switch
+        {
+            ResultErrorType.NotFound => new NotFoundObjectResult(result.Error),
+            ResultErrorType.Validation => new BadRequestObjectResult(result.Error),
+            ResultErrorType.Conflict => new ConflictObjectResult(result.Error),
+            _ => new BadRequestObjectResult(result.Error)
+        };
+    }
+    
     private static ObjectResult ErrorResult(Result result) =>
         ErrorResult(result.Error, GetStatusCode(result.ErrorType));
 

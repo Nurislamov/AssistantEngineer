@@ -1,4 +1,3 @@
-using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Infrastructure.Persistence;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
@@ -19,13 +18,13 @@ public class InfrastructureDependencyInjectionTests
             .Options;
         using var context = new AppDbContext(options);
 
-        var entity = context.Model.FindEntityType(typeof(ThermalZoneRoom));
+        var entity = context.Model.FindEntityType("ThermalZoneRooms");
 
         Assert.NotNull(entity);
         Assert.NotNull(entity.FindPrimaryKey());
         Assert.Contains(entity.GetForeignKeys(), key => key.PrincipalEntityType.ClrType.Name == "Room");
         Assert.Contains(entity.GetIndexes(), index =>
-            index.IsUnique && index.Properties.Any(property => property.Name == nameof(ThermalZoneRoom.RoomId)));
+            index.IsUnique && index.Properties.Any(property => property.Name == "RoomId"));
     }
 
     [Fact]

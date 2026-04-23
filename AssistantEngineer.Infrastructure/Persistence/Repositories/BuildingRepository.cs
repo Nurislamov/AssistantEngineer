@@ -23,16 +23,42 @@ internal sealed class BuildingRepository : IBuildingRepository
         return await query.FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
     }
 
-    public async Task<Building?> GetWithFloorsAsync(int id, CancellationToken cancellationToken = default) =>
+    public async Task<Building?> GetWithFloorsAsync(
+        int id,
+        CancellationToken cancellationToken = default) =>
         await _context.Buildings
             .Include(building => building.Floors)
             .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
 
-    public async Task<Building?> GetForCalculationAsync(int id, CancellationToken cancellationToken = default) =>
+    public async Task<Building?> GetWithThermalZonesAndRoomsAsync(
+        int id,
+        CancellationToken cancellationToken = default) =>
+        await _context.Buildings
+            .Include(building => building.Floors)
+                .ThenInclude(floor => floor.Rooms)
+            .Include(building => building.ThermalZones)
+                .ThenInclude(zone => zone.Rooms)
+            .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
+
+    public async Task<Building?> GetByThermalZoneIdAsync(
+        int thermalZoneId,
+        CancellationToken cancellationToken = default) =>
+        await _context.Buildings
+            .Include(building => building.ThermalZones)
+                .ThenInclude(zone => zone.Rooms)
+            .FirstOrDefaultAsync(
+                building => building.ThermalZones.Any(zone => zone.Id == thermalZoneId),
+                cancellationToken);
+
+    public async Task<Building?> GetForCalculationAsync(
+        int id,
+        CancellationToken cancellationToken = default) =>
         await WithCalculationGraph(_context.Buildings)
             .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
 
-    public async Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
+    public async Task<Building?> GetForReportAsync(
+        int id,
+        CancellationToken cancellationToken = default) =>
         await WithCalculationGraph(_context.Buildings)
             .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
 
@@ -56,7 +82,6 @@ internal sealed class BuildingRepository : IBuildingRepository
             .Include(building => building.ClimateZone)
             .Include(building => building.ThermalZones)
                 .ThenInclude(zone => zone.Rooms)
-                    .ThenInclude(zoneRoom => zoneRoom.Room)
             .Include(building => building.Floors)
                 .ThenInclude(floor => floor.Rooms)
                     .ThenInclude(room => room.OccupancySchedule)
@@ -72,6 +97,10 @@ internal sealed class BuildingRepository : IBuildingRepository
             .Include(building => building.Floors)
                 .ThenInclude(floor => floor.Rooms)
                     .ThenInclude(room => room.Windows)
+            .Include(building => building.Floors)
+                .ThenInclude(floor => floor.Rooms)
+                    .ThenInclude(room => room.Walls)
+                        .ThenInclude(wall => wall.AdjacentRoom)
             .Include(building => building.Floors)
                 .ThenInclude(floor => floor.Rooms)
                     .ThenInclude(room => room.Walls)

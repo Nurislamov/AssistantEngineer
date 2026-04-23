@@ -80,6 +80,12 @@ public class EnergyPlusModelExportServiceTests
         public Task<Building?> GetWithFloorsAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<Building?> GetWithThermalZonesAndRoomsAsync(int id, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(id == _building.Id ? _building : null);
+
+        public Task<Building?> GetByThermalZoneIdAsync(int thermalZoneId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(_building.ThermalZones.Any(zone => zone.Id == thermalZoneId) ? _building : null);
+
         public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 

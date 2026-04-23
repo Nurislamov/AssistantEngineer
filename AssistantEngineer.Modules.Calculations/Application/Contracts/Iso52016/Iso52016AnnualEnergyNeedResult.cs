@@ -8,4 +8,6 @@ public sealed record Iso52016AnnualEnergyNeedResult(
     IReadOnlyList<Iso52016MonthlyEnergyNeed> MonthlyResults,
     double AnnualHeatingDemandKWh,
     double AnnualCoolingDemandKWh,
-    Iso52016EnergyBalanceBreakdown Breakdown);
+    Iso52016EnergyBalanceBreakdown Breakdown,
+    IReadOnlyList<Iso52016ZoneHourlyEnergyNeed>? ZoneHourlyResults = null,
+    IReadOnlyList<Iso52016RoomHourlyEnergyNeed>? RoomHourlyResults = null);
