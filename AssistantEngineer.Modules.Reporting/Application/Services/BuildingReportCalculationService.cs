@@ -5,29 +5,25 @@ using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
-using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Models;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;
 
-public sealed class BuildingReportCalculationService
+internal sealed class BuildingReportCalculationService
 {
     private readonly IAggregateLoadCalculator _aggregateCalculator;
     private readonly IRoomCoolingLoadCalculator _roomCoolingLoadCalculator;
     private readonly ICoolingEquipmentSelector _equipmentSelector;
-    private readonly IRoomHeatingLoadCalculator _heatingCalculator;
 
     public BuildingReportCalculationService(
         IAggregateLoadCalculator aggregateCalculator,
         IRoomCoolingLoadCalculator roomCoolingLoadCalculator,
-        ICoolingEquipmentSelector equipmentSelector,
-        IRoomHeatingLoadCalculator heatingCalculator)
+        ICoolingEquipmentSelector equipmentSelector)
     {
         _aggregateCalculator = aggregateCalculator;
         _roomCoolingLoadCalculator = roomCoolingLoadCalculator;
         _equipmentSelector = equipmentSelector;
-        _heatingCalculator = heatingCalculator;
     }
 
     public async Task<BuildingCoolingReportData> BuildCoolingDataAsync(
@@ -97,29 +93,5 @@ public sealed class BuildingReportCalculationService
             equipmentSelectionRequested,
             systemType ?? string.Empty,
             unitType ?? string.Empty);
-    }
-
-    public async Task<BuildingHeatingReportData> BuildHeatingDataAsync(
-        Building building,
-        CalculationPreferences? preferences,
-        HeatingLoadCalculationMethod method,
-        CancellationToken cancellationToken = default)
-    {
-        var roomCalculations = new List<RoomHeatingLoadResult>();
-        foreach (var floor in building.Floors)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            foreach (var room in floor.Rooms)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                roomCalculations.Add(await _heatingCalculator.CalculateAsync(
-                    room,
-                    method,
-                    preferences,
-                    cancellationToken));
-            }
-        }
-
-        return new BuildingHeatingReportData(building, method, roomCalculations);
     }
 }

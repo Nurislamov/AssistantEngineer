@@ -60,7 +60,12 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingEnergyBalanceService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ICalculationsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyAnalysisFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingComfortAnalysisFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingSizingAnalysisFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IValidateOptions<CoolingLoadCalculationOptions>>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IValidateOptions<Iso52016EnergyNeedOptions>>(services, ServiceLifetime.Singleton);
     }
 
     [Fact]
@@ -86,6 +91,63 @@ public class CalculationsDependencyInjectionTests
         Assert.Equal(0.7, provider.GetRequiredService<IOptions<En12831HeatingLoadOptions>>().Value.DefaultAirChangesPerHour);
     }
 
+    [Fact]
+    public void AddCalculationsModuleRejectsInvalidCriticalOptions()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Calculations:CoolingLoad:DefaultCoolingSafetyFactor"] = "0",
+                ["Calculations:Iso52016EnergyNeed:DefaultWeatherYear"] = "1800",
+                ["Calculations:Iso52016EnergyNeed:DefaultCoolingSetpointC"] = "27",
+                ["Calculations:Iso52016EnergyNeed:DefaultCoolingSetbackC"] = "25",
+                ["Calculations:NaturalVentilation:MinimumOutdoorTemperatureC"] = "30",
+                ["Calculations:NaturalVentilation:MaximumOutdoorTemperatureC"] = "20"
+            })
+            .Build();
+
+        services.AddCalculationsModule(configuration);
+
+        using var provider = services.BuildServiceProvider();
+
+        var coolingOptionsException = Assert.Throws<OptionsValidationException>(() =>
+            provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value);
+        Assert.Contains(coolingOptionsException.Failures, failure =>
+            failure.Contains("Calculations:CoolingLoad:DefaultCoolingSafetyFactor", StringComparison.Ordinal));
+
+        var energyOptionsException = Assert.Throws<OptionsValidationException>(() =>
+            provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value);
+        Assert.Contains(energyOptionsException.Failures, failure =>
+            failure.Contains("Calculations:Iso52016EnergyNeed:DefaultWeatherYear", StringComparison.Ordinal));
+        Assert.Contains(energyOptionsException.Failures, failure =>
+            failure.Contains("DefaultCoolingSetbackC", StringComparison.Ordinal));
+
+        var ventilationOptionsException = Assert.Throws<OptionsValidationException>(() =>
+            provider.GetRequiredService<IOptions<NaturalVentilationOptions>>().Value);
+        Assert.Contains(ventilationOptionsException.Failures, failure =>
+            failure.Contains("MinimumOutdoorTemperatureC cannot exceed MaximumOutdoorTemperatureC", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void AddCalculationsModuleDoesNotDuplicateMainServiceRegistrations()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().Build();
+
+        services.AddCalculationsModule(configuration);
+
+        AssertSingleRegistration<ICalculationsFacade>(services);
+        AssertSingleRegistration<IBuildingEnergyAnalysisFacade>(services);
+        AssertSingleRegistration<IBuildingComfortAnalysisFacade>(services);
+        AssertSingleRegistration<IBuildingSizingAnalysisFacade>(services);
+        AssertSingleRegistration<IBuildingEnergyCalculator>(services);
+        AssertSingleRegistration<IRoomCoolingLoadCalculator>(services);
+        AssertSingleRegistration<IAggregateLoadCalculator>(services);
+        AssertSingleRegistration<IRoomHeatingLoadCalculator>(services);
+        AssertSingleRegistration<IBuildingHeatingLoadCalculator>(services);
+    }
+
     private static void AssertServiceLifetime<TService>(
         IServiceCollection services,
         ServiceLifetime expectedLifetime)
@@ -94,5 +156,14 @@ public class CalculationsDependencyInjectionTests
 
         Assert.NotNull(descriptor);
         Assert.Equal(expectedLifetime, descriptor.Lifetime);
+    }
+
+    private static void AssertSingleRegistration<TService>(IServiceCollection services)
+    {
+        var registrations = services
+            .Where(service => service.ServiceType == typeof(TService))
+            .ToArray();
+
+        Assert.Single(registrations);
     }
 }

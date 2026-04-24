@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
@@ -11,11 +11,11 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/buildings/{buildingId:int}/sizing-analysis")]
 public class BuildingSizingAnalysisController : ControllerBase
 {
-    private readonly IBuildingSizingAnalysisFacade _sizing;
+    private readonly ICalculationsFacade _calculations;
 
-    public BuildingSizingAnalysisController(IBuildingSizingAnalysisFacade sizing)
+    public BuildingSizingAnalysisController(ICalculationsFacade calculations)
     {
-        _sizing = sizing;
+        _calculations = calculations;
     }
 
     [HttpPost("peak-loads")]
@@ -25,13 +25,13 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] PeakSizingRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculatePeakLoadsAsync(
+        var result = await _calculations.CalculatePeakLoadsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("reference-design-day")]
@@ -41,13 +41,13 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] ReferenceDesignDayRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculateReferenceDesignDayAsync(
+        var result = await _calculations.CalculateReferenceDesignDayAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("synthetic-design-day")]
@@ -56,12 +56,12 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] SyntheticDesignDayRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculateSyntheticDesignDayAsync(
+        var result = await _calculations.CalculateSyntheticDesignDayAsync(
             buildingId,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("autosizing")]
@@ -71,13 +71,13 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] AutosizingRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculateAutosizingAsync(
+        var result = await _calculations.CalculateAutosizingAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("catalog-autosizing")]
@@ -87,13 +87,13 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] CatalogAutosizingRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculateCatalogAutosizingAsync(
+        var result = await _calculations.CalculateCatalogAutosizingAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("equipment-recommendations")]
@@ -103,13 +103,13 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] EquipmentRecommendationRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CalculateEquipmentRecommendationsAsync(
+        var result = await _calculations.CalculateEquipmentRecommendationsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("equipment-recommendations/compare")]
@@ -119,12 +119,12 @@ public class BuildingSizingAnalysisController : ControllerBase
         [FromBody] EquipmentRecommendationComparisonRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _sizing.CompareEquipmentRecommendationsAsync(
+        var result = await _calculations.CompareEquipmentRecommendationsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 }

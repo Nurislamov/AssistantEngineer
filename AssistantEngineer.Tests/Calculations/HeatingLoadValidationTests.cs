@@ -1,6 +1,10 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
+using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -24,9 +28,9 @@ public class HeatingLoadValidationTests
             Temperature.FromCelsius(-15).Value).Value;
 
         var service = new BuildingHeatingLoadService(
-            new BuildingRepositoryStub(building),
-            new EmptyPreferencesRepository(),
-            CalculationTestFactory.CreateHeatingLoadCalculator());
+            new BuildingHeatingReadModelRepositoryStub(building),
+            new BuildingHeatingReadModelCalculator(
+                Microsoft.Extensions.Options.Options.Create(new En12831HeatingLoadOptions())));
 
         var result = await service.CalculateAsync(building.Id);
 
@@ -60,34 +64,35 @@ public class HeatingLoadValidationTests
         Assert.Contains("climate zone", result.Error, StringComparison.OrdinalIgnoreCase);
     }
 
-    private sealed class BuildingRepositoryStub : IBuildingRepository
+    private sealed class BuildingHeatingReadModelRepositoryStub : IBuildingHeatingReadModelRepository
     {
-        private readonly Building _building;
+        private readonly BuildingHeatingReadModel _building;
 
-        public BuildingRepositoryStub(Building building) => _building = building;
+        public BuildingHeatingReadModelRepositoryStub(Building building)
+        {
+            _building = new BuildingHeatingReadModel(
+                building.Id,
+                building.Name,
+                building.ProjectId,
+                building.Project.Name,
+                building.ClimateZone?.WinterDesignTemperature.Celsius,
+                building.Floors
+                    .SelectMany(floor => floor.Rooms)
+                    .Select(room => new RoomHeatingReadModel(
+                        room.Id,
+                        room.Name,
+                        room.Area.SquareMeters,
+                        room.HeightM,
+                        room.IndoorTemperature.Celsius,
+                        room.OutdoorTemperatureOverride?.Celsius,
+                        null,
+                        [],
+                        []))
+                    .ToList());
+        }
 
-        public Task<Building?> GetForCalculationAsync(int id, CancellationToken cancellationToken = default) =>
-            Task.FromResult<Building?>(id == _building.Id ? _building : null);
-
-        public Task<Building?> GetByIdAsync(int id, bool includeClimateZone = false, CancellationToken cancellationToken = default) =>
-            throw new NotSupportedException();
-
-        public Task<Building?> GetWithFloorsAsync(int id, CancellationToken cancellationToken = default) =>
-            throw new NotSupportedException();
-
-        public Task<Building?> GetWithThermalZonesAndRoomsAsync(int id, CancellationToken cancellationToken = default) =>
-            Task.FromResult<Building?>(id == _building.Id ? _building : null);
-
-        public Task<Building?> GetByThermalZoneIdAsync(int thermalZoneId, CancellationToken cancellationToken = default) =>
-            Task.FromResult<Building?>(_building.ThermalZones.Any(zone => zone.Id == thermalZoneId) ? _building : null);
-
-        public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
-            throw new NotSupportedException();
-
-        public Task<IReadOnlyList<Building>> ListByProjectIdAsync(int projectId, CancellationToken cancellationToken = default) =>
-            throw new NotSupportedException();
-
-        public void Add(Building building) => throw new NotSupportedException();
+        public Task<BuildingHeatingReadModel?> GetByIdAsync(int buildingId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<BuildingHeatingReadModel?>(buildingId == _building.BuildingId ? _building : null);
     }
 
     private sealed class EmptyPreferencesRepository : ICalculationPreferencesRepository

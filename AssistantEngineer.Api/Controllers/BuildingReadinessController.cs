@@ -1,6 +1,6 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +13,11 @@ public class BuildingReadinessController : ControllerBase
 {
     private const int DefaultWeatherYear = 2020;
 
-    private readonly BuildingCalculationReadinessService _readiness;
+    private readonly IBuildingsFacade _buildings;
 
-    public BuildingReadinessController(BuildingCalculationReadinessService readiness)
+    public BuildingReadinessController(IBuildingsFacade buildings)
     {
-        _readiness = readiness;
+        _buildings = buildings;
     }
 
     [HttpGet]
@@ -26,10 +26,10 @@ public class BuildingReadinessController : ControllerBase
         [FromQuery] int? weatherYear,
         CancellationToken cancellationToken)
     {
-        var result = await _readiness.CheckAsync(
+        var result = await _buildings.CheckBuildingReadinessAsync(
             buildingId,
             weatherYear ?? DefaultWeatherYear,
             cancellationToken);
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 }

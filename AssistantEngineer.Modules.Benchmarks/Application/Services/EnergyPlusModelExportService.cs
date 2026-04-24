@@ -5,7 +5,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
-public sealed class EnergyPlusModelExportService
+internal sealed class EnergyPlusModelExportService
 {
     private readonly IBuildingRepository _buildings;
     private readonly IEnergyPlusModelExporter _energyPlusModelExporter;

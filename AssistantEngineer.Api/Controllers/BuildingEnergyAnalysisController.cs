@@ -16,11 +16,11 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/buildings/{buildingId:int}/energy-analysis")]
 public class BuildingEnergyAnalysisController : ControllerBase
 {
-    private readonly IBuildingEnergyAnalysisFacade _energyAnalysis;
+    private readonly ICalculationsFacade _calculations;
 
-    public BuildingEnergyAnalysisController(IBuildingEnergyAnalysisFacade energyAnalysis)
+    public BuildingEnergyAnalysisController(ICalculationsFacade calculations)
     {
-        _energyAnalysis = energyAnalysis;
+        _calculations = calculations;
     }
 
     [HttpGet("iso52016/breakdown")]
@@ -30,8 +30,8 @@ public class BuildingEnergyAnalysisController : ControllerBase
         [FromQuery] int? year,
         CancellationToken cancellationToken)
     {
-        var result = await _energyAnalysis.GetIso52016BreakdownAsync(buildingId, year, cancellationToken);
-        return result.ToActionResult();
+        var result = await _calculations.GetIso52016BreakdownAsync(buildingId, year, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpGet("energy-signature")]
@@ -42,13 +42,13 @@ public class BuildingEnergyAnalysisController : ControllerBase
         [FromQuery] double? heatingBaseTemperatureC,
         CancellationToken cancellationToken)
     {
-        var result = await _energyAnalysis.GetEnergySignatureAsync(
+        var result = await _calculations.GetEnergySignatureAsync(
             buildingId,
             year,
             heatingBaseTemperatureC,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("heating-system-energy")]
@@ -59,13 +59,13 @@ public class BuildingEnergyAnalysisController : ControllerBase
         [FromBody] HeatingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyAnalysis.CalculateHeatingSystemEnergyAsync(
+        var result = await _calculations.CalculateHeatingSystemEnergyAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("cooling-system-energy")]
@@ -76,13 +76,13 @@ public class BuildingEnergyAnalysisController : ControllerBase
         [FromBody] CoolingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyAnalysis.CalculateCoolingSystemEnergyAsync(
+        var result = await _calculations.CalculateCoolingSystemEnergyAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("summary")]
@@ -93,12 +93,12 @@ public class BuildingEnergyAnalysisController : ControllerBase
         [FromBody] BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyAnalysis.CalculateSummaryAsync(
+        var result = await _calculations.CalculateSummaryAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 }

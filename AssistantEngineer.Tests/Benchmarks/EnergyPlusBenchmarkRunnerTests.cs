@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.SharedKernel.Primitives;
+using AssistantEngineer.SharedKernel.Resilience;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -112,7 +113,11 @@ public class EnergyPlusBenchmarkRunnerTests
     private static EnergyPlusBenchmarkRunner CreateRunner(EnergyPlusBenchmarkOptions options)
     {
         var artifacts = new LocalEnergyPlusArtifactStore(Options.Create(options));
-        return new(Options.Create(options), NullLogger<EnergyPlusBenchmarkRunner>.Instance, artifacts);
+        return new(
+            Options.Create(options),
+            NullLogger<EnergyPlusBenchmarkRunner>.Instance,
+            artifacts,
+            new ResilientOperationExecutor());
     }
 
     private static void SeedArtifact(string rootDirectory, string artifactId, string content)

@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Filters;
+using AssistantEngineer.Api.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -27,6 +28,8 @@ public class GlobalExceptionFilterTests
         Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
         Assert.DoesNotContain("secret", problem.Detail);
         Assert.Equal("InvalidOperationException", problem.Extensions["exceptionType"]);
+        Assert.Equal("unexpected_error", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
+        Assert.Equal("trace-123", problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
         Assert.True(problem.Extensions.ContainsKey("traceId"));
         Assert.True(context.ExceptionHandled);
     }
@@ -45,6 +48,8 @@ public class GlobalExceptionFilterTests
         var problem = Assert.IsType<ProblemDetails>(result.Value);
         Assert.DoesNotContain("secret", problem.Detail);
         Assert.False(problem.Extensions.ContainsKey("exceptionType"));
+        Assert.Equal("unexpected_error", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
+        Assert.Equal("trace-123", problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
         Assert.True(problem.Extensions.ContainsKey("traceId"));
     }
 

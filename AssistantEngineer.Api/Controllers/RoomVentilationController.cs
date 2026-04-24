@@ -1,10 +1,9 @@
-﻿using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Services.Rooms;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
-using AssistantEngineer.SharedKernel.Primitives;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,18 +13,15 @@ namespace AssistantEngineer.Api.Controllers;
 [ApiVersion("1.0")]
 public class RoomVentilationController : ControllerBase
 {
-    private readonly RoomVentilationCommandService _command;
-    private readonly RoomVentilationQueryService _query;
-    private readonly NaturalVentilationPreviewService _preview;
+    private readonly IBuildingsFacade _buildings;
+    private readonly ICalculationsFacade _calculations;
 
     public RoomVentilationController(
-        RoomVentilationCommandService command,
-        RoomVentilationQueryService query,
-        NaturalVentilationPreviewService preview)
+        IBuildingsFacade buildings,
+        ICalculationsFacade calculations)
     {
-        _command = command;
-        _query = query;
-        _preview = preview;
+        _buildings = buildings;
+        _calculations = calculations;
     }
 
     [HttpGet("api/v{version:apiVersion}/rooms/{roomId:int}/ventilation-parameters")]
@@ -33,8 +29,8 @@ public class RoomVentilationController : ControllerBase
         int roomId,
         CancellationToken cancellationToken)
     {
-        var result = await _query.GetAsync(roomId, cancellationToken);
-        return result.ToActionResult();
+        var result = await _buildings.GetRoomVentilationParametersAsync(roomId, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpPut("api/v{version:apiVersion}/rooms/{roomId:int}/ventilation-parameters")]
@@ -43,8 +39,8 @@ public class RoomVentilationController : ControllerBase
         [FromBody] UpsertRoomVentilationParametersRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _command.UpsertAsync(roomId, request, cancellationToken);
-        return result.ToActionResult();
+        var result = await _buildings.UpsertRoomVentilationParametersAsync(roomId, request, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpDelete("api/v{version:apiVersion}/rooms/{roomId:int}/ventilation-parameters")]
@@ -52,18 +48,12 @@ public class RoomVentilationController : ControllerBase
         int roomId,
         CancellationToken cancellationToken)
     {
-        var result = await _command.DeleteAsync(roomId, cancellationToken);
+        var result = await _buildings.DeleteRoomVentilationParametersAsync(roomId, cancellationToken);
 
         if (result.IsSuccess)
             return NoContent();
 
-        return result.ErrorType switch
-        {
-            ResultErrorType.NotFound => NotFound(result.Error),
-            ResultErrorType.Validation => BadRequest(result.Error),
-            ResultErrorType.Conflict => Conflict(result.Error),
-            _ => BadRequest(result.Error)
-        };
+        return result.ToActionResult(this);
     }
 
     [HttpPost("api/v{version:apiVersion}/rooms/{roomId:int}/natural-ventilation/preview")]
@@ -72,7 +62,7 @@ public class RoomVentilationController : ControllerBase
         [FromBody] NaturalVentilationPreviewRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _preview.PreviewAsync(roomId, request, cancellationToken);
-        return result.ToActionResult();
+        var result = await _calculations.PreviewNaturalVentilationAsync(roomId, request, cancellationToken);
+        return result.ToActionResult(this);
     }
 }

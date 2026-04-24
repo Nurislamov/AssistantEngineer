@@ -1,5 +1,10 @@
 using System.Reflection;
 using AssistantEngineer.Api;
+using AssistantEngineer.Modules.Benchmarks.Application.Facades;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
+using AssistantEngineer.Modules.Equipment.Application.Facades;
+using AssistantEngineer.Modules.Reporting.Application.Facades;
 using AssistantEngineer.SharedKernel.Primitives;
 using NetArchTest.Rules;
 
@@ -63,6 +68,62 @@ public class ModuleBoundaryTests
     {
         AssertNoAssemblyReferences(ApiAssembly, "AssistantEngineer.Infrastructure.Persistence");
         AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Infrastructure.Persistence");
+    }
+
+    [Fact]
+    public void ApiDoesNotDependOnModuleInternalServicesOrMappers()
+    {
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Buildings.Application.Services");
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Calculations.Application.Services");
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Equipment.Application.Services");
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Reporting.Application.Services");
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Benchmarks.Application.Services");
+        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Calculations.Application.Mappers");
+        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingEnergyAnalysisFacade).FullName!);
+        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingComfortAnalysisFacade).FullName!);
+        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingSizingAnalysisFacade).FullName!);
+    }
+
+    [Fact]
+    public void ControllersDependOnlyOnModuleFacadeContracts()
+    {
+        var allowedDependencyTypes = new HashSet<Type>
+        {
+            typeof(IBenchmarksFacade),
+            typeof(IBuildingsFacade),
+            typeof(ICalculationsFacade),
+            typeof(IEquipmentFacade),
+            typeof(IReportsFacade)
+        };
+
+        var violatingConstructors = typeof(Program).Assembly
+            .GetTypes()
+            .Where(type =>
+                type is { IsAbstract: false, IsPublic: true } &&
+                typeof(Microsoft.AspNetCore.Mvc.ControllerBase).IsAssignableFrom(type))
+            .SelectMany(type => type.GetConstructors()
+                .Select(constructor => new
+                {
+                    Controller = type,
+                    ViolatingParameters = constructor
+                        .GetParameters()
+                        .Select(parameter => parameter.ParameterType)
+                        .Where(parameterType =>
+                            parameterType.Assembly.GetName().Name?.StartsWith("AssistantEngineer.Modules.", StringComparison.Ordinal) == true &&
+                            !allowedDependencyTypes.Contains(parameterType))
+                        .Select(parameterType => parameterType.FullName ?? parameterType.Name)
+                        .Order(StringComparer.Ordinal)
+                        .ToArray()
+                }))
+            .Where(result => result.ViolatingParameters.Length > 0)
+            .Select(result =>
+                $"{result.Controller.FullName}: {string.Join(", ", result.ViolatingParameters)}")
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.True(
+            violatingConstructors.Length == 0,
+            $"Controllers depend on non-facade module types: {string.Join("; ", violatingConstructors)}.");
     }
 
     [Fact]

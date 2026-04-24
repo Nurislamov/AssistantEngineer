@@ -11,7 +11,10 @@ public static class DependencyInjection
         services.AddScoped<BuildingReportCalculationService>();
         services.AddScoped<BuildingReportGenerator>();
         services.AddScoped<BuildingReportDataService>();
-        services.AddScoped<IReportsFacade, ReportsFacade>();
+        services.AddScoped<IReportsFacade>(sp => new ReportsFacade(
+            sp.GetRequiredService<BuildingReportDataService>(),
+            sp.GetRequiredService<AssistantEngineer.Modules.Reporting.Application.Abstractions.IBuildingReportExporter>(),
+            sp.GetRequiredService<AssistantEngineer.Modules.Calculations.Application.Services.Buildings.BuildingEnergyBalanceService>()));
 
         return services;
     }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
-public class VerificationComparator : IVerificationComparator
+internal sealed class VerificationComparator : IVerificationComparator
 {
     private readonly VerificationTolerance _defaultTolerance;
     private readonly TimeProvider _timeProvider;

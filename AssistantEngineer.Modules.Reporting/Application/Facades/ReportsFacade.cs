@@ -14,7 +14,7 @@ public sealed class ReportsFacade : IReportsFacade
     private readonly IBuildingReportExporter _reportExporter;
     private readonly BuildingEnergyBalanceService _energyBalanceService;
 
-    public ReportsFacade(
+    internal ReportsFacade(
         BuildingReportDataService reportDataService,
         IBuildingReportExporter reportExporter,
         BuildingEnergyBalanceService energyBalanceService)

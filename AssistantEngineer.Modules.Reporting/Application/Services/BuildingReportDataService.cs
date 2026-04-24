@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -9,13 +10,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;
 
-public class BuildingReportDataService
+internal sealed class BuildingReportDataService
 {
     private readonly IBuildingRepository _buildings;
     private readonly ICalculationPreferencesRepository _preferences;
     private readonly IEquipmentCatalogRepository _catalog;
     private readonly Iso52016ClimateDataValidator _iso52016ClimateDataValidator;
     private readonly BuildingReportCalculationService _calculationService;
+    private readonly BuildingHeatingLoadService _heatingLoadService;
     private readonly BuildingReportGenerator _reportGenerator;
     private readonly ILogger<BuildingReportDataService> _logger;
 
@@ -25,6 +27,7 @@ public class BuildingReportDataService
         IEquipmentCatalogRepository catalog,
         Iso52016ClimateDataValidator iso52016ClimateDataValidator,
         BuildingReportCalculationService calculationService,
+        BuildingHeatingLoadService heatingLoadService,
         BuildingReportGenerator reportGenerator,
         ILogger<BuildingReportDataService>? logger = null)
     {
@@ -33,6 +36,7 @@ public class BuildingReportDataService
         _catalog = catalog;
         _iso52016ClimateDataValidator = iso52016ClimateDataValidator;
         _calculationService = calculationService;
+        _heatingLoadService = heatingLoadService;
         _reportGenerator = reportGenerator;
         _logger = logger ?? NullLogger<BuildingReportDataService>.Instance;
     }
@@ -109,20 +113,17 @@ public class BuildingReportDataService
             buildingId,
             method);
 
-        var building = await _buildings.GetForReportAsync(buildingId, cancellationToken);
-        if (building is null)
+        var heating = await _heatingLoadService.CalculateAsync(buildingId, method, cancellationToken);
+        if (heating.IsFailure)
         {
-            _logger.LogWarning("Heating report generation failed because building {BuildingId} was not found.", buildingId);
-            return Result<HeatingReport>.NotFound($"Building with id {buildingId} not found.");
+            _logger.LogWarning(
+                "Heating report generation failed for building {BuildingId}: {Error}.",
+                buildingId,
+                heating.Error);
+            return Result<HeatingReport>.Failure(heating);
         }
 
-        var preferences = await _preferences.GetByProjectIdAsync(building.ProjectId, cancellationToken);
-        var data = await _calculationService.BuildHeatingDataAsync(
-            building,
-            preferences,
-            method,
-            cancellationToken);
-        var report = _reportGenerator.GenerateHeatingReport(data);
+        var report = _reportGenerator.GenerateHeatingReport(heating.Value);
 
         _logger.LogInformation(
             "Building heating report generated for building {BuildingId}: {RoomCount} rooms, total design load {TotalDesignHeatingLoadKw} kW.",

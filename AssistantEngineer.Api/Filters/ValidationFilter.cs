@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using AssistantEngineer.Api.Extensions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -74,11 +75,7 @@ public class ValidationFilter : IAsyncActionFilter
     }
 
     private static BadRequestObjectResult CreateValidationProblem(ActionContext context) =>
-        new(new ValidationProblemDetails(context.ModelState)
-        {
-            Title = "Validation failed",
-            Status = StatusCodes.Status400BadRequest
-        });
+        ApiProblemDetailsFactory.CreateValidationResult(context);
 
     private sealed record ValidationArgumentMetadata(Type ValidatorType, Type ValidationContextType);
 }

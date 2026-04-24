@@ -4,7 +4,7 @@ using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;
 
-public sealed class BuildingReportGenerator
+internal sealed class BuildingReportGenerator
 {
     private readonly TimeProvider _timeProvider;
 
@@ -51,9 +51,9 @@ public sealed class BuildingReportGenerator
         };
     }
 
-    public HeatingReport GenerateHeatingReport(BuildingHeatingReportData data)
+    public HeatingReport GenerateHeatingReport(BuildingHeatingLoadResult data)
     {
-        var rooms = data.RoomCalculations;
+        var rooms = data.Rooms;
         var transmissionLoss = rooms.Sum(room => room.TransmissionHeatLossW);
         var ventilationLoss = rooms.Sum(room => room.VentilationHeatLossW);
         var totalLoad = transmissionLoss + ventilationLoss;
@@ -68,9 +68,9 @@ public sealed class BuildingReportGenerator
 
         return new HeatingReport
         {
-            ProjectName = data.Building.Project.Name,
-            BuildingName = data.Building.Name,
-            CalculationMethod = data.Method.ToString(),
+            ProjectName = data.ProjectName,
+            BuildingName = data.BuildingName,
+            CalculationMethod = data.CalculationMethod,
             GeneratedAtUtc = _timeProvider.GetUtcNow().UtcDateTime,
             OutdoorDesignTemperatureC = outdoorTemp,
             IndoorDesignTemperatureC = indoorTemp,
@@ -79,7 +79,9 @@ public sealed class BuildingReportGenerator
             TotalVentilationLossW = Math.Round(ventilationLoss, 2, MidpointRounding.AwayFromZero),
             TotalDesignHeatingLoadW = Math.Round(totalLoad, 2, MidpointRounding.AwayFromZero),
             TotalDesignHeatingLoadKw = Math.Round(totalLoad / 1000.0, 2, MidpointRounding.AwayFromZero),
-            Rooms = rooms.ToList()
+            Rooms = rooms
+                .OrderBy(room => room.RoomId)
+                .ToList()
         };
     }
 

@@ -1,11 +1,10 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
-using AssistantEngineer.Modules.Buildings.Domain.Enums;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Models;
 
-public sealed record BuildingCoolingReportData(
+internal sealed record BuildingCoolingReportData(
     Building Building,
     BuildingCalculationResult BuildingCalculation,
     IReadOnlyList<FloorCalculationResult> FloorCalculations,
@@ -14,13 +13,8 @@ public sealed record BuildingCoolingReportData(
     string RequestedSystemType,
     string RequestedUnitType);
 
-public sealed record RoomCoolingReportCalculation(
+internal sealed record RoomCoolingReportCalculation(
     Floor Floor,
     Room Room,
     RoomCalculationResult Calculation,
     EquipmentSelectionResult? EquipmentSelection);
-
-public sealed record BuildingHeatingReportData(
-    Building Building,
-    HeatingLoadCalculationMethod Method,
-    IReadOnlyList<RoomHeatingLoadResult> RoomCalculations);

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
-public sealed class VerificationService
+internal sealed class VerificationService
 {
     private readonly IBuildingRepository _buildings;
     private readonly BuildingCoolingLoadService _coolingLoadService;

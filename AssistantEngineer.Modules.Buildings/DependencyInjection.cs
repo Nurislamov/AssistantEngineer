@@ -1,5 +1,6 @@
 using System.Reflection;
 using AssistantEngineer.Modules.Buildings.Application.Options;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
 using AssistantEngineer.Modules.Buildings.Application.Services.Floors;
@@ -10,7 +11,9 @@ using AssistantEngineer.Modules.Buildings.Application.Validation;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using AssistantEngineer.SharedKernel.Resilience;
 
 namespace AssistantEngineer.Modules.Buildings;
 
@@ -21,8 +24,10 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.TryAddSingleton<ResilientOperationExecutor>();
 
         services.AddSingleton<IValidateOptions<BuildingArchetypeCatalogOptions>, BuildingArchetypeCatalogOptionsValidator>();
+        services.AddSingleton<IValidateOptions<PvgisApiOptions>, PvgisApiOptionsValidator>();
         services
             .AddOptions<BuildingArchetypeCatalogOptions>()
             .Bind(configuration.GetSection("Buildings:ArchetypeCatalog"))
@@ -31,8 +36,6 @@ public static class DependencyInjection
         services
             .AddOptions<PvgisApiOptions>()
             .Bind(configuration.GetSection(PvgisApiOptions.SectionName))
-            .Validate(options => !string.IsNullOrWhiteSpace(options.BaseUrl), "Buildings:Pvgis:BaseUrl is required.")
-            .Validate(options => options.TimeoutSeconds > 0 && options.TimeoutSeconds <= 300, "Buildings:Pvgis:TimeoutSeconds must be between 1 and 300.")
             .ValidateOnStart();
 
         services.AddHttpClient<PvgisAnnualClimateDataImportService>((sp, client) =>
@@ -43,7 +46,8 @@ public static class DependencyInjection
                     ? options.BaseUrl
                     : options.BaseUrl + "/",
                 UriKind.Absolute);
-            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            client.Timeout = Timeout.InfiniteTimeSpan;
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("AssistantEngineer/1.0");
         });
 
         services.AddScoped<ProjectCommandService>();
@@ -66,6 +70,7 @@ public static class DependencyInjection
         services.AddScoped<ThermalZoneQueryService>();
 
         services.AddScoped<EpwAnnualClimateDataImportService>();
+        services.AddScoped<IBuildingsFacade, BuildingsFacade>();
 
         return services;
     }

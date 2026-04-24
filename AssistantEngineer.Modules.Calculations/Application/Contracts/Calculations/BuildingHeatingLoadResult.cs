@@ -3,6 +3,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Calculati
 public class BuildingHeatingLoadResult
 {
     public int BuildingId { get; set; }
+    public string ProjectName { get; set; } = string.Empty;
     public string BuildingName { get; set; } = string.Empty;
     public string CalculationMethod { get; set; } = string.Empty;
     public int RoomsCount { get; set; }

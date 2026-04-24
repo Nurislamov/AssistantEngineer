@@ -1,11 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Models;
 using AssistantEngineer.SharedKernel.Primitives;
+using AssistantEngineer.SharedKernel.Resilience;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.Extensions.Logging;
@@ -18,16 +20,19 @@ public sealed class EnergyPlusBenchmarkRunner : IEnergyPlusBenchmarkRunner
     private readonly EnergyPlusBenchmarkOptions _options;
     private readonly ILogger<EnergyPlusBenchmarkRunner> _logger;
     private readonly IEnergyPlusArtifactStore _artifacts;
+    private readonly ResilientOperationExecutor _executor;
     private readonly IDockerClient? _dockerClient;
 
     public EnergyPlusBenchmarkRunner(
         IOptions<EnergyPlusBenchmarkOptions> options,
         ILogger<EnergyPlusBenchmarkRunner> logger,
-        IEnergyPlusArtifactStore artifacts)
+        IEnergyPlusArtifactStore artifacts,
+        ResilientOperationExecutor executor)
     {
         _options = options.Value;
         _logger = logger;
         _artifacts = artifacts;
+        _executor = executor;
 
         if (_options.UseDocker)
         {
@@ -72,9 +77,51 @@ public sealed class EnergyPlusBenchmarkRunner : IEnergyPlusBenchmarkRunner
             weatherArtifact.Value,
             workspace.Value);
 
-        return _options.UseDocker
-            ? await RunWithDockerAsync(execution, cancellationToken)
-            : await RunLocallyAsync(execution, cancellationToken);
+        using var scope = _logger.BeginScope(new Dictionary<string, object?>
+        {
+            ["RunArtifactId"] = execution.Workspace.RunArtifactId,
+            ["ExecutionMode"] = _options.UseDocker ? "docker" : "local"
+        });
+
+        try
+        {
+            return await _executor.ExecuteAsync(
+                integrationName: _options.UseDocker ? "energyplus-docker" : "energyplus-local",
+                settings: CreateResilienceSettings(),
+                operation: ct => _options.UseDocker
+                    ? RunWithDockerAsync(execution, ct)
+                    : RunLocallyAsync(execution, ct),
+                logger: _logger,
+                isTransientException: static exception =>
+                    exception is DockerApiException or HttpRequestException or IOException,
+                cancellationToken: cancellationToken);
+        }
+        catch (CircuitBreakerOpenException exception)
+        {
+            TryDeleteWorkspace(execution.Workspace);
+            _logger.LogWarning(
+                exception,
+                "EnergyPlus execution was rejected because the circuit breaker is open.");
+            return Result<EnergyPlusBenchmarkResult>.Failure("EnergyPlus is temporarily unavailable. Please retry later.");
+        }
+        catch (TimeoutException exception)
+        {
+            TryDeleteWorkspace(execution.Workspace);
+            _logger.LogWarning(
+                exception,
+                "EnergyPlus execution timed out for run {RunArtifactId}.",
+                execution.Workspace.RunArtifactId);
+            return Result<EnergyPlusBenchmarkResult>.Failure("EnergyPlus execution timed out.");
+        }
+        catch (Exception exception) when (exception is DockerApiException or HttpRequestException or IOException)
+        {
+            TryDeleteWorkspace(execution.Workspace);
+            _logger.LogWarning(
+                exception,
+                "EnergyPlus execution failed after retries for run {RunArtifactId}.",
+                execution.Workspace.RunArtifactId);
+            return Result<EnergyPlusBenchmarkResult>.Failure("EnergyPlus is temporarily unavailable. Please retry later.");
+        }
     }
 
     private async Task<Result<EnergyPlusBenchmarkResult>> RunWithDockerAsync(
@@ -299,6 +346,30 @@ public sealed class EnergyPlusBenchmarkRunner : IEnergyPlusBenchmarkRunner
             return Result.Validation("EnergyPlus max captured log characters must be positive.");
 
         return Result.Success();
+    }
+
+    private ResilientOperationSettings CreateResilienceSettings() =>
+        new(
+            Timeout: TimeSpan.FromSeconds(_options.ExecutionTimeoutSeconds),
+            MaxRetryAttempts: _options.MaxRetryAttempts,
+            InitialRetryDelay: TimeSpan.FromMilliseconds(_options.InitialRetryDelayMilliseconds),
+            CircuitBreakerFailureThreshold: _options.CircuitBreakerFailureThreshold,
+            CircuitBreakerBreakDuration: TimeSpan.FromSeconds(_options.CircuitBreakerBreakDurationSeconds));
+
+    private void TryDeleteWorkspace(EnergyPlusRunWorkspace workspace)
+    {
+        try
+        {
+            if (Directory.Exists(workspace.WorkingDirectory))
+                Directory.Delete(workspace.WorkingDirectory, recursive: true);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Failed to delete EnergyPlus workspace {WorkingDirectory}.",
+                workspace.WorkingDirectory);
+        }
     }
 
     private sealed record EnergyPlusBenchmarkExecution(

@@ -6,12 +6,22 @@ public class FacadeBoundaryTests
 {
     private static readonly string[] AllowedFacadeTypeNames =
     [
-        "AssistantEngineer.Modules.Reporting.Application.Facades.IReportsFacade",
-        "AssistantEngineer.Modules.Reporting.Application.Facades.ReportsFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingEnergyAnalysisFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingEnergyAnalysisFacade",
         "AssistantEngineer.Modules.Benchmarks.Application.Facades.IBenchmarksFacade",
-        "AssistantEngineer.Modules.Benchmarks.Application.Facades.BenchmarksFacade"
+        "AssistantEngineer.Modules.Benchmarks.Application.Facades.BenchmarksFacade",
+        "AssistantEngineer.Modules.Buildings.Application.Facades.IBuildingsFacade",
+        "AssistantEngineer.Modules.Buildings.Application.Facades.BuildingsFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingComfortAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.CalculationsFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingEnergyAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingSizingAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingComfortAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.ICalculationsFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingEnergyAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingSizingAnalysisFacade",
+        "AssistantEngineer.Modules.Equipment.Application.Facades.IEquipmentFacade",
+        "AssistantEngineer.Modules.Equipment.Application.Facades.EquipmentFacade",
+        "AssistantEngineer.Modules.Reporting.Application.Facades.IReportsFacade",
+        "AssistantEngineer.Modules.Reporting.Application.Facades.ReportsFacade"
     ];
 
     [Fact]

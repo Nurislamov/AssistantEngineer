@@ -1,7 +1,7 @@
 using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +13,11 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/climate-zones/{climateZoneId:int}/annual-climate-data")]
 public class AnnualClimateDataController : ControllerBase
 {
-    private readonly EpwAnnualClimateDataImportService _epwImport;
-    private readonly PvgisAnnualClimateDataImportService _pvgisImport;
+    private readonly IBuildingsFacade _buildings;
 
-    public AnnualClimateDataController(
-        EpwAnnualClimateDataImportService epwImport,
-        PvgisAnnualClimateDataImportService pvgisImport)
+    public AnnualClimateDataController(IBuildingsFacade buildings)
     {
-        _epwImport = epwImport;
-        _pvgisImport = pvgisImport;
+        _buildings = buildings;
     }
 
     [HttpPost("epw")]
@@ -34,17 +30,21 @@ public class AnnualClimateDataController : ControllerBase
         CancellationToken cancellationToken)
     {
         if (sourceFile is null)
-            return BadRequest("EPW source file is required.");
+            return ApiProblemDetailsFactory.CreateValidationResult(
+                this,
+                "EPW source file is required.",
+                nameof(sourceFile),
+                "EPW source file is required.");
 
         await using var stream = sourceFile.OpenReadStream();
-        var result = await _epwImport.ImportAsync(
+        var result = await _buildings.ImportAnnualClimateDataFromEpwAsync(
             climateZoneId,
             year,
             stream,
             sourceFile.FileName,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("pvgis")]
@@ -54,11 +54,11 @@ public class AnnualClimateDataController : ControllerBase
         [FromBody] ImportPvgisWeatherRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _pvgisImport.ImportAsync(
+        var result = await _buildings.ImportAnnualClimateDataFromPvgisAsync(
             climateZoneId,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 }

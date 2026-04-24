@@ -23,6 +23,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.SharedKernel.ValueObjects;
@@ -403,6 +404,33 @@ public class BuildingPerformanceCalculationServicesTests
         Assert.Equal(0, calibratedResult.Breakdown.SolarGainsKWh);
     }
 
+    [Fact]
+    public async Task Iso52016ResultsDoNotDependOnThermalZoneProcessingOrderWithinHour()
+    {
+        var climateZone = ClimateZone.Create(
+            "Adjacent zone climate",
+            Temperature.FromCelsius(30).Value,
+            Temperature.FromCelsius(-5).Value).Value;
+        var weather = AnnualClimateData.Create(climateZone, year: 2020).Value;
+        for (var hour = 0; hour < 8760; hour++)
+            Assert.True(weather.AddHourlyData(hour, dryBulbTemp: 15, directSolar: 0, diffuseSolar: 0).IsSuccess);
+
+        var firstOrder = await CalculateAdjacentZoneCaseAsync(climateZone, weather, firstZoneId: 1, secondZoneId: 2);
+        var secondOrder = await CalculateAdjacentZoneCaseAsync(climateZone, weather, firstZoneId: 2, secondZoneId: 1);
+        Assert.NotNull(firstOrder.RoomHourlyResults);
+        Assert.NotNull(secondOrder.RoomHourlyResults);
+
+        var firstRoomA = firstOrder.RoomHourlyResults!.Single(result => result.RoomId == 101 && result.HourOfYear == 0);
+        var firstRoomB = firstOrder.RoomHourlyResults!.Single(result => result.RoomId == 102 && result.HourOfYear == 0);
+        var secondRoomA = secondOrder.RoomHourlyResults!.Single(result => result.RoomId == 101 && result.HourOfYear == 0);
+        var secondRoomB = secondOrder.RoomHourlyResults!.Single(result => result.RoomId == 102 && result.HourOfYear == 0);
+
+        Assert.Equal(firstRoomA.OperativeTemperatureC, secondRoomA.OperativeTemperatureC, precision: 2);
+        Assert.Equal(firstRoomB.OperativeTemperatureC, secondRoomB.OperativeTemperatureC, precision: 2);
+        Assert.Equal(firstOrder.AnnualHeatingDemandKWh, secondOrder.AnnualHeatingDemandKWh, precision: 2);
+        Assert.Equal(firstOrder.AnnualCoolingDemandKWh, secondOrder.AnnualCoolingDemandKWh, precision: 2);
+    }
+
     private static string FormatBenchmarkFailure(Iso52016ReferenceBenchmarkResult result)
     {
         var failed = result.Assertions
@@ -443,6 +471,80 @@ public class BuildingPerformanceCalculationServicesTests
             Temperature.FromCelsius(21).Value,
             Temperature.FromCelsius(35).Value).Value;
         return building;
+    }
+
+    private static async Task<Iso52016AnnualEnergyNeedResult> CalculateAdjacentZoneCaseAsync(
+        ClimateZone climateZone,
+        AnnualClimateData weather,
+        int firstZoneId,
+        int secondZoneId)
+    {
+        var project = DomainInvariantTests.CreateProject("Adjacent zone project");
+        var building = Building.Create("Adjacent zone building", project, climateZone).Value;
+        var floor = building.AddFloor("Ground").Value;
+        var roomA = floor.AddRoom(
+            "Room A",
+            Area.FromSquareMeters(25).Value,
+            3,
+            Temperature.FromCelsius(18).Value,
+            Temperature.FromCelsius(35).Value,
+            peopleCount: 0,
+            type: RoomType.Office).Value;
+        var roomB = floor.AddRoom(
+            "Room B",
+            Area.FromSquareMeters(25).Value,
+            3,
+            Temperature.FromCelsius(28).Value,
+            Temperature.FromCelsius(35).Value,
+            peopleCount: 0,
+            type: RoomType.Retail).Value;
+
+        SetEntityId(roomA, 101);
+        SetEntityId(roomB, 102);
+
+        var alwaysOccupied = HourlySchedule.Create("Always occupied", Enumerable.Repeat(1.0, 24).ToArray()).Value;
+        Assert.True(roomA.SetOccupancySchedule(alwaysOccupied).IsSuccess);
+        Assert.True(roomB.SetOccupancySchedule(alwaysOccupied).IsSuccess);
+
+        Assert.True(roomA.AddWall(
+            Area.FromSquareMeters(40).Value,
+            ThermalTransmittance.FromValue(2.5).Value,
+            CardinalDirection.East,
+            WallBoundaryType.AdjacentConditioned,
+            roomB).IsSuccess);
+        Assert.True(roomB.AddWall(
+            Area.FromSquareMeters(40).Value,
+            ThermalTransmittance.FromValue(2.5).Value,
+            CardinalDirection.West,
+            WallBoundaryType.AdjacentConditioned,
+            roomA).IsSuccess);
+
+        var zoneA = building.AddThermalZone("Zone A", [roomA]).Value;
+        var zoneB = building.AddThermalZone("Zone B", [roomB]).Value;
+        SetEntityId(zoneA, firstZoneId);
+        SetEntityId(zoneB, secondZoneId);
+
+        var calculator = new Iso52016HourlySteadyStateCalculator(
+            new AnnualClimateDataProviderStub(weather),
+            new SolarRadiationService(),
+            new VentilationHeatTransferCalculator(new Iso16798ReferenceData()),
+            options: Options.Create(new Iso52016EnergyNeedOptions
+            {
+                TreatSameUseAdjacentConditionedAsAdiabatic = false
+            }));
+
+        var result = await calculator.CalculateBuildingEnergyNeedsAsync(
+            building,
+            year: weather.Year);
+        Assert.NotNull(result);
+        return result;
+    }
+
+    private static void SetEntityId(object entity, int id)
+    {
+        var field = entity.GetType().GetField("<Id>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        field.SetValue(entity, id);
     }
 
     private static async Task<Iso52016AnnualEnergyNeedResult> CalculateSolarCaseAsync(

@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Filters;
+using AssistantEngineer.Api.Extensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,8 @@ public class ValidationFilterTests
         var result = Assert.IsType<BadRequestObjectResult>(executingContext.Result);
         var problem = Assert.IsType<ValidationProblemDetails>(result.Value);
         Assert.Equal("Validation failed", problem.Title);
+        Assert.Equal("validation_failed", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
+        Assert.Equal(httpContext.TraceIdentifier, problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
         Assert.Contains("Name", problem.Errors.Keys);
     }
 
@@ -57,8 +60,9 @@ public class ValidationFilterTests
         var services = new ServiceCollection()
             .AddSingleton<IValidator<TestRequest>>(validator)
             .BuildServiceProvider();
+        var httpContext = new DefaultHttpContext { RequestServices = services };
         var actionContext = new ActionContext(
-            new DefaultHttpContext { RequestServices = services },
+            httpContext,
             new RouteData(),
             new ActionDescriptor());
         var executingContext = new ActionExecutingContext(
@@ -72,7 +76,10 @@ public class ValidationFilterTests
             () => Task.FromResult(new ActionExecutedContext(actionContext, [], new object())));
 
         Assert.Equal(1, validator.InvocationCount);
-        Assert.IsType<BadRequestObjectResult>(executingContext.Result);
+        var result = Assert.IsType<BadRequestObjectResult>(executingContext.Result);
+        var problem = Assert.IsType<ValidationProblemDetails>(result.Value);
+        Assert.Equal("validation_failed", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
+        Assert.Equal(httpContext.TraceIdentifier, problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
         Assert.Contains("Name", actionContext.ModelState.Keys);
     }
 

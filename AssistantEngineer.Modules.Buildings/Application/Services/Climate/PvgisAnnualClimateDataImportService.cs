@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+using System.Diagnostics;
+using System.Globalization;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
@@ -8,6 +10,7 @@ using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.SharedKernel.Abstractions;
 using AssistantEngineer.SharedKernel.Primitives;
+using AssistantEngineer.SharedKernel.Resilience;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -23,6 +26,7 @@ public sealed class PvgisAnnualClimateDataImportService
     private readonly IAnnualClimateDataRepository _annualClimateData;
     private readonly IUnitOfWork _unitOfWork;
     private readonly PvgisApiOptions _options;
+    private readonly ResilientOperationExecutor _executor;
     private readonly ILogger<PvgisAnnualClimateDataImportService> _logger;
 
     public PvgisAnnualClimateDataImportService(
@@ -31,6 +35,7 @@ public sealed class PvgisAnnualClimateDataImportService
         IAnnualClimateDataRepository annualClimateData,
         IUnitOfWork unitOfWork,
         IOptions<PvgisApiOptions> options,
+        ResilientOperationExecutor executor,
         ILogger<PvgisAnnualClimateDataImportService>? logger = null)
     {
         _httpClient = httpClient;
@@ -38,6 +43,7 @@ public sealed class PvgisAnnualClimateDataImportService
         _annualClimateData = annualClimateData;
         _unitOfWork = unitOfWork;
         _options = options.Value;
+        _executor = executor;
         _logger = logger ?? NullLogger<PvgisAnnualClimateDataImportService>.Instance;
     }
 
@@ -120,45 +126,105 @@ public sealed class PvgisAnnualClimateDataImportService
         CancellationToken cancellationToken)
     {
         var uri = BuildTmyUri(request);
-        using var response = await _httpClient.GetAsync(uri, cancellationToken);
+        var correlationId = Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString("N");
+        HttpResponseMessage response;
 
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            response = await _executor.ExecuteAsync(
+                integrationName: "pvgis-tmy",
+                settings: CreateResilienceSettings(),
+                operation: async ct =>
+                {
+                    using var requestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+                    requestMessage.Headers.TryAddWithoutValidation("X-Correlation-ID", correlationId);
+
+                    var httpResponse = await _httpClient.SendAsync(
+                        requestMessage,
+                        HttpCompletionOption.ResponseHeadersRead,
+                        ct);
+
+                    if (IsTransientStatusCode(httpResponse.StatusCode))
+                    {
+                        httpResponse.Dispose();
+                        throw new HttpRequestException(
+                            $"PVGIS returned transient status {(int)httpResponse.StatusCode}.",
+                            inner: null,
+                            httpResponse.StatusCode);
+                    }
+
+                    return httpResponse;
+                },
+                logger: _logger,
+                isTransientException: static exception => exception is HttpRequestException,
+                cancellationToken: cancellationToken);
+        }
+        catch (CircuitBreakerOpenException exception)
+        {
             _logger.LogWarning(
-                "PVGIS request failed with status {StatusCode}. Response: {ResponseBody}",
-                (int)response.StatusCode,
-                responseBody);
-
-            return Result<PvgisTmyWeather>.Validation(
-                $"PVGIS request failed with status {(int)response.StatusCode}.");
+                exception,
+                "PVGIS circuit breaker is open for correlation id {CorrelationId}.",
+                correlationId);
+            return Result<PvgisTmyWeather>.Failure("PVGIS is temporarily unavailable. Please retry later.");
         }
-
-        var payload = await response.Content.ReadFromJsonAsync<PvgisTmyResponse>(cancellationToken: cancellationToken);
-        if (payload is null)
-            return Result<PvgisTmyWeather>.Validation("PVGIS returned an empty response.");
-
-        if (payload.Outputs?.TmyHourly is null || payload.Outputs.TmyHourly.Count == 0)
-            return Result<PvgisTmyWeather>.Validation("PVGIS returned no hourly TMY records.");
-
-        var mappedHours = new List<PvgisTmyHour>(ExpectedAnnualHours);
-
-        foreach (var row in payload.Outputs.TmyHourly.OrderBy(static item => item.TimeUtc))
+        catch (TimeoutException exception)
         {
-            var mapped = MapHour(row);
-            if (mapped.IsFailure)
-                return Result<PvgisTmyWeather>.Failure(mapped);
-
-            mappedHours.Add(mapped.Value);
+            _logger.LogWarning(
+                exception,
+                "PVGIS request timed out for correlation id {CorrelationId}.",
+                correlationId);
+            return Result<PvgisTmyWeather>.Failure("PVGIS request timed out.");
         }
-
-        if (mappedHours.Count != ExpectedAnnualHours)
+        catch (HttpRequestException exception)
         {
-            return Result<PvgisTmyWeather>.Validation(
-                $"PVGIS TMY returned {mappedHours.Count} hourly records instead of {ExpectedAnnualHours}.");
+            _logger.LogWarning(
+                exception,
+                "PVGIS request failed after retries for correlation id {CorrelationId}.",
+                correlationId);
+            return Result<PvgisTmyWeather>.Failure("PVGIS is temporarily unavailable. Please retry later.");
         }
 
-        return Result<PvgisTmyWeather>.Success(new PvgisTmyWeather(mappedHours));
+        using (response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                _logger.LogWarning(
+                    "PVGIS request failed with status {StatusCode}. CorrelationId: {CorrelationId}. Response: {ResponseBody}",
+                    (int)response.StatusCode,
+                    correlationId,
+                    responseBody);
+
+                return Result<PvgisTmyWeather>.Validation(
+                    $"PVGIS request failed with status {(int)response.StatusCode}.");
+            }
+
+            var payload = await response.Content.ReadFromJsonAsync<PvgisTmyResponse>(cancellationToken: cancellationToken);
+            if (payload is null)
+                return Result<PvgisTmyWeather>.Validation("PVGIS returned an empty response.");
+
+            if (payload.Outputs?.TmyHourly is null || payload.Outputs.TmyHourly.Count == 0)
+                return Result<PvgisTmyWeather>.Validation("PVGIS returned no hourly TMY records.");
+
+            var mappedHours = new List<PvgisTmyHour>(ExpectedAnnualHours);
+
+            foreach (var row in payload.Outputs.TmyHourly.OrderBy(static item => item.TimeUtc))
+            {
+                var mapped = MapHour(row);
+                if (mapped.IsFailure)
+                    return Result<PvgisTmyWeather>.Failure(mapped);
+
+                mappedHours.Add(mapped.Value);
+            }
+
+            if (mappedHours.Count != ExpectedAnnualHours)
+            {
+                return Result<PvgisTmyWeather>.Validation(
+                    $"PVGIS TMY returned {mappedHours.Count} hourly records instead of {ExpectedAnnualHours}.");
+            }
+
+            return Result<PvgisTmyWeather>.Success(new PvgisTmyWeather(mappedHours));
+        }
     }
 
     private Uri BuildTmyUri(ImportPvgisWeatherRequest request)
@@ -209,6 +275,19 @@ public sealed class PvgisAnnualClimateDataImportService
 
         return Result.Success();
     }
+
+    private ResilientOperationSettings CreateResilienceSettings() =>
+        new(
+            Timeout: TimeSpan.FromSeconds(_options.TimeoutSeconds),
+            MaxRetryAttempts: _options.MaxRetryAttempts,
+            InitialRetryDelay: TimeSpan.FromMilliseconds(_options.InitialRetryDelayMilliseconds),
+            CircuitBreakerFailureThreshold: _options.CircuitBreakerFailureThreshold,
+            CircuitBreakerBreakDuration: TimeSpan.FromSeconds(_options.CircuitBreakerBreakDurationSeconds));
+
+    private static bool IsTransientStatusCode(HttpStatusCode statusCode) =>
+        statusCode == HttpStatusCode.RequestTimeout ||
+        statusCode == HttpStatusCode.TooManyRequests ||
+        (int)statusCode >= 500;
 
     private static Result<PvgisTmyHour> MapHour(PvgisTmyHourDto row)
     {

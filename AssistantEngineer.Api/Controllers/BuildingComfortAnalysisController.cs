@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Api.Extensions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Comfort;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using Asp.Versioning;
@@ -11,11 +11,11 @@ namespace AssistantEngineer.Api.Controllers;
 [Route("api/v{version:apiVersion}/buildings/{buildingId:int}/comfort-analysis")]
 public class BuildingComfortAnalysisController : ControllerBase
 {
-    private readonly IBuildingComfortAnalysisFacade _comfort;
+    private readonly ICalculationsFacade _calculations;
 
-    public BuildingComfortAnalysisController(IBuildingComfortAnalysisFacade comfort)
+    public BuildingComfortAnalysisController(ICalculationsFacade calculations)
     {
-        _comfort = comfort;
+        _calculations = calculations;
     }
 
     [HttpPost("metrics")]
@@ -25,13 +25,13 @@ public class BuildingComfortAnalysisController : ControllerBase
         [FromBody] BuildingComfortMetricsRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _comfort.CalculateMetricsAsync(
+        var result = await _calculations.CalculateComfortMetricsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("zone-metrics")]
@@ -41,13 +41,13 @@ public class BuildingComfortAnalysisController : ControllerBase
         [FromBody] BuildingComfortMetricsRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _comfort.CalculateZoneMetricsAsync(
+        var result = await _calculations.CalculateZoneComfortMetricsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("room-metrics")]
@@ -57,12 +57,12 @@ public class BuildingComfortAnalysisController : ControllerBase
         [FromBody] BuildingComfortMetricsRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _comfort.CalculateRoomMetricsAsync(
+        var result = await _calculations.CalculateRoomComfortMetricsAsync(
             buildingId,
             year,
             request,
             cancellationToken);
 
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 }

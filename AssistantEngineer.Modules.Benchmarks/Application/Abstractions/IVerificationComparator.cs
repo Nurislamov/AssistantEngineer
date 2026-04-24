@@ -3,7 +3,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 
 namespace AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 
-public interface IVerificationComparator
+internal interface IVerificationComparator
 {
     VerificationReport Compare(
         BuildingCalculationResult ourResult,

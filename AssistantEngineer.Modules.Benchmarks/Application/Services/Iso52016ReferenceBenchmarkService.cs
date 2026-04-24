@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 
 // Generates deterministic internal ISO 52016 reference fixtures used by benchmark endpoints.
-public sealed class Iso52016ReferenceBenchmarkService
+internal sealed class Iso52016ReferenceBenchmarkService
 {
     private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, Iso52016BenchmarkMetricExpectation>>
         ExpectedMetrics = new Dictionary<string, IReadOnlyDictionary<string, Iso52016BenchmarkMetricExpectation>>

@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Buildings;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Application.Services.Climate;
@@ -21,7 +22,9 @@ public class BuildingsDependencyInjectionTests
         AssertServiceLifetime<BuildingCalculationReadinessService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingArchetypeService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EpwAnnualClimateDataImportService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IValidateOptions<BuildingArchetypeCatalogOptions>>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IValidateOptions<PvgisApiOptions>>(services, ServiceLifetime.Singleton);
     }
 
     [Fact]
@@ -66,6 +69,31 @@ public class BuildingsDependencyInjectionTests
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].RoomsCount"));
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].RoomAreaM2"));
         Assert.Contains(exception.Failures, failure => failure.Contains("Archetypes[0].WindowShgc"));
+    }
+
+    [Fact]
+    public void AddBuildingsModuleRejectsInvalidPvgisOptions()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(CreateValidArchetypeConfiguration())
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Buildings:Pvgis:BaseUrl"] = "ftp://user:secret@example.com",
+                ["Buildings:Pvgis:TimeoutSeconds"] = "0",
+                ["Buildings:Pvgis:MaxRetryAttempts"] = "6"
+            })
+            .Build();
+
+        services.AddBuildingsModule(configuration);
+
+        using var provider = services.BuildServiceProvider();
+        var exception = Assert.Throws<OptionsValidationException>(() =>
+            provider.GetRequiredService<IOptions<PvgisApiOptions>>().Value);
+
+        Assert.Contains(exception.Failures, failure => failure.Contains("Buildings:Pvgis:BaseUrl", StringComparison.Ordinal));
+        Assert.Contains(exception.Failures, failure => failure.Contains("Buildings:Pvgis:TimeoutSeconds", StringComparison.Ordinal));
+        Assert.Contains(exception.Failures, failure => failure.Contains("Buildings:Pvgis:MaxRetryAttempts", StringComparison.Ordinal));
     }
 
     private static void AssertServiceLifetime<TService>(

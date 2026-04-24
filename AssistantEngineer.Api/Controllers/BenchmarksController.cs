@@ -27,7 +27,7 @@ public class BenchmarksController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _benchmarks.RunEnergyPlusAsync(request, cancellationToken);
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("energyplus/buildings/{buildingId:int}/model")]
@@ -41,7 +41,7 @@ public class BenchmarksController : ControllerBase
             buildingId,
             request,
             cancellationToken);
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("buildings/{buildingId:int}/verify")]
@@ -57,7 +57,7 @@ public class BenchmarksController : ControllerBase
             method,
             request,
             cancellationToken);
-        return result.ToOkResult();
+        return result.ToOkResult(this);
     }
 
     [HttpGet("iso52016/reference-cases")]
@@ -66,6 +66,6 @@ public class BenchmarksController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _benchmarks.RunIso52016ReferenceCasesAsync(cancellationToken);
-        return result.ToOkResult();
+        return result.ToOkResult(this);
     }
 }

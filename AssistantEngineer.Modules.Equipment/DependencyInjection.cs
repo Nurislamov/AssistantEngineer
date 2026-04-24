@@ -1,5 +1,6 @@
 using System.Reflection;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
+using AssistantEngineer.Modules.Equipment.Application.Facades;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using FluentValidation;
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<CoolingEquipmentCatalogCommandService>();
         services.AddScoped<CoolingEquipmentCatalogQueryService>();
         services.AddScoped<EquipmentSelectionService>();
+        services.AddScoped<IEquipmentFacade, EquipmentFacade>();
 
         return services;
     }

@@ -32,6 +32,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations;
 
@@ -44,13 +45,48 @@ public static class DependencyInjection
         services.AddMemoryCache();
         services.AddSingleton(TimeProvider.System);
 
-        services.Configure<CoolingLoadCalculationOptions>(configuration.GetSection("Calculations:CoolingLoad"));
-        services.Configure<Iso52016CoolingLoadOptions>(configuration.GetSection("Calculations:Iso52016Cooling"));
-        services.Configure<Iso52016EnergyNeedOptions>(configuration.GetSection("Calculations:Iso52016EnergyNeed"));
-        services.Configure<Iso52016MonthlyEnergyNeedOptions>(configuration.GetSection("Calculations:Iso52016MonthlyEnergyNeed"));
-        services.Configure<En12831HeatingLoadOptions>(configuration.GetSection("Calculations:HeatingLoad"));
-        services.Configure<En16798ProfileOptions>(configuration.GetSection("Calculations:En16798Profiles"));
-        services.Configure<NaturalVentilationOptions>(configuration.GetSection("Calculations:NaturalVentilation"));
+        services.AddSingleton<IValidateOptions<CoolingLoadCalculationOptions>, CoolingLoadCalculationOptionsValidator>();
+        services.AddSingleton<IValidateOptions<Iso52016CoolingLoadOptions>, Iso52016CoolingLoadOptionsValidator>();
+        services.AddSingleton<IValidateOptions<Iso52016EnergyNeedOptions>, Iso52016EnergyNeedOptionsValidator>();
+        services.AddSingleton<IValidateOptions<Iso52016MonthlyEnergyNeedOptions>, Iso52016MonthlyEnergyNeedOptionsValidator>();
+        services.AddSingleton<IValidateOptions<En12831HeatingLoadOptions>, En12831HeatingLoadOptionsValidator>();
+        services.AddSingleton<IValidateOptions<En16798ProfileOptions>, En16798ProfileOptionsValidator>();
+        services.AddSingleton<IValidateOptions<NaturalVentilationOptions>, NaturalVentilationOptionsValidator>();
+
+        services
+            .AddOptions<CoolingLoadCalculationOptions>()
+            .Bind(configuration.GetSection("Calculations:CoolingLoad"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<Iso52016CoolingLoadOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso52016Cooling"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<Iso52016EnergyNeedOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso52016EnergyNeed"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<Iso52016MonthlyEnergyNeedOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso52016MonthlyEnergyNeed"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<En12831HeatingLoadOptions>()
+            .Bind(configuration.GetSection("Calculations:HeatingLoad"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<En16798ProfileOptions>()
+            .Bind(configuration.GetSection("Calculations:En16798Profiles"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<NaturalVentilationOptions>()
+            .Bind(configuration.GetSection("Calculations:NaturalVentilation"))
+            .ValidateOnStart();
 
         services.AddSingleton<IHourlyProfileAggregator, HourlyProfileAggregator>();
         services.AddSingleton<IAnnualProfileGenerator, AnnualProfileGenerator>();
@@ -66,6 +102,7 @@ public static class DependencyInjection
         services.AddScoped<IAggregateLoadCalculator, AggregateCalculator>();
 
         services.AddScoped<En12831HeatingLoadCalculator>();
+        services.AddScoped<BuildingHeatingReadModelCalculator>();
         services.AddScoped<IRoomHeatingLoadCalculator>(sp => sp.GetRequiredService<En12831HeatingLoadCalculator>());
         services.AddScoped<IBuildingHeatingLoadCalculator>(sp => sp.GetRequiredService<En12831HeatingLoadCalculator>());
 
@@ -103,10 +140,9 @@ public static class DependencyInjection
         services.AddScoped<EquipmentRecommendationComparisonReportService>();
         
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
+        services.AddScoped<ICalculationsFacade, CalculationsFacade>();
         services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
         services.AddScoped<IBuildingComfortAnalysisFacade, BuildingComfortAnalysisFacade>();
-        services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
-        services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
         services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
         
         services.AddScoped<BuildingCoolingLoadService>();

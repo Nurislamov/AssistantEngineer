@@ -1,6 +1,11 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
+using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
+using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Equipment.Application.Services;
 using AssistantEngineer.Modules.Reporting.Application.Services;
@@ -118,7 +123,11 @@ public class BuildingReportDataServiceTests
     public async Task BuildHeatingReportAsyncSummarizesTemperaturesAcrossAllRooms()
     {
         var project = DomainInvariantTests.CreateProject("Headquarters");
-        var building = Building.Create("Main", project).Value;
+        var climateZone = ClimateZone.Create(
+            "Cold climate",
+            Temperature.FromCelsius(35).Value,
+            Temperature.FromCelsius(-15).Value).Value;
+        var building = Building.Create("Main", project, climateZone).Value;
         Assert.True(project.AddBuilding(building).IsSuccess);
 
         var floor = building.AddFloor("Level 1").Value;
@@ -158,7 +167,7 @@ public class BuildingReportDataServiceTests
             result.Value.OutdoorDesignTemperatureC,
             precision: 2);
         Assert.NotEqual(result.Value.Rooms[0].IndoorDesignTemperatureC, result.Value.IndoorDesignTemperatureC);
-        Assert.NotEqual(result.Value.Rooms[0].OutdoorDesignTemperatureC, result.Value.OutdoorDesignTemperatureC);
+        Assert.Equal(-15, result.Value.OutdoorDesignTemperatureC);
     }
 
     private static BuildingReportDataService CreateService(
@@ -169,8 +178,11 @@ public class BuildingReportDataServiceTests
         var calculationService = new BuildingReportCalculationService(
             CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
             roomCalculator,
-            new CoolingEquipmentSelector(roomCalculator),
-            CalculationTestFactory.CreateHeatingLoadCalculator());
+            new CoolingEquipmentSelector(roomCalculator));
+        var heatingLoadService = new BuildingHeatingLoadService(
+            new BuildingHeatingReadModelRepositoryStub(building),
+            new BuildingHeatingReadModelCalculator(
+                Microsoft.Extensions.Options.Options.Create(new En12831HeatingLoadOptions())));
         var reportGenerator = new BuildingReportGenerator(new FixedTimeProvider(FixedReportTime));
 
         return new BuildingReportDataService(
@@ -179,6 +191,7 @@ public class BuildingReportDataServiceTests
             new EmptyEquipmentCatalogRepository(),
             CalculationTestFactory.CreateIso52016ClimateDataValidator(),
             calculationService,
+            heatingLoadService,
             reportGenerator);
     }
 
@@ -241,5 +254,57 @@ public class BuildingReportDataServiceTests
             throw new NotSupportedException();
 
         public void Add(CoolingEquipmentCatalogItem item) => throw new NotSupportedException();
+    }
+
+    private sealed class BuildingHeatingReadModelRepositoryStub : IBuildingHeatingReadModelRepository
+    {
+        private readonly BuildingHeatingReadModel _building;
+
+        public BuildingHeatingReadModelRepositoryStub(Building building)
+        {
+            _building = new BuildingHeatingReadModel(
+                building.Id,
+                building.Name,
+                building.ProjectId,
+                building.Project.Name,
+                building.ClimateZone?.WinterDesignTemperature.Celsius,
+                building.Floors
+                    .SelectMany(floor => floor.Rooms)
+                    .Select(room => new RoomHeatingReadModel(
+                        room.Id,
+                        room.Name,
+                        room.Area.SquareMeters,
+                        room.HeightM,
+                        room.IndoorTemperature.Celsius,
+                        room.OutdoorTemperatureOverride?.Celsius,
+                        room.VentilationParameters is null
+                            ? null
+                            : new HeatingVentilationReadModel(
+                                room.VentilationParameters.AirChangesPerHour,
+                                room.VentilationParameters.HeatRecoveryEfficiency,
+                                room.VentilationParameters.InfiltrationAirChangesPerHour,
+                                room.VentilationParameters.StackCoefficient),
+                        room.Windows
+                            .Select(window => new WindowHeatingReadModel(
+                                window.Area.SquareMeters,
+                                window.UValue.Value))
+                            .ToList(),
+                        room.Walls
+                            .Select(wall => new WallHeatingReadModel(
+                                wall.Area.SquareMeters,
+                                wall.IsExternal,
+                                wall.UValue.Value,
+                                wall.ConstructionAssembly?.Layers
+                                    .Select(layer => new ConstructionLayerHeatingReadModel(
+                                        layer.ThicknessM,
+                                        layer.Material.ThermalConductivityWPerMK))
+                                    .ToList() ??
+                                []))
+                            .ToList()))
+                    .ToList());
+        }
+
+        public Task<BuildingHeatingReadModel?> GetByIdAsync(int buildingId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<BuildingHeatingReadModel?>(buildingId == _building.BuildingId ? _building : null);
     }
 }

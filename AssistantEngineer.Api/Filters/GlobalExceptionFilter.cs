@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using AssistantEngineer.Api.Extensions;
 
 namespace AssistantEngineer.Api.Filters;
 
 public class GlobalExceptionFilter : IExceptionFilter
 {
-    private const string GenericErrorDetail = "An unexpected error occurred. Use the trace id when contacting support.";
+    private const string GenericErrorDetail = "An unexpected error occurred. Use the correlation id when contacting support.";
 
     private readonly ILogger<GlobalExceptionFilter> _logger;
     private readonly IHostEnvironment _environment;
@@ -19,14 +20,12 @@ public class GlobalExceptionFilter : IExceptionFilter
     public void OnException(ExceptionContext context)
     {
         _logger.LogError(context.Exception, "Unhandled exception occurred.");
-        var problemDetails = new ProblemDetails
-        {
-            Status = StatusCodes.Status500InternalServerError,
-            Title = "An unexpected error occurred.",
-            Detail = GenericErrorDetail,
-            Instance = context.HttpContext.Request.Path
-        };
-        problemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+        var problemDetails = ApiProblemDetailsFactory.CreateProblemDetails(
+            context.HttpContext,
+            StatusCodes.Status500InternalServerError,
+            code: "unexpected_error",
+            title: "An unexpected error occurred.",
+            detail: GenericErrorDetail);
 
         if (_environment.IsDevelopment())
             problemDetails.Extensions["exceptionType"] = context.Exception.GetType().Name;

@@ -37,7 +37,7 @@ public class ReportsController : ControllerBase
             systemType,
             unitType,
             cancellationToken);
-        return result.ToOkResult();
+        return result.ToOkResult(this);
     }
 
     [HttpGet("buildings/{buildingId:int}/excel")]
@@ -56,7 +56,7 @@ public class ReportsController : ControllerBase
             unitType,
             cancellationToken);
         if (result.IsFailure)
-            return result.ToFailureResult();
+            return result.ToFailureResult(this);
 
         return File(result.Value, ExcelContentType, $"building-{buildingId}-report.xlsx");
     }
@@ -72,7 +72,7 @@ public class ReportsController : ControllerBase
             buildingId,
             method,
             cancellationToken);
-        return result.ToOkResult();
+        return result.ToOkResult(this);
     }
 
     [HttpGet("buildings/{buildingId:int}/energy-balance/excel")]
@@ -89,7 +89,7 @@ public class ReportsController : ControllerBase
             heatingMethod,
             cancellationToken);
         if (result.IsFailure)
-            return result.ToFailureResult();
+            return result.ToFailureResult(this);
 
         return File(result.Value, ExcelContentType, $"building-{buildingId}-energy-balance.xlsx");
     }

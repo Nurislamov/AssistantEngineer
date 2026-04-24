@@ -14,7 +14,7 @@ public sealed class BenchmarksFacade : IBenchmarksFacade
     private readonly VerificationService _verificationService;
     private readonly Iso52016ReferenceBenchmarkService _iso52016ReferenceBenchmarkService;
 
-    public BenchmarksFacade(
+    internal BenchmarksFacade(
         IEnergyPlusBenchmarkRunner energyPlusBenchmarkRunner,
         EnergyPlusModelExportService energyPlusModelExportService,
         VerificationService verificationService,
