@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.StandardDefaults;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
@@ -44,7 +45,6 @@ public static class DependencyInjection
     {
         services.AddMemoryCache();
         services.AddSingleton(TimeProvider.System);
-
         services.AddSingleton<IValidateOptions<CoolingLoadCalculationOptions>, CoolingLoadCalculationOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso52016CoolingLoadOptions>, Iso52016CoolingLoadOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso52016EnergyNeedOptions>, Iso52016EnergyNeedOptionsValidator>();
@@ -53,6 +53,24 @@ public static class DependencyInjection
         services.AddSingleton<IValidateOptions<En16798ProfileOptions>, En16798ProfileOptionsValidator>();
         services.AddSingleton<IValidateOptions<NaturalVentilationOptions>, NaturalVentilationOptionsValidator>();
 
+        services.AddSingleton<IInternalLoadStandardProvider, InternalLoadStandardProvider>();
+        services.AddSingleton<IDomesticHotWaterStandardProvider, DomesticHotWaterStandardProvider>();
+        services.AddSingleton<ITb14ReferenceDataProvider, Tb14ReferenceDataProvider>();
+        services.AddSingleton<IRoomStandardDefaultsProvider, RoomStandardDefaultsProvider>();
+        services.AddSingleton<IRoomVentilationDefaultsProvider, RoomVentilationDefaultsProvider>();
+        services.AddSingleton<IIso16798ReferenceData, Iso16798ReferenceData>();
+        services.AddSingleton<IEn16798ProfileCatalog, En16798ProfileCatalog>();
+        services.AddSingleton<IBuildingEnvelopeReferenceData, BuildingEnvelopeReferenceData>();
+        services.AddSingleton<ICoolingLoadReferenceData, CoolingLoadReferenceData>();
+        services.AddSingleton<IHolidayCalendarProvider, UzbekistanHolidayCalendarProvider>();
+        services.AddSingleton<IAnnualProfileTemplateProvider, AnnualProfileTemplateProvider>();
+        services.AddSingleton<IAnnualScheduleGenerator, AnnualScheduleGenerationService>();
+        services.AddSingleton<AnnualProfileGenerationService>();
+        services.AddSingleton<StandardTableCatalogService>();
+        services.AddSingleton<IRoomAnnualProfileSetProvider, RoomAnnualProfileSetProvider>();
+        services.AddSingleton<IHourlyRoomProfileAccessor, HourlyRoomProfileAccessor>();
+        services.AddSingleton<HourlyInternalGainProfileService>();
+        
         services
             .AddOptions<CoolingLoadCalculationOptions>()
             .Bind(configuration.GetSection("Calculations:CoolingLoad"))
@@ -90,10 +108,6 @@ public static class DependencyInjection
 
         services.AddSingleton<IHourlyProfileAggregator, HourlyProfileAggregator>();
         services.AddSingleton<IAnnualProfileGenerator, AnnualProfileGenerator>();
-        services.AddSingleton<IIso16798ReferenceData, Iso16798ReferenceData>();
-        services.AddSingleton<IEn16798ProfileCatalog, En16798ProfileCatalog>();
-        services.AddSingleton<IBuildingEnvelopeReferenceData, BuildingEnvelopeReferenceData>();
-        services.AddSingleton<ICoolingLoadReferenceData, CoolingLoadReferenceData>();
 
         services.AddScoped<IRoomCoolingLoadCalculationStrategy, SimplifiedCoolingLoadCalculator>();
         services.AddScoped<IRoomCoolingLoadCalculationStrategy, Iso52016CoolingLoadCalculator>();

@@ -51,4 +51,10 @@ public class Window
             shading ?? WindowShadingParameters.None,
             room));
     }
+    
+    public Result Resize(Area newArea)
+    {
+        Area = newArea;
+        return Result.Success();
+    }
 }

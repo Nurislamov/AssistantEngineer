@@ -299,4 +299,42 @@ public class Room
 
         return Result.Success();
     }
+    
+    public Result UpdateArea(Area newArea)
+    {
+        Area = newArea;
+        return Result.Success();
+    }
+
+    public Result UpdateHeight(double heightM)
+    {
+        var heightCheck = Guard.AgainstZeroOrNegative(heightM, "Height");
+        if (heightCheck.IsFailure)
+            return heightCheck;
+
+        HeightM = heightM;
+        return Result.Success();
+    }
+
+    public Result UpdatePeopleCount(int peopleCount)
+    {
+        var peopleCheck = Guard.AgainstNegative(peopleCount, "People count");
+        if (peopleCheck.IsFailure)
+            return peopleCheck;
+
+        PeopleCount = peopleCount;
+        return Result.Success();
+    }
+
+    public Result UpdateEquipmentLoad(Power equipmentLoad)
+    {
+        EquipmentLoad = equipmentLoad;
+        return Result.Success();
+    }
+
+    public Result UpdateLightingLoad(Power lightingLoad)
+    {
+        LightingLoad = lightingLoad;
+        return Result.Success();
+    }
 }

@@ -107,4 +107,44 @@ internal sealed class BuildingRepository : IBuildingRepository
                         .ThenInclude(wall => wall.ConstructionAssembly)
                             .ThenInclude(assembly => assembly!.Layers)
                                 .ThenInclude(layer => layer.Material);
+    
+    public async Task<Building?> GetForValidationAsync(
+        int id,
+        bool asTracking = false,
+        CancellationToken cancellationToken = default) =>
+        await WithValidationGraph(_context.Buildings, asTracking)
+            .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
+    
+    private static IQueryable<Building> WithValidationGraph(
+        IQueryable<Building> query,
+        bool asTracking)
+    {
+        if (!asTracking)
+            query = query.AsNoTrackingWithIdentityResolution();
+
+        return query
+            .AsSplitQuery()
+            .Include(building => building.ClimateZone)
+            .Include(building => building.ThermalZones)
+            .ThenInclude(zone => zone.Rooms)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.OccupancySchedule)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.EquipmentSchedule)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.LightingSchedule)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.VentilationParameters)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.Windows)
+            .Include(building => building.Floors)
+            .ThenInclude(floor => floor.Rooms)
+            .ThenInclude(room => room.Walls)
+            .ThenInclude(wall => wall.AdjacentRoom);
+    }
 }

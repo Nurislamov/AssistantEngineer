@@ -14,6 +14,7 @@ public class VerificationReport
 
     public VerificationMetrics CoolingMetrics { get; set; } = null!;
     public VerificationMetrics HeatingMetrics { get; set; } = null!;
+    public List<VerificationVerdictBreakdownItem> VerdictBreakdown { get; set; } = [];
 
     public bool Passed { get; set; }
     public string Conclusion { get; set; } = string.Empty;

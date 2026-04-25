@@ -33,6 +33,8 @@ namespace AssistantEngineer.Tests;
 
 public class BuildingPerformanceCalculationServicesTests
 {
+    private static readonly Iso16798ReferenceData ReferenceData = new(new InternalLoadStandardProvider());
+
     [Fact]
     public void AnnualProfileGeneratorBuildsNonLeapHourlyProfileWithWeekendOverrides()
     {
@@ -240,7 +242,7 @@ public class BuildingPerformanceCalculationServicesTests
     public void VentilationCalculatorUsesIso16798OccupancyDefaults()
     {
         var room = DomainInvariantTests.CreateRoom(areaM2: 20);
-        var calculator = new VentilationHeatTransferCalculator(new Iso16798ReferenceData());
+        var calculator = new VentilationHeatTransferCalculator(ReferenceData);
 
         var fixedAirChanges = calculator.Calculate(
             room,
@@ -271,7 +273,7 @@ public class BuildingPerformanceCalculationServicesTests
             stackCoefficient: 0.01,
             windCoefficient: 0.03).Value;
         Assert.True(room.SetVentilationParameters(ventilation).IsSuccess);
-        var calculator = new VentilationHeatTransferCalculator(new Iso16798ReferenceData());
+        var calculator = new VentilationHeatTransferCalculator(ReferenceData);
 
         var calm = calculator.Calculate(
             room,
@@ -319,7 +321,7 @@ public class BuildingPerformanceCalculationServicesTests
     {
         var service = new Iso52016ReferenceBenchmarkService(
             new SolarRadiationService(),
-            new VentilationHeatTransferCalculator(new Iso16798ReferenceData()),
+            new VentilationHeatTransferCalculator(ReferenceData),
             new WindowShadingService(),
             Options.Create(new Iso52016EnergyNeedOptions()));
 
@@ -527,7 +529,7 @@ public class BuildingPerformanceCalculationServicesTests
         var calculator = new Iso52016HourlySteadyStateCalculator(
             new AnnualClimateDataProviderStub(weather),
             new SolarRadiationService(),
-            new VentilationHeatTransferCalculator(new Iso16798ReferenceData()),
+            new VentilationHeatTransferCalculator(ReferenceData),
             options: Options.Create(new Iso52016EnergyNeedOptions
             {
                 TreatSameUseAdjacentConditionedAsAdiabatic = false
@@ -576,7 +578,7 @@ public class BuildingPerformanceCalculationServicesTests
         var calculator = new Iso52016HourlySteadyStateCalculator(
             new AnnualClimateDataProviderStub(weather),
             new SolarRadiationService(),
-            new VentilationHeatTransferCalculator(new Iso16798ReferenceData()),
+            new VentilationHeatTransferCalculator(ReferenceData),
             new WindowShadingService());
 
         var result = await calculator.CalculateBuildingEnergyNeedsAsync(

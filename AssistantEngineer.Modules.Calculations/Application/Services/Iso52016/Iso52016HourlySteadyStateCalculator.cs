@@ -5,8 +5,10 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -30,20 +32,29 @@ public sealed class Iso52016HourlySteadyStateCalculator
         INaturalVentilationAirflowService? naturalVentilationAirflowService = null,
         IOptions<Iso52016EnergyNeedOptions>? options = null,
         IOptions<En16798ProfileOptions>? profileOptions = null,
+        HourlyInternalGainProfileService? hourlyProfiles = null,
         ILogger<Iso52016HourlySteadyStateCalculator>? logger = null)
     {
         var resolvedOptions = options?.Value ?? new Iso52016EnergyNeedOptions();
         var resolvedProfileOptions = profileOptions?.Value ?? new En16798ProfileOptions();
         var resolvedEnvelopeReferenceData = envelopeReferenceData ?? new BuildingEnvelopeReferenceData();
         var resolvedProfileCatalog = profileCatalog ?? new En16798ProfileCatalog();
+        var resolvedHourlyProfiles = hourlyProfiles ?? new HourlyInternalGainProfileService(
+            new HourlyRoomProfileAccessor(
+                new RoomAnnualProfileSetProvider(
+                    new AnnualScheduleGenerationService(
+                        new UzbekistanHolidayCalendarProvider(),
+                        new AnnualProfileTemplateProvider()))));
 
         _weatherProvider = new Iso52016HourlyWeatherProvider(
             climateDataProvider,
             resolvedOptions,
             logger);
+
         _contextFactory = new Iso52016HourlyCalculationContextFactory(
             resolvedEnvelopeReferenceData,
             resolvedOptions);
+
         _heatBalanceCalculator = new Iso52016HourlyHeatBalanceCalculator(
             solarRadiationService,
             ventilationCalculator,
@@ -52,7 +63,9 @@ public sealed class Iso52016HourlySteadyStateCalculator
             resolvedProfileCatalog,
             naturalVentilationAirflowService,
             resolvedOptions,
-            resolvedProfileOptions);
+            resolvedProfileOptions,
+            resolvedHourlyProfiles);
+
         _resultComposer = new Iso52016HourlyResultComposer();
     }
 
@@ -60,6 +73,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
         Building building,
         CalculationPreferences? preferences = null,
         int? year = null,
+        AnnualProfileOptionsDto? annualProfileOptions = null,
         CancellationToken cancellationToken = default)
     {
         var weatherContext = await _weatherProvider.GetBuildingWeatherAsync(
@@ -92,7 +106,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     calculationContext.PreviousRoomTemperatures,
                     calculationContext.RoomZoneMap,
                     preferences,
-                    cancellationToken));
+                    cancellationToken,
+                    annualProfileOptions));
             }
 
             foreach (var zoneResult in currentHourResults)
@@ -128,6 +143,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
         ThermalZone thermalZone,
         int year = 2020,
         double coolingSetpoint = 26.0,
+        AnnualProfileOptionsDto? annualProfileOptions = null,
         CancellationToken cancellationToken = default)
     {
         var weatherContext = await _weatherProvider.GetBuildingWeatherAsync(
@@ -152,11 +168,14 @@ public sealed class Iso52016HourlySteadyStateCalculator
                 calculationContext.PreviousRoomTemperatures,
                 calculationContext.RoomZoneMap,
                 preferences: null,
-                cancellationToken);
+                cancellationToken,
+                annualProfileOptions);
 
             foreach (var roomResult in zoneResult.Rooms)
+            {
                 calculationContext.PreviousRoomTemperatures[roomResult.RoomId] =
                     roomResult.Hour.OperativeTemperatureC;
+            }
 
             result.Add(zoneResult.Hour.CoolingLoadW);
         }

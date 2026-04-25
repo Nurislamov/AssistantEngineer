@@ -556,6 +556,12 @@ public class ApiIntegrationTests
         public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
             Task.FromResult(_buildings.FirstOrDefault(building => building.Id == id));
 
+        public Task<Building?> GetForValidationAsync(
+            int id,
+            bool asTracking = false,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_buildings.FirstOrDefault(building => building.Id == id));
+
         public Task<IReadOnlyList<Building>> ListByProjectIdAsync(
             int projectId,
             CancellationToken cancellationToken = default) =>

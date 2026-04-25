@@ -28,6 +28,8 @@ public sealed class BuildingsFacade : IBuildingsFacade
     private readonly ThermalZoneQueryService _thermalZoneQuery;
     private readonly EpwAnnualClimateDataImportService _epwImport;
     private readonly PvgisAnnualClimateDataImportService _pvgisImport;
+    private readonly BuildingModelValidationService _buildingValidation;
+    private readonly BuildingModelAutocorrectionService _buildingAutocorrection;
 
     public BuildingsFacade(
         ProjectCommandService projectCommand,
@@ -36,6 +38,8 @@ public sealed class BuildingsFacade : IBuildingsFacade
         BuildingQueryService buildingQuery,
         BuildingArchetypeService buildingArchetypes,
         BuildingCalculationReadinessService buildingReadiness,
+        BuildingModelValidationService buildingValidation,
+        BuildingModelAutocorrectionService buildingAutocorrection,
         FloorCommandService floorCommand,
         FloorQueryService floorQuery,
         RoomCommandService roomCommand,
@@ -53,6 +57,8 @@ public sealed class BuildingsFacade : IBuildingsFacade
         _buildingQuery = buildingQuery;
         _buildingArchetypes = buildingArchetypes;
         _buildingReadiness = buildingReadiness;
+        _buildingValidation = buildingValidation;
+        _buildingAutocorrection = buildingAutocorrection;
         _floorCommand = floorCommand;
         _floorQuery = floorQuery;
         _roomCommand = roomCommand;
@@ -216,4 +222,24 @@ public sealed class BuildingsFacade : IBuildingsFacade
         ImportPvgisWeatherRequest request,
         CancellationToken cancellationToken) =>
         _pvgisImport.ImportAsync(climateZoneId, request, cancellationToken);
+    
+    public Task<Result<BuildingValidationReport>> ValidateBuildingModelAsync(
+        int buildingId,
+        int weatherYear,
+        CancellationToken cancellationToken) =>
+        _buildingValidation.ValidateAsync(buildingId, weatherYear, cancellationToken);
+
+    public Task<Result<BuildingAutocorrectionPreview>> PreviewBuildingAutocorrectionsAsync(
+        int buildingId,
+        int weatherYear,
+        AutocorrectBuildingModelRequest request,
+        CancellationToken cancellationToken) =>
+        _buildingAutocorrection.PreviewAsync(buildingId, weatherYear, request, cancellationToken);
+
+    public Task<Result<BuildingAutocorrectionResult>> ApplyBuildingAutocorrectionsAsync(
+        int buildingId,
+        int weatherYear,
+        AutocorrectBuildingModelRequest request,
+        CancellationToken cancellationToken) =>
+        _buildingAutocorrection.ApplyAsync(buildingId, weatherYear, request, cancellationToken);
 }

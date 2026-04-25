@@ -128,4 +128,21 @@ public interface IBuildingsFacade
         int climateZoneId,
         ImportPvgisWeatherRequest request,
         CancellationToken cancellationToken);
+    
+    Task<Result<BuildingValidationReport>> ValidateBuildingModelAsync(
+        int buildingId,
+        int weatherYear,
+        CancellationToken cancellationToken);
+
+    Task<Result<BuildingAutocorrectionPreview>> PreviewBuildingAutocorrectionsAsync(
+        int buildingId,
+        int weatherYear,
+        AutocorrectBuildingModelRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result<BuildingAutocorrectionResult>> ApplyBuildingAutocorrectionsAsync(
+        int buildingId,
+        int weatherYear,
+        AutocorrectBuildingModelRequest request,
+        CancellationToken cancellationToken);
 }

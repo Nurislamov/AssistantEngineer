@@ -18,6 +18,10 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
+using AssistantEngineer.Modules.Buildings.Application.Mappers;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -35,6 +39,11 @@ public sealed class CalculationsFacade : ICalculationsFacade
     private readonly IBuildingEnergyAnalysisFacade _energyAnalysis;
     private readonly IBuildingComfortAnalysisFacade _comfortAnalysis;
     private readonly IBuildingSizingAnalysisFacade _sizingAnalysis;
+    private readonly IInternalLoadStandardProvider _internalLoads;
+    private readonly IDomesticHotWaterStandardProvider _dhwStandards;
+    private readonly ITb14ReferenceDataProvider _tb14;
+    private readonly StandardTableCatalogService _standardTableCatalog;
+    private readonly AnnualProfileGenerationService _annualProfiles;
 
     public CalculationsFacade(
         BuildingCoolingLoadService buildingCooling,
@@ -47,7 +56,12 @@ public sealed class CalculationsFacade : ICalculationsFacade
         En16798ProfileService profiles,
         IBuildingEnergyAnalysisFacade energyAnalysis,
         IBuildingComfortAnalysisFacade comfortAnalysis,
-        IBuildingSizingAnalysisFacade sizingAnalysis)
+        IBuildingSizingAnalysisFacade sizingAnalysis,
+        AnnualProfileGenerationService annualProfiles,
+        IInternalLoadStandardProvider internalLoads,
+        IDomesticHotWaterStandardProvider dhwStandards,
+        ITb14ReferenceDataProvider tb14,
+        StandardTableCatalogService standardTableCatalog)
     {
         _buildingCooling = buildingCooling;
         _buildingHeating = buildingHeating;
@@ -60,6 +74,11 @@ public sealed class CalculationsFacade : ICalculationsFacade
         _energyAnalysis = energyAnalysis;
         _comfortAnalysis = comfortAnalysis;
         _sizingAnalysis = sizingAnalysis;
+        _annualProfiles = annualProfiles;
+        _internalLoads = internalLoads;
+        _dhwStandards = dhwStandards;
+        _tb14 = tb14;
+        _standardTableCatalog = standardTableCatalog;
     }
 
     public Task<Result<BuildingCalculationResult>> CalculateBuildingCoolingLoadAsync(
@@ -220,4 +239,68 @@ public sealed class CalculationsFacade : ICalculationsFacade
         EquipmentRecommendationComparisonRequest request,
         CancellationToken cancellationToken) =>
         _sizingAnalysis.CompareEquipmentRecommendationsAsync(buildingId, year, request, cancellationToken);
+    
+    public StandardTableCatalogResponse GetStandardTableCatalog() =>
+        _standardTableCatalog.GetCatalog();
+
+    public InternalLoadStandardLookupResponse GetInternalLoadStandard(
+        RoomTypeDto roomType)
+    {
+        var row = _internalLoads.GetRow(roomType.ToDomain());
+
+        return new InternalLoadStandardLookupResponse
+        {
+            TableKey = row.TableKey,
+            Version = row.Version,
+            RoomType = row.RoomType.ToContract(),
+            SensibleHeatGainPerPersonW = row.SensibleHeatGainPerPersonW,
+            LatentHeatGainPerPersonW = row.LatentHeatGainPerPersonW,
+            EquipmentGainWPerM2 = row.EquipmentGainWPerM2,
+            LightingGainWPerM2 = row.LightingGainWPerM2,
+            MinimumVentilationLitersPerSecondM2 = row.MinimumVentilationLitersPerSecondM2,
+            OccupantDensityPeoplePer100M2 = row.OccupantDensityPeoplePer100M2,
+            Notes = row.Notes
+        };
+    }
+
+    public DomesticHotWaterStandardLookupResponse GetDomesticHotWaterStandard(
+        RoomTypeDto roomType)
+    {
+        var row = _dhwStandards.GetRow(roomType.ToDomain());
+
+        return new DomesticHotWaterStandardLookupResponse
+        {
+            TableKey = row.TableKey,
+            Version = row.Version,
+            RoomType = row.RoomType.ToContract(),
+            LitersPerPersonDay = row.LitersPerPersonDay,
+            ColdWaterTemperatureC = row.ColdWaterTemperatureC,
+            HotWaterTemperatureC = row.HotWaterTemperatureC,
+            DistributionLossFactor = row.DistributionLossFactor,
+            StorageLossKWhPerDay = row.StorageLossKWhPerDay,
+            CirculationLossKWhPerDay = row.CirculationLossKWhPerDay,
+            Notes = row.Notes
+        };
+    }
+    
+    public Tb14VentilationStandardLookupResponse GetTb14VentilationStandard(
+        RoomTypeDto roomType)
+    {
+        var row = _tb14.GetRow(roomType.ToDomain());
+
+        return new Tb14VentilationStandardLookupResponse
+        {
+            TableKey = row.TableKey,
+            Version = row.Version,
+            RoomType = row.RoomType.ToContract(),
+            OutdoorAirLitersPerSecondPerPerson = row.OutdoorAirLitersPerSecondPerPerson,
+            OutdoorAirLitersPerSecondPerM2 = row.OutdoorAirLitersPerSecondPerM2,
+            ExhaustAirChangesPerHour = row.ExhaustAirChangesPerHour,
+            RecirculationAllowed = row.RecirculationAllowed,
+            Notes = row.Notes
+        };
+    }
+    
+    public AnnualProfileResponse GenerateAnnualProfile(AnnualProfileGenerationRequest request) =>
+        _annualProfiles.Generate(request);
 }

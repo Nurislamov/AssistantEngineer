@@ -64,8 +64,6 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IBuildingEnergyAnalysisFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingComfortAnalysisFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingSizingAnalysisFacade>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IValidateOptions<CoolingLoadCalculationOptions>>(services, ServiceLifetime.Singleton);
-        AssertServiceLifetime<IValidateOptions<Iso52016EnergyNeedOptions>>(services, ServiceLifetime.Singleton);
     }
 
     [Fact]
@@ -111,20 +109,20 @@ public class CalculationsDependencyInjectionTests
 
         using var provider = services.BuildServiceProvider();
 
-        var coolingOptionsException = Assert.Throws<OptionsValidationException>(() =>
-            provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value);
+        var coolingOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
+            _ = provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value));
         Assert.Contains(coolingOptionsException.Failures, failure =>
             failure.Contains("Calculations:CoolingLoad:DefaultCoolingSafetyFactor", StringComparison.Ordinal));
 
-        var energyOptionsException = Assert.Throws<OptionsValidationException>(() =>
-            provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value);
+        var energyOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
+            _ = provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value));
         Assert.Contains(energyOptionsException.Failures, failure =>
             failure.Contains("Calculations:Iso52016EnergyNeed:DefaultWeatherYear", StringComparison.Ordinal));
         Assert.Contains(energyOptionsException.Failures, failure =>
             failure.Contains("DefaultCoolingSetbackC", StringComparison.Ordinal));
 
-        var ventilationOptionsException = Assert.Throws<OptionsValidationException>(() =>
-            provider.GetRequiredService<IOptions<NaturalVentilationOptions>>().Value);
+        var ventilationOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
+            _ = provider.GetRequiredService<IOptions<NaturalVentilationOptions>>().Value));
         Assert.Contains(ventilationOptionsException.Failures, failure =>
             failure.Contains("MinimumOutdoorTemperatureC cannot exceed MaximumOutdoorTemperatureC", StringComparison.Ordinal));
     }

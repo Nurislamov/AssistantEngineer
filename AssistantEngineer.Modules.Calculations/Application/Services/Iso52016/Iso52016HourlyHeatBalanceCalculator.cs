@@ -6,11 +6,14 @@ using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Models.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
@@ -24,6 +27,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
     private readonly INaturalVentilationAirflowService? _naturalVentilationAirflowService;
     private readonly Iso52016EnergyNeedOptions _options;
     private readonly En16798ProfileOptions _profileOptions;
+    private readonly HourlyInternalGainProfileService _hourlyProfiles;
 
     public Iso52016HourlyHeatBalanceCalculator(
         ISolarRadiationService solarRadiationService,
@@ -33,7 +37,8 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         IEn16798ProfileCatalog profileCatalog,
         INaturalVentilationAirflowService? naturalVentilationAirflowService,
         Iso52016EnergyNeedOptions options,
-        En16798ProfileOptions profileOptions)
+        En16798ProfileOptions profileOptions,
+        HourlyInternalGainProfileService hourlyProfiles)
     {
         _solarRadiationService = solarRadiationService;
         _ventilationCalculator = ventilationCalculator;
@@ -43,6 +48,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         _naturalVentilationAirflowService = naturalVentilationAirflowService;
         _options = options;
         _profileOptions = profileOptions;
+        _hourlyProfiles = hourlyProfiles;
     }
 
     public Iso52016ZoneHourResult CalculateZoneHourEnergyNeed(
@@ -52,7 +58,8 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         IReadOnlyDictionary<int, double> previousRoomTemperatures,
         IReadOnlyDictionary<int, string> roomZoneMap,
         CalculationPreferences? preferences,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        AnnualProfileOptionsDto? annualProfileOptions = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -61,9 +68,30 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         var hourOfDay = hourOfYear % 24;
         var dayOfYear = hourOfYear / 24 + 1;
 
+        Dictionary<int, RoomHourlyProfileSnapshot>? annualSnapshots = null;
+        if (annualProfileOptions?.UseAnnualProfiles == true)
+        {
+            annualSnapshots = rooms.ToDictionary(
+                room => room.Id,
+                room => _hourlyProfiles.GetRoomHourlyMultipliers(
+                    room,
+                    hourOfYear,
+                    annualProfileOptions));
+        }
+
         var occupiedScheduleFactor = Iso52016HourlyCalculatorMath.WeightedAverage(
             rooms,
-            room => GetOccupancyFactor(room, hourOfDay));
+            room =>
+            {
+                if (annualSnapshots is not null &&
+                    annualSnapshots.TryGetValue(room.Id, out var snapshot))
+                {
+                    return snapshot.Occupancy;
+                }
+
+                return GetOccupancyFactor(room, hourOfDay);
+            });
+
         var heatingSetpoint = occupiedScheduleFactor > 0
             ? state.HeatingSetpointC
             : _options.DefaultHeatingSetbackC;
@@ -79,7 +107,17 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 ? previousTemp
                 : room.IndoorTemperature.Celsius;
 
-            var internalGains = GetHourlyInternalGain(room, hourOfDay);
+            RoomHourlyProfileSnapshot? profileSnapshot = null;
+
+            if (annualSnapshots is not null)
+                annualSnapshots.TryGetValue(room.Id, out profileSnapshot);
+
+            var internalGains = GetHourlyInternalGain(
+                room,
+                hourOfDay,
+                annualProfileOptions,
+                profileSnapshot);
+
             var solarGains = GetHourlySolarGain(room, weather, dayOfYear, hourOfDay, preferences);
             var ventilationHeatTransfer = GetHourlyVentilationHeatTransferForRoom(
                 room,
@@ -253,13 +291,31 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         return Math.Clamp(configuredReduction * geometricReduction, 0, 1);
     }
 
-    private double GetHourlyInternalGain(Room room, int hour)
+    private double GetHourlyInternalGain(
+        Room room,
+        int hour,
+        AnnualProfileOptionsDto? annualProfileOptions,
+        RoomHourlyProfileSnapshot? annualSnapshot)
     {
+        var useAnnualProfiles = annualProfileOptions?.UseAnnualProfiles == true && annualSnapshot is not null;
+
+        var occupancyFactor = useAnnualProfiles
+            ? annualSnapshot!.Occupancy
+            : GetOccupancyFactor(room, hour);
+
+        var equipmentFactor = useAnnualProfiles
+            ? annualSnapshot!.Equipment
+            : GetEquipmentFactor(room, hour);
+
+        var lightingFactor = useAnnualProfiles
+            ? annualSnapshot!.Lighting
+            : GetLightingFactor(room, hour);
+
         var people = room.PeopleCount *
                      Iso52016HourlyCalculatorMath.GetPeopleHeatGain(room.Type) *
-                     GetOccupancyFactor(room, hour);
-        var equipment = room.EquipmentLoad.Watts * GetEquipmentFactor(room, hour);
-        var lighting = room.LightingLoad.Watts * GetLightingFactor(room, hour);
+                     occupancyFactor;
+        var equipment = room.EquipmentLoad.Watts * equipmentFactor;
+        var lighting = room.LightingLoad.Watts * lightingFactor;
 
         return people + equipment + lighting;
     }

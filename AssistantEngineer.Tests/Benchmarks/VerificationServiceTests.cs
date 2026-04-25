@@ -156,6 +156,12 @@ public class VerificationServiceTests
         public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<Building?> GetForValidationAsync(
+            int id,
+            bool asTracking = false,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(id == _building.Id ? _building : null);
+
         public Task<IReadOnlyList<Building>> ListByProjectIdAsync(
             int projectId,
             CancellationToken cancellationToken = default) =>
@@ -254,7 +260,13 @@ public class VerificationServiceTests
                 CalculationMethod = ourResult.CalculationMethod,
                 OurCalculation = ourResult,
                 EnergyPlusCalculation = epResult,
-                CoolingMetrics = new VerificationMetrics { WithinTolerance = true },
+                CoolingMetrics = new VerificationMetrics { HasComparableData = true, WithinTolerance = true },
+                HeatingMetrics = new VerificationMetrics
+                {
+                    HasComparableData = false,
+                    WithinTolerance = false,
+                    Detail = "Stub comparator does not implement heating verification."
+                },
                 Passed = true
             };
         }

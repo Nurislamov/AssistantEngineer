@@ -209,6 +209,7 @@ public sealed class BuildingPerformanceService
             building,
             preferences,
             year,
+            annualProfileOptions: null,
             cancellationToken);
 
         return result is null
@@ -259,6 +260,7 @@ public sealed class BuildingPerformanceService
             building,
             preferences,
             year,
+            annualProfileOptions: null,
             cancellationToken);
 
         return result is null

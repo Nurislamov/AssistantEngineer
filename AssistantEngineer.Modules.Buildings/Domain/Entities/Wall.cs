@@ -80,4 +80,14 @@ public class Wall
         ConstructionAssemblyId = constructionAssembly?.Id;
         return Result.Success();
     }
+    
+    public Result ClearUnexpectedAdjacentRoomReference()
+    {
+        if (BoundaryType is WallBoundaryType.AdjacentConditioned or WallBoundaryType.AdjacentUnconditioned)
+            return Result.Validation("Cannot clear adjacent room reference for an adjacent wall boundary type.");
+
+        AdjacentRoom = null;
+        AdjacentRoomId = null;
+        return Result.Success();
+    }
 }

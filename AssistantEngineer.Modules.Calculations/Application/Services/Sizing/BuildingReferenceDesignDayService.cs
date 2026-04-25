@@ -59,6 +59,7 @@ public sealed class BuildingReferenceDesignDayService
             building,
             preferences,
             year,
+            annualProfileOptions: null,
             cancellationToken);
 
         if (energyNeed is null)

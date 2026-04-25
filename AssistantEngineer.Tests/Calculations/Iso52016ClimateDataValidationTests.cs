@@ -94,6 +94,12 @@ public class Iso52016ClimateDataValidationTests
         public Task<Building?> GetForReportAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<Building?> GetForValidationAsync(
+            int id,
+            bool asTracking = false,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<Building?>(id == _building.Id ? _building : null);
+
         public Task<IReadOnlyList<Building>> ListByProjectIdAsync(int projectId, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 

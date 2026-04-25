@@ -11,6 +11,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.ReferenceData;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -147,4 +148,17 @@ public interface ICalculationsFacade
         int? year,
         EquipmentRecommendationComparisonRequest request,
         CancellationToken cancellationToken);
+    
+    StandardTableCatalogResponse GetStandardTableCatalog();
+
+    InternalLoadStandardLookupResponse GetInternalLoadStandard(
+        RoomTypeDto roomType);
+
+    DomesticHotWaterStandardLookupResponse GetDomesticHotWaterStandard(
+        RoomTypeDto roomType);
+
+    Tb14VentilationStandardLookupResponse GetTb14VentilationStandard(
+        RoomTypeDto roomType);
+    
+    AnnualProfileResponse GenerateAnnualProfile(AnnualProfileGenerationRequest request);
 }
