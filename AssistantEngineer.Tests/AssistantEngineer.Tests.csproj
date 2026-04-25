@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>
@@ -22,10 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AssistantEngineer.Domain\AssistantEngineer.Domain.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Application\AssistantEngineer.Application.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.SharedKernel\AssistantEngineer.SharedKernel.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Buildings\AssistantEngineer.Modules.Buildings.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Calculations\AssistantEngineer.Modules.Calculations.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
     <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assistant-engineer.local/schemas/building-archetypes.schema.json",
+  "title": "Assistant Engineer building archetypes configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [ "Buildings" ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "Buildings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [ "ArchetypeCatalog" ],
+      "properties": {
+        "ArchetypeCatalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [ "FormatVersion", "Archetypes" ],
+          "properties": {
+            "FormatVersion": {
+              "type": "integer",
+              "const": 1,
+              "description": "Configuration format version. Increment this when archetype semantics or required fields change."
+            },
+            "Archetypes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/buildingArchetype"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "roomType": {
+      "type": "string",
+      "enum": [ "Office", "MeetingRoom", "Corridor", "ServerRoom", "Retail", "Residential", "Other" ]
+    },
+    "cardinalDirection": {
+      "type": "string",
+      "enum": [ "North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest" ]
+    },
+    "ratio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "buildingArchetype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Code",
+        "DisplayName",
+        "Type",
+        "RoomsCount",
+        "RoomAreaM2",
+        "RoomHeightM",
+        "IndoorTemperatureC",
+        "PeopleCount",
+        "EquipmentLoadWPerM2",
+        "LightingLoadWPerM2",
+        "ExternalWallAreaFactor",
+        "ExternalWallUValue",
+        "WindowAreaM2Minimum",
+        "WindowAreaFactor",
+        "WindowUValue",
+        "WindowShgc",
+        "OddRoomOrientation",
+        "EvenRoomOrientation"
+      ],
+      "properties": {
+        "Code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable unique archetype code used by API requests."
+        },
+        "DisplayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "Type": {
+          "$ref": "#/$defs/roomType"
+        },
+        "RoomsCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "RoomAreaM2": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 10000
+        },
+        "RoomHeightM": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "IndoorTemperatureC": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 80
+        },
+        "PeopleCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "EquipmentLoadWPerM2": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "LightingLoadWPerM2": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "ExternalWallAreaFactor": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 100
+        },
+        "ExternalWallUValue": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 10
+        },
+        "WindowAreaM2Minimum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "WindowAreaFactor": {
+          "$ref": "#/$defs/ratio"
+        },
+        "WindowUValue": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 10
+        },
+        "WindowShgc": {
+          "$ref": "#/$defs/ratio"
+        },
+        "OddRoomOrientation": {
+          "$ref": "#/$defs/cardinalDirection"
+        },
+        "EvenRoomOrientation": {
+          "$ref": "#/$defs/cardinalDirection"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "./building-archetypes.schema.json",
+  "Buildings": {
+    "ArchetypeCatalog": {
+      "FormatVersion": 1,
+      "Archetypes": [
+        {
+          "Code": "office-small",
+          "DisplayName": "Small office",
+          "Type": "Office",
+          "RoomsCount": 6,
+          "RoomAreaM2": 18,
+          "RoomHeightM": 3,
+          "IndoorTemperatureC": 22,
+          "PeopleCount": 1,
+          "EquipmentLoadWPerM2": 8,
+          "LightingLoadWPerM2": 7,
+          "ExternalWallAreaFactor": 0.8,
+          "ExternalWallUValue": 1.2,
+          "WindowAreaM2Minimum": 1.5,
+          "WindowAreaFactor": 0.12,
+          "WindowUValue": 2.2,
+          "WindowShgc": 0.5,
+          "OddRoomOrientation": "South",
+          "EvenRoomOrientation": "East"
+        },
+        {
+          "Code": "residential-small",
+          "DisplayName": "Small residential",
+          "Type": "Residential",
+          "RoomsCount": 4,
+          "RoomAreaM2": 20,
+          "RoomHeightM": 2.8,
+          "IndoorTemperatureC": 21,
+          "PeopleCount": 2,
+          "EquipmentLoadWPerM2": 8,
+          "LightingLoadWPerM2": 7,
+          "ExternalWallAreaFactor": 0.8,
+          "ExternalWallUValue": 1.2,
+          "WindowAreaM2Minimum": 1.5,
+          "WindowAreaFactor": 0.12,
+          "WindowUValue": 2.2,
+          "WindowShgc": 0.5,
+          "OddRoomOrientation": "South",
+          "EvenRoomOrientation": "East"
+        },
+        {
+          "Code": "retail-small",
+          "DisplayName": "Small retail",
+          "Type": "Retail",
+          "RoomsCount": 3,
+          "RoomAreaM2": 40,
+          "RoomHeightM": 3.5,
+          "IndoorTemperatureC": 22,
+          "PeopleCount": 1,
+          "EquipmentLoadWPerM2": 8,
+          "LightingLoadWPerM2": 7,
+          "ExternalWallAreaFactor": 0.8,
+          "ExternalWallUValue": 1.2,
+          "WindowAreaM2Minimum": 1.5,
+          "WindowAreaFactor": 0.12,
+          "WindowUValue": 2.2,
+          "WindowShgc": 0.5,
+          "OddRoomOrientation": "South",
+          "EvenRoomOrientation": "East"
+        }
+      ]
+    }
+  }
+}

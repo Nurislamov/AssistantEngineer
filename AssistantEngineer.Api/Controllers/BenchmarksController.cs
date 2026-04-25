@@ -1,35 +1,23 @@
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application;
-using AssistantEngineer.Application.Abstractions;
-using AssistantEngineer.Application.Contracts.Benchmarks;
-using AssistantEngineer.Application.Contracts.Common;
-using AssistantEngineer.Application.Services.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
+using AssistantEngineer.Modules.Benchmarks.Application.Facades;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/benchmarks")]
-[Route("api/benchmarks")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/benchmarks")]
 public class BenchmarksController : ControllerBase
 {
-    private readonly IEnergyPlusBenchmarkRunner _energyPlusBenchmarkRunner;
-    private readonly EnergyPlusModelExportService _energyPlusModelExportService;
-    private readonly VerificationService _verificationService;
-    private readonly Iso52016ReferenceBenchmarkService _iso52016ReferenceBenchmarkService;
+    private readonly IBenchmarksFacade _benchmarks;
 
-    public BenchmarksController(
-        IEnergyPlusBenchmarkRunner energyPlusBenchmarkRunner,
-        EnergyPlusModelExportService energyPlusModelExportService,
-        VerificationService verificationService,
-        Iso52016ReferenceBenchmarkService iso52016ReferenceBenchmarkService)
+    public BenchmarksController(IBenchmarksFacade benchmarks)
     {
-        _energyPlusBenchmarkRunner = energyPlusBenchmarkRunner;
-        _energyPlusModelExportService = energyPlusModelExportService;
-        _verificationService = verificationService;
-        _iso52016ReferenceBenchmarkService = iso52016ReferenceBenchmarkService;
+        _benchmarks = benchmarks;
     }
 
     [HttpPost("energyplus")]
@@ -38,8 +26,8 @@ public class BenchmarksController : ControllerBase
         [FromBody] EnergyPlusBenchmarkRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyPlusBenchmarkRunner.RunAsync(request, cancellationToken);
-        return result.ToActionResult();
+        var result = await _benchmarks.RunEnergyPlusAsync(request, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpPost("energyplus/buildings/{buildingId:int}/model")]
@@ -49,11 +37,11 @@ public class BenchmarksController : ControllerBase
         [FromBody] EnergyPlusModelExportRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _energyPlusModelExportService.ExportBuildingModelAsync(
+        var result = await _benchmarks.ExportEnergyPlusModelAsync(
             buildingId,
             request,
             cancellationToken);
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
 
     [HttpPost("buildings/{buildingId:int}/verify")]
@@ -64,12 +52,12 @@ public class BenchmarksController : ControllerBase
         [FromBody] VerificationRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _verificationService.VerifyBuildingAsync(
+        var result = await _benchmarks.VerifyCalculationAsync(
             buildingId,
-            method.ToDomain(),
+            method,
             request,
             cancellationToken);
-        return result.ToOkResult();
+        return result.ToOkResult(this);
     }
 
     [HttpGet("iso52016/reference-cases")]
@@ -77,7 +65,7 @@ public class BenchmarksController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<Iso52016ReferenceBenchmarkResult>>> RunIso52016ReferenceCases(
         CancellationToken cancellationToken)
     {
-        var result = await _iso52016ReferenceBenchmarkService.RunAsync(cancellationToken);
-        return Ok(result);
+        var result = await _benchmarks.RunIso52016ReferenceCasesAsync(cancellationToken);
+        return result.ToOkResult(this);
     }
 }

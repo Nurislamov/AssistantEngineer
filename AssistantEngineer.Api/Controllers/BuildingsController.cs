@@ -1,77 +1,92 @@
+using AssistantEngineer.Api.Contracts.Buildings;
+using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Extensions;
-using AssistantEngineer.Api;
-using AssistantEngineer.Application.Abstractions;
-using AssistantEngineer.Application.Contracts.Calculations;
-using AssistantEngineer.Application.Contracts.Common;
-using AssistantEngineer.Application.Contracts.Requests;
-using AssistantEngineer.Application.Contracts.Responses;
-using AssistantEngineer.Application.Services.Buildings;
-using AssistantEngineer.Application;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/buildings")]
-[Route("api/buildings")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/buildings")]
 public class BuildingsController : ControllerBase
 {
-    private readonly BuildingCommandService _command;
-    private readonly BuildingQueryService _query;
-    private readonly BuildingCoolingLoadService _coolingLoadService;
-    private readonly BuildingHeatingLoadService _heatingLoadService;
-    private readonly BuildingEnergyBalanceService _energyBalanceService;
+    private readonly IBuildingsFacade _buildings;
+    private readonly ICalculationsFacade _calculations;
 
     public BuildingsController(
-        BuildingCommandService command,
-        BuildingQueryService query,
-        BuildingCoolingLoadService coolingLoadService,
-        BuildingHeatingLoadService heatingLoadService,
-        BuildingEnergyBalanceService energyBalanceService)
+        IBuildingsFacade buildings,
+        ICalculationsFacade calculations)
     {
-        _command = command;
-        _query = query;
-        _coolingLoadService = coolingLoadService;
-        _heatingLoadService = heatingLoadService;
-        _energyBalanceService = energyBalanceService;
+        _buildings = buildings;
+        _calculations = calculations;
     }
 
-    [HttpPost("{projectId:int}")]
+    [HttpPost("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
     public async Task<ActionResult<BuildingResponse>> Create(
         int projectId,
         [FromBody] CreateBuildingRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _command.CreateAsync(projectId, request, cancellationToken);
-        return result.ToCreatedResult(nameof(GetById), building => building.Id);
+        var result = await _buildings.CreateBuildingAsync(projectId, request, cancellationToken);
+        return result.ToCreatedResult(this, nameof(GetById), building => building.Id);
+    }
+
+    [HttpPost("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings/from-archetype")]
+    public async Task<ActionResult<BuildingResponse>> CreateFromArchetype(
+        int projectId,
+        [FromBody] CreateBuildingFromArchetypeRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.CreateBuildingFromArchetypeAsync(projectId, request, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BuildingResponse>> GetById(int id, CancellationToken cancellationToken)
     {
-        var result = await _query.GetByIdAsync(id, cancellationToken);
-        return result.ToActionResult();
+        var result = await _buildings.GetBuildingByIdAsync(id, cancellationToken);
+        return result.ToActionResult(this);
     }
 
-    [HttpGet("project/{projectId:int}")]
-    public async Task<ActionResult<List<BuildingResponse>>> GetByProject(
+    [HttpGet("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
+    public async Task<ActionResult<PagedResponse<BuildingResponse>>> GetByProject(
         int projectId,
+        [FromQuery] BuildingListQueryParameters query,
         CancellationToken cancellationToken)
     {
-        var result = await _query.GetByProjectIdAsync(projectId, cancellationToken);
-        return result.ToOkResult();
+        var result = await _buildings.GetBuildingsByProjectAsync(projectId, cancellationToken);
+        if (result.IsFailure)
+            return ApiProblemDetailsFactory.CreateResult(HttpContext, result);
+
+        IEnumerable<BuildingResponse> items = result.Value;
+
+        if (query.ClimateZoneId.HasValue)
+            items = items.Where(building => building.ClimateZoneId == query.ClimateZoneId.Value);
+
+        items = SortBuildings(
+            items.ApplySearch(query.Search, building => building.Name, building => building.ClimateZoneName),
+            query);
+
+        return Ok(items.ToPagedResponse(query));
     }
 
-    [HttpGet("{id:int}/calculate")]
+    [HttpGet("{id:int}/cooling-load")]
     [RequestTimeout(RequestPolicies.LongRunning)]
-    public async Task<ActionResult<BuildingCalculationResult>> Calculate(
+    public async Task<ActionResult<BuildingCalculationResult>> CalculateCoolingLoad(
         int id,
         [FromQuery] CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken)
     {
-        var result = await _coolingLoadService.CalculateAsync(id, method.ToDomain(), cancellationToken);
-        return result.ToActionResult();
+        var result = await _calculations.CalculateBuildingCoolingLoadAsync(id, method, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpGet("{id:int}/heating-load")]
@@ -81,8 +96,8 @@ public class BuildingsController : ControllerBase
         [FromQuery] HeatingLoadCalculationMethodDto method,
         CancellationToken cancellationToken)
     {
-        var result = await _heatingLoadService.CalculateAsync(id, method.ToDomain(), cancellationToken);
-        return result.ToActionResult();
+        var result = await _calculations.CalculateBuildingHeatingLoadAsync(id, method, cancellationToken);
+        return result.ToActionResult(this);
     }
 
     [HttpGet("{id:int}/energy-balance")]
@@ -93,11 +108,27 @@ public class BuildingsController : ControllerBase
         [FromQuery] HeatingLoadCalculationMethodDto heatingMethod,
         CancellationToken cancellationToken)
     {
-        var result = await _energyBalanceService.CalculateAsync(
+        var result = await _calculations.CalculateBuildingEnergyBalanceAsync(
             id,
-            coolingMethod.ToDomain(),
-            heatingMethod.ToDomain(),
+            coolingMethod,
+            heatingMethod,
             cancellationToken);
-        return result.ToActionResult();
+        return result.ToActionResult(this);
     }
+
+    private static IEnumerable<BuildingResponse> SortBuildings(
+        IEnumerable<BuildingResponse> source,
+        CollectionQueryParameters query) =>
+        (query.SortBy ?? "id").ToLowerInvariant() switch
+        {
+            "name" => query.SortDescending
+                ? source.OrderByDescending(building => building.Name).ThenByDescending(building => building.Id)
+                : source.OrderBy(building => building.Name).ThenBy(building => building.Id),
+            "climatezonename" => query.SortDescending
+                ? source.OrderByDescending(building => building.ClimateZoneName).ThenByDescending(building => building.Id)
+                : source.OrderBy(building => building.ClimateZoneName).ThenBy(building => building.Id),
+            _ => query.SortDescending
+                ? source.OrderByDescending(building => building.Id)
+                : source.OrderBy(building => building.Id)
+        };
 }
