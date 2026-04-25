@@ -62,8 +62,8 @@ public sealed class BuildingComfortMetricsService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions: null);
 
         if (energyNeed is null)
         {

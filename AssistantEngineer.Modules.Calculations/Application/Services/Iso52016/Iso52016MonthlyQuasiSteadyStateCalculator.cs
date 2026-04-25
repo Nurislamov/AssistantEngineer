@@ -7,13 +7,14 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
@@ -32,6 +33,8 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
     private readonly Iso52016EnergyNeedOptions _energyOptions;
     private readonly Iso52016MonthlyEnergyNeedOptions _monthlyOptions;
     private readonly En16798ProfileOptions _profileOptions;
+    private readonly IGroundTemperatureService _groundTemperatureService;
+    private readonly IGroundHeatTransferService _groundHeatTransferService;
 
     public Iso52016MonthlyQuasiSteadyStateCalculator(
         IAnnualClimateDataProvider climateDataProvider,
@@ -43,7 +46,9 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         INaturalVentilationAirflowService naturalVentilationAirflowService,
         IOptions<Iso52016EnergyNeedOptions> energyOptions,
         IOptions<Iso52016MonthlyEnergyNeedOptions> monthlyOptions,
-        IOptions<En16798ProfileOptions> profileOptions)
+        IOptions<En16798ProfileOptions> profileOptions,
+        IGroundTemperatureService groundTemperatureService,
+        IGroundHeatTransferService groundHeatTransferService)
     {
         _climateDataProvider = climateDataProvider;
         _solarRadiationService = solarRadiationService;
@@ -55,6 +60,8 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         _energyOptions = energyOptions.Value;
         _monthlyOptions = monthlyOptions.Value;
         _profileOptions = profileOptions.Value;
+        _groundTemperatureService = groundTemperatureService;
+        _groundHeatTransferService = groundHeatTransferService;
     }
 
     public async Task<Iso52016AnnualEnergyNeedResult?> CalculateBuildingEnergyNeedsAsync(
@@ -75,7 +82,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         if (!HasCompleteAnnualWeatherData(annualData))
             return null;
 
-        var hourlyData = annualData!.HourlyData
+        var orderedHourlyData = annualData!.HourlyData
             .Where(hour => hour.HourOfYear.HasValue)
             .OrderBy(hour => hour.HourOfYear!.Value)
             .ToArray();
@@ -85,7 +92,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
 
         foreach (var zone in zoneGroups)
         {
-            var groupedMonths = hourlyData
+            var groupedMonths = orderedHourlyData
                 .GroupBy(hour => GetMonth(hour.HourOfYear!.Value))
                 .OrderBy(group => group.Key);
 
@@ -93,11 +100,16 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
+                var monthlyGroundTemperature = _groundTemperatureService.GetMonthlyAverageTemperature(
+                    orderedHourlyData,
+                    monthGroup.Key);
+
                 var monthlyZoneResult = CalculateZoneMonth(
                     zone,
                     monthGroup.Key,
                     monthGroup.ToArray(),
-                    preferences);
+                    preferences,
+                    monthlyGroundTemperature);
 
                 zoneMonthResults.Add(monthlyZoneResult);
             }
@@ -137,7 +149,8 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         ThermalZoneGroup zone,
         int month,
         IReadOnlyList<HourlyClimateData> monthHours,
-        CalculationPreferences? preferences)
+        CalculationPreferences? preferences,
+        double groundBoundaryTemperatureC)
     {
         var rooms = zone.Rooms;
         var envelopeDefaults = _buildingEnvelopeReferenceData.GetDefaults();
@@ -165,8 +178,11 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
                 hour.WindSpeedMPerS ?? 0,
                 hour.HourOfYear!.Value % 24));
 
-        var totalHeatTransfer = transmissionHeatTransfer + averageVentilationHeatTransfer;
-        var hours = monthHours.Count;
+        var outdoorUa = rooms.Sum(room => GetOutdoorTransmissionHeatTransferCoefficient(room, envelopeDefaults));
+        var groundBoundaryConditions = rooms
+            .Select(room => _groundHeatTransferService.CalculateBoundaryCondition(room, envelopeDefaults))
+            .ToArray();
+        var groundUa = groundBoundaryConditions.Sum(x => x.HeatTransferCoefficientWPerK);var hours = monthHours.Count;
 
         var internalGainsKWh = monthHours.Sum(hour =>
             rooms.Sum(room => GetHourlyInternalGain(room, hour.HourOfYear!.Value % 24))) / 1000.0;
@@ -176,18 +192,40 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
 
         var totalUsefulGainsKWh = internalGainsKWh + solarGainsKWh;
 
+        var equivalentGroundBoundaryTemperature = groundUa <= 0
+            ? groundBoundaryTemperatureC
+            : groundBoundaryConditions.Sum(x =>
+                x.HeatTransferCoefficientWPerK *
+                (x.IndoorTemperatureWeight * effectiveHeatingSetpoint +
+                 x.OutdoorTemperatureWeight * averageOutdoorTemperature +
+                 x.GroundTemperatureWeight * groundBoundaryTemperatureC)) / groundUa;
+        
         var heatingLossesKWh = Math.Max(
             0,
-            totalHeatTransfer * Math.Max(0, effectiveHeatingSetpoint - averageOutdoorTemperature) * hours / 1000.0);
+            ((outdoorUa * Math.Max(0, effectiveHeatingSetpoint - averageOutdoorTemperature)) +
+             (groundUa * Math.Max(0, effectiveHeatingSetpoint - equivalentGroundBoundaryTemperature)) +
+             (averageVentilationHeatTransfer * Math.Max(0, effectiveHeatingSetpoint - averageOutdoorTemperature)))
+            * hours / 1000.0);
 
         var heatingDemandKWh = Math.Max(
             0,
             heatingLossesKWh - totalUsefulGainsKWh * _monthlyOptions.HeatingGainUtilizationFactor);
 
+        var equivalentCoolingGroundBoundaryTemperature = groundUa <= 0
+            ? groundBoundaryTemperatureC
+            : groundBoundaryConditions.Sum(x =>
+                x.HeatTransferCoefficientWPerK *
+                (x.IndoorTemperatureWeight * effectiveCoolingSetpoint +
+                 x.OutdoorTemperatureWeight * averageOutdoorTemperature +
+                 x.GroundTemperatureWeight * groundBoundaryTemperatureC)) / groundUa;
+
         var coolingTransmissionKWh = Math.Max(
             0,
-            totalHeatTransfer * Math.Max(0, averageOutdoorTemperature - effectiveCoolingSetpoint) * hours / 1000.0);
-
+            ((outdoorUa * Math.Max(0, averageOutdoorTemperature - effectiveCoolingSetpoint)) +
+             (groundUa * Math.Max(0, equivalentCoolingGroundBoundaryTemperature - effectiveCoolingSetpoint)) +
+             (averageVentilationHeatTransfer * Math.Max(0, averageOutdoorTemperature - effectiveCoolingSetpoint)))
+            * hours / 1000.0);
+        
         var coolingDemandKWh = Math.Max(
             0,
             coolingTransmissionKWh + totalUsefulGainsKWh * _monthlyOptions.CoolingGainUtilizationFactor);
@@ -497,4 +535,31 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         double CoolingDemandKWh,
         double InternalGainsKWh,
         double SolarGainsKWh);
+    
+    private static double GetOutdoorTransmissionHeatTransferCoefficient(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        var envelope = room.Walls
+            .Where(wall => wall.BoundaryType == WallBoundaryType.External)
+            .Sum(wall => wall.Area.SquareMeters * Iso52016HourlyCalculatorMath.GetWallUValue(wall));
+
+        envelope += room.Windows.Sum(window => window.Area.SquareMeters * window.UValue.Value);
+        envelope += room.Area.SquareMeters * envelopeDefaults.CeilingUValueWPerM2K;
+
+        return envelope;
+    }
+
+    private static double GetGroundTransmissionHeatTransferCoefficient(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        var envelope = room.Walls
+            .Where(wall => wall.BoundaryType == WallBoundaryType.Ground)
+            .Sum(wall => wall.Area.SquareMeters * Iso52016HourlyCalculatorMath.GetWallUValue(wall));
+
+        envelope += room.Area.SquareMeters * envelopeDefaults.FloorUValueWPerM2K;
+
+        return envelope;
+    }
 }

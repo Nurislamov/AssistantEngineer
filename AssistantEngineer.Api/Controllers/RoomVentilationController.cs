@@ -11,7 +11,7 @@ namespace AssistantEngineer.Api.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
-public class RoomVentilationController : ControllerBase
+public sealed class RoomVentilationController : ControllerBase
 {
     private readonly IBuildingsFacade _buildings;
     private readonly ICalculationsFacade _calculations;
@@ -53,6 +53,25 @@ public class RoomVentilationController : ControllerBase
         if (result.IsSuccess)
             return NoContent();
 
+        return result.ToActionResult(this);
+    }
+
+    [HttpGet("api/v{version:apiVersion}/rooms/{roomId:int}/ventilation-parameters/defaults")]
+    public async Task<ActionResult<RoomVentilationDefaultsResponse>> GetDefaults(
+        int roomId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.PreviewRoomVentilationDefaultsAsync(roomId, cancellationToken);
+        return result.ToActionResult(this);
+    }
+
+    [HttpPost("api/v{version:apiVersion}/rooms/{roomId:int}/ventilation-parameters/apply-defaults")]
+    public async Task<ActionResult<RoomVentilationParametersResponse>> ApplyDefaults(
+        int roomId,
+        [FromBody] ApplyRoomVentilationDefaultsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.ApplyRoomVentilationDefaultsAsync(roomId, request, cancellationToken);
         return result.ToActionResult(this);
     }
 

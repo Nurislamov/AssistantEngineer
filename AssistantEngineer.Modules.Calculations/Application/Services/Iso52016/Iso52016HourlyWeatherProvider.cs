@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -9,15 +10,18 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 internal sealed class Iso52016HourlyWeatherProvider
 {
     private readonly IAnnualClimateDataProvider _climateDataProvider;
+    private readonly IGroundTemperatureService _groundTemperatureService;
     private readonly Iso52016EnergyNeedOptions _options;
     private readonly ILogger _logger;
 
     public Iso52016HourlyWeatherProvider(
         IAnnualClimateDataProvider climateDataProvider,
+        IGroundTemperatureService groundTemperatureService,
         Iso52016EnergyNeedOptions options,
         ILogger? logger = null)
     {
         _climateDataProvider = climateDataProvider;
+        _groundTemperatureService = groundTemperatureService;
         _options = options;
         _logger = logger ?? NullLogger.Instance;
     }
@@ -45,11 +49,16 @@ internal sealed class Iso52016HourlyWeatherProvider
             return null;
         }
 
+        var hourlyData = annualData!.HourlyData
+            .Where(hour => hour.HourOfYear.HasValue)
+            .OrderBy(hour => hour.HourOfYear!.Value)
+            .ToArray();
+
+        var groundProfile = _groundTemperatureService.BuildHourlyProfile(hourlyData);
+
         return new Iso52016HourlyWeatherContext(
             weatherYear,
-            annualData!.HourlyData
-                .Where(hour => hour.HourOfYear.HasValue)
-                .OrderBy(hour => hour.HourOfYear!.Value)
-                .ToArray());
+            hourlyData,
+            groundProfile);
     }
 }

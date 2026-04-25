@@ -18,18 +18,20 @@ public sealed class BuildingsFacade : IBuildingsFacade
     private readonly BuildingQueryService _buildingQuery;
     private readonly BuildingArchetypeService _buildingArchetypes;
     private readonly BuildingCalculationReadinessService _buildingReadiness;
+    private readonly BuildingModelValidationService _buildingValidation;
+    private readonly BuildingModelAutocorrectionService _buildingAutocorrection;
     private readonly FloorCommandService _floorCommand;
     private readonly FloorQueryService _floorQuery;
     private readonly RoomCommandService _roomCommand;
     private readonly RoomQueryService _roomQuery;
     private readonly RoomVentilationCommandService _roomVentilationCommand;
     private readonly RoomVentilationQueryService _roomVentilationQuery;
+    private readonly RoomVentilationDefaultsService _roomVentilationDefaults;
     private readonly ThermalZoneCommandService _thermalZoneCommand;
     private readonly ThermalZoneQueryService _thermalZoneQuery;
     private readonly EpwAnnualClimateDataImportService _epwImport;
     private readonly PvgisAnnualClimateDataImportService _pvgisImport;
-    private readonly BuildingModelValidationService _buildingValidation;
-    private readonly BuildingModelAutocorrectionService _buildingAutocorrection;
+    private readonly RoomGroundContactService _roomGroundContact;
 
     public BuildingsFacade(
         ProjectCommandService projectCommand,
@@ -46,10 +48,12 @@ public sealed class BuildingsFacade : IBuildingsFacade
         RoomQueryService roomQuery,
         RoomVentilationCommandService roomVentilationCommand,
         RoomVentilationQueryService roomVentilationQuery,
+        RoomVentilationDefaultsService roomVentilationDefaults,
         ThermalZoneCommandService thermalZoneCommand,
         ThermalZoneQueryService thermalZoneQuery,
         EpwAnnualClimateDataImportService epwImport,
-        PvgisAnnualClimateDataImportService pvgisImport)
+        PvgisAnnualClimateDataImportService pvgisImport,
+        RoomGroundContactService roomGroundContact)
     {
         _projectCommand = projectCommand;
         _projectQuery = projectQuery;
@@ -65,10 +69,12 @@ public sealed class BuildingsFacade : IBuildingsFacade
         _roomQuery = roomQuery;
         _roomVentilationCommand = roomVentilationCommand;
         _roomVentilationQuery = roomVentilationQuery;
+        _roomVentilationDefaults = roomVentilationDefaults;
         _thermalZoneCommand = thermalZoneCommand;
         _thermalZoneQuery = thermalZoneQuery;
         _epwImport = epwImport;
         _pvgisImport = pvgisImport;
+        _roomGroundContact = roomGroundContact;
     }
 
     public Task<Result<ProjectResponse>> CreateProjectAsync(
@@ -182,6 +188,17 @@ public sealed class BuildingsFacade : IBuildingsFacade
         CancellationToken cancellationToken) =>
         _roomVentilationCommand.DeleteAsync(roomId, cancellationToken);
 
+    public Task<Result<RoomVentilationDefaultsResponse>> PreviewRoomVentilationDefaultsAsync(
+        int roomId,
+        CancellationToken cancellationToken) =>
+        _roomVentilationDefaults.PreviewAsync(roomId, cancellationToken);
+
+    public Task<Result<RoomVentilationParametersResponse>> ApplyRoomVentilationDefaultsAsync(
+        int roomId,
+        ApplyRoomVentilationDefaultsRequest request,
+        CancellationToken cancellationToken) =>
+        _roomVentilationDefaults.ApplyAsync(roomId, request, cancellationToken);
+
     public Task<Result<List<ThermalZoneResponse>>> GetThermalZonesByBuildingAsync(
         int buildingId,
         CancellationToken cancellationToken) =>
@@ -222,7 +239,7 @@ public sealed class BuildingsFacade : IBuildingsFacade
         ImportPvgisWeatherRequest request,
         CancellationToken cancellationToken) =>
         _pvgisImport.ImportAsync(climateZoneId, request, cancellationToken);
-    
+
     public Task<Result<BuildingValidationReport>> ValidateBuildingModelAsync(
         int buildingId,
         int weatherYear,
@@ -242,4 +259,20 @@ public sealed class BuildingsFacade : IBuildingsFacade
         AutocorrectBuildingModelRequest request,
         CancellationToken cancellationToken) =>
         _buildingAutocorrection.ApplyAsync(buildingId, weatherYear, request, cancellationToken);
+    
+    public Task<Result<RoomGroundContactResponse>> GetRoomGroundContactAsync(
+        int roomId,
+        CancellationToken cancellationToken) =>
+        _roomGroundContact.GetAsync(roomId, cancellationToken);
+
+    public Task<Result<RoomGroundContactResponse>> UpsertRoomGroundContactAsync(
+        int roomId,
+        UpsertRoomGroundContactRequest request,
+        CancellationToken cancellationToken) =>
+        _roomGroundContact.UpsertAsync(roomId, request, cancellationToken);
+
+    public Task<Result> DeleteRoomGroundContactAsync(
+        int roomId,
+        CancellationToken cancellationToken) =>
+        _roomGroundContact.DeleteAsync(roomId, cancellationToken);
 }

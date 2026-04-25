@@ -1,7 +1,7 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
-using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Performance;
 
@@ -16,4 +16,6 @@ public sealed class BuildingEnergyPerformanceRequest
     public DomesticHotWaterSystemRequest DomesticHotWaterSystem { get; set; } = new();
     public EnergyCarrierType DomesticHotWaterCarrier { get; set; } = EnergyCarrierType.NaturalGas;
     public Dictionary<EnergyCarrierType, EnergyCarrierFactors>? CarrierFactorOverrides { get; set; }
+
+    public AnnualProfileOptionsDto? AnnualProfiles { get; set; }
 }

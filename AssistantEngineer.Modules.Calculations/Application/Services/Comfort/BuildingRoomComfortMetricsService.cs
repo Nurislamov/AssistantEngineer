@@ -60,8 +60,8 @@ public sealed class BuildingRoomComfortMetricsService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions: null);
 
         if (energyNeed is null)
             return Result<BuildingRoomComfortMetricsResponse>.Validation("Complete annual climate data is required for comfort analysis.");

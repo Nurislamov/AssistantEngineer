@@ -2,12 +2,14 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using Microsoft.Extensions.Logging;
@@ -33,6 +35,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
         IOptions<Iso52016EnergyNeedOptions>? options = null,
         IOptions<En16798ProfileOptions>? profileOptions = null,
         HourlyInternalGainProfileService? hourlyProfiles = null,
+        IGroundTemperatureService? groundTemperatureService = null,
+        IGroundHeatTransferService? groundHeatTransferService = null,
         ILogger<Iso52016HourlySteadyStateCalculator>? logger = null)
     {
         var resolvedOptions = options?.Value ?? new Iso52016EnergyNeedOptions();
@@ -46,8 +50,19 @@ public sealed class Iso52016HourlySteadyStateCalculator
                         new UzbekistanHolidayCalendarProvider(),
                         new AnnualProfileTemplateProvider()))));
 
+        var resolvedGroundTemperatureService = groundTemperatureService ??
+                                               new Iso13370GroundTemperatureService(
+                                                   Microsoft.Extensions.Options.Options.Create(
+                                                       new Iso13370GroundTemperatureOptions()));
+        
+        var resolvedGroundHeatTransferService = groundHeatTransferService ??
+                                                new Iso13370GroundHeatTransferService(
+                                                    Microsoft.Extensions.Options.Options.Create(
+                                                        new Iso13370GroundHeatTransferOptions()));
+
         _weatherProvider = new Iso52016HourlyWeatherProvider(
             climateDataProvider,
+            resolvedGroundTemperatureService,
             resolvedOptions,
             logger);
 
@@ -61,6 +76,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
             windowShadingService,
             resolvedEnvelopeReferenceData,
             resolvedProfileCatalog,
+            resolvedGroundHeatTransferService,
             naturalVentilationAirflowService,
             resolvedOptions,
             resolvedProfileOptions,
@@ -73,8 +89,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
         Building building,
         CalculationPreferences? preferences = null,
         int? year = null,
-        AnnualProfileOptionsDto? annualProfileOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        AnnualProfileOptionsDto? annualProfileOptions = null)
     {
         var weatherContext = await _weatherProvider.GetBuildingWeatherAsync(
             building,
@@ -107,7 +123,9 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     calculationContext.RoomZoneMap,
                     preferences,
                     cancellationToken,
-                    annualProfileOptions));
+                    annualProfileOptions,
+                    weatherContext.GroundBoundaryTemperaturesC[
+                        Math.Clamp(weather.HourOfYear!.Value, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)]));
             }
 
             foreach (var zoneResult in currentHourResults)
@@ -143,8 +161,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
         ThermalZone thermalZone,
         int year = 2020,
         double coolingSetpoint = 26.0,
-        AnnualProfileOptionsDto? annualProfileOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        AnnualProfileOptionsDto? annualProfileOptions = null)
     {
         var weatherContext = await _weatherProvider.GetBuildingWeatherAsync(
             thermalZone.Building,
@@ -161,6 +179,9 @@ public sealed class Iso52016HourlySteadyStateCalculator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            var groundBoundaryTemperatureC = weatherContext.GroundBoundaryTemperaturesC[
+                Math.Clamp(weather.HourOfYear!.Value, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)];
+
             var zoneResult = _heatBalanceCalculator.CalculateZoneHourEnergyNeed(
                 calculationContext.Zone,
                 calculationContext.ZoneState,
@@ -169,7 +190,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
                 calculationContext.RoomZoneMap,
                 preferences: null,
                 cancellationToken,
-                annualProfileOptions);
+                annualProfileOptions,
+                groundBoundaryTemperatureC);
 
             foreach (var roomResult in zoneResult.Rooms)
             {

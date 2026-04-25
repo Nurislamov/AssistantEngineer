@@ -95,6 +95,15 @@ public interface IBuildingsFacade
         int roomId,
         CancellationToken cancellationToken);
 
+    Task<Result<RoomVentilationDefaultsResponse>> PreviewRoomVentilationDefaultsAsync(
+        int roomId,
+        CancellationToken cancellationToken);
+
+    Task<Result<RoomVentilationParametersResponse>> ApplyRoomVentilationDefaultsAsync(
+        int roomId,
+        ApplyRoomVentilationDefaultsRequest request,
+        CancellationToken cancellationToken);
+
     Task<Result<List<ThermalZoneResponse>>> GetThermalZonesByBuildingAsync(
         int buildingId,
         CancellationToken cancellationToken);
@@ -128,7 +137,7 @@ public interface IBuildingsFacade
         int climateZoneId,
         ImportPvgisWeatherRequest request,
         CancellationToken cancellationToken);
-    
+
     Task<Result<BuildingValidationReport>> ValidateBuildingModelAsync(
         int buildingId,
         int weatherYear,
@@ -144,5 +153,18 @@ public interface IBuildingsFacade
         int buildingId,
         int weatherYear,
         AutocorrectBuildingModelRequest request,
+        CancellationToken cancellationToken);
+    
+    Task<Result<RoomGroundContactResponse>> GetRoomGroundContactAsync(
+        int roomId,
+        CancellationToken cancellationToken);
+
+    Task<Result<RoomGroundContactResponse>> UpsertRoomGroundContactAsync(
+        int roomId,
+        UpsertRoomGroundContactRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteRoomGroundContactAsync(
+        int roomId,
         CancellationToken cancellationToken);
 }

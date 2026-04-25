@@ -14,6 +14,7 @@ using AssistantEngineer.Modules.Calculations.Application.Models.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
@@ -28,6 +29,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
     private readonly Iso52016EnergyNeedOptions _options;
     private readonly En16798ProfileOptions _profileOptions;
     private readonly HourlyInternalGainProfileService _hourlyProfiles;
+    private readonly IGroundHeatTransferService _groundHeatTransferService;
 
     public Iso52016HourlyHeatBalanceCalculator(
         ISolarRadiationService solarRadiationService,
@@ -35,6 +37,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         IWindowShadingService? windowShadingService,
         IBuildingEnvelopeReferenceData envelopeReferenceData,
         IEn16798ProfileCatalog profileCatalog,
+        IGroundHeatTransferService groundHeatTransferService,
         INaturalVentilationAirflowService? naturalVentilationAirflowService,
         Iso52016EnergyNeedOptions options,
         En16798ProfileOptions profileOptions,
@@ -45,6 +48,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         _windowShadingService = windowShadingService;
         _envelopeReferenceData = envelopeReferenceData;
         _profileCatalog = profileCatalog;
+        _groundHeatTransferService = groundHeatTransferService;
         _naturalVentilationAirflowService = naturalVentilationAirflowService;
         _options = options;
         _profileOptions = profileOptions;
@@ -59,7 +63,8 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         IReadOnlyDictionary<int, string> roomZoneMap,
         CalculationPreferences? preferences,
         CancellationToken cancellationToken,
-        AnnualProfileOptionsDto? annualProfileOptions = null)
+        AnnualProfileOptionsDto? annualProfileOptions = null,
+        double? groundBoundaryTemperatureC = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -135,15 +140,19 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             var envelopeDefaults = _envelopeReferenceData.GetDefaults();
             var outdoorUa = GetOutdoorEnvelopeHeatTransferCoefficient(room, envelopeDefaults);
-            var groundUa = GetGroundEnvelopeHeatTransferCoefficient(room, envelopeDefaults);
-
+            var groundBoundary = _groundHeatTransferService.CalculateBoundaryCondition(room, envelopeDefaults);
+            var groundUa = groundBoundary.HeatTransferCoefficientWPerK;
+            
             var thermalCapacityPerHour = GetRoomThermalCapacityJPerK(room, preferences) / 3600.0;
             var totalHeatTransfer =
                 outdoorUa + groundUa + ventilationHeatTransfer + adjacent.HeatTransferCoefficientWPerK;
 
             var baseBalance = thermalCapacityPerHour * previousRoomTemperature +
                               (outdoorUa + ventilationHeatTransfer) * weather.DryBulbTemperature +
-                              groundUa * _options.DefaultGroundBoundaryTemperatureC +
+                              groundUa * (
+                                  groundBoundary.IndoorTemperatureWeight * heatingSetpoint +
+                                  groundBoundary.OutdoorTemperatureWeight * weather.DryBulbTemperature +
+                                  groundBoundary.GroundTemperatureWeight * (groundBoundaryTemperatureC ?? _options.DefaultGroundBoundaryTemperatureC)) +
                               adjacent.BoundaryTemperatureWeightedHeatTransferW +
                               internalGains +
                               solarGains;

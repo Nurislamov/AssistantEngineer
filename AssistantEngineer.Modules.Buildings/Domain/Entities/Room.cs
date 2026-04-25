@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
+using AssistantEngineer.Modules.Buildings.Domain.Ground;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using System.Collections.ObjectModel;
@@ -21,6 +22,7 @@ public class Room
     public int PeopleCount { get; private set; }
     public Power EquipmentLoad { get; private set; } = Power.FromWatts(0).Value;
     public Power LightingLoad { get; private set; } = Power.FromWatts(0).Value;
+    public GroundContactMetadata? GroundContactMetadata { get; private set; }
 
     public RoomType Type { get; private set; }
 
@@ -237,6 +239,18 @@ public class Room
         total += Area.SquareMeters * ceilingHeatCapacityKjPerM2K;
 
         return total;
+    }
+    
+    public Result SetGroundContactMetadata(GroundContactMetadata metadata)
+    {
+        GroundContactMetadata = metadata;
+        return Result.Success();
+    }
+
+    public Result ClearGroundContactMetadata()
+    {
+        GroundContactMetadata = null;
+        return Result.Success();
     }
 
     private bool IsWindowAreaValid(Area additionalArea)

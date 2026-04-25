@@ -6,7 +6,8 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
 internal sealed record Iso52016HourlyWeatherContext(
     int Year,
-    HourlyClimateData[] HourlyData);
+    HourlyClimateData[] HourlyData,
+    double[] GroundBoundaryTemperaturesC);
 
 internal sealed record Iso52016ThermalZoneGroup(
     string Name,

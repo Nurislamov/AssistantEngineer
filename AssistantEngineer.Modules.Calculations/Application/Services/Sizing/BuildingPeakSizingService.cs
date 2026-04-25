@@ -59,8 +59,8 @@ public sealed class BuildingPeakSizingService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions: null);
 
         if (energyNeed is null)
         {

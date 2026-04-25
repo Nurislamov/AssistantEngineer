@@ -1,5 +1,4 @@
 using System.Reflection;
-using AssistantEngineer.Modules.Buildings.Application.Abstractions.StandardDefaults;
 using AssistantEngineer.Modules.Buildings.Application.Options;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
@@ -8,12 +7,12 @@ using AssistantEngineer.Modules.Buildings.Application.Services.Floors;
 using AssistantEngineer.Modules.Buildings.Application.Services.Projects;
 using AssistantEngineer.Modules.Buildings.Application.Services.Rooms;
 using AssistantEngineer.Modules.Buildings.Application.Services.ThermalZones;
+using AssistantEngineer.SharedKernel.Resilience;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using AssistantEngineer.SharedKernel.Resilience;
 
 namespace AssistantEngineer.Modules.Buildings;
 
@@ -28,6 +27,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IValidateOptions<BuildingArchetypeCatalogOptions>, BuildingArchetypeCatalogOptionsValidator>();
         services.AddSingleton<IValidateOptions<PvgisApiOptions>, PvgisApiOptionsValidator>();
+
         services
             .AddOptions<BuildingArchetypeCatalogOptions>()
             .Bind(configuration.GetSection("Buildings:ArchetypeCatalog"))
@@ -49,10 +49,6 @@ public static class DependencyInjection
             client.Timeout = Timeout.InfiniteTimeSpan;
             client.DefaultRequestHeaders.UserAgent.ParseAdd("AssistantEngineer/1.0");
         });
-        
-        services.AddScoped<IRoomStandardDefaultsProvider>(_ =>
-            throw new InvalidOperationException(
-                "IRoomStandardDefaultsProvider is not registered. Make sure AssistantEngineer.Modules.Calculations is added before Buildings module composition is finalized."));
 
         services.AddScoped<ProjectCommandService>();
         services.AddScoped<ProjectQueryService>();
@@ -64,9 +60,6 @@ public static class DependencyInjection
         services.AddScoped<BuildingAutocorrectionPlanner>();
         services.AddScoped<BuildingModelValidationService>();
         services.AddScoped<BuildingModelAutocorrectionService>();
-        services.AddScoped<BuildingAutocorrectionPlanner>();
-        services.AddScoped<BuildingModelValidationService>();
-        services.AddScoped<BuildingModelAutocorrectionService>();
 
         services.AddScoped<FloorCommandService>();
         services.AddScoped<FloorQueryService>();
@@ -75,6 +68,8 @@ public static class DependencyInjection
         services.AddScoped<RoomQueryService>();
         services.AddScoped<RoomVentilationCommandService>();
         services.AddScoped<RoomVentilationQueryService>();
+        services.AddScoped<RoomVentilationDefaultsService>();
+        services.AddScoped<RoomGroundContactService>();
 
         services.AddScoped<ThermalZoneCommandService>();
         services.AddScoped<ThermalZoneQueryService>();

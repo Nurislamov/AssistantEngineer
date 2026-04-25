@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Buildings.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analytics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
@@ -60,7 +61,12 @@ public sealed class BuildingPerformanceService
         int? year,
         CancellationToken cancellationToken)
     {
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<Iso52016EnergyBalanceBreakdown>.Failure(energyNeed);
 
@@ -76,7 +82,12 @@ public sealed class BuildingPerformanceService
         if (month.HasValue && (month < 1 || month > 12))
             return Result<Iso52016HourlyResultsResponse>.Validation("Month must be between 1 and 12.");
 
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<Iso52016HourlyResultsResponse>.Failure(energyNeed);
 
@@ -99,7 +110,12 @@ public sealed class BuildingPerformanceService
         int? year,
         CancellationToken cancellationToken)
     {
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<Iso52016MonthlyResultsResponse>.Failure(energyNeed);
 
@@ -140,7 +156,12 @@ public sealed class BuildingPerformanceService
         double? heatingBaseTemperatureC,
         CancellationToken cancellationToken)
     {
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<EnergySignatureResult>.Failure(energyNeed);
 
@@ -155,7 +176,12 @@ public sealed class BuildingPerformanceService
         HeatingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<HeatingSystemEnergyResult>.Failure(energyNeed);
 
@@ -168,7 +194,12 @@ public sealed class BuildingPerformanceService
         CoolingSystemEnergyRequest request,
         CancellationToken cancellationToken)
     {
-        var energyNeed = await CalculateHourlyEnergyNeedAsync(buildingId, year, cancellationToken);
+        var energyNeed = await CalculateHourlyEnergyNeedAsync(
+            buildingId,
+            year,
+            annualProfileOptions: null,
+            cancellationToken);
+
         if (energyNeed.IsFailure)
             return Result<CoolingSystemEnergyResult>.Failure(energyNeed);
 
@@ -181,7 +212,12 @@ public sealed class BuildingPerformanceService
         BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken)
     {
-        var context = await CalculateHourlyEnergyNeedContextAsync(buildingId, year, cancellationToken);
+        var context = await CalculateHourlyEnergyNeedContextAsync(
+            buildingId,
+            year,
+            request.AnnualProfiles,
+            cancellationToken);
+
         if (context.IsFailure)
             return Result<BuildingEnergyPerformanceSummary>.Failure(context);
 
@@ -194,6 +230,7 @@ public sealed class BuildingPerformanceService
     private async Task<Result<Iso52016AnnualEnergyNeedResult>> CalculateHourlyEnergyNeedAsync(
         int buildingId,
         int? year,
+        AnnualProfileOptionsDto? annualProfileOptions,
         CancellationToken cancellationToken)
     {
         var readiness = await EnsureCalculationReadyAsync(buildingId, year, cancellationToken);
@@ -209,8 +246,8 @@ public sealed class BuildingPerformanceService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions);
 
         return result is null
             ? Result<Iso52016AnnualEnergyNeedResult>.Validation("Complete annual climate data is required for ISO 52016 analysis.")
@@ -245,6 +282,7 @@ public sealed class BuildingPerformanceService
     private async Task<Result<BuildingEnergyNeedContext>> CalculateHourlyEnergyNeedContextAsync(
         int buildingId,
         int? year,
+        AnnualProfileOptionsDto? annualProfileOptions,
         CancellationToken cancellationToken)
     {
         var readiness = await EnsureCalculationReadyAsync(buildingId, year, cancellationToken);
@@ -260,8 +298,8 @@ public sealed class BuildingPerformanceService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions);
 
         return result is null
             ? Result<BuildingEnergyNeedContext>.Validation("Complete annual climate data is required for ISO 52016 analysis.")

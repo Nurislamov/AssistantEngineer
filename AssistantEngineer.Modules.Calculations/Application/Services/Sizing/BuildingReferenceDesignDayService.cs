@@ -59,8 +59,8 @@ public sealed class BuildingReferenceDesignDayService
             building,
             preferences,
             year,
-            annualProfileOptions: null,
-            cancellationToken);
+            cancellationToken,
+            annualProfileOptions: null);
 
         if (energyNeed is null)
             return Result<BuildingReferenceDesignDayResponse>.Validation(

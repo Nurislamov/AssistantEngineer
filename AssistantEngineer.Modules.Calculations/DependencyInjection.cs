@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.StandardDefaults;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
@@ -20,6 +21,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.S
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
@@ -69,7 +71,7 @@ public static class DependencyInjection
         services.AddSingleton<StandardTableCatalogService>();
         services.AddSingleton<IRoomAnnualProfileSetProvider, RoomAnnualProfileSetProvider>();
         services.AddSingleton<IHourlyRoomProfileAccessor, HourlyRoomProfileAccessor>();
-        services.AddSingleton<HourlyInternalGainProfileService>();
+        services.AddSingleton<IValidateOptions<Iso13370GroundTemperatureOptions>, Iso13370GroundTemperatureOptionsValidator>();
         
         services
             .AddOptions<CoolingLoadCalculationOptions>()
@@ -104,6 +106,11 @@ public static class DependencyInjection
         services
             .AddOptions<NaturalVentilationOptions>()
             .Bind(configuration.GetSection("Calculations:NaturalVentilation"))
+            .ValidateOnStart();
+        
+        services
+            .AddOptions<Iso13370GroundTemperatureOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso13370Ground"))
             .ValidateOnStart();
 
         services.AddSingleton<IHourlyProfileAggregator, HourlyProfileAggregator>();
@@ -152,7 +159,8 @@ public static class DependencyInjection
         services.AddScoped<EquipmentRecommendationComparisonService>();
         services.AddScoped<EquipmentRecommendationReportService>();
         services.AddScoped<EquipmentRecommendationComparisonReportService>();
-        
+        services.AddScoped<GroundTemperatureProfilePreviewService>();
+        services.AddSingleton<IGroundTemperatureService, Iso13370GroundTemperatureService>();
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
         services.AddScoped<ICalculationsFacade, CalculationsFacade>();
         services.AddScoped<IBuildingEnergyAnalysisFacade, BuildingEnergyAnalysisFacade>();
@@ -165,7 +173,15 @@ public static class DependencyInjection
 
         services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
-
+        
+        services.AddSingleton<IValidateOptions<Iso13370GroundHeatTransferOptions>, Iso13370GroundHeatTransferOptionsValidator>();
+        services.AddSingleton<IGroundHeatTransferService, Iso13370GroundHeatTransferService>();
+        
+        services
+            .AddOptions<Iso13370GroundHeatTransferOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso13370GroundHeatTransfer"))
+            .ValidateOnStart();
+        
         return services;
     }
 }
