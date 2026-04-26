@@ -1,5 +1,3 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
-using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Services;
@@ -40,7 +38,13 @@ public sealed class EquipmentFacade : IEquipmentFacade
     public Task<Result<EquipmentSelectionResult>> SelectRoomEquipmentAsync(
         int roomId,
         EquipmentSelectionRequest request,
-        CoolingLoadCalculationMethodDto method,
+        double totalHeatLoadKw,
+        double designCapacityKw,
         CancellationToken cancellationToken) =>
-        _equipmentSelection.SelectForRoomAsync(roomId, request, method.ToDomain(), cancellationToken);
+        _equipmentSelection.SelectForRoomAsync(
+            roomId,
+            request,
+            totalHeatLoadKw,
+            designCapacityKw,
+            cancellationToken);
 }

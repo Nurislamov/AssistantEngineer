@@ -4,8 +4,11 @@ namespace AssistantEngineer.Api.Contracts.Equipment;
 
 public sealed class EquipmentCatalogListQueryParameters : CollectionQueryParameters
 {
-    public string? Manufacturer { get; init; }
-    public string? SystemType { get; init; }
-    public string? UnitType { get; init; }
-    public bool? IsActive { get; init; }
+    public string? Manufacturer { get; set; }
+
+    public string? SystemType { get; set; }
+
+    public string? UnitType { get; set; }
+
+    public bool? IsActive { get; set; }
 }

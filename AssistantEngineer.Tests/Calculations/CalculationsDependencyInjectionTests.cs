@@ -36,9 +36,11 @@ public class CalculationsDependencyInjectionTests
         services.AddCalculationsModule(configuration);
 
         AssertServiceLifetime<TimeProvider>(services, ServiceLifetime.Singleton);
+
         Assert.All(
             services.Where(service => service.ServiceType == typeof(IRoomCoolingLoadCalculationStrategy)),
             service => Assert.Equal(ServiceLifetime.Scoped, service.Lifetime));
+
         AssertServiceLifetime<IRoomCoolingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IAggregateLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IAnnualProfileGenerator>(services, ServiceLifetime.Singleton);
@@ -60,7 +62,12 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingEnergyBalanceService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<ICalculationsFacade>(services, ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<ILoadCalculationsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IVentilationAnalysisFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IDomesticHotWaterFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IProfilesFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IStandardReferenceDataFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyAnalysisFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingComfortAnalysisFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingSizingAnalysisFacade>(services, ServiceLifetime.Scoped);
@@ -70,6 +77,7 @@ public class CalculationsDependencyInjectionTests
     public void AddCalculationsModuleBindsCalculationOptionsFromConfiguration()
     {
         var services = new ServiceCollection();
+
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -83,16 +91,29 @@ public class CalculationsDependencyInjectionTests
         services.AddCalculationsModule(configuration);
 
         using var provider = services.BuildServiceProvider();
-        Assert.Equal(1.25, provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value.DefaultCoolingSafetyFactor);
-        Assert.Equal(8, provider.GetRequiredService<IOptions<Iso52016CoolingLoadOptions>>().Value.DefaultDesignMonth);
-        Assert.Equal(2024, provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value.DefaultWeatherYear);
-        Assert.Equal(0.7, provider.GetRequiredService<IOptions<En12831HeatingLoadOptions>>().Value.DefaultAirChangesPerHour);
+
+        Assert.Equal(
+            1.25,
+            provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value.DefaultCoolingSafetyFactor);
+
+        Assert.Equal(
+            8,
+            provider.GetRequiredService<IOptions<Iso52016CoolingLoadOptions>>().Value.DefaultDesignMonth);
+
+        Assert.Equal(
+            2024,
+            provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value.DefaultWeatherYear);
+
+        Assert.Equal(
+            0.7,
+            provider.GetRequiredService<IOptions<En12831HeatingLoadOptions>>().Value.DefaultAirChangesPerHour);
     }
 
     [Fact]
     public void AddCalculationsModuleRejectsInvalidCriticalOptions()
     {
         var services = new ServiceCollection();
+
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -111,20 +132,28 @@ public class CalculationsDependencyInjectionTests
 
         var coolingOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
             _ = provider.GetRequiredService<IOptions<CoolingLoadCalculationOptions>>().Value));
-        Assert.Contains(coolingOptionsException.Failures, failure =>
-            failure.Contains("Calculations:CoolingLoad:DefaultCoolingSafetyFactor", StringComparison.Ordinal));
+
+        Assert.Contains(
+            coolingOptionsException.Failures,
+            failure => failure.Contains("Calculations:CoolingLoad:DefaultCoolingSafetyFactor", StringComparison.Ordinal));
 
         var energyOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
             _ = provider.GetRequiredService<IOptions<Iso52016EnergyNeedOptions>>().Value));
-        Assert.Contains(energyOptionsException.Failures, failure =>
-            failure.Contains("Calculations:Iso52016EnergyNeed:DefaultWeatherYear", StringComparison.Ordinal));
-        Assert.Contains(energyOptionsException.Failures, failure =>
-            failure.Contains("DefaultCoolingSetbackC", StringComparison.Ordinal));
+
+        Assert.Contains(
+            energyOptionsException.Failures,
+            failure => failure.Contains("Calculations:Iso52016EnergyNeed:DefaultWeatherYear", StringComparison.Ordinal));
+
+        Assert.Contains(
+            energyOptionsException.Failures,
+            failure => failure.Contains("DefaultCoolingSetbackC", StringComparison.Ordinal));
 
         var ventilationOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
             _ = provider.GetRequiredService<IOptions<NaturalVentilationOptions>>().Value));
-        Assert.Contains(ventilationOptionsException.Failures, failure =>
-            failure.Contains("MinimumOutdoorTemperatureC cannot exceed MaximumOutdoorTemperatureC", StringComparison.Ordinal));
+
+        Assert.Contains(
+            ventilationOptionsException.Failures,
+            failure => failure.Contains("MinimumOutdoorTemperatureC cannot exceed MaximumOutdoorTemperatureC", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -135,7 +164,11 @@ public class CalculationsDependencyInjectionTests
 
         services.AddCalculationsModule(configuration);
 
-        AssertSingleRegistration<ICalculationsFacade>(services);
+        AssertSingleRegistration<ILoadCalculationsFacade>(services);
+        AssertSingleRegistration<IVentilationAnalysisFacade>(services);
+        AssertSingleRegistration<IDomesticHotWaterFacade>(services);
+        AssertSingleRegistration<IProfilesFacade>(services);
+        AssertSingleRegistration<IStandardReferenceDataFacade>(services);
         AssertSingleRegistration<IBuildingEnergyAnalysisFacade>(services);
         AssertSingleRegistration<IBuildingComfortAnalysisFacade>(services);
         AssertSingleRegistration<IBuildingSizingAnalysisFacade>(services);
@@ -156,7 +189,8 @@ public class CalculationsDependencyInjectionTests
         Assert.Equal(expectedLifetime, descriptor.Lifetime);
     }
 
-    private static void AssertSingleRegistration<TService>(IServiceCollection services)
+    private static void AssertSingleRegistration<TService>(
+        IServiceCollection services)
     {
         var registrations = services
             .Where(service => service.ServiceType == typeof(TService))

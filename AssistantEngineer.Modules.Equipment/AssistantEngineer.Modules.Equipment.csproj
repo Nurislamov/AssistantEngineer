@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssistantEngineer.SharedKernel\AssistantEngineer.SharedKernel.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Modules.Buildings\AssistantEngineer.Modules.Buildings.csproj" />
-    <ProjectReference Include="..\AssistantEngineer.Modules.Calculations\AssistantEngineer.Modules.Calculations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,5 +15,5 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.6" />
   </ItemGroup>
-  
+
 </Project>

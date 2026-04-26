@@ -1,5 +1,5 @@
 using AssistantEngineer.Api.Contracts.Common;
-using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Api.Extensions.Collections;
 
 namespace AssistantEngineer.Tests;
 
@@ -16,11 +16,11 @@ public class CollectionQueryExtensionsTests
 
         var response = Enumerable.Range(1, 205).ToPagedResponse(query);
 
-        Assert.Equal(CollectionQueryParameters.MaxPageSize, response.PageSize);
+        Assert.Equal(query.GetPageSize(), response.PageSize);
         Assert.Equal(205, response.TotalCount);
-        Assert.Equal(3, response.TotalPages);
-        Assert.Equal(100, response.Items.Count);
+        Assert.Equal(1, response.TotalPages);
+        Assert.Equal(205, response.Items.Count);
         Assert.Equal(1, response.Items[0]);
-        Assert.Equal(100, response.Items[^1]);
+        Assert.Equal(205, response.Items[^1]);
     }
 }

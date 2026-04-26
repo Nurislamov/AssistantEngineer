@@ -5,5 +5,5 @@ namespace AssistantEngineer.Api.Contracts.Buildings;
 
 public sealed class BuildingArchetypeListQueryParameters : CollectionQueryParameters
 {
-    public RoomType? Type { get; init; }
+    public RoomType? Type { get; set; }
 }

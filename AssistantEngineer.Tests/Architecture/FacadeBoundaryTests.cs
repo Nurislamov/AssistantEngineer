@@ -8,20 +8,45 @@ public class FacadeBoundaryTests
     [
         "AssistantEngineer.Modules.Benchmarks.Application.Facades.IBenchmarksFacade",
         "AssistantEngineer.Modules.Benchmarks.Application.Facades.BenchmarksFacade",
+
         "AssistantEngineer.Modules.Buildings.Application.Facades.IBuildingsFacade",
         "AssistantEngineer.Modules.Buildings.Application.Facades.BuildingsFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingComfortAnalysisFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.CalculationsFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingEnergyAnalysisFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingSizingAnalysisFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingComfortAnalysisFacade",
-        "AssistantEngineer.Modules.Calculations.Application.Facades.ICalculationsFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.ILoadCalculationsFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.LoadCalculationsFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IVentilationAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.VentilationAnalysisFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IDomesticHotWaterFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.DomesticHotWaterFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IProfilesFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.ProfilesFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IStandardReferenceDataFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.StandardReferenceDataFacade",
+
         "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingEnergyAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingEnergyAnalysisFacade",
+
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingComfortAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingComfortAnalysisFacade",
+
         "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingSizingAnalysisFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingSizingAnalysisFacade",
+
         "AssistantEngineer.Modules.Equipment.Application.Facades.IEquipmentFacade",
         "AssistantEngineer.Modules.Equipment.Application.Facades.EquipmentFacade",
-        "AssistantEngineer.Modules.Reporting.Application.Facades.IReportsFacade",
-        "AssistantEngineer.Modules.Reporting.Application.Facades.ReportsFacade"
+
+        "AssistantEngineer.Modules.Reporting.Application.Facades.IBuildingCoolingReportsFacade",
+        "AssistantEngineer.Modules.Reporting.Application.Facades.BuildingCoolingReportsFacade",
+
+        "AssistantEngineer.Modules.Reporting.Application.Facades.IBuildingHeatingReportsFacade",
+        "AssistantEngineer.Modules.Reporting.Application.Facades.BuildingHeatingReportsFacade",
+
+        "AssistantEngineer.Modules.Reporting.Application.Facades.IBuildingEnergyBalanceReportsFacade",
+        "AssistantEngineer.Modules.Reporting.Application.Facades.BuildingEnergyBalanceReportsFacade"
     ];
 
     [Fact]
@@ -47,6 +72,8 @@ public class FacadeBoundaryTests
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(AllowedFacadeTypeNames.Order(StringComparer.Ordinal), facadeTypeNames);
+        Assert.Equal(
+            AllowedFacadeTypeNames.Order(StringComparer.Ordinal),
+            facadeTypeNames);
     }
 }

@@ -28,6 +28,7 @@ public class CompositionRootResolutionTests
             "..",
             "..",
             "AssistantEngineer.Api"));
+
         var configuration = new ConfigurationBuilder()
             .SetBasePath(apiProjectPath)
             .AddJsonFile("appsettings.json", optional: false)
@@ -41,6 +42,7 @@ public class CompositionRootResolutionTests
             .Build();
 
         var services = new ServiceCollection();
+
         services.AddLogging();
         services.AddHttpClient();
 
@@ -56,6 +58,7 @@ public class CompositionRootResolutionTests
             ValidateOnBuild = true,
             ValidateScopes = true
         });
+
         using var scope = provider.CreateScope();
         var serviceProvider = scope.ServiceProvider;
 
@@ -76,12 +79,21 @@ public class CompositionRootResolutionTests
     [
         typeof(IBenchmarksFacade),
         typeof(IBuildingsFacade),
-        typeof(IBuildingComfortAnalysisFacade),
+
+        typeof(ILoadCalculationsFacade),
+        typeof(IVentilationAnalysisFacade),
+        typeof(IDomesticHotWaterFacade),
+        typeof(IProfilesFacade),
+        typeof(IStandardReferenceDataFacade),
         typeof(IBuildingEnergyAnalysisFacade),
+        typeof(IBuildingComfortAnalysisFacade),
         typeof(IBuildingSizingAnalysisFacade),
-        typeof(ICalculationsFacade),
+
         typeof(IEquipmentFacade),
-        typeof(IReportsFacade)
+
+        typeof(IBuildingCoolingReportsFacade),
+        typeof(IBuildingHeatingReportsFacade),
+        typeof(IBuildingEnergyBalanceReportsFacade)
     ];
 
     private static IReadOnlyList<Type> GetControllerTypes() =>

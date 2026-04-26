@@ -5,5 +5,5 @@ namespace AssistantEngineer.Api.Contracts.Buildings;
 
 public sealed class WindowListQueryParameters : CollectionQueryParameters
 {
-    public CardinalDirectionDto? Orientation { get; init; }
+    public CardinalDirectionDto? Orientation { get; set; }
 }

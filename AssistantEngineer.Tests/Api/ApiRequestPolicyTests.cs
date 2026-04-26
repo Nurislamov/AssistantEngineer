@@ -1,6 +1,10 @@
 using System.Reflection;
 using AssistantEngineer.Api;
-using AssistantEngineer.Api.Controllers;
+using AssistantEngineer.Api.Controllers.Analysis;
+using AssistantEngineer.Api.Controllers.Benchmarks;
+using AssistantEngineer.Api.Controllers.Calculations;
+using AssistantEngineer.Api.Controllers.Equipment;
+using AssistantEngineer.Api.Controllers.Reports;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Extensions.Configuration;
 
@@ -35,22 +39,23 @@ public class ApiRequestPolicyTests
     public static TheoryData<Type, string> LongRunningActions() =>
         new()
         {
-            { typeof(BuildingsController), nameof(BuildingsController.CalculateCoolingLoad) },
-            { typeof(BuildingsController), nameof(BuildingsController.CalculateHeatingLoad) },
-            { typeof(BuildingsController), nameof(BuildingsController.CalculateEnergyBalance) },
-            { typeof(FloorsController), nameof(FloorsController.CalculateCoolingLoad) },
-            { typeof(RoomsController), nameof(RoomsController.CalculateCoolingLoad) },
-            { typeof(RoomsController), nameof(RoomsController.CalculateHeatingLoad) },
-            { typeof(RoomsController), nameof(RoomsController.SelectEquipment) },
-            { typeof(ReportsController), nameof(ReportsController.GetBuildingReport) },
-            { typeof(ReportsController), nameof(ReportsController.DownloadBuildingReportExcel) },
-            { typeof(ReportsController), nameof(ReportsController.GetHeatingReport) },
-            { typeof(ReportsController), nameof(ReportsController.DownloadEnergyBalanceReportExcel) },
+            { typeof(BuildingLoadCalculationsController), nameof(BuildingLoadCalculationsController.CalculateCoolingLoad) },
+            { typeof(BuildingLoadCalculationsController), nameof(BuildingLoadCalculationsController.CalculateHeatingLoad) },
+            { typeof(BuildingLoadCalculationsController), nameof(BuildingLoadCalculationsController.CalculateEnergyBalance) },
+            { typeof(FloorLoadCalculationsController), nameof(FloorLoadCalculationsController.CalculateCoolingLoad) },
+            { typeof(RoomLoadCalculationsController), nameof(RoomLoadCalculationsController.CalculateCoolingLoad) },
+            { typeof(RoomLoadCalculationsController), nameof(RoomLoadCalculationsController.CalculateHeatingLoad) },
+            { typeof(RoomEquipmentSelectionController), nameof(RoomEquipmentSelectionController.SelectEquipment) },
+            { typeof(BuildingCoolingReportsController), nameof(BuildingCoolingReportsController.GetCoolingReport) },
+            { typeof(BuildingCoolingReportsController), nameof(BuildingCoolingReportsController.DownloadCoolingReportExcel) },
+            { typeof(BuildingHeatingReportsController), nameof(BuildingHeatingReportsController.GetHeatingReport) },
+            { typeof(BuildingEnergyBalanceReportsController), nameof(BuildingEnergyBalanceReportsController.DownloadEnergyBalanceReportExcel) },
             { typeof(BenchmarksController), nameof(BenchmarksController.RunEnergyPlus) },
             { typeof(BenchmarksController), nameof(BenchmarksController.ExportEnergyPlusModel) },
             { typeof(BenchmarksController), nameof(BenchmarksController.VerifyCalculation) },
             { typeof(BenchmarksController), nameof(BenchmarksController.RunIso52016ReferenceCases) },
             { typeof(AnnualClimateDataController), nameof(AnnualClimateDataController.ImportFromEpw) },
+            { typeof(AnnualClimateDataController), nameof(AnnualClimateDataController.ImportFromPvgis) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetIso52016Breakdown) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetEnergySignature) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateHeatingSystemEnergy) },

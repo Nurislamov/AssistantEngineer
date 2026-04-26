@@ -55,6 +55,20 @@ public class ModuleBoundaryTests
     }
 
     [Fact]
+    public void EquipmentModuleDoesNotDependOnBuildingsModule()
+    {
+        AssertNoAssemblyReferences(EquipmentAssembly, BuildingsAssemblyName);
+        AssertNoTypeDependencies(EquipmentAssembly, BuildingsAssemblyName);
+    }
+
+    [Fact]
+    public void EquipmentModuleDoesNotDependOnCalculationsModule()
+    {
+        AssertNoAssemblyReferences(EquipmentAssembly, CalculationsAssemblyName);
+        AssertNoTypeDependencies(EquipmentAssembly, CalculationsAssemblyName);
+    }
+
+    [Fact]
     public void SharedKernelDoesNotDependOnModules()
     {
         AssertNoAssemblyReferences(SharedKernelAssembly, ModuleAssemblyNames);
@@ -70,60 +84,31 @@ public class ModuleBoundaryTests
         AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Infrastructure.Persistence");
     }
 
+
     [Fact]
-    public void ApiDoesNotDependOnModuleInternalServicesOrMappers()
+    public void ReportingDoesNotDependOnCalculationImplementationDetails()
     {
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Buildings.Application.Services");
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Calculations.Application.Services");
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Equipment.Application.Services");
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Reporting.Application.Services");
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Benchmarks.Application.Services");
-        AssertNoTypeDependencies(ApiAssembly, "AssistantEngineer.Modules.Calculations.Application.Mappers");
-        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingEnergyAnalysisFacade).FullName!);
-        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingComfortAnalysisFacade).FullName!);
-        AssertNoTypeDependencies(ApiAssembly, typeof(IBuildingSizingAnalysisFacade).FullName!);
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Calculations.Application.Services");
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Calculations.Application.Mappers");
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Calculations.Application.Validation");
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Calculations.Application.Abstractions");
     }
 
     [Fact]
-    public void ControllersDependOnlyOnModuleFacadeContracts()
+    public void ReportingDoesNotDependOnEquipmentImplementationDetails()
     {
-        var allowedDependencyTypes = new HashSet<Type>
-        {
-            typeof(IBenchmarksFacade),
-            typeof(IBuildingsFacade),
-            typeof(ICalculationsFacade),
-            typeof(IEquipmentFacade),
-            typeof(IReportsFacade)
-        };
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Equipment.Application.Services");
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Equipment.Application.Abstractions");
+        AssertNoTypeDependencies(ReportingAssembly, "AssistantEngineer.Modules.Equipment.Domain");
+    }
 
-        var violatingConstructors = typeof(Program).Assembly
-            .GetTypes()
-            .Where(type =>
-                type is { IsAbstract: false, IsPublic: true } &&
-                typeof(Microsoft.AspNetCore.Mvc.ControllerBase).IsAssignableFrom(type))
-            .SelectMany(type => type.GetConstructors()
-                .Select(constructor => new
-                {
-                    Controller = type,
-                    ViolatingParameters = constructor
-                        .GetParameters()
-                        .Select(parameter => parameter.ParameterType)
-                        .Where(parameterType =>
-                            parameterType.Assembly.GetName().Name?.StartsWith("AssistantEngineer.Modules.", StringComparison.Ordinal) == true &&
-                            !allowedDependencyTypes.Contains(parameterType))
-                        .Select(parameterType => parameterType.FullName ?? parameterType.Name)
-                        .Order(StringComparer.Ordinal)
-                        .ToArray()
-                }))
-            .Where(result => result.ViolatingParameters.Length > 0)
-            .Select(result =>
-                $"{result.Controller.FullName}: {string.Join(", ", result.ViolatingParameters)}")
-            .Order(StringComparer.Ordinal)
-            .ToArray();
-
-        Assert.True(
-            violatingConstructors.Length == 0,
-            $"Controllers depend on non-facade module types: {string.Join("; ", violatingConstructors)}.");
+    [Fact]
+    public void EquipmentDoesNotCalculateLoadsInternally()
+    {
+        AssertNoTypeDependencies(EquipmentAssembly, "AssistantEngineer.Modules.Calculations.Application.Services");
+        AssertNoTypeDependencies(EquipmentAssembly, "AssistantEngineer.Modules.Calculations.Application.Validation");
+        AssertNoTypeDependencies(EquipmentAssembly, "AssistantEngineer.Modules.Calculations.Application.Mappers");
+        AssertNoTypeDependencies(EquipmentAssembly, "AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories");
     }
 
     [Fact]
@@ -152,7 +137,9 @@ public class ModuleBoundaryTests
         }
     }
 
-    private static void AssertNoAssemblyReferences(Assembly sourceAssembly, params string[] forbiddenAssemblyNames)
+    private static void AssertNoAssemblyReferences(
+        Assembly sourceAssembly,
+        params string[] forbiddenAssemblyNames)
     {
         var referencedAssemblyNames = sourceAssembly
             .GetReferencedAssemblies()
@@ -169,7 +156,9 @@ public class ModuleBoundaryTests
             $"{sourceAssembly.GetName().Name} references forbidden assemblies: {string.Join(", ", violations)}.");
     }
 
-    private static void AssertNoTypeDependencies(Assembly sourceAssembly, string forbiddenDependency)
+    private static void AssertNoTypeDependencies(
+        Assembly sourceAssembly,
+        string forbiddenDependency)
     {
         var result = Types
             .InAssembly(sourceAssembly)

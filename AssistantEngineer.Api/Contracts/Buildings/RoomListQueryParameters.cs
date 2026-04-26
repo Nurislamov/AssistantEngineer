@@ -5,6 +5,7 @@ namespace AssistantEngineer.Api.Contracts.Buildings;
 
 public sealed class RoomListQueryParameters : CollectionQueryParameters
 {
-    public int? FloorId { get; init; }
-    public RoomTypeDto? Type { get; init; }
+    public int? FloorId { get; set; }
+
+    public RoomTypeDto? Type { get; set; }
 }

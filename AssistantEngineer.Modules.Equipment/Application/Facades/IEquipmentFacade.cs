@@ -1,4 +1,3 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -21,6 +20,7 @@ public interface IEquipmentFacade
     Task<Result<EquipmentSelectionResult>> SelectRoomEquipmentAsync(
         int roomId,
         EquipmentSelectionRequest request,
-        CoolingLoadCalculationMethodDto method,
+        double totalHeatLoadKw,
+        double designCapacityKw,
         CancellationToken cancellationToken);
 }
