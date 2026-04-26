@@ -33,4 +33,15 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Controllers\Benchmarks\" />
+      <Folder Include="Controllers\Buildings\" />
+      <Folder Include="Controllers\Calculations\" />
+      <Folder Include="Controllers\Equipment\" />
+      <Folder Include="Controllers\Profiles\" />
+      <Folder Include="Controllers\Projects\" />
+      <Folder Include="Controllers\ReferenceData\" />
+      <Folder Include="Controllers\Reports\" />
+    </ItemGroup>
+
 </Project>

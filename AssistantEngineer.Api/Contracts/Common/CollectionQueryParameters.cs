@@ -2,22 +2,31 @@ namespace AssistantEngineer.Api.Contracts.Common;
 
 public class CollectionQueryParameters
 {
-    public const int DefaultPage = 1;
-    public const int DefaultPageSize = 20;
-    public const int MaxPageSize = 100;
+    private const int DefaultPage = 1;
+    private const int DefaultPageSize = 50;
+    private const int MaxPageSize = 500;
 
-    public int Page { get; init; } = DefaultPage;
-    public int PageSize { get; init; } = DefaultPageSize;
-    public string? Search { get; init; }
-    public string? SortBy { get; init; }
-    public bool SortDescending { get; init; }
+    public string? Search { get; set; }
 
-    public int GetPage() => Page < 1 ? DefaultPage : Page;
+    public string? SortBy { get; set; }
+
+    public bool SortDescending { get; set; }
+
+    public int Page { get; set; } = DefaultPage;
+
+    public int PageSize { get; set; } = DefaultPageSize;
+
+    public int GetPage() =>
+        Page <= 0
+            ? DefaultPage
+            : Page;
 
     public int GetPageSize()
     {
-        var requestedPageSize = PageSize < 1 ? DefaultPageSize : PageSize;
-        return Math.Min(requestedPageSize, MaxPageSize);
+        if (PageSize <= 0)
+            return DefaultPageSize;
+
+        return Math.Min(PageSize, MaxPageSize);
     }
 
     public string? GetSearchTerm() =>

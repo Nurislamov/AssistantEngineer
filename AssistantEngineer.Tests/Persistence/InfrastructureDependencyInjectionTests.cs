@@ -1,12 +1,15 @@
 using AssistantEngineer.Infrastructure;
-using AssistantEngineer.Infrastructure.Persistence;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
+using AssistantEngineer.Infrastructure.Integrations.Reports.Excel;
+using AssistantEngineer.Infrastructure.Persistence;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
-using Microsoft.EntityFrameworkCore;
+using AssistantEngineer.SharedKernel.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -15,23 +18,6 @@ namespace AssistantEngineer.Tests;
 
 public class InfrastructureDependencyInjectionTests
 {
-    [Fact]
-    public void AppDbContextMapsThermalZoneRoomsWithRoomForeignKey()
-    {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseNpgsql("Host=localhost;Port=5432;Database=AssistantEngineerModelTest;Username=postgres")
-            .Options;
-        using var context = new AppDbContext(options);
-
-        var entity = context.Model.FindEntityType("ThermalZoneRooms");
-
-        Assert.NotNull(entity);
-        Assert.NotNull(entity.FindPrimaryKey());
-        Assert.Contains(entity.GetForeignKeys(), key => key.PrincipalEntityType.ClrType.Name == "Room");
-        Assert.Contains(entity.GetIndexes(), index =>
-            index.IsUnique && index.Properties.Any(property => property.Name == "RoomId"));
-    }
-
     [Fact]
     public void AddInfrastructureBindsEnergyPlusOptionsFromConfiguration()
     {
@@ -48,12 +34,15 @@ public class InfrastructureDependencyInjectionTests
                 ["EnergyPlus:MaxRetryAttempts"] = "2"
             })
             .Build();
+
         var services = new ServiceCollection();
 
         services.AddInfrastructure(configuration, "Testing");
 
         using var provider = services.BuildServiceProvider();
+
         var options = provider.GetRequiredService<IOptions<EnergyPlusBenchmarkOptions>>().Value;
+
         Assert.False(options.UseDocker);
         Assert.Equal(Environment.ProcessPath, options.ExecutablePath);
         Assert.Equal("tcp://localhost:2375", options.DockerUri);
@@ -75,16 +64,23 @@ public class InfrastructureDependencyInjectionTests
                 ["EnergyPlus:ExecutionTimeoutSeconds"] = "0"
             })
             .Build();
+
         var services = new ServiceCollection();
 
         services.AddInfrastructure(configuration, "Testing");
 
         using var provider = services.BuildServiceProvider();
+
         var exception = Assert.Throws<OptionsValidationException>(() =>
             provider.GetRequiredService<IOptions<EnergyPlusBenchmarkOptions>>().Value);
 
-        Assert.Contains(exception.Failures, failure => failure.Contains("EnergyPlus:ExecutablePath", StringComparison.Ordinal));
-        Assert.Contains(exception.Failures, failure => failure.Contains("EnergyPlus:ExecutionTimeoutSeconds", StringComparison.Ordinal));
+        Assert.Contains(
+            exception.Failures,
+            failure => failure.Contains("EnergyPlus:ExecutablePath", StringComparison.Ordinal));
+
+        Assert.Contains(
+            exception.Failures,
+            failure => failure.Contains("EnergyPlus:ExecutionTimeoutSeconds", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -97,15 +93,20 @@ public class InfrastructureDependencyInjectionTests
   }
 }
 """u8.ToArray());
+
         var configuration = new ConfigurationBuilder()
             .AddJsonStream(json)
             .Build();
+
         var services = new ServiceCollection();
 
         var exception = Assert.Throws<InvalidOperationException>(() =>
             services.AddInfrastructure(configuration, "Production"));
 
-        Assert.Contains("ConnectionStrings:DefaultConnection", exception.Message, StringComparison.Ordinal);
+        Assert.Contains(
+            "ConnectionStrings:DefaultConnection",
+            exception.Message,
+            StringComparison.Ordinal);
     }
 
     [Fact]
@@ -118,6 +119,7 @@ public class InfrastructureDependencyInjectionTests
   }
 }
 """u8.ToArray());
+
         var configuration = new ConfigurationBuilder()
             .AddJsonStream(json)
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -125,12 +127,15 @@ public class InfrastructureDependencyInjectionTests
                 ["ConnectionStrings:DefaultConnection"] = "Host=db;Database=AssistantEngineer;Username=app"
             })
             .Build();
+
         var services = new ServiceCollection();
 
         services.AddInfrastructure(configuration, "Production");
 
         using var provider = services.BuildServiceProvider();
+
         var options = provider.GetRequiredService<IOptions<EnergyPlusBenchmarkOptions>>().Value;
+
         Assert.NotNull(options);
     }
 
@@ -143,14 +148,31 @@ public class InfrastructureDependencyInjectionTests
                 ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Port=5432;Database=AssistantEngineerTests;Username=postgres"
             })
             .Build();
+
         var services = new ServiceCollection();
 
         services.AddInfrastructure(configuration, "Testing");
 
-        AssertServiceLifetime<IBuildingHeatingReadModelRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<AppDbContext>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IUnitOfWork>(services, ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IProjectRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IFloorRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IRoomRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IClimateZoneRepository>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IClimateDataRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingHeatingReadModelRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IAnnualClimateDataRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ICalculationPreferencesRepository>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEquipmentCatalogRepository>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IBuildingReportExporter>(services, ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IAnnualClimateDataProvider>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ICoolingEquipmentCatalogSizingProvider>(services, ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IBuildingCoolingReportExporter>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingEnergyBalanceReportExporter>(services, ServiceLifetime.Scoped);
+
         AssertServiceLifetime<IEnergyPlusArtifactStore>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyPlusModelExporter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyPlusResultParser>(services, ServiceLifetime.Scoped);

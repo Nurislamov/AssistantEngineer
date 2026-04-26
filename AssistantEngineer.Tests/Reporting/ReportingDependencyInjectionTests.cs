@@ -8,16 +8,60 @@ namespace AssistantEngineer.Tests;
 public class ReportingDependencyInjectionTests
 {
     [Fact]
-    public void AddReportingModuleRegistersReportingServicesAsScoped()
+    public void AddReportingModuleRegistersReportCalculationServices()
     {
         var services = new ServiceCollection();
 
         services.AddReportingModule();
 
-        AssertServiceLifetime<BuildingReportCalculationService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<BuildingReportGenerator>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<BuildingReportDataService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IReportsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<BuildingCoolingReportCalculationService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<BuildingHeatingReportCalculationService>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddReportingModuleRegistersReportGenerators()
+    {
+        var services = new ServiceCollection();
+
+        services.AddReportingModule();
+
+        AssertServiceLifetime<BuildingCoolingReportGenerator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<BuildingHeatingReportGenerator>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddReportingModuleRegistersReportDataServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddReportingModule();
+
+        AssertServiceLifetime<BuildingCoolingReportDataService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<BuildingHeatingReportDataService>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddReportingModuleRegistersReportFacades()
+    {
+        var services = new ServiceCollection();
+
+        services.AddReportingModule();
+
+        AssertServiceLifetime<IBuildingCoolingReportsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingHeatingReportsFacade>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IBuildingEnergyBalanceReportsFacade>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddReportingModuleDoesNotRegisterGenericReportServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddReportingModule();
+
+        AssertNoRegistrationNamed(services, "BuildingReportCalculationService");
+        AssertNoRegistrationNamed(services, "BuildingReportGenerator");
+        AssertNoRegistrationNamed(services, "BuildingReportDataService");
     }
 
     private static void AssertServiceLifetime<TService>(
@@ -28,5 +72,18 @@ public class ReportingDependencyInjectionTests
 
         Assert.NotNull(descriptor);
         Assert.Equal(expectedLifetime, descriptor.Lifetime);
+    }
+
+    private static void AssertNoRegistrationNamed(
+        IServiceCollection services,
+        string typeName)
+    {
+        var matches = services
+            .Where(service =>
+                string.Equals(service.ServiceType.Name, typeName, StringComparison.Ordinal) ||
+                string.Equals(service.ImplementationType?.Name, typeName, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Empty(matches);
     }
 }

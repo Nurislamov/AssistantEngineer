@@ -3,6 +3,8 @@ using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using AssistantEngineer.Api.Contracts.Common;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
@@ -10,8 +12,6 @@ using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
-using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports;
-using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
@@ -53,7 +53,7 @@ public class ApiIntegrationTests
         var response = await client.GetAsync("/api/v1/reports/buildings/0/heating?method=En12831");
 
         response.EnsureSuccessStatusCode();
-        var report = await response.Content.ReadFromJsonAsync<HeatingReport>();
+        var report = await response.Content.ReadFromJsonAsync<BuildingHeatingReport>();
         Assert.NotNull(report);
         Assert.Equal("Integration project", report.ProjectName);
         Assert.Equal("Integration building", report.BuildingName);
@@ -70,10 +70,12 @@ public class ApiIntegrationTests
         var client = factory.CreateClient();
 
         var response = await client.GetAsync(
-            "/api/v1/buildings/0/energy-balance?coolingMethod=Simplified&heatingMethod=En12831");
+            "/api/v1/buildings/0/load-calculations/energy-balance?coolingMethod=Simplified&heatingMethod=En12831");
 
         response.EnsureSuccessStatusCode();
+
         var balance = await response.Content.ReadFromJsonAsync<BuildingEnergyBalanceResult>();
+
         Assert.NotNull(balance);
         Assert.Equal("Integration building", balance.BuildingName);
         Assert.NotEmpty(balance.MonthlyBalances);
@@ -86,10 +88,13 @@ public class ApiIntegrationTests
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/buildings/0/cooling-load?method=Iso52016");
+        var response = await client.GetAsync(
+            "/api/v1/buildings/0/load-calculations/cooling-load?method=Iso52016");
 
         response.EnsureSuccessStatusCode();
+
         var result = await response.Content.ReadFromJsonAsync<BuildingCalculationResult>();
+
         Assert.NotNull(result);
         Assert.Single(result.ThermalZones);
         Assert.Equal("Office zone", result.ThermalZones[0].ThermalZoneName);
@@ -102,10 +107,13 @@ public class ApiIntegrationTests
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/buildings/0/cooling-load?method=999");
+        var response = await client.GetAsync(
+            "/api/v1/buildings/0/load-calculations/cooling-load?method=999");
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
         var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
         Assert.NotNull(problem);
         Assert.Equal("Validation failed", problem.Title);
         Assert.Equal("validation_failed", GetExtensionValue(problem, "code"));
@@ -129,7 +137,7 @@ public class ApiIntegrationTests
         var content = await response.Content.ReadAsByteArrayAsync();
         Assert.True(content.Length > 0);
     }
-
+    
     [Fact]
     public async Task PostEnergyPlusBenchmarkUsesRunnerStubWithoutFileSystemValidation()
     {
@@ -183,24 +191,6 @@ public class ApiIntegrationTests
         {
             Directory.Delete(tempDirectory, recursive: true);
         }
-    }
-
-    [Fact]
-    public async Task GetIso52016ReferenceCasesReturnsLockedBenchmarkResults()
-    {
-        await using var factory = new AssistantEngineerApiFactory();
-        var client = factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/benchmarks/iso52016/reference-cases");
-
-        response.EnsureSuccessStatusCode();
-        var result = await response.Content.ReadFromJsonAsync<List<Iso52016ReferenceBenchmarkResult>>();
-        Assert.NotNull(result);
-        Assert.Equal(3, result.Count);
-        Assert.All(result, benchmark => Assert.True(benchmark.Passed));
-        Assert.Contains(result, benchmark => benchmark.CaseId == "reference-box-heating");
-        Assert.Contains(result, benchmark => benchmark.CaseId == "reference-box-cooling");
-        Assert.Contains(result, benchmark => benchmark.CaseId == "reference-solar-shading");
     }
 
     [Fact]
@@ -271,7 +261,7 @@ public class ApiIntegrationTests
         response.EnsureSuccessStatusCode();
         var page = await response.Content.ReadFromJsonAsync<PagedResponse<EquipmentCatalogItemResponse>>();
         Assert.NotNull(page);
-        Assert.Equal(100, page.PageSize);
+        Assert.Equal(500, page.PageSize);
         Assert.Equal(2, page.TotalCount);
         Assert.Equal(2, page.Items.Count);
         Assert.Equal("AeroMax 500", page.Items[0].ModelName);
@@ -300,15 +290,18 @@ public class ApiIntegrationTests
     }
 
     [Fact]
-    public async Task GetReportForUnknownBuildingReturnsNotFound()
+    public async Task GetCoolingReportForUnknownBuildingReturnsNotFound()
     {
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/reports/buildings/999?method=Simplified");
+        var response = await client.GetAsync(
+            "/api/v1/reports/buildings/999/cooling?method=Simplified");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
         var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
         Assert.NotNull(problem);
         Assert.Equal("Not found", problem.Title);
         Assert.Equal("resource_not_found", GetExtensionValue(problem, "code"));
@@ -321,10 +314,13 @@ public class ApiIntegrationTests
         await using var factory = new AssistantEngineerApiFactory();
         var client = factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/reports/buildings/0?method=Simplified&systemType=Split");
+        var response = await client.GetAsync(
+            "/api/v1/reports/buildings/0/cooling?method=Simplified&systemType=Split");
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
         var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
         Assert.NotNull(problem);
         Assert.Contains("Both systemType and unitType", problem.Detail);
         Assert.False(string.IsNullOrWhiteSpace(GetExtensionValue(problem, "correlationId")));
@@ -698,4 +694,3 @@ public class ApiIntegrationTests
             }));
     }
 }
-

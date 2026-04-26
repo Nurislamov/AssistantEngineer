@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Extensions;
+using AssistantEngineer.Api.Extensions.Results;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +20,8 @@ public class ResultExtensionsTests
         Assert.Equal(StatusCodes.Status400BadRequest, problem.Status);
         Assert.Equal("Validation failed", problem.Title);
         Assert.Equal("Invalid request.", problem.Detail);
-        Assert.Equal("validation_failed", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
-        Assert.Equal("trace-123", problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
+        Assert.Equal("validation_failed", problem.Extensions["code"]);
+        Assert.Equal("trace-123", problem.Extensions["correlationId"]);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class ResultExtensionsTests
         Assert.Equal(StatusCodes.Status404NotFound, problem.Status);
         Assert.Equal("Not found", problem.Title);
         Assert.Equal("Missing.", problem.Detail);
-        Assert.Equal("resource_not_found", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
-        Assert.Equal("trace-123", problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
+        Assert.Equal("resource_not_found", problem.Extensions["code"]);
+        Assert.Equal("trace-123", problem.Extensions["correlationId"]);
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class ResultExtensionsTests
         Assert.Equal(StatusCodes.Status409Conflict, problem.Status);
         Assert.Equal("Conflict", problem.Title);
         Assert.Equal("Duplicate.", problem.Detail);
-        Assert.Equal("conflict", problem.Extensions[ApiProblemDetailsFactory.CodeExtensionName]);
-        Assert.Equal("trace-123", problem.Extensions[ApiProblemDetailsFactory.CorrelationIdExtensionName]);
+        Assert.Equal("conflict", problem.Extensions["code"]);
+        Assert.Equal("trace-123", problem.Extensions["correlationId"]);
     }
 
     private static ControllerBase CreateController()

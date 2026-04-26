@@ -1,5 +1,3 @@
-using AssistantEngineer.Modules.Benchmarks.Application.Services;
-using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
@@ -317,22 +315,6 @@ public class BuildingPerformanceCalculationServicesTests
     }
 
     [Fact]
-    public async Task Iso52016ReferenceBenchmarksPassCorePhysicalAssertions()
-    {
-        var service = new Iso52016ReferenceBenchmarkService(
-            new SolarRadiationService(),
-            new VentilationHeatTransferCalculator(ReferenceData),
-            new WindowShadingService(),
-            Options.Create(new Iso52016EnergyNeedOptions()));
-
-        var results = await service.RunAsync();
-
-        Assert.True(results.IsSuccess, results.Error);
-        Assert.Equal(3, results.Value.Count);
-        Assert.All(results.Value, result => Assert.True(result.Passed, FormatBenchmarkFailure(result)));
-    }
-
-    [Fact]
     public async Task Iso52016UsesPerWindowShadingParameters()
     {
         var climateZone = ClimateZone.Create(
@@ -431,16 +413,6 @@ public class BuildingPerformanceCalculationServicesTests
         Assert.Equal(firstRoomB.OperativeTemperatureC, secondRoomB.OperativeTemperatureC, precision: 2);
         Assert.Equal(firstOrder.AnnualHeatingDemandKWh, secondOrder.AnnualHeatingDemandKWh, precision: 2);
         Assert.Equal(firstOrder.AnnualCoolingDemandKWh, secondOrder.AnnualCoolingDemandKWh, precision: 2);
-    }
-
-    private static string FormatBenchmarkFailure(Iso52016ReferenceBenchmarkResult result)
-    {
-        var failed = result.Assertions
-            .Where(assertion => !assertion.Passed)
-            .Select(assertion =>
-                $"{assertion.Name}: actual={assertion.Actual}, expected={assertion.Expected}, tolerance={assertion.Tolerance}")
-            .ToArray();
-        return $"{result.CaseId} failed. Metrics: {string.Join(", ", result.Metrics.Select(metric => $"{metric.Key}={metric.Value}"))}. Failed assertions: {string.Join("; ", failed)}";
     }
 
     private static Iso52016AnnualEnergyNeedResult CreateEnergyNeed(

@@ -1,5 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
-using AssistantEngineer.Infrastructure.Integrations.Reports;
+using AssistantEngineer.Infrastructure.Integrations.Reports.Excel;
 using ClosedXML.Excel;
 
 namespace AssistantEngineer.Tests;
@@ -34,7 +34,7 @@ public class ExcelReportServiceTests
                 }
             ]
         };
-        var service = new ExcelReportService();
+        var service = new BuildingEnergyBalanceExcelReportExporter();
 
         var content = service.GenerateEnergyBalanceReport(report);
 
@@ -52,5 +52,4 @@ public class ExcelReportServiceTests
         Assert.Equal(150, monthly.Cell(3, 4).GetDouble());
     }
 }
-
 
