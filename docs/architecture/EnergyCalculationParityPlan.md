@@ -4,7 +4,7 @@
 
 ## Важное правило нейминга
 
-В production-коде, namespace, class names и test namespace AssistantEngineer не используется имя внешнего проекта.
+В production-коде, namespace, class names, folder names и test namespace AssistantEngineer не используется имя внешнего проекта или библиотеки.
 
 Правильно:
 
@@ -12,14 +12,16 @@
 - ReferenceFeatureStatus
 - EnergyCalculationParityMatrix
 - EnergyCalculationParityFeature
+- EnergyCalculationParity fixtures
 
 Неправильно:
 
 - имя внешней библиотеки в namespace;
 - имя внешней библиотеки в class name;
+- имя внешней библиотеки в folder name;
 - имя внешней библиотеки в production architecture.
 
-Внешние библиотеки и проекты могут упоминаться только в документации как reference implementation или source of expected results.
+Внешний проект может использоваться как reference implementation только вне архитектурного нейминга AssistantEngineer.
 
 ## Что такое parity
 
@@ -80,7 +82,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 
 ### Sprint 1
 
-Создать parity matrix и guard-тесты.
+Создать EnergyCalculationParity matrix и guard-тесты.
 
 ### Sprint 2
 
@@ -109,3 +111,27 @@ Primary energy.
 ### Sprint 8
 
 API/reporting integration.
+
+## Fixture policy
+
+Каждый reference fixture должен содержать:
+
+1. имя fixture;
+2. описание здания / зоны;
+3. входные данные;
+4. ожидаемые hourly results;
+5. ожидаемые monthly results;
+6. ожидаемые annual results;
+7. tolerance;
+8. assumptions.
+
+## Tolerance policy
+
+Базовые значения:
+
+- hourly temperature: ±0.05 °C;
+- hourly load: ±1 W;
+- monthly demand: ±0.01 kWh;
+- annual demand: ±0.1 kWh.
+
+Tolerance можно расширять только с documented assumption.
