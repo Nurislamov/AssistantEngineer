@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.6" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AssistantEngineer.SharedKernel\AssistantEngineer.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Modules.Buildings\AssistantEngineer.Modules.Buildings.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Modules.Calculations\AssistantEngineer.Modules.Calculations.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
+  </ItemGroup>
+
+</Project>
