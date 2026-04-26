@@ -22,6 +22,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tests", "tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj", "{C23FEFA9-C12B-4712-B225-6699B47539CC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A8A3B7E4-2C33-4D16-9D58-1229A7D5F2E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{E14F8B56-3A55-4F4B-9836-73F8CDA6D4D2}"
+	ProjectSection(SolutionItems) = preProject
+		docs\architecture\EnergyCalculationParityPlan.md = docs\architecture\EnergyCalculationParityPlan.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,5 +161,6 @@ Global
 		{DB7B5D98-38FE-49E0-8F3C-7818E0082A8A} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{B171C9DA-EA44-4343-B626-365B0C7D931F} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{C23FEFA9-C12B-4712-B225-6699B47539CC} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{E14F8B56-3A55-4F4B-9836-73F8CDA6D4D2} = {A8A3B7E4-2C33-4D16-9D58-1229A7D5F2E1}
 	EndGlobalSection
 EndGlobal
