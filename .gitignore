@@ -8,3 +8,8 @@ riderModule.iml
 *.suo
 *.userosscache
 *.sln.docstates
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
