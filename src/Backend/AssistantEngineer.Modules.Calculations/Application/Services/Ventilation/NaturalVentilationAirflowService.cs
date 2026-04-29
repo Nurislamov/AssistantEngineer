@@ -8,16 +8,13 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilatio
 public sealed class NaturalVentilationAirflowService : INaturalVentilationAirflowService
 {
     private readonly NaturalVentilationOptions _naturalOptions;
-    private readonly Iso52016EnergyNeedOptions _energyOptions;
     private readonly INaturalVentilationOpeningControlService _openingControl;
 
     public NaturalVentilationAirflowService(
         IOptions<NaturalVentilationOptions> naturalOptions,
-        IOptions<Iso52016EnergyNeedOptions> energyOptions,
         INaturalVentilationOpeningControlService openingControl)
     {
         _naturalOptions = naturalOptions.Value;
-        _energyOptions = energyOptions.Value;
         _openingControl = openingControl;
     }
 
@@ -73,6 +70,6 @@ public sealed class NaturalVentilationAirflowService : INaturalVentilationAirflo
         var ach = totalFlowM3PerH / roomVolume;
         ach = Math.Clamp(ach, 0.0, _naturalOptions.MaximumAirChangesPerHour);
 
-        return _energyOptions.AirHeatCapacityWhPerM3K * ach * roomVolume;
+        return AirPhysicalConstants.AirHeatCapacityWhPerM3K * ach * roomVolume;
     }
 }

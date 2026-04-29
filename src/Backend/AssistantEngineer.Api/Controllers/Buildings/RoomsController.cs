@@ -65,6 +65,48 @@ public class RoomsController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    [HttpGet("~/api/v{version:apiVersion}/buildings/{buildingId:int}/rooms")]
+    public async Task<ActionResult<PagedResponse<RoomResponse>>> GetByBuilding(
+        int buildingId,
+        [FromQuery] RoomListQueryParameters query,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.GetRoomsByBuildingAsync(
+            buildingId,
+            cancellationToken);
+
+        return result.ToPagedOkResult(
+            this,
+            query,
+            items => items.ApplyRoomListQuery(query));
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<RoomResponse>> Update(
+        int id,
+        [FromBody] UpdateRoomRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateRoomAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteRoomAsync(
+            id,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
+
     [HttpPost("{id:int}/windows")]
     public async Task<ActionResult<WindowResponse>> AddWindow(
         int id,
@@ -79,6 +121,36 @@ public class RoomsController : ControllerBase
         return result.ToOkResult(this);
     }
 
+    [HttpPut("{roomId:int}/windows/{windowId:int}")]
+    public async Task<ActionResult<WindowResponse>> UpdateWindow(
+        int roomId,
+        int windowId,
+        [FromBody] UpdateWindowRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateWindowAsync(
+            roomId,
+            windowId,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{roomId:int}/windows/{windowId:int}")]
+    public async Task<ActionResult> DeleteWindow(
+        int roomId,
+        int windowId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteWindowAsync(
+            roomId,
+            windowId,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
+
     [HttpPost("{id:int}/walls")]
     public async Task<ActionResult<WallResponse>> AddWall(
         int id,
@@ -91,6 +163,36 @@ public class RoomsController : ControllerBase
             cancellationToken);
 
         return result.ToOkResult(this);
+    }
+
+    [HttpPut("{roomId:int}/walls/{wallId:int}")]
+    public async Task<ActionResult<WallResponse>> UpdateWall(
+        int roomId,
+        int wallId,
+        [FromBody] UpdateWallRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateWallAsync(
+            roomId,
+            wallId,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{roomId:int}/walls/{wallId:int}")]
+    public async Task<ActionResult> DeleteWall(
+        int roomId,
+        int wallId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteWallAsync(
+            roomId,
+            wallId,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
     }
 
     [HttpGet("{id:int}/windows")]

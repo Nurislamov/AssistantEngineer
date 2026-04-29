@@ -22,7 +22,7 @@ export function CreateFloorForm({
     event.preventDefault();
 
     if (!name.trim()) {
-      setValidationError("Укажите название этажа");
+      setValidationError("Enter a floor name.");
       return;
     }
 
@@ -44,7 +44,7 @@ export function CreateFloorForm({
         <Alert severity="error">{validationError ?? getErrorMessage(createFloor.error)}</Alert>
       )}
       <TextField
-        label="Название этажа"
+        label="Floor name"
         value={name}
         required
         autoFocus
@@ -53,11 +53,11 @@ export function CreateFloorForm({
       <Stack direction="row" spacing={1} justifyContent="flex-end">
         {onCancel ? (
           <Button type="button" color="inherit" onClick={onCancel}>
-            Отмена
+            Cancel
           </Button>
         ) : null}
         <Button type="submit" variant="contained" disabled={createFloor.isPending}>
-          Создать
+          Create
         </Button>
       </Stack>
     </Stack>

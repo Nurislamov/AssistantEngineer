@@ -140,6 +140,31 @@ public class Room
         return Result.Success();
     }
 
+    public Result<Window> UpdateWindow(
+        int windowId,
+        Area area,
+        ThermalTransmittance uValue,
+        SolarHeatGainCoefficient shgc,
+        CardinalDirection orientation,
+        WindowShadingParameters? shading = null)
+    {
+        var window = _windows.FirstOrDefault(w => w.Id == windowId);
+        if (window is null)
+            return Result<Window>.NotFound($"Window with id {windowId} not found.");
+
+        if (!HasExternalWallForWindow(orientation))
+            return Result<Window>.Validation("Window orientation must match an existing external wall.");
+
+        if (!IsWindowAreaValid(windowId, area))
+            return Result<Window>.Validation("Total window area would exceed 80% of floor area.");
+
+        var updateResult = window.Update(area, uValue, shgc, orientation, shading);
+        if (updateResult.IsFailure)
+            return Result<Window>.Failure(updateResult);
+
+        return Result<Window>.Success(window);
+    }
+
     public Result<Wall> AddWall(
         Area area,
         ThermalTransmittance uValue,
@@ -176,9 +201,49 @@ public class Room
         return Result.Success();
     }
 
+    public Result<Wall> UpdateWall(
+        int wallId,
+        Area area,
+        ThermalTransmittance uValue,
+        CardinalDirection orientation,
+        WallBoundaryType boundaryType,
+        Room? adjacentRoom = null)
+    {
+        var wall = _walls.FirstOrDefault(w => w.Id == wallId);
+        if (wall is null)
+            return Result<Wall>.NotFound($"Wall with id {wallId} not found.");
+
+        var updateResult = wall.Update(area, uValue, orientation, boundaryType, adjacentRoom);
+        if (updateResult.IsFailure)
+            return Result<Wall>.Failure(updateResult);
+
+        return Result<Wall>.Success(wall);
+    }
+
+    public Result UpdateName(string name)
+    {
+        var nameResult = name.ToRequiredTrimmed("Room name", maxLength: 100);
+        if (nameResult.IsFailure) return nameResult;
+
+        Name = nameResult.Value;
+        return Result.Success();
+    }
+
     public Result UpdateIndoorTemperature(Temperature newTemp)
     {
         IndoorTemperature = newTemp;
+        return Result.Success();
+    }
+
+    public Result UpdateOutdoorTemperatureOverride(Temperature? newTemp)
+    {
+        OutdoorTemperatureOverride = newTemp;
+        return Result.Success();
+    }
+
+    public Result UpdateType(RoomType type)
+    {
+        Type = type;
         return Result.Success();
     }
 
@@ -256,6 +321,14 @@ public class Room
     private bool IsWindowAreaValid(Area additionalArea)
     {
         var totalWindowArea = _windows.Sum(w => w.Area.SquareMeters) + additionalArea.SquareMeters;
+        return totalWindowArea <= Area.SquareMeters * 0.8;
+    }
+
+    private bool IsWindowAreaValid(int updatedWindowId, Area newArea)
+    {
+        var totalWindowArea = _windows
+            .Where(w => w.Id != updatedWindowId)
+            .Sum(w => w.Area.SquareMeters) + newArea.SquareMeters;
         return totalWindowArea <= Area.SquareMeters * 0.8;
     }
 

@@ -34,6 +34,7 @@ public interface IBuildingRepository
         CancellationToken cancellationToken = default);
 
     void Add(Building building);
+    void Remove(Building building);
     
     Task<Building?> GetForValidationAsync(
         int id,

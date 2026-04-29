@@ -1,10 +1,4 @@
-import {
-  Alert,
-  Button,
-  MenuItem,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Alert, Button, MenuItem, Stack, TextField } from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
 import type { FloorDto } from "@/entities/floor/types";
 import type { CreateRoomRequest } from "@/entities/room/types";
@@ -31,9 +25,7 @@ export function CreateRoomForm({
   onCancel,
 }: CreateRoomFormProps): JSX.Element {
   const firstFloorId = floors[0]?.id ?? 0;
-  const [form, setForm] = useState<CreateRoomRequest>(() =>
-    createDefaultRoomForm(firstFloorId),
-  );
+  const [form, setForm] = useState<CreateRoomRequest>(() => createDefaultRoomForm(firstFloorId));
   const [validationError, setValidationError] = useState<string | null>(null);
   const createRoom = useCreateRoom(buildingId);
 
@@ -71,13 +63,13 @@ export function CreateRoomForm({
   return (
     <Stack component="form" spacing={2} onSubmit={handleSubmit}>
       {floors.length === 0 ? (
-        <Alert severity="warning">Для помещения нужен этаж. Сначала добавьте этаж здания.</Alert>
+        <Alert severity="warning">Create a floor before adding rooms.</Alert>
       ) : null}
       {(validationError || createRoom.isError) && (
         <Alert severity="error">{validationError ?? getErrorMessage(createRoom.error)}</Alert>
       )}
       <TextField
-        label="Название"
+        label="Room name"
         value={form.name}
         required
         autoFocus
@@ -85,7 +77,7 @@ export function CreateRoomForm({
       />
       <TextField
         select
-        label="Этаж"
+        label="Floor"
         value={form.floorId || ""}
         required
         onChange={(event) =>
@@ -100,7 +92,7 @@ export function CreateRoomForm({
       </TextField>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <TextField
-          label="Площадь, м²"
+          label="Area, m2"
           type="number"
           value={form.area || ""}
           required
@@ -111,7 +103,7 @@ export function CreateRoomForm({
           fullWidth
         />
         <TextField
-          label="Высота, м"
+          label="Height, m"
           type="number"
           value={form.height ?? ""}
           inputProps={{ min: 1, step: 0.1 }}
@@ -123,7 +115,7 @@ export function CreateRoomForm({
       </Stack>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <TextField
-          label="Температура внутри, °C"
+          label="Indoor temperature, C"
           type="number"
           value={form.designIndoorTemperature ?? ""}
           inputProps={{ step: 0.5 }}
@@ -136,7 +128,7 @@ export function CreateRoomForm({
           fullWidth
         />
         <TextField
-          label="Людей"
+          label="People"
           type="number"
           value={form.peopleCount ?? 0}
           inputProps={{ min: 0, step: 1 }}
@@ -148,7 +140,7 @@ export function CreateRoomForm({
       </Stack>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <TextField
-          label="Оборудование, Вт"
+          label="Equipment load, W"
           type="number"
           value={form.equipmentLoadW ?? 0}
           inputProps={{ min: 0, step: 10 }}
@@ -158,7 +150,7 @@ export function CreateRoomForm({
           fullWidth
         />
         <TextField
-          label="Освещение, Вт"
+          label="Lighting load, W"
           type="number"
           value={form.lightingLoadW ?? 0}
           inputProps={{ min: 0, step: 10 }}
@@ -170,7 +162,7 @@ export function CreateRoomForm({
       </Stack>
       <TextField
         select
-        label="Тип помещения"
+        label="Room type"
         value={form.type ?? "Office"}
         onChange={(event) =>
           setForm((current) => ({ ...current, type: parseRoomType(event.target.value) }))
@@ -185,7 +177,7 @@ export function CreateRoomForm({
       <Stack direction="row" spacing={1} justifyContent="flex-end">
         {onCancel ? (
           <Button type="button" color="inherit" onClick={onCancel}>
-            Отмена
+            Cancel
           </Button>
         ) : null}
         <Button
@@ -193,7 +185,7 @@ export function CreateRoomForm({
           variant="contained"
           disabled={createRoom.isPending || floors.length === 0}
         >
-          Добавить
+          Add
         </Button>
       </Stack>
     </Stack>

@@ -34,6 +34,9 @@ public class Iso52016RoomEnergySimulationServiceTests
         Assert.Equal(24, simulation.HourlyInputProfile.HourCount);
         Assert.Equal(24, simulation.HeatBalanceProfile.HourCount);
 
+        Assert.Equal(600.0, simulation.SolarGainProfile.GetHour(0).TotalSolarGainW, precision: 6);
+        Assert.Equal(600.0, simulation.HourlyInputProfile.GetHour(0).SolarGainsW, precision: 6);
+        Assert.Equal(600.0 * 24.0 / 1000.0, simulation.AnnualSolarGainsKWh, precision: 6);
         Assert.True(simulation.AnnualSolarGainsKWh > 0);
         Assert.True(simulation.AnnualInternalGainsKWh > 0);
         Assert.True(simulation.AnnualTotalGainsKWh > 0);

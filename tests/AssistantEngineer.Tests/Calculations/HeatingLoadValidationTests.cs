@@ -119,10 +119,16 @@ public class HeatingLoadValidationTests
         public Task<Room?> GetWithWallsAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<Room?> GetWithWindowsAndWallsAsync(int id, CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public Task<Room?> GetWithVentilationAsync(int id, CancellationToken cancellationToken = default) =>
             Task.FromResult<Room?>(id == _room.Id ? _room : null);
 
         public Task<IReadOnlyList<Room>> ListAsync(CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<Room>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
         public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
@@ -135,6 +141,12 @@ public class HeatingLoadValidationTests
             throw new NotSupportedException();
 
         public void Add(Room room) => throw new NotSupportedException();
+
+        public void Remove(Room room) => throw new NotSupportedException();
+
+        public void RemoveWindow(Window window) => throw new NotSupportedException();
+
+        public void RemoveWall(Wall wall) => throw new NotSupportedException();
     }
 
 }

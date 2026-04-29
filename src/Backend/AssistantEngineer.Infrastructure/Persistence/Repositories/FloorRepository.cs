@@ -53,4 +53,6 @@ internal sealed class FloorRepository : IFloorRepository
             .ToListAsync(cancellationToken);
 
     public void Add(Floor floor) => _context.Floors.Add(floor);
+
+    public void Remove(Floor floor) => _context.Floors.Remove(floor);
 }

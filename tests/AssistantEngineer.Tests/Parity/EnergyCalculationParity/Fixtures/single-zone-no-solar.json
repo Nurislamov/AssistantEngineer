@@ -1,0 +1,82 @@
+{
+  "fixtureName": "single-zone-no-solar",
+  "description": "Single thermal zone with constant winter outdoor temperature, no solar gains, and constant internal gains. This is a deterministic reference fixture for the AssistantEngineer hourly heat-balance path.",
+  "sourceReference": "AssistantEngineer deterministic reference fixture v1; derived from documented steady-state heat-balance assumptions, not an external reference implementation.",
+  "assumptions": [
+    "One-hour timestep.",
+    "Single zone is held at the heating setpoint after each timestep when heating is required.",
+    "No solar gains.",
+    "Transmission and ventilation heat-transfer coefficients are fixed inputs.",
+    "Internal gains are constant for all 24 hours."
+  ],
+  "input": {
+    "calculationBasis": "hourly-room-heat-balance",
+    "zone": {
+      "zoneName": "Reference Zone",
+      "floorAreaM2": 20,
+      "heightM": 3
+    },
+    "envelope": {
+      "transmissionHeatTransferCoefficientWPerK": 100,
+      "ventilationHeatTransferCoefficientWPerK": 20,
+      "thermalCapacityJPerK": 3000000
+    },
+    "internalGains": {
+      "constantInternalGainsW": 400
+    },
+    "solar": {
+      "constantSolarGainsW": 0
+    },
+    "simulation": {
+      "hourCount": 24,
+      "outdoorTemperatureC": -5,
+      "heatingSetpointC": 20,
+      "coolingSetpointC": 26,
+      "initialIndoorTemperatureC": 20,
+      "timeStepSeconds": 3600
+    }
+  },
+  "expectedHourlyResults": {
+    "hourCount": 24,
+    "representativeHours": [
+      {
+        "hourOfYear": 0,
+        "heatingLoadW": 2600,
+        "coolingLoadW": 0,
+        "solarGainsW": 0,
+        "internalGainsW": 400,
+        "indoorTemperatureAfterHvacC": 20
+      }
+    ]
+  },
+  "expectedMonthlyResults": [
+    {
+      "month": 1,
+      "hours": 24,
+      "heatingDemandKWh": 62.4,
+      "coolingDemandKWh": 0,
+      "solarGainsKWh": 0,
+      "internalGainsKWh": 9.6,
+      "peakHeatingLoadW": 2600,
+      "peakCoolingLoadW": 0
+    }
+  ],
+  "expectedAnnualResults": {
+    "heatingDemandKWh": 62.4,
+    "coolingDemandKWh": 0,
+    "solarGainsKWh": 0,
+    "internalGainsKWh": 9.6,
+    "transmissionHeatTransferCoefficientWPerK": 100,
+    "ventilationHeatTransferCoefficientWPerK": 20,
+    "peakHeatingLoadW": 2600,
+    "peakCoolingLoadW": 0,
+    "hourCount": 24
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.05,
+    "hourlyLoadW": 1,
+    "monthlyDemandKWh": 0.01,
+    "annualDemandKWh": 0.1,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

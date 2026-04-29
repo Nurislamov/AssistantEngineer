@@ -1,13 +1,13 @@
 import type { CreateRoomRequest, RoomTypeDto } from "@/entities/room/types";
 
 export const roomTypeOptions: Array<{ value: RoomTypeDto; label: string }> = [
-  { value: "Office", label: "Офис" },
-  { value: "MeetingRoom", label: "Переговорная" },
-  { value: "Corridor", label: "Коридор" },
-  { value: "ServerRoom", label: "Серверная" },
-  { value: "Retail", label: "Торговое" },
-  { value: "Residential", label: "Жилое" },
-  { value: "Other", label: "Другое" },
+  { value: "Office", label: "Office" },
+  { value: "MeetingRoom", label: "Meeting room" },
+  { value: "Corridor", label: "Corridor" },
+  { value: "ServerRoom", label: "Server room" },
+  { value: "Retail", label: "Retail" },
+  { value: "Residential", label: "Residential" },
+  { value: "Other", label: "Other" },
 ];
 
 export function createDefaultRoomForm(floorId: number): CreateRoomRequest {
@@ -34,19 +34,19 @@ export function parseRoomType(value: string): RoomTypeDto {
 
 export function validateCreateRoomForm(form: CreateRoomRequest): string | null {
   if (form.name.trim().length < 2) {
-    return "Название помещения должно быть не короче 2 символов";
+    return "Room name must be at least 2 characters.";
   }
 
   if (form.floorId <= 0) {
-    return "Выберите этаж";
+    return "Select a floor.";
   }
 
   if (form.area < 1) {
-    return "Площадь должна быть не меньше 1 м²";
+    return "Room area must be at least 1 m2.";
   }
 
   if ((form.height ?? 0) < 1) {
-    return "Высота должна быть не меньше 1 м";
+    return "Room height must be at least 1 m.";
   }
 
   return null;

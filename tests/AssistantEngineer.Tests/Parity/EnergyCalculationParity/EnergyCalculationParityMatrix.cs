@@ -5,6 +5,33 @@ public static class EnergyCalculationParityMatrix
     public static IReadOnlyList<EnergyCalculationParityFeature> Features { get; } =
     [
         new(
+            Code: "ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER",
+            Name: "Transmission heat transfer",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Transmission",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
+            Name: "Window solar gains",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SolarGains",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
+            Name: "Ventilation and infiltration loads",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Ventilation",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
             Code: "ISO52010.CLIMATE_CONVERSION",
             Name: "ISO 52010 external climate conversion",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,

@@ -40,6 +40,15 @@ public class RoomQueryService
         return Result<RoomResponse>.Success(BuildingsMapper.ToResponse(room));
     }
 
+    public async Task<Result<List<RoomResponse>>> GetByBuildingIdAsync(
+        int buildingId,
+        CancellationToken cancellationToken = default)
+    {
+        var rooms = await _rooms.ListByBuildingIdAsync(buildingId, cancellationToken);
+        _logger.LogDebug("Loaded {RoomCount} rooms for building {BuildingId}.", rooms.Count, buildingId);
+        return Result<List<RoomResponse>>.Success(rooms.Select(BuildingsMapper.ToResponse).ToList());
+    }
+
     public async Task<Result<List<WindowResponse>>> GetWindowsAsync(
         int roomId,
         CancellationToken cancellationToken = default)

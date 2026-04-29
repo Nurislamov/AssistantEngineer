@@ -26,7 +26,7 @@ export function CreateBuildingForm({
     event.preventDefault();
 
     if (!form.name.trim()) {
-      setValidationError("Укажите название здания");
+      setValidationError("Building name is required.");
       return;
     }
 
@@ -53,14 +53,15 @@ export function CreateBuildingForm({
         </Alert>
       )}
       <TextField
-        label="Название"
+        label="Building name"
         value={form.name}
         required
         autoFocus
         onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
       />
       <TextField
-        label="ID климатической зоны"
+        label="Climate zone ID"
+        helperText="Optional. Use the development demo seed or import climate data before ISO calculations."
         type="number"
         value={form.climateZoneId ?? ""}
         onChange={(event) =>
@@ -73,11 +74,11 @@ export function CreateBuildingForm({
       <Stack direction="row" spacing={1} justifyContent="flex-end">
         {onCancel ? (
           <Button type="button" color="inherit" onClick={onCancel}>
-            Отмена
+            Cancel
           </Button>
         ) : null}
         <Button type="submit" variant="contained" disabled={createBuilding.isPending}>
-          Создать
+          Create
         </Button>
       </Stack>
     </Stack>

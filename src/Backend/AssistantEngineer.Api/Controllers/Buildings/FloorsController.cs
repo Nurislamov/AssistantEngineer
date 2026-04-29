@@ -68,6 +68,32 @@ public class FloorsController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<FloorResponse>> Update(
+        int id,
+        [FromBody] UpdateFloorRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateFloorAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteFloorAsync(
+            id,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
+
     private static readonly IReadOnlyDictionary<string, Func<IEnumerable<FloorResponse>, bool, IOrderedEnumerable<FloorResponse>>> SortRules =
         new Dictionary<string, Func<IEnumerable<FloorResponse>, bool, IOrderedEnumerable<FloorResponse>>>(StringComparer.OrdinalIgnoreCase)
         {

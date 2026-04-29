@@ -82,6 +82,32 @@ public class EquipmentCatalogController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<EquipmentCatalogItemResponse>> Update(
+        int id,
+        [FromBody] UpdateEquipmentCatalogItemRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _equipment.UpdateCatalogItemAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _equipment.DeactivateCatalogItemAsync(
+            id,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
+
     [HttpGet]
     public async Task<ActionResult<PagedResponse<EquipmentCatalogItemResponse>>> GetAll(
         [FromQuery] EquipmentCatalogListQueryParameters query,

@@ -31,6 +31,17 @@ public sealed class EquipmentFacade : IEquipmentFacade
         CancellationToken cancellationToken) =>
         _catalogQuery.GetByIdAsync(id, cancellationToken);
 
+    public Task<Result<EquipmentCatalogItemResponse>> UpdateCatalogItemAsync(
+        int id,
+        UpdateEquipmentCatalogItemRequest request,
+        CancellationToken cancellationToken) =>
+        _catalogCommand.UpdateAsync(id, request, cancellationToken);
+
+    public Task<Result> DeactivateCatalogItemAsync(
+        int id,
+        CancellationToken cancellationToken) =>
+        _catalogCommand.DeactivateAsync(id, cancellationToken);
+
     public Task<Result<List<EquipmentCatalogItemResponse>>> GetCatalogItemsAsync(
         CancellationToken cancellationToken) =>
         _catalogQuery.GetAllAsync(cancellationToken);

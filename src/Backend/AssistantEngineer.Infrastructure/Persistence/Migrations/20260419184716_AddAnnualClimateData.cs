@@ -68,14 +68,14 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                 table: "HourlyClimateData",
                 columns: new[] { "AnnualClimateDataId", "HourOfYear" },
                 unique: true,
-                filter: "[AnnualClimateDataId] IS NOT NULL AND [HourOfYear] IS NOT NULL");
+                filter: "\"AnnualClimateDataId\" IS NOT NULL AND \"HourOfYear\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HourlyClimateData_ClimateDataId_Hour",
                 table: "HourlyClimateData",
                 columns: new[] { "ClimateDataId", "Hour" },
                 unique: true,
-                filter: "[ClimateDataId] IS NOT NULL AND [Hour] IS NOT NULL");
+                filter: "\"ClimateDataId\" IS NOT NULL AND \"Hour\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AnnualClimateData_ClimateZoneId_Year",

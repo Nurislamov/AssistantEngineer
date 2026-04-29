@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Ground;
@@ -106,7 +107,7 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
     {
         var envelope = room.Walls
             .Where(wall => wall.BoundaryType == WallBoundaryType.Ground)
-            .Sum(wall => wall.Area.SquareMeters * Services.Iso52016.Iso52016HourlyCalculatorMath.GetWallUValue(wall));
+            .Sum(wall => wall.Area.SquareMeters * RoomTransmissionInputFactory.ResolveWallUValue(wall));
 
         envelope += room.Area.SquareMeters * envelopeDefaults.FloorUValueWPerM2K;
         return envelope;

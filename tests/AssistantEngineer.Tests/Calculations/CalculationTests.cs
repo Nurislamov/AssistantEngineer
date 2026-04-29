@@ -158,7 +158,7 @@ public class CalculationTests
         var result = await calculator.CalculateAsync(room);
 
         Assert.Equal(1.0, result.AirChangesPerHour);
-        Assert.Equal(754.8, result.VentilationHeatLossW);
+        Assert.Equal(743.7, result.VentilationHeatLossW);
     }
 
     [Fact]
@@ -183,7 +183,7 @@ public class CalculationTests
 
         Assert.Equal(-15, result.OutdoorDesignTemperatureC);
         Assert.Equal(37, result.DeltaTemperatureC);
-        Assert.Equal(377.4, result.VentilationHeatLossW);
+        Assert.Equal(371.85, result.VentilationHeatLossW);
     }
 
     [Fact]

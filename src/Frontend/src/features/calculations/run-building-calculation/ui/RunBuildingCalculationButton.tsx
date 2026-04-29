@@ -29,7 +29,7 @@ export function RunBuildingCalculationButton({
         })
       }
     >
-      {runCalculation.isPending ? "Расчёт..." : "Запустить расчёт"}
+      {runCalculation.isPending ? "Running..." : "Run calculation"}
     </Button>
   );
 }

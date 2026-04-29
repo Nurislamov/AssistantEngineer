@@ -1,9 +1,7 @@
 ﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
-using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.SharedKernel.Primitives;
-using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 
@@ -12,18 +10,14 @@ public sealed class NaturalVentilationPreviewService
     private readonly IRoomRepository _rooms;
     private readonly INaturalVentilationOpeningControlService _openingControl;
     private readonly INaturalVentilationAirflowService _airflow;
-    private readonly Iso52016EnergyNeedOptions _energyOptions;
-
     public NaturalVentilationPreviewService(
         IRoomRepository rooms,
         INaturalVentilationOpeningControlService openingControl,
-        INaturalVentilationAirflowService airflow,
-        IOptions<Iso52016EnergyNeedOptions> energyOptions)
+        INaturalVentilationAirflowService airflow)
     {
         _rooms = rooms;
         _openingControl = openingControl;
         _airflow = airflow;
-        _energyOptions = energyOptions.Value;
     }
 
     public async Task<Result<NaturalVentilationPreviewResponse>> PreviewAsync(
@@ -58,7 +52,7 @@ public sealed class NaturalVentilationPreviewService
             request.HourOfDay);
 
         var roomVolume = Math.Max(room.CalculateVolume(), 0.001);
-        var equivalentAch = heatTransfer / (_energyOptions.AirHeatCapacityWhPerM3K * roomVolume);
+        var equivalentAch = heatTransfer / (AirPhysicalConstants.AirHeatCapacityWhPerM3K * roomVolume);
 
         return Result<NaturalVentilationPreviewResponse>.Success(new NaturalVentilationPreviewResponse
         {

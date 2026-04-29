@@ -67,6 +67,32 @@ public class BuildingsController : ControllerBase
         return result.ToActionResult(this);
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<BuildingResponse>> Update(
+        int id,
+        [FromBody] UpdateBuildingRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateBuildingAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteBuildingAsync(
+            id,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
+
     [HttpGet("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
     public async Task<ActionResult<PagedResponse<BuildingResponse>>> GetByProject(
         int projectId,

@@ -1,12 +1,17 @@
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditIcon from "@mui/icons-material/Edit";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   Button,
+  IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { paths } from "@/app/router/paths";
@@ -15,14 +20,16 @@ import { EmptyState } from "@/shared/ui/EmptyState";
 
 interface BuildingListProps {
   buildings: BuildingDto[];
+  onEdit?: (building: BuildingDto) => void;
+  onDelete?: (building: BuildingDto) => void;
 }
 
-export function BuildingList({ buildings }: BuildingListProps): JSX.Element {
+export function BuildingList({ buildings, onEdit, onDelete }: BuildingListProps): JSX.Element {
   if (buildings.length === 0) {
     return (
       <EmptyState
-        title="Зданий пока нет"
-        description="Создайте первое здание в текущем проекте."
+        title="No buildings yet"
+        description="Create the first building in the selected project."
       />
     );
   }
@@ -33,9 +40,9 @@ export function BuildingList({ buildings }: BuildingListProps): JSX.Element {
         <TableHead>
           <TableRow>
             <TableCell>ID</TableCell>
-            <TableCell>Название</TableCell>
-            <TableCell>Климатическая зона</TableCell>
-            <TableCell align="right">Действия</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Climate zone</TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -45,14 +52,30 @@ export function BuildingList({ buildings }: BuildingListProps): JSX.Element {
               <TableCell>{building.name}</TableCell>
               <TableCell>{building.climateZoneName ?? building.climateZoneId ?? "-"}</TableCell>
               <TableCell align="right">
-                <Button
-                  component={RouterLink}
-                  to={paths.buildingDetails(building.id)}
-                  size="small"
-                  endIcon={<OpenInNewIcon />}
-                >
-                  Открыть
-                </Button>
+                <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                  {onEdit ? (
+                    <Tooltip title="Edit building">
+                      <IconButton size="small" onClick={() => onEdit(building)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                  {onDelete ? (
+                    <Tooltip title="Delete building">
+                      <IconButton size="small" color="error" onClick={() => onDelete(building)}>
+                        <DeleteOutlineIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : null}
+                  <Button
+                    component={RouterLink}
+                    to={paths.buildingDetails(building.id)}
+                    size="small"
+                    endIcon={<OpenInNewIcon />}
+                  >
+                    Open
+                  </Button>
+                </Stack>
               </TableCell>
             </TableRow>
           ))}

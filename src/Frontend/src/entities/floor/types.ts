@@ -8,6 +8,10 @@ export interface CreateFloorRequest {
   name: string;
 }
 
+export interface UpdateFloorRequest {
+  name: string;
+}
+
 export interface FloorApiResponse {
   id: number;
   buildingId: number;

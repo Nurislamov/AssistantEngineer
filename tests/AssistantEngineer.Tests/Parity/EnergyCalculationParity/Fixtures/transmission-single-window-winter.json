@@ -1,0 +1,57 @@
+{
+  "fixtureName": "SingleWindowWinterTransmission",
+  "description": "Single outdoor window transmission heat loss with winter boundary condition.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Transmission Heat Transfer",
+  "sourceReference": "AssistantEngineer deterministic fixture for U x A x delta-T transmission heat transfer.",
+  "assumptions": [
+    "Window is treated only as a conductive envelope element.",
+    "Solar gains are excluded."
+  ],
+  "notes": [
+    "This fixture verifies window heat transfer without any solar component."
+  ],
+  "input": {
+    "calculationBasis": "transmission-heat-transfer",
+    "transmission": {
+      "elements": [
+        {
+          "elementId": 2,
+          "elementType": "Window",
+          "roomId": 101,
+          "areaM2": 2,
+          "uValueWPerM2K": 2.0,
+          "indoorTemperatureC": 20,
+          "outdoorTemperatureC": -5,
+          "boundaryType": "Outdoor",
+          "diagnosticsContext": "SingleWindowWinterTransmission window"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalHeatFlowW": 100,
+    "totalHeatLossW": 100,
+    "totalHeatGainW": 0,
+    "elements": [
+      {
+        "elementId": 2,
+        "elementType": "Window",
+        "boundaryType": "Outdoor",
+        "areaM2": 2,
+        "uValueWPerM2K": 2.0,
+        "deltaTC": 25,
+        "heatFlowW": 100,
+        "isIncludedInLoad": true,
+        "expectedDiagnosticCodes": []
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

@@ -15,6 +15,7 @@ using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
@@ -30,6 +31,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
     private readonly En16798ProfileOptions _profileOptions;
     private readonly HourlyInternalGainProfileService _hourlyProfiles;
     private readonly IGroundHeatTransferService _groundHeatTransferService;
+    private readonly WindowSolarGainEngine _windowSolarGains;
 
     public Iso52016HourlyHeatBalanceCalculator(
         ISolarRadiationService solarRadiationService,
@@ -41,7 +43,8 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         INaturalVentilationAirflowService? naturalVentilationAirflowService,
         Iso52016EnergyNeedOptions options,
         En16798ProfileOptions profileOptions,
-        HourlyInternalGainProfileService hourlyProfiles)
+        HourlyInternalGainProfileService hourlyProfiles,
+        WindowSolarGainEngine? windowSolarGains = null)
     {
         _solarRadiationService = solarRadiationService;
         _ventilationCalculator = ventilationCalculator;
@@ -53,6 +56,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         _options = options;
         _profileOptions = profileOptions;
         _hourlyProfiles = hourlyProfiles;
+        _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
     }
 
     public Iso52016ZoneHourResult CalculateZoneHourEnergyNeed(
@@ -240,12 +244,16 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             var shadingReduction = GetWindowShadingReduction(window, dayOfYear, hourOfDay, preferences);
 
-            return window.Area.SquareMeters *
-                   window.Shgc.Value *
-                   radiation *
-                   (1 - GetWindowFrameAreaFraction(preferences)) *
-                   shadingReduction *
-                   GetSolarUtilizationFactor(preferences);
+            var solar = _windowSolarGains.Calculate(
+                WindowSolarGainInputFactory.CreateForWindow(
+                    window,
+                    radiation,
+                    frameFactor: 1 - GetWindowFrameAreaFraction(preferences),
+                    externalShadingFactor: shadingReduction,
+                    fixedShadingFactor: GetSolarUtilizationFactor(preferences),
+                    hourIndex: weather.HourOfYear));
+
+            return solar.Value.SolarGainW;
         });
     }
 

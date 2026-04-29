@@ -73,4 +73,58 @@ public class CoolingEquipmentCatalogCommandService
             itemResult.Value.Id);
         return Result<EquipmentCatalogItemResponse>.Success(EquipmentMapper.ToResponse(itemResult.Value));
     }
+
+    public async Task<Result<EquipmentCatalogItemResponse>> UpdateAsync(
+        int id,
+        UpdateEquipmentCatalogItemRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Updating cooling equipment catalog item {CatalogItemId}.", id);
+
+        var item = await _catalog.GetByIdAsync(id, cancellationToken);
+        if (item is null)
+        {
+            _logger.LogWarning("Cannot update cooling equipment catalog item {CatalogItemId} because it was not found.", id);
+            return Result<EquipmentCatalogItemResponse>.NotFound($"Equipment catalog item with id {id} not found.");
+        }
+
+        var powerResult = Power.FromWatts(request.NominalCoolingCapacityKw * 1000);
+        if (powerResult.IsFailure)
+            return Result<EquipmentCatalogItemResponse>.Failure(powerResult);
+
+        var updateResult = item.Update(
+            request.Manufacturer,
+            request.SystemType,
+            request.UnitType,
+            request.ModelName,
+            powerResult.Value,
+            request.IsActive);
+        if (updateResult.IsFailure)
+            return Result<EquipmentCatalogItemResponse>.Failure(updateResult);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Updated cooling equipment catalog item {CatalogItemId}.", id);
+        return Result<EquipmentCatalogItemResponse>.Success(EquipmentMapper.ToResponse(item));
+    }
+
+    public async Task<Result> DeactivateAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Deactivating cooling equipment catalog item {CatalogItemId}.", id);
+
+        var item = await _catalog.GetByIdAsync(id, cancellationToken);
+        if (item is null)
+        {
+            _logger.LogWarning("Cannot deactivate cooling equipment catalog item {CatalogItemId} because it was not found.", id);
+            return Result.NotFound($"Equipment catalog item with id {id} not found.");
+        }
+
+        item.Deactivate();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Deactivated cooling equipment catalog item {CatalogItemId}.", id);
+        return Result.Success();
+    }
 }

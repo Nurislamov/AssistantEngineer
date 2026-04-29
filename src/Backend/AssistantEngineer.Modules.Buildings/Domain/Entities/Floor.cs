@@ -33,6 +33,15 @@ public class Floor
         return Result<Floor>.Success(new Floor(nameResult.Value, building));
     }
 
+    public Result UpdateName(string name)
+    {
+        var nameResult = name.ToRequiredTrimmed("Floor name", maxLength: 100);
+        if (nameResult.IsFailure) return nameResult;
+
+        Name = nameResult.Value;
+        return Result.Success();
+    }
+
     public Result<Room> AddRoom(
         string name,
         Area area,

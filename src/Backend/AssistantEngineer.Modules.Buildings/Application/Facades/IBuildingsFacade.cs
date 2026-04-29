@@ -16,6 +16,15 @@ public interface IBuildingsFacade
         int id,
         CancellationToken cancellationToken);
 
+    Task<Result<ProjectResponse>> UpdateProjectAsync(
+        int id,
+        UpdateProjectRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteProjectAsync(
+        int id,
+        CancellationToken cancellationToken);
+
     Task<Result<BuildingResponse>> CreateBuildingAsync(
         int projectId,
         CreateBuildingRequest request,
@@ -27,6 +36,15 @@ public interface IBuildingsFacade
         CancellationToken cancellationToken);
 
     Task<Result<BuildingResponse>> GetBuildingByIdAsync(
+        int id,
+        CancellationToken cancellationToken);
+
+    Task<Result<BuildingResponse>> UpdateBuildingAsync(
+        int id,
+        UpdateBuildingRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteBuildingAsync(
         int id,
         CancellationToken cancellationToken);
 
@@ -54,13 +72,35 @@ public interface IBuildingsFacade
         int id,
         CancellationToken cancellationToken);
 
+    Task<Result<FloorResponse>> UpdateFloorAsync(
+        int id,
+        UpdateFloorRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteFloorAsync(
+        int id,
+        CancellationToken cancellationToken);
+
     Task<Result<RoomResponse>> CreateRoomAsync(
         CreateRoomRequest request,
         CancellationToken cancellationToken);
 
     Task<Result<List<RoomResponse>>> GetRoomsAsync(CancellationToken cancellationToken);
 
+    Task<Result<List<RoomResponse>>> GetRoomsByBuildingAsync(
+        int buildingId,
+        CancellationToken cancellationToken);
+
     Task<Result<RoomResponse>> GetRoomByIdAsync(
+        int id,
+        CancellationToken cancellationToken);
+
+    Task<Result<RoomResponse>> UpdateRoomAsync(
+        int id,
+        UpdateRoomRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteRoomAsync(
         int id,
         CancellationToken cancellationToken);
 
@@ -69,9 +109,31 @@ public interface IBuildingsFacade
         CreateWindowRequest request,
         CancellationToken cancellationToken);
 
+    Task<Result<WindowResponse>> UpdateWindowAsync(
+        int roomId,
+        int windowId,
+        UpdateWindowRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteWindowAsync(
+        int roomId,
+        int windowId,
+        CancellationToken cancellationToken);
+
     Task<Result<WallResponse>> AddWallAsync(
         int roomId,
         CreateWallRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result<WallResponse>> UpdateWallAsync(
+        int roomId,
+        int wallId,
+        UpdateWallRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeleteWallAsync(
+        int roomId,
+        int wallId,
         CancellationToken cancellationToken);
 
     Task<Result<List<WindowResponse>>> GetRoomWindowsAsync(

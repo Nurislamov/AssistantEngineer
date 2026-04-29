@@ -22,14 +22,15 @@ export function CalculationResultsPage(): JSX.Element {
   return (
     <PageContainer>
       <PageHeader
-        title="Результат расчёта"
+        title="Calculation Result"
+        description="Cached result from the latest calculation run in this browser session."
         actions={
           <Button
             component={RouterLink}
             to={buildingId ? paths.buildingDetails(buildingId) : paths.buildings}
             startIcon={<ArrowBackIcon />}
           >
-            Назад
+            Back
           </Button>
         }
       />

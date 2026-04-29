@@ -13,7 +13,7 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(r => r.Name).IsRequired().HasMaxLength(100);
         builder.HasIndex(r => new { r.FloorId, r.Name }).IsUnique();
 
-        // Value Objects маппятся как owned types
+        // Value objects are mapped as owned types.
         builder.OwnsOne(r => r.Area, area =>
         {
             area.Property(a => a.SquareMeters).HasColumnName("AreaM2").IsRequired();
@@ -38,16 +38,31 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         {
             p.Property(pw => pw.Watts).HasColumnName("LightingLoadW").IsRequired();
         });
-        
+
+        builder.OwnsOne(r => r.GroundContactMetadata, ground =>
+        {
+            ground.Property(g => g.ContactType)
+                .HasColumnName("GroundContactType")
+                .HasConversion<string>();
+            ground.Property(g => g.ExposedPerimeterM).HasColumnName("GroundExposedPerimeterM");
+            ground.Property(g => g.BurialDepthM).HasColumnName("GroundBurialDepthM");
+            ground.Property(g => g.WallHeightBelowGradeM).HasColumnName("GroundWallHeightBelowGradeM");
+            ground.Property(g => g.HorizontalInsulationWidthM).HasColumnName("GroundHorizontalInsulationWidthM");
+            ground.Property(g => g.PerimeterInsulationDepthM).HasColumnName("GroundPerimeterInsulationDepthM");
+            ground.Property(g => g.UnderfloorVentilationAirChangesPerHour)
+                .HasColumnName("GroundUnderfloorVentilationAirChangesPerHour");
+        });
+
         builder.Property(r => r.HeightM).IsRequired();
         builder.Property(r => r.PeopleCount).IsRequired();
         builder.Property(r => r.Type).IsRequired();
         builder.Property(r => r.Type).HasConversion<string>();
-        
+
         builder.HasOne(r => r.Floor)
             .WithMany(f => f.Rooms)
             .HasForeignKey(r => r.FloorId)
             .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne(r => r.OccupancySchedule)
             .WithMany()
             .HasForeignKey(r => r.OccupancyScheduleId)
@@ -69,4 +84,3 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
             .OnDelete(DeleteBehavior.SetNull);
     }
 }
-

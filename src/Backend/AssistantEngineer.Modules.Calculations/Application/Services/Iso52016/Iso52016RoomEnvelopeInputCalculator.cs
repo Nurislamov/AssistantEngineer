@@ -2,6 +2,7 @@
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
@@ -42,7 +43,7 @@ public sealed class Iso52016RoomEnvelopeInputCalculator : IIso52016RoomEnvelopeI
             .Where(wall => wall.BoundaryType is WallBoundaryType.External or WallBoundaryType.Ground or WallBoundaryType.AdjacentUnconditioned)
             .Sum(wall =>
                 wall.Area.SquareMeters *
-                wall.UValue.Value);
+                RoomTransmissionInputFactory.ResolveWallUValue(wall));
 
         var windowTransmission = room.Windows
             .Sum(window =>

@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
@@ -14,4 +15,6 @@ public sealed record Iso52016WindowSolarGainResult(
     double DiffuseSkySolarGainW,
     double GroundReflectedSolarGainW,
     double TotalSolarGainW,
-    double SurfaceTotalIrradianceWm2);
+    double SurfaceTotalIrradianceWm2,
+    double EffectiveSolarFactor,
+    IReadOnlyList<SolarGainDiagnostic> Diagnostics);

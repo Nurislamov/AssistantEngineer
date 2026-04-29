@@ -46,6 +46,12 @@ internal sealed class RoomRepository : IRoomRepository
             .Include(room => room.Walls)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
 
+    public async Task<Room?> GetWithWindowsAndWallsAsync(int id, CancellationToken cancellationToken = default) =>
+        await _context.Rooms
+            .Include(room => room.Windows)
+            .Include(room => room.Walls)
+            .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
+
     public async Task<Room?> GetWithVentilationAsync(int id, CancellationToken cancellationToken = default) =>
         await _context.Rooms
             .Include(room => room.VentilationParameters)
@@ -54,6 +60,15 @@ internal sealed class RoomRepository : IRoomRepository
     public async Task<IReadOnlyList<Room>> ListAsync(CancellationToken cancellationToken = default) =>
         await _context.Rooms
             .AsNoTracking()
+            .OrderBy(room => room.Id)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<Room>> ListByBuildingIdAsync(
+        int buildingId,
+        CancellationToken cancellationToken = default) =>
+        await _context.Rooms
+            .AsNoTracking()
+            .Where(room => room.Floor.BuildingId == buildingId)
             .OrderBy(room => room.Id)
             .ToListAsync(cancellationToken);
 
@@ -75,4 +90,10 @@ internal sealed class RoomRepository : IRoomRepository
             .ToListAsync(cancellationToken);
 
     public void Add(Room room) => _context.Rooms.Add(room);
+
+    public void Remove(Room room) => _context.Rooms.Remove(room);
+
+    public void RemoveWindow(Window window) => _context.Windows.Remove(window);
+
+    public void RemoveWall(Wall wall) => _context.Walls.Remove(wall);
 }

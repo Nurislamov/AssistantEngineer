@@ -28,6 +28,15 @@ public class Project
         return Result<Project>.Success(new Project(nameResult.Value));
     }
 
+    public Result UpdateName(string name)
+    {
+        var nameResult = name.ToRequiredTrimmed("Project name", maxLength: 200, minLength: 2);
+        if (nameResult.IsFailure) return nameResult;
+
+        Name = nameResult.Value;
+        return Result.Success();
+    }
+
     public Result AddBuilding(Building building)
     {
         if (_buildings.Any(b => b.Name.Equals(building.Name, StringComparison.OrdinalIgnoreCase)))

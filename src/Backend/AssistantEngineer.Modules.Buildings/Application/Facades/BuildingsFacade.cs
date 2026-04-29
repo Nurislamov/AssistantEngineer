@@ -90,6 +90,17 @@ public sealed class BuildingsFacade : IBuildingsFacade
         CancellationToken cancellationToken) =>
         _projectQuery.GetByIdAsync(id, cancellationToken);
 
+    public Task<Result<ProjectResponse>> UpdateProjectAsync(
+        int id,
+        UpdateProjectRequest request,
+        CancellationToken cancellationToken) =>
+        _projectCommand.UpdateAsync(id, request, cancellationToken);
+
+    public Task<Result> DeleteProjectAsync(
+        int id,
+        CancellationToken cancellationToken) =>
+        _projectCommand.DeleteAsync(id, cancellationToken);
+
     public Task<Result<BuildingResponse>> CreateBuildingAsync(
         int projectId,
         CreateBuildingRequest request,
@@ -106,6 +117,17 @@ public sealed class BuildingsFacade : IBuildingsFacade
         int id,
         CancellationToken cancellationToken) =>
         _buildingQuery.GetByIdAsync(id, cancellationToken);
+
+    public Task<Result<BuildingResponse>> UpdateBuildingAsync(
+        int id,
+        UpdateBuildingRequest request,
+        CancellationToken cancellationToken) =>
+        _buildingCommand.UpdateAsync(id, request, cancellationToken);
+
+    public Task<Result> DeleteBuildingAsync(
+        int id,
+        CancellationToken cancellationToken) =>
+        _buildingCommand.DeleteAsync(id, cancellationToken);
 
     public Task<Result<List<BuildingResponse>>> GetBuildingsByProjectAsync(
         int projectId,
@@ -137,6 +159,17 @@ public sealed class BuildingsFacade : IBuildingsFacade
         CancellationToken cancellationToken) =>
         _floorQuery.GetByIdAsync(id, cancellationToken);
 
+    public Task<Result<FloorResponse>> UpdateFloorAsync(
+        int id,
+        UpdateFloorRequest request,
+        CancellationToken cancellationToken) =>
+        _floorCommand.UpdateAsync(id, request, cancellationToken);
+
+    public Task<Result> DeleteFloorAsync(
+        int id,
+        CancellationToken cancellationToken) =>
+        _floorCommand.DeleteAsync(id, cancellationToken);
+
     public Task<Result<RoomResponse>> CreateRoomAsync(
         CreateRoomRequest request,
         CancellationToken cancellationToken) =>
@@ -145,10 +178,26 @@ public sealed class BuildingsFacade : IBuildingsFacade
     public Task<Result<List<RoomResponse>>> GetRoomsAsync(CancellationToken cancellationToken) =>
         _roomQuery.GetAllAsync(cancellationToken);
 
+    public Task<Result<List<RoomResponse>>> GetRoomsByBuildingAsync(
+        int buildingId,
+        CancellationToken cancellationToken) =>
+        _roomQuery.GetByBuildingIdAsync(buildingId, cancellationToken);
+
     public Task<Result<RoomResponse>> GetRoomByIdAsync(
         int id,
         CancellationToken cancellationToken) =>
         _roomQuery.GetByIdAsync(id, cancellationToken);
+
+    public Task<Result<RoomResponse>> UpdateRoomAsync(
+        int id,
+        UpdateRoomRequest request,
+        CancellationToken cancellationToken) =>
+        _roomCommand.UpdateAsync(id, request, cancellationToken);
+
+    public Task<Result> DeleteRoomAsync(
+        int id,
+        CancellationToken cancellationToken) =>
+        _roomCommand.DeleteAsync(id, cancellationToken);
 
     public Task<Result<WindowResponse>> AddWindowAsync(
         int roomId,
@@ -156,11 +205,37 @@ public sealed class BuildingsFacade : IBuildingsFacade
         CancellationToken cancellationToken) =>
         _roomCommand.AddWindowAsync(roomId, request, cancellationToken);
 
+    public Task<Result<WindowResponse>> UpdateWindowAsync(
+        int roomId,
+        int windowId,
+        UpdateWindowRequest request,
+        CancellationToken cancellationToken) =>
+        _roomCommand.UpdateWindowAsync(roomId, windowId, request, cancellationToken);
+
+    public Task<Result> DeleteWindowAsync(
+        int roomId,
+        int windowId,
+        CancellationToken cancellationToken) =>
+        _roomCommand.DeleteWindowAsync(roomId, windowId, cancellationToken);
+
     public Task<Result<WallResponse>> AddWallAsync(
         int roomId,
         CreateWallRequest request,
         CancellationToken cancellationToken) =>
         _roomCommand.AddWallAsync(roomId, request, cancellationToken);
+
+    public Task<Result<WallResponse>> UpdateWallAsync(
+        int roomId,
+        int wallId,
+        UpdateWallRequest request,
+        CancellationToken cancellationToken) =>
+        _roomCommand.UpdateWallAsync(roomId, wallId, request, cancellationToken);
+
+    public Task<Result> DeleteWallAsync(
+        int roomId,
+        int wallId,
+        CancellationToken cancellationToken) =>
+        _roomCommand.DeleteWallAsync(roomId, wallId, cancellationToken);
 
     public Task<Result<List<WindowResponse>>> GetRoomWindowsAsync(
         int roomId,

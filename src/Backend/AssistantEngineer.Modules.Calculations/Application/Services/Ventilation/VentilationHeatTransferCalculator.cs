@@ -8,42 +8,57 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilatio
 
 public sealed class VentilationHeatTransferCalculator : IVentilationHeatTransferCalculator
 {
-    private const double AirHeatCapacityWhPerM3K = 0.34;
     private readonly IIso16798ReferenceData _referenceData;
+    private readonly VentilationAndInfiltrationLoadEngine _engine;
 
-    public VentilationHeatTransferCalculator(IIso16798ReferenceData referenceData)
+    public VentilationHeatTransferCalculator(
+        IIso16798ReferenceData referenceData,
+        VentilationAndInfiltrationLoadEngine? engine = null)
     {
         _referenceData = referenceData;
+        _engine = engine ?? new VentilationAndInfiltrationLoadEngine();
     }
 
-    public double Calculate(Room room, VentilationCalculationContext context)
-    {
-        return CalculateMechanical(room, context) + CalculateInfiltration(room, context);
-    }
+    public double Calculate(
+        Room room,
+        VentilationCalculationContext context) =>
+        CalculateMechanical(room, context) + CalculateInfiltration(room, context);
 
-    public double CalculateMechanical(Room room, VentilationCalculationContext context)
+    public double CalculateMechanical(
+        Room room,
+        VentilationCalculationContext context)
     {
-        var heatRecoveryFactor = 1 - (room.VentilationParameters?.HeatRecoveryEfficiency ?? 0);
-        var volume = room.CalculateVolume();
-        var airChangesPerHour = context.Method switch
+        if (context.CustomHeatTransferCoefficientWPerK.HasValue &&
+            context.Method == VentilationCalculationMethod.Custom)
         {
-            VentilationCalculationMethod.Occupancy => CalculateOccupancyAirChanges(room),
-            VentilationCalculationMethod.Custom => context.CustomHeatTransferCoefficientWPerK.HasValue
-                ? context.CustomHeatTransferCoefficientWPerK.Value / Math.Max(AirHeatCapacityWhPerM3K * volume, 0.001)
-                : room.VentilationParameters?.AirChangesPerHour ?? 0.5,
-            _ => room.VentilationParameters?.AirChangesPerHour ?? 0.5
-        };
+            return Math.Max(0, context.CustomHeatTransferCoefficientWPerK.Value);
+        }
 
-        return Math.Max(0, AirHeatCapacityWhPerM3K * airChangesPerHour * volume * heatRecoveryFactor);
+        var heatRecoveryEfficiency = room.VentilationParameters?.HeatRecoveryEfficiency ?? 0;
+        var input = context.Method == VentilationCalculationMethod.Occupancy
+            ? CreateBaseInput(room) with
+            {
+                AirflowPerAreaLpsM2 = _referenceData.GetRoomDefaults(room.Type).MinimumVentilationLitersPerSecondM2,
+                HeatRecoveryEfficiency = heatRecoveryEfficiency
+            }
+            : CreateBaseInput(room) with
+            {
+                AirChangesPerHour = room.VentilationParameters?.AirChangesPerHour ?? 0.5,
+                HeatRecoveryEfficiency = heatRecoveryEfficiency
+            };
+
+        var result = _engine.Calculate(input);
+        return result.Value.MechanicalVentilation.EffectiveHeatingLoadW;
     }
 
-    public double CalculateInfiltration(Room room, VentilationCalculationContext context)
+    public double CalculateInfiltration(
+        Room room,
+        VentilationCalculationContext context)
     {
         var parameters = room.VentilationParameters;
         if (parameters is null)
             return 0;
 
-        var volume = room.CalculateVolume();
         var stackEffect = parameters.StackCoefficient *
             Math.Sqrt(Math.Abs(context.IndoorTemperatureC - context.OutdoorTemperatureC));
         var windEffect = parameters.WindCoefficient *
@@ -53,16 +68,23 @@ public sealed class VentilationHeatTransferCalculator : IVentilationHeatTransfer
             stackEffect +
             windEffect;
 
-        return Math.Max(0, AirHeatCapacityWhPerM3K * airChangesPerHour * volume);
+        var result = _engine.Calculate(
+            CreateBaseInput(room) with
+            {
+                InfiltrationAirChangesPerHour = airChangesPerHour
+            });
+
+        return result.Value.Infiltration.HeatingLoadW;
     }
 
-    private double CalculateOccupancyAirChanges(Room room)
-    {
-        var defaults = _referenceData.GetRoomDefaults(room.Type);
-        var flowM3PerHour = defaults.MinimumVentilationLitersPerSecondM2 *
-            room.Area.SquareMeters *
-            3.6;
-        return flowM3PerHour / Math.Max(room.CalculateVolume(), 0.001);
-    }
-
+    private static VentilationAndInfiltrationLoadInput CreateBaseInput(
+        Room room) =>
+        new(
+            RoomId: room.Id,
+            AreaM2: room.Area.SquareMeters,
+            VolumeM3: room.CalculateVolume(),
+            OccupancyPeople: room.PeopleCount,
+            IndoorTemperatureC: 1,
+            OutdoorTemperatureC: 0,
+            DiagnosticsContext: $"Room {room.Id} ventilation heat transfer");
 }

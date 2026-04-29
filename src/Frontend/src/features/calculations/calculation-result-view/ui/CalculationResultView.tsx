@@ -21,8 +21,8 @@ export function CalculationResultView({ result }: CalculationResultViewProps): J
   if (!result) {
     return (
       <EmptyState
-        title="Результат расчёта не найден"
-        description="Запустите расчёт со страницы здания или помещения."
+        title="No calculation result"
+        description="Run a calculation from the building workspace. After a page refresh, run it again from the Calculations tab."
       />
     );
   }
@@ -32,14 +32,14 @@ export function CalculationResultView({ result }: CalculationResultViewProps): J
       <DataCard>
         <Stack spacing={2}>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            {result.buildingName ?? result.roomName ?? "Результат расчёта"}
+            {result.buildingName ?? result.roomName ?? "Calculation result"}
           </Typography>
           <Stack direction={{ xs: "column", md: "row" }} spacing={3}>
-            <Metric label="Теплопотери, Вт" value={result.totalHeatLoss} />
-            <Metric label="Теплопритоки, Вт" value={result.totalHeatGain} />
-            <Metric label="Отопительная нагрузка, Вт" value={result.heatingLoad} />
-            <Metric label="Холодильная нагрузка, Вт" value={result.coolingLoad} />
-            <Metric label="Дата" value={formatDateTime(result.calculatedAt)} />
+            <Metric label="Heat loss, W" value={result.totalHeatLoss} />
+            <Metric label="Heat gain, W" value={result.totalHeatGain} />
+            <Metric label="Heating load, W" value={result.heatingLoad} />
+            <Metric label="Cooling load, W" value={result.coolingLoad} />
+            <Metric label="Calculated at" value={formatDateTime(result.calculatedAt)} />
           </Stack>
         </Stack>
       </DataCard>
@@ -47,17 +47,17 @@ export function CalculationResultView({ result }: CalculationResultViewProps): J
       {result.rooms && result.rooms.length > 0 ? (
         <DataCard>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-            Помещения
+            Rooms
           </Typography>
           <TableContainer>
             <Table size="medium">
               <TableHead>
                 <TableRow>
-                  <TableCell>Помещение</TableCell>
-                  <TableCell align="right">Теплопотери, Вт</TableCell>
-                  <TableCell align="right">Теплопритоки, Вт</TableCell>
-                  <TableCell align="right">Отопление, Вт</TableCell>
-                  <TableCell align="right">Охлаждение, Вт</TableCell>
+                  <TableCell>Room</TableCell>
+                  <TableCell align="right">Heat loss, W</TableCell>
+                  <TableCell align="right">Heat gain, W</TableCell>
+                  <TableCell align="right">Heating, W</TableCell>
+                  <TableCell align="right">Cooling, W</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

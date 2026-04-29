@@ -14,6 +14,15 @@ public interface IEquipmentFacade
         int id,
         CancellationToken cancellationToken);
 
+    Task<Result<EquipmentCatalogItemResponse>> UpdateCatalogItemAsync(
+        int id,
+        UpdateEquipmentCatalogItemRequest request,
+        CancellationToken cancellationToken);
+
+    Task<Result> DeactivateCatalogItemAsync(
+        int id,
+        CancellationToken cancellationToken);
+
     Task<Result<List<EquipmentCatalogItemResponse>>> GetCatalogItemsAsync(
         CancellationToken cancellationToken);
 

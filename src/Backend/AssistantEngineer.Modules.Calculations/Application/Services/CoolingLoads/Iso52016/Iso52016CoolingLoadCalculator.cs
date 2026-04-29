@@ -6,7 +6,11 @@ using AssistantEngineer.Modules.Buildings.Domain.Construction;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
+using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -18,17 +22,26 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
     private readonly Iso52016CoolingLoadOptions _options;
     private readonly IIso52016ReferenceDataProvider _referenceDataProvider;
     private readonly IHourlyProfileAggregator _profileAggregator;
+    private readonly WindowSolarGainEngine _windowSolarGains;
+    private readonly TransmissionHeatTransferEngine _transmissionHeatTransfer;
+    private readonly VentilationAndInfiltrationLoadEngine _ventilationLoads;
     private readonly ILogger<Iso52016CoolingLoadCalculator> _logger;
 
     public Iso52016CoolingLoadCalculator(
         IOptions<Iso52016CoolingLoadOptions> options,
         IIso52016ReferenceDataProvider referenceDataProvider,
         IHourlyProfileAggregator profileAggregator,
+        WindowSolarGainEngine? windowSolarGains = null,
+        TransmissionHeatTransferEngine? transmissionHeatTransfer = null,
+        VentilationAndInfiltrationLoadEngine? ventilationLoads = null,
         ILogger<Iso52016CoolingLoadCalculator>? logger = null)
     {
         _options = options.Value;
         _referenceDataProvider = referenceDataProvider;
         _profileAggregator = profileAggregator;
+        _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
+        _transmissionHeatTransfer = transmissionHeatTransfer ?? new TransmissionHeatTransferEngine();
+        _ventilationLoads = ventilationLoads ?? new VentilationAndInfiltrationLoadEngine();
         _logger = logger ?? NullLogger<Iso52016CoolingLoadCalculator>.Instance;
     }
 
@@ -64,12 +77,12 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             : new Dictionary<CardinalDirection, IReadOnlyList<double>>();
 
         var transmissionProfile = CreateTransmissionProfile(room, outdoorTemperatureProfile, cancellationToken);
-        var ventilationProfile = CreateVentilationProfile(room, outdoorTemperatureProfile, cancellationToken);
+        var ventilationProfiles = CreateVentilationProfiles(room, outdoorTemperatureProfile, cancellationToken);
         var solarProfile = CreateSolarProfile(room, solarRadiationProfiles, cancellationToken);
         var internalGainProfile = CreateInternalGainProfile(room, cancellationToken);
 
         var rawLoadProfile = _profileAggregator.SumProfiles(
-            [transmissionProfile, ventilationProfile, solarProfile, internalGainProfile],
+            [transmissionProfile, ventilationProfiles.TotalCoolingLoadW, solarProfile, internalGainProfile],
             cancellationToken);
         var hourlyHeatLoad = ApplyThermalMassDamping(room, rawLoadProfile, cancellationToken);
         var peakHour = _profileAggregator.FindPeakHour(hourlyHeatLoad);
@@ -83,9 +96,12 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             Method,
             peakHour,
             hourlyHeatLoad,
-            baseLoad: transmissionProfile[peakHour] + ventilationProfile[peakHour],
+            baseLoad: transmissionProfile[peakHour] + ventilationProfiles.TotalCoolingLoadW[peakHour],
             windowGain: solarProfile[peakHour],
             wallGain: transmissionProfile[peakHour],
+            ventilationGain: ventilationProfiles.MechanicalCoolingLoadW[peakHour],
+            infiltrationGain: ventilationProfiles.InfiltrationCoolingLoadW[peakHour],
+            naturalVentilationGain: ventilationProfiles.NaturalVentilationCoolingLoadW[peakHour],
             peopleGain,
             equipmentGain,
             lightingGain,
@@ -110,7 +126,7 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
         return factors.Select(factor => indoorTemperatureC + designDeltaT * factor).ToArray();
     }
 
-    private static List<double> CreateTransmissionProfile(
+    private List<double> CreateTransmissionProfile(
         Room room,
         IReadOnlyList<double> outdoorTemperatureProfile,
         CancellationToken cancellationToken)
@@ -119,48 +135,63 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
         for (var hour = 0; hour < 24; hour++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var deltaT = Math.Max(outdoorTemperatureProfile[hour] - room.IndoorTemperature.Celsius, 0);
-            var load = room.Walls
-                .Where(wall => wall.IsExternal)
-                .Sum(wall => wall.Area.SquareMeters * GetWallUValue(wall) * deltaT);
-            load += room.Windows.Sum(window => window.Area.SquareMeters * window.UValue.Value * deltaT);
+            var transmission = _transmissionHeatTransfer.Calculate(
+                RoomTransmissionInputFactory.CreateForRoom(
+                    room,
+                    room.IndoorTemperature.Celsius,
+                    outdoorTemperatureProfile[hour]));
+            var load = transmission.Value.TotalHeatGainW - transmission.Value.TotalHeatLossW;
             result.Add(Math.Round(load, 2, MidpointRounding.AwayFromZero));
         }
         return result;
     }
 
-    private List<double> CreateVentilationProfile(
+    private VentilationCoolingProfiles CreateVentilationProfiles(
         Room room,
         IReadOnlyList<double> outdoorTemperatureProfile,
         CancellationToken cancellationToken)
     {
-        var result = new List<double>(capacity: 24);
-        var airChangesPerHour = room.VentilationParameters?.AirChangesPerHour ??
-            _options.DefaultVentilationAirChangesPerHour;
-        var heatRecoveryFactor = 1 - (room.VentilationParameters?.HeatRecoveryEfficiency ?? 0);
+        var mechanical = new List<double>(capacity: 24);
+        var infiltration = new List<double>(capacity: 24);
+        var natural = new List<double>(capacity: 24);
+        var total = new List<double>(capacity: 24);
 
         for (var hour = 0; hour < 24; hour++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var deltaT = Math.Max(outdoorTemperatureProfile[hour] - room.IndoorTemperature.Celsius, 0);
+            var outdoorTemperatureC = outdoorTemperatureProfile[hour];
+            var deltaT = Math.Max(outdoorTemperatureC - room.IndoorTemperature.Celsius, 0);
             var infiltrationAirChangesPerHour = room.VentilationParameters is null
                 ? 0
                 : room.VentilationParameters.InfiltrationAirChangesPerHour +
                 room.VentilationParameters.StackCoefficient * Math.Sqrt(deltaT);
-            result.Add(Math.Round(
-                (_options.AirHeatCapacityWhPerM3K *
-                airChangesPerHour *
-                room.CalculateVolume() *
-                deltaT *
-                heatRecoveryFactor) +
-                (_options.AirHeatCapacityWhPerM3K *
-                infiltrationAirChangesPerHour *
-                room.CalculateVolume() *
-                deltaT),
-                2,
-                MidpointRounding.AwayFromZero));
+            var ventilation = _ventilationLoads.Calculate(
+                new VentilationAndInfiltrationLoadInput(
+                    RoomId: room.Id,
+                    AreaM2: room.Area.SquareMeters,
+                    VolumeM3: room.CalculateVolume(),
+                    OccupancyPeople: room.PeopleCount,
+                    IndoorTemperatureC: room.IndoorTemperature.Celsius,
+                    OutdoorTemperatureC: outdoorTemperatureC,
+                    AirChangesPerHour: room.VentilationParameters?.AirChangesPerHour ??
+                        _options.DefaultVentilationAirChangesPerHour,
+                    InfiltrationAirChangesPerHour: infiltrationAirChangesPerHour,
+                    HeatRecoveryEfficiency: room.VentilationParameters?.HeatRecoveryEfficiency ?? 0,
+                    CalculationMode: VentilationLoadCalculationMode.Hourly,
+                    AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
+                    AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
+                    DiagnosticsContext: $"Room {room.Id} cooling ventilation hour {hour}"));
+
+            var mechanicalLoad = ventilation.Value.MechanicalVentilation.EffectiveCoolingLoadW;
+            var infiltrationLoad = ventilation.Value.Infiltration.CoolingLoadW;
+            var naturalLoad = ventilation.Value.NaturalVentilation.CoolingLoadW;
+
+            mechanical.Add(Round(mechanicalLoad));
+            infiltration.Add(Round(infiltrationLoad));
+            natural.Add(Round(naturalLoad));
+            total.Add(Round(mechanicalLoad + infiltrationLoad + naturalLoad));
         }
-        return result;
+        return new VentilationCoolingProfiles(mechanical, infiltration, natural, total);
     }
 
     private List<double> CreateSolarProfile(
@@ -178,10 +209,14 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
                 var radiation = solarRadiationProfiles.TryGetValue(window.Orientation, out var profile)
                     ? profile[hour]
                     : _referenceDataProvider.GetDefaultSolarRadiation(window.Orientation) * daylightProfile[hour];
-                return window.Area.SquareMeters *
-                    window.Shgc.Value *
-                    radiation *
-                    _options.DefaultSolarUtilizationFactor;
+                var solar = _windowSolarGains.Calculate(
+                    WindowSolarGainInputFactory.CreateForWindow(
+                        window,
+                        radiation,
+                        fixedShadingFactor: _options.DefaultSolarUtilizationFactor,
+                        hourIndex: hour));
+
+                return solar.Value.SolarGainW;
             });
             result.Add(Math.Round(load, 2, MidpointRounding.AwayFromZero));
         }
@@ -237,11 +272,6 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
     private static IReadOnlyList<double> CreateDefaultOccupancyProfile() =>
         [0, 0, 0, 0, 0, 0.05, 0.2, 0.65, 1.0, 1.0, 1.0, 0.95, 0.85, 0.95, 1.0, 1.0, 0.85, 0.35, 0.1, 0.05, 0, 0, 0, 0];
 
-    private static double GetWallUValue(Wall wall) =>
-        wall.ConstructionAssembly is { UValueWPerM2K: > 0 } assembly
-            ? assembly.UValueWPerM2K
-            : wall.UValue.Value;
-
     private double GetPeopleGain(Room room, int hour) =>
         room.PeopleCount *
         _referenceDataProvider.GetPeopleHeatGain(room.Type) *
@@ -281,4 +311,13 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             layer.Material.VolumetricHeatCapacityKjPerM3K *
             layer.ThicknessM /
             3.6);
+
+    private static double Round(double value) =>
+        Math.Round(value, 2, MidpointRounding.AwayFromZero);
+
+    private sealed record VentilationCoolingProfiles(
+        List<double> MechanicalCoolingLoadW,
+        List<double> InfiltrationCoolingLoadW,
+        List<double> NaturalVentilationCoolingLoadW,
+        List<double> TotalCoolingLoadW);
 }

@@ -12,9 +12,13 @@ public interface IRoomRepository
 
     Task<Room?> GetWithWallsAsync(int id, CancellationToken cancellationToken = default);
 
+    Task<Room?> GetWithWindowsAndWallsAsync(int id, CancellationToken cancellationToken = default);
+
     Task<Room?> GetWithVentilationAsync(int id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Room>> ListAsync(CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Room>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default);
 
     Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
 
@@ -23,4 +27,7 @@ public interface IRoomRepository
     Task<IReadOnlyList<Wall>> ListWallsAsync(int roomId, CancellationToken cancellationToken = default);
 
     void Add(Room room);
+    void Remove(Room room);
+    void RemoveWindow(Window window);
+    void RemoveWall(Wall wall);
 }

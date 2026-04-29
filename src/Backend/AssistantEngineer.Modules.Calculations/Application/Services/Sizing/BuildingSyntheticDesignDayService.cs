@@ -6,6 +6,8 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceD
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Options;
 
@@ -19,6 +21,7 @@ public sealed class BuildingSyntheticDesignDayService
     private readonly INaturalVentilationAirflowService? _naturalVentilationAirflowService;
     private readonly Iso52016EnergyNeedOptions _energyOptions;
     private readonly En16798ProfileOptions _profileOptions;
+    private readonly WindowSolarGainEngine _windowSolarGains;
 
     public BuildingSyntheticDesignDayService(
         IBuildingRepository buildings,
@@ -26,7 +29,8 @@ public sealed class BuildingSyntheticDesignDayService
         IEn16798ProfileCatalog profileCatalog,
         INaturalVentilationAirflowService? naturalVentilationAirflowService,
         IOptions<Iso52016EnergyNeedOptions> energyOptions,
-        IOptions<En16798ProfileOptions> profileOptions)
+        IOptions<En16798ProfileOptions> profileOptions,
+        WindowSolarGainEngine? windowSolarGains = null)
     {
         _buildings = buildings;
         _envelopeReferenceData = envelopeReferenceData;
@@ -34,6 +38,7 @@ public sealed class BuildingSyntheticDesignDayService
         _naturalVentilationAirflowService = naturalVentilationAirflowService;
         _energyOptions = energyOptions.Value;
         _profileOptions = profileOptions.Value;
+        _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
     }
 
     public async Task<Result<BuildingSyntheticDesignDayResponse>> CalculateAsync(
@@ -171,11 +176,20 @@ public sealed class BuildingSyntheticDesignDayService
 
         var solarGainsW = request.IncludeSolarGains
             ? room.Windows.Sum(window =>
-                window.Area.SquareMeters *
-                window.Shgc.Value *
-                solarHorizontalWPerM2 *
-                GetFacadeSolarMultiplier(window.Orientation, hourOfDay) *
-                GetSimpleShadingReduction(window))
+            {
+                var incidentIrradiance =
+                    solarHorizontalWPerM2 *
+                    GetFacadeSolarMultiplier(window.Orientation, hourOfDay);
+                var solar = _windowSolarGains.Calculate(
+                    WindowSolarGainInputFactory.CreateForWindow(
+                        window,
+                        incidentIrradiance,
+                        externalShadingFactor: GetSimpleShadingReduction(window),
+                        hourIndex: hourOfDay,
+                        isNight: solarHorizontalWPerM2 <= 0));
+
+                return solar.Value.SolarGainW;
+            })
             : 0.0;
 
         var outdoorUa = GetOutdoorEnvelopeHeatTransferCoefficient(room, envelopeDefaults);
@@ -232,16 +246,17 @@ public sealed class BuildingSyntheticDesignDayService
 
         var infiltrationAch = room.VentilationParameters?.InfiltrationAirChangesPerHour ?? 0.0;
         var heatRecoveryFactor = 1.0 - (room.VentilationParameters?.HeatRecoveryEfficiency ?? 0.0);
+        var airHeatCapacityWhPerM3K = AirPhysicalConstants.AirHeatCapacityWhPerM3K;
 
         var mechanicalUa =
-            _energyOptions.AirHeatCapacityWhPerM3K *
+            airHeatCapacityWhPerM3K *
             airChangesPerHour *
             room.CalculateVolume() *
             heatRecoveryFactor *
             ventilationFactor;
 
         var infiltrationUa =
-            _energyOptions.AirHeatCapacityWhPerM3K *
+            airHeatCapacityWhPerM3K *
             infiltrationAch *
             room.CalculateVolume();
 

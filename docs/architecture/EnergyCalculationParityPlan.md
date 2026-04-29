@@ -49,6 +49,9 @@ Parity означает, что AssistantEngineer на одинаковых вх
 
 | Code | Feature | Current AssistantEngineer status |
 |---|---|---|
+| ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER | Transmission heat transfer | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS | Window solar gains | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS | Ventilation and infiltration loads | InternalDeterministicTested |
 | ISO52010.CLIMATE_CONVERSION | ISO 52010 external climate conversion | partial |
 | ISO52010.SURFACE_IRRADIANCE | Solar irradiance on tilted/oriented surfaces | partial |
 | WEATHER.EPW | EPW weather input normalization | partial |
@@ -135,3 +138,42 @@ API/reporting integration.
 - annual demand: ±0.1 kWh.
 
 Tolerance можно расширять только с documented assumption.
+
+## Deterministic fixtures added
+
+Эти fixtures являются deterministic reference fixtures AssistantEngineer. Они не являются external reference parity proof и не переводят matrix features в covered.
+
+| Fixture | Scope | Test coverage |
+|---|---|---|
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/single-zone-no-solar.json` | Single-zone hourly heat balance without solar gains | Heating/cooling load, fixed transmission and ventilation coefficients, internal gains |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/single-zone-solar-south-window.json` | Single south-facing window solar gains | Beam, diffuse sky, ground-reflected and total solar gains |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/single-zone-annual-8760.json` | Compact one-zone annual aggregation | 8760-hour month bins, monthly sums, annual totals, peak loads |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/transmission-single-external-wall-winter.json` | Transmission heat transfer | Single outdoor wall winter heat loss |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/transmission-single-window-winter.json` | Transmission heat transfer | Single outdoor window winter heat loss |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/transmission-adiabatic-internal-wall.json` | Transmission heat transfer | Internal adiabatic boundary exclusion and diagnostic |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/transmission-adjacent-conditioned-same-temperature.json` | Transmission heat transfer | Adjacent conditioned zone with zero temperature difference |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/transmission-outdoor-cooling-gain.json` | Transmission heat transfer | Outdoor cooling condition heat gain sign convention |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/window-solar-single-window-no-shading.json` | Window solar gains | Single window, no shading, provided incident irradiance |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/window-solar-single-window-with-shading.json` | Window solar gains | Frame, internal shading, external shading and fixed factors |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/window-solar-night-is-zero.json` | Window solar gains | Zero incident irradiance returns zero solar gain |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/window-solar-invalid-shgc-diagnostics.json` | Window solar gains | Invalid SHGC produces diagnostics and no gain |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/window-solar-room-aggregation.json` | Window solar gains | Room-level aggregation across two windows |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-mechanical-heating-load.json` | Ventilation and infiltration loads | Mechanical ventilation winter heating load |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-mechanical-cooling-load.json` | Ventilation and infiltration loads | Mechanical ventilation summer cooling load |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-with-heat-recovery.json` | Ventilation and infiltration loads | Heat recovery reduces mechanical ventilation load |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-infiltration-by-ach.json` | Ventilation and infiltration loads | Infiltration airflow from ACH and room volume |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-zero-airflow.json` | Ventilation and infiltration loads | Zero airflow returns zero outdoor air load |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-invalid-heat-recovery-efficiency.json` | Ventilation and infiltration loads | Invalid heat recovery efficiency produces diagnostics |
+
+## Fixtures still needed
+
+| Needed fixture | Purpose |
+|---|---|
+| External reference single-zone annual ISO 52016 case | Real parity proof against an independently produced reference result |
+| Multi-zone adjacent conditioned zone | Verify adiabatic/internal separating-wall behavior |
+| Adjacent unconditioned zone | Verify adjusted adjacent-zone temperature and heat-transfer coefficient |
+| EPW weather normalization fixture | Verify 8760 weather import and ISO 52010 conversion |
+| PVGIS weather normalization fixture | Verify PVGIS import normalization |
+| Surface irradiance N/E/S/W/horizontal fixture | Verify ISO 52010 oriented surface irradiance |
+| DHW EN 12831-3 fixture | Verify domestic hot water demand |
+| Primary energy EN 15316-1 fixture | Verify delivered/final/primary energy aggregation |

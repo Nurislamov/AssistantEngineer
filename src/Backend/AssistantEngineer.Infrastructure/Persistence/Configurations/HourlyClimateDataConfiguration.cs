@@ -40,10 +40,10 @@ public class HourlyClimateDataConfiguration : IEntityTypeConfiguration<HourlyCli
         // Индексы с фильтром
         builder.HasIndex(x => new { x.ClimateDataId, x.Hour })
             .IsUnique()
-            .HasFilter("[ClimateDataId] IS NOT NULL AND [Hour] IS NOT NULL");
+            .HasFilter("\"ClimateDataId\" IS NOT NULL AND \"Hour\" IS NOT NULL");
 
         builder.HasIndex(x => new { x.AnnualClimateDataId, x.HourOfYear })
             .IsUnique()
-            .HasFilter("[AnnualClimateDataId] IS NOT NULL AND [HourOfYear] IS NOT NULL");
+            .HasFilter("\"AnnualClimateDataId\" IS NOT NULL AND \"HourOfYear\" IS NOT NULL");
     }
 }

@@ -1,8 +1,11 @@
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -11,17 +14,20 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoa
 
 public sealed class BuildingHeatingReadModelCalculator
 {
-    private const double InternalSurfaceResistance = 0.13;
-    private const double ExternalSurfaceResistance = 0.04;
-
     private readonly En12831HeatingLoadOptions _options;
+    private readonly TransmissionHeatTransferEngine _transmissionHeatTransfer;
+    private readonly VentilationAndInfiltrationLoadEngine _ventilationLoads;
     private readonly ILogger<BuildingHeatingReadModelCalculator> _logger;
 
     public BuildingHeatingReadModelCalculator(
         IOptions<En12831HeatingLoadOptions> options,
+        TransmissionHeatTransferEngine? transmissionHeatTransfer = null,
+        VentilationAndInfiltrationLoadEngine? ventilationLoads = null,
         ILogger<BuildingHeatingReadModelCalculator>? logger = null)
     {
         _options = options.Value;
+        _transmissionHeatTransfer = transmissionHeatTransfer ?? new TransmissionHeatTransferEngine();
+        _ventilationLoads = ventilationLoads ?? new VentilationAndInfiltrationLoadEngine();
         _logger = logger ?? NullLogger<BuildingHeatingReadModelCalculator>.Instance;
     }
 
@@ -92,27 +98,18 @@ public sealed class BuildingHeatingReadModelCalculator
             _options.DefaultOutdoorHeatingDesignTemperatureC;
         var deltaT = Math.Max(indoorTemperature - outdoorTemperature, 0);
 
-        var transmissionLoss = room.Walls
-            .Where(wall => wall.IsExternal)
-            .Sum(wall => wall.AreaM2 * GetWallUValue(wall) * deltaT);
-        transmissionLoss += room.Windows.Sum(window => window.AreaM2 * window.UValue * deltaT);
+        var transmissionResult = _transmissionHeatTransfer.Calculate(
+            RoomTransmissionInputFactory.CreateForReadModelRoom(
+                room,
+                outdoorTemperature));
+        var transmissionLoss = transmissionResult.Value.TotalHeatLossW;
 
-        var airChangesPerHour = room.Ventilation?.AirChangesPerHour ?? _options.DefaultAirChangesPerHour;
-        var heatRecoveryFactor = 1 - (room.Ventilation?.HeatRecoveryEfficiency ?? 0);
-        var mechanicalVentilationLoss = _options.AirHeatCapacityWhPerM3K *
-            airChangesPerHour *
-            room.VolumeM3 *
-            deltaT *
-            heatRecoveryFactor;
-        var infiltrationAirChangesPerHour = room.Ventilation is null
-            ? 0
-            : room.Ventilation.InfiltrationAirChangesPerHour +
-            room.Ventilation.StackCoefficient * Math.Sqrt(deltaT);
-        var infiltrationLoss = _options.AirHeatCapacityWhPerM3K *
-            infiltrationAirChangesPerHour *
-            room.VolumeM3 *
-            deltaT;
-        var ventilationLoss = mechanicalVentilationLoss + infiltrationLoss;
+        var ventilationResult = _ventilationLoads.Calculate(
+            CreateVentilationInput(room, indoorTemperature, outdoorTemperature, deltaT));
+        var ventilationLoss = ventilationResult.Value.TotalHeatingLoadW;
+        var airChangesPerHour =
+            ventilationResult.Value.MechanicalVentilation.AirflowM3PerHour / Math.Max(room.VolumeM3, 0.001) +
+            ventilationResult.Value.Infiltration.InfiltrationAirChangesPerHour;
         var totalLoad = transmissionLoss + ventilationLoss;
 
         return Task.FromResult(new RoomHeatingLoadResult
@@ -124,22 +121,41 @@ public sealed class BuildingHeatingReadModelCalculator
             OutdoorDesignTemperatureC = outdoorTemperature,
             DeltaTemperatureC = Round(deltaT),
             VolumeM3 = Round(room.VolumeM3),
-            AirChangesPerHour = Round(airChangesPerHour + infiltrationAirChangesPerHour),
+            AirChangesPerHour = Round(airChangesPerHour),
             TransmissionHeatLossW = Round(transmissionLoss),
             VentilationHeatLossW = Round(ventilationLoss),
+            MechanicalVentilationHeatLossW = Round(ventilationResult.Value.MechanicalVentilation.EffectiveHeatingLoadW),
+            InfiltrationHeatLossW = Round(ventilationResult.Value.Infiltration.HeatingLoadW),
+            NaturalVentilationHeatLossW = Round(ventilationResult.Value.NaturalVentilation.HeatingLoadW),
             TotalDesignHeatingLoadW = Round(totalLoad),
             TotalDesignHeatingLoadKw = Round(totalLoad / 1000.0)
         });
     }
 
-    private static double GetWallUValue(WallHeatingReadModel wall)
+    private VentilationAndInfiltrationLoadInput CreateVentilationInput(
+        RoomHeatingReadModel room,
+        double indoorTemperatureC,
+        double outdoorTemperatureC,
+        double deltaT)
     {
-        if (wall.ConstructionLayers.Count == 0)
-            return wall.UValue;
+        var infiltrationAirChangesPerHour = room.Ventilation is null
+            ? 0
+            : room.Ventilation.InfiltrationAirChangesPerHour +
+            room.Ventilation.StackCoefficient * Math.Sqrt(deltaT);
 
-        var resistance = wall.ConstructionLayers.Sum(layer => layer.ThicknessM / layer.ThermalConductivityWPerMK);
-        var totalResistance = InternalSurfaceResistance + resistance + ExternalSurfaceResistance;
-        return totalResistance > 0 ? 1.0 / totalResistance : wall.UValue;
+        return new VentilationAndInfiltrationLoadInput(
+            RoomId: room.RoomId,
+            AreaM2: room.AreaM2,
+            VolumeM3: room.VolumeM3,
+            OccupancyPeople: 0,
+            IndoorTemperatureC: indoorTemperatureC,
+            OutdoorTemperatureC: outdoorTemperatureC,
+            AirChangesPerHour: room.Ventilation?.AirChangesPerHour ?? _options.DefaultAirChangesPerHour,
+            InfiltrationAirChangesPerHour: infiltrationAirChangesPerHour,
+            HeatRecoveryEfficiency: room.Ventilation?.HeatRecoveryEfficiency ?? 0,
+            AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
+            AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
+            DiagnosticsContext: $"Read-model room {room.RoomId} heating ventilation");
     }
 
     private static double Round(double value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);

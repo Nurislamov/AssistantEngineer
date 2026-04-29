@@ -1,5 +1,6 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material";
+import { ProjectSelector } from "@/features/projects/project-selection/ui/ProjectSelector";
 
 interface AppHeaderProps {
   onMenuClick: () => void;
@@ -17,24 +18,25 @@ export function AppHeader({ onMenuClick }: AppHeaderProps): JSX.Element {
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ gap: 2 }}>
         <IconButton
           edge="start"
           color="inherit"
-          aria-label="Открыть меню"
+          aria-label="Open menu"
           onClick={onMenuClick}
           sx={{ display: { md: "none" }, mr: 1 }}
         >
           <MenuIcon />
         </IconButton>
-        <Box>
+        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           <Typography variant="h6" component="div" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
             AssistantEngineer
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Инженерные расчёты зданий
+            Building engineering calculations
           </Typography>
         </Box>
+        <ProjectSelector />
       </Toolbar>
     </AppBar>
   );

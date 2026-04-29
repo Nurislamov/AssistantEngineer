@@ -80,6 +80,36 @@ public class Wall
         ConstructionAssemblyId = constructionAssembly?.Id;
         return Result.Success();
     }
+
+    public Result Update(
+        Area area,
+        ThermalTransmittance uValue,
+        CardinalDirection orientation,
+        WallBoundaryType boundaryType,
+        Room? adjacentRoom = null)
+    {
+        if (boundaryType is WallBoundaryType.AdjacentConditioned or WallBoundaryType.AdjacentUnconditioned)
+        {
+            if (adjacentRoom is null)
+                return Result.Validation("Adjacent room is required for adjacent wall boundary types.");
+
+            if (adjacentRoom == Room || adjacentRoom.Id == RoomId)
+                return Result.Validation("A wall cannot reference the same room as its adjacent room.");
+        }
+        else if (adjacentRoom is not null)
+        {
+            return Result.Validation("Adjacent room can only be specified for adjacent wall boundary types.");
+        }
+
+        Area = area;
+        UValue = uValue;
+        Orientation = orientation;
+        BoundaryType = boundaryType;
+        IsExternal = boundaryType == WallBoundaryType.External;
+        AdjacentRoom = adjacentRoom;
+        AdjacentRoomId = adjacentRoom?.Id;
+        return Result.Success();
+    }
     
     public Result ClearUnexpectedAdjacentRoomReference()
     {

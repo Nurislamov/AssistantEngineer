@@ -3,6 +3,8 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
+using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
@@ -11,13 +13,19 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
 {
     private readonly CoolingLoadCalculationOptions _options;
     private readonly ICoolingLoadReferenceData _referenceData;
+    private readonly WindowSolarGainEngine _windowSolarGains;
+    private readonly TransmissionHeatTransferEngine _transmissionHeatTransfer;
 
     public SimplifiedCoolingLoadCalculator(
         IOptions<CoolingLoadCalculationOptions> options,
-        ICoolingLoadReferenceData referenceData)
+        ICoolingLoadReferenceData referenceData,
+        WindowSolarGainEngine? windowSolarGains = null,
+        TransmissionHeatTransferEngine? transmissionHeatTransfer = null)
     {
         _options = options.Value;
         _referenceData = referenceData;
+        _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
+        _transmissionHeatTransfer = transmissionHeatTransfer ?? new TransmissionHeatTransferEngine();
     }
 
     public CoolingLoadCalculationMethod Method => CoolingLoadCalculationMethod.Simplified;
@@ -33,21 +41,17 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
         var outdoorTemperature = GetOutdoorDesignTemperature(room);
         var deltaT = Math.Abs(outdoorTemperature - room.IndoorTemperature.Celsius);
         var baseLoad = room.CalculateVolume() * _options.SimplifiedVolumeLoadWPerM3 * GetRoomTypeLoadFactor(room.Type);
-        var windowGain = room.Windows.Sum(window =>
-            window.Area.SquareMeters *
-            _referenceData.GetWindowSolarLoadWPerM2(window.Orientation) *
-            window.Shgc.Value);
-        var wallGain = 0.0;
-        foreach (var wall in room.Walls)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            wallGain += GetWallLoad(wall);
-        }
+        var windowGain = CalculateWindowSolarGain(room);
+        var transmissionGain = CalculateTransmissionCoolingContribution(
+            room,
+            outdoorTemperature);
 
         var peopleGain = room.PeopleCount * _referenceData.GetPeopleHeatGainW(room.Type);
         var equipmentGain = room.EquipmentLoad.Watts;
         var lightingGain = room.LightingLoad.Watts;
-        var totalLoad = baseLoad + windowGain + wallGain + peopleGain + equipmentGain + lightingGain;
+        var totalLoad = Math.Max(
+            0,
+            baseLoad + windowGain + transmissionGain + peopleGain + equipmentGain + lightingGain);
 
         var result = CoolingLoadResultFactory.Create(
             room,
@@ -56,7 +60,10 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
             hourlyHeatLoadW: Enumerable.Repeat(Round(totalLoad), 24).ToList(),
             baseLoad,
             windowGain,
-            wallGain,
+            transmissionGain,
+            ventilationGain: 0,
+            infiltrationGain: 0,
+            naturalVentilationGain: 0,
             peopleGain,
             equipmentGain,
             lightingGain,
@@ -70,16 +77,29 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
         return Task.FromResult(result);
     }
 
-    private double GetWallLoad(Wall wall)
+    private double CalculateTransmissionCoolingContribution(
+        Room room,
+        double outdoorTemperatureC)
     {
-        var loadPerM2 = wall.IsExternal
-            ? wall.Orientation == CardinalDirection.North
-                ? _options.SimplifiedNorthExternalWallLoadWPerM2
-                : _options.SimplifiedExternalWallLoadWPerM2
-            : _options.SimplifiedInternalWallLoadWPerM2;
+        var transmission = _transmissionHeatTransfer.Calculate(
+            RoomTransmissionInputFactory.CreateForRoom(
+                room,
+                room.IndoorTemperature.Celsius,
+                outdoorTemperatureC));
 
-        return wall.Area.SquareMeters * loadPerM2;
+        return transmission.Value.TotalHeatGainW - transmission.Value.TotalHeatLossW;
     }
+
+    private double CalculateWindowSolarGain(Room room) =>
+        room.Windows.Sum(window =>
+        {
+            var solar = _windowSolarGains.Calculate(
+                WindowSolarGainInputFactory.CreateForWindow(
+                    window,
+                    _referenceData.GetWindowSolarLoadWPerM2(window.Orientation)));
+
+            return solar.Value.SolarGainW;
+        });
 
     private double GetReserveFactor(CalculationPreferences? preferences) =>
         preferences?.CoolingSafetyFactor ?? _options.DefaultCoolingSafetyFactor;

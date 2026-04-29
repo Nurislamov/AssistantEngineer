@@ -62,4 +62,33 @@ public class CoolingEquipmentCatalogItem
 
     public void Deactivate() => IsActive = false;
     public void Activate() => IsActive = true;
+
+    public Result Update(
+        string manufacturer,
+        string systemType,
+        string unitType,
+        string modelName,
+        Power nominalCoolingCapacity,
+        bool isActive)
+    {
+        var manufacturerResult = manufacturer.ToRequiredTrimmed("Manufacturer");
+        if (manufacturerResult.IsFailure) return manufacturerResult;
+
+        var systemResult = systemType.ToRequiredTrimmed("System type");
+        if (systemResult.IsFailure) return systemResult;
+
+        var unitResult = unitType.ToRequiredTrimmed("Unit type");
+        if (unitResult.IsFailure) return unitResult;
+
+        var modelResult = modelName.ToRequiredTrimmed("Model name");
+        if (modelResult.IsFailure) return modelResult;
+
+        Manufacturer = manufacturerResult.Value;
+        SystemType = systemResult.Value;
+        UnitType = unitResult.Value;
+        ModelName = modelResult.Value;
+        NominalCoolingCapacity = nominalCoolingCapacity;
+        IsActive = isActive;
+        return Result.Success();
+    }
 }

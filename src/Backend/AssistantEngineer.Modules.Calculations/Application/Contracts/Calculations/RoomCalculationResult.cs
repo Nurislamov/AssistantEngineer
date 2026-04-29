@@ -23,6 +23,9 @@ public class RoomCalculationResult
     public double BaseRoomLoadW { get; set; }
     public double WindowHeatGainW { get; set; }
     public double WallHeatGainW { get; set; }
+    public double VentilationHeatGainW { get; set; }
+    public double InfiltrationHeatGainW { get; set; }
+    public double NaturalVentilationHeatGainW { get; set; }
     public double PeopleHeatGainW { get; set; }
     public double EquipmentHeatGainW { get; set; }
     public double LightingHeatGainW { get; set; }

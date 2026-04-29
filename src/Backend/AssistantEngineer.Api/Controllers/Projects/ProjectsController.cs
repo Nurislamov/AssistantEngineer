@@ -74,4 +74,30 @@ public class ProjectsController : ControllerBase
 
         return result.ToActionResult(this);
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ProjectResponse>> Update(
+        int id,
+        [FromBody] UpdateProjectRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.UpdateProjectAsync(
+            id,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _buildings.DeleteProjectAsync(
+            id,
+            cancellationToken);
+
+        return result.ToNoContentResult(this);
+    }
 }

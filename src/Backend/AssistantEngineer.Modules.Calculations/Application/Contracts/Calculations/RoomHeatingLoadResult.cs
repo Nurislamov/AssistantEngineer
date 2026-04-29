@@ -14,6 +14,9 @@ public class RoomHeatingLoadResult
 
     public double TransmissionHeatLossW { get; set; }
     public double VentilationHeatLossW { get; set; }
+    public double MechanicalVentilationHeatLossW { get; set; }
+    public double InfiltrationHeatLossW { get; set; }
+    public double NaturalVentilationHeatLossW { get; set; }
     public double TotalDesignHeatingLoadW { get; set; }
     public double TotalDesignHeatingLoadKw { get; set; }
 }

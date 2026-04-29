@@ -74,6 +74,8 @@ internal sealed class BuildingRepository : IBuildingRepository
 
     public void Add(Building building) => _context.Buildings.Add(building);
 
+    public void Remove(Building building) => _context.Buildings.Remove(building);
+
     private static IQueryable<Building> WithCalculationGraph(IQueryable<Building> query) =>
         query
             .AsNoTrackingWithIdentityResolution()

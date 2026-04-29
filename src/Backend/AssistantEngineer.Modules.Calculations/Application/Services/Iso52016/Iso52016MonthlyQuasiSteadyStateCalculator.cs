@@ -14,7 +14,7 @@ using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Options;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
@@ -35,6 +35,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
     private readonly En16798ProfileOptions _profileOptions;
     private readonly IGroundTemperatureService _groundTemperatureService;
     private readonly IGroundHeatTransferService _groundHeatTransferService;
+    private readonly WindowSolarGainEngine _windowSolarGains;
 
     public Iso52016MonthlyQuasiSteadyStateCalculator(
         IAnnualClimateDataProvider climateDataProvider,
@@ -48,7 +49,8 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         IOptions<Iso52016MonthlyEnergyNeedOptions> monthlyOptions,
         IOptions<En16798ProfileOptions> profileOptions,
         IGroundTemperatureService groundTemperatureService,
-        IGroundHeatTransferService groundHeatTransferService)
+        IGroundHeatTransferService groundHeatTransferService,
+        WindowSolarGainEngine? windowSolarGains = null)
     {
         _climateDataProvider = climateDataProvider;
         _solarRadiationService = solarRadiationService;
@@ -62,6 +64,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         _profileOptions = profileOptions.Value;
         _groundTemperatureService = groundTemperatureService;
         _groundHeatTransferService = groundHeatTransferService;
+        _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
     }
 
     public async Task<Iso52016AnnualEnergyNeedResult?> CalculateBuildingEnergyNeedsAsync(
@@ -267,12 +270,16 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
 
             var shadingReduction = GetWindowShadingReduction(window, dayOfYear, hourOfDay, preferences);
 
-            return window.Area.SquareMeters *
-                window.Shgc.Value *
-                radiation *
-                (1 - GetWindowFrameAreaFraction(preferences)) *
-                shadingReduction *
-                GetSolarUtilizationFactor(preferences);
+            var solar = _windowSolarGains.Calculate(
+                WindowSolarGainInputFactory.CreateForWindow(
+                    window,
+                    radiation,
+                    frameFactor: 1 - GetWindowFrameAreaFraction(preferences),
+                    externalShadingFactor: shadingReduction,
+                    fixedShadingFactor: GetSolarUtilizationFactor(preferences),
+                    hourIndex: weather.HourOfYear));
+
+            return solar.Value.SolarGainW;
         });
     }
 

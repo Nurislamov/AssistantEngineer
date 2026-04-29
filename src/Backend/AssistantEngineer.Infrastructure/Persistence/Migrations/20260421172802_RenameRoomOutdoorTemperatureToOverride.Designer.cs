@@ -149,11 +149,11 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AnnualClimateDataId", "HourOfYear")
                         .IsUnique()
-                        .HasFilter("[AnnualClimateDataId] IS NOT NULL AND [HourOfYear] IS NOT NULL");
+                        .HasFilter("\"AnnualClimateDataId\" IS NOT NULL AND \"HourOfYear\" IS NOT NULL");
 
                     b.HasIndex("ClimateDataId", "Hour")
                         .IsUnique()
-                        .HasFilter("[ClimateDataId] IS NOT NULL AND [Hour] IS NOT NULL");
+                        .HasFilter("\"ClimateDataId\" IS NOT NULL AND \"Hour\" IS NOT NULL");
 
                     b.ToTable("HourlyClimateData", (string)null);
                 });

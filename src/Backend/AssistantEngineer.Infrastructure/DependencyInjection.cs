@@ -1,5 +1,6 @@
 using AssistantEngineer.Infrastructure.Composition;
 using AssistantEngineer.Infrastructure.Configuration;
+using AssistantEngineer.Infrastructure.Seeding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddApplicationProviders();
         ReportExporterRegistration.AddReportExporters(services);
         services.AddEnergyPlusIntegration(configuration);
+        services.AddScoped<IDevelopmentDemoDataSeeder, DevelopmentDemoDataSeeder>();
 
         return services;
     }

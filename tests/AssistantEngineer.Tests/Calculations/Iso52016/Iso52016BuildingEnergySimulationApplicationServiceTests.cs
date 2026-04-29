@@ -376,6 +376,11 @@ public class Iso52016BuildingEnergySimulationApplicationServiceTests
         {
         }
 
+        public void Remove(
+            Building building)
+        {
+        }
+
         public Task<Building?> GetForValidationAsync(
             int id,
             bool asTracking = false,

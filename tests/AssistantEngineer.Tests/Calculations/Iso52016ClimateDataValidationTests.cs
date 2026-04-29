@@ -104,6 +104,8 @@ public class Iso52016ClimateDataValidationTests
             throw new NotSupportedException();
 
         public void Add(Building building) => throw new NotSupportedException();
+
+        public void Remove(Building building) => throw new NotSupportedException();
     }
 
     private sealed class EmptyPreferencesRepository : ICalculationPreferencesRepository

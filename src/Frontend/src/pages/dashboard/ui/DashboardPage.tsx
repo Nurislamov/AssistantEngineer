@@ -3,40 +3,46 @@ import CalculateIcon from "@mui/icons-material/Calculate";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { Button, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { appConfig } from "@/shared/config/env";
 import { paths } from "@/app/router/paths";
+import { useProjectSelection } from "@/features/projects/project-selection/model/ProjectSelectionProvider";
 import { DataCard } from "@/shared/ui/DataCard";
 import { PageContainer } from "@/shared/ui/PageContainer";
 import { PageHeader } from "@/shared/ui/PageHeader";
 
 export function DashboardPage(): JSX.Element {
+  const { selectedProjectId } = useProjectSelection();
+
   return (
     <PageContainer>
       <PageHeader
         title="Dashboard"
-        description={`Текущий проект для API-запросов: #${appConfig.defaultProjectId}`}
+        description={
+          selectedProjectId
+            ? `Selected project: #${selectedProjectId}`
+            : "No project selected. Create or select a project to start."
+        }
       />
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           icon={<ApartmentIcon color="primary" />}
-          title="Здания"
-          description="Список зданий, создание и переход в карточку."
+          title="Buildings"
+          description="Create projects, buildings, floors, rooms, envelope elements, and model inputs."
           to={paths.buildings}
-          action="Открыть здания"
+          action="Open buildings"
         />
         <DashboardCard
           icon={<CalculateIcon color="primary" />}
-          title="Расчёты"
-          description="Расчёты запускаются из карточки здания или строки помещения."
-          to={paths.calculations}
-          action="Открыть результаты"
+          title="Calculations"
+          description="Run building and room load calculations from a building workspace."
+          to={paths.buildings}
+          action="Choose building"
         />
         <DashboardCard
           icon={<PrecisionManufacturingIcon color="primary" />}
-          title="Оборудование"
-          description="Заготовка под будущий подбор оборудования."
+          title="Equipment"
+          description="Maintain cooling equipment catalog items and select equipment for rooms."
           to={paths.equipmentSelection}
-          action="Открыть модуль"
+          action="Open equipment"
         />
       </Stack>
     </PageContainer>

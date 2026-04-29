@@ -6,6 +6,10 @@ import type {
   BuildingDto,
   CreateBuildingRequest,
   CreateProjectRequest,
+  UpdateBuildingRequest,
+  UpdateProjectRequest,
+  BuildingReadinessApiResponse,
+  BuildingValidationApiResponse,
   ProjectApiResponse,
   ProjectDto,
 } from "../types";
@@ -44,6 +48,21 @@ export const projectsApi = {
 
     return mapProject(response);
   },
+
+  async update(projectId: number, request: UpdateProjectRequest): Promise<ProjectDto> {
+    const response = await apiRequest<ProjectApiResponse>(apiRoutes.projects.update(projectId), {
+      method: "PUT",
+      body: request,
+    });
+
+    return mapProject(response);
+  },
+
+  async delete(projectId: number): Promise<void> {
+    await apiRequest<void>(apiRoutes.projects.delete(projectId), {
+      method: "DELETE",
+    });
+  },
 };
 
 export const buildingsApi = {
@@ -75,5 +94,29 @@ export const buildingsApi = {
     return mapBuilding(response);
   },
 
-  // TODO: add update/delete methods when backend exposes PUT/DELETE /api/v1/buildings/{buildingId}.
+  async update(buildingId: number, request: UpdateBuildingRequest): Promise<BuildingDto> {
+    const response = await apiRequest<BuildingApiResponse>(apiRoutes.buildings.update(buildingId), {
+      method: "PUT",
+      body: {
+        name: request.name,
+        climateZoneId: request.climateZoneId ?? null,
+      },
+    });
+
+    return mapBuilding(response);
+  },
+
+  async delete(buildingId: number): Promise<void> {
+    await apiRequest<void>(apiRoutes.buildings.delete(buildingId), {
+      method: "DELETE",
+    });
+  },
+
+  async getReadiness(buildingId: number): Promise<BuildingReadinessApiResponse> {
+    return apiRequest<BuildingReadinessApiResponse>(apiRoutes.buildings.readiness(buildingId));
+  },
+
+  async getValidation(buildingId: number): Promise<BuildingValidationApiResponse> {
+    return apiRequest<BuildingValidationApiResponse>(apiRoutes.buildings.validation(buildingId));
+  },
 };

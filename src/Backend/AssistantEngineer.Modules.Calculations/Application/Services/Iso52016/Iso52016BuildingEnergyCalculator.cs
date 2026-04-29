@@ -131,7 +131,10 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
 
         result.AnnualCoolingDemandKWh = Math.Round(totalCooling, 2, MidpointRounding.AwayFromZero);
         result.AnnualHeatingDemandKWh = Math.Round(totalHeating, 2, MidpointRounding.AwayFromZero);
-        result.AnnualTotalDemandKWh = Math.Round(totalCooling + totalHeating, 2, MidpointRounding.AwayFromZero);
+        result.AnnualTotalDemandKWh = Math.Round(
+            result.AnnualCoolingDemandKWh + result.AnnualHeatingDemandKWh,
+            2,
+            MidpointRounding.AwayFromZero);
 
         _logger.LogInformation(
             "Energy balance calculation finished for building {BuildingId}: annual total {AnnualTotalDemandKWh} kWh.",
@@ -177,5 +180,4 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
         double DesignDayCoolingDemandKWh,
         double DesignMonthHeatingDemandKWh);
 }
-
 

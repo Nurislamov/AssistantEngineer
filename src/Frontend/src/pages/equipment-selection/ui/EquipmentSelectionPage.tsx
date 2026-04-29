@@ -1,15 +1,15 @@
-import { EquipmentSelectionPlaceholder } from "@/features/equipment/equipment-selection/ui/EquipmentSelectionPlaceholder";
 import { PageContainer } from "@/shared/ui/PageContainer";
 import { PageHeader } from "@/shared/ui/PageHeader";
+import { EquipmentPanel } from "@/widgets/building-workspace/ui/BuildingWorkspace";
 
 export function EquipmentSelectionPage(): JSX.Element {
   return (
     <PageContainer>
       <PageHeader
-        title="Подбор оборудования"
-        description="Здесь будет подключаться подбор оборудования по результатам расчётов."
+        title="Equipment"
+        description="Manage the cooling equipment catalog. Room selection is available inside each building workspace."
       />
-      <EquipmentSelectionPlaceholder />
+      <EquipmentPanel rooms={[]} />
     </PageContainer>
   );
 }

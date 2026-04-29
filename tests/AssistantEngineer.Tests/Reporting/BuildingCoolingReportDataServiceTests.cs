@@ -207,6 +207,17 @@ public class BuildingCoolingReportDataServiceTests
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 
+        public Task<Result<EquipmentCatalogItemResponse>> UpdateCatalogItemAsync(
+            int id,
+            UpdateEquipmentCatalogItemRequest request,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result> DeactivateCatalogItemAsync(
+            int id,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public Task<Result<List<EquipmentCatalogItemResponse>>> GetCatalogItemsAsync(
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
@@ -274,6 +285,10 @@ public class BuildingCoolingReportDataServiceTests
             throw new NotSupportedException();
 
         public void Add(
+            Building building) =>
+            throw new NotSupportedException();
+
+        public void Remove(
             Building building) =>
             throw new NotSupportedException();
     }

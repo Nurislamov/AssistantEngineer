@@ -101,6 +101,8 @@ public class EnergyPlusModelExportServiceTests
             throw new NotSupportedException();
 
         public void Add(Building building) => throw new NotSupportedException();
+
+        public void Remove(Building building) => throw new NotSupportedException();
     }
 
     private sealed class ExporterStub : IEnergyPlusModelExporter

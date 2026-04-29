@@ -29,4 +29,6 @@ internal sealed class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
 
     public void Add(Project project) => _context.Projects.Add(project);
+
+    public void Remove(Project project) => _context.Projects.Remove(project);
 }

@@ -9,4 +9,5 @@ public interface IFloorRepository
     Task<Floor?> GetForCalculationAsync(int id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Floor>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default);
     void Add(Floor floor);
+    void Remove(Floor floor);
 }

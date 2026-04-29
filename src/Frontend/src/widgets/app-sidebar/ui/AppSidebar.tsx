@@ -1,4 +1,5 @@
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
@@ -23,14 +24,19 @@ interface AppSidebarProps {
 
 const navItems = [
   { label: "Dashboard", to: paths.dashboard, icon: <DashboardIcon /> },
-  { label: "Здания", to: paths.buildings, icon: <ApartmentIcon /> },
+  { label: "Buildings", to: paths.buildings, icon: <ApartmentIcon /> },
   {
-    label: "Расчёты",
+    label: "Calculations",
     to: paths.calculations,
     icon: <CalculateIcon />,
   },
   {
-    label: "Оборудование",
+    label: "Reports",
+    to: paths.reports,
+    icon: <AssessmentIcon />,
+  },
+  {
+    label: "Equipment",
     to: paths.equipmentSelection,
     icon: <PrecisionManufacturingIcon />,
   },

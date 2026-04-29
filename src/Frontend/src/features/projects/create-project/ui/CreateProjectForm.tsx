@@ -1,10 +1,11 @@
 import { Alert, Button, Stack, TextField } from "@mui/material";
 import { FormEvent, useState } from "react";
+import type { ProjectDto } from "@/entities/building/types";
 import { getErrorMessage } from "@/shared/lib/getErrorMessage";
 import { useCreateProject } from "../model/useCreateProject";
 
 interface CreateProjectFormProps {
-  onCreated?: () => void;
+  onCreated?: (project: ProjectDto) => void;
   onCancel?: () => void;
 }
 
@@ -20,7 +21,7 @@ export function CreateProjectForm({
     event.preventDefault();
 
     if (name.trim().length < 2) {
-      setValidationError("Название проекта должно быть не короче 2 символов");
+      setValidationError("Project name must contain at least 2 characters.");
       return;
     }
 
@@ -28,9 +29,9 @@ export function CreateProjectForm({
     createProject.mutate(
       { name: name.trim() },
       {
-        onSuccess: () => {
+        onSuccess: (project) => {
           setName("");
-          onCreated?.();
+          onCreated?.(project);
         },
       },
     );
@@ -42,7 +43,7 @@ export function CreateProjectForm({
         <Alert severity="error">{validationError ?? getErrorMessage(createProject.error)}</Alert>
       )}
       <TextField
-        label="Название проекта"
+        label="Project name"
         value={name}
         required
         autoFocus
@@ -51,11 +52,11 @@ export function CreateProjectForm({
       <Stack direction="row" spacing={1} justifyContent="flex-end">
         {onCancel ? (
           <Button type="button" color="inherit" onClick={onCancel}>
-            Отмена
+            Cancel
           </Button>
         ) : null}
         <Button type="submit" variant="contained" disabled={createProject.isPending}>
-          Создать
+          Create
         </Button>
       </Stack>
     </Stack>

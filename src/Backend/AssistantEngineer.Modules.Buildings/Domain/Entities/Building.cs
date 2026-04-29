@@ -39,6 +39,15 @@ public class Building
         return Result<Building>.Success(new Building(nameResult.Value, project, climateZone));
     }
 
+    public Result UpdateName(string name)
+    {
+        var nameResult = name.ToRequiredTrimmed("Building name", maxLength: 200);
+        if (nameResult.IsFailure) return nameResult;
+
+        Name = nameResult.Value;
+        return Result.Success();
+    }
+
     public Result<Floor> AddFloor(string name)
     {
         var floorResult = Floor.Create(name, this);

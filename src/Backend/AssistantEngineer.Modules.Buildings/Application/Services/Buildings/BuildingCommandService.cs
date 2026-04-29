@@ -98,4 +98,83 @@ public class BuildingCommandService
             projectId);
         return Result<BuildingResponse>.Success(BuildingsMapper.ToResponse(buildingResult.Value));
     }
+
+    public async Task<Result<BuildingResponse>> UpdateAsync(
+        int buildingId,
+        UpdateBuildingRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Updating building {BuildingId}.", buildingId);
+
+        var building = await _buildings.GetByIdAsync(
+            buildingId,
+            includeClimateZone: true,
+            cancellationToken: cancellationToken);
+        if (building is null)
+        {
+            _logger.LogWarning("Cannot update building because building {BuildingId} was not found.", buildingId);
+            return Result<BuildingResponse>.NotFound($"Building with id {buildingId} not found.");
+        }
+
+        var project = await _projects.GetByIdAsync(
+            building.ProjectId,
+            includeBuildings: true,
+            cancellationToken: cancellationToken);
+        if (project is null)
+            return Result<BuildingResponse>.Validation("Unable to validate building project ownership.");
+
+        if (project.Buildings.Any(existing =>
+                existing.Id != buildingId &&
+                existing.Name.Equals((request.Name ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase)))
+        {
+            return Result<BuildingResponse>.Conflict($"Building with name '{request.Name}' already exists in this project.");
+        }
+
+        ClimateZone? climateZone = null;
+        if (request.ClimateZoneId.HasValue)
+        {
+            climateZone = await _climateZones.GetByIdAsync(request.ClimateZoneId.Value, cancellationToken);
+            if (climateZone is null)
+            {
+                _logger.LogWarning(
+                    "Cannot update building {BuildingId} because climate zone {ClimateZoneId} was not found.",
+                    buildingId,
+                    request.ClimateZoneId);
+                return Result<BuildingResponse>.NotFound($"Climate zone with id {request.ClimateZoneId} not found.");
+            }
+        }
+
+        var updateNameResult = building.UpdateName(request.Name);
+        if (updateNameResult.IsFailure)
+            return Result<BuildingResponse>.Failure(updateNameResult);
+
+        var climateZoneResult = building.SetClimateZone(climateZone);
+        if (climateZoneResult.IsFailure)
+            return Result<BuildingResponse>.Failure(climateZoneResult);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Updated building {BuildingId}.", buildingId);
+        return Result<BuildingResponse>.Success(BuildingsMapper.ToResponse(building));
+    }
+
+    public async Task<Result> DeleteAsync(
+        int buildingId,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Deleting building {BuildingId}.", buildingId);
+
+        var building = await _buildings.GetByIdAsync(buildingId, cancellationToken: cancellationToken);
+        if (building is null)
+        {
+            _logger.LogWarning("Cannot delete building because building {BuildingId} was not found.", buildingId);
+            return Result.NotFound($"Building with id {buildingId} not found.");
+        }
+
+        _buildings.Remove(building);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Deleted building {BuildingId}.", buildingId);
+        return Result.Success();
+    }
 }

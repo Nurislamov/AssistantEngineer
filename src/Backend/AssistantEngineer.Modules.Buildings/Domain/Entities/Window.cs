@@ -57,4 +57,19 @@ public class Window
         Area = newArea;
         return Result.Success();
     }
+
+    public Result Update(
+        Area area,
+        ThermalTransmittance uValue,
+        SolarHeatGainCoefficient shgc,
+        CardinalDirection orientation,
+        WindowShadingParameters? shading = null)
+    {
+        Area = area;
+        UValue = uValue;
+        Shgc = shgc;
+        Orientation = orientation;
+        Shading = shading ?? WindowShadingParameters.None;
+        return Result.Success();
+    }
 }
