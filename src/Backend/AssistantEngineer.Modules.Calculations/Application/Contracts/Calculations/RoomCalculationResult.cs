@@ -21,6 +21,11 @@ public class RoomCalculationResult
     public int PeopleCount { get; set; }
     public double EquipmentLoadW { get; set; }
     public double LightingLoadW { get; set; }
+    public double EffectiveAirChangesPerHour { get; set; }
+    public double EffectiveMechanicalAirflowM3PerHour { get; set; }
+    public double EffectiveInfiltrationAirChangesPerHour { get; set; }
+    public double EffectiveInfiltrationAirflowM3PerHour { get; set; }
+    public string VentilationAssumptionSource { get; set; } = string.Empty;
 
     public double TotalWindowAreaM2 { get; set; }
     public double TotalWallAreaM2 { get; set; }

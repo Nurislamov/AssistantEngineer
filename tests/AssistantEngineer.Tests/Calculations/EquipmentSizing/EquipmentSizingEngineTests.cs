@@ -24,6 +24,80 @@ public class EquipmentSizingEngineTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(5500, result.Value.RequiredCoolingCapacityWithReserveW, precision: 6);
+        Assert.Equal(1.1, result.Value.CoolingSafetyFactor, precision: 6);
+    }
+
+    [Fact]
+    public void Calculate_AppliesSeparateHeatingAndCoolingSafetyFactors()
+    {
+        var result = _engine.Calculate(new EquipmentSizingInput(
+            TargetId: 1,
+            TargetType: EquipmentSizingTargetType.Room,
+            RequiredHeatingLoadW: 10000,
+            RequiredCoolingLoadW: 5000,
+            SafetyFactor: null,
+            Candidates:
+            [
+                Candidate(1, heatingW: 13000, coolingW: 6000)
+            ],
+            HeatingSafetyFactor: 1.2,
+            CoolingSafetyFactor: 1.1));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1.2, result.Value.HeatingSafetyFactor, precision: 6);
+        Assert.Equal(1.1, result.Value.CoolingSafetyFactor, precision: 6);
+        Assert.Equal(12000, result.Value.RequiredHeatingCapacityWithReserveW, precision: 6);
+        Assert.Equal(5500, result.Value.RequiredCoolingCapacityWithReserveW, precision: 6);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingSafetyFactorApplied" &&
+            diagnostic.Message.Contains("1.2", StringComparison.Ordinal));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.CoolingSafetyFactorApplied" &&
+            diagnostic.Message.Contains("1.1", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Calculate_RejectsCandidateForInsufficientHeatingReserveOnly()
+    {
+        var result = _engine.Calculate(new EquipmentSizingInput(
+            TargetId: 1,
+            TargetType: EquipmentSizingTargetType.Room,
+            RequiredHeatingLoadW: 10000,
+            RequiredCoolingLoadW: 5000,
+            SafetyFactor: null,
+            Candidates:
+            [
+                Candidate(1, heatingW: 11000, coolingW: 6000)
+            ],
+            HeatingSafetyFactor: 1.2,
+            CoolingSafetyFactor: 1.1));
+
+        Assert.True(result.IsSuccess);
+        var rejected = Assert.Single(result.Value.RejectedEquipment);
+        Assert.Contains("insufficient heating capacity", rejected.Reasons);
+        Assert.DoesNotContain("insufficient cooling capacity", rejected.Reasons);
+    }
+
+    [Fact]
+    public void Calculate_RejectsCandidateForInsufficientCoolingReserveOnly()
+    {
+        var result = _engine.Calculate(new EquipmentSizingInput(
+            TargetId: 1,
+            TargetType: EquipmentSizingTargetType.Room,
+            RequiredHeatingLoadW: 10000,
+            RequiredCoolingLoadW: 5000,
+            SafetyFactor: null,
+            Candidates:
+            [
+                Candidate(1, heatingW: 13000, coolingW: 5400)
+            ],
+            HeatingSafetyFactor: 1.2,
+            CoolingSafetyFactor: 1.1));
+
+        Assert.True(result.IsSuccess);
+        var rejected = Assert.Single(result.Value.RejectedEquipment);
+        Assert.Contains("insufficient cooling capacity", rejected.Reasons);
+        Assert.DoesNotContain("insufficient heating capacity", rejected.Reasons);
     }
 
     [Fact]
@@ -140,8 +214,12 @@ public class EquipmentSizingEngineTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(1.1, result.Value.SafetyFactor, precision: 6);
+        Assert.Equal(1.1, result.Value.HeatingSafetyFactor, precision: 6);
+        Assert.Equal(1.1, result.Value.CoolingSafetyFactor, precision: 6);
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
-            diagnostic.Code == "EquipmentSizing.DefaultSafetyFactorUsed");
+            diagnostic.Code == "EquipmentSizing.DefaultHeatingSafetyFactorUsed");
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.DefaultCoolingSafetyFactorUsed");
     }
 
     private static EquipmentSizingCandidateInput Candidate(

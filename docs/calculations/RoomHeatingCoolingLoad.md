@@ -67,12 +67,13 @@ Ground contact, solar, ventilation and schedules are assembled with documented f
 - ground boundaries use existing ground temperature profile data when available; missing metadata/profile produces diagnostics and no silent outdoor substitution;
 - window solar gains use annual/weather solar context when available, otherwise `ReferenceByOrientationFallback` is reported;
 - missing room ventilation parameters use the configured default ACH only with a warning that includes the ACH value;
+- room heating/cooling responses expose effective ventilation assumptions: `EffectiveAirChangesPerHour`, `EffectiveMechanicalAirflowM3PerHour`, `EffectiveInfiltrationAirChangesPerHour`, `EffectiveInfiltrationAirflowM3PerHour`, and `VentilationAssumptionSource`;
 - design-point internal gains use schedule factor `1.0`, and diagnostics state this even when room schedules exist.
 
 Response DTOs keep existing public fields and add mapped parity fields where supported:
 
-- heating: `HeatingLoadW`, `HeatingLoadWPerM2`, transmission, ventilation, infiltration and ground breakdown, diagnostics and assumptions;
-- cooling: `CoolingLoadW`, `CoolingLoadWPerM2`, transmission, solar, ventilation, infiltration, internal gains and ground breakdown, diagnostics and assumptions.
+- heating: `HeatingLoadW`, `HeatingLoadWPerM2`, effective ventilation values, transmission, ventilation, infiltration and ground breakdown, diagnostics and assumptions;
+- cooling: `CoolingLoadW`, `CoolingLoadWPerM2`, effective ventilation values, transmission, solar, ventilation, infiltration, internal gains and ground breakdown, diagnostics and assumptions.
 
 ## Deterministic Fixtures
 

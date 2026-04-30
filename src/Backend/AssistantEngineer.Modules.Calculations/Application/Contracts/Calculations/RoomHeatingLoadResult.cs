@@ -17,6 +17,11 @@ public class RoomHeatingLoadResult
     public double DeltaTemperatureC { get; set; }
     public double VolumeM3 { get; set; }
     public double AirChangesPerHour { get; set; }
+    public double EffectiveAirChangesPerHour { get; set; }
+    public double EffectiveMechanicalAirflowM3PerHour { get; set; }
+    public double EffectiveInfiltrationAirChangesPerHour { get; set; }
+    public double EffectiveInfiltrationAirflowM3PerHour { get; set; }
+    public string VentilationAssumptionSource { get; set; } = string.Empty;
 
     public double TransmissionHeatLossW { get; set; }
     public double VentilationHeatLossW { get; set; }

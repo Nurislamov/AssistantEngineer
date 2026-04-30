@@ -10,6 +10,8 @@ public class EquipmentSelectionResult
     public double RequiredHeatingCapacityW { get; set; }
     public double CapacityWithReserveW { get; set; }
     public double SafetyFactor { get; set; }
+    public double HeatingSafetyFactor { get; set; }
+    public double CoolingSafetyFactor { get; set; }
 
     public string RequestedSystemType { get; set; } = string.Empty;
     public string RequestedUnitType { get; set; } = string.Empty;

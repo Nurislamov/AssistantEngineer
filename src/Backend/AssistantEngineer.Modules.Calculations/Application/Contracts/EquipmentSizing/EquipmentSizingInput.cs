@@ -8,4 +8,6 @@ public sealed record EquipmentSizingInput(
     double? SafetyFactor,
     IReadOnlyList<EquipmentSizingCandidateInput> Candidates,
     string? EquipmentType = null,
-    string? DiagnosticsContext = null);
+    string? DiagnosticsContext = null,
+    double? HeatingSafetyFactor = null,
+    double? CoolingSafetyFactor = null);

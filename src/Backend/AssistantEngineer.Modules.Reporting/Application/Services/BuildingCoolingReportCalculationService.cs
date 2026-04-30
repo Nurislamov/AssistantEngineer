@@ -132,6 +132,8 @@ internal sealed class BuildingCoolingReportCalculationService
             RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,
             CapacityWithReserveW = capacityWithReserveW,
             SafetyFactor = sizing.SafetyFactor,
+            HeatingSafetyFactor = sizing.HeatingSafetyFactor,
+            CoolingSafetyFactor = sizing.CoolingSafetyFactor,
             RequestedSystemType = systemType,
             RequestedUnitType = unitType,
             SelectedCatalogItemId = best?.EquipmentId ?? 0,

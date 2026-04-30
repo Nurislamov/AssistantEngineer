@@ -63,6 +63,8 @@ public sealed class RoomEquipmentSelectionController : ControllerBase
             RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,
             CapacityWithReserveW = capacityWithReserveW,
             SafetyFactor = sizing.SafetyFactor,
+            HeatingSafetyFactor = sizing.HeatingSafetyFactor,
+            CoolingSafetyFactor = sizing.CoolingSafetyFactor,
             RequestedSystemType = request.SystemType,
             RequestedUnitType = request.UnitType,
             SelectedCatalogItemId = best?.EquipmentId ?? 0,

@@ -110,7 +110,15 @@ When room-specific ventilation parameters are missing, `EnergyCalculationPipelin
 - `Ventilation.DefaultAirChangesPerHourUsed` with the fallback ACH value; or
 - `Ventilation.InvalidDefaultAirChangesPerHour` when the configured fallback is invalid.
 
-When room-specific ventilation parameters are present, diagnostics record `Ventilation.RoomParametersUsed` and no default ACH fallback warning is emitted.
+Room heating and cooling responses expose the effective values used by the pipeline:
+
+- `EffectiveAirChangesPerHour`
+- `EffectiveMechanicalAirflowM3PerHour`
+- `EffectiveInfiltrationAirChangesPerHour`
+- `EffectiveInfiltrationAirflowM3PerHour`
+- `VentilationAssumptionSource`
+
+When room-specific ventilation parameters are present, diagnostics record `Ventilation.RoomParametersUsed`, response source is `RoomVentilationParameters`, and no default ACH fallback warning is emitted. When defaults are used, response source is `DefaultCalculationPreferences`.
 
 ## Natural Ventilation
 

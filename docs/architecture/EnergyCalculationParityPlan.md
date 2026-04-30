@@ -81,13 +81,13 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Public method query values are preserved as `requestedMethod`; results also expose `actualMethod` and diagnostics when the endpoint is currently using the Energy Calculation Parity design-point pipeline for API compatibility.
 - Room ground boundaries are passed into transmission inputs. If ground-contact metadata or a ground temperature profile is missing, diagnostics state that explicitly; the pipeline does not silently treat ground as outdoor.
 - Room solar gains prefer available annual/weather solar context. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
-- Room ventilation falls back to project/default ACH only with diagnostics that include the value. Invalid default ACH returns validation/diagnostics.
+- Room ventilation falls back to project/default ACH only with diagnostics that include the value. Room responses expose the effective ACH/airflow values and source. Invalid default ACH returns validation/diagnostics.
 - Design-point internal gains use full schedule factor `1.0` and report that assumption. Existing hourly analysis paths remain responsible for schedule expansion.
 - `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It distinguishes `HourlySimulation` from `MonthlyBalanceAdapter` and exposes `isTrueHourly8760`; representative monthly records are not labelled as true 8760 simulation.
 - `POST /api/v1/domestic-hot-water/demand` остается на deterministic DHW service path.
 - Building energy analysis heating/cooling system routes используют `SystemEnergyEngine`; useful, final и primary energy не смешиваются.
 - Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
-- `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет project safety factor, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; otherwise diagnostics state the limitation.
+- `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет separate project heating/cooling safety factors, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; cooling capacity is evaluated against catalog cooling capacity; otherwise diagnostics state the limitation.
 - Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
 - Benchmark verification now asks `ILoadCalculationsFacade` for the AssistantEngineer building cooling result, so comparison reports use the application pipeline result. Benchmark statuses still do not imply external parity coverage without passing comparison evidence.
 
@@ -228,7 +228,7 @@ Tolerance можно расширять только с documented assumption.
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-heating-efficiency.json` | System energy | Useful heating divided by efficiency |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-cooling-cop.json` | System energy | Useful cooling divided by COP |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-total-energy.json` | System energy | Total final energy |
-| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-sizing-cooling-simple.json` | Equipment sizing | Cooling reserve from safety factor |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-sizing-cooling-simple.json` | Equipment sizing | Cooling reserve from cooling safety factor |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-accepted.json` | Equipment sizing | Candidate accepted and margin |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-rejected.json` | Equipment sizing | Candidate rejected with reason |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-no-equipment-found.json` | Equipment sizing | Empty catalog diagnostics |

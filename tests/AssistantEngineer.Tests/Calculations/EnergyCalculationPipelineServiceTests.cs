@@ -133,13 +133,60 @@ public class EnergyCalculationPipelineServiceTests
         var building = CreateDeterministicBuilding(includeVentilation: false);
         var service = CreateService(building);
 
-        var result = await service.CalculateRoomHeatingLoadAsync(1);
+        var heating = await service.CalculateRoomHeatingLoadAsync(1);
+        var cooling = await service.CalculateRoomCoolingLoadAsync(1);
 
-        Assert.True(result.IsSuccess, result.Error);
-        Assert.True(result.Value.Breakdown!.VentilationW > 0);
-        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+        Assert.True(heating.IsSuccess, heating.Error);
+        Assert.True(cooling.IsSuccess, cooling.Error);
+        Assert.True(heating.Value.Breakdown!.VentilationW > 0);
+        Assert.Equal(0.5, heating.Value.AirChangesPerHour, precision: 2);
+        Assert.Equal(0.5, heating.Value.EffectiveAirChangesPerHour, precision: 2);
+        Assert.Equal(30, heating.Value.EffectiveMechanicalAirflowM3PerHour, precision: 2);
+        Assert.Equal(0, heating.Value.EffectiveInfiltrationAirChangesPerHour, precision: 2);
+        Assert.Equal(0.5, cooling.Value.EffectiveAirChangesPerHour, precision: 2);
+        Assert.Equal(30, cooling.Value.EffectiveMechanicalAirflowM3PerHour, precision: 2);
+        Assert.Equal("DefaultCalculationPreferences", heating.Value.VentilationAssumptionSource);
+        Assert.Equal("DefaultCalculationPreferences", cooling.Value.VentilationAssumptionSource);
+        Assert.Contains(heating.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed" &&
             diagnostic.Message.Contains("0.5", StringComparison.Ordinal));
+        Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed" &&
+            diagnostic.Message.Contains("Effective mechanical airflow 30", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task RoomVentilationParametersExposeEffectiveAchAndSuppressDefaultWarning()
+    {
+        var building = CreateDeterministicBuilding();
+        var room = building.Floors.Single().Rooms.Single(room => room.Id == 1);
+        Assert.True(room.SetVentilationParameters(
+            VentilationParameters.Create(
+                airChangesPerHour: 1.2,
+                heatRecoveryEfficiency: 0,
+                infiltrationAirChangesPerHour: 0.3,
+                windExposureFactor: 0,
+                stackCoefficient: 0,
+                windCoefficient: 0).Value).IsSuccess);
+        var service = CreateService(building);
+
+        var heating = await service.CalculateRoomHeatingLoadAsync(1);
+        var cooling = await service.CalculateRoomCoolingLoadAsync(1);
+
+        Assert.True(heating.IsSuccess, heating.Error);
+        Assert.True(cooling.IsSuccess, cooling.Error);
+        Assert.Equal(1.2, heating.Value.EffectiveAirChangesPerHour, precision: 2);
+        Assert.Equal(72, heating.Value.EffectiveMechanicalAirflowM3PerHour, precision: 2);
+        Assert.Equal(0.3, heating.Value.EffectiveInfiltrationAirChangesPerHour, precision: 2);
+        Assert.Equal(18, heating.Value.EffectiveInfiltrationAirflowM3PerHour, precision: 2);
+        Assert.Equal(1.2, cooling.Value.EffectiveAirChangesPerHour, precision: 2);
+        Assert.Equal("RoomVentilationParameters", heating.Value.VentilationAssumptionSource);
+        Assert.Equal("RoomVentilationParameters", cooling.Value.VentilationAssumptionSource);
+        Assert.DoesNotContain(heating.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed");
+        Assert.Contains(heating.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "Ventilation.RoomParametersUsed" &&
+            diagnostic.Message.Contains("Effective ACH 1.2", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -294,6 +341,8 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal(2000, result.Value.RequiredCoolingCapacityW, precision: 2);
         Assert.Equal(1750, result.Value.RequiredHeatingCapacityW, precision: 2);
         Assert.Equal(1.1, result.Value.SafetyFactor, precision: 2);
+        Assert.Equal(1.1, result.Value.CoolingSafetyFactor, precision: 2);
+        Assert.Equal(1.1, result.Value.HeatingSafetyFactor, precision: 2);
         Assert.Equal(2200, result.Value.RequiredCoolingCapacityWithReserveW, precision: 2);
         Assert.Equal(1925, result.Value.RequiredHeatingCapacityWithReserveW, precision: 2);
         Assert.Equal(2, result.Value.BestMatch!.EquipmentId);
@@ -329,6 +378,39 @@ public class EnergyCalculationPipelineServiceTests
             item.Reasons.Contains("insufficient heating capacity"));
         Assert.DoesNotContain(result.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
+    }
+
+    [Fact]
+    public async Task RoomEquipmentSizingUsesSeparateHeatingAndCoolingSafetyFactorsFromPreferences()
+    {
+        var building = CreateDeterministicBuilding();
+        var preferences = CreatePreferences(
+            heatingSafetyFactor: 1.2,
+            coolingSafetyFactor: 1.1);
+        var catalog = new FakeCatalogSizingProvider([
+            new CoolingEquipmentCatalogSizingCandidate(1, "Acme", "DX", "Wall", "HeatingSmall-6000-2000", 6.0, 2.0),
+            new CoolingEquipmentCatalogSizingCandidate(2, "Acme", "DX", "Wall", "HeatingFit-6000-2200", 6.0, 2.2)
+        ]);
+        var service = CreateService(building, catalog, preferences: preferences);
+
+        var result = await service.CalculateRoomEquipmentSizingAsync(
+            1,
+            "DX",
+            "Wall",
+            CoolingLoadCalculationMethod.Simplified);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal(1.2, result.Value.HeatingSafetyFactor, precision: 2);
+        Assert.Equal(1.1, result.Value.CoolingSafetyFactor, precision: 2);
+        Assert.Equal(2100, result.Value.RequiredHeatingCapacityWithReserveW, precision: 2);
+        Assert.Equal(2200, result.Value.RequiredCoolingCapacityWithReserveW, precision: 2);
+        Assert.Equal(2, result.Value.BestMatch!.EquipmentId);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingSafetyFactorApplied" &&
+            diagnostic.Message.Contains("1.2", StringComparison.Ordinal));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.CoolingSafetyFactorApplied" &&
+            diagnostic.Message.Contains("1.1", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -506,9 +588,12 @@ public class EnergyCalculationPipelineServiceTests
         return building;
     }
 
-    private static CalculationPreferences CreatePreferences(double defaultAch = 0.5)
+    private static CalculationPreferences CreatePreferences(
+        double defaultAch = 0.5,
+        double coolingSafetyFactor = 1.1,
+        double heatingSafetyFactor = 1.1)
     {
-        var preferences = CalculationPreferences.Create(1.1, 1.1).Value;
+        var preferences = CalculationPreferences.Create(coolingSafetyFactor, heatingSafetyFactor).Value;
         SetBackingField(preferences, nameof(CalculationPreferences.Iso52016DefaultAirChangesPerHour), defaultAch);
         return preferences;
     }

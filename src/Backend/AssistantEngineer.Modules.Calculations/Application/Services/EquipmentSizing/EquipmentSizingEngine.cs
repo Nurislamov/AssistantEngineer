@@ -23,18 +23,39 @@ public sealed class EquipmentSizingEngine
             return Result<EquipmentSizingResult>.Validation("Equipment sizing candidates are required.");
 
         var diagnostics = Validate(input);
-        var safetyFactor = input.SafetyFactor ?? DocumentedDefaultSafetyFactor;
-        if (!input.SafetyFactor.HasValue)
+        var heatingSafetyFactor = input.HeatingSafetyFactor ?? input.SafetyFactor ?? DocumentedDefaultSafetyFactor;
+        var coolingSafetyFactor = input.CoolingSafetyFactor ?? input.SafetyFactor ?? DocumentedDefaultSafetyFactor;
+        if (!input.HeatingSafetyFactor.HasValue && !input.SafetyFactor.HasValue)
         {
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,
-                "EquipmentSizing.DefaultSafetyFactorUsed",
-                $"Safety factor was not supplied and documented default {DocumentedDefaultSafetyFactor} was used.",
+                "EquipmentSizing.DefaultHeatingSafetyFactorUsed",
+                $"Heating safety factor was not supplied and documented default {DocumentedDefaultSafetyFactor} was used.",
                 input.DiagnosticsContext));
         }
 
-        var requiredHeatingWithReserve = Math.Max(0, input.RequiredHeatingLoadW) * safetyFactor;
-        var requiredCoolingWithReserve = Math.Max(0, input.RequiredCoolingLoadW) * safetyFactor;
+        if (!input.CoolingSafetyFactor.HasValue && !input.SafetyFactor.HasValue)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "EquipmentSizing.DefaultCoolingSafetyFactorUsed",
+                $"Cooling safety factor was not supplied and documented default {DocumentedDefaultSafetyFactor} was used.",
+                input.DiagnosticsContext));
+        }
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
+            "EquipmentSizing.HeatingSafetyFactorApplied",
+            FormattableString.Invariant($"Heating safety factor {Round(heatingSafetyFactor)} was applied."),
+            input.DiagnosticsContext));
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
+            "EquipmentSizing.CoolingSafetyFactorApplied",
+            FormattableString.Invariant($"Cooling safety factor {Round(coolingSafetyFactor)} was applied."),
+            input.DiagnosticsContext));
+
+        var requiredHeatingWithReserve = Math.Max(0, input.RequiredHeatingLoadW) * heatingSafetyFactor;
+        var requiredCoolingWithReserve = Math.Max(0, input.RequiredCoolingLoadW) * coolingSafetyFactor;
         var accepted = new List<EquipmentSizingRecommendedItem>();
         var rejected = new List<EquipmentSizingRejectedItem>();
 
@@ -105,7 +126,9 @@ public sealed class EquipmentSizingEngine
             input.TargetType,
             Round(Math.Max(0, input.RequiredHeatingLoadW)),
             Round(Math.Max(0, input.RequiredCoolingLoadW)),
-            Round(safetyFactor),
+            Round(coolingSafetyFactor),
+            Round(heatingSafetyFactor),
+            Round(coolingSafetyFactor),
             Round(requiredHeatingWithReserve),
             Round(requiredCoolingWithReserve),
             recommended,
@@ -130,6 +153,12 @@ public sealed class EquipmentSizingEngine
 
         if (input.SafetyFactor is <= 0)
             diagnostics.Add(Error("EquipmentSizing.InvalidSafetyFactor", "Safety factor must be greater than zero.", input.DiagnosticsContext));
+
+        if (input.HeatingSafetyFactor is <= 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidHeatingSafetyFactor", "Heating safety factor must be greater than zero.", input.DiagnosticsContext));
+
+        if (input.CoolingSafetyFactor is <= 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidCoolingSafetyFactor", "Cooling safety factor must be greater than zero.", input.DiagnosticsContext));
 
         return diagnostics;
     }

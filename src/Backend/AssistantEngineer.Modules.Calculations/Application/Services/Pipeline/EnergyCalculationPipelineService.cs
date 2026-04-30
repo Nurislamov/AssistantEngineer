@@ -31,6 +31,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
@@ -167,7 +168,7 @@ public sealed class EnergyCalculationPipelineService
         if (load.Value.HasErrors)
             return Result<RoomHeatingLoadResult>.Validation(FormatErrorDiagnostics(load.Value.Diagnostics));
 
-        return Result<RoomHeatingLoadResult>.Success(MapHeatingRoomResult(room, load.Value, method));
+        return Result<RoomHeatingLoadResult>.Success(MapHeatingRoomResult(room, load.Value, method, preferences));
     }
 
     public async Task<Result<FloorCalculationResult>> CalculateFloorLoadAsync(
@@ -272,7 +273,7 @@ public sealed class EnergyCalculationPipelineService
             if (roomLoad.Value.HasErrors)
                 return Result<BuildingHeatingLoadResult>.Validation(FormatErrorDiagnostics(roomLoad.Value.Diagnostics));
 
-            roomResults.Add(MapHeatingRoomResult(room, roomLoad.Value, method));
+            roomResults.Add(MapHeatingRoomResult(room, roomLoad.Value, method, preferences));
         }
 
         return Result<BuildingHeatingLoadResult>.Success(MapBuildingHeatingResult(
@@ -385,7 +386,9 @@ public sealed class EnergyCalculationPipelineService
             RequiredCoolingLoadW: load.Value.CoolingLoadW,
             SafetyFactor: preferences.CoolingSafetyFactor,
             Candidates: candidates,
-            DiagnosticsContext: $"Room {room.Id} equipment selection"));
+            DiagnosticsContext: $"Room {room.Id} equipment selection",
+            HeatingSafetyFactor: preferences.HeatingSafetyFactor,
+            CoolingSafetyFactor: preferences.CoolingSafetyFactor));
 
         if (sizing.IsFailure)
             return sizing;
@@ -403,7 +406,7 @@ public sealed class EnergyCalculationPipelineService
         return Result<EquipmentSizingResult>.Success(sizing.Value with
         {
             RequiredHeatingCapacityW = Round(load.Value.HeatingLoadW),
-            RequiredHeatingCapacityWithReserveW = Round(load.Value.HeatingLoadW * preferences.CoolingSafetyFactor),
+            RequiredHeatingCapacityWithReserveW = Round(load.Value.HeatingLoadW * preferences.HeatingSafetyFactor),
             Diagnostics = diagnostics
         });
     }
@@ -536,6 +539,7 @@ public sealed class EnergyCalculationPipelineService
             : Math.Max(outdoorTemperatureC - indoorTemperatureC, 0);
         var ventilation = room.VentilationParameters;
         var defaultAch = preferences.Iso52016DefaultAirChangesPerHour;
+        var effectiveVentilation = ResolveEffectiveVentilationAssumption(room, preferences, deltaT);
         if (ventilation is null)
         {
             diagnostics.Add(new CalculationDiagnostic(
@@ -547,7 +551,13 @@ public sealed class EnergyCalculationPipelineService
                     : "Ventilation.DefaultAirChangesPerHourUsed",
                 defaultAch < 0
                     ? "Room ventilation parameters are missing and the default ACH is invalid."
-                    : FormattableString.Invariant($"Room ventilation parameters are missing; default ACH {Round(defaultAch)} was used."),
+                    : string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Room ventilation parameters are missing; default ACH {0} was used. Effective mechanical airflow {1} m3/h; effective infiltration ACH {2}; effective infiltration airflow {3} m3/h.",
+                        Round(defaultAch),
+                        Round(effectiveVentilation.EffectiveMechanicalAirflowM3PerHour),
+                        Round(effectiveVentilation.EffectiveInfiltrationAirChangesPerHour),
+                        Round(effectiveVentilation.EffectiveInfiltrationAirflowM3PerHour)),
                 $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
         }
         else
@@ -555,13 +565,15 @@ public sealed class EnergyCalculationPipelineService
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Info,
                 "Ventilation.RoomParametersUsed",
-                "Room ventilation parameters were used.",
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Room ventilation parameters were used. Effective ACH {0}; effective mechanical airflow {1} m3/h; effective infiltration ACH {2}; effective infiltration airflow {3} m3/h.",
+                    Round(effectiveVentilation.EffectiveAirChangesPerHour),
+                    Round(effectiveVentilation.EffectiveMechanicalAirflowM3PerHour),
+                    Round(effectiveVentilation.EffectiveInfiltrationAirChangesPerHour),
+                    Round(effectiveVentilation.EffectiveInfiltrationAirflowM3PerHour)),
                 $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
         }
-
-        var infiltrationAirChangesPerHour = ventilation is null
-            ? 0
-            : ventilation.InfiltrationAirChangesPerHour + ventilation.StackCoefficient * Math.Sqrt(deltaT);
 
         return new VentilationAndInfiltrationLoadInput(
             RoomId: room.Id,
@@ -570,9 +582,8 @@ public sealed class EnergyCalculationPipelineService
             OccupancyPeople: room.PeopleCount,
             IndoorTemperatureC: indoorTemperatureC,
             OutdoorTemperatureC: outdoorTemperatureC,
-            AirChangesPerHour: ventilation?.AirChangesPerHour ??
-                defaultAch,
-            InfiltrationAirChangesPerHour: infiltrationAirChangesPerHour,
+            AirChangesPerHour: effectiveVentilation.EffectiveAirChangesPerHour,
+            InfiltrationAirChangesPerHour: effectiveVentilation.EffectiveInfiltrationAirChangesPerHour,
             HeatRecoveryEfficiency: ventilation?.HeatRecoveryEfficiency ?? 0,
             AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
             AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
@@ -588,6 +599,30 @@ public sealed class EnergyCalculationPipelineService
             EquipmentLoadW: room.EquipmentLoad.Watts,
             LightingLoadW: room.LightingLoad.Watts,
             DiagnosticsContext: $"Room {room.Id} application internal gains");
+
+    private static EffectiveVentilationAssumption ResolveEffectiveVentilationAssumption(
+        Room room,
+        CalculationPreferences preferences,
+        double deltaT)
+    {
+        var ventilation = room.VentilationParameters;
+        var volumeM3 = room.CalculateVolume();
+        var mechanicalAch = ventilation?.AirChangesPerHour ??
+            preferences.Iso52016DefaultAirChangesPerHour;
+        var infiltrationAch = ventilation is null
+            ? 0
+            : ventilation.InfiltrationAirChangesPerHour + ventilation.StackCoefficient * Math.Sqrt(deltaT);
+        var source = ventilation is null
+            ? "DefaultCalculationPreferences"
+            : "RoomVentilationParameters";
+
+        return new EffectiveVentilationAssumption(
+            EffectiveAirChangesPerHour: mechanicalAch,
+            EffectiveMechanicalAirflowM3PerHour: mechanicalAch * volumeM3,
+            EffectiveInfiltrationAirChangesPerHour: infiltrationAch,
+            EffectiveInfiltrationAirflowM3PerHour: infiltrationAch * volumeM3,
+            Source: source);
+    }
 
     private async Task<PipelineClimateContext> BuildClimateContextAsync(
         Building building,
@@ -976,6 +1011,10 @@ public sealed class EnergyCalculationPipelineService
         var outdoorTemperature = room.OutdoorTemperatureOverride?.Celsius ??
             room.Floor.Building.ClimateZone?.SummerDesignTemperature.Celsius ??
             room.IndoorTemperature.Celsius;
+        var ventilationAssumption = ResolveEffectiveVentilationAssumption(
+            room,
+            preferences,
+            Math.Max(outdoorTemperature - room.IndoorTemperature.Celsius, 0));
 
         return new RoomCalculationResult
         {
@@ -994,6 +1033,11 @@ public sealed class EnergyCalculationPipelineService
             PeopleCount = room.PeopleCount,
             EquipmentLoadW = Round(room.EquipmentLoad.Watts),
             LightingLoadW = Round(room.LightingLoad.Watts),
+            EffectiveAirChangesPerHour = Round(ventilationAssumption.EffectiveAirChangesPerHour),
+            EffectiveMechanicalAirflowM3PerHour = Round(ventilationAssumption.EffectiveMechanicalAirflowM3PerHour),
+            EffectiveInfiltrationAirChangesPerHour = Round(ventilationAssumption.EffectiveInfiltrationAirChangesPerHour),
+            EffectiveInfiltrationAirflowM3PerHour = Round(ventilationAssumption.EffectiveInfiltrationAirflowM3PerHour),
+            VentilationAssumptionSource = ventilationAssumption.Source,
             TotalWindowAreaM2 = Round(room.Windows.Sum(window => window.Area.SquareMeters)),
             TotalWallAreaM2 = Round(room.Walls.Sum(wall => wall.Area.SquareMeters)),
             ExternalWallAreaM2 = Round(room.Walls.Where(wall => wall.IsExternal).Sum(wall => wall.Area.SquareMeters)),
@@ -1025,13 +1069,21 @@ public sealed class EnergyCalculationPipelineService
     private static RoomHeatingLoadResult MapHeatingRoomResult(
         Room room,
         RoomLoadCalculationResult load,
-        HeatingLoadCalculationMethod requestedMethod)
+        HeatingLoadCalculationMethod requestedMethod,
+        CalculationPreferences preferences)
     {
         var ventilation = load.HeatingBreakdown.VentilationW;
         var infiltration = load.HeatingBreakdown.InfiltrationW;
         var transmission = load.HeatingBreakdown.TransmissionW +
             load.HeatingBreakdown.WindowTransmissionW +
             load.HeatingBreakdown.GroundW;
+        var outdoorDesignTemperature = room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ??
+            room.OutdoorTemperatureOverride?.Celsius ??
+            0;
+        var ventilationAssumption = ResolveEffectiveVentilationAssumption(
+            room,
+            preferences,
+            Math.Max(room.IndoorTemperature.Celsius - outdoorDesignTemperature, 0));
 
         return new RoomHeatingLoadResult
         {
@@ -1042,10 +1094,15 @@ public sealed class EnergyCalculationPipelineService
             ActualMethod = EnergyCalculationParityDesignPoint,
             CalculationMethodLabel = "Energy Calculation Parity design-point pipeline",
             IndoorDesignTemperatureC = Round(room.IndoorTemperature.Celsius),
-            OutdoorDesignTemperatureC = Round(room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ?? 0),
-            DeltaTemperatureC = Round(Math.Max(room.IndoorTemperature.Celsius - (room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ?? 0), 0)),
+            OutdoorDesignTemperatureC = Round(outdoorDesignTemperature),
+            DeltaTemperatureC = Round(Math.Max(room.IndoorTemperature.Celsius - outdoorDesignTemperature, 0)),
             VolumeM3 = Round(room.CalculateVolume()),
-            AirChangesPerHour = Round((room.VentilationParameters?.AirChangesPerHour ?? 0) + (room.VentilationParameters?.InfiltrationAirChangesPerHour ?? 0)),
+            AirChangesPerHour = Round(ventilationAssumption.EffectiveAirChangesPerHour),
+            EffectiveAirChangesPerHour = Round(ventilationAssumption.EffectiveAirChangesPerHour),
+            EffectiveMechanicalAirflowM3PerHour = Round(ventilationAssumption.EffectiveMechanicalAirflowM3PerHour),
+            EffectiveInfiltrationAirChangesPerHour = Round(ventilationAssumption.EffectiveInfiltrationAirChangesPerHour),
+            EffectiveInfiltrationAirflowM3PerHour = Round(ventilationAssumption.EffectiveInfiltrationAirflowM3PerHour),
+            VentilationAssumptionSource = ventilationAssumption.Source,
             TransmissionHeatLossW = Round(transmission),
             VentilationHeatLossW = Round(ventilation + infiltration),
             MechanicalVentilationHeatLossW = Round(ventilation),
@@ -1359,6 +1416,13 @@ public sealed class EnergyCalculationPipelineService
         string Source,
         bool IsTrueHourly8760,
         IReadOnlyList<CalculationDiagnostic> Diagnostics);
+
+    private sealed record EffectiveVentilationAssumption(
+        double EffectiveAirChangesPerHour,
+        double EffectiveMechanicalAirflowM3PerHour,
+        double EffectiveInfiltrationAirChangesPerHour,
+        double EffectiveInfiltrationAirflowM3PerHour,
+        string Source);
 
     private static double Round(double value) =>
         Math.Round(value, 2, MidpointRounding.AwayFromZero);

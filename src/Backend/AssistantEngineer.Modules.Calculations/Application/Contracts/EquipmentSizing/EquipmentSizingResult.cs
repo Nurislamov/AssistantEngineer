@@ -8,6 +8,8 @@ public sealed record EquipmentSizingResult(
     double RequiredHeatingCapacityW,
     double RequiredCoolingCapacityW,
     double SafetyFactor,
+    double HeatingSafetyFactor,
+    double CoolingSafetyFactor,
     double RequiredHeatingCapacityWithReserveW,
     double RequiredCoolingCapacityWithReserveW,
     IReadOnlyList<EquipmentSizingRecommendedItem> RecommendedEquipment,
