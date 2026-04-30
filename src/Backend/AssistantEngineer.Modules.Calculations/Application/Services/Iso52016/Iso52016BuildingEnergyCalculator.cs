@@ -108,8 +108,12 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                         Month: hour.Month,
                         HeatingLoadW: hour.HeatingLoadW,
                         CoolingLoadW: hour.CoolingLoadW,
+                        TransmissionW: hour.TransmissionW,
+                        VentilationW: hour.VentilationW,
+                        InfiltrationW: hour.InfiltrationW,
                         SolarGainsW: hour.SolarGainsW,
                         InternalGainsW: hour.InternalGainsW,
+                        GroundW: hour.GroundW,
                         HourDurationH: 1.0))
                     .ToList();
                 var hourlyMapping = new HourlySimulationToAnnualEnergyInputMapper().Map(

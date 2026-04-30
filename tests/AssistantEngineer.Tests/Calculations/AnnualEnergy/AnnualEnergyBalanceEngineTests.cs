@@ -105,6 +105,24 @@ public class AnnualEnergyBalanceEngineTests
     }
 
     [Fact]
+    public void Calculate_ComponentBreakdownIncludesProvidedHourlyComponents()
+    {
+        var result = _engine.Calculate(new AnnualEnergyBalanceInput(
+            BuildingId: 1,
+            BuildingName: "Building",
+            BuildingAreaM2: 100,
+            Year: 2026,
+            Hours: CreateComponentHours()));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(876, result.Value.ComponentBreakdown.TransmissionKWh, precision: 6);
+        Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
+        Assert.Equal(262.8, result.Value.ComponentBreakdown.GroundKWh, precision: 6);
+        Assert.Equal(175.2, result.Value.ComponentBreakdown.SolarGainsKWh, precision: 6);
+        Assert.Equal(87.6, result.Value.ComponentBreakdown.InternalGainsKWh, precision: 6);
+    }
+
+    [Fact]
     public void Calculate_EnergyUseIntensityUsesAnnualTotalAndArea()
     {
         var result = _engine.Calculate(new AnnualEnergyBalanceInput(
@@ -235,6 +253,31 @@ public class AnnualEnergyBalanceEngineTests
                 CoolingLoadW: month is >= 5 and <= 9 ? 50 : 0,
                 HourDurationH: hours));
             hour += hours;
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateComponentHours()
+    {
+        var result = new List<AnnualEnergyBalanceHourInput>(8760);
+        var hour = 0;
+        foreach (var (month, hours) in MonthHours())
+        {
+            for (var i = 0; i < hours; i++)
+            {
+                result.Add(new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour++,
+                    Month: month,
+                    HeatingLoadW: 100,
+                    CoolingLoadW: 50,
+                    TransmissionW: 100,
+                    VentilationW: 50,
+                    InfiltrationW: 0,
+                    SolarGainsW: 20,
+                    InternalGainsW: 10,
+                    GroundW: 30));
+            }
         }
 
         return result;

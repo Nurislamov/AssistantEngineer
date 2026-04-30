@@ -36,7 +36,7 @@ The building energy-balance route and energy-balance report facade use the Energ
 
 If the existing hourly simulation path provides 8760 hourly records, `HourlySimulationToAnnualEnergyInputMapper` maps them into annual engine input, the result is marked as `TrueHourlySimulation`, `hourlyRecordCount = 8760`, and `isTrueHourly8760 = true`. If the hourly source is unavailable but monthly balances exist, the adapter generates representative monthly records, marks the source as `MonthlyBalanceAdapter`, sets `isTrueHourly8760 = false`, and emits a diagnostic saying this is not a true 8760 simulation. If neither hourly nor monthly source data is available, the application path returns validation instead of fake zero annual results.
 
-The mapper carries available hourly heating/cooling, solar and internal-gain values. If the hourly source does not expose optional component breakdown such as transmission, ventilation, infiltration or ground, diagnostics state that the annual component breakdown excludes those components instead of inventing values.
+The mapper carries available hourly heating/cooling, transmission, ventilation, ground, solar and internal-gain values. In the current true hourly path, ventilation is reported as the combined hourly ventilation heat-transfer contribution. Infiltration is not separately exposed by that path yet, so it remains `0` and diagnostics state that the annual infiltration breakdown is partial instead of inventing a split.
 
 The separate building energy analysis API remains labelled as `ISO52016InspiredHourlyAnalysis`/monthly analysis when it uses that hourly/monthly service path. It is not silently mixed with the load-calculations annual adapter.
 
@@ -51,4 +51,4 @@ The mapped output includes annual heating demand, annual cooling demand, monthly
 
 ## Limits
 
-The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. `TrueHourlySimulation` means the project consumed an existing hourly simulation output; it does not claim full compliance with any external method or `ExternalParityCovered` status.
+The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. `TrueHourlySimulation` means the project consumed an existing hourly simulation output; it does not claim full compliance with any external method or `ExternalParityCovered` status. Separate infiltration reporting remains a known limitation of the current hourly component breakdown.

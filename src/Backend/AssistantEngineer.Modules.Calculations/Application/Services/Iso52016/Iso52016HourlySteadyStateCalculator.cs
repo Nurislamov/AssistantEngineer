@@ -139,7 +139,11 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     OperativeTemperatureC: zoneResult.Hour.OperativeTemperatureC,
                     OutdoorTemperatureC: zoneResult.Hour.OutdoorTemperatureC,
                     InternalGainsW: zoneResult.Hour.InternalGainsW,
-                    SolarGainsW: zoneResult.Hour.SolarGainsW));
+                    SolarGainsW: zoneResult.Hour.SolarGainsW,
+                    TransmissionW: zoneResult.Hour.TransmissionW,
+                    VentilationW: zoneResult.Hour.VentilationW,
+                    InfiltrationW: zoneResult.Hour.InfiltrationW,
+                    GroundW: zoneResult.Hour.GroundW));
 
                 foreach (var roomResult in zoneResult.Rooms)
                 {

@@ -52,6 +52,34 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
     }
 
     [Fact]
+    public void Map_DoesNotWarnForAvailableComponentsAndStillReportsMissingInfiltration()
+    {
+        var mapper = new HourlySimulationToAnnualEnergyInputMapper();
+        var records = CreateHoursWithAvailableComponentsExceptInfiltration();
+
+        var result = mapper.Map(
+            buildingId: 1,
+            buildingName: "Building",
+            buildingAreaM2: 120,
+            year: 2026,
+            hourlyRecords: records,
+            diagnosticsContext: "test");
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("transmission", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("ventilation", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("ground", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("infiltration", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void Map_OutputAggregatesInAnnualEnergyEngine()
     {
         var mapper = new HourlySimulationToAnnualEnergyInputMapper();
@@ -96,6 +124,31 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
                     SolarGainsW: coolingW,
                     InternalGainsW: coolingW * 0.2,
                     GroundW: includeComponents ? heatingW * 0.02 : 0));
+            }
+        }
+
+        return records;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateHoursWithAvailableComponentsExceptInfiltration()
+    {
+        var records = new List<AnnualEnergyBalanceHourInput>(8760);
+        var hour = 0;
+        foreach (var (month, hours) in MonthHours())
+        {
+            for (var i = 0; i < hours; i++)
+            {
+                records.Add(new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour++,
+                    Month: month,
+                    HeatingLoadW: 100,
+                    CoolingLoadW: 50,
+                    TransmissionW: 40,
+                    VentilationW: 20,
+                    InfiltrationW: 0,
+                    SolarGainsW: 30,
+                    InternalGainsW: 10,
+                    GroundW: 15));
             }
         }
 

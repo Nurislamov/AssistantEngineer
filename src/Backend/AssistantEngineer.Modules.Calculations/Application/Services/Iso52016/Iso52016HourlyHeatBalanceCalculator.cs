@@ -9,6 +9,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilatio
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Models.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ventilation;
@@ -146,6 +147,12 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             var outdoorUa = GetOutdoorEnvelopeHeatTransferCoefficient(room, envelopeDefaults);
             var groundBoundary = _groundHeatTransferService.CalculateBoundaryCondition(room, envelopeDefaults);
             var groundUa = groundBoundary.HeatTransferCoefficientWPerK;
+            var groundTemperature = groundBoundaryTemperatureC ?? _options.DefaultGroundBoundaryTemperatureC;
+            var groundBoundaryReferenceTemperature = CalculateGroundBoundaryReferenceTemperature(
+                groundBoundary,
+                heatingSetpoint,
+                weather.DryBulbTemperature,
+                groundTemperature);
             
             var thermalCapacityPerHour = GetRoomThermalCapacityJPerK(room, preferences) / 3600.0;
             var totalHeatTransfer =
@@ -153,10 +160,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             var baseBalance = thermalCapacityPerHour * previousRoomTemperature +
                               (outdoorUa + ventilationHeatTransfer) * weather.DryBulbTemperature +
-                              groundUa * (
-                                  groundBoundary.IndoorTemperatureWeight * heatingSetpoint +
-                                  groundBoundary.OutdoorTemperatureWeight * weather.DryBulbTemperature +
-                                  groundBoundary.GroundTemperatureWeight * (groundBoundaryTemperatureC ?? _options.DefaultGroundBoundaryTemperatureC)) +
+                              groundUa * groundBoundaryReferenceTemperature +
                               adjacent.BoundaryTemperatureWeightedHeatTransferW +
                               internalGains +
                               solarGains;
@@ -182,6 +186,14 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 operativeTemperature = coolingSetpoint;
             }
 
+            var transmissionW = outdoorUa * Math.Abs(operativeTemperature - weather.DryBulbTemperature);
+            var ventilationW = ventilationHeatTransfer * Math.Abs(operativeTemperature - weather.DryBulbTemperature);
+            var groundW = groundUa * Math.Abs(operativeTemperature - CalculateGroundBoundaryReferenceTemperature(
+                groundBoundary,
+                operativeTemperature,
+                weather.DryBulbTemperature,
+                groundTemperature));
+
             roomResults.Add(new Iso52016RoomHourResult(
                 room.Id,
                 new Iso52016RoomHourlyEnergyNeed(
@@ -195,13 +207,21 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                     OperativeTemperatureC: Iso52016HourlyCalculatorMath.Round(operativeTemperature),
                     OutdoorTemperatureC: Iso52016HourlyCalculatorMath.Round(weather.DryBulbTemperature),
                     InternalGainsW: Iso52016HourlyCalculatorMath.Round(internalGains),
-                    SolarGainsW: Iso52016HourlyCalculatorMath.Round(solarGains))));
+                    SolarGainsW: Iso52016HourlyCalculatorMath.Round(solarGains),
+                    TransmissionW: Iso52016HourlyCalculatorMath.Round(transmissionW),
+                    VentilationW: Iso52016HourlyCalculatorMath.Round(ventilationW),
+                    InfiltrationW: 0,
+                    GroundW: Iso52016HourlyCalculatorMath.Round(groundW))));
         }
 
         var zoneHeating = roomResults.Sum(x => x.Hour.HeatingLoadW);
         var zoneCooling = roomResults.Sum(x => x.Hour.CoolingLoadW);
         var zoneInternal = roomResults.Sum(x => x.Hour.InternalGainsW);
         var zoneSolar = roomResults.Sum(x => x.Hour.SolarGainsW);
+        var zoneTransmission = roomResults.Sum(x => x.Hour.TransmissionW);
+        var zoneVentilation = roomResults.Sum(x => x.Hour.VentilationW);
+        var zoneInfiltration = roomResults.Sum(x => x.Hour.InfiltrationW);
+        var zoneGround = roomResults.Sum(x => x.Hour.GroundW);
         var totalArea = rooms.Sum(room => room.Area.SquareMeters);
         var zoneOperative = totalArea > 0
             ? rooms.Join(
@@ -222,7 +242,11 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 OperativeTemperatureC: Iso52016HourlyCalculatorMath.Round(zoneOperative),
                 OutdoorTemperatureC: Iso52016HourlyCalculatorMath.Round(weather.DryBulbTemperature),
                 InternalGainsW: Iso52016HourlyCalculatorMath.Round(zoneInternal),
-                SolarGainsW: Iso52016HourlyCalculatorMath.Round(zoneSolar)),
+                SolarGainsW: Iso52016HourlyCalculatorMath.Round(zoneSolar),
+                TransmissionW: Iso52016HourlyCalculatorMath.Round(zoneTransmission),
+                VentilationW: Iso52016HourlyCalculatorMath.Round(zoneVentilation),
+                InfiltrationW: Iso52016HourlyCalculatorMath.Round(zoneInfiltration),
+                GroundW: Iso52016HourlyCalculatorMath.Round(zoneGround)),
             roomResults);
     }
 
@@ -536,6 +560,15 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
         return envelope;
     }
+
+    private static double CalculateGroundBoundaryReferenceTemperature(
+        GroundBoundaryCondition groundBoundary,
+        double indoorReferenceTemperatureC,
+        double outdoorTemperatureC,
+        double groundTemperatureC) =>
+        groundBoundary.IndoorTemperatureWeight * indoorReferenceTemperatureC +
+        groundBoundary.OutdoorTemperatureWeight * outdoorTemperatureC +
+        groundBoundary.GroundTemperatureWeight * groundTemperatureC;
 
     private static double GetGroundEnvelopeHeatTransferCoefficient(
         Room room,

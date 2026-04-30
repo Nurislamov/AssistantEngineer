@@ -21,7 +21,11 @@ internal sealed class Iso52016HourlyResultComposer
                 OperativeTemperatureC: Iso52016HourlyCalculatorMath.Round(group.Average(hour => hour.OperativeTemperatureC)),
                 OutdoorTemperatureC: Iso52016HourlyCalculatorMath.Round(group.Average(hour => hour.OutdoorTemperatureC)),
                 InternalGainsW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.InternalGainsW)),
-                SolarGainsW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.SolarGainsW))))
+                SolarGainsW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.SolarGainsW)),
+                TransmissionW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.TransmissionW)),
+                VentilationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.VentilationW)),
+                InfiltrationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.InfiltrationW)),
+                GroundW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundW))))
             .OrderBy(hour => hour.HourOfYear)
             .ToArray();
 

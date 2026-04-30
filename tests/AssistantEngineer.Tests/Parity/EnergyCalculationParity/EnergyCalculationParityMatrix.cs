@@ -92,7 +92,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
-            Notes: "Covered by deterministic fixtures, engine tests, mapper tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. This is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. True hourly source passes available transmission, combined ventilation, ground, solar and internal gains; infiltration remains partial when not separately modelled. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",

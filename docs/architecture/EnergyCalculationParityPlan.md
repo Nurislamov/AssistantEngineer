@@ -83,7 +83,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Room solar gains prefer available annual/weather solar context. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
 - Room ventilation falls back to project/default ACH only with diagnostics that include the value. Room responses expose the effective ACH/airflow values and source. Invalid default ACH returns validation/diagnostics.
 - Design-point internal gains use full schedule factor `1.0` and report that assumption. Existing hourly analysis paths remain responsible for schedule expansion.
-- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It tries existing true hourly simulation records first, maps them through `HourlySimulationToAnnualEnergyInputMapper`, and distinguishes `TrueHourlySimulation` from `MonthlyBalanceAdapter`. Results expose `isTrueHourly8760` and `hourlyRecordCount`; representative monthly records are not labelled as true 8760 simulation.
+- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It tries existing true hourly simulation records first, maps them through `HourlySimulationToAnnualEnergyInputMapper`, and distinguishes `TrueHourlySimulation` from `MonthlyBalanceAdapter`. True hourly records carry heating, cooling, transmission, combined ventilation, ground, solar and internal gains where the source computes them. Results expose `isTrueHourly8760` and `hourlyRecordCount`; representative monthly records are not labelled as true 8760 simulation.
 - `POST /api/v1/domestic-hot-water/demand` остается на deterministic DHW service path.
 - Building energy analysis heating/cooling system routes используют `SystemEnergyEngine`; useful, final и primary energy не смешиваются.
 - Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
@@ -96,6 +96,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 ### Current limitations
 
 - The load-calculations energy-balance endpoint is an annual aggregation adapter unless the upstream source provides true 8760 hourly records. If neither true hourly records nor monthly balances are available, the application path returns validation instead of fake annual values.
+- The current true hourly component breakdown does not split infiltration from ventilation. Infiltration remains partial and is diagnosed instead of being faked.
 - The design-point room load path is not a full hourly balance and does not claim full ISO compliance.
 - Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed.
 - Internal schedules are expanded in existing hourly analysis paths, not in design-point room loads.

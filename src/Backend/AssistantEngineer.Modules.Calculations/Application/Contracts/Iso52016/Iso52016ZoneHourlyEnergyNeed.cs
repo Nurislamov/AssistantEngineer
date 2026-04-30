@@ -9,4 +9,8 @@ public sealed record Iso52016ZoneHourlyEnergyNeed(
     double OperativeTemperatureC,
     double OutdoorTemperatureC,
     double InternalGainsW,
-    double SolarGainsW);
+    double SolarGainsW,
+    double TransmissionW = 0,
+    double VentilationW = 0,
+    double InfiltrationW = 0,
+    double GroundW = 0);
