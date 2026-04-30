@@ -3,10 +3,15 @@ using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Buildings.Domain.Ground;
+using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
@@ -19,6 +24,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -44,6 +50,10 @@ public class EnergyCalculationPipelineServiceTests
         Assert.True(cooling.IsSuccess, cooling.Error);
         Assert.Contains("Energy Calculation Parity", heating.Value.CalculationMethod);
         Assert.Contains("Energy Calculation Parity", cooling.Value.CalculationMethod);
+        Assert.Equal("En12831", heating.Value.RequestedMethod);
+        Assert.Equal("Simplified", cooling.Value.RequestedMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", heating.Value.ActualMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", cooling.Value.ActualMethod);
         Assert.Equal(1750, heating.Value.HeatingLoadW, precision: 2);
         Assert.Equal(87.5, heating.Value.HeatingLoadWPerM2, precision: 2);
         Assert.Equal(1000, heating.Value.Breakdown!.TransmissionW + heating.Value.Breakdown.WindowTransmissionW + heating.Value.Breakdown.GroundW, precision: 2);
@@ -55,6 +65,35 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal(500, cooling.Value.Breakdown.InternalGainsW, precision: 2);
         Assert.Equal(400, cooling.Value.Breakdown.VentilationW, precision: 2);
         Assert.Equal(200, cooling.Value.Breakdown.InfiltrationW, precision: 2);
+        Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarGains.ReferenceByOrientationFallback");
+        Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "InternalGains.DesignPointFullScheduleFactor");
+        Assert.DoesNotContain(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed");
+    }
+
+    [Fact]
+    public async Task RequestedCalculationMethodIsReportedSeparatelyFromActualPipelineMethod()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var cooling = await service.CalculateRoomCoolingLoadAsync(1, CoolingLoadCalculationMethod.Iso52016);
+        var heating = await service.CalculateRoomHeatingLoadAsync(1, HeatingLoadCalculationMethod.En12831);
+
+        Assert.True(cooling.IsSuccess, cooling.Error);
+        Assert.True(heating.IsSuccess, heating.Error);
+        Assert.Equal("Iso52016", cooling.Value.RequestedMethod);
+        Assert.Equal("En12831", heating.Value.RequestedMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", cooling.Value.ActualMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", heating.Value.ActualMethod);
+        Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
+            diagnostic.Message.Contains("Energy Calculation Parity design-point pipeline", StringComparison.Ordinal));
+        Assert.Contains(heating.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
+            diagnostic.Message.Contains("Energy Calculation Parity design-point pipeline", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -89,6 +128,109 @@ public class EnergyCalculationPipelineServiceTests
     }
 
     [Fact]
+    public async Task MissingRoomVentilationUsesDefaultAchWithDiagnostics()
+    {
+        var building = CreateDeterministicBuilding(includeVentilation: false);
+        var service = CreateService(building);
+
+        var result = await service.CalculateRoomHeatingLoadAsync(1);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.True(result.Value.Breakdown!.VentilationW > 0);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed" &&
+            diagnostic.Message.Contains("0.5", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task InvalidDefaultAchIsExposedAsDiagnosticError()
+    {
+        var building = CreateDeterministicBuilding(includeVentilation: false);
+        var preferences = CreatePreferences(defaultAch: -0.5);
+        var service = CreateService(building, preferences: preferences);
+
+        var result = await service.CalculateRoomHeatingLoadAsync(1);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("Ventilation.InvalidDefaultAirChangesPerHour", result.Error);
+    }
+
+    [Fact]
+    public async Task SolarGainsUseAnnualClimateDataWhenAvailable()
+    {
+        var building = CreateDeterministicBuilding();
+        var annualClimate = CreateAnnualClimateData(building.ClimateZone!);
+        var service = CreateService(
+            building,
+            annualClimateDataProvider: new FakeAnnualClimateDataProvider(annualClimate),
+            solarRadiationService: new FixedSolarRadiationService(240));
+
+        var result = await service.CalculateRoomCoolingLoadAsync(1);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal(600, result.Value.Breakdown!.SolarW, precision: 2);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarGains.IrradianceSource" &&
+            diagnostic.Message.Contains("AnnualClimateData", StringComparison.Ordinal));
+        Assert.DoesNotContain(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarGains.ReferenceByOrientationFallback");
+    }
+
+    [Fact]
+    public async Task GroundBoundaryUsesResolvedGroundTemperatureWhenMetadataAndClimateAreAvailable()
+    {
+        var building = CreateDeterministicBuilding(
+            includeGroundWall: true,
+            includeGroundMetadata: true);
+        var annualClimate = CreateAnnualClimateData(building.ClimateZone!);
+        var service = CreateService(
+            building,
+            annualClimateDataProvider: new FakeAnnualClimateDataProvider(annualClimate),
+            groundTemperatureService: new FixedGroundTemperatureService(12));
+
+        var room = await service.CalculateRoomHeatingLoadAsync(1);
+        var buildingLoad = await service.CalculateBuildingHeatingLoadAsync(building.Id);
+
+        Assert.True(room.IsSuccess, room.Error);
+        Assert.True(buildingLoad.IsSuccess, buildingLoad.Error);
+        Assert.Equal(80, room.Value.Breakdown!.GroundW, precision: 2);
+        Assert.True(buildingLoad.Value.ComponentBreakdown!.GroundW >= 80);
+        Assert.Contains(room.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "GroundContact.GroundTemperatureProfileUsed");
+        Assert.DoesNotContain(room.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "GroundContact.MetadataMissing");
+    }
+
+    [Fact]
+    public async Task GroundBoundaryWithoutMetadataReturnsDiagnostic()
+    {
+        var building = CreateDeterministicBuilding(
+            includeGroundWall: true,
+            includeGroundMetadata: false);
+        var service = CreateService(building);
+
+        var result = await service.CalculateRoomHeatingLoadAsync(1);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "GroundContact.MetadataMissing");
+    }
+
+    [Fact]
+    public async Task DesignPointInternalGainsReportFullScheduleFactorWhenSchedulesExist()
+    {
+        var building = CreateDeterministicBuilding(includeSchedules: true);
+        var service = CreateService(building);
+
+        var result = await service.CalculateRoomCoolingLoadAsync(1);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "InternalGains.DesignPointFullScheduleFactorWithSchedules");
+    }
+
+    [Fact]
     public async Task EnergyBalanceApplicationPathUsesAnnualEnergyEngineAdapterWithDiagnostics()
     {
         var building = CreateDeterministicBuilding();
@@ -97,7 +239,9 @@ public class EnergyCalculationPipelineServiceTests
         var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
 
         Assert.True(result.IsSuccess, result.Error);
-        Assert.Contains("Annual 8760 Energy Balance", result.Value.CoolingCalculationMethod);
+        Assert.Equal("EnergyCalculationParityAnnualAggregationAdapter", result.Value.ActualMethod);
+        Assert.Equal("MonthlyBalanceAdapter", result.Value.EnergyDataSource);
+        Assert.False(result.Value.IsTrueHourly8760);
         Assert.Equal(
             result.Value.MonthlyBalances.Sum(month => month.HeatingDemandKWh + month.CoolingDemandKWh),
             result.Value.AnnualTotalDemandKWh,
@@ -105,6 +249,29 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.SyntheticWeather" &&
             diagnostic.Severity == CalculationDiagnosticSeverity.Warning);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.MonthlyBalanceAdapter" &&
+            diagnostic.Message.Contains("not a true hourly 8760", StringComparison.Ordinal));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "CalculationMethod.ApiCompatibility");
+    }
+
+    [Fact]
+    public async Task EnergyBalanceApplicationPathUsesHourlyRecordsWhenSourceProvidesThem()
+    {
+        var building = CreateDeterministicBuilding();
+        var hourlyRecords = CreateAnnualHourlyRecords(heatingLoadW: 100, coolingLoadW: 50);
+        var service = CreateService(
+            building,
+            energyCalculator: new FixedBuildingEnergyCalculator(hourlyRecords));
+
+        var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("HourlySimulation", result.Value.EnergyDataSource);
+        Assert.True(result.Value.IsTrueHourly8760);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlySimulationSource");
     }
 
     [Fact]
@@ -125,13 +292,43 @@ public class EnergyCalculationPipelineServiceTests
 
         Assert.True(result.IsSuccess, result.Error);
         Assert.Equal(2000, result.Value.RequiredCoolingCapacityW, precision: 2);
+        Assert.Equal(1750, result.Value.RequiredHeatingCapacityW, precision: 2);
         Assert.Equal(1.1, result.Value.SafetyFactor, precision: 2);
         Assert.Equal(2200, result.Value.RequiredCoolingCapacityWithReserveW, precision: 2);
+        Assert.Equal(1925, result.Value.RequiredHeatingCapacityWithReserveW, precision: 2);
         Assert.Equal(2, result.Value.BestMatch!.EquipmentId);
         Assert.Contains(result.Value.RecommendedEquipment, item => item.EquipmentId == 2);
         Assert.Contains(result.Value.RejectedEquipment, item =>
             item.EquipmentId == 1 &&
             item.Reasons.Contains("insufficient cooling capacity"));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
+    }
+
+    [Fact]
+    public async Task RoomEquipmentSizingRejectsCandidateWithInsufficientHeatingCapacity()
+    {
+        var building = CreateDeterministicBuilding();
+        var catalog = new FakeCatalogSizingProvider([
+            new CoolingEquipmentCatalogSizingCandidate(1, "Acme", "DX", "Wall", "HeatingSmall-2500-1800", 2.5, 1.8),
+            new CoolingEquipmentCatalogSizingCandidate(2, "Acme", "DX", "Wall", "HeatingFit-2500-2000", 2.5, 2.0)
+        ]);
+        var service = CreateService(building, catalog);
+
+        var result = await service.CalculateRoomEquipmentSizingAsync(
+            1,
+            "DX",
+            "Wall",
+            CoolingLoadCalculationMethod.Simplified);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal(2, result.Value.BestMatch!.EquipmentId);
+        Assert.Contains(result.Value.RecommendedEquipment, item => item.EquipmentId == 2);
+        Assert.Contains(result.Value.RejectedEquipment, item =>
+            item.EquipmentId == 1 &&
+            item.Reasons.Contains("insufficient heating capacity"));
+        Assert.DoesNotContain(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
     }
 
     [Fact]
@@ -166,9 +363,14 @@ public class EnergyCalculationPipelineServiceTests
 
     private static EnergyCalculationPipelineService CreateService(
         Building building,
-        ICoolingEquipmentCatalogSizingProvider? catalog = null)
+        ICoolingEquipmentCatalogSizingProvider? catalog = null,
+        IAnnualClimateDataProvider? annualClimateDataProvider = null,
+        IGroundTemperatureService? groundTemperatureService = null,
+        ISolarRadiationService? solarRadiationService = null,
+        CalculationPreferences? preferences = null,
+        IBuildingEnergyCalculator? energyCalculator = null)
     {
-        var repository = new BuildingGraphRepositoryStub(building);
+        var repository = new BuildingGraphRepositoryStub(building, preferences);
         var timeProvider = new FixedTimeProvider(FixedNow);
 
         return new EnergyCalculationPipelineService(
@@ -180,15 +382,24 @@ public class EnergyCalculationPipelineServiceTests
             new LoadAggregationEngine(timeProvider),
             new AnnualEnergyBalanceEngine(timeProvider),
             new EquipmentSizingEngine(timeProvider),
-            new FixedBuildingEnergyCalculator(),
+            energyCalculator ?? new FixedBuildingEnergyCalculator(),
             new CoolingLoadReferenceData(),
             Options.Create(new CoolingLoadCalculationOptions()),
             Options.Create(new En12831HeatingLoadOptions()),
             timeProvider,
-            catalog ?? new FakeCatalogSizingProvider([]));
+            catalog ?? new FakeCatalogSizingProvider([]),
+            annualClimateDataProvider,
+            groundTemperatureService,
+            solarRadiationService,
+            Options.Create(new Iso52016EnergyNeedOptions()));
     }
 
-    private static Building CreateDeterministicBuilding(bool hasClimateZone = true)
+    private static Building CreateDeterministicBuilding(
+        bool hasClimateZone = true,
+        bool includeVentilation = true,
+        bool includeGroundWall = false,
+        bool includeGroundMetadata = true,
+        bool includeSchedules = false)
     {
         var project = DomainInvariantTests.CreateProject("Pipeline project");
         SetId(project, 100);
@@ -229,14 +440,18 @@ public class EnergyCalculationPipelineServiceTests
             type: RoomType.Corridor).Value;
         SetId(adjacent, 2);
 
-        Assert.True(room.SetVentilationParameters(
-            VentilationParameters.Create(
-                airChangesPerHour: 500.0 / (1.2 * 1005.0 * (60.0 / 3600.0) * 20.0),
-                heatRecoveryEfficiency: 0,
-                infiltrationAirChangesPerHour: 250.0 / (1.2 * 1005.0 * (60.0 / 3600.0) * 20.0),
-                windExposureFactor: 0,
-                stackCoefficient: 0,
-                windCoefficient: 0).Value).IsSuccess);
+        if (includeVentilation)
+        {
+            Assert.True(room.SetVentilationParameters(
+                VentilationParameters.Create(
+                    airChangesPerHour: 500.0 / (1.2 * 1005.0 * (60.0 / 3600.0) * 20.0),
+                    heatRecoveryEfficiency: 0,
+                    infiltrationAirChangesPerHour: 250.0 / (1.2 * 1005.0 * (60.0 / 3600.0) * 20.0),
+                    windExposureFactor: 0,
+                    stackCoefficient: 0,
+                    windCoefficient: 0).Value).IsSuccess);
+        }
+
         Assert.True(adjacent.SetVentilationParameters(VentilationParameters.Create(0, 0).Value).IsSuccess);
 
         Assert.True(room.AddWall(
@@ -256,14 +471,97 @@ public class EnergyCalculationPipelineServiceTests
             WallBoundaryType.AdjacentUnconditioned,
             adjacent).IsSuccess);
 
+        if (includeGroundWall)
+        {
+            Assert.True(room.AddWall(
+                Area.FromSquareMeters(10).Value,
+                ThermalTransmittance.FromValue(1).Value,
+                CardinalDirection.North,
+                WallBoundaryType.Ground).IsSuccess);
+
+            if (includeGroundMetadata)
+            {
+                Assert.True(room.SetGroundContactMetadata(
+                    GroundContactMetadata.Create(
+                        GroundContactType.SlabOnGround,
+                        exposedPerimeterM: 12,
+                        burialDepthM: 0,
+                        wallHeightBelowGradeM: 0,
+                        horizontalInsulationWidthM: 0,
+                        perimeterInsulationDepthM: 0,
+                        underfloorVentilationAirChangesPerHour: 0).Value).IsSuccess);
+            }
+        }
+
+        if (includeSchedules)
+        {
+            var schedule = HourlySchedule.Create(
+                "Occupied",
+                Enumerable.Repeat(0.75, 24).ToArray()).Value;
+            Assert.True(room.SetOccupancySchedule(schedule).IsSuccess);
+            Assert.True(room.SetEquipmentSchedule(schedule).IsSuccess);
+            Assert.True(room.SetLightingSchedule(schedule).IsSuccess);
+        }
+
         return building;
+    }
+
+    private static CalculationPreferences CreatePreferences(double defaultAch = 0.5)
+    {
+        var preferences = CalculationPreferences.Create(1.1, 1.1).Value;
+        SetBackingField(preferences, nameof(CalculationPreferences.Iso52016DefaultAirChangesPerHour), defaultAch);
+        return preferences;
+    }
+
+    private static AnnualClimateData CreateAnnualClimateData(ClimateZone climateZone)
+    {
+        var annual = AnnualClimateData.Create(climateZone, 2020).Value;
+        SetId(annual, 300);
+        Assert.True(annual.AddHourlyData(
+            hourOfYear: 12,
+            dryBulbTemp: 28,
+            directSolar: 700,
+            diffuseSolar: 120).IsSuccess);
+        return annual;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateAnnualHourlyRecords(
+        double heatingLoadW,
+        double coolingLoadW) =>
+        Enumerable.Range(0, 8760)
+            .Select(hour => new AnnualEnergyBalanceHourInput(
+                HourIndex: hour,
+                Month: MonthFromHour(hour),
+                HeatingLoadW: heatingLoadW,
+                CoolingLoadW: coolingLoadW,
+                HourDurationH: 1.0))
+            .ToArray();
+
+    private static int MonthFromHour(int hour)
+    {
+        var dayOfYear = hour / 24;
+        var daysPerMonth = new[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        var accumulated = 0;
+        for (var month = 1; month <= 12; month++)
+        {
+            accumulated += daysPerMonth[month - 1];
+            if (dayOfYear < accumulated)
+                return month;
+        }
+
+        return 12;
     }
 
     private static void SetId(object entity, int id)
     {
-        var field = entity.GetType().GetField("<Id>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+        SetBackingField(entity, "Id", id);
+    }
+
+    private static void SetBackingField(object entity, string propertyName, object? value)
+    {
+        var field = entity.GetType().GetField($"<{propertyName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
-        field.SetValue(entity, id);
+        field.SetValue(entity, value);
     }
 
     private sealed class BuildingGraphRepositoryStub :
@@ -273,11 +571,12 @@ public class EnergyCalculationPipelineServiceTests
         ICalculationPreferencesRepository
     {
         private readonly Building _building;
-        private readonly CalculationPreferences _preferences = CalculationPreferences.Create(1.1, 1.1).Value;
+        private readonly CalculationPreferences _preferences;
 
-        public BuildingGraphRepositoryStub(Building building)
+        public BuildingGraphRepositoryStub(Building building, CalculationPreferences? preferences = null)
         {
             _building = building;
+            _preferences = preferences ?? CalculationPreferences.Create(1.1, 1.1).Value;
         }
 
         Task<Room?> IRoomRepository.GetByIdAsync(int id, CancellationToken cancellationToken) =>
@@ -374,6 +673,13 @@ public class EnergyCalculationPipelineServiceTests
 
     private sealed class FixedBuildingEnergyCalculator : IBuildingEnergyCalculator
     {
+        private readonly IReadOnlyList<AnnualEnergyBalanceHourInput>? _hourlyRecords;
+
+        public FixedBuildingEnergyCalculator(IReadOnlyList<AnnualEnergyBalanceHourInput>? hourlyRecords = null)
+        {
+            _hourlyRecords = hourlyRecords;
+        }
+
         public Task<BuildingEnergyBalanceResult> CalculateAsync(
             Building building,
             CoolingLoadCalculationMethod coolingMethod,
@@ -386,6 +692,7 @@ public class EnergyCalculationPipelineServiceTests
                 BuildingName = building.Name,
                 CoolingCalculationMethod = coolingMethod.ToString(),
                 HeatingCalculationMethod = heatingMethod.ToString(),
+                HourlyBalanceRecords = _hourlyRecords?.ToList() ?? [],
                 AnnualCoolingDemandKWh = 50,
                 AnnualHeatingDemandKWh = 100,
                 AnnualTotalDemandKWh = 150,
@@ -416,5 +723,57 @@ public class EnergyCalculationPipelineServiceTests
                     candidate.UnitType == unitType)
                 .ToList()
                 as IReadOnlyList<CoolingEquipmentCatalogSizingCandidate>);
+    }
+
+    private sealed class FakeAnnualClimateDataProvider : IAnnualClimateDataProvider
+    {
+        private readonly AnnualClimateData _annualClimateData;
+
+        public FakeAnnualClimateDataProvider(AnnualClimateData annualClimateData)
+        {
+            _annualClimateData = annualClimateData;
+        }
+
+        public Task<AnnualClimateData?> GetForClimateZoneAsync(
+            int climateZoneId,
+            int year,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<AnnualClimateData?>(_annualClimateData.ClimateZoneId == climateZoneId
+                ? _annualClimateData
+                : null);
+    }
+
+    private sealed class FixedGroundTemperatureService : IGroundTemperatureService
+    {
+        private readonly double _temperatureC;
+
+        public FixedGroundTemperatureService(double temperatureC)
+        {
+            _temperatureC = temperatureC;
+        }
+
+        public double[] BuildHourlyProfile(IReadOnlyList<HourlyClimateData> hourlyClimateData) =>
+            Enumerable.Repeat(_temperatureC, 8760).ToArray();
+
+        public double GetMonthlyAverageTemperature(IReadOnlyList<HourlyClimateData> hourlyClimateData, int month) =>
+            _temperatureC;
+    }
+
+    private sealed class FixedSolarRadiationService : ISolarRadiationService
+    {
+        private readonly double _irradianceWPerM2;
+
+        public FixedSolarRadiationService(double irradianceWPerM2)
+        {
+            _irradianceWPerM2 = irradianceWPerM2;
+        }
+
+        public double CalculateVerticalSurfaceRadiation(
+            HourlyClimateData hourlyData,
+            CardinalDirection orientation,
+            double latitude,
+            int dayOfYear,
+            int hour) =>
+            _irradianceWPerM2;
     }
 }

@@ -11,7 +11,7 @@ This stage covers:
 - natural ventilation load when an airflow is already supplied;
 - heat recovery efficiency for mechanical ventilation;
 - room-level result with separate mechanical, infiltration, and natural ventilation breakdown;
-- integration into existing room heating and ISO cooling calculations as separate components.
+- integration into the Energy Calculation Parity room load application pipeline as separate components.
 
 This stage does not cover:
 
@@ -103,6 +103,15 @@ infiltrationAirflowM3PerHour = roomVolumeM3 * infiltrationAirChangesPerHour
 
 If no infiltration input is supplied, the engine returns zero infiltration load and emits a diagnostic that no infiltration airflow was assumed.
 
+## Application Pipeline Fallback
+
+When room-specific ventilation parameters are missing, `EnergyCalculationPipelineService` uses the configured default ACH only if that value is valid. The room load diagnostics include:
+
+- `Ventilation.DefaultAirChangesPerHourUsed` with the fallback ACH value; or
+- `Ventilation.InvalidDefaultAirChangesPerHour` when the configured fallback is invalid.
+
+When room-specific ventilation parameters are present, diagnostics record `Ventilation.RoomParametersUsed` and no default ACH fallback warning is emitted.
+
 ## Natural Ventilation
 
 The load engine accepts `naturalVentilationAirflowM3PerHour` when an existing service has already calculated or supplied natural ventilation airflow. It does not introduce a new natural ventilation physics model in this stage.
@@ -142,3 +151,4 @@ These fixtures verify the formula, unit conversion, heat recovery, ACH infiltrat
 - Detailed natural ventilation flow physics is not expanded here.
 - Wind and stack terms remain in existing services where already present; the load engine consumes normalized airflow or ACH.
 - Building-level aggregation relies on existing aggregation of room heating/cooling results.
+- Default ACH fallback exists only at the application assembler layer and is always diagnosed.

@@ -7,18 +7,18 @@ Verification is based on internal deterministic fixtures, focused engine tests, 
 | Function | Status | Evidence |
 | --- | --- | --- |
 | Transmission Heat Transfer | InternalDeterministicTested | Engine tests, transmission fixtures, room load application pipeline integration |
-| Window Solar Gains | InternalDeterministicTested | Engine tests, solar fixtures, room cooling application pipeline integration |
-| Ventilation and Infiltration Loads | InternalDeterministicTested | Engine tests, ventilation fixtures, room load application pipeline integration |
-| Internal Gains | InternalDeterministicTested | Engine tests, room cooling application pipeline integration |
-| Room Heating Load | InternalDeterministicTested | Room load engine tests, fixtures, application pipeline tests, endpoint facade integration |
-| Room Cooling Load | InternalDeterministicTested | Room load engine tests, fixtures, application pipeline tests, endpoint facade integration |
+| Window Solar Gains | InternalDeterministicTested | Engine tests, solar fixtures, room cooling application pipeline integration, annual-climate source/fallback diagnostics |
+| Ventilation and Infiltration Loads | InternalDeterministicTested | Engine tests, ventilation fixtures, room load application pipeline integration, default ACH diagnostics |
+| Internal Gains | InternalDeterministicTested | Engine tests, room cooling application pipeline integration, design-point schedule assumption diagnostics |
+| Room Heating Load | InternalDeterministicTested | Room load engine tests, fixtures, application pipeline tests, endpoint facade integration, requested/actual method diagnostics |
+| Room Cooling Load | InternalDeterministicTested | Room load engine tests, fixtures, application pipeline tests, endpoint facade integration, requested/actual method diagnostics |
 | Thermal Zone Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, application pipeline tests |
 | Floor Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, floor application pipeline tests |
 | Building Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, building application pipeline tests |
-| Annual Energy Balance | InternalDeterministicTested | Annual engine tests, fixtures, application pipeline adapter tests, report facade integration |
+| Annual Energy Balance | InternalDeterministicTested | Annual engine tests, fixtures, application pipeline adapter tests, report facade integration, monthly adapter/hourly source diagnostics |
 | DHW Demand | InternalDeterministicTested | DHW deterministic service tests, fixtures, endpoint facade path |
 | System Energy | InternalDeterministicTested | System energy tests, fixtures, heating/cooling system services call SystemEnergyEngine |
-| Equipment Sizing Integration | InternalDeterministicTested | Equipment sizing tests, fixtures, room equipment application pipeline tests, endpoint/report integration |
+| Equipment Sizing Integration | InternalDeterministicTested | Equipment sizing tests, fixtures, room equipment application pipeline tests, endpoint/report integration, heating capacity diagnostics |
 
 No function is marked ExternalParityCovered in this pass.
 
@@ -26,13 +26,14 @@ No function is marked ExternalParityCovered in this pass.
 
 The real backend calculation path now uses `EnergyCalculationPipelineService` behind `ILoadCalculationsFacade`.
 
-- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`.
+- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
-- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose the hourly/monthly source as synthetic profile or unavailable.
+- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `HourlySimulation` versus `MonthlyBalanceAdapter`, and `isTrueHourly8760` is false for representative monthly records.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values.
-- Room equipment selection uses the actual room cooling load, project safety factor, `EquipmentSizingEngine`, and the active equipment catalog provider. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
+- Room equipment selection uses the actual room load, project safety factor, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
 - Cooling, heating and energy-balance reports consume facade results built from the same application pipeline. Excel generation stays in Infrastructure integrations.
+- Benchmark verification obtains AssistantEngineer cooling results through `ILoadCalculationsFacade`, so the benchmark comparison path uses the same application pipeline result as the public load-calculation route. This is still only benchmark evidence when a comparison test actually runs and passes.
 
 ## Regression Rules
 
@@ -41,10 +42,12 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 - Annual totals must equal monthly sums within tolerance.
 - Design building loads must equal sums of unique room loads in design-point mode.
 - Diagnostics must exist for fallback or clamped assumptions.
+- Diagnostics must identify requested method versus actual method for compatibility requests.
+- Energy-balance diagnostics must identify `MonthlyBalanceAdapter` versus `HourlySimulation`.
 - Room cooling separates solar, internal, transmission and ventilation components.
 - Room heating separates transmission, ventilation, infiltration and ground components.
 - Equipment sizing explains rejected candidates.
 
 ## Known Limits
 
-The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. It does not prove external benchmark parity.
+The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.

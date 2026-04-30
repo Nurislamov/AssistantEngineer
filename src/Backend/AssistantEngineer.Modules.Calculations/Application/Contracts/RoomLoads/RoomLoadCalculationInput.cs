@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Transmission;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
@@ -22,6 +23,8 @@ public sealed record RoomLoadCalculationInput(
     VentilationAndInfiltrationLoadInput? CoolingVentilationAndInfiltration = null,
     InternalGainInput? InternalGains = null,
     RoomLoadFixedComponentInput? FixedComponents = null,
+    IReadOnlyList<CalculationDiagnostic>? ApplicationDiagnostics = null,
+    IReadOnlyList<string>? ApplicationAssumptions = null,
     RoomLoadCalculationMode CalculationMode = RoomLoadCalculationMode.DesignPoint,
     int? HourIndex = null,
     DateTimeOffset? Timestamp = null,

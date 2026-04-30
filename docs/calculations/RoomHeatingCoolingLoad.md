@@ -56,6 +56,19 @@ The controller calls `ILoadCalculationsFacade`, which delegates to `EnergyCalcul
 
 The assembler maps existing room, wall, window, ventilation, infiltration, ground-contact and internal-gain data into component inputs. It does not introduce a second formula path. Legacy calculation method query values are preserved in response metadata for backward compatibility.
 
+Method handling is explicit:
+
+- `requestedMethod` records the public API query value.
+- `actualMethod` is `EnergyCalculationParityDesignPoint` for the room load endpoint.
+- diagnostics warn when a requested compatibility method is accepted but the design-point pipeline is used.
+
+Ground contact, solar, ventilation and schedules are assembled with documented fallbacks:
+
+- ground boundaries use existing ground temperature profile data when available; missing metadata/profile produces diagnostics and no silent outdoor substitution;
+- window solar gains use annual/weather solar context when available, otherwise `ReferenceByOrientationFallback` is reported;
+- missing room ventilation parameters use the configured default ACH only with a warning that includes the ACH value;
+- design-point internal gains use schedule factor `1.0`, and diagnostics state this even when room schedules exist.
+
 Response DTOs keep existing public fields and add mapped parity fields where supported:
 
 - heating: `HeatingLoadW`, `HeatingLoadWPerM2`, transmission, ventilation, infiltration and ground breakdown, diagnostics and assumptions;
@@ -70,4 +83,4 @@ Response DTOs keep existing public fields and add mapped parity fields where sup
 
 ## Limits
 
-This is a design-point component aggregation engine. It does not claim full dynamic simulation and does not apply useful internal or solar gain offsets to heating load.
+This is a design-point component aggregation engine. It does not claim full dynamic simulation or full ISO hourly balance and does not apply useful internal or solar gain offsets to heating load.

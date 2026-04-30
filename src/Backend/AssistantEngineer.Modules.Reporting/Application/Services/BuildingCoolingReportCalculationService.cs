@@ -119,15 +119,18 @@ internal sealed class BuildingCoolingReportCalculationService
         EquipmentSizingResult sizing)
     {
         var best = sizing.BestMatch;
+        var capacityWithReserveW = Math.Max(
+            sizing.RequiredHeatingCapacityWithReserveW,
+            sizing.RequiredCoolingCapacityWithReserveW);
 
         return new EquipmentSelectionResult
         {
             RoomId = roomId,
-            TotalHeatLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
-            DesignCapacityKw = RoundKw(sizing.RequiredCoolingCapacityWithReserveW),
+            TotalHeatLoadKw = RoundKw(Math.Max(sizing.RequiredHeatingCapacityW, sizing.RequiredCoolingCapacityW)),
+            DesignCapacityKw = RoundKw(capacityWithReserveW),
             RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,
             RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,
-            CapacityWithReserveW = sizing.RequiredCoolingCapacityWithReserveW,
+            CapacityWithReserveW = capacityWithReserveW,
             SafetyFactor = sizing.SafetyFactor,
             RequestedSystemType = systemType,
             RequestedUnitType = unitType,

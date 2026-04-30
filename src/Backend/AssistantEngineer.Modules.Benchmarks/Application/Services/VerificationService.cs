@@ -2,7 +2,8 @@ using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
+using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -14,7 +15,7 @@ namespace AssistantEngineer.Modules.Benchmarks.Application.Services;
 internal sealed class VerificationService
 {
     private readonly IBuildingRepository _buildings;
-    private readonly BuildingCoolingLoadService _coolingLoadService;
+    private readonly ILoadCalculationsFacade _loadCalculations;
     private readonly IEnergyPlusModelExporter _energyPlusModelExporter;
     private readonly IEnergyPlusBenchmarkRunner _energyPlusBenchmarkRunner;
     private readonly IEnergyPlusResultParser _energyPlusResultParser;
@@ -24,7 +25,7 @@ internal sealed class VerificationService
 
     public VerificationService(
         IBuildingRepository buildings,
-        BuildingCoolingLoadService coolingLoadService,
+        ILoadCalculationsFacade loadCalculations,
         IEnergyPlusModelExporter energyPlusModelExporter,
         IEnergyPlusBenchmarkRunner energyPlusBenchmarkRunner,
         IEnergyPlusResultParser energyPlusResultParser,
@@ -33,7 +34,7 @@ internal sealed class VerificationService
         ILogger<VerificationService>? logger = null)
     {
         _buildings = buildings;
-        _coolingLoadService = coolingLoadService;
+        _loadCalculations = loadCalculations;
         _energyPlusModelExporter = energyPlusModelExporter;
         _energyPlusBenchmarkRunner = energyPlusBenchmarkRunner;
         _energyPlusResultParser = energyPlusResultParser;
@@ -52,7 +53,10 @@ internal sealed class VerificationService
         if (building is null)
             return Result<VerificationReport>.NotFound($"Building with id {buildingId} not found.");
 
-        var ourResult = await _coolingLoadService.CalculateAsync(buildingId, method, cancellationToken);
+        var ourResult = await _loadCalculations.CalculateBuildingCoolingLoadAsync(
+            buildingId,
+            method.ToContract(),
+            cancellationToken);
         if (ourResult.IsFailure)
             return Result<VerificationReport>.Failure(ourResult);
 

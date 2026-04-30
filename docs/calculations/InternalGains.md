@@ -67,6 +67,10 @@ totalLatentInternalGainW =
 
 Schedule factors must be between 0 and 1. A factor of 0 produces zero gain for that component. A factor of 1 uses the design gain.
 
+In the room load application pipeline, design-point internal gains use full schedule factor `1.0`. Diagnostics report `InternalGains.DesignPointFullScheduleFactor`; if room schedules exist, diagnostics state that those schedules are reserved for hourly analysis paths.
+
+Existing hourly analysis services continue to use schedule/profile expansion where that path is available.
+
 ## Sensible And Latent
 
 The engine calculates sensible and latent gains separately. Current room heat-balance consumers use sensible gains; latent gains are returned in the result and reported in diagnostics when not consumed by the current path.
@@ -92,4 +96,4 @@ Equipment gains here mean internal heat gains from appliances or process equipme
 
 ## Limits
 
-This is a deterministic component model. It does not model moisture balance or dynamic heat storage.
+This is a deterministic component model. It does not model moisture balance or dynamic heat storage. Design-point room loads do not silently expand hourly schedules.

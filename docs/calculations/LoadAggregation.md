@@ -39,6 +39,8 @@ Floor and building load routes use room results from the same Energy Calculation
 
 The current API path uses design-point aggregation. If hourly profiles are not available, diagnostics identify design-point aggregation instead of silently claiming coincident hourly behavior.
 
+Public method query values are carried as `requestedMethod`; `actualMethod` is `EnergyCalculationParityDesignPoint` for the current floor/building load routes. Component breakdowns include ground when room load results contain ground components.
+
 ## Deterministic Fixtures
 
 - `aggregation-floor-two-rooms.json`

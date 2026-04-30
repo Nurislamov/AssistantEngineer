@@ -8,6 +8,9 @@ public class RoomHeatingLoadResult
     public int RoomId { get; set; }
     public string RoomName { get; set; } = string.Empty;
     public string CalculationMethod { get; set; } = string.Empty;
+    public string RequestedMethod { get; set; } = string.Empty;
+    public string ActualMethod { get; set; } = string.Empty;
+    public string CalculationMethodLabel { get; set; } = string.Empty;
 
     public double IndoorDesignTemperatureC { get; set; }
     public double OutdoorDesignTemperatureC { get; set; }

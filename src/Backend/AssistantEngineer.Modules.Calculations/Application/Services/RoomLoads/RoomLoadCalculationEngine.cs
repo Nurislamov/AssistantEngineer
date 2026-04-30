@@ -43,12 +43,17 @@ public sealed class RoomLoadCalculationEngine
             return Result<RoomLoadCalculationResult>.Validation("Room load calculation input is required.");
 
         var diagnostics = Validate(input);
+        if (input.ApplicationDiagnostics is { Count: > 0 })
+            diagnostics.AddRange(input.ApplicationDiagnostics);
+
         var assumptions = new List<string>
         {
             "Heating load sums positive heat-loss components only.",
             "Cooling load sums positive heat-gain components only.",
             "Internal and solar gains are not deducted from heating load in this design-point method."
         };
+        if (input.ApplicationAssumptions is { Count: > 0 })
+            assumptions.AddRange(input.ApplicationAssumptions);
 
         var heating = new MutableHeatingBreakdown();
         var cooling = new MutableCoolingBreakdown();

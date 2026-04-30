@@ -1,6 +1,6 @@
-# Annual 8760 Energy Balance
+# Annual Energy Balance
 
-This Energy Calculation Parity step provides a deterministic annual balance from hourly load inputs.
+This Energy Calculation Parity step provides a deterministic annual balance from hourly load inputs. In application endpoints it can also run behind an explicit adapter when only monthly source data is available.
 
 ## Formula
 
@@ -18,7 +18,11 @@ The result includes annual heating, annual cooling, annual total, monthly heatin
 
 ## Diagnostics
 
-Synthetic weather use is reported. Missing hourly records and invalid area are errors. Negative hourly loads are clamped to zero and reported.
+Synthetic weather use is reported. Missing hourly records and invalid area are errors. Negative hourly loads are clamped to zero and reported. Application results expose:
+
+- `energyDataSource`: `HourlySimulation`, `MonthlyBalanceAdapter`, or `unavailable`;
+- `isTrueHourly8760`: true only when the adapter receives 8760 hourly records;
+- diagnostics for representative monthly records when the monthly adapter is used.
 
 ## Real Application Pipeline
 
@@ -27,7 +31,11 @@ The building energy-balance route and energy-balance report facade use the Energ
 - `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance`
 - `GET /api/v1/reports/buildings/{buildingId}/energy-balance/excel`
 
-`EnergyCalculationPipelineService` calls the existing building energy source as an explicit adapter, converts available monthly/hourly demand into `AnnualEnergyBalanceInput`, and then calls `AnnualEnergyBalanceEngine`. When full hourly generation from weather is not available, the adapter marks the source as `synthetic profile` or `unavailable`; diagnostics are carried into the response/report model.
+`EnergyCalculationPipelineService` calls the existing building energy source as an explicit adapter, converts available monthly/hourly demand into `AnnualEnergyBalanceInput`, and then calls `AnnualEnergyBalanceEngine`.
+
+If the source provides 8760 hourly records, the result is marked as `HourlySimulation` with `isTrueHourly8760 = true`. If the source provides only monthly balances, the adapter generates representative monthly records, marks the source as `MonthlyBalanceAdapter`, sets `isTrueHourly8760 = false`, and emits a diagnostic saying this is not a true 8760 simulation.
+
+The separate building energy analysis API remains labelled as `ISO52016InspiredHourlyAnalysis`/monthly analysis when it uses that hourly/monthly service path. It is not silently mixed with the load-calculations annual adapter.
 
 The mapped output includes annual heating demand, annual cooling demand, monthly heating/cooling values, annual total, EUI when area is known, peak heating/cooling load, diagnostics and assumptions.
 
@@ -40,4 +48,4 @@ The mapped output includes annual heating demand, annual cooling demand, monthly
 
 ## Limits
 
-This is an MVP-level engineering annual balance. It does not claim full compliance with any external method.
+The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. This document does not claim full compliance with any external method.

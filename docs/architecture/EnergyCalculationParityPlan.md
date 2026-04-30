@@ -78,13 +78,29 @@ Parity означает, что AssistantEngineer на одинаковых вх
 
 - `GET /api/v1/rooms/{roomId}/load-calculations/heating-load` и `GET /api/v1/rooms/{roomId}/load-calculations/cooling-load` вызывают `ILoadCalculationsFacade`, затем `EnergyCalculationPipelineService`, который собирает input-модель комнаты и вызывает `RoomLoadCalculationEngine`.
 - `GET /api/v1/floors/{floorId}/load-calculations/heating-load`, `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`, building heating и building cooling routes используют room load results и `LoadAggregationEngine` в design-point mode.
-- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` использует existing building energy source как явный adapter и затем `AnnualEnergyBalanceEngine`. Diagnostics фиксируют source hourly/monthly data: synthetic profile или unavailable.
+- Public method query values are preserved as `requestedMethod`; results also expose `actualMethod` and diagnostics when the endpoint is currently using the Energy Calculation Parity design-point pipeline for API compatibility.
+- Room ground boundaries are passed into transmission inputs. If ground-contact metadata or a ground temperature profile is missing, diagnostics state that explicitly; the pipeline does not silently treat ground as outdoor.
+- Room solar gains prefer available annual/weather solar context. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
+- Room ventilation falls back to project/default ACH only with diagnostics that include the value. Invalid default ACH returns validation/diagnostics.
+- Design-point internal gains use full schedule factor `1.0` and report that assumption. Existing hourly analysis paths remain responsible for schedule expansion.
+- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It distinguishes `HourlySimulation` from `MonthlyBalanceAdapter` and exposes `isTrueHourly8760`; representative monthly records are not labelled as true 8760 simulation.
 - `POST /api/v1/domestic-hot-water/demand` остается на deterministic DHW service path.
 - Building energy analysis heating/cooling system routes используют `SystemEnergyEngine`; useful, final и primary energy не смешиваются.
-- `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет project safety factor, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates.
+- Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
+- `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет project safety factor, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; otherwise diagnostics state the limitation.
 - Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
+- Benchmark verification now asks `ILoadCalculationsFacade` for the AssistantEngineer building cooling result, so comparison reports use the application pipeline result. Benchmark statuses still do not imply external parity coverage without passing comparison evidence.
 
 Старые calculators сохраняются как compatibility adapters или alternative method labels там, где они еще нужны для public contracts. Новые статусы выше `InternalDeterministicTested` не выставляются без benchmark comparison evidence. Для integrated paths notes должны содержать `Application pipeline integrated.`
+
+### Current limitations
+
+- The load-calculations energy-balance endpoint is an annual aggregation adapter unless the upstream source provides true 8760 hourly records.
+- The design-point room load path is not a full hourly balance and does not claim full ISO compliance.
+- Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed.
+- Internal schedules are expanded in existing hourly analysis paths, not in design-point room loads.
+- Equipment heating selection depends on catalog heating capacity fields being populated.
+- No feature is marked `ExternalParityCovered` in this pass.
 
 ## P1 — расширение до полного расчётного покрытия
 

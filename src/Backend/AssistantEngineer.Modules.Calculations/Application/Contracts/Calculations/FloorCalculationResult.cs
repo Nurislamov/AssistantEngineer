@@ -8,6 +8,9 @@ public class FloorCalculationResult
     public int FloorId { get; set; }
     public string FloorName { get; set; } = string.Empty;
     public string CalculationMethod { get; set; } = string.Empty;
+    public string RequestedMethod { get; set; } = string.Empty;
+    public string ActualMethod { get; set; } = string.Empty;
+    public string CalculationMethodLabel { get; set; } = string.Empty;
     public int? PeakHour { get; set; }
     public int RoomsCount { get; set; }
 

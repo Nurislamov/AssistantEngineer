@@ -42,6 +42,8 @@ Input temperatures are degrees Celsius. Temperature difference is numerically eq
 
 `Ground`: uses `groundTemperatureC`, or `boundaryTemperatureC` when supplied. Ground transfer is currently simplified and diagnostics explicitly mark that assumption.
 
+In the room load application pipeline, ground boundary walls receive a ground temperature from existing ground temperature/profile services when available. If ground-contact metadata is missing, diagnostics report that explicitly. If no profile is available, the configured default boundary temperature is used with a warning diagnostic; ground is not silently treated as outdoor air.
+
 `AdjacentUnheatedSpace`: uses `adjacentTemperatureC`, or `boundaryTemperatureC` when supplied. Missing temperature is a diagnostic error.
 
 `AdjacentConditionedZone`: uses `adjacentTemperatureC`, or `boundaryTemperatureC` when supplied. Equal room and adjacent temperatures produce zero heat flow.
@@ -105,4 +107,4 @@ This stage does not include:
 - a full ground-contact heat transfer model;
 - coupled multi-zone heat balance.
 
-Ground transfer currently uses the supplied temperature and correction factor path and reports a simplified-ground diagnostic.
+Ground transfer currently uses the supplied temperature and correction factor path and reports simplified-ground/profile diagnostics. It is not a full ground-contact model.

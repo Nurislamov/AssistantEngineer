@@ -6,4 +6,5 @@ public sealed record CoolingEquipmentCatalogSizingCandidate(
     string SystemType,
     string UnitType,
     string ModelName,
-    double NominalCoolingCapacityKw);
+    double NominalCoolingCapacityKw,
+    double? NominalHeatingCapacityKw = null);

@@ -34,7 +34,7 @@ Room equipment selection uses the Energy Calculation Parity load and sizing path
 - `POST /api/v1/rooms/{roomId}/equipment-selection`
 - cooling report equipment rows, when a system type and unit type are requested
 
-The route calls `ILoadCalculationsFacade.CalculateRoomEquipmentSizingAsync`. The pipeline calculates the actual room load with `RoomLoadCalculationEngine`, applies the project cooling safety factor, queries the active equipment catalog through the sizing provider, and evaluates candidates with `EquipmentSizingEngine`.
+The route calls `ILoadCalculationsFacade.CalculateRoomEquipmentSizingAsync`. The pipeline calculates the actual room heating and cooling load with `RoomLoadCalculationEngine`, applies the project safety factor, queries the active equipment catalog through the sizing provider, and evaluates candidates with `EquipmentSizingEngine`.
 
 The API response keeps compatibility fields and maps sizing evidence:
 
@@ -47,7 +47,7 @@ The API response keeps compatibility fields and maps sizing evidence:
 - best match
 - diagnostics
 
-Current catalog integration exposes cooling capacity for cooling equipment. Heating capacity is not inferred from cooling catalog rows; diagnostics state that cooling capacity only was evaluated.
+Heating capacity is evaluated when catalog rows expose heating capacity. If the active catalog does not expose heating capacity, the result still reports the calculated required heating load and adds a diagnostic: heating sizing is skipped because catalog items do not expose heating capacity. Heating capacity is not inferred from cooling capacity.
 
 ## Deterministic Fixtures
 
@@ -58,4 +58,4 @@ Current catalog integration exposes cooling capacity for cooling equipment. Heat
 
 ## Limits
 
-The deterministic engine does not duplicate catalog persistence or catalog query logic.
+The deterministic engine does not duplicate catalog persistence or catalog query logic. Heating selection quality depends on catalog heating capacity data being present.

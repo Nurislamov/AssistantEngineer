@@ -1,8 +1,11 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
@@ -19,6 +22,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
@@ -34,6 +38,12 @@ public sealed class EnergyCalculationPipelineService
 {
     private const string RoomPipelineMethod = "Energy Calculation Parity / Application Room Load Pipeline";
     private const string AggregationPipelineMethod = "Energy Calculation Parity / Application Load Aggregation Pipeline";
+    private const string EnergyCalculationParityDesignPoint = "EnergyCalculationParityDesignPoint";
+    private const string EnergyCalculationParityAnnualAggregationAdapter = "EnergyCalculationParityAnnualAggregationAdapter";
+    private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";
+    private const string HourlySimulationSource = "HourlySimulation";
+    private const string AnnualClimateDataSolarSource = "AnnualClimateData";
+    private const string ReferenceSolarFallbackSource = "ReferenceByOrientationFallback";
 
     private readonly IRoomRepository _rooms;
     private readonly IFloorRepository _floors;
@@ -46,8 +56,12 @@ public sealed class EnergyCalculationPipelineService
     private readonly IBuildingEnergyCalculator _legacyEnergyCalculator;
     private readonly ICoolingLoadReferenceData _coolingReferenceData;
     private readonly ICoolingEquipmentCatalogSizingProvider? _equipmentCatalogSizingProvider;
+    private readonly IAnnualClimateDataProvider? _annualClimateDataProvider;
+    private readonly IGroundTemperatureService? _groundTemperatureService;
+    private readonly ISolarRadiationService? _solarRadiationService;
     private readonly CoolingLoadCalculationOptions _coolingOptions;
     private readonly En12831HeatingLoadOptions _heatingOptions;
+    private readonly Iso52016EnergyNeedOptions _energyNeedOptions;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<EnergyCalculationPipelineService> _logger;
 
@@ -66,6 +80,10 @@ public sealed class EnergyCalculationPipelineService
         IOptions<En12831HeatingLoadOptions> heatingOptions,
         TimeProvider timeProvider,
         ICoolingEquipmentCatalogSizingProvider? equipmentCatalogSizingProvider = null,
+        IAnnualClimateDataProvider? annualClimateDataProvider = null,
+        IGroundTemperatureService? groundTemperatureService = null,
+        ISolarRadiationService? solarRadiationService = null,
+        IOptions<Iso52016EnergyNeedOptions>? energyNeedOptions = null,
         ILogger<EnergyCalculationPipelineService>? logger = null)
     {
         _rooms = rooms;
@@ -80,8 +98,12 @@ public sealed class EnergyCalculationPipelineService
         _coolingReferenceData = coolingReferenceData;
         _coolingOptions = coolingOptions.Value;
         _heatingOptions = heatingOptions.Value;
+        _energyNeedOptions = energyNeedOptions?.Value ?? new Iso52016EnergyNeedOptions();
         _timeProvider = timeProvider;
         _equipmentCatalogSizingProvider = equipmentCatalogSizingProvider;
+        _annualClimateDataProvider = annualClimateDataProvider;
+        _groundTemperatureService = groundTemperatureService;
+        _solarRadiationService = solarRadiationService;
         _logger = logger ?? NullLogger<EnergyCalculationPipelineService>.Instance;
     }
 
@@ -94,7 +116,8 @@ public sealed class EnergyCalculationPipelineService
             return Result<RoomLoadCalculationResult>.NotFound($"Room with id {roomId} not found.");
 
         var preferences = await GetPreferencesAsync(room.Floor.Building.ProjectId, cancellationToken);
-        return CalculateRoomLoad(room, preferences);
+        var climateContext = await BuildClimateContextAsync(room.Floor.Building, cancellationToken);
+        return CalculateRoomLoad(room, preferences, climateContext);
     }
 
     public async Task<Result<RoomCalculationResult>> CalculateRoomCoolingLoadAsync(
@@ -107,7 +130,12 @@ public sealed class EnergyCalculationPipelineService
             return Result<RoomCalculationResult>.NotFound($"Room with id {roomId} not found.");
 
         var preferences = await GetPreferencesAsync(room.Floor.Building.ProjectId, cancellationToken);
-        var load = CalculateRoomLoad(room, preferences);
+        var climateContext = await BuildClimateContextAsync(room.Floor.Building, cancellationToken);
+        var load = CalculateRoomLoad(
+            room,
+            preferences,
+            climateContext,
+            requestedMethod: method.ToString());
         if (load.IsFailure)
             return Result<RoomCalculationResult>.Failure(load);
 
@@ -127,7 +155,12 @@ public sealed class EnergyCalculationPipelineService
             return Result<RoomHeatingLoadResult>.NotFound($"Room with id {roomId} not found.");
 
         var preferences = await GetPreferencesAsync(room.Floor.Building.ProjectId, cancellationToken);
-        var load = CalculateRoomLoad(room, preferences);
+        var climateContext = await BuildClimateContextAsync(room.Floor.Building, cancellationToken);
+        var load = CalculateRoomLoad(
+            room,
+            preferences,
+            climateContext,
+            requestedMethod: method.ToString());
         if (load.IsFailure)
             return Result<RoomHeatingLoadResult>.Failure(load);
 
@@ -139,6 +172,7 @@ public sealed class EnergyCalculationPipelineService
 
     public async Task<Result<FloorCalculationResult>> CalculateFloorLoadAsync(
         int floorId,
+        string? requestedMethod = null,
         CancellationToken cancellationToken = default)
     {
         var floor = await _floors.GetForCalculationAsync(floorId, cancellationToken);
@@ -146,27 +180,36 @@ public sealed class EnergyCalculationPipelineService
             return Result<FloorCalculationResult>.NotFound($"Floor with id {floorId} not found.");
 
         var preferences = await GetPreferencesAsync(floor.Building.ProjectId, cancellationToken);
-        var aggregation = AggregateFloor(floor, preferences);
+        var climateContext = await BuildClimateContextAsync(floor.Building, cancellationToken);
+        var aggregation = AggregateFloor(
+            floor,
+            preferences,
+            climateContext,
+            requestedMethod);
         if (aggregation.IsFailure)
             return Result<FloorCalculationResult>.Failure(aggregation);
 
         if (aggregation.Value.HasErrors)
             return Result<FloorCalculationResult>.Validation(FormatErrorDiagnostics(aggregation.Value.Diagnostics));
 
-        return Result<FloorCalculationResult>.Success(MapFloorResult(floor, aggregation.Value, preferences));
+        return Result<FloorCalculationResult>.Success(MapFloorResult(
+            floor,
+            aggregation.Value,
+            preferences,
+            requestedMethod));
     }
 
     public Task<Result<FloorCalculationResult>> CalculateFloorCoolingLoadAsync(
         int floorId,
         CoolingLoadCalculationMethod method = CoolingLoadCalculationMethod.Simplified,
         CancellationToken cancellationToken = default) =>
-        CalculateFloorLoadAsync(floorId, cancellationToken);
+        CalculateFloorLoadAsync(floorId, method.ToString(), cancellationToken);
 
     public Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
         int floorId,
         HeatingLoadCalculationMethod method = HeatingLoadCalculationMethod.En12831,
         CancellationToken cancellationToken = default) =>
-        CalculateFloorLoadAsync(floorId, cancellationToken);
+        CalculateFloorLoadAsync(floorId, method.ToString(), cancellationToken);
 
     public async Task<Result<BuildingCalculationResult>> CalculateBuildingCoolingLoadAsync(
         int buildingId,
@@ -178,14 +221,19 @@ public sealed class EnergyCalculationPipelineService
             return Result<BuildingCalculationResult>.NotFound($"Building with id {buildingId} not found.");
 
         var preferences = await GetPreferencesAsync(building.ProjectId, cancellationToken);
-        var aggregation = AggregateBuilding(building, preferences);
+        var climateContext = await BuildClimateContextAsync(building, cancellationToken);
+        var aggregation = AggregateBuilding(
+            building,
+            preferences,
+            climateContext,
+            method.ToString());
         if (aggregation.IsFailure)
             return Result<BuildingCalculationResult>.Failure(aggregation);
 
         if (aggregation.Value.HasErrors)
             return Result<BuildingCalculationResult>.Validation(FormatErrorDiagnostics(aggregation.Value.Diagnostics));
 
-        return Result<BuildingCalculationResult>.Success(MapBuildingCoolingResult(building, aggregation.Value, preferences));
+        return Result<BuildingCalculationResult>.Success(MapBuildingCoolingResult(building, aggregation.Value, preferences, method));
     }
 
     public async Task<Result<BuildingHeatingLoadResult>> CalculateBuildingHeatingLoadAsync(
@@ -198,7 +246,12 @@ public sealed class EnergyCalculationPipelineService
             return Result<BuildingHeatingLoadResult>.NotFound($"Building with id {buildingId} not found.");
 
         var preferences = await GetPreferencesAsync(building.ProjectId, cancellationToken);
-        var aggregation = AggregateBuilding(building, preferences);
+        var climateContext = await BuildClimateContextAsync(building, cancellationToken);
+        var aggregation = AggregateBuilding(
+            building,
+            preferences,
+            climateContext,
+            method.ToString());
         if (aggregation.IsFailure)
             return Result<BuildingHeatingLoadResult>.Failure(aggregation);
 
@@ -208,7 +261,11 @@ public sealed class EnergyCalculationPipelineService
         var roomResults = new List<RoomHeatingLoadResult>();
         foreach (var room in building.Floors.SelectMany(floor => floor.Rooms).OrderBy(room => room.Id))
         {
-            var roomLoad = CalculateRoomLoad(room, preferences);
+            var roomLoad = CalculateRoomLoad(
+                room,
+                preferences,
+                climateContext,
+                requestedMethod: method.ToString());
             if (roomLoad.IsFailure)
                 return Result<BuildingHeatingLoadResult>.Failure(roomLoad);
 
@@ -221,7 +278,8 @@ public sealed class EnergyCalculationPipelineService
         return Result<BuildingHeatingLoadResult>.Success(MapBuildingHeatingResult(
             building,
             aggregation.Value,
-            roomResults));
+            roomResults,
+            method));
     }
 
     public async Task<Result<BuildingEnergyBalanceResult>> CalculateBuildingEnergyBalanceAsync(
@@ -245,11 +303,18 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             cancellationToken);
         var annualInput = BuildAnnualEnergyInput(building, source);
-        var annual = _annualEnergyEngine.Calculate(annualInput);
+        var annual = _annualEnergyEngine.Calculate(annualInput.Input);
         if (annual.IsFailure)
             return Result<BuildingEnergyBalanceResult>.Failure(annual);
 
-        var result = MapEnergyBalanceResult(source, annual.Value, coolingMethod, heatingMethod);
+        var result = MapEnergyBalanceResult(
+            source,
+            annual.Value,
+            coolingMethod,
+            heatingMethod,
+            annualInput.Source,
+            annualInput.IsTrueHourly8760,
+            annualInput.Diagnostics);
         if (source.MonthlyBalances.Count == 0)
         {
             result.Diagnostics.Add(new CalculationDiagnostic(
@@ -283,7 +348,12 @@ public sealed class EnergyCalculationPipelineService
             return Result<EquipmentSizingResult>.NotFound($"Room with id {roomId} not found.");
 
         var preferences = await GetPreferencesAsync(room.Floor.Building.ProjectId, cancellationToken);
-        var load = CalculateRoomLoad(room, preferences);
+        var climateContext = await BuildClimateContextAsync(room.Floor.Building, cancellationToken);
+        var load = CalculateRoomLoad(
+            room,
+            preferences,
+            climateContext,
+            requestedMethod: method.ToString());
         if (load.IsFailure)
             return Result<EquipmentSizingResult>.Failure(load);
 
@@ -300,15 +370,18 @@ public sealed class EnergyCalculationPipelineService
                 candidate.Manufacturer,
                 candidate.ModelName,
                 $"{candidate.SystemType}/{candidate.UnitType}",
-                HeatingCapacityW: null,
+                HeatingCapacityW: candidate.NominalHeatingCapacityKw * 1000,
                 CoolingCapacityW: candidate.NominalCoolingCapacityKw * 1000,
                 IsActive: true))
             .ToArray();
+        var canEvaluateHeating = load.Value.HeatingLoadW > 0 &&
+            catalog.Any(candidate => candidate.NominalHeatingCapacityKw.HasValue);
+        var evaluatedHeatingLoadW = canEvaluateHeating ? load.Value.HeatingLoadW : 0;
 
         var sizing = _equipmentSizingEngine.Calculate(new EquipmentSizingInput(
             TargetId: room.Id,
             TargetType: EquipmentSizingTargetType.Room,
-            RequiredHeatingLoadW: 0,
+            RequiredHeatingLoadW: evaluatedHeatingLoadW,
             RequiredCoolingLoadW: load.Value.CoolingLoadW,
             SafetyFactor: preferences.CoolingSafetyFactor,
             Candidates: candidates,
@@ -318,23 +391,37 @@ public sealed class EnergyCalculationPipelineService
             return sizing;
 
         var diagnostics = sizing.Value.Diagnostics.ToList();
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Info,
-            "EquipmentSizing.CoolingCatalogOnly",
-            "Cooling equipment catalog does not expose heating capacity; sizing evaluated cooling capacity only.",
-            $"Room {room.Id} equipment selection"));
+        if (load.Value.HeatingLoadW > 0 && !canEvaluateHeating)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "EquipmentSizing.HeatingCapacityUnavailable",
+                "Heating sizing is skipped because catalog items do not expose heating capacity.",
+                $"Room {room.Id} equipment selection"));
+        }
 
-        return Result<EquipmentSizingResult>.Success(sizing.Value with { Diagnostics = diagnostics });
+        return Result<EquipmentSizingResult>.Success(sizing.Value with
+        {
+            RequiredHeatingCapacityW = Round(load.Value.HeatingLoadW),
+            RequiredHeatingCapacityWithReserveW = Round(load.Value.HeatingLoadW * preferences.CoolingSafetyFactor),
+            Diagnostics = diagnostics
+        });
     }
 
     private Result<RoomLoadCalculationResult> CalculateRoomLoad(
         Room room,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        PipelineClimateContext climateContext,
+        string? requestedMethod = null)
     {
         if (room.Floor.Building.ClimateZone is null)
             return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Energy Calculation Parity room load calculation.");
 
-        var input = BuildRoomLoadInput(room, preferences);
+        var input = BuildRoomLoadInput(
+            room,
+            preferences,
+            climateContext,
+            requestedMethod);
         var result = _roomLoadEngine.Calculate(input);
         if (result.IsFailure)
             return result;
@@ -350,7 +437,9 @@ public sealed class EnergyCalculationPipelineService
 
     private RoomLoadCalculationInput BuildRoomLoadInput(
         Room room,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        PipelineClimateContext climateContext,
+        string? requestedMethod)
     {
         var indoor = room.IndoorTemperature.Celsius;
         var heatingOutdoor = room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ??
@@ -359,15 +448,28 @@ public sealed class EnergyCalculationPipelineService
         var coolingOutdoor = room.OutdoorTemperatureOverride?.Celsius ??
             room.Floor.Building.ClimateZone?.SummerDesignTemperature.Celsius ??
             _coolingOptions.DefaultOutdoorCoolingDesignTemperatureC;
+        var diagnostics = new List<CalculationDiagnostic>();
+        var assumptions = new List<string>();
+        AddMethodCompatibilityDiagnostic(diagnostics, requestedMethod, $"Room {room.Id} application load pipeline");
+        AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
 
+        var groundContext = ResolveGroundContext(room, climateContext);
+        diagnostics.AddRange(groundContext.Diagnostics);
+        assumptions.AddRange(groundContext.Assumptions);
         var heatingTransmission = RoomTransmissionInputFactory.CreateForRoom(
             room,
             indoor,
-            heatingOutdoor).Elements;
+            heatingOutdoor,
+            groundContext.HeatingGroundTemperatureC).Elements;
         var coolingTransmission = RoomTransmissionInputFactory.CreateForRoom(
             room,
             indoor,
-            coolingOutdoor).Elements;
+            coolingOutdoor,
+            groundContext.CoolingGroundTemperatureC).Elements;
+
+        var solarContext = ResolveSolarContext(room, climateContext);
+        diagnostics.AddRange(solarContext.Diagnostics);
+        assumptions.AddRange(solarContext.Assumptions);
 
         return new RoomLoadCalculationInput(
             RoomId: room.Id,
@@ -381,24 +483,30 @@ public sealed class EnergyCalculationPipelineService
             OutdoorDesignCoolingTemperatureC: coolingOutdoor,
             TransmissionElements: heatingTransmission,
             CoolingTransmissionElements: coolingTransmission,
-            WindowSolarGains: CreateSolarInput(room),
+            WindowSolarGains: CreateSolarInput(room, solarContext.IrradianceByWindowId),
             HeatingVentilationAndInfiltration: CreateVentilationInput(
                 room,
                 preferences,
                 indoor,
                 heatingOutdoor,
-                isHeating: true),
+                isHeating: true,
+                diagnostics),
             CoolingVentilationAndInfiltration: CreateVentilationInput(
                 room,
                 preferences,
                 indoor,
                 coolingOutdoor,
-                isHeating: false),
+                isHeating: false,
+                diagnostics),
             InternalGains: CreateInternalGainInput(room),
+            ApplicationDiagnostics: diagnostics,
+            ApplicationAssumptions: assumptions,
             DiagnosticsContext: $"Room {room.Id} application load pipeline");
     }
 
-    private RoomWindowSolarGainRequest? CreateSolarInput(Room room)
+    private RoomWindowSolarGainRequest? CreateSolarInput(
+        Room room,
+        IReadOnlyDictionary<int, double> irradianceByWindowId)
     {
         if (room.Windows.Count == 0)
             return null;
@@ -406,7 +514,9 @@ public sealed class EnergyCalculationPipelineService
         var windows = room.Windows
             .Select(window => WindowSolarGainInputFactory.CreateForWindow(
                 window,
-                _coolingReferenceData.GetWindowSolarLoadWPerM2(window.Orientation),
+                irradianceByWindowId.GetValueOrDefault(
+                    window.Id,
+                    _coolingReferenceData.GetWindowSolarLoadWPerM2(window.Orientation)),
                 diagnosticsContext: $"Room {room.Id} window {window.Id} application solar gain"))
             .ToArray();
 
@@ -418,12 +528,37 @@ public sealed class EnergyCalculationPipelineService
         CalculationPreferences preferences,
         double indoorTemperatureC,
         double outdoorTemperatureC,
-        bool isHeating)
+        bool isHeating,
+        List<CalculationDiagnostic> diagnostics)
     {
         var deltaT = isHeating
             ? Math.Max(indoorTemperatureC - outdoorTemperatureC, 0)
             : Math.Max(outdoorTemperatureC - indoorTemperatureC, 0);
         var ventilation = room.VentilationParameters;
+        var defaultAch = preferences.Iso52016DefaultAirChangesPerHour;
+        if (ventilation is null)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                defaultAch < 0
+                    ? CalculationDiagnosticSeverity.Error
+                    : CalculationDiagnosticSeverity.Warning,
+                defaultAch < 0
+                    ? "Ventilation.InvalidDefaultAirChangesPerHour"
+                    : "Ventilation.DefaultAirChangesPerHourUsed",
+                defaultAch < 0
+                    ? "Room ventilation parameters are missing and the default ACH is invalid."
+                    : FormattableString.Invariant($"Room ventilation parameters are missing; default ACH {Round(defaultAch)} was used."),
+                $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
+        }
+        else
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "Ventilation.RoomParametersUsed",
+                "Room ventilation parameters were used.",
+                $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
+        }
+
         var infiltrationAirChangesPerHour = ventilation is null
             ? 0
             : ventilation.InfiltrationAirChangesPerHour + ventilation.StackCoefficient * Math.Sqrt(deltaT);
@@ -436,7 +571,7 @@ public sealed class EnergyCalculationPipelineService
             IndoorTemperatureC: indoorTemperatureC,
             OutdoorTemperatureC: outdoorTemperatureC,
             AirChangesPerHour: ventilation?.AirChangesPerHour ??
-                preferences.Iso52016DefaultAirChangesPerHour,
+                defaultAch,
             InfiltrationAirChangesPerHour: infiltrationAirChangesPerHour,
             HeatRecoveryEfficiency: ventilation?.HeatRecoveryEfficiency ?? 0,
             AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
@@ -454,11 +589,224 @@ public sealed class EnergyCalculationPipelineService
             LightingLoadW: room.LightingLoad.Watts,
             DiagnosticsContext: $"Room {room.Id} application internal gains");
 
+    private async Task<PipelineClimateContext> BuildClimateContextAsync(
+        Building building,
+        CancellationToken cancellationToken)
+    {
+        if (_annualClimateDataProvider is null ||
+            building.ClimateZone is null)
+        {
+            return new PipelineClimateContext(null, IsCompleteAnnualClimateData: false);
+        }
+
+        AnnualClimateData? annualData;
+        try
+        {
+            annualData = await _annualClimateDataProvider.GetForClimateZoneAsync(
+                building.ClimateZone.Id,
+                _energyNeedOptions.DefaultWeatherYear,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Annual climate data was unavailable for building {BuildingId}; Energy Calculation Parity pipeline will use documented design-point fallbacks.",
+                building.Id);
+            return new PipelineClimateContext(null, IsCompleteAnnualClimateData: false);
+        }
+
+        return new PipelineClimateContext(
+            annualData,
+            IsCompleteAnnualClimateData: HasCompleteAnnualClimateData(annualData));
+    }
+
+    private RoomGroundContext ResolveGroundContext(
+        Room room,
+        PipelineClimateContext climateContext)
+    {
+        if (!room.Walls.Any(wall => wall.BoundaryType == WallBoundaryType.Ground))
+            return RoomGroundContext.Empty;
+
+        var diagnostics = new List<CalculationDiagnostic>();
+        var assumptions = new List<string>();
+        var context = $"Room {room.Id} application ground boundary";
+
+        if (room.GroundContactMetadata is null)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "GroundContact.MetadataMissing",
+                "Ground boundary exists, but ground contact metadata is missing.",
+                context));
+        }
+
+        if (_groundTemperatureService is not null &&
+            climateContext.AnnualClimateData is not null &&
+            climateContext.AnnualClimateData.HourlyData.Count > 0)
+        {
+            var monthly = Enumerable.Range(1, 12)
+                .Select(month => _groundTemperatureService.GetMonthlyAverageTemperature(
+                    climateContext.AnnualClimateData.HourlyData.ToArray(),
+                    month))
+                .ToArray();
+
+            var heatingGroundTemperature = monthly.Min();
+            var coolingGroundTemperature = monthly.Max();
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "GroundContact.GroundTemperatureProfileUsed",
+                "Ground boundary temperature was resolved from the existing ground temperature profile service.",
+                context));
+            assumptions.Add("Ground boundary uses existing ground temperature profile values for design-point transmission.");
+            return new RoomGroundContext(
+                heatingGroundTemperature,
+                coolingGroundTemperature,
+                diagnostics,
+                assumptions);
+        }
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "GroundContact.DefaultBoundaryTemperatureUsed",
+            $"Ground boundary temperature profile was unavailable; default boundary temperature {_energyNeedOptions.DefaultGroundBoundaryTemperatureC} C was used.",
+            context));
+        assumptions.Add("Ground boundary uses the configured default boundary temperature when profile data is unavailable.");
+        return new RoomGroundContext(
+            _energyNeedOptions.DefaultGroundBoundaryTemperatureC,
+            _energyNeedOptions.DefaultGroundBoundaryTemperatureC,
+            diagnostics,
+            assumptions);
+    }
+
+    private RoomSolarContext ResolveSolarContext(
+        Room room,
+        PipelineClimateContext climateContext)
+    {
+        if (room.Windows.Count == 0)
+            return RoomSolarContext.Empty;
+
+        var diagnostics = new List<CalculationDiagnostic>();
+        var assumptions = new List<string>();
+        var irradianceByWindowId = new Dictionary<int, double>();
+        var context = $"Room {room.Id} application solar gains";
+
+        if (_solarRadiationService is not null &&
+            climateContext.AnnualClimateData is not null &&
+            climateContext.AnnualClimateData.HourlyData.Any(hour => hour.HourOfYear.HasValue))
+        {
+            foreach (var window in room.Windows)
+            {
+                var irradiance = climateContext.AnnualClimateData.HourlyData
+                    .Where(hour => hour.HourOfYear.HasValue)
+                    .Select(hour =>
+                    {
+                        var timestamp = new DateTime(
+                                climateContext.AnnualClimateData.Year,
+                                1,
+                                1,
+                                0,
+                                0,
+                                0,
+                                DateTimeKind.Utc)
+                            .AddHours(hour.HourOfYear!.Value);
+                        return _solarRadiationService.CalculateVerticalSurfaceRadiation(
+                            hour,
+                            window.Orientation,
+                            _energyNeedOptions.LatitudeDegrees,
+                            timestamp.DayOfYear,
+                            timestamp.Hour);
+                    })
+                    .DefaultIfEmpty(0)
+                    .Max();
+
+                irradianceByWindowId[window.Id] = irradiance;
+            }
+
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarGains.IrradianceSource",
+                $"Solar irradiance source: {AnnualClimateDataSolarSource}.",
+                context));
+            assumptions.Add("Window solar gains use available annual climate solar data for design-point irradiance.");
+            return new RoomSolarContext(irradianceByWindowId, diagnostics, assumptions);
+        }
+
+        foreach (var window in room.Windows)
+        {
+            irradianceByWindowId[window.Id] =
+                _coolingReferenceData.GetWindowSolarLoadWPerM2(window.Orientation);
+        }
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "SolarGains.ReferenceByOrientationFallback",
+            "Window solar gain uses orientation reference irradiance because hourly weather/solar context was not available.",
+            context));
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
+            "SolarGains.IrradianceSource",
+            $"Solar irradiance source: {ReferenceSolarFallbackSource}.",
+            context));
+        assumptions.Add("Window solar gains use orientation reference irradiance fallback when annual weather/solar data is unavailable.");
+        return new RoomSolarContext(irradianceByWindowId, diagnostics, assumptions);
+    }
+
+    private static void AddMethodCompatibilityDiagnostic(
+        List<CalculationDiagnostic> diagnostics,
+        string? requestedMethod,
+        string context,
+        string actualMethodLabel = "Energy Calculation Parity design-point pipeline")
+    {
+        if (string.IsNullOrWhiteSpace(requestedMethod))
+            return;
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "CalculationMethod.ApiCompatibility",
+            $"Requested method '{requestedMethod}' is accepted for API compatibility, but this endpoint currently uses {actualMethodLabel}.",
+            context));
+    }
+
+    private static void AddInternalGainScheduleDiagnostics(
+        Room room,
+        List<CalculationDiagnostic> diagnostics,
+        List<string> assumptions)
+    {
+        var context = $"Room {room.Id} application internal gains";
+        var hasSchedules =
+            room.OccupancySchedule is not null ||
+            room.EquipmentSchedule is not null ||
+            room.LightingSchedule is not null;
+
+        diagnostics.Add(new CalculationDiagnostic(
+            hasSchedules ? CalculationDiagnosticSeverity.Warning : CalculationDiagnosticSeverity.Info,
+            hasSchedules
+                ? "InternalGains.DesignPointFullScheduleFactorWithSchedules"
+                : "InternalGains.DesignPointFullScheduleFactor",
+            hasSchedules
+                ? "Design-point internal gains use full schedule factor 1.0; room schedules are reserved for hourly analysis paths."
+                : "Design-point internal gains use full schedule factor 1.0.",
+            context));
+        assumptions.Add("Design-point internal gains use full schedule factor 1.0.");
+    }
+
     private Result<LoadAggregationResult> AggregateFloor(
         Floor floor,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        PipelineClimateContext climateContext,
+        string? requestedMethod)
     {
-        var rooms = BuildAggregationRooms(floor.Rooms, floor.Building, preferences);
+        var rooms = BuildAggregationRooms(
+            floor.Rooms,
+            floor.Building,
+            preferences,
+            climateContext,
+            requestedMethod);
         if (rooms.IsFailure)
             return Result<LoadAggregationResult>.Failure(rooms);
 
@@ -473,12 +821,16 @@ public sealed class EnergyCalculationPipelineService
 
     private Result<LoadAggregationResult> AggregateBuilding(
         Building building,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        PipelineClimateContext climateContext,
+        string? requestedMethod)
     {
         var rooms = BuildAggregationRooms(
             building.Floors.SelectMany(floor => floor.Rooms),
             building,
-            preferences);
+            preferences,
+            climateContext,
+            requestedMethod);
         if (rooms.IsFailure)
             return Result<LoadAggregationResult>.Failure(rooms);
 
@@ -494,7 +846,9 @@ public sealed class EnergyCalculationPipelineService
     private Result<IReadOnlyList<AggregationRoomLoadInput>> BuildAggregationRooms(
         IEnumerable<Room> sourceRooms,
         Building building,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        PipelineClimateContext climateContext,
+        string? requestedMethod)
     {
         var roomToZone = building.ThermalZones
             .SelectMany(zone => zone.AssignedRooms.Select(room => new { room.Id, ZoneId = (int?)zone.Id }))
@@ -504,7 +858,11 @@ public sealed class EnergyCalculationPipelineService
 
         foreach (var room in sourceRooms.OrderBy(room => room.Id))
         {
-            var load = CalculateRoomLoad(room, preferences);
+            var load = CalculateRoomLoad(
+                room,
+                preferences,
+                climateContext,
+                requestedMethod);
             if (load.IsFailure)
                 return Result<IReadOnlyList<AggregationRoomLoadInput>>.Failure(load);
 
@@ -529,14 +887,56 @@ public sealed class EnergyCalculationPipelineService
         return Result<IReadOnlyList<AggregationRoomLoadInput>>.Success(rooms);
     }
 
-    private AnnualEnergyBalanceInput BuildAnnualEnergyInput(
+    private AnnualEnergyAdapterInput BuildAnnualEnergyInput(
         Building building,
         BuildingEnergyBalanceResult source)
     {
+        if (source.HourlyBalanceRecords.Count > 0)
+        {
+            var isTrueHourly8760 = source.HourlyBalanceRecords.Count == 8760;
+            var diagnostics = new List<CalculationDiagnostic>
+            {
+                new(
+                    isTrueHourly8760 ? CalculationDiagnosticSeverity.Info : CalculationDiagnosticSeverity.Warning,
+                    isTrueHourly8760 ? "AnnualEnergy.HourlySimulationSource" : "AnnualEnergy.PartialHourlySimulationSource",
+                    isTrueHourly8760
+                        ? "Annual energy balance used hourly simulation records."
+                        : "Annual energy balance used available hourly simulation records, but the input is not a full 8760-hour year.",
+                    $"Building {building.Id} application energy balance")
+            };
+
+            return new AnnualEnergyAdapterInput(
+                new AnnualEnergyBalanceInput(
+                    BuildingId: building.Id,
+                    BuildingName: building.Name,
+                    BuildingAreaM2: CalculateBuildingArea(building),
+                    Year: _timeProvider.GetUtcNow().Year,
+                    Hours: source.HourlyBalanceRecords,
+                    UsesSyntheticWeather: false,
+                    WeatherSource: HourlySimulationSource,
+                    DiagnosticsContext: $"Building {building.Id} application energy balance"),
+                HourlySimulationSource,
+                isTrueHourly8760,
+                diagnostics);
+        }
+
         var balances = source.MonthlyBalances.Count == 0
             ? Enumerable.Range(1, 12).Select(month => new MonthlyEnergyBalance { Month = month }).ToArray()
             : source.MonthlyBalances.OrderBy(balance => balance.Month).ToArray();
         var hours = new List<AnnualEnergyBalanceHourInput>(balances.Length);
+        var diagnosticsForAdapter = new List<CalculationDiagnostic>
+        {
+            new(
+                CalculationDiagnosticSeverity.Warning,
+                "AnnualEnergy.MonthlyBalanceAdapter",
+                "Monthly balance adapter generated representative monthly records; this is not a true hourly 8760 simulation.",
+                $"Building {building.Id} application energy balance"),
+            new(
+                CalculationDiagnosticSeverity.Info,
+                "AnnualEnergy.InternalGainScheduleUnavailableInMonthlyAdapter",
+                "Monthly balance adapter does not expose hourly internal gains schedules; annual internal gains are not expanded from room schedules in this path.",
+                $"Building {building.Id} application energy balance")
+        };
 
         foreach (var balance in balances)
         {
@@ -549,15 +949,19 @@ public sealed class EnergyCalculationPipelineService
                 HourDurationH: duration));
         }
 
-        return new AnnualEnergyBalanceInput(
-            BuildingId: building.Id,
-            BuildingName: building.Name,
-            BuildingAreaM2: CalculateBuildingArea(building),
-            Year: _timeProvider.GetUtcNow().Year,
-            Hours: hours,
-            UsesSyntheticWeather: true,
-            WeatherSource: source.MonthlyBalances.Count == 0 ? "unavailable" : "synthetic profile",
-            DiagnosticsContext: $"Building {building.Id} application energy balance");
+        return new AnnualEnergyAdapterInput(
+            new AnnualEnergyBalanceInput(
+                BuildingId: building.Id,
+                BuildingName: building.Name,
+                BuildingAreaM2: CalculateBuildingArea(building),
+                Year: _timeProvider.GetUtcNow().Year,
+                Hours: hours,
+                UsesSyntheticWeather: true,
+                WeatherSource: source.MonthlyBalances.Count == 0 ? "unavailable" : MonthlyBalanceAdapterSource,
+                DiagnosticsContext: $"Building {building.Id} application energy balance"),
+            MonthlyBalanceAdapterSource,
+            IsTrueHourly8760: false,
+            diagnosticsForAdapter);
     }
 
     private static RoomCalculationResult MapCoolingRoomResult(
@@ -577,7 +981,10 @@ public sealed class EnergyCalculationPipelineService
         {
             RoomId = room.Id,
             RoomName = room.Name,
-            CalculationMethod = $"{requestedMethod} via {RoomPipelineMethod}",
+            CalculationMethod = RoomPipelineMethod,
+            RequestedMethod = requestedMethod.ToString(),
+            ActualMethod = EnergyCalculationParityDesignPoint,
+            CalculationMethodLabel = "Energy Calculation Parity design-point pipeline",
             PeakHour = 15,
             AreaM2 = Round(room.Area.SquareMeters),
             HeightM = Round(room.HeightM),
@@ -630,7 +1037,10 @@ public sealed class EnergyCalculationPipelineService
         {
             RoomId = room.Id,
             RoomName = room.Name,
-            CalculationMethod = $"{requestedMethod} via {RoomPipelineMethod}",
+            CalculationMethod = RoomPipelineMethod,
+            RequestedMethod = requestedMethod.ToString(),
+            ActualMethod = EnergyCalculationParityDesignPoint,
+            CalculationMethodLabel = "Energy Calculation Parity design-point pipeline",
             IndoorDesignTemperatureC = Round(room.IndoorTemperature.Celsius),
             OutdoorDesignTemperatureC = Round(room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ?? 0),
             DeltaTemperatureC = Round(Math.Max(room.IndoorTemperature.Celsius - (room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ?? 0), 0)),
@@ -654,15 +1064,25 @@ public sealed class EnergyCalculationPipelineService
     private static FloorCalculationResult MapFloorResult(
         Floor floor,
         LoadAggregationResult aggregation,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        string? requestedMethod)
     {
         var designCapacity = aggregation.CoolingLoadW * preferences.CoolingSafetyFactor;
+        var diagnostics = aggregation.Diagnostics.ToList();
+        AddMethodCompatibilityDiagnostic(
+            diagnostics,
+            requestedMethod,
+            $"Floor {floor.Id} application aggregation",
+            "Energy Calculation Parity design-point aggregation");
 
         return new FloorCalculationResult
         {
             FloorId = floor.Id,
             FloorName = floor.Name,
             CalculationMethod = AggregationPipelineMethod,
+            RequestedMethod = requestedMethod ?? string.Empty,
+            ActualMethod = EnergyCalculationParityDesignPoint,
+            CalculationMethodLabel = "Energy Calculation Parity design-point aggregation",
             PeakHour = null,
             RoomsCount = aggregation.RoomCount,
             TotalHeatLoadW = Round(aggregation.CoolingLoadW),
@@ -676,22 +1096,32 @@ public sealed class EnergyCalculationPipelineService
             DesignCapacityKw = Round(designCapacity / 1000.0),
             HourlyHeatLoadW = Enumerable.Repeat(Round(aggregation.CoolingLoadW), 24).ToList(),
             ComponentBreakdown = aggregation.ComponentBreakdown,
-            Diagnostics = aggregation.Diagnostics.ToList()
+            Diagnostics = diagnostics
         };
     }
 
     private static BuildingCalculationResult MapBuildingCoolingResult(
         Building building,
         LoadAggregationResult aggregation,
-        CalculationPreferences preferences)
+        CalculationPreferences preferences,
+        CoolingLoadCalculationMethod requestedMethod)
     {
         var designCapacity = aggregation.CoolingLoadW * preferences.CoolingSafetyFactor;
+        var diagnostics = aggregation.Diagnostics.ToList();
+        AddMethodCompatibilityDiagnostic(
+            diagnostics,
+            requestedMethod.ToString(),
+            $"Building {building.Id} application cooling aggregation",
+            "Energy Calculation Parity design-point aggregation");
 
         return new BuildingCalculationResult
         {
             BuildingId = building.Id,
             BuildingName = building.Name,
             CalculationMethod = AggregationPipelineMethod,
+            RequestedMethod = requestedMethod.ToString(),
+            ActualMethod = EnergyCalculationParityDesignPoint,
+            CalculationMethodLabel = "Energy Calculation Parity design-point aggregation",
             PeakHour = null,
             FloorsCount = building.Floors.Count,
             RoomsCount = aggregation.RoomCount,
@@ -705,17 +1135,24 @@ public sealed class EnergyCalculationPipelineService
             HourlyHeatLoadW = Enumerable.Repeat(Round(aggregation.CoolingLoadW), 24).ToList(),
             ThermalZones = BuildThermalZoneResults(building, aggregation),
             ComponentBreakdown = aggregation.ComponentBreakdown,
-            Diagnostics = aggregation.Diagnostics.ToList()
+            Diagnostics = diagnostics
         };
     }
 
     private static BuildingHeatingLoadResult MapBuildingHeatingResult(
         Building building,
         LoadAggregationResult aggregation,
-        IReadOnlyList<RoomHeatingLoadResult> rooms)
+        IReadOnlyList<RoomHeatingLoadResult> rooms,
+        HeatingLoadCalculationMethod requestedMethod)
     {
         var transmission = rooms.Sum(room => room.TransmissionHeatLossW);
         var ventilation = rooms.Sum(room => room.VentilationHeatLossW);
+        var diagnostics = aggregation.Diagnostics.ToList();
+        AddMethodCompatibilityDiagnostic(
+            diagnostics,
+            requestedMethod.ToString(),
+            $"Building {building.Id} application heating aggregation",
+            "Energy Calculation Parity design-point aggregation");
 
         return new BuildingHeatingLoadResult
         {
@@ -723,6 +1160,9 @@ public sealed class EnergyCalculationPipelineService
             ProjectName = building.Project?.Name ?? string.Empty,
             BuildingName = building.Name,
             CalculationMethod = AggregationPipelineMethod,
+            RequestedMethod = requestedMethod.ToString(),
+            ActualMethod = EnergyCalculationParityDesignPoint,
+            CalculationMethodLabel = "Energy Calculation Parity design-point aggregation",
             RoomsCount = aggregation.RoomCount,
             TransmissionHeatLossW = Round(transmission),
             VentilationHeatLossW = Round(ventilation),
@@ -732,7 +1172,7 @@ public sealed class EnergyCalculationPipelineService
             HeatingLoadWPerM2 = Round(aggregation.HeatingLoadWPerM2),
             Rooms = rooms.ToList(),
             ComponentBreakdown = aggregation.ComponentBreakdown,
-            Diagnostics = aggregation.Diagnostics.ToList()
+            Diagnostics = diagnostics
         };
     }
 
@@ -740,13 +1180,37 @@ public sealed class EnergyCalculationPipelineService
         BuildingEnergyBalanceResult source,
         AnnualEnergyBalanceResult annual,
         CoolingLoadCalculationMethod coolingMethod,
-        HeatingLoadCalculationMethod heatingMethod) =>
-        new()
+        HeatingLoadCalculationMethod heatingMethod,
+        string sourceName,
+        bool isTrueHourly8760,
+        IReadOnlyList<CalculationDiagnostic> adapterDiagnostics)
+    {
+        var diagnostics = annual.Diagnostics
+            .Concat(adapterDiagnostics)
+            .ToList();
+        AddMethodCompatibilityDiagnostic(
+            diagnostics,
+            coolingMethod.ToString(),
+            $"Building {annual.BuildingId} application annual energy balance cooling method",
+            "Energy Calculation Parity annual aggregation adapter");
+        AddMethodCompatibilityDiagnostic(
+            diagnostics,
+            heatingMethod.ToString(),
+            $"Building {annual.BuildingId} application annual energy balance heating method",
+            "Energy Calculation Parity annual aggregation adapter");
+
+        return new BuildingEnergyBalanceResult
         {
             BuildingId = annual.BuildingId,
             BuildingName = annual.BuildingName ?? source.BuildingName,
-            CoolingCalculationMethod = $"{coolingMethod} via {annual.CalculationMethod}",
-            HeatingCalculationMethod = $"{heatingMethod} via {annual.CalculationMethod}",
+            CoolingCalculationMethod = "Energy Calculation Parity / Annual Aggregation Adapter",
+            HeatingCalculationMethod = "Energy Calculation Parity / Annual Aggregation Adapter",
+            RequestedCoolingMethod = coolingMethod.ToString(),
+            RequestedHeatingMethod = heatingMethod.ToString(),
+            ActualMethod = EnergyCalculationParityAnnualAggregationAdapter,
+            CalculationMethodLabel = "Energy Calculation Parity annual aggregation adapter",
+            EnergyDataSource = sourceName,
+            IsTrueHourly8760 = isTrueHourly8760,
             AnnualCoolingDemandKWh = Round(annual.AnnualCoolingDemandKWh),
             AnnualHeatingDemandKWh = Round(annual.AnnualHeatingDemandKWh),
             AnnualTotalDemandKWh = Round(annual.AnnualTotalDemandKWh),
@@ -764,9 +1228,10 @@ public sealed class EnergyCalculationPipelineService
                     CoolingDemandKWh = Round(month.CoolingKWh)
                 })
                 .ToList(),
-            Diagnostics = annual.Diagnostics.ToList(),
+            Diagnostics = diagnostics,
             Assumptions = annual.AssumptionsUsed.ToList()
         };
+    }
 
     private static List<ThermalZoneCalculationResult> BuildThermalZoneResults(
         Building building,
@@ -857,6 +1322,43 @@ public sealed class EnergyCalculationPipelineService
 
         return hour;
     }
+
+    private static bool HasCompleteAnnualClimateData(AnnualClimateData? annualData) =>
+        annualData?.HourlyData
+            .Where(hour => hour.HourOfYear.HasValue)
+            .Select(hour => hour.HourOfYear!.Value)
+            .Distinct()
+            .Count() == 8760;
+
+    private sealed record PipelineClimateContext(
+        AnnualClimateData? AnnualClimateData,
+        bool IsCompleteAnnualClimateData);
+
+    private sealed record RoomGroundContext(
+        double? HeatingGroundTemperatureC,
+        double? CoolingGroundTemperatureC,
+        IReadOnlyList<CalculationDiagnostic> Diagnostics,
+        IReadOnlyList<string> Assumptions)
+    {
+        public static RoomGroundContext Empty { get; } = new(null, null, [], []);
+    }
+
+    private sealed record RoomSolarContext(
+        IReadOnlyDictionary<int, double> IrradianceByWindowId,
+        IReadOnlyList<CalculationDiagnostic> Diagnostics,
+        IReadOnlyList<string> Assumptions)
+    {
+        public static RoomSolarContext Empty { get; } = new(
+            new Dictionary<int, double>(),
+            [],
+            []);
+    }
+
+    private sealed record AnnualEnergyAdapterInput(
+        AnnualEnergyBalanceInput Input,
+        string Source,
+        bool IsTrueHourly8760,
+        IReadOnlyList<CalculationDiagnostic> Diagnostics);
 
     private static double Round(double value) =>
         Math.Round(value, 2, MidpointRounding.AwayFromZero);

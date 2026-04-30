@@ -19,6 +19,16 @@ This stage covers:
 
 Surface irradiance can come from the existing weather-solar path, or it can be supplied directly as deterministic input. Window solar gains are not mixed with window transmission heat transfer.
 
+## Application Pipeline Source Priority
+
+For room cooling load endpoints, `EnergyCalculationPipelineService` resolves incident irradiance in this order:
+
+1. available annual/weather solar context for the selected design condition;
+2. existing annual climate/design solar data;
+3. orientation reference irradiance fallback.
+
+The result diagnostics expose the source as `AnnualClimateData` or `ReferenceByOrientationFallback`. When the fallback is used, diagnostics warn that hourly weather/solar context was not available.
+
 ## Formula
 
 The simplified deterministic formula is:
@@ -108,4 +118,4 @@ This stage does not include:
 - a full rewrite of room cooling load;
 - a new solar position model.
 
-The engine consumes provided surface irradiance. The existing weather-solar path remains responsible for mapping weather and sun position to surface irradiance.
+The engine consumes provided surface irradiance. The existing weather-solar path remains responsible for mapping weather and sun position to surface irradiance. The application fallback is documented and diagnosed; it is not a full solar-context replacement.
