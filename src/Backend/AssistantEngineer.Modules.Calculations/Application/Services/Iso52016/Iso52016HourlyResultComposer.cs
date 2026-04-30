@@ -14,7 +14,7 @@ internal sealed class Iso52016HourlyResultComposer
         var groupedHourlyResults = zoneHourlyResults
             .GroupBy(hour => hour.HourOfYear)
             .Select(group => new Iso52016HourlyEnergyNeed(
-                group.Key,
+                HourOfYear: group.Key,
                 Month: Iso52016HourlyCalculatorMath.GetMonth(group.Key),
                 HeatingLoadW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.HeatingLoadW)),
                 CoolingLoadW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.CoolingLoadW)),
@@ -25,7 +25,11 @@ internal sealed class Iso52016HourlyResultComposer
                 TransmissionW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.TransmissionW)),
                 VentilationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.VentilationW)),
                 InfiltrationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.InfiltrationW)),
-                GroundW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundW))))
+                GroundW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundW)),
+                TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.TransmissionBalanceW)),
+                VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.VentilationBalanceW)),
+                InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.InfiltrationBalanceW)),
+                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundBalanceW))))
             .OrderBy(hour => hour.HourOfYear)
             .ToArray();
 

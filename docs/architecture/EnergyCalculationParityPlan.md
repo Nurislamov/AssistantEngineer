@@ -246,3 +246,71 @@ Tolerance можно расширять только с documented assumption.
 | Surface irradiance N/E/S/W/horizontal fixture | Verify ISO 52010 oriented surface irradiance |
 | External DHW benchmark fixture | Verify domestic hot water demand against a documented benchmark |
 | External system energy benchmark fixture | Verify final/primary energy aggregation against a documented benchmark |
+START SECTION
+
+## Update: signed hourly component balance
+
+The Energy Calculation Parity true hourly path now supports signed component balance for available hourly components.
+
+### Implemented
+
+The following signed hourly fields are available in the true hourly simulation path:
+
+- TransmissionBalanceW
+- VentilationBalanceW
+- InfiltrationBalanceW
+- GroundBalanceW
+
+The following annual net fields are available in annual component breakdown:
+
+- NetTransmissionKWh
+- NetVentilationKWh
+- NetInfiltrationKWh
+- NetGroundKWh
+
+### Sign convention
+
+The sign convention is:
+
+- Positive value = heat gain to the room, zone or building.
+- Negative value = heat loss from the room, zone or building.
+
+Magnitude fields remain available and non-negative:
+
+- TransmissionW
+- VentilationW
+- InfiltrationW
+- GroundW
+
+### Current implementation status
+
+| Function | Status | Notes |
+|---|---|---|
+| Hourly transmission magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
+| Hourly ventilation magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
+| Hourly ground magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
+| Hourly infiltration magnitude | Partial | Current hourly source does not expose separate infiltration split. |
+| Signed transmission balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
+| Signed ventilation balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
+| Signed ground balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
+| Signed infiltration balance | Partial | Not faked; remains 0 until hourly path exposes infiltration separately. |
+| Annual net transmission total | InternalDeterministicTested | Exposed as NetTransmissionKWh. |
+| Annual net ventilation total | InternalDeterministicTested | Exposed as NetVentilationKWh. |
+| Annual net ground total | InternalDeterministicTested | Exposed as NetGroundKWh. |
+| Annual net infiltration total | Partial | Exposed as NetInfiltrationKWh, but currently depends on missing hourly infiltration split. |
+
+### Verification notes
+
+Signed component balance is verified internally through deterministic tests.
+
+This update does not change external parity status.
+
+Current status remains:
+
+- InternalDeterministicTested for implemented signed hourly components.
+- Partial for infiltration split.
+- Not ExternalParityCovered.
+
+External parity still requires benchmark comparison fixtures with documented source results and tolerances.
+
+END SECTION

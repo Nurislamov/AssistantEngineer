@@ -1,54 +1,263 @@
+START FILE
 # Annual Energy Balance
 
-This Energy Calculation Parity step provides a deterministic annual balance from hourly load inputs. In application endpoints it can also run behind an explicit adapter when only monthly source data is available.
+Annual energy balance is part of the **Energy Calculation Parity** track.
 
-## Formula
+It converts hourly or representative monthly energy records into:
+
+- monthly heating demand;
+- monthly cooling demand;
+- annual heating demand;
+- annual cooling demand;
+- annual total demand;
+- energy use intensity;
+- peak heating/cooling load;
+- component breakdown;
+- diagnostics.
+
+## Current calculation paths
+
+The annual energy balance supports two source paths.
+
+### 1. TrueHourlySimulation
+
+This path is used when the application can provide real hourly simulation records.
+
+A true hourly annual result must contain 8760 records for a non-leap-year annual calculation.
+
+When this path is used:
 
 ```text
-energyKWh = sum(loadW * hourDurationH) / 1000
-annualTotalKWh = sum(monthlyTotalKWh)
-EUI = annualTotalKWh / buildingAreaM2
+EnergyDataSource = TrueHourlySimulation
+IsTrueHourly8760 = true only when HourlyRecordCount == 8760
 ```
 
-Monthly totals are built from hourly records grouped by month. Annual totals are the sum of monthly totals.
+If the record count is not 8760, the result remains usable for the supplied period, but it is not treated as a true annual 8760 simulation.
 
-## Output
+### 2. MonthlyBalanceAdapter
 
-The result includes annual heating, annual cooling, annual total, monthly heating/cooling/total arrays, peak heating and cooling load, peak hours, EUI, component energy breakdown and diagnostics.
+This path remains as a compatibility fallback.
+
+It converts monthly balances into representative monthly records so that the same annual aggregation engine can be used.
+
+When this path is used:
+
+```text
+EnergyDataSource = MonthlyBalanceAdapter
+IsTrueHourly8760 = false
+```
+
+This path is not a true hourly 8760 simulation.
+
+## Hourly to annual conversion
+
+For each hourly record:
+
+```text
+EnergyKWh = LoadW × HourDurationH / 1000
+```
+
+Monthly totals are calculated by grouping records by month.
+
+Annual totals are calculated as the sum of monthly totals.
+
+```text
+AnnualHeatingKWh = Sum(MonthlyHeatingKWh)
+AnnualCoolingKWh = Sum(MonthlyCoolingKWh)
+AnnualTotalKWh = AnnualHeatingKWh + AnnualCoolingKWh
+```
+
+## Energy use intensity
+
+If building area is available:
+
+```text
+EnergyUseIntensityKWhPerM2Year =
+    AnnualTotalKWh / BuildingAreaM2
+```
+
+If the building area is missing or invalid, the engine returns diagnostics.
+
+## Magnitude component fields
+
+The annual component breakdown includes magnitude fields:
+
+```text
+TransmissionKWh
+VentilationKWh
+InfiltrationKWh
+GroundKWh
+SolarGainsKWh
+InternalGainsKWh
+```
+
+Magnitude fields are non-negative.
+
+They answer the question:
+
+```text
+How much component activity occurred over the calculation period?
+```
+
+For example:
+
+```text
+TransmissionKWh = Sum(max(TransmissionW, 0) × HourDurationH) / 1000
+```
+
+These fields are useful for high-level reports and component sizing.
+
+## Signed component balance fields
+
+The annual component breakdown also includes signed/net fields:
+
+```text
+NetTransmissionKWh
+NetVentilationKWh
+NetInfiltrationKWh
+NetGroundKWh
+```
+
+Signed fields preserve the direction of heat flow.
+
+## Sign convention
+
+The sign convention is:
+
+```text
+Positive value = heat gain to the room/building
+Negative value = heat loss from the room/building
+```
+
+Examples:
+
+```text
+Outdoor air colder than indoor air:
+TransmissionBalanceW < 0
+VentilationBalanceW < 0
+
+Outdoor air warmer than indoor air:
+TransmissionBalanceW > 0
+VentilationBalanceW > 0
+
+Ground colder than room:
+GroundBalanceW < 0
+
+Ground warmer than room:
+GroundBalanceW > 0
+```
+
+Solar and internal gains remain positive gains:
+
+```text
+SolarGainsW >= 0
+InternalGainsW >= 0
+```
+
+Heating and cooling demand fields remain positive demand values:
+
+```text
+HeatingLoadW >= 0
+CoolingLoadW >= 0
+```
+
+## Magnitude vs signed balance
+
+Example for one hour:
+
+```text
+Indoor operative temperature = 20°C
+Outdoor temperature = -5°C
+Envelope UA = 10 W/K
+```
+
+Magnitude component:
+
+```text
+TransmissionW = 10 × abs(20 - (-5)) = 250 W
+```
+
+Signed balance:
+
+```text
+TransmissionBalanceW = 10 × (-5 - 20) = -250 W
+```
+
+The magnitude says:
+
+```text
+250 W of transmission exchange occurred.
+```
+
+The signed balance says:
+
+```text
+250 W left the room/building through transmission.
+```
+
+## Infiltration status
+
+The current true hourly path does not expose infiltration as a separate signed component.
+
+If infiltration is modelled by the current hourly path, it may be included in combined ventilation contribution.
+
+Therefore:
+
+```text
+InfiltrationW = 0
+InfiltrationBalanceW = 0
+```
+
+can mean:
+
+```text
+separate infiltration split is not available
+```
+
+not necessarily:
+
+```text
+there is physically no infiltration
+```
+
+The mapper reports this with diagnostics:
+
+```text
+AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
+```
 
 ## Diagnostics
 
-Synthetic weather use is reported. Missing hourly records and invalid area are errors. Negative hourly loads are clamped to zero and reported. Application results expose:
+Important diagnostics include:
 
-- `energyDataSource`: `TrueHourlySimulation`, `MonthlyBalanceAdapter`, `DeterministicFixture`, or `Unavailable`;
-- `isTrueHourly8760`: true only when the source is actual hourly simulation and exactly 8760 records are supplied;
-- `hourlyRecordCount`: the number of records consumed by the annual engine;
-- diagnostics for representative monthly records when the monthly adapter is used.
+```text
+AnnualEnergy.TrueHourlySimulationUsed
+AnnualEnergy.TrueHourlySimulationPartial
+AnnualEnergy.MonthlyBalanceAdapter
+AnnualEnergy.SourceUnavailable
+AnnualEnergy.HourlyComponentBreakdownPartial
+AnnualEnergy.SignedComponentBalanceAvailable
+AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
+AnnualEnergy.NegativeHourlyValueClamped
+```
 
-## Real Application Pipeline
+## Current status
 
-The building energy-balance route and energy-balance report facade use the Energy Calculation Parity annual engine path:
+Annual energy balance is currently:
 
-- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance`
-- `GET /api/v1/reports/buildings/{buildingId}/energy-balance/excel`
+```text
+InternalDeterministicTested
+Application pipeline integrated
+TrueHourlySimulation supported when hourly source is available
+MonthlyBalanceAdapter fallback documented
+Signed component balance supported for available hourly components
+```
 
-`EnergyCalculationPipelineService` calls the existing building energy source as an explicit adapter, converts available monthly/hourly demand into `AnnualEnergyBalanceInput`, and then calls `AnnualEnergyBalanceEngine`.
+It is not marked as:
 
-If the existing hourly simulation path provides 8760 hourly records, `HourlySimulationToAnnualEnergyInputMapper` maps them into annual engine input, the result is marked as `TrueHourlySimulation`, `hourlyRecordCount = 8760`, and `isTrueHourly8760 = true`. If the hourly source is unavailable but monthly balances exist, the adapter generates representative monthly records, marks the source as `MonthlyBalanceAdapter`, sets `isTrueHourly8760 = false`, and emits a diagnostic saying this is not a true 8760 simulation. If neither hourly nor monthly source data is available, the application path returns validation instead of fake zero annual results.
+```text
+ExternalParityCovered
+```
 
-The mapper carries available hourly heating/cooling, transmission, ventilation, ground, solar and internal-gain values. In the current true hourly path, ventilation is reported as the combined hourly ventilation heat-transfer contribution. Infiltration is not separately exposed by that path yet, so it remains `0` and diagnostics state that the annual infiltration breakdown is partial instead of inventing a split.
-
-The separate building energy analysis API remains labelled as `ISO52016InspiredHourlyAnalysis`/monthly analysis when it uses that hourly/monthly service path. It is not silently mixed with the load-calculations annual adapter.
-
-The mapped output includes annual heating demand, annual cooling demand, monthly heating/cooling values, annual total, EUI when area is known, peak heating/cooling load, diagnostics and assumptions.
-
-## Deterministic Fixtures
-
-- `annual-constant-heating-load.json`
-- `annual-constant-cooling-load.json`
-- `annual-monthly-aggregation-consistency.json`
-- `annual-energy-use-intensity.json`
-
-## Limits
-
-The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. `TrueHourlySimulation` means the project consumed an existing hourly simulation output; it does not claim full compliance with any external method or `ExternalParityCovered` status. Separate infiltration reporting remains a known limitation of the current hourly component breakdown.
+because no external benchmark comparison is currently used as proof.
+END FILE

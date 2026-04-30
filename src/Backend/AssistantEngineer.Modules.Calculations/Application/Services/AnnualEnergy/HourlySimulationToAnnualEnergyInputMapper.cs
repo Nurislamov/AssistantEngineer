@@ -20,6 +20,7 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         var records = hourlyRecords
             .OrderBy(record => record.HourIndex)
             .ToArray();
+
         var diagnostics = BuildComponentDiagnostics(records, diagnosticsContext);
         var isTrueHourly8760 = records.Length == 8760;
 
@@ -48,38 +49,50 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         if (records.Count == 0)
             return [];
 
-        var hasLoad = records.Any(record => record.HeatingLoadW > 0 || record.CoolingLoadW > 0);
+        var hasLoad = records.Any(record =>
+            record.HeatingLoadW > 0 ||
+            record.CoolingLoadW > 0);
+
         if (!hasLoad)
             return [];
 
         var diagnostics = new List<CalculationDiagnostic>();
+
         AddMissingComponentDiagnostic(
             diagnostics,
             records,
-            "transmission",
-            "TransmissionW",
-            record => record.TransmissionW,
+            componentName: "transmission",
+            fieldName: nameof(AnnualEnergyBalanceHourInput.TransmissionW),
+            valueSelector: record => record.TransmissionW,
             diagnosticsContext);
+
         AddMissingComponentDiagnostic(
             diagnostics,
             records,
-            "ventilation",
-            "VentilationW",
-            record => record.VentilationW,
+            componentName: "ventilation",
+            fieldName: nameof(AnnualEnergyBalanceHourInput.VentilationW),
+            valueSelector: record => record.VentilationW,
             diagnosticsContext);
+
         AddMissingComponentDiagnostic(
             diagnostics,
             records,
-            "infiltration",
-            "InfiltrationW",
-            record => record.InfiltrationW,
+            componentName: "infiltration",
+            fieldName: nameof(AnnualEnergyBalanceHourInput.InfiltrationW),
+            valueSelector: record => record.InfiltrationW,
             diagnosticsContext);
+
         AddMissingComponentDiagnostic(
             diagnostics,
             records,
-            "ground",
-            "GroundW",
-            record => record.GroundW,
+            componentName: "ground",
+            fieldName: nameof(AnnualEnergyBalanceHourInput.GroundW),
+            valueSelector: record => record.GroundW,
+            diagnosticsContext);
+
+        AddSignedComponentBalanceDiagnostics(
+            diagnostics,
+            records,
             diagnosticsContext);
 
         return diagnostics;
@@ -93,7 +106,7 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         Func<AnnualEnergyBalanceHourInput, double> valueSelector,
         string? diagnosticsContext)
     {
-        if (records.Any(record => valueSelector(record) != 0))
+        if (records.Any(record => Math.Abs(valueSelector(record)) > 0.000001))
             return;
 
         diagnostics.Add(new CalculationDiagnostic(
@@ -101,6 +114,52 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
             "AnnualEnergy.HourlyComponentBreakdownPartial",
             $"Hourly simulation did not provide component {componentName} ({fieldName}); annual component breakdown excludes it.",
             diagnosticsContext));
+    }
+
+    private static void AddSignedComponentBalanceDiagnostics(
+        ICollection<CalculationDiagnostic> diagnostics,
+        IReadOnlyList<AnnualEnergyBalanceHourInput> records,
+        string? diagnosticsContext)
+    {
+        var availableSignedComponents = new List<string>();
+
+        if (records.Any(record => Math.Abs(record.TransmissionBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.TransmissionBalanceW));
+
+        if (records.Any(record => Math.Abs(record.VentilationBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.VentilationBalanceW));
+
+        if (records.Any(record => Math.Abs(record.InfiltrationBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.InfiltrationBalanceW));
+
+        if (records.Any(record => Math.Abs(record.GroundBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.GroundBalanceW));
+
+        if (availableSignedComponents.Count > 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "AnnualEnergy.SignedComponentBalanceAvailable",
+                "Hourly simulation provides signed component balance fields. Positive values mean heat gain to the room/building; negative values mean heat loss from the room/building. Available fields: " +
+                string.Join(", ", availableSignedComponents) +
+                ".",
+                diagnosticsContext));
+        }
+
+        var hasInfiltrationMagnitude = records.Any(record =>
+            Math.Abs(record.InfiltrationW) > 0.000001);
+
+        var hasInfiltrationSignedBalance = records.Any(record =>
+            Math.Abs(record.InfiltrationBalanceW) > 0.000001);
+
+        if (!hasInfiltrationMagnitude && !hasInfiltrationSignedBalance)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable",
+                "Hourly simulation does not expose infiltration as a separate signed component. If infiltration is modelled by the current hourly path, it remains included in the combined ventilation contribution.",
+                diagnosticsContext));
+        }
     }
 }
 

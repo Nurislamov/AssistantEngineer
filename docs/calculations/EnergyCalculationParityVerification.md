@@ -51,3 +51,82 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 ## Known Limits
 
 The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown still reports infiltration as partial when it is not separately modelled. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
+START SECTION
+
+## Signed hourly component balance
+
+The true hourly simulation path now supports signed component balance fields for available hourly components.
+
+The existing magnitude fields remain available:
+
+- TransmissionW
+- VentilationW
+- InfiltrationW
+- GroundW
+- SolarGainsW
+- InternalGainsW
+
+These magnitude fields are non-negative and represent the absolute component activity.
+
+The signed balance fields are:
+
+- TransmissionBalanceW
+- VentilationBalanceW
+- InfiltrationBalanceW
+- GroundBalanceW
+
+The sign convention is:
+
+- Positive value means heat gain to the room, zone or building.
+- Negative value means heat loss from the room, zone or building.
+
+Examples:
+
+- Outdoor temperature lower than operative temperature produces negative TransmissionBalanceW.
+- Outdoor temperature higher than operative temperature produces positive TransmissionBalanceW.
+- Ground boundary temperature lower than operative temperature produces negative GroundBalanceW.
+- Ground boundary temperature higher than operative temperature produces positive GroundBalanceW.
+
+At annual aggregation level, the signed hourly values are exposed as:
+
+- NetTransmissionKWh
+- NetVentilationKWh
+- NetInfiltrationKWh
+- NetGroundKWh
+
+These values preserve the sign of heat flow over the calculation period.
+
+### Current limitation
+
+The current true hourly path does not expose infiltration as a separate split.
+
+If infiltration is modelled by the active hourly calculation path, it may be included in the combined ventilation contribution.
+
+Because of that:
+
+- InfiltrationW may remain 0.
+- InfiltrationBalanceW may remain 0.
+- NetInfiltrationKWh may remain 0.
+
+This does not necessarily mean that the building has no physical infiltration. It means that the current hourly source does not expose infiltration separately.
+
+The verification diagnostics should report this with:
+
+- AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
+
+### Verification status
+
+Signed component balance is internally deterministic tested for the currently available true hourly components.
+
+Status:
+
+- Transmission signed balance: InternalDeterministicTested
+- Ventilation signed balance: InternalDeterministicTested
+- Ground signed balance: InternalDeterministicTested
+- Infiltration signed balance: Partial
+
+This is not ExternalParityCovered.
+
+External parity requires benchmark comparison fixtures with documented source results and tolerances.
+
+END SECTION

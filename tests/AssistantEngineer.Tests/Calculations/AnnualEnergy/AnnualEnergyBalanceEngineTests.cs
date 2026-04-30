@@ -123,6 +123,32 @@ public class AnnualEnergyBalanceEngineTests
     }
 
     [Fact]
+    public void Calculate_SignedComponentBreakdownPreservesLossesAndGains()
+    {
+        var result = _engine.Calculate(new AnnualEnergyBalanceInput(
+            BuildingId: 1,
+            BuildingName: "Building",
+            BuildingAreaM2: 100,
+            Year: 2026,
+            Hours: CreateSignedComponentHours()));
+
+        Assert.True(result.IsSuccess);
+
+        Assert.Equal(876, result.Value.ComponentBreakdown.TransmissionKWh, precision: 6);
+        Assert.Equal(-876, result.Value.ComponentBreakdown.NetTransmissionKWh, precision: 6);
+
+        Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
+        Assert.Equal(-438, result.Value.ComponentBreakdown.NetVentilationKWh, precision: 6);
+
+        Assert.Equal(262.8, result.Value.ComponentBreakdown.GroundKWh, precision: 6);
+        Assert.Equal(87.6, result.Value.ComponentBreakdown.NetGroundKWh, precision: 6);
+
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Info &&
+            diagnostic.Code == "AnnualEnergy.SignedComponentBalanceAvailable");
+    }
+
+    [Fact]
     public void Calculate_EnergyUseIntensityUsesAnnualTotalAndArea()
     {
         var result = _engine.Calculate(new AnnualEnergyBalanceInput(
@@ -277,6 +303,36 @@ public class AnnualEnergyBalanceEngineTests
                     SolarGainsW: 20,
                     InternalGainsW: 10,
                     GroundW: 30));
+            }
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateSignedComponentHours()
+    {
+        var result = new List<AnnualEnergyBalanceHourInput>(8760);
+        var hour = 0;
+        foreach (var (month, hours) in MonthHours())
+        {
+            for (var i = 0; i < hours; i++)
+            {
+                result.Add(new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour++,
+                    Month: month,
+                    HeatingLoadW: 100,
+                    CoolingLoadW: 50,
+                    TransmissionW: 100,
+                    VentilationW: 50,
+                    InfiltrationW: 0,
+                    SolarGainsW: 20,
+                    InternalGainsW: 10,
+                    GroundW: 30,
+                    HourDurationH: 1,
+                    TransmissionBalanceW: -100,
+                    VentilationBalanceW: -50,
+                    InfiltrationBalanceW: 0,
+                    GroundBalanceW: 10));
             }
         }
 

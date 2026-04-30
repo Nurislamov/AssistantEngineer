@@ -11,4 +11,8 @@ public sealed record AnnualEnergyBalanceHourInput(
     double SolarGainsW = 0,
     double InternalGainsW = 0,
     double GroundW = 0,
-    double HourDurationH = 1.0);
+    double HourDurationH = 1.0,
+    double TransmissionBalanceW = 0,
+    double VentilationBalanceW = 0,
+    double InfiltrationBalanceW = 0,
+    double GroundBalanceW = 0);

@@ -12,4 +12,8 @@ public sealed record Iso52016HourlyEnergyNeed(
     double TransmissionW = 0,
     double VentilationW = 0,
     double InfiltrationW = 0,
-    double GroundW = 0);
+    double GroundW = 0,
+    double TransmissionBalanceW = 0,
+    double VentilationBalanceW = 0,
+    double InfiltrationBalanceW = 0,
+    double GroundBalanceW = 0);

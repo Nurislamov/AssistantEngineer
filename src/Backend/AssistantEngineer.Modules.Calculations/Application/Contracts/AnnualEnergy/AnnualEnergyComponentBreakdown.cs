@@ -6,4 +6,8 @@ public sealed record AnnualEnergyComponentBreakdown(
     double InfiltrationKWh,
     double SolarGainsKWh,
     double InternalGainsKWh,
-    double GroundKWh);
+    double GroundKWh,
+    double NetTransmissionKWh = 0,
+    double NetVentilationKWh = 0,
+    double NetInfiltrationKWh = 0,
+    double NetGroundKWh = 0);

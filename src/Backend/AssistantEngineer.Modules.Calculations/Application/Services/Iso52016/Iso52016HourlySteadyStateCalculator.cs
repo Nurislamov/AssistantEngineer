@@ -143,7 +143,11 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     TransmissionW: zoneResult.Hour.TransmissionW,
                     VentilationW: zoneResult.Hour.VentilationW,
                     InfiltrationW: zoneResult.Hour.InfiltrationW,
-                    GroundW: zoneResult.Hour.GroundW));
+                    GroundW: zoneResult.Hour.GroundW,
+                    TransmissionBalanceW: zoneResult.Hour.TransmissionBalanceW,
+                    VentilationBalanceW: zoneResult.Hour.VentilationBalanceW,
+                    InfiltrationBalanceW: zoneResult.Hour.InfiltrationBalanceW,
+                    GroundBalanceW: zoneResult.Hour.GroundBalanceW));
 
                 foreach (var roomResult in zoneResult.Rooms)
                 {

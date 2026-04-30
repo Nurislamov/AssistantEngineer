@@ -2,13 +2,13 @@ using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
-using AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -44,6 +44,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
         CancellationToken cancellationToken = default)
     {
         var climateZone = building.ClimateZone ?? throw new InvalidOperationException("Building has no climate zone.");
+
         _logger.LogInformation(
             "Energy balance calculation started for building {BuildingId} with climate zone {ClimateZoneId}.",
             building.Id,
@@ -79,6 +80,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                 result.EnergyDataSource = HourlySimulationToAnnualEnergyInputMapper.TrueHourlySimulationSource;
                 result.IsTrueHourly8760 = annualEnergyNeeds.HourlyResults.Count == 8760;
                 result.HourlyRecordCount = annualEnergyNeeds.HourlyResults.Count;
+
                 result.Diagnostics.Add(new CalculationDiagnostic(
                     result.IsTrueHourly8760
                         ? CalculationDiagnosticSeverity.Info
@@ -114,8 +116,13 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                         SolarGainsW: hour.SolarGainsW,
                         InternalGainsW: hour.InternalGainsW,
                         GroundW: hour.GroundW,
-                        HourDurationH: 1.0))
+                        HourDurationH: 1.0,
+                        TransmissionBalanceW: hour.TransmissionBalanceW,
+                        VentilationBalanceW: hour.VentilationBalanceW,
+                        InfiltrationBalanceW: hour.InfiltrationBalanceW,
+                        GroundBalanceW: hour.GroundBalanceW))
                     .ToList();
+
                 var hourlyMapping = new HourlySimulationToAnnualEnergyInputMapper().Map(
                     building.Id,
                     building.Name,
@@ -123,6 +130,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                     annualEnergyNeeds.Year,
                     hourlyRecords,
                     $"Building {building.Id} ISO52016InspiredHourlyAnalysis");
+
                 result.HourlyBalanceRecords = hourlyMapping.Input.Hours.ToList();
                 result.Diagnostics.AddRange(hourlyMapping.Diagnostics);
 
@@ -138,6 +146,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                     building.Id,
                     result.AnnualHeatingDemandKWh,
                     result.AnnualCoolingDemandKWh);
+
                 return result;
             }
         }
@@ -153,11 +162,13 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
             result.EnergyDataSource = "LegacyMonthlyEstimate";
             result.IsTrueHourly8760 = false;
             result.HourlyRecordCount = 0;
+
             result.Diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,
                 "EnergyBalance.LegacyMonthlyEstimateUnavailable",
                 "No climate months were available for the legacy monthly estimate path.",
                 $"Building {building.Id} legacy energy balance"));
+
             return result;
         }
 
@@ -167,6 +178,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
             heatingMethod,
             preferences,
             cancellationToken);
+
         var monthlyCooling = roomEnergyEstimates.Sum(estimate => estimate.DesignDayCoolingDemandKWh);
         var monthlyHeating = roomEnergyEstimates.Sum(estimate => estimate.DesignMonthHeatingDemandKWh);
 
@@ -196,11 +208,13 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
             result.AnnualCoolingDemandKWh + result.AnnualHeatingDemandKWh,
             2,
             MidpointRounding.AwayFromZero);
+
         result.ActualMethod = "LegacyMonthlyEstimate";
         result.CalculationMethodLabel = "Legacy monthly estimate compatibility path";
         result.EnergyDataSource = "LegacyMonthlyEstimate";
         result.IsTrueHourly8760 = false;
         result.HourlyRecordCount = 0;
+
         result.Diagnostics.Add(new CalculationDiagnostic(
             CalculationDiagnosticSeverity.Warning,
             "EnergyBalance.LegacyMonthlyEstimatePath",
@@ -223,6 +237,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
         CancellationToken cancellationToken)
     {
         var estimates = new List<RoomEnergyEstimate>();
+
         foreach (var floor in building.Floors)
         foreach (var room in floor.Rooms)
         {
@@ -233,6 +248,7 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                 coolingMethod,
                 preferences,
                 cancellationToken);
+
             var heatingResult = await _heatingCalculator.CalculateAsync(
                 room,
                 heatingMethod,
