@@ -28,6 +28,48 @@ public class AnnualEnergyBalanceEngineTests
     }
 
     [Fact]
+    public void Calculate_TrueHourly8760SetsSourceMetadata()
+    {
+        var result = _engine.Calculate(new AnnualEnergyBalanceInput(
+            BuildingId: 1,
+            BuildingName: "Building",
+            BuildingAreaM2: 200,
+            Year: 2026,
+            Hours: CreateHours(heatingW: 1000, coolingW: 0),
+            EnergyDataSource: "TrueHourlySimulation",
+            IsTrueHourly8760: true));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("TrueHourlySimulation", result.Value.EnergyDataSource);
+        Assert.True(result.Value.IsTrueHourly8760);
+        Assert.Equal(8760, result.Value.HourlyRecordCount);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.TrueHourlySimulationUsed");
+    }
+
+    [Fact]
+    public void Calculate_MonthlyAdapterSourceIsNotTrueHourly8760()
+    {
+        var result = _engine.Calculate(new AnnualEnergyBalanceInput(
+            BuildingId: 1,
+            BuildingName: "Building",
+            BuildingAreaM2: 200,
+            Year: 2026,
+            Hours: CreateRepresentativeMonthlyRecords(),
+            UsesSyntheticWeather: true,
+            EnergyDataSource: "MonthlyBalanceAdapter",
+            IsTrueHourly8760: false));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("MonthlyBalanceAdapter", result.Value.EnergyDataSource);
+        Assert.False(result.Value.IsTrueHourly8760);
+        Assert.Equal(12, result.Value.HourlyRecordCount);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.MonthlyBalanceAdapter" &&
+            diagnostic.Message.Contains("not a true hourly 8760", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Calculate_ConstantCoolingLoadConvertsHourlyWToAnnualKWh()
     {
         var result = _engine.Calculate(new AnnualEnergyBalanceInput(
@@ -175,6 +217,24 @@ public class AnnualEnergyBalanceEngineTests
                     HeatingLoadW: heating,
                     CoolingLoadW: cooling));
             }
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateRepresentativeMonthlyRecords()
+    {
+        var result = new List<AnnualEnergyBalanceHourInput>(12);
+        var hour = 0;
+        foreach (var (month, hours) in MonthHours())
+        {
+            result.Add(new AnnualEnergyBalanceHourInput(
+                HourIndex: hour,
+                Month: month,
+                HeatingLoadW: month <= 4 || month >= 10 ? 100 : 0,
+                CoolingLoadW: month is >= 5 and <= 9 ? 50 : 0,
+                HourDurationH: hours));
+            hour += hours;
         }
 
         return result;

@@ -43,10 +43,10 @@ The backend calculation endpoints use the Energy Calculation Parity application 
 
 - Room heating/cooling routes assemble room component inputs and call `RoomLoadCalculationEngine`.
 - Floor and building heating/cooling routes aggregate room load results with `LoadAggregationEngine`.
-- Building energy balance maps the available building energy source into `AnnualEnergyBalanceEngine` and carries source diagnostics.
+- Building energy balance maps true hourly simulation records into `AnnualEnergyBalanceEngine` when available; otherwise it uses the documented MonthlyBalanceAdapter fallback with source diagnostics and `isTrueHourly8760 = false`.
 - DHW demand uses the deterministic DHW service path.
 - Heating/cooling system energy uses `SystemEnergyEngine` so useful, final and primary energy remain distinct.
-- Room equipment selection uses actual room load, the project safety factor, `EquipmentSizingEngine`, and the active equipment catalog.
+- Room equipment selection uses actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog.
 - Cooling, heating and energy-balance reports consume facade results from the same pipeline. Excel rendering stays in Infrastructure.
 
 ## Backend Setup

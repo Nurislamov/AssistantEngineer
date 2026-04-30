@@ -20,8 +20,9 @@ The result includes annual heating, annual cooling, annual total, monthly heatin
 
 Synthetic weather use is reported. Missing hourly records and invalid area are errors. Negative hourly loads are clamped to zero and reported. Application results expose:
 
-- `energyDataSource`: `HourlySimulation`, `MonthlyBalanceAdapter`, or `unavailable`;
-- `isTrueHourly8760`: true only when the adapter receives 8760 hourly records;
+- `energyDataSource`: `TrueHourlySimulation`, `MonthlyBalanceAdapter`, `DeterministicFixture`, or `Unavailable`;
+- `isTrueHourly8760`: true only when the source is actual hourly simulation and exactly 8760 records are supplied;
+- `hourlyRecordCount`: the number of records consumed by the annual engine;
 - diagnostics for representative monthly records when the monthly adapter is used.
 
 ## Real Application Pipeline
@@ -33,7 +34,9 @@ The building energy-balance route and energy-balance report facade use the Energ
 
 `EnergyCalculationPipelineService` calls the existing building energy source as an explicit adapter, converts available monthly/hourly demand into `AnnualEnergyBalanceInput`, and then calls `AnnualEnergyBalanceEngine`.
 
-If the source provides 8760 hourly records, the result is marked as `HourlySimulation` with `isTrueHourly8760 = true`. If the source provides only monthly balances, the adapter generates representative monthly records, marks the source as `MonthlyBalanceAdapter`, sets `isTrueHourly8760 = false`, and emits a diagnostic saying this is not a true 8760 simulation.
+If the existing hourly simulation path provides 8760 hourly records, `HourlySimulationToAnnualEnergyInputMapper` maps them into annual engine input, the result is marked as `TrueHourlySimulation`, `hourlyRecordCount = 8760`, and `isTrueHourly8760 = true`. If the hourly source is unavailable but monthly balances exist, the adapter generates representative monthly records, marks the source as `MonthlyBalanceAdapter`, sets `isTrueHourly8760 = false`, and emits a diagnostic saying this is not a true 8760 simulation. If neither hourly nor monthly source data is available, the application path returns validation instead of fake zero annual results.
+
+The mapper carries available hourly heating/cooling, solar and internal-gain values. If the hourly source does not expose optional component breakdown such as transmission, ventilation, infiltration or ground, diagnostics state that the annual component breakdown excludes those components instead of inventing values.
 
 The separate building energy analysis API remains labelled as `ISO52016InspiredHourlyAnalysis`/monthly analysis when it uses that hourly/monthly service path. It is not silently mixed with the load-calculations annual adapter.
 
@@ -48,4 +51,4 @@ The mapped output includes annual heating demand, annual cooling demand, monthly
 
 ## Limits
 
-The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. This document does not claim full compliance with any external method.
+The load-calculations endpoint is an annual aggregation adapter unless the upstream source supplies true 8760 hourly records. `TrueHourlySimulation` means the project consumed an existing hourly simulation output; it does not claim full compliance with any external method or `ExternalParityCovered` status.

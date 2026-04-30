@@ -20,7 +20,11 @@ public sealed record AnnualEnergyBalanceResult(
     IReadOnlyList<string> AssumptionsUsed,
     string CalculationMethod,
     string CalculationVersion,
-    DateTimeOffset CalculatedAtUtc)
+    DateTimeOffset CalculatedAtUtc,
+    string EnergyDataSource,
+    bool IsTrueHourly8760,
+    int HourlyRecordCount,
+    string ActualMethod)
 {
     public bool HasErrors =>
         Diagnostics.Any(diagnostic => diagnostic.Severity == CalculationDiagnosticSeverity.Error);

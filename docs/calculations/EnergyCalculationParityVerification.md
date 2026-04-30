@@ -28,10 +28,10 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 
 - Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
-- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `HourlySimulation` versus `MonthlyBalanceAdapter`, and `isTrueHourly8760` is false for representative monthly records.
+- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values.
-- Room equipment selection uses the actual room load, project safety factor, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
+- Room equipment selection uses the actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
 - Cooling, heating and energy-balance reports consume facade results built from the same application pipeline. Excel generation stays in Infrastructure integrations.
 - Benchmark verification obtains AssistantEngineer cooling results through `ILoadCalculationsFacade`, so the benchmark comparison path uses the same application pipeline result as the public load-calculation route. This is still only benchmark evidence when a comparison test actually runs and passes.
 
@@ -43,11 +43,11 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 - Design building loads must equal sums of unique room loads in design-point mode.
 - Diagnostics must exist for fallback or clamped assumptions.
 - Diagnostics must identify requested method versus actual method for compatibility requests.
-- Energy-balance diagnostics must identify `MonthlyBalanceAdapter` versus `HourlySimulation`.
+- Energy-balance diagnostics must identify `MonthlyBalanceAdapter` versus `TrueHourlySimulation`.
 - Room cooling separates solar, internal, transmission and ventilation components.
 - Room heating separates transmission, ventilation, infiltration and ground components.
 - Equipment sizing explains rejected candidates.
 
 ## Known Limits
 
-The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
+The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.

@@ -289,6 +289,7 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal("EnergyCalculationParityAnnualAggregationAdapter", result.Value.ActualMethod);
         Assert.Equal("MonthlyBalanceAdapter", result.Value.EnergyDataSource);
         Assert.False(result.Value.IsTrueHourly8760);
+        Assert.Equal(2, result.Value.HourlyRecordCount);
         Assert.Equal(
             result.Value.MonthlyBalances.Sum(month => month.HeatingDemandKWh + month.CoolingDemandKWh),
             result.Value.AnnualTotalDemandKWh,
@@ -315,10 +316,26 @@ public class EnergyCalculationPipelineServiceTests
         var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
 
         Assert.True(result.IsSuccess, result.Error);
-        Assert.Equal("HourlySimulation", result.Value.EnergyDataSource);
+        Assert.Equal("TrueHourlySimulation", result.Value.EnergyDataSource);
         Assert.True(result.Value.IsTrueHourly8760);
+        Assert.Equal(8760, result.Value.HourlyRecordCount);
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
-            diagnostic.Code == "AnnualEnergy.HourlySimulationSource");
+            diagnostic.Code == "AnnualEnergy.TrueHourlySimulationUsed");
+    }
+
+    [Fact]
+    public async Task EnergyBalanceApplicationPathReturnsValidationWhenSourceUnavailable()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(
+            building,
+            energyCalculator: new UnavailableBuildingEnergyCalculator());
+
+        var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("source is unavailable", result.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -785,7 +802,30 @@ public class EnergyCalculationPipelineServiceTests
                 [
                     new MonthlyEnergyBalance { Month = 1, HeatingDemandKWh = 100, CoolingDemandKWh = 0 },
                     new MonthlyEnergyBalance { Month = 7, HeatingDemandKWh = 0, CoolingDemandKWh = 50 }
-                ]
+                ],
+                HourlyRecordCount = _hourlyRecords?.Count ?? 0,
+                EnergyDataSource = _hourlyRecords is null ? "LegacyMonthlyEstimate" : "TrueHourlySimulation",
+                IsTrueHourly8760 = _hourlyRecords?.Count == 8760
+            });
+    }
+
+    private sealed class UnavailableBuildingEnergyCalculator : IBuildingEnergyCalculator
+    {
+        public Task<BuildingEnergyBalanceResult> CalculateAsync(
+            Building building,
+            CoolingLoadCalculationMethod coolingMethod,
+            HeatingLoadCalculationMethod heatingMethod,
+            CalculationPreferences? preferences = null,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(new BuildingEnergyBalanceResult
+            {
+                BuildingId = building.Id,
+                BuildingName = building.Name,
+                CoolingCalculationMethod = coolingMethod.ToString(),
+                HeatingCalculationMethod = heatingMethod.ToString(),
+                EnergyDataSource = "Unavailable",
+                IsTrueHourly8760 = false,
+                HourlyRecordCount = 0
             });
     }
 

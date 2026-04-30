@@ -8,6 +8,10 @@ public sealed class AnnualEnergyBalanceEngine
 {
     private const string Method = "Energy Calculation Parity / Annual 8760 Energy Balance";
     private const string Version = "2026.04-internal-deterministic";
+    private const string TrueHourlySimulationSource = "TrueHourlySimulation";
+    private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";
+    private const string DeterministicFixtureSource = "DeterministicFixture";
+    private const string UnavailableSource = "Unavailable";
 
     private readonly TimeProvider _timeProvider;
 
@@ -40,6 +44,18 @@ public sealed class AnnualEnergyBalanceEngine
                 "Synthetic weather profile was used for annual energy balance.",
                 input.DiagnosticsContext));
         }
+
+        var energyDataSource = ResolveEnergyDataSource(input);
+        var hourlyRecordCount = input.Hours.Count;
+        var isTrueHourly8760 = energyDataSource == TrueHourlySimulationSource &&
+            input.IsTrueHourly8760 &&
+            hourlyRecordCount == 8760;
+        AddSourceDiagnostics(
+            diagnostics,
+            energyDataSource,
+            isTrueHourly8760,
+            hourlyRecordCount,
+            input.DiagnosticsContext);
 
         var monthly = Enumerable.Range(1, 12)
             .Select(month =>
@@ -92,7 +108,11 @@ public sealed class AnnualEnergyBalanceEngine
             assumptions,
             Method,
             Version,
-            _timeProvider.GetUtcNow()));
+            _timeProvider.GetUtcNow(),
+            energyDataSource,
+            isTrueHourly8760,
+            hourlyRecordCount,
+            input.ActualMethod ?? Method));
     }
 
     private static List<CalculationDiagnostic> Validate(AnnualEnergyBalanceInput input)
@@ -145,6 +165,60 @@ public sealed class AnnualEnergyBalanceEngine
         }
 
         return 12;
+    }
+
+    private static string ResolveEnergyDataSource(AnnualEnergyBalanceInput input)
+    {
+        if (!string.IsNullOrWhiteSpace(input.EnergyDataSource))
+            return input.EnergyDataSource;
+
+        if (input.UsesSyntheticWeather)
+            return MonthlyBalanceAdapterSource;
+
+        return input.Hours.Count == 0 ? UnavailableSource : DeterministicFixtureSource;
+    }
+
+    private static void AddSourceDiagnostics(
+        ICollection<CalculationDiagnostic> diagnostics,
+        string energyDataSource,
+        bool isTrueHourly8760,
+        int hourlyRecordCount,
+        string? context)
+    {
+        switch (energyDataSource)
+        {
+            case TrueHourlySimulationSource when isTrueHourly8760:
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Info,
+                    "AnnualEnergy.TrueHourlySimulationUsed",
+                    "Annual energy balance was calculated from true hourly simulation records.",
+                    context));
+                break;
+
+            case TrueHourlySimulationSource:
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Warning,
+                    "AnnualEnergy.TrueHourlySimulationPartial",
+                    $"Annual energy balance was calculated from hourly simulation records, but the record count is {hourlyRecordCount}; this is not a true hourly 8760 simulation.",
+                    context));
+                break;
+
+            case MonthlyBalanceAdapterSource:
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Warning,
+                    "AnnualEnergy.MonthlyBalanceAdapter",
+                    "Annual energy balance uses representative monthly records generated from monthly balances; this is not a true hourly 8760 simulation.",
+                    context));
+                break;
+
+            case UnavailableSource:
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Error,
+                    "AnnualEnergy.SourceUnavailable",
+                    "Annual energy balance source data is unavailable.",
+                    context));
+                break;
+        }
     }
 
     private static double Positive(double value, string component, ICollection<CalculationDiagnostic> diagnostics)

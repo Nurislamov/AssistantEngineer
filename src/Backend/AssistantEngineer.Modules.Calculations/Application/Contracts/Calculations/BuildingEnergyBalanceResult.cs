@@ -16,6 +16,7 @@ public class BuildingEnergyBalanceResult
     public string CalculationMethodLabel { get; set; } = string.Empty;
     public string EnergyDataSource { get; set; } = string.Empty;
     public bool IsTrueHourly8760 { get; set; }
+    public int HourlyRecordCount { get; set; }
     public double AnnualCoolingDemandKWh { get; set; }
     public double AnnualHeatingDemandKWh { get; set; }
     public double AnnualTotalDemandKWh { get; set; }

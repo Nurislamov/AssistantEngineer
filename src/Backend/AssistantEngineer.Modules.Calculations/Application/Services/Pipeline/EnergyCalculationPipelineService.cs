@@ -41,8 +41,8 @@ public sealed class EnergyCalculationPipelineService
     private const string AggregationPipelineMethod = "Energy Calculation Parity / Application Load Aggregation Pipeline";
     private const string EnergyCalculationParityDesignPoint = "EnergyCalculationParityDesignPoint";
     private const string EnergyCalculationParityAnnualAggregationAdapter = "EnergyCalculationParityAnnualAggregationAdapter";
+    private const string TrueHourlySimulationSource = HourlySimulationToAnnualEnergyInputMapper.TrueHourlySimulationSource;
     private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";
-    private const string HourlySimulationSource = "HourlySimulation";
     private const string AnnualClimateDataSolarSource = "AnnualClimateData";
     private const string ReferenceSolarFallbackSource = "ReferenceByOrientationFallback";
 
@@ -303,6 +303,12 @@ public sealed class EnergyCalculationPipelineService
             heatingMethod,
             preferences,
             cancellationToken);
+        if (source.HourlyBalanceRecords.Count == 0 && source.MonthlyBalances.Count == 0)
+        {
+            return Result<BuildingEnergyBalanceResult>.Validation(
+                "Annual energy balance source is unavailable: neither true hourly simulation records nor monthly balances were available.");
+        }
+
         var annualInput = BuildAnnualEnergyInput(building, source);
         var annual = _annualEnergyEngine.Calculate(annualInput.Input);
         if (annual.IsFailure)
@@ -315,15 +321,8 @@ public sealed class EnergyCalculationPipelineService
             heatingMethod,
             annualInput.Source,
             annualInput.IsTrueHourly8760,
+            annualInput.HourlyRecordCount,
             annualInput.Diagnostics);
-        if (source.MonthlyBalances.Count == 0)
-        {
-            result.Diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Warning,
-                "AnnualEnergy.HourlySourceUnavailable",
-                "Existing hourly/monthly source data was unavailable; annual energy balance returned zero-load diagnostic output.",
-                $"Building {building.Id}"));
-        }
 
         return Result<BuildingEnergyBalanceResult>.Success(result);
     }
@@ -928,44 +927,26 @@ public sealed class EnergyCalculationPipelineService
     {
         if (source.HourlyBalanceRecords.Count > 0)
         {
-            var isTrueHourly8760 = source.HourlyBalanceRecords.Count == 8760;
-            var diagnostics = new List<CalculationDiagnostic>
-            {
-                new(
-                    isTrueHourly8760 ? CalculationDiagnosticSeverity.Info : CalculationDiagnosticSeverity.Warning,
-                    isTrueHourly8760 ? "AnnualEnergy.HourlySimulationSource" : "AnnualEnergy.PartialHourlySimulationSource",
-                    isTrueHourly8760
-                        ? "Annual energy balance used hourly simulation records."
-                        : "Annual energy balance used available hourly simulation records, but the input is not a full 8760-hour year.",
-                    $"Building {building.Id} application energy balance")
-            };
+            var mapping = new HourlySimulationToAnnualEnergyInputMapper().Map(
+                building.Id,
+                building.Name,
+                CalculateBuildingArea(building),
+                _timeProvider.GetUtcNow().Year,
+                source.HourlyBalanceRecords,
+                $"Building {building.Id} application energy balance");
 
             return new AnnualEnergyAdapterInput(
-                new AnnualEnergyBalanceInput(
-                    BuildingId: building.Id,
-                    BuildingName: building.Name,
-                    BuildingAreaM2: CalculateBuildingArea(building),
-                    Year: _timeProvider.GetUtcNow().Year,
-                    Hours: source.HourlyBalanceRecords,
-                    UsesSyntheticWeather: false,
-                    WeatherSource: HourlySimulationSource,
-                    DiagnosticsContext: $"Building {building.Id} application energy balance"),
-                HourlySimulationSource,
-                isTrueHourly8760,
-                diagnostics);
+                mapping.Input,
+                TrueHourlySimulationSource,
+                mapping.IsTrueHourly8760,
+                mapping.HourlyRecordCount,
+                mapping.Diagnostics);
         }
 
-        var balances = source.MonthlyBalances.Count == 0
-            ? Enumerable.Range(1, 12).Select(month => new MonthlyEnergyBalance { Month = month }).ToArray()
-            : source.MonthlyBalances.OrderBy(balance => balance.Month).ToArray();
+        var balances = source.MonthlyBalances.OrderBy(balance => balance.Month).ToArray();
         var hours = new List<AnnualEnergyBalanceHourInput>(balances.Length);
         var diagnosticsForAdapter = new List<CalculationDiagnostic>
         {
-            new(
-                CalculationDiagnosticSeverity.Warning,
-                "AnnualEnergy.MonthlyBalanceAdapter",
-                "Monthly balance adapter generated representative monthly records; this is not a true hourly 8760 simulation.",
-                $"Building {building.Id} application energy balance"),
             new(
                 CalculationDiagnosticSeverity.Info,
                 "AnnualEnergy.InternalGainScheduleUnavailableInMonthlyAdapter",
@@ -992,10 +973,14 @@ public sealed class EnergyCalculationPipelineService
                 Year: _timeProvider.GetUtcNow().Year,
                 Hours: hours,
                 UsesSyntheticWeather: true,
-                WeatherSource: source.MonthlyBalances.Count == 0 ? "unavailable" : MonthlyBalanceAdapterSource,
-                DiagnosticsContext: $"Building {building.Id} application energy balance"),
+                WeatherSource: MonthlyBalanceAdapterSource,
+                DiagnosticsContext: $"Building {building.Id} application energy balance",
+                EnergyDataSource: MonthlyBalanceAdapterSource,
+                IsTrueHourly8760: false,
+                ActualMethod: EnergyCalculationParityAnnualAggregationAdapter),
             MonthlyBalanceAdapterSource,
             IsTrueHourly8760: false,
+            HourlyRecordCount: hours.Count,
             diagnosticsForAdapter);
     }
 
@@ -1240,9 +1225,11 @@ public sealed class EnergyCalculationPipelineService
         HeatingLoadCalculationMethod heatingMethod,
         string sourceName,
         bool isTrueHourly8760,
+        int hourlyRecordCount,
         IReadOnlyList<CalculationDiagnostic> adapterDiagnostics)
     {
-        var diagnostics = annual.Diagnostics
+        var diagnostics = source.Diagnostics
+            .Concat(annual.Diagnostics)
             .Concat(adapterDiagnostics)
             .ToList();
         AddMethodCompatibilityDiagnostic(
@@ -1268,6 +1255,7 @@ public sealed class EnergyCalculationPipelineService
             CalculationMethodLabel = "Energy Calculation Parity annual aggregation adapter",
             EnergyDataSource = sourceName,
             IsTrueHourly8760 = isTrueHourly8760,
+            HourlyRecordCount = hourlyRecordCount,
             AnnualCoolingDemandKWh = Round(annual.AnnualCoolingDemandKWh),
             AnnualHeatingDemandKWh = Round(annual.AnnualHeatingDemandKWh),
             AnnualTotalDemandKWh = Round(annual.AnnualTotalDemandKWh),
@@ -1415,6 +1403,7 @@ public sealed class EnergyCalculationPipelineService
         AnnualEnergyBalanceInput Input,
         string Source,
         bool IsTrueHourly8760,
+        int HourlyRecordCount,
         IReadOnlyList<CalculationDiagnostic> Diagnostics);
 
     private sealed record EffectiveVentilationAssumption(
