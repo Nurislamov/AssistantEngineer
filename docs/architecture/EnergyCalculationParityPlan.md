@@ -52,6 +52,16 @@ Parity означает, что AssistantEngineer на одинаковых вх
 | ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER | Transmission heat transfer | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS | Window solar gains | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS | Ventilation and infiltration loads | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.INTERNAL_GAINS | Internal gains | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD | Room heating load | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD | Room cooling load | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION | Thermal zone aggregation | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION | Floor aggregation | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION | Building aggregation | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE | Annual energy balance | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.DHW_DEMAND | DHW demand | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY | System energy | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION | Equipment sizing integration | InternalDeterministicTested |
 | ISO52010.CLIMATE_CONVERSION | ISO 52010 external climate conversion | partial |
 | ISO52010.SURFACE_IRRADIANCE | Solar irradiance on tilted/oriented surfaces | partial |
 | WEATHER.EPW | EPW weather input normalization | partial |
@@ -164,6 +174,34 @@ Tolerance можно расширять только с documented assumption.
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-infiltration-by-ach.json` | Ventilation and infiltration loads | Infiltration airflow from ACH and room volume |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-zero-airflow.json` | Ventilation and infiltration loads | Zero airflow returns zero outdoor air load |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/ventilation-invalid-heat-recovery-efficiency.json` | Ventilation and infiltration loads | Invalid heat recovery efficiency produces diagnostics |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-occupancy-sensible.json` | Internal gains | Occupancy sensible gain |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-lighting-by-area.json` | Internal gains | Lighting gain by area |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-equipment-by-area.json` | Internal gains | Equipment gain by area |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-process-with-schedule.json` | Internal gains | Process gain with schedule |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-room-aggregation.json` | Internal gains | Room internal gain aggregation |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-zero-schedule.json` | Internal gains | Zero schedule gives zero gain |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-invalid-schedule-factor.json` | Internal gains | Invalid schedule diagnostic |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/internal-gains-negative-power-density.json` | Internal gains | Negative power density diagnostic |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/room-load-heating-transmission-only.json` | Room load | Heating transmission-only total and W/m2 |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/room-load-heating-transmission-ventilation-infiltration.json` | Room load | Heating transmission, ventilation and infiltration aggregation |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/room-load-cooling-solar-internal-ventilation.json` | Room load | Cooling component separation and W/m2 |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/room-load-does-not-go-negative.json` | Room load | Negative component clamp diagnostics |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/aggregation-floor-two-rooms.json` | Load aggregation | Floor sum, area and W/m2 |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/aggregation-building-two-floors.json` | Load aggregation | Building sum from room loads on two floors |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/aggregation-thermal-zone-no-double-count.json` | Load aggregation | Thermal zone de-duplication |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/annual-constant-heating-load.json` | Annual energy balance | 8760 hourly heating W to kWh |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/annual-constant-cooling-load.json` | Annual energy balance | 8760 hourly cooling W to kWh |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/annual-monthly-aggregation-consistency.json` | Annual energy balance | Annual total equals monthly sum |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/annual-energy-use-intensity.json` | Annual energy balance | EUI from annual total and area |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/dhw-residential-simple.json` | DHW demand | People-based DHW formula |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/dhw-zero-occupancy.json` | DHW demand | Zero occupancy diagnostic |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-heating-efficiency.json` | System energy | Useful heating divided by efficiency |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-cooling-cop.json` | System energy | Useful cooling divided by COP |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/system-total-energy.json` | System energy | Total final energy |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-sizing-cooling-simple.json` | Equipment sizing | Cooling reserve from safety factor |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-accepted.json` | Equipment sizing | Candidate accepted and margin |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-rejected.json` | Equipment sizing | Candidate rejected with reason |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-no-equipment-found.json` | Equipment sizing | Empty catalog diagnostics |
 
 ## Fixtures still needed
 
@@ -175,5 +213,5 @@ Tolerance можно расширять только с documented assumption.
 | EPW weather normalization fixture | Verify 8760 weather import and ISO 52010 conversion |
 | PVGIS weather normalization fixture | Verify PVGIS import normalization |
 | Surface irradiance N/E/S/W/horizontal fixture | Verify ISO 52010 oriented surface irradiance |
-| DHW EN 12831-3 fixture | Verify domestic hot water demand |
-| Primary energy EN 15316-1 fixture | Verify delivered/final/primary energy aggregation |
+| External DHW benchmark fixture | Verify domestic hot water demand against a documented benchmark |
+| External system energy benchmark fixture | Verify final/primary energy aggregation against a documented benchmark |

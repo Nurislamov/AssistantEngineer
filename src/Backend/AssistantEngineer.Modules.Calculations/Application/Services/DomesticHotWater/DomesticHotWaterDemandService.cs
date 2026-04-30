@@ -23,10 +23,10 @@ public sealed class DomesticHotWaterDemandService
 
     public Result<DomesticHotWaterDemandResult> Calculate(DomesticHotWaterDemandRequest request)
     {
-        if (request.PeopleCount <= 0)
-            return Result<DomesticHotWaterDemandResult>.Validation("People count must be positive.");
+        if (request.PeopleCount < 0)
+            return Result<DomesticHotWaterDemandResult>.Validation("People count cannot be negative.");
 
-        if (request.LitersPerPersonDay <= 0)
+        if (request.PeopleCount > 0 && request.LitersPerPersonDay <= 0)
             return Result<DomesticHotWaterDemandResult>.Validation("DHW liters per person per day must be positive.");
 
         if (request.HotWaterTemperatureC <= request.ColdWaterTemperatureC)
@@ -38,8 +38,22 @@ public sealed class DomesticHotWaterDemandService
         if (request.StorageLossKWhPerDay < 0 || request.CirculationLossKWhPerDay < 0)
             return Result<DomesticHotWaterDemandResult>.Validation("DHW storage and circulation losses cannot be negative.");
 
+        var diagnostics = new List<string>();
+        var assumptions = new List<string>
+        {
+            "DHW energy uses liters x density x cp x deltaT / 3600 with density 1 kg/liter and cp 4.186 kJ/(kg K).",
+            "Monthly demand uses a non-leap 12-month calendar."
+        };
+
+        if (request.PeopleCount == 0)
+            diagnostics.Add("DHW people count is zero; daily volume and energy are zero.");
+
         var weekdayProfile = request.WeekdayDrawProfile ?? DefaultWeekdayDrawProfile;
         var weekendProfile = request.WeekendDrawProfile ?? DefaultWeekendDrawProfile;
+        if (request.IncludeHourlyProfile && request.WeekdayDrawProfile is null)
+            diagnostics.Add("Default weekday DHW draw profile was used.");
+        if (request.IncludeHourlyProfile && request.WeekendDrawProfile is null)
+            diagnostics.Add("Default weekend DHW draw profile was used.");
         var weekdayValidation = ValidateDrawProfile(weekdayProfile, "Weekday DHW draw profile");
         if (weekdayValidation.IsFailure)
             return Result<DomesticHotWaterDemandResult>.Failure(weekdayValidation);
@@ -47,7 +61,9 @@ public sealed class DomesticHotWaterDemandService
         if (weekendValidation.IsFailure)
             return Result<DomesticHotWaterDemandResult>.Failure(weekendValidation);
 
-        const double waterSpecificHeatWhPerLiterK = 1.163;
+        const double waterDensityKgPerLiter = 1.0;
+        const double waterSpecificHeatKJPerKgK = 4.186;
+        const double waterSpecificHeatWhPerLiterK = waterDensityKgPerLiter * waterSpecificHeatKJPerKgK / 3.6;
         var dailyVolume = request.PeopleCount * request.LitersPerPersonDay;
         var dailyDrawEnergyKWh = dailyVolume *
             waterSpecificHeatWhPerLiterK *
@@ -77,7 +93,9 @@ public sealed class DomesticHotWaterDemandService
             MonthlyDemand: monthly,
             HourlyDemand: hourly,
             AnnualVolumeLiters: Round(monthly.Sum(month => month.VolumeLiters)),
-            AnnualEnergyKWh: Round(monthly.Sum(month => month.EnergyKWh))));
+            AnnualEnergyKWh: Round(monthly.Sum(month => month.EnergyKWh)),
+            Diagnostics: diagnostics,
+            AssumptionsUsed: assumptions));
     }
 
     private static IReadOnlyList<DomesticHotWaterHourlyDemand> CreateHourlyDemand(
@@ -146,7 +164,7 @@ public sealed class DomesticHotWaterDemandService
     }
 
     private static double Round(double value) =>
-        Math.Round(value, 2, MidpointRounding.AwayFromZero);
+        Math.Round(value, 3, MidpointRounding.AwayFromZero);
 
     private static double RoundHourly(double value) =>
         Math.Round(value, 4, MidpointRounding.AwayFromZero);

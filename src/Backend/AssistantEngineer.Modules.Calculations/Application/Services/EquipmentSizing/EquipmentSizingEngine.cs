@@ -1,0 +1,197 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
+using AssistantEngineer.SharedKernel.Primitives;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing;
+
+public sealed class EquipmentSizingEngine
+{
+    private const double DocumentedDefaultSafetyFactor = 1.10;
+    private readonly TimeProvider _timeProvider;
+
+    public EquipmentSizingEngine(TimeProvider? timeProvider = null)
+    {
+        _timeProvider = timeProvider ?? TimeProvider.System;
+    }
+
+    public Result<EquipmentSizingResult> Calculate(EquipmentSizingInput input)
+    {
+        if (input is null)
+            return Result<EquipmentSizingResult>.Validation("Equipment sizing input is required.");
+
+        if (input.Candidates is null)
+            return Result<EquipmentSizingResult>.Validation("Equipment sizing candidates are required.");
+
+        var diagnostics = Validate(input);
+        var safetyFactor = input.SafetyFactor ?? DocumentedDefaultSafetyFactor;
+        if (!input.SafetyFactor.HasValue)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "EquipmentSizing.DefaultSafetyFactorUsed",
+                $"Safety factor was not supplied and documented default {DocumentedDefaultSafetyFactor} was used.",
+                input.DiagnosticsContext));
+        }
+
+        var requiredHeatingWithReserve = Math.Max(0, input.RequiredHeatingLoadW) * safetyFactor;
+        var requiredCoolingWithReserve = Math.Max(0, input.RequiredCoolingLoadW) * safetyFactor;
+        var accepted = new List<EquipmentSizingRecommendedItem>();
+        var rejected = new List<EquipmentSizingRejectedItem>();
+
+        if (input.Candidates.Count == 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "EquipmentSizing.NoEquipmentFound",
+                "No equipment candidates were supplied.",
+                input.DiagnosticsContext));
+        }
+
+        foreach (var candidate in input.Candidates)
+        {
+            var reasons = RejectReasons(candidate, input, requiredHeatingWithReserve, requiredCoolingWithReserve);
+            if (reasons.Count > 0)
+            {
+                rejected.Add(new EquipmentSizingRejectedItem(
+                    candidate.EquipmentId,
+                    candidate.Name,
+                    candidate.Model,
+                    reasons));
+                continue;
+            }
+
+            var heatingMargin = (candidate.HeatingCapacityW ?? 0) - requiredHeatingWithReserve;
+            var coolingMargin = (candidate.CoolingCapacityW ?? 0) - requiredCoolingWithReserve;
+            var heatingMarginPercent = requiredHeatingWithReserve > 0
+                ? heatingMargin / requiredHeatingWithReserve * 100.0
+                : (double?)null;
+            var coolingMarginPercent = requiredCoolingWithReserve > 0
+                ? coolingMargin / requiredCoolingWithReserve * 100.0
+                : (double?)null;
+            var score = CalculateScore(heatingMarginPercent, coolingMarginPercent);
+
+            accepted.Add(new EquipmentSizingRecommendedItem(
+                candidate.EquipmentId,
+                candidate.Name,
+                candidate.Model,
+                candidate.HeatingCapacityW,
+                candidate.CoolingCapacityW,
+                Round(heatingMargin),
+                Round(coolingMargin),
+                heatingMarginPercent.HasValue ? Round(heatingMarginPercent.Value) : null,
+                coolingMarginPercent.HasValue ? Round(coolingMarginPercent.Value) : null,
+                Round(score),
+                ["Accepted by deterministic capacity sizing."]));
+        }
+
+        var recommended = accepted
+            .OrderBy(item => PositiveMarginSum(item))
+            .ThenByDescending(item => item.Score)
+            .ThenBy(item => item.EquipmentId)
+            .ToArray();
+        var bestMatch = recommended.FirstOrDefault();
+
+        if (recommended.Length == 0 && input.Candidates.Count > 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "EquipmentSizing.NoRecommendedEquipment",
+                "No equipment candidate satisfied the sizing requirements.",
+                input.DiagnosticsContext));
+        }
+
+        return Result<EquipmentSizingResult>.Success(new EquipmentSizingResult(
+            input.TargetId,
+            input.TargetType,
+            Round(Math.Max(0, input.RequiredHeatingLoadW)),
+            Round(Math.Max(0, input.RequiredCoolingLoadW)),
+            Round(safetyFactor),
+            Round(requiredHeatingWithReserve),
+            Round(requiredCoolingWithReserve),
+            recommended,
+            rejected,
+            bestMatch,
+            diagnostics,
+            _timeProvider.GetUtcNow()));
+    }
+
+    private static List<CalculationDiagnostic> Validate(EquipmentSizingInput input)
+    {
+        var diagnostics = new List<CalculationDiagnostic>();
+
+        if (input.TargetId < 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidTargetId", "Target id must not be negative.", input.DiagnosticsContext));
+
+        if (input.RequiredHeatingLoadW < 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidHeatingLoad", "Required heating load cannot be negative.", input.DiagnosticsContext));
+
+        if (input.RequiredCoolingLoadW < 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidCoolingLoad", "Required cooling load cannot be negative.", input.DiagnosticsContext));
+
+        if (input.SafetyFactor is <= 0)
+            diagnostics.Add(Error("EquipmentSizing.InvalidSafetyFactor", "Safety factor must be greater than zero.", input.DiagnosticsContext));
+
+        return diagnostics;
+    }
+
+    private static List<string> RejectReasons(
+        EquipmentSizingCandidateInput candidate,
+        EquipmentSizingInput input,
+        double requiredHeatingWithReserve,
+        double requiredCoolingWithReserve)
+    {
+        var reasons = new List<string>();
+
+        if (!candidate.IsActive)
+            reasons.Add("inactive equipment");
+
+        if (!string.IsNullOrWhiteSpace(input.EquipmentType) &&
+            !string.Equals(input.EquipmentType, candidate.EquipmentType, StringComparison.OrdinalIgnoreCase))
+        {
+            reasons.Add("wrong type");
+        }
+
+        if (requiredHeatingWithReserve > 0)
+        {
+            if (!candidate.HeatingCapacityW.HasValue || candidate.HeatingCapacityW.Value <= 0)
+                reasons.Add("missing heating capacity");
+            else if (candidate.HeatingCapacityW.Value < requiredHeatingWithReserve)
+                reasons.Add("insufficient heating capacity");
+        }
+
+        if (requiredCoolingWithReserve > 0)
+        {
+            if (!candidate.CoolingCapacityW.HasValue || candidate.CoolingCapacityW.Value <= 0)
+                reasons.Add("missing cooling capacity");
+            else if (candidate.CoolingCapacityW.Value < requiredCoolingWithReserve)
+                reasons.Add("insufficient cooling capacity");
+        }
+
+        if (requiredHeatingWithReserve <= 0 && requiredCoolingWithReserve <= 0)
+            reasons.Add("no matching mode");
+
+        return reasons;
+    }
+
+    private static double CalculateScore(double? heatingMarginPercent, double? coolingMarginPercent)
+    {
+        var margins = new[] { heatingMarginPercent, coolingMarginPercent }
+            .Where(value => value.HasValue)
+            .Select(value => Math.Abs(value!.Value))
+            .ToArray();
+
+        if (margins.Length == 0)
+            return 0;
+
+        return Math.Max(0, 100.0 - margins.Average());
+    }
+
+    private static double PositiveMarginSum(EquipmentSizingRecommendedItem item) =>
+        Math.Max(0, item.HeatingMarginW) + Math.Max(0, item.CoolingMarginW);
+
+    private static CalculationDiagnostic Error(string code, string message, string? context) =>
+        new(CalculationDiagnosticSeverity.Error, code, message, context);
+
+    private static double Round(double value) =>
+        Math.Round(value, 6, MidpointRounding.AwayFromZero);
+}

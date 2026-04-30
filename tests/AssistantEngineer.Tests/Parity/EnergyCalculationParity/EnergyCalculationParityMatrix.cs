@@ -32,6 +32,96 @@ public static class EnergyCalculationParityMatrix
             Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
 
         new(
+            Code: "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
+            Name: "Internal gains",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.InternalGains",
+            Notes: "Covered by deterministic engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
+            Name: "Room heating load",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
+            Name: "Room cooling load",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
+            Name: "Thermal zone aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
+            Name: "Floor aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
+            Name: "Building aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
+            Name: "Annual energy balance",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
+            Name: "DHW demand",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
+            Name: "System energy",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION",
+            Name: "Equipment sizing integration",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing",
+            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+
+        new(
             Code: "ISO52010.CLIMATE_CONVERSION",
             Name: "ISO 52010 external climate conversion",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,

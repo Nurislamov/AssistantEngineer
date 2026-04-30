@@ -1,0 +1,25 @@
+{
+  "fixtureName": "EnergyUseIntensity",
+  "description": "Annual total divided by building area.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Annual 8760 Energy Balance",
+  "category": "AnnualEnergyBalance",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "annual-energy-balance",
+    "annualEnergyBalance": {
+      "buildingId": 1,
+      "buildingName": "Building",
+      "buildingAreaM2": 200,
+      "year": 2026,
+      "months": [
+        { "month": 1, "hours": 8760, "heatingLoadW": 1141.552511, "coolingLoadW": 0 }
+      ]
+    }
+  },
+  "expectedAnnualResults": { "heatingDemandKWh": 10000, "coolingDemandKWh": 0, "hourCount": 8760 },
+  "expected": { "totalAreaM2": 200 },
+  "tolerances": { "annualDemandKWh": 0.001 },
+  "assumptions": [ "EUI equals annual total kWh divided by area m2." ],
+  "notes": [ "Expected EUI is 50 kWh/m2year." ]
+}

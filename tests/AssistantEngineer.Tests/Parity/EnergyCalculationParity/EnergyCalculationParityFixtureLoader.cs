@@ -35,6 +35,7 @@ internal sealed class EnergyCalculationParityFixture
     public string Description { get; set; } = string.Empty;
     public string ReferenceType { get; set; } = string.Empty;
     public string Method { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
     public string SourceReference { get; set; } = string.Empty;
     public List<string> Assumptions { get; set; } = [];
     public List<string> Notes { get; set; } = [];
@@ -54,6 +55,13 @@ internal sealed class EnergyCalculationFixtureInput
     public WindowSolarGainsFixtureInput? WindowSolarGains { get; set; }
     public VentilationInfiltrationFixtureInput? VentilationInfiltration { get; set; }
     public EnergyCalculationInternalGainsInput? InternalGains { get; set; }
+    public InternalGainsFixtureInput? InternalGainCalculation { get; set; }
+    public RoomLoadFixtureInput? RoomLoad { get; set; }
+    public LoadAggregationFixtureInput? Aggregation { get; set; }
+    public AnnualEnergyBalanceFixtureInput? AnnualEnergyBalance { get; set; }
+    public DhwFixtureInput? Dhw { get; set; }
+    public SystemEnergyFixtureInput? SystemEnergy { get; set; }
+    public EquipmentSizingFixtureInput? EquipmentSizing { get; set; }
     public EnergyCalculationSolarInput? Solar { get; set; }
     public EnergyCalculationSimulationInput? Simulation { get; set; }
     public EnergyCalculationAnnualAggregationInput? AnnualAggregation { get; set; }
@@ -137,6 +145,31 @@ internal sealed class EnergyCalculationFixtureExpected
     public double TotalHeatLossW { get; set; }
     public double TotalHeatGainW { get; set; }
     public double TotalRoomSolarGainW { get; set; }
+    public double OccupancySensibleGainW { get; set; }
+    public double LightingGainW { get; set; }
+    public double EquipmentGainW { get; set; }
+    public double ProcessSensibleGainW { get; set; }
+    public double TotalSensibleGainW { get; set; }
+    public double HeatingLoadW { get; set; }
+    public double CoolingLoadW { get; set; }
+    public double HeatingLoadWPerM2 { get; set; }
+    public double CoolingLoadWPerM2 { get; set; }
+    public double TotalAreaM2 { get; set; }
+    public double DailyVolumeLiters { get; set; }
+    public double DailyEnergyKWh { get; set; }
+    public double AnnualEnergyKWh { get; set; }
+    public double FinalHeatingEnergyKWh { get; set; }
+    public double FinalCoolingEnergyKWh { get; set; }
+    public double FinalDhwEnergyKWh { get; set; }
+    public double TotalFinalEnergyKWh { get; set; }
+    public double RequiredCoolingCapacityWithReserveW { get; set; }
+    public double CoolingMarginW { get; set; }
+    public double CoolingMarginPercent { get; set; }
+    public bool HasErrors { get; set; }
+    public bool HasAcceptedCandidate { get; set; }
+    public bool HasRejectedCandidate { get; set; }
+    public string ExpectedRejectReason { get; set; } = string.Empty;
+    public List<string> ExpectedDiagnosticCodes { get; set; } = [];
     public VentilationInfiltrationFixtureExpected? VentilationInfiltration { get; set; }
     public List<TransmissionFixtureExpectedElement> Elements { get; set; } = [];
     public List<WindowSolarGainFixtureExpectedWindow> WindowSolarGains { get; set; } = [];
@@ -194,6 +227,138 @@ internal sealed class EnergyCalculationEnvelopeInput
 internal sealed class EnergyCalculationInternalGainsInput
 {
     public double ConstantInternalGainsW { get; set; }
+}
+
+internal sealed class InternalGainsFixtureInput
+{
+    public int RoomId { get; set; }
+    public double? AreaM2 { get; set; }
+    public int? OccupancyPeople { get; set; }
+    public double? SensibleGainPerPersonW { get; set; }
+    public double? LatentGainPerPersonW { get; set; }
+    public double? LightingLoadW { get; set; }
+    public double? LightingPowerDensityWPerM2 { get; set; }
+    public double? EquipmentLoadW { get; set; }
+    public double? EquipmentPowerDensityWPerM2 { get; set; }
+    public double? ProcessSensibleGainW { get; set; }
+    public double? ProcessLatentGainW { get; set; }
+    public double? CustomSensibleGainW { get; set; }
+    public double? CustomLatentGainW { get; set; }
+    public double OccupancyScheduleFactor { get; set; } = 1.0;
+    public double LightingScheduleFactor { get; set; } = 1.0;
+    public double EquipmentScheduleFactor { get; set; } = 1.0;
+    public double ProcessScheduleFactor { get; set; } = 1.0;
+    public double CustomScheduleFactor { get; set; } = 1.0;
+    public string? DiagnosticsContext { get; set; }
+}
+
+internal sealed class RoomLoadFixtureInput
+{
+    public int RoomId { get; set; }
+    public string? RoomCode { get; set; }
+    public string? RoomName { get; set; }
+    public double AreaM2 { get; set; }
+    public double VolumeM3 { get; set; }
+    public double HeatingSetpointC { get; set; }
+    public double CoolingSetpointC { get; set; }
+    public double OutdoorDesignHeatingTemperatureC { get; set; }
+    public double OutdoorDesignCoolingTemperatureC { get; set; }
+    public RoomLoadFixedComponentsFixtureInput FixedComponents { get; set; } = new();
+}
+
+internal sealed class RoomLoadFixedComponentsFixtureInput
+{
+    public double HeatingTransmissionW { get; set; }
+    public double HeatingWindowTransmissionW { get; set; }
+    public double HeatingGroundW { get; set; }
+    public double HeatingVentilationW { get; set; }
+    public double HeatingInfiltrationW { get; set; }
+    public double CoolingTransmissionW { get; set; }
+    public double CoolingWindowTransmissionW { get; set; }
+    public double CoolingGroundW { get; set; }
+    public double CoolingVentilationW { get; set; }
+    public double CoolingInfiltrationW { get; set; }
+    public double CoolingSolarW { get; set; }
+    public double CoolingInternalGainsW { get; set; }
+}
+
+internal sealed class LoadAggregationFixtureInput
+{
+    public int TargetId { get; set; }
+    public string TargetType { get; set; } = string.Empty;
+    public string Mode { get; set; } = "DesignPoint";
+    public List<LoadAggregationFixtureRoomInput> Rooms { get; set; } = [];
+}
+
+internal sealed class LoadAggregationFixtureRoomInput
+{
+    public int RoomId { get; set; }
+    public string RoomName { get; set; } = string.Empty;
+    public int? ThermalZoneId { get; set; }
+    public int? FloorId { get; set; }
+    public int BuildingId { get; set; }
+    public double AreaM2 { get; set; }
+    public double HeatingLoadW { get; set; }
+    public double CoolingLoadW { get; set; }
+}
+
+internal sealed class AnnualEnergyBalanceFixtureInput
+{
+    public int BuildingId { get; set; }
+    public string BuildingName { get; set; } = string.Empty;
+    public double BuildingAreaM2 { get; set; }
+    public int Year { get; set; }
+    public List<AnnualEnergyBalanceFixtureMonthInput> Months { get; set; } = [];
+}
+
+internal sealed class AnnualEnergyBalanceFixtureMonthInput
+{
+    public int Month { get; set; }
+    public int Hours { get; set; }
+    public double HeatingLoadW { get; set; }
+    public double CoolingLoadW { get; set; }
+}
+
+internal sealed class DhwFixtureInput
+{
+    public int PeopleCount { get; set; }
+    public double LitersPerPersonDay { get; set; }
+    public double ColdWaterTemperatureC { get; set; }
+    public double HotWaterTemperatureC { get; set; }
+    public double DistributionLossFactor { get; set; }
+}
+
+internal sealed class SystemEnergyFixtureInput
+{
+    public double UsefulHeatingEnergyKWh { get; set; }
+    public double UsefulCoolingEnergyKWh { get; set; }
+    public double UsefulDhwEnergyKWh { get; set; }
+    public double? HeatingEfficiency { get; set; }
+    public double? CoolingCop { get; set; }
+    public double? DhwEfficiency { get; set; }
+    public double FanEnergyKWh { get; set; }
+}
+
+internal sealed class EquipmentSizingFixtureInput
+{
+    public int TargetId { get; set; }
+    public string TargetType { get; set; } = string.Empty;
+    public double RequiredHeatingLoadW { get; set; }
+    public double RequiredCoolingLoadW { get; set; }
+    public double? SafetyFactor { get; set; }
+    public string? EquipmentType { get; set; }
+    public List<EquipmentSizingFixtureCandidateInput> Candidates { get; set; } = [];
+}
+
+internal sealed class EquipmentSizingFixtureCandidateInput
+{
+    public int EquipmentId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
+    public string EquipmentType { get; set; } = string.Empty;
+    public double? HeatingCapacityW { get; set; }
+    public double? CoolingCapacityW { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 internal sealed class EnergyCalculationSolarInput

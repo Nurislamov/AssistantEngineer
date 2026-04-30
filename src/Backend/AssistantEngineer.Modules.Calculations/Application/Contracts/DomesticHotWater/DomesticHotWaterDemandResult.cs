@@ -6,7 +6,9 @@ public sealed record DomesticHotWaterDemandResult(
     IReadOnlyList<DomesticHotWaterMonthlyDemand> MonthlyDemand,
     IReadOnlyList<DomesticHotWaterHourlyDemand> HourlyDemand,
     double AnnualVolumeLiters,
-    double AnnualEnergyKWh);
+    double AnnualEnergyKWh,
+    IReadOnlyList<string> Diagnostics,
+    IReadOnlyList<string> AssumptionsUsed);
 
 public sealed record DomesticHotWaterMonthlyDemand(
     int Month,

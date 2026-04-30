@@ -1,6 +1,9 @@
 {
   "fixtureName": "single-zone-solar-south-window",
   "description": "Single zone with one south-facing window and deterministic south-surface irradiance. This fixture isolates window solar-gain math.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Window Solar Gains",
+  "category": "SolarGains",
   "sourceReference": "AssistantEngineer deterministic reference fixture v1; solar gains are calculated from area, frame fraction, SHGC, shading factor, and south-surface irradiance.",
   "assumptions": [
     "Only the south window contributes solar gains.",

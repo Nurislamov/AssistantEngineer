@@ -3,6 +3,8 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
+using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.Options;
@@ -15,17 +17,20 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
     private readonly ICoolingLoadReferenceData _referenceData;
     private readonly WindowSolarGainEngine _windowSolarGains;
     private readonly TransmissionHeatTransferEngine _transmissionHeatTransfer;
+    private readonly InternalGainEngine _internalGains;
 
     public SimplifiedCoolingLoadCalculator(
         IOptions<CoolingLoadCalculationOptions> options,
         ICoolingLoadReferenceData referenceData,
         WindowSolarGainEngine? windowSolarGains = null,
-        TransmissionHeatTransferEngine? transmissionHeatTransfer = null)
+        TransmissionHeatTransferEngine? transmissionHeatTransfer = null,
+        InternalGainEngine? internalGains = null)
     {
         _options = options.Value;
         _referenceData = referenceData;
         _windowSolarGains = windowSolarGains ?? new WindowSolarGainEngine();
         _transmissionHeatTransfer = transmissionHeatTransfer ?? new TransmissionHeatTransferEngine();
+        _internalGains = internalGains ?? new InternalGainEngine();
     }
 
     public CoolingLoadCalculationMethod Method => CoolingLoadCalculationMethod.Simplified;
@@ -46,9 +51,18 @@ public sealed class SimplifiedCoolingLoadCalculator : IRoomCoolingLoadCalculatio
             room,
             outdoorTemperature);
 
-        var peopleGain = room.PeopleCount * _referenceData.GetPeopleHeatGainW(room.Type);
-        var equipmentGain = room.EquipmentLoad.Watts;
-        var lightingGain = room.LightingLoad.Watts;
+        var internalGains = _internalGains.Calculate(
+            new InternalGainInput(
+                RoomId: room.Id,
+                AreaM2: room.Area.SquareMeters,
+                OccupancyPeople: room.PeopleCount,
+                SensibleGainPerPersonW: _referenceData.GetPeopleHeatGainW(room.Type),
+                EquipmentLoadW: room.EquipmentLoad.Watts,
+                LightingLoadW: room.LightingLoad.Watts,
+                DiagnosticsContext: $"Room {room.Id} simplified cooling internal gains"));
+        var peopleGain = internalGains.Value.OccupancySensibleGainW;
+        var equipmentGain = internalGains.Value.EquipmentGainW;
+        var lightingGain = internalGains.Value.LightingGainW;
         var totalLoad = Math.Max(
             0,
             baseLoad + windowGain + transmissionGain + peopleGain + equipmentGain + lightingGain);

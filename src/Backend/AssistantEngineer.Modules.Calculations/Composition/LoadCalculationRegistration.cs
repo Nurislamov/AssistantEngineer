@@ -6,6 +6,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.S
 using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +20,13 @@ internal static class LoadCalculationRegistration
         this IServiceCollection services)
     {
         services.TryAddSingleton<TransmissionHeatTransferEngine>();
+        services.TryAddScoped<RoomLoadCalculationEngine>();
         services.AddScoped<IRoomCoolingLoadCalculationStrategy, SimplifiedCoolingLoadCalculator>();
         services.AddScoped<IRoomCoolingLoadCalculationStrategy, Iso52016CoolingLoadCalculator>();
 
         services.AddScoped<IRoomCoolingLoadCalculator, RoomCoolingLoadCalculator>();
         services.AddScoped<IAggregateLoadCalculator, AggregateCalculator>();
+        services.TryAddSingleton<LoadAggregationEngine>();
 
         services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<FloorCalculationService>();
@@ -36,6 +39,7 @@ internal static class LoadCalculationRegistration
         this IServiceCollection services)
     {
         services.TryAddSingleton<TransmissionHeatTransferEngine>();
+        services.TryAddScoped<RoomLoadCalculationEngine>();
         services.AddScoped<En12831HeatingLoadCalculator>();
         services.AddScoped<BuildingHeatingReadModelCalculator>();
 

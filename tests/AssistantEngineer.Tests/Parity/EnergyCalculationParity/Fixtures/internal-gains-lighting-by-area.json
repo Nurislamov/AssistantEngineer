@@ -1,0 +1,16 @@
+{
+  "fixtureName": "LightingGainByArea",
+  "description": "Lighting internal gain from area and power density.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Internal Gains",
+  "category": "InternalGains",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "internal-gains",
+    "internalGainCalculation": { "roomId": 1, "areaM2": 20, "lightingPowerDensityWPerM2": 10, "lightingScheduleFactor": 0.8 }
+  },
+  "expected": { "lightingGainW": 160, "totalSensibleGainW": 160 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Lighting gain equals area times W/m2 times schedule factor." ],
+  "notes": [ "No occupancy, equipment or process gains are supplied." ]
+}

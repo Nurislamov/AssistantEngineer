@@ -1,11 +1,27 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
 public sealed class Iso52016RoomInternalGainProfileBuilder : IIso52016RoomInternalGainProfileBuilder
 {
+    private readonly InternalGainEngine _internalGainEngine;
+
+    public Iso52016RoomInternalGainProfileBuilder()
+        : this(new InternalGainEngine())
+    {
+    }
+
+    public Iso52016RoomInternalGainProfileBuilder(
+        InternalGainEngine internalGainEngine)
+    {
+        _internalGainEngine = internalGainEngine ??
+                              throw new ArgumentNullException(nameof(internalGainEngine));
+    }
+
     public Result<Iso52016RoomInternalGainProfile> Build(
         Iso52016RoomInternalGainProfileRequest request)
     {
@@ -31,7 +47,7 @@ public sealed class Iso52016RoomInternalGainProfileBuilder : IIso52016RoomIntern
                 Hours: hours));
     }
 
-    private static Iso52016HourlyRoomInternalGainRecord BuildHour(
+    private Iso52016HourlyRoomInternalGainRecord BuildHour(
         Iso52016RoomInternalGainProfileRequest request,
         int hourOfYear)
     {
@@ -39,28 +55,42 @@ public sealed class Iso52016RoomInternalGainProfileBuilder : IIso52016RoomIntern
         var equipmentFactor = request.EquipmentFactors[hourOfYear];
         var lightingFactor = request.LightingFactors[hourOfYear];
 
-        var peopleGain =
-            request.PeopleCount *
-            request.SensibleHeatGainPerPersonW *
-            occupancyFactor;
+        var result = _internalGainEngine.Calculate(
+            new InternalGainInput(
+                RoomId: 0,
+                OccupancyPeople: request.PeopleCount,
+                SensibleGainPerPersonW: request.SensibleHeatGainPerPersonW,
+                EquipmentLoadW: request.EquipmentLoadW,
+                LightingLoadW: request.LightingLoadW,
+                OccupancyScheduleFactor: occupancyFactor,
+                EquipmentScheduleFactor: equipmentFactor,
+                LightingScheduleFactor: lightingFactor,
+                DiagnosticsContext: request.RoomCode));
 
-        var equipmentGain =
-            request.EquipmentLoadW *
-            equipmentFactor;
+        if (result.IsFailure)
+        {
+            throw new InvalidOperationException(
+                $"Internal gain calculation failed for hour {hourOfYear}: {result.Error}");
+        }
 
-        var lightingGain =
-            request.LightingLoadW *
-            lightingFactor;
+        if (result.Value.HasErrors)
+        {
+            var firstError = result.Value.Diagnostics.First(diagnostic =>
+                diagnostic.Severity == InternalGainDiagnosticSeverity.Error);
+
+            throw new InvalidOperationException(
+                $"Internal gain calculation has diagnostics error at hour {hourOfYear}: {firstError.Code} - {firstError.Message}");
+        }
 
         return new Iso52016HourlyRoomInternalGainRecord(
             HourOfYear: hourOfYear,
             OccupancyFactor: occupancyFactor,
             EquipmentFactor: equipmentFactor,
             LightingFactor: lightingFactor,
-            PeopleGainW: peopleGain,
-            EquipmentGainW: equipmentGain,
-            LightingGainW: lightingGain,
-            TotalInternalGainW: peopleGain + equipmentGain + lightingGain);
+            PeopleGainW: result.Value.OccupancySensibleGainW,
+            EquipmentGainW: result.Value.EquipmentGainW,
+            LightingGainW: result.Value.LightingGainW,
+            TotalInternalGainW: result.Value.TotalSensibleGainW);
     }
 
     private static Result Validate(

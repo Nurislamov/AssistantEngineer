@@ -126,7 +126,45 @@ public class Iso52016RoomInternalGainProfileBuilderTests
     }
 
     [Fact]
-    public void Build_RejectsNegativeLoads()
+    public void Build_RejectsNegativePeopleCount()
+    {
+        var result = _builder.Build(
+            new Iso52016RoomInternalGainProfileRequest(
+                RoomCode: "room-1",
+                HourCount: 24,
+                PeopleCount: -1,
+                SensibleHeatGainPerPersonW: 100,
+                EquipmentLoadW: 100,
+                LightingLoadW: 100,
+                OccupancyFactors: ConstantProfile(24, 1.0),
+                EquipmentFactors: ConstantProfile(24, 1.0),
+                LightingFactors: ConstantProfile(24, 1.0)));
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("People count must not be negative.", result.Error);
+    }
+
+    [Fact]
+    public void Build_RejectsNegativeSensibleGainPerPerson()
+    {
+        var result = _builder.Build(
+            new Iso52016RoomInternalGainProfileRequest(
+                RoomCode: "room-1",
+                HourCount: 24,
+                PeopleCount: 1,
+                SensibleHeatGainPerPersonW: -1,
+                EquipmentLoadW: 100,
+                LightingLoadW: 100,
+                OccupancyFactors: ConstantProfile(24, 1.0),
+                EquipmentFactors: ConstantProfile(24, 1.0),
+                LightingFactors: ConstantProfile(24, 1.0)));
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Sensible heat gain per person must not be negative.", result.Error);
+    }
+
+    [Fact]
+    public void Build_RejectsNegativeEquipmentLoad()
     {
         var result = _builder.Build(
             new Iso52016RoomInternalGainProfileRequest(
@@ -142,6 +180,25 @@ public class Iso52016RoomInternalGainProfileBuilderTests
 
         Assert.True(result.IsFailure);
         Assert.Equal("Equipment load must not be negative.", result.Error);
+    }
+
+    [Fact]
+    public void Build_RejectsNegativeLightingLoad()
+    {
+        var result = _builder.Build(
+            new Iso52016RoomInternalGainProfileRequest(
+                RoomCode: "room-1",
+                HourCount: 24,
+                PeopleCount: 1,
+                SensibleHeatGainPerPersonW: 100,
+                EquipmentLoadW: 100,
+                LightingLoadW: -1,
+                OccupancyFactors: ConstantProfile(24, 1.0),
+                EquipmentFactors: ConstantProfile(24, 1.0),
+                LightingFactors: ConstantProfile(24, 1.0)));
+
+        Assert.True(result.IsFailure);
+        Assert.Equal("Lighting load must not be negative.", result.Error);
     }
 
     [Fact]

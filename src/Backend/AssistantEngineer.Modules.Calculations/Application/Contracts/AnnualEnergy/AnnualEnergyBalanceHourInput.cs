@@ -1,0 +1,14 @@
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
+
+public sealed record AnnualEnergyBalanceHourInput(
+    int HourIndex,
+    int Month,
+    double HeatingLoadW,
+    double CoolingLoadW,
+    double TransmissionW = 0,
+    double VentilationW = 0,
+    double InfiltrationW = 0,
+    double SolarGainsW = 0,
+    double InternalGainsW = 0,
+    double GroundW = 0,
+    double HourDurationH = 1.0);
