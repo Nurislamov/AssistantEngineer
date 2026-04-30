@@ -1,11 +1,20 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 
 public sealed class HeatingSystemEnergyService
 {
+    private readonly SystemEnergyEngine _systemEnergy;
+
+    public HeatingSystemEnergyService(SystemEnergyEngine? systemEnergy = null)
+    {
+        _systemEnergy = systemEnergy ?? new SystemEnergyEngine();
+    }
+
     public Result<HeatingSystemEnergyResult> Calculate(
         Iso52016AnnualEnergyNeedResult energyNeed,
         HeatingSystemEnergyRequest request)
@@ -22,7 +31,14 @@ public sealed class HeatingSystemEnergyService
         var totalEfficiency = request.GenerationEfficiency *
             request.DistributionEfficiency *
             request.EmissionEfficiency;
-        var finalEnergy = energyNeed.AnnualHeatingDemandKWh / totalEfficiency;
+        var systemEnergy = _systemEnergy.Calculate(new SystemEnergyInput(
+            UsefulHeatingEnergyKWh: energyNeed.AnnualHeatingDemandKWh,
+            HeatingEfficiency: totalEfficiency,
+            DiagnosticsContext: $"Building {energyNeed.BuildingId} heating system energy"));
+        if (systemEnergy.IsFailure)
+            return Result<HeatingSystemEnergyResult>.Failure(systemEnergy);
+
+        var finalEnergy = systemEnergy.Value.FinalHeatingEnergyKWh;
 
         return Result<HeatingSystemEnergyResult>.Success(new HeatingSystemEnergyResult(
             UsefulHeatingDemandKWh: Round(energyNeed.AnnualHeatingDemandKWh),

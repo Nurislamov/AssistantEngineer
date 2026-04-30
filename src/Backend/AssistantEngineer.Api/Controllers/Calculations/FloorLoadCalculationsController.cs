@@ -35,5 +35,20 @@ public sealed class FloorLoadCalculationsController : ControllerBase
 
         return result.ToActionResult(this);
     }
+
+    [HttpGet("heating-load")]
+    [RequestTimeout(RequestPolicies.LongRunning)]
+    public async Task<ActionResult<FloorCalculationResult>> CalculateHeatingLoad(
+        int floorId,
+        [FromQuery] HeatingLoadCalculationMethodDto method = HeatingLoadCalculationMethodDto.En12831,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _loadCalculations.CalculateFloorHeatingLoadAsync(
+            floorId,
+            method,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
 }
 

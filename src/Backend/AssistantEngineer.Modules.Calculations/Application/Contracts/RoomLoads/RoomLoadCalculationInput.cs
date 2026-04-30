@@ -16,6 +16,7 @@ public sealed record RoomLoadCalculationInput(
     double OutdoorDesignHeatingTemperatureC,
     double OutdoorDesignCoolingTemperatureC,
     IReadOnlyList<TransmissionElementInput>? TransmissionElements = null,
+    IReadOnlyList<TransmissionElementInput>? CoolingTransmissionElements = null,
     RoomWindowSolarGainRequest? WindowSolarGains = null,
     VentilationAndInfiltrationLoadInput? HeatingVentilationAndInfiltration = null,
     VentilationAndInfiltrationLoadInput? CoolingVentilationAndInfiltration = null,

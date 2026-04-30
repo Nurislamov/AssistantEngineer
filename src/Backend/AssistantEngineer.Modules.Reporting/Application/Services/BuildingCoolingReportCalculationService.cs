@@ -1,10 +1,9 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
-using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Equipment.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Models;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -13,14 +12,10 @@ namespace AssistantEngineer.Modules.Reporting.Application.Services;
 internal sealed class BuildingCoolingReportCalculationService
 {
     private readonly ILoadCalculationsFacade _loadCalculations;
-    private readonly IEquipmentFacade _equipment;
 
-    public BuildingCoolingReportCalculationService(
-        ILoadCalculationsFacade loadCalculations,
-        IEquipmentFacade equipment)
+    public BuildingCoolingReportCalculationService(ILoadCalculationsFacade loadCalculations)
     {
         _loadCalculations = loadCalculations;
-        _equipment = equipment;
     }
 
     public async Task<Result<BuildingCoolingReportData>> BuildCoolingDataAsync(
@@ -75,27 +70,27 @@ internal sealed class BuildingCoolingReportCalculationService
 
                 if (equipmentSelectionRequested)
                 {
-                    var equipmentSelectionResult = await _equipment.SelectRoomEquipmentAsync(
+                    var equipmentSizing = await _loadCalculations.CalculateRoomEquipmentSizingAsync(
                         room.Id,
-                        new EquipmentSelectionRequest
-                        {
-                            SystemType = systemType!,
-                            UnitType = unitType!
-                        },
-                        roomCalculation.Value.TotalHeatLoadKw,
-                        roomCalculation.Value.DesignCapacityKw,
+                        systemType!,
+                        unitType!,
+                        method,
                         cancellationToken);
 
-                    if (equipmentSelectionResult.IsSuccess)
+                    if (equipmentSizing.IsSuccess)
                     {
-                        equipmentSelection = equipmentSelectionResult.Value;
+                        equipmentSelection = MapSelectionResult(
+                            room.Id,
+                            systemType!,
+                            unitType!,
+                            equipmentSizing.Value);
                     }
-                    else if (equipmentSelectionResult.ErrorType is
+                    else if (equipmentSizing.ErrorType is
                              ResultErrorType.Validation or
                              ResultErrorType.NotFound or
                              ResultErrorType.Conflict)
                     {
-                        return Result<BuildingCoolingReportData>.Failure(equipmentSelectionResult);
+                        return Result<BuildingCoolingReportData>.Failure(equipmentSizing);
                     }
                 }
 
@@ -116,4 +111,66 @@ internal sealed class BuildingCoolingReportCalculationService
             systemType ?? string.Empty,
             unitType ?? string.Empty));
     }
+
+    private static EquipmentSelectionResult MapSelectionResult(
+        int roomId,
+        string systemType,
+        string unitType,
+        EquipmentSizingResult sizing)
+    {
+        var best = sizing.BestMatch;
+
+        return new EquipmentSelectionResult
+        {
+            RoomId = roomId,
+            TotalHeatLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
+            DesignCapacityKw = RoundKw(sizing.RequiredCoolingCapacityWithReserveW),
+            RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,
+            RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,
+            CapacityWithReserveW = sizing.RequiredCoolingCapacityWithReserveW,
+            SafetyFactor = sizing.SafetyFactor,
+            RequestedSystemType = systemType,
+            RequestedUnitType = unitType,
+            SelectedCatalogItemId = best?.EquipmentId ?? 0,
+            SelectedManufacturer = best?.Name ?? string.Empty,
+            SelectedModelName = best?.Model ?? string.Empty,
+            SelectedNominalCoolingCapacityKw = best?.CoolingCapacityW is null ? 0 : RoundKw(best.CoolingCapacityW.Value),
+            CapacityReserveKw = best is null ? 0 : RoundKw(best.CoolingMarginW),
+            AcceptedCandidates = sizing.RecommendedEquipment
+                .Select(candidate => new EquipmentSelectionCandidateResult
+                {
+                    CatalogItemId = candidate.EquipmentId,
+                    Manufacturer = candidate.Name,
+                    ModelName = candidate.Model,
+                    HeatingCapacityW = candidate.HeatingCapacityW,
+                    CoolingCapacityW = candidate.CoolingCapacityW,
+                    HeatingMarginW = candidate.HeatingMarginW,
+                    CoolingMarginW = candidate.CoolingMarginW,
+                    Score = candidate.Score,
+                    Notes = candidate.Notes.ToList()
+                })
+                .ToList(),
+            RejectedCandidates = sizing.RejectedEquipment
+                .Select(candidate => new EquipmentSelectionRejectedCandidate
+                {
+                    CatalogItemId = candidate.EquipmentId,
+                    Manufacturer = candidate.Name,
+                    ModelName = candidate.Model,
+                    Reasons = candidate.Reasons.ToList()
+                })
+                .ToList(),
+            Diagnostics = sizing.Diagnostics
+                .Select(diagnostic => new EquipmentSelectionDiagnostic
+                {
+                    Severity = diagnostic.Severity.ToString(),
+                    Code = diagnostic.Code,
+                    Message = diagnostic.Message,
+                    Context = diagnostic.Context
+                })
+                .ToList()
+        };
+    }
+
+    private static double RoundKw(double watts) =>
+        Math.Round(watts / 1000.0, 2, MidpointRounding.AwayFromZero);
 }

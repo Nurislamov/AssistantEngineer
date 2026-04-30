@@ -26,6 +26,19 @@ If hourly profiles are not available, diagnostics report that design-point aggre
 
 The aggregation result includes component sums for transmission, solar, ventilation, infiltration, internal gains and ground.
 
+## Real Application Pipeline
+
+Floor and building load routes use room results from the same Energy Calculation Parity pipeline and aggregate them with `LoadAggregationEngine`.
+
+- `GET /api/v1/floors/{floorId}/load-calculations/heating-load`
+- `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`
+- `GET /api/v1/buildings/{buildingId}/load-calculations/heating-load`
+- `GET /api/v1/buildings/{buildingId}/load-calculations/cooling-load`
+
+`EnergyCalculationPipelineService` assembles room load inputs, calculates each room with `RoomLoadCalculationEngine`, then passes unique room load records to `LoadAggregationEngine`. Floor aggregation only includes rooms on the requested floor. Building aggregation includes the building rooms once and uses thermal-zone ids only for grouping/breakdown, not for double counting.
+
+The current API path uses design-point aggregation. If hourly profiles are not available, diagnostics identify design-point aggregation instead of silently claiming coincident hourly behavior.
+
 ## Deterministic Fixtures
 
 - `aggregation-floor-two-rooms.json`

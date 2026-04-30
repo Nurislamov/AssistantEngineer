@@ -3,13 +3,11 @@ using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
-using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
-using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Equipment.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
@@ -90,9 +88,7 @@ public class BuildingCoolingReportDataServiceTests
             building,
             roomCalculator);
 
-        var calculationService = new BuildingCoolingReportCalculationService(
-            loadCalculations,
-            new EquipmentFacadeStub());
+        var calculationService = new BuildingCoolingReportCalculationService(loadCalculations);
 
         var reportGenerator = new BuildingCoolingReportGenerator(
             new FixedTimeProvider(FixedReportTime));
@@ -167,6 +163,12 @@ public class BuildingCoolingReportDataServiceTests
             return Result<FloorCalculationResult>.Success(result);
         }
 
+        public Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
+            int floorId,
+            HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public async Task<Result<RoomCalculationResult>> CalculateRoomCoolingLoadAsync(
             int roomId,
             CoolingLoadCalculationMethodDto method,
@@ -193,43 +195,15 @@ public class BuildingCoolingReportDataServiceTests
             HeatingLoadCalculationMethodDto method,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
-    }
 
-    private sealed class EquipmentFacadeStub : IEquipmentFacade
-    {
-        public Task<Result<EquipmentCatalogItemResponse>> CreateCatalogItemAsync(
-            CreateEquipmentCatalogItemRequest request,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<Result<EquipmentCatalogItemResponse>> GetCatalogItemByIdAsync(
-            int id,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<Result<EquipmentCatalogItemResponse>> UpdateCatalogItemAsync(
-            int id,
-            UpdateEquipmentCatalogItemRequest request,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<Result> DeactivateCatalogItemAsync(
-            int id,
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<Result<List<EquipmentCatalogItemResponse>>> GetCatalogItemsAsync(
-            CancellationToken cancellationToken) =>
-            throw new NotSupportedException();
-
-        public Task<Result<EquipmentSelectionResult>> SelectRoomEquipmentAsync(
+        public Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
             int roomId,
-            EquipmentSelectionRequest request,
-            double totalHeatLoadKw,
-            double designCapacityKw,
+            string systemType,
+            string unitType,
+            CoolingLoadCalculationMethodDto method,
             CancellationToken cancellationToken) =>
-            Task.FromResult(Result<EquipmentSelectionResult>.Failure(
-                "Equipment selection is not expected in this test."));
+            Task.FromResult(Result<EquipmentSizingResult>.Failure(
+                "Equipment sizing is not expected in this test."));
     }
 
     private sealed class BuildingRepositoryStub : IBuildingRepository

@@ -11,7 +11,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Transmission",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and engine tests; integrated through the room load application pipeline. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
@@ -20,7 +20,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SolarGains",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and engine tests; integrated through the room cooling application pipeline. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
@@ -29,7 +29,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Ventilation",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and engine tests; integrated through the room load application pipeline. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
@@ -38,7 +38,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.InternalGains",
-            Notes: "Covered by deterministic engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic engine tests; integrated through the room cooling application pipeline. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
@@ -47,7 +47,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
@@ -56,7 +56,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
@@ -65,7 +65,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
@@ -74,7 +74,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and floor application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
@@ -83,7 +83,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and building application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
@@ -92,7 +92,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline adapter tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
@@ -101,7 +101,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and service tests; endpoint uses the deterministic facade path. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
@@ -110,7 +110,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and engine tests; system services call SystemEnergyEngine. This is not external parity proof."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION",
@@ -119,7 +119,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing",
-            Notes: "Covered by deterministic fixtures and engine tests; this is not external parity proof."),
+            Notes: "Covered by deterministic fixtures, engine tests, and room equipment application pipeline tests. Application pipeline integrated. This is not external parity proof."),
 
         new(
             Code: "ISO52010.CLIMATE_CONVERSION",

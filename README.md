@@ -37,6 +37,18 @@ Important constraints:
 - ClosedXML belongs only in `AssistantEngineer.Infrastructure.Integrations.Reports`.
 - Equipment selection must not depend on Buildings or Calculations implementation internals.
 
+## Real Application Pipeline
+
+The backend calculation endpoints use the Energy Calculation Parity application pipeline through public facades:
+
+- Room heating/cooling routes assemble room component inputs and call `RoomLoadCalculationEngine`.
+- Floor and building heating/cooling routes aggregate room load results with `LoadAggregationEngine`.
+- Building energy balance maps the available building energy source into `AnnualEnergyBalanceEngine` and carries source diagnostics.
+- DHW demand uses the deterministic DHW service path.
+- Heating/cooling system energy uses `SystemEnergyEngine` so useful, final and primary energy remain distinct.
+- Room equipment selection uses actual room load, the project safety factor, `EquipmentSizingEngine`, and the active equipment catalog.
+- Cooling, heating and energy-balance reports consume facade results from the same pipeline. Excel rendering stays in Infrastructure.
+
 ## Backend Setup
 
 Prerequisites:
@@ -233,6 +245,7 @@ Calculations and reports:
 - `GET /api/v1/buildings/{buildingId}/load-calculations/heating-load`
 - `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance`
 - `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`
+- `GET /api/v1/floors/{floorId}/load-calculations/heating-load`
 - `GET /api/v1/rooms/{roomId}/load-calculations/cooling-load`
 - `GET /api/v1/rooms/{roomId}/load-calculations/heating-load`
 - `GET /api/v1/reports/buildings/{buildingId}/cooling`

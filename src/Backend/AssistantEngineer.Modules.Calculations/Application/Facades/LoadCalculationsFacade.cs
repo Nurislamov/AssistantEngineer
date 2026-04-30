@@ -1,41 +1,27 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Mappers;
+using AssistantEngineer.Modules.Buildings.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
-using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
+using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 
 public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
 {
-    private readonly BuildingCoolingLoadService _buildingCooling;
-    private readonly BuildingHeatingLoadService _buildingHeating;
-    private readonly BuildingEnergyBalanceService _buildingEnergyBalance;
-    private readonly FloorCalculationService _floorCalculation;
-    private readonly RoomCalculationService _roomCalculation;
+    private readonly EnergyCalculationPipelineService _pipeline;
 
-    public LoadCalculationsFacade(
-        BuildingCoolingLoadService buildingCooling,
-        BuildingHeatingLoadService buildingHeating,
-        BuildingEnergyBalanceService buildingEnergyBalance,
-        FloorCalculationService floorCalculation,
-        RoomCalculationService roomCalculation)
+    public LoadCalculationsFacade(EnergyCalculationPipelineService pipeline)
     {
-        _buildingCooling = buildingCooling;
-        _buildingHeating = buildingHeating;
-        _buildingEnergyBalance = buildingEnergyBalance;
-        _floorCalculation = floorCalculation;
-        _roomCalculation = roomCalculation;
+        _pipeline = pipeline;
     }
 
     public Task<Result<BuildingCalculationResult>> CalculateBuildingCoolingLoadAsync(
         int buildingId,
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>
-        _buildingCooling.CalculateAsync(
+        _pipeline.CalculateBuildingCoolingLoadAsync(
             buildingId,
             method.ToDomain(),
             cancellationToken);
@@ -44,7 +30,7 @@ public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
         int buildingId,
         HeatingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>
-        _buildingHeating.CalculateAsync(
+        _pipeline.CalculateBuildingHeatingLoadAsync(
             buildingId,
             method.ToDomain(),
             cancellationToken);
@@ -54,7 +40,7 @@ public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
         CoolingLoadCalculationMethodDto coolingMethod,
         HeatingLoadCalculationMethodDto heatingMethod,
         CancellationToken cancellationToken) =>
-        _buildingEnergyBalance.CalculateAsync(
+        _pipeline.CalculateBuildingEnergyBalanceAsync(
             buildingId,
             coolingMethod.ToDomain(),
             heatingMethod.ToDomain(),
@@ -64,7 +50,16 @@ public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
         int floorId,
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>
-        _floorCalculation.CalculateAsync(
+        _pipeline.CalculateFloorCoolingLoadAsync(
+            floorId,
+            method.ToDomain(),
+            cancellationToken);
+
+    public Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
+        int floorId,
+        HeatingLoadCalculationMethodDto method,
+        CancellationToken cancellationToken) =>
+        _pipeline.CalculateFloorHeatingLoadAsync(
             floorId,
             method.ToDomain(),
             cancellationToken);
@@ -73,7 +68,7 @@ public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
         int roomId,
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>
-        _roomCalculation.CalculateAsync(
+        _pipeline.CalculateRoomCoolingLoadAsync(
             roomId,
             method.ToDomain(),
             cancellationToken);
@@ -82,8 +77,21 @@ public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
         int roomId,
         HeatingLoadCalculationMethodDto method,
         CancellationToken cancellationToken) =>
-        _roomCalculation.CalculateHeatingLoadAsync(
+        _pipeline.CalculateRoomHeatingLoadAsync(
             roomId,
+            method.ToDomain(),
+            cancellationToken);
+
+    public Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
+        int roomId,
+        string systemType,
+        string unitType,
+        CoolingLoadCalculationMethodDto method,
+        CancellationToken cancellationToken) =>
+        _pipeline.CalculateRoomEquipmentSizingAsync(
+            roomId,
+            systemType,
+            unitType,
             method.ToDomain(),
             cancellationToken);
 }

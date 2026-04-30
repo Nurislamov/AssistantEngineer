@@ -127,7 +127,8 @@ public sealed class RoomLoadCalculationEngine
         MutableCoolingBreakdown cooling,
         List<CalculationDiagnostic> diagnostics)
     {
-        if (input.TransmissionElements is null || input.TransmissionElements.Count == 0)
+        if ((input.TransmissionElements is null || input.TransmissionElements.Count == 0) &&
+            (input.CoolingTransmissionElements is null || input.CoolingTransmissionElements.Count == 0))
         {
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Info,
@@ -137,10 +138,53 @@ public sealed class RoomLoadCalculationEngine
             return;
         }
 
-        var result = _transmission.Calculate(new TransmissionHeatTransferRequest(input.TransmissionElements));
+        if (input.CoolingTransmissionElements is { Count: > 0 })
+        {
+            AddTransmissionElements(
+                input.TransmissionElements,
+                addHeatingComponents: true,
+                addCoolingComponents: false,
+                heating,
+                cooling,
+                diagnostics,
+                input.DiagnosticsContext);
+            AddTransmissionElements(
+                input.CoolingTransmissionElements,
+                addHeatingComponents: false,
+                addCoolingComponents: true,
+                heating,
+                cooling,
+                diagnostics,
+                input.DiagnosticsContext);
+            return;
+        }
+
+        AddTransmissionElements(
+            input.TransmissionElements,
+            addHeatingComponents: true,
+            addCoolingComponents: true,
+            heating,
+            cooling,
+            diagnostics,
+            input.DiagnosticsContext);
+    }
+
+    private void AddTransmissionElements(
+        IReadOnlyList<TransmissionElementInput>? elements,
+        bool addHeatingComponents,
+        bool addCoolingComponents,
+        MutableHeatingBreakdown heating,
+        MutableCoolingBreakdown cooling,
+        List<CalculationDiagnostic> diagnostics,
+        string? diagnosticsContext)
+    {
+        if (elements is null || elements.Count == 0)
+            return;
+
+        var result = _transmission.Calculate(new TransmissionHeatTransferRequest(elements));
         if (result.IsFailure)
         {
-            diagnostics.Add(Error("RoomLoad.TransmissionFailed", result.Error, input.DiagnosticsContext));
+            diagnostics.Add(Error("RoomLoad.TransmissionFailed", result.Error, diagnosticsContext));
             return;
         }
 
@@ -156,18 +200,24 @@ public sealed class RoomLoadCalculationEngine
 
             if (isGround)
             {
-                heating.GroundW += heatLoss;
-                cooling.GroundW += heatGain;
+                if (addHeatingComponents)
+                    heating.GroundW += heatLoss;
+                if (addCoolingComponents)
+                    cooling.GroundW += heatGain;
             }
             else if (isWindow)
             {
-                heating.WindowTransmissionW += heatLoss;
-                cooling.WindowTransmissionW += heatGain;
+                if (addHeatingComponents)
+                    heating.WindowTransmissionW += heatLoss;
+                if (addCoolingComponents)
+                    cooling.WindowTransmissionW += heatGain;
             }
             else
             {
-                heating.TransmissionW += heatLoss;
-                cooling.TransmissionW += heatGain;
+                if (addHeatingComponents)
+                    heating.TransmissionW += heatLoss;
+                if (addCoolingComponents)
+                    cooling.TransmissionW += heatGain;
             }
         }
     }

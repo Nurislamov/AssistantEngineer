@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
@@ -188,6 +189,12 @@ public class BuildingHeatingReportDataServiceTests
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 
+        public Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
+            int floorId,
+            HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public Task<Result<RoomCalculationResult>> CalculateRoomCoolingLoadAsync(
             int roomId,
             CoolingLoadCalculationMethodDto method,
@@ -197,6 +204,14 @@ public class BuildingHeatingReportDataServiceTests
         public Task<Result<RoomHeatingLoadResult>> CalculateRoomHeatingLoadAsync(
             int roomId,
             HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
+            int roomId,
+            string systemType,
+            string unitType,
+            CoolingLoadCalculationMethodDto method,
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
     }

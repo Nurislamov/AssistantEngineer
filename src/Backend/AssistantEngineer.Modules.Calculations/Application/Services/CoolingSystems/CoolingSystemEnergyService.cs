@@ -1,11 +1,20 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 
 public sealed class CoolingSystemEnergyService
 {
+    private readonly SystemEnergyEngine _systemEnergy;
+
+    public CoolingSystemEnergyService(SystemEnergyEngine? systemEnergy = null)
+    {
+        _systemEnergy = systemEnergy ?? new SystemEnergyEngine();
+    }
+
     public Result<CoolingSystemEnergyResult> Calculate(
         Iso52016AnnualEnergyNeedResult energyNeed,
         CoolingSystemEnergyRequest request)
@@ -22,10 +31,21 @@ public sealed class CoolingSystemEnergyService
         if (request.AuxiliaryEnergyKWh < 0)
             return Result<CoolingSystemEnergyResult>.Validation("Auxiliary energy cannot be negative.");
 
+        var effectiveCop = request.SeasonalCop *
+            request.DistributionEfficiency *
+            request.EmissionEfficiency;
+        var systemEnergy = _systemEnergy.Calculate(new SystemEnergyInput(
+            UsefulCoolingEnergyKWh: energyNeed.AnnualCoolingDemandKWh,
+            CoolingCop: effectiveCop,
+            FanEnergyKWh: request.AuxiliaryEnergyKWh,
+            DiagnosticsContext: $"Building {energyNeed.BuildingId} cooling system energy"));
+        if (systemEnergy.IsFailure)
+            return Result<CoolingSystemEnergyResult>.Failure(systemEnergy);
+
         var deliveredCooling = energyNeed.AnnualCoolingDemandKWh /
             (request.DistributionEfficiency * request.EmissionEfficiency);
-        var compressorElectricity = deliveredCooling / request.SeasonalCop;
-        var finalElectricity = compressorElectricity + request.AuxiliaryEnergyKWh;
+        var compressorElectricity = systemEnergy.Value.FinalCoolingEnergyKWh;
+        var finalElectricity = systemEnergy.Value.TotalFinalEnergyKWh;
 
         return Result<CoolingSystemEnergyResult>.Success(new CoolingSystemEnergyResult(
             UsefulCoolingDemandKWh: Round(energyNeed.AnnualCoolingDemandKWh),

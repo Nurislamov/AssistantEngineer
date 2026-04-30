@@ -27,6 +27,28 @@ Candidates are rejected with explicit reasons:
 
 The best match is the accepted candidate with the smallest positive reserve.
 
+## Real Application Pipeline
+
+Room equipment selection uses the Energy Calculation Parity load and sizing path:
+
+- `POST /api/v1/rooms/{roomId}/equipment-selection`
+- cooling report equipment rows, when a system type and unit type are requested
+
+The route calls `ILoadCalculationsFacade.CalculateRoomEquipmentSizingAsync`. The pipeline calculates the actual room load with `RoomLoadCalculationEngine`, applies the project cooling safety factor, queries the active equipment catalog through the sizing provider, and evaluates candidates with `EquipmentSizingEngine`.
+
+The API response keeps compatibility fields and maps sizing evidence:
+
+- `RequiredCoolingCapacityW`
+- `RequiredHeatingCapacityW`
+- `CapacityWithReserveW`
+- `SafetyFactor`
+- accepted/recommended candidates
+- rejected candidates with reasons
+- best match
+- diagnostics
+
+Current catalog integration exposes cooling capacity for cooling equipment. Heating capacity is not inferred from cooling catalog rows; diagnostics state that cooling capacity only was evaluated.
+
 ## Deterministic Fixtures
 
 - `equipment-sizing-cooling-simple.json`

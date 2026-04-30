@@ -1,4 +1,7 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 
 public class BuildingEnergyBalanceResult
 {
@@ -9,5 +12,13 @@ public class BuildingEnergyBalanceResult
     public double AnnualCoolingDemandKWh { get; set; }
     public double AnnualHeatingDemandKWh { get; set; }
     public double AnnualTotalDemandKWh { get; set; }
+    public double EnergyUseIntensityKWhPerM2Year { get; set; }
+    public double PeakHeatingW { get; set; }
+    public double PeakCoolingW { get; set; }
+    public int? PeakHeatingHour { get; set; }
+    public int? PeakCoolingHour { get; set; }
+    public AnnualEnergyComponentBreakdown? ComponentBreakdown { get; set; }
     public List<MonthlyEnergyBalance> MonthlyBalances { get; set; } = new();
+    public List<CalculationDiagnostic> Diagnostics { get; set; } = new();
+    public List<string> Assumptions { get; set; } = new();
 }

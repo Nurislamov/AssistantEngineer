@@ -6,6 +6,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.S
 using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
@@ -31,6 +32,7 @@ internal static class LoadCalculationRegistration
         services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
+        services.AddScoped<EnergyCalculationPipelineService>();
 
         return services;
     }

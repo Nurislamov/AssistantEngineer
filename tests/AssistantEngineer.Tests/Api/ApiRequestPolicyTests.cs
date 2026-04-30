@@ -43,6 +43,7 @@ public class ApiRequestPolicyTests
             { typeof(BuildingLoadCalculationsController), nameof(BuildingLoadCalculationsController.CalculateHeatingLoad) },
             { typeof(BuildingLoadCalculationsController), nameof(BuildingLoadCalculationsController.CalculateEnergyBalance) },
             { typeof(FloorLoadCalculationsController), nameof(FloorLoadCalculationsController.CalculateCoolingLoad) },
+            { typeof(FloorLoadCalculationsController), nameof(FloorLoadCalculationsController.CalculateHeatingLoad) },
             { typeof(RoomLoadCalculationsController), nameof(RoomLoadCalculationsController.CalculateCoolingLoad) },
             { typeof(RoomLoadCalculationsController), nameof(RoomLoadCalculationsController.CalculateHeatingLoad) },
             { typeof(RoomEquipmentSelectionController), nameof(RoomEquipmentSelectionController.SelectEquipment) },

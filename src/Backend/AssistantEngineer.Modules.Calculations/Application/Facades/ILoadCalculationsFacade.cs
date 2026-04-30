@@ -1,5 +1,6 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -27,6 +28,11 @@ public interface ILoadCalculationsFacade
         CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken);
 
+    Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
+        int floorId,
+        HeatingLoadCalculationMethodDto method,
+        CancellationToken cancellationToken);
+
     Task<Result<RoomCalculationResult>> CalculateRoomCoolingLoadAsync(
         int roomId,
         CoolingLoadCalculationMethodDto method,
@@ -35,5 +41,12 @@ public interface ILoadCalculationsFacade
     Task<Result<RoomHeatingLoadResult>> CalculateRoomHeatingLoadAsync(
         int roomId,
         HeatingLoadCalculationMethodDto method,
+        CancellationToken cancellationToken);
+
+    Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
+        int roomId,
+        string systemType,
+        string unitType,
+        CoolingLoadCalculationMethodDto method,
         CancellationToken cancellationToken);
 }

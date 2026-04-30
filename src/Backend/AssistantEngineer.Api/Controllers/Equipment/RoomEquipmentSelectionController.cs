@@ -1,11 +1,11 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Api.Extensions.Http;
+using AssistantEngineer.Api.Extensions.Results;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Equipment.Application.Facades;
 using Asp.Versioning;
-using AssistantEngineer.Api.Extensions.Http;
-using AssistantEngineer.Api.Extensions.Results;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,14 +17,10 @@ namespace AssistantEngineer.Api.Controllers.Equipment;
 public sealed class RoomEquipmentSelectionController : ControllerBase
 {
     private readonly ILoadCalculationsFacade _loadCalculations;
-    private readonly IEquipmentFacade _equipment;
 
-    public RoomEquipmentSelectionController(
-        ILoadCalculationsFacade loadCalculations,
-        IEquipmentFacade equipment)
+    public RoomEquipmentSelectionController(ILoadCalculationsFacade loadCalculations)
     {
         _loadCalculations = loadCalculations;
-        _equipment = equipment;
     }
 
     [HttpPost]
@@ -35,22 +31,77 @@ public sealed class RoomEquipmentSelectionController : ControllerBase
         [FromQuery] CoolingLoadCalculationMethodDto method = CoolingLoadCalculationMethodDto.Simplified,
         CancellationToken cancellationToken = default)
     {
-        var coolingLoad = await _loadCalculations.CalculateRoomCoolingLoadAsync(
+        var sizing = await _loadCalculations.CalculateRoomEquipmentSizingAsync(
             roomId,
+            request.SystemType,
+            request.UnitType,
             method,
             cancellationToken);
 
-        if (coolingLoad.IsFailure)
-            return ApiProblemDetailsFactory.CreateResult(HttpContext, coolingLoad);
+        if (sizing.IsFailure)
+            return ApiProblemDetailsFactory.CreateResult(HttpContext, sizing);
 
-        var result = await _equipment.SelectRoomEquipmentAsync(
-            roomId,
-            request,
-            coolingLoad.Value.TotalHeatLoadKw,
-            coolingLoad.Value.DesignCapacityKw,
-            cancellationToken);
-
-        return result.ToOkResult(this);
+        return Ok(MapSelectionResult(roomId, request, sizing.Value));
     }
-}
 
+    private static EquipmentSelectionResult MapSelectionResult(
+        int roomId,
+        EquipmentSelectionRequest request,
+        EquipmentSizingResult sizing)
+    {
+        var best = sizing.BestMatch;
+
+        return new EquipmentSelectionResult
+        {
+            RoomId = roomId,
+            TotalHeatLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
+            DesignCapacityKw = RoundKw(sizing.RequiredCoolingCapacityWithReserveW),
+            RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,
+            RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,
+            CapacityWithReserveW = sizing.RequiredCoolingCapacityWithReserveW,
+            SafetyFactor = sizing.SafetyFactor,
+            RequestedSystemType = request.SystemType,
+            RequestedUnitType = request.UnitType,
+            SelectedCatalogItemId = best?.EquipmentId ?? 0,
+            SelectedManufacturer = best?.Name ?? string.Empty,
+            SelectedModelName = best?.Model ?? string.Empty,
+            SelectedNominalCoolingCapacityKw = best?.CoolingCapacityW is null ? 0 : RoundKw(best.CoolingCapacityW.Value),
+            CapacityReserveKw = best is null ? 0 : RoundKw(best.CoolingMarginW),
+            AcceptedCandidates = sizing.RecommendedEquipment
+                .Select(candidate => new EquipmentSelectionCandidateResult
+                {
+                    CatalogItemId = candidate.EquipmentId,
+                    Manufacturer = candidate.Name,
+                    ModelName = candidate.Model,
+                    HeatingCapacityW = candidate.HeatingCapacityW,
+                    CoolingCapacityW = candidate.CoolingCapacityW,
+                    HeatingMarginW = candidate.HeatingMarginW,
+                    CoolingMarginW = candidate.CoolingMarginW,
+                    Score = candidate.Score,
+                    Notes = candidate.Notes.ToList()
+                })
+                .ToList(),
+            RejectedCandidates = sizing.RejectedEquipment
+                .Select(candidate => new EquipmentSelectionRejectedCandidate
+                {
+                    CatalogItemId = candidate.EquipmentId,
+                    Manufacturer = candidate.Name,
+                    ModelName = candidate.Model,
+                    Reasons = candidate.Reasons.ToList()
+                })
+                .ToList(),
+            Diagnostics = sizing.Diagnostics
+                .Select(diagnostic => new EquipmentSelectionDiagnostic
+                {
+                    Severity = diagnostic.Severity.ToString(),
+                    Code = diagnostic.Code,
+                    Message = diagnostic.Message,
+                    Context = diagnostic.Context
+                })
+                .ToList()
+        };
+    }
+
+    private static double RoundKw(double watts) =>
+        Math.Round(watts / 1000.0, 2, MidpointRounding.AwayFromZero);
+}

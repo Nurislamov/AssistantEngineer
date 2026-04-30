@@ -1,3 +1,6 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 
 public class RoomHeatingLoadResult
@@ -19,4 +22,9 @@ public class RoomHeatingLoadResult
     public double NaturalVentilationHeatLossW { get; set; }
     public double TotalDesignHeatingLoadW { get; set; }
     public double TotalDesignHeatingLoadKw { get; set; }
+    public double HeatingLoadW { get; set; }
+    public double HeatingLoadWPerM2 { get; set; }
+    public RoomHeatingLoadBreakdown? Breakdown { get; set; }
+    public List<CalculationDiagnostic> Diagnostics { get; set; } = new();
+    public List<string> Assumptions { get; set; } = new();
 }

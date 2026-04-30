@@ -72,6 +72,20 @@ Parity означает, что AssistantEngineer на одинаковых вх
 | ISO52016.SENSIBLE_LOAD_HOURLY | Hourly sensible heating/cooling load | partial |
 | ISO52016.THERMAL_ZONES | Thermal zone calculation | partial |
 
+## Real application pipeline
+
+Реальные API и report paths должны идти через application-level orchestrator, а не напрямую через старые calculators. Текущий интегрированный путь:
+
+- `GET /api/v1/rooms/{roomId}/load-calculations/heating-load` и `GET /api/v1/rooms/{roomId}/load-calculations/cooling-load` вызывают `ILoadCalculationsFacade`, затем `EnergyCalculationPipelineService`, который собирает input-модель комнаты и вызывает `RoomLoadCalculationEngine`.
+- `GET /api/v1/floors/{floorId}/load-calculations/heating-load`, `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`, building heating и building cooling routes используют room load results и `LoadAggregationEngine` в design-point mode.
+- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` использует existing building energy source как явный adapter и затем `AnnualEnergyBalanceEngine`. Diagnostics фиксируют source hourly/monthly data: synthetic profile или unavailable.
+- `POST /api/v1/domestic-hot-water/demand` остается на deterministic DHW service path.
+- Building energy analysis heating/cooling system routes используют `SystemEnergyEngine`; useful, final и primary energy не смешиваются.
+- `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет project safety factor, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates.
+- Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
+
+Старые calculators сохраняются как compatibility adapters или alternative method labels там, где они еще нужны для public contracts. Новые статусы выше `InternalDeterministicTested` не выставляются без benchmark comparison evidence. Для integrated paths notes должны содержать `Application pipeline integrated.`
+
 ## P1 — расширение до полного расчётного покрытия
 
 | Code | Feature | Current AssistantEngineer status |
