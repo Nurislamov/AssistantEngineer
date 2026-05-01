@@ -50,6 +50,12 @@ public class Iso52016WeatherSolarContextBuilderTests
         Assert.Equal(10, firstHour.OutdoorTemperatureC);
 
         Assert.NotEmpty(firstHour.SurfaceIrradiance);
+        Assert.Contains(context.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.HourlyWeatherSourceUsed");
+        Assert.Contains(context.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.AnnualClimateSolarDataUsed");
+        Assert.Contains(context.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.SurfaceIrradianceCalculated");
     }
 
     [Fact]
@@ -103,6 +109,32 @@ public class Iso52016WeatherSolarContextBuilderTests
     }
 
     [Fact]
+    public void Build_ClampsNightSurfaceIrradianceToZero()
+    {
+        var annualClimateData = CreateAnnualClimateData(
+            forceNightSolarRadiation: true);
+
+        var result = _builder.Build(
+            new Iso52016WeatherSolarContextRequest(
+                AnnualClimateData: annualClimateData,
+                LatitudeDegrees: 41.3,
+                LongitudeDegrees: 69.2,
+                TimeZoneOffset: TimeSpan.FromHours(5)));
+
+        Assert.True(result.IsSuccess);
+
+        var midnight = result.Value.GetHour(0);
+        var south = midnight.GetSurface("south");
+
+        Assert.Equal(0, south.BeamIrradianceWm2, precision: 6);
+        Assert.Equal(0, south.DiffuseSkyIrradianceWm2, precision: 6);
+        Assert.Equal(0, south.GroundReflectedIrradianceWm2, precision: 6);
+        Assert.Equal(0, south.TotalIrradianceWm2, precision: 6);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.NightSolarClampedToZero");
+    }
+
+    [Fact]
     public void Build_RejectsInvalidLatitude()
     {
         var annualClimateData = CreateAnnualClimateData();
@@ -118,7 +150,8 @@ public class Iso52016WeatherSolarContextBuilderTests
         Assert.Equal("Latitude must be between -90 and 90 degrees.", result.Error);
     }
 
-    private static AnnualClimateData CreateAnnualClimateData()
+    private static AnnualClimateData CreateAnnualClimateData(
+        bool forceNightSolarRadiation = false)
     {
         var climateZone = CreateClimateZone();
 
@@ -135,8 +168,8 @@ public class Iso52016WeatherSolarContextBuilderTests
             var addResult = annualData.AddHourlyData(
                 hourOfYear: hour,
                 dryBulbTemp: 10,
-                directSolar: IsDayHour(hour) ? 600 : 0,
-                diffuseSolar: IsDayHour(hour) ? 100 : 0,
+                directSolar: IsDayHour(hour) || forceNightSolarRadiation ? 600 : 0,
+                diffuseSolar: IsDayHour(hour) || forceNightSolarRadiation ? 100 : 0,
                 relativeHumidityPercent: 50,
                 atmosphericPressurePa: 101_325,
                 windSpeedMPerS: 2.5,

@@ -1,4 +1,6 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 public sealed record Iso52016WeatherSolarContext(
     int Year,
@@ -7,6 +9,8 @@ public sealed record Iso52016WeatherSolarContext(
     double LongitudeDegrees,
     IReadOnlyList<Iso52016HourlyWeatherSolarRecord> Hours)
 {
+    public IReadOnlyList<CalculationDiagnostic> Diagnostics { get; init; } = [];
+
     public int HourCount => Hours.Count;
 
     public Iso52016HourlyWeatherSolarRecord GetHour(

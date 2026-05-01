@@ -1,6 +1,7 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Weather;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.WeatherSolar;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Weather;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
@@ -65,14 +66,18 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
 
         var context = MapToIso52016Context(
             weatherSolarResult.Value,
-            groundProfileResult.Value);
+            groundProfileResult.Value,
+            BuildDiagnostics(
+                weatherSolarResult.Value,
+                request));
 
         return Result<Iso52016WeatherSolarContext>.Success(context);
     }
 
     private static Iso52016WeatherSolarContext MapToIso52016Context(
         AnnualWeatherSolarProfile profile,
-        Iso52016GroundBoundaryTemperatureProfile groundProfile)
+        Iso52016GroundBoundaryTemperatureProfile groundProfile,
+        IReadOnlyList<CalculationDiagnostic> diagnostics)
     {
         var hours = profile.Hours
             .Select(hour => MapHour(
@@ -85,7 +90,10 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
             TimeZoneOffset: profile.TimeZoneOffset,
             LatitudeDegrees: profile.LatitudeDegrees,
             LongitudeDegrees: profile.LongitudeDegrees,
-            Hours: hours);
+            Hours: hours)
+        {
+            Diagnostics = diagnostics
+        };
     }
 
     private static Iso52016HourlyWeatherSolarRecord MapHour(
@@ -126,7 +134,7 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
         HourlyWeatherSolarRecord source)
     {
         if (source.SolarPosition.SolarAltitudeDegrees <= 0)
-            return source.Weather.DiffuseHorizontalIrradianceWm2;
+            return 0;
 
         var sunAltitudeRadians =
             source.SolarPosition.SolarAltitudeDegrees *
@@ -140,6 +148,61 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
         return Math.Max(
             0.0,
             projectedDirect + source.Weather.DiffuseHorizontalIrradianceWm2);
+    }
+
+    private static IReadOnlyList<CalculationDiagnostic> BuildDiagnostics(
+        AnnualWeatherSolarProfile profile,
+        Iso52016WeatherSolarContextRequest request)
+    {
+        var context = $"ISO 52016 weather-solar context {profile.Year}";
+        var diagnostics = new List<CalculationDiagnostic>
+        {
+            new(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.HourlyWeatherSourceUsed",
+                "Hourly weather source was normalized from annual climate data for the ISO 52016-inspired weather-solar context.",
+                context),
+            new(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.AnnualClimateSolarDataUsed",
+                "Direct and diffuse solar data from annual climate records were used to calculate surface irradiance.",
+                context),
+            new(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.SurfaceIrradianceCalculated",
+                $"Surface irradiance was calculated for {profile.Surfaces.Count} surfaces and {profile.HourCount} hours using ground reflectance {request.GroundReflectance:0.###}.",
+                context)
+        };
+
+        var hasMissingDirectDiffuse = profile.Hours.Any(hour =>
+            hour.Weather.GlobalHorizontalIrradianceWm2.GetValueOrDefault() > 0 &&
+            hour.Weather.DirectNormalIrradianceWm2 == 0 &&
+            hour.Weather.DiffuseHorizontalIrradianceWm2 == 0);
+
+        if (hasMissingDirectDiffuse)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "SolarWeather.MissingDirectDiffuseSolarData",
+                "At least one hourly record has global horizontal irradiance without direct normal or diffuse horizontal solar data.",
+                context));
+        }
+
+        var hasNightClamp = profile.Hours.Any(hour =>
+            hour.SurfaceIrradiance.Any(surface =>
+                surface.Irradiance.Diagnostics.Any(diagnostic =>
+                    diagnostic.Code == "SolarWeather.NightSolarClampedToZero")));
+
+        if (hasNightClamp)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.NightSolarClampedToZero",
+                "At least one nighttime surface irradiance calculation was clamped to zero.",
+                context));
+        }
+
+        return diagnostics;
     }
 
     private static Result Validate(

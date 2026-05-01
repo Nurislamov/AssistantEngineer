@@ -209,6 +209,26 @@ public class AnnualEnergyBalanceEngineTests
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
             diagnostic.Severity == CalculationDiagnosticSeverity.Warning &&
             diagnostic.Code == "AnnualEnergy.SyntheticWeather");
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Warning &&
+            diagnostic.Code == "SolarWeather.SyntheticWeatherUsed");
+    }
+
+    [Fact]
+    public void Calculate_HourlyWeatherSourceAddsSolarWeatherDiagnostic()
+    {
+        var result = _engine.Calculate(new AnnualEnergyBalanceInput(
+            BuildingId: 1,
+            BuildingName: "Building",
+            BuildingAreaM2: 200,
+            Year: 2026,
+            Hours: CreateHours(heatingW: 100, coolingW: 0),
+            WeatherSource: "TrueHourlySimulation"));
+
+        Assert.True(result.IsSuccess);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Info &&
+            diagnostic.Code == "SolarWeather.HourlyWeatherSourceUsed");
     }
 
     [Fact]

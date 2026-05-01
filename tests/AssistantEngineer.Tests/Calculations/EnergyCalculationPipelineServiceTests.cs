@@ -68,6 +68,8 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "SolarGains.ReferenceByOrientationFallback");
         Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.ReferenceByOrientationFallbackUsed");
+        Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "InternalGains.DesignPointFullScheduleFactor");
         Assert.DoesNotContain(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "Ventilation.DefaultAirChangesPerHourUsed");
@@ -220,6 +222,10 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "SolarGains.IrradianceSource" &&
             diagnostic.Message.Contains("AnnualClimateData", StringComparison.Ordinal));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.AnnualClimateSolarDataUsed");
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarWeather.SurfaceIrradianceCalculated");
         Assert.DoesNotContain(result.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "SolarGains.ReferenceByOrientationFallback");
     }

@@ -7,6 +7,7 @@ This document describes the current Energy Calculation Parity scope for solar ga
 This stage covers:
 
 - solar irradiance already mapped to the window plane;
+- centralized solar position and isotropic sky surface irradiance calculations for the weather-solar path;
 - window orientation azimuth;
 - window tilt;
 - SHGC;
@@ -23,11 +24,38 @@ Surface irradiance can come from the existing weather-solar path, or it can be s
 
 For room cooling load endpoints, `EnergyCalculationPipelineService` resolves incident irradiance in this order:
 
-1. available annual/weather solar context for the selected design condition;
-2. existing annual climate/design solar data;
+1. hourly weather/solar context when available to the hourly path;
+2. annual climate direct/diffuse solar data through the centralized surface irradiance path;
 3. orientation reference irradiance fallback.
 
 The result diagnostics expose the source as `AnnualClimateData` or `ReferenceByOrientationFallback`. When the fallback is used, diagnostics warn that hourly weather/solar context was not available.
+
+Related diagnostics include:
+
+- `SolarWeather.HourlyWeatherSourceUsed`;
+- `SolarWeather.AnnualClimateSolarDataUsed`;
+- `SolarWeather.ReferenceByOrientationFallbackUsed`;
+- `SolarWeather.SyntheticWeatherUsed`;
+- `SolarWeather.MissingDirectDiffuseSolarData`;
+- `SolarWeather.NightSolarClampedToZero`;
+- `SolarWeather.SurfaceIrradianceCalculated`.
+
+Existing `SolarGains.IrradianceSource` and `SolarGains.ReferenceByOrientationFallback` diagnostics remain for compatibility.
+
+## Surface Irradiance
+
+The weather-solar path calculates surface irradiance from:
+
+- latitude, timestamp and longitude for solar position;
+- surface azimuth and tilt;
+- direct normal irradiance;
+- diffuse horizontal irradiance;
+- global horizontal irradiance, supplied or derived from projected direct plus diffuse;
+- ground reflectance.
+
+The surface result contains direct, diffuse sky, ground-reflected and total incident irradiance. Surface tilt must be `0..180`; azimuth is normalized to `0..360`.
+
+When solar altitude is below or equal to the horizon, direct, diffuse sky, ground-reflected and total surface irradiance are clamped to zero. This prevents nighttime diffuse/global source noise from creating window solar gains.
 
 ## Formula
 
@@ -72,7 +100,7 @@ SHGC x FrameFactor x InternalShadingFactor x ExternalShadingFactor x FixedShadin
 
 ## Orientation And Tilt
 
-Orientation and tilt are preserved in the input and result. When the existing weather-solar profile is used, orientation selects the matching surface irradiance record. When irradiance is supplied directly, orientation and tilt are diagnostics context and result metadata; the engine does not recalculate solar position.
+Orientation and tilt are preserved in the input and result. When the existing weather-solar profile is used, orientation selects the matching surface irradiance record, so south/north/east/west vertical surfaces can receive different incident irradiance under the same weather hour. When irradiance is supplied directly, orientation and tilt are diagnostics context and result metadata; the window gain engine does not recalculate solar position.
 
 ## Sign Convention
 
@@ -91,7 +119,7 @@ The engine validates:
 
 Missing frame factor uses a documented default of `1.0` and returns a warning diagnostic. Missing SHGC is an error; it is not silently defaulted.
 
-Diagnostics also state whether incident irradiance or component irradiance was provided, and include the effective solar factor.
+Diagnostics also state whether incident irradiance or component irradiance was provided, include the effective solar factor, and report night clamping when applicable.
 
 ## Deterministic Fixtures
 
@@ -105,6 +133,15 @@ The following deterministic fixtures cover this stage:
 
 They verify no-shading gain, combined factors, night/zero irradiance, validation diagnostics, and room-level aggregation.
 
+Active benchmark comparison fixtures also cover deterministic window and surface cases:
+
+- `solar-night-zero.json`;
+- `window-solar-gain-basic.json`;
+- `window-solar-gain-with-shading.json`;
+- `surface-irradiance-night-zero.json`.
+
+These are deterministic benchmark references. They do not mark the feature `ExternalParityCovered`.
+
 ## Limitations
 
 This stage does not include:
@@ -116,6 +153,6 @@ This stage does not include:
 - domestic hot water;
 - equipment;
 - a full rewrite of room cooling load;
-- a new solar position model.
+- a full ISO 52010 clone.
 
 The engine consumes provided surface irradiance. The existing weather-solar path remains responsible for mapping weather and sun position to surface irradiance. The application fallback is documented and diagnosed; it is not a full solar-context replacement.

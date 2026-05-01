@@ -72,8 +72,10 @@ Supported fixture category values are:
 - `EquipmentSizing`
 - `HourlyEnergyBalance`
 - `SignedComponentBalance`
+- `WindowSolarGains`
+- `SurfaceIrradiance`
 
-The first benchmark runner supports `AnnualEnergyBalance` and `SignedComponentBalance`.
+The benchmark runner currently supports `AnnualEnergyBalance`, `SignedComponentBalance`, `SolarGains`, `WindowSolarGains`, and `SurfaceIrradiance`.
 
 ## Tolerances
 

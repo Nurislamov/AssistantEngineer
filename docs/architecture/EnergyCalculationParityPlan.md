@@ -50,7 +50,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 | Code | Feature | Current AssistantEngineer status |
 |---|---|---|
 | ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER | Transmission heat transfer | InternalDeterministicTested |
-| ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS | Window solar gains | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS | Window solar gains | BenchmarkCompared |
 | ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS | Ventilation and infiltration loads | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.INTERNAL_GAINS | Internal gains | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD | Room heating load | InternalDeterministicTested |
@@ -64,7 +64,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 | ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY | System energy | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION | Equipment sizing integration | InternalDeterministicTested |
 | ISO52010.CLIMATE_CONVERSION | ISO 52010 external climate conversion | partial |
-| ISO52010.SURFACE_IRRADIANCE | Solar irradiance on tilted/oriented surfaces | partial |
+| ISO52010.SURFACE_IRRADIANCE | Solar irradiance on tilted/oriented surfaces | InternalDeterministicTested |
 | WEATHER.EPW | EPW weather input normalization | partial |
 | ISO52016.HOURLY_HEATING_NEED | Hourly sensible heating need | partial |
 | ISO52016.HOURLY_COOLING_NEED | Hourly sensible cooling need | partial |
@@ -81,7 +81,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - `GET /api/v1/floors/{floorId}/load-calculations/heating-load`, `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`, building heating и building cooling routes используют room load results и `LoadAggregationEngine` в design-point mode.
 - Public method query values are preserved as `requestedMethod`; results also expose `actualMethod` and diagnostics when the endpoint is currently using the Energy Calculation Parity design-point pipeline for API compatibility.
 - Room ground boundaries are passed into transmission inputs. If ground-contact metadata or a ground temperature profile is missing, diagnostics state that explicitly; the pipeline does not silently treat ground as outdoor.
-- Room solar gains prefer available annual/weather solar context. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
+- Room solar gains prefer available annual/weather solar context. Annual climate solar data is routed through the centralized solar position and surface irradiance path. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
 - Room ventilation falls back to project/default ACH only with diagnostics that include the value. Room responses expose the effective ACH/airflow values and source. Invalid default ACH returns validation/diagnostics.
 - Design-point internal gains use full schedule factor `1.0` and report that assumption. Existing hourly analysis paths remain responsible for schedule expansion.
 - `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It tries existing true hourly simulation records first, maps them through `HourlySimulationToAnnualEnergyInputMapper`, and distinguishes `TrueHourlySimulation` from `MonthlyBalanceAdapter`. True hourly records carry heating, cooling, transmission, mechanical ventilation, natural ventilation, aggregate ventilation, separate infiltration, ground, solar and internal gains where the source computes them. Results expose `isTrueHourly8760` and `hourlyRecordCount`; representative monthly records are not labelled as true 8760 simulation.
@@ -90,7 +90,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
 - `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет separate project heating/cooling safety factors, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; cooling capacity is evaluated against catalog cooling capacity; otherwise diagnostics state the limitation.
 - Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
-- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. Current active benchmark fixtures cover annual constant hourly deterministic cases and signed component balance deterministic cases, including separate infiltration and mechanical/natural ventilation split. Benchmark statuses still do not imply external parity coverage without documented external source evidence.
+- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. Current active benchmark fixtures cover annual constant hourly deterministic cases, signed component balance deterministic cases, and deterministic solar/window surface cases. Benchmark statuses still do not imply external parity coverage without documented external source evidence.
 
 Старые calculators сохраняются как compatibility adapters или alternative method labels там, где они еще нужны для public contracts. Новые статусы выше `InternalDeterministicTested` не выставляются без benchmark comparison evidence. Для integrated paths notes должны содержать `Application pipeline integrated.`
 
@@ -99,7 +99,7 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - The load-calculations energy-balance endpoint is an annual aggregation adapter unless the upstream source provides true 8760 hourly records. If neither true hourly records nor monthly balances are available, the application path returns validation instead of fake annual values.
 - The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when source data can evaluate those assumptions. Aggregate `VentilationW` remains mechanical plus natural ventilation; explicit zero ventilation or infiltration can remain zero without warning.
 - The design-point room load path is not a full hourly balance and does not claim full ISO compliance.
-- Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed.
+- Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed. Solar position and surface irradiance are deterministic-tested, but this is not a full ISO 52010 clone.
 - Internal schedules are expanded in existing hourly analysis paths, not in design-point room loads.
 - Equipment heating selection depends on catalog heating capacity fields being populated.
 - No feature is marked `ExternalParityCovered` in this pass.
@@ -261,10 +261,18 @@ These fixtures are deterministic benchmark references for the benchmark comparis
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-summer.json` | Signed summer transmission, ventilation and ground balance with gains | BenchmarkCompared |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-with-infiltration-winter.json` | Signed winter ventilation and separate infiltration balance | BenchmarkCompared |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-with-ventilation-split-winter.json` | Signed winter mechanical/natural ventilation split with separate infiltration balance | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/solar-night-zero.json` | Window solar gain night-zero deterministic fixture | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/window-solar-gain-basic.json` | Basic deterministic window solar gain | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/window-solar-gain-with-shading.json` | Deterministic window solar gain with shading factors | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/surface-irradiance-night-zero.json` | Surface irradiance night-zero deterministic fixture | BenchmarkCompared |
 
 Annual Energy Balance remains `InternalDeterministicTested` for existing deterministic fixtures and is now `BenchmarkCompared` for the active constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture.
 
 Signed Component Balance is now `BenchmarkCompared` for deterministic signed component benchmark fixtures, including separate infiltration and mechanical/natural ventilation split.
+
+Window Solar Gains are now `BenchmarkCompared` for deterministic benchmark fixtures covering night-zero, basic incident irradiance, and shading factor multiplication.
+
+Surface Irradiance is `InternalDeterministicTested` for orientation/tilt and night clamping, with a deterministic night-zero benchmark fixture.
 
 No benchmark fixture in this section claims `ExternalParityCovered`.
 

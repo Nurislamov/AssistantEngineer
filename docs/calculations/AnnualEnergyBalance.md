@@ -251,6 +251,8 @@ AnnualEnergy.VentilationSubcomponentBreakdownAvailable
 AnnualEnergy.VentilationSubcomponentBreakdownPartial
 AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
 AnnualEnergy.NegativeHourlyValueClamped
+SolarWeather.HourlyWeatherSourceUsed
+SolarWeather.SyntheticWeatherUsed
 ```
 
 ## Current status
@@ -263,6 +265,7 @@ BenchmarkCompared for active constant hourly deterministic benchmark fixtures an
 Application pipeline integrated
 TrueHourlySimulation supported when hourly source is available
 MonthlyBalanceAdapter fallback documented
+Weather source diagnostics documented for hourly source and synthetic monthly-adapter source
 Separate hourly infiltration split supported when source data is available
 Separate hourly mechanical/natural ventilation split supported when source data is available
 Signed component balance supported for transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground

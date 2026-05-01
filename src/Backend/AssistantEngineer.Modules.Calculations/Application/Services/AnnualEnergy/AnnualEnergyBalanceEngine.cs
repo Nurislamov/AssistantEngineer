@@ -46,6 +46,11 @@ public sealed class AnnualEnergyBalanceEngine
                 "AnnualEnergy.SyntheticWeather",
                 "Synthetic weather profile was used for annual energy balance.",
                 input.DiagnosticsContext));
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "SolarWeather.SyntheticWeatherUsed",
+                "Synthetic weather profile was used; solar/weather source data is representative rather than true hourly weather.",
+                input.DiagnosticsContext));
         }
 
         var energyDataSource = ResolveEnergyDataSource(input);
@@ -60,6 +65,11 @@ public sealed class AnnualEnergyBalanceEngine
             energyDataSource,
             isTrueHourly8760,
             hourlyRecordCount,
+            input.DiagnosticsContext);
+
+        AddWeatherSourceDiagnostics(
+            diagnostics,
+            input,
             input.DiagnosticsContext);
 
         AddSignedBalanceDiagnostics(
@@ -351,6 +361,24 @@ public sealed class AnnualEnergyBalanceEngine
                     context));
                 break;
         }
+    }
+
+    private static void AddWeatherSourceDiagnostics(
+        ICollection<CalculationDiagnostic> diagnostics,
+        AnnualEnergyBalanceInput input,
+        string? context)
+    {
+        if (string.IsNullOrWhiteSpace(input.WeatherSource))
+            return;
+
+        if (string.Equals(input.WeatherSource, MonthlyBalanceAdapterSource, StringComparison.Ordinal))
+            return;
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
+            "SolarWeather.HourlyWeatherSourceUsed",
+            $"Annual energy balance weather source: {input.WeatherSource}.",
+            context));
     }
 
     private static void AddSignedBalanceDiagnostics(

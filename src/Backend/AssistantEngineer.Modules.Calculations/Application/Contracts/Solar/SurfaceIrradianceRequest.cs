@@ -6,4 +6,5 @@ public sealed record SurfaceIrradianceRequest(
     double DirectNormalIrradianceWm2,
     double DiffuseHorizontalIrradianceWm2,
     double GlobalHorizontalIrradianceWm2,
-    double GroundReflectance = 0.2);
+    double GroundReflectance = 0.2,
+    string? DiagnosticsContext = null);

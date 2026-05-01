@@ -766,6 +766,16 @@ public sealed class EnergyCalculationPipelineService
                 "SolarGains.IrradianceSource",
                 $"Solar irradiance source: {AnnualClimateDataSolarSource}.",
                 context));
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.AnnualClimateSolarDataUsed",
+                "Annual climate direct and diffuse solar data were used to resolve design-point window irradiance.",
+                context));
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.SurfaceIrradianceCalculated",
+                "Window irradiance was calculated through the centralized solar position and surface irradiance path.",
+                context));
             assumptions.Add("Window solar gains use available annual climate solar data for design-point irradiance.");
             return new RoomSolarContext(irradianceByWindowId, diagnostics, assumptions);
         }
@@ -780,6 +790,16 @@ public sealed class EnergyCalculationPipelineService
             CalculationDiagnosticSeverity.Warning,
             "SolarGains.ReferenceByOrientationFallback",
             "Window solar gain uses orientation reference irradiance because hourly weather/solar context was not available.",
+            context));
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "SolarWeather.ReferenceByOrientationFallbackUsed",
+            "Reference irradiance by window orientation was used because hourly weather/solar context was not available.",
+            context));
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "SolarWeather.MissingDirectDiffuseSolarData",
+            "Hourly direct and diffuse solar data were unavailable for this application path.",
             context));
         diagnostics.Add(new CalculationDiagnostic(
             CalculationDiagnosticSeverity.Info,

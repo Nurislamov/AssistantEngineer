@@ -95,7 +95,8 @@ public sealed class AnnualWeatherSolarProfileBuilder : IAnnualWeatherSolarProfil
                 DirectNormalIrradianceWm2: weather.DirectNormalIrradianceWm2,
                 DiffuseHorizontalIrradianceWm2: weather.DiffuseHorizontalIrradianceWm2,
                 GlobalHorizontalIrradianceWm2: globalHorizontalIrradianceWm2,
-                GroundReflectance: request.GroundReflectance));
+                GroundReflectance: request.GroundReflectance,
+                DiagnosticsContext: $"Hour {weather.HourOfYear} {surface.Code} surface"));
 
         return new HourlySurfaceIrradianceRecord(
             SurfaceCode: surface.Code,
@@ -111,7 +112,7 @@ public sealed class AnnualWeatherSolarProfileBuilder : IAnnualWeatherSolarProfil
             return weather.GlobalHorizontalIrradianceWm2.Value;
 
         if (solarPosition.SolarAltitudeDegrees <= 0)
-            return weather.DiffuseHorizontalIrradianceWm2;
+            return 0;
 
         var sunAltitudeRadians =
             solarPosition.SolarAltitudeDegrees * Math.PI / 180.0;

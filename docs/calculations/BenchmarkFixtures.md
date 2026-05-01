@@ -60,6 +60,10 @@ Expected zero is handled without division by zero. A nonzero actual value agains
 - `signed-component-balance-summer.json`: SignedComponentBalance, positive net transmission/ventilation/ground totals plus solar/internal gains.
 - `signed-component-balance-with-infiltration-winter.json`: SignedComponentBalance, negative net ventilation and separate infiltration totals.
 - `signed-component-balance-with-ventilation-split-winter.json`: SignedComponentBalance, negative net mechanical ventilation, natural ventilation, aggregate ventilation and separate infiltration totals.
+- `solar-night-zero.json`: SolarGains, zero window gain for night condition.
+- `window-solar-gain-basic.json`: WindowSolarGains, deterministic area x irradiance x SHGC gain.
+- `window-solar-gain-with-shading.json`: WindowSolarGains, deterministic frame and shading factor multiplication.
+- `surface-irradiance-night-zero.json`: SurfaceIrradiance, all surface irradiance components zero below the horizon.
 
 These fixtures are deterministic benchmark references. They are not `ExternalParityCovered`.
 

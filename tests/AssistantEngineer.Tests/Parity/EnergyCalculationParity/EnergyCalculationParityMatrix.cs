@@ -17,10 +17,10 @@ public static class EnergyCalculationParityMatrix
             Code: "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
             Name: "Window solar gains",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
-            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SolarGains",
-            Notes: "Covered by deterministic fixtures and engine tests. Application pipeline integrated; annual/weather solar source is preferred and orientation reference fallback is diagnosed. This is not external parity proof."),
+            Notes: "Covered by deterministic fixtures and engine tests. BenchmarkCompared for deterministic window solar gain and night-zero fixtures. Application pipeline integrated; annual climate solar data uses the centralized surface irradiance path and orientation reference fallback is diagnosed. This is not ExternalParityCovered."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
@@ -137,16 +137,16 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Нужно выделить отдельный ISO 52010 weather/solar layer."),
+            Notes: "Solar position has deterministic tests and is used by the weather-solar surface irradiance path. Broader external climate conversion remains Partial and is not ExternalParityCovered."),
 
         new(
             Code: "ISO52010.SURFACE_IRRADIANCE",
             Name: "Solar irradiance on tilted and oriented surfaces",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
-            AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Нужны reference tests для N/E/S/W/horizontal surfaces."),
+            Notes: "InternalDeterministicTested for isotropic sky surface irradiance, orientation/tilt behavior, horizontal midday irradiance, night clamping to zero, and weather-solar diagnostics. BenchmarkCompared for deterministic surface night-zero fixture. External parity remains not covered."),
 
         new(
             Code: "WEATHER.EPW",

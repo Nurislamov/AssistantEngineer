@@ -65,6 +65,7 @@ public class WindowSolarGainEngineTests
         Assert.False(result.HasErrors);
         Assert.Equal(0, result.SolarGainW);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "SolarGains.Night");
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "SolarWeather.NightSolarClampedToZero");
     }
 
     [Fact]

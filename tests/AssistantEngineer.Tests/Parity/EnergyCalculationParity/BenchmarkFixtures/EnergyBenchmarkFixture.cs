@@ -31,7 +31,9 @@ internal static class EnergyBenchmarkFixtureMetadata
         "SystemEnergy",
         "EquipmentSizing",
         "HourlyEnergyBalance",
-        "SignedComponentBalance"
+        "SignedComponentBalance",
+        "WindowSolarGains",
+        "SurfaceIrradiance"
     };
 }
 
@@ -63,6 +65,8 @@ internal sealed class EnergyBenchmarkFixtureInput
     public string EnergyDataSource { get; set; } = "TrueHourlySimulation";
     public bool IsTrueHourly8760 { get; set; }
     public EnergyBenchmarkHourlyValues HourlyValues { get; set; } = new();
+    public EnergyBenchmarkWindowSolarGainInput? WindowSolarGain { get; set; }
+    public EnergyBenchmarkSurfaceIrradianceInput? SurfaceIrradiance { get; set; }
 }
 
 internal sealed class EnergyBenchmarkHourlyValues
@@ -84,4 +88,35 @@ internal sealed class EnergyBenchmarkHourlyValues
     public double VentilationBalanceW { get; set; }
     public double InfiltrationBalanceW { get; set; }
     public double GroundBalanceW { get; set; }
+}
+
+internal sealed class EnergyBenchmarkWindowSolarGainInput
+{
+    public int WindowId { get; set; } = 1;
+    public int RoomId { get; set; } = 1;
+    public double AreaM2 { get; set; }
+    public double OrientationAzimuthDeg { get; set; } = 180;
+    public double TiltDeg { get; set; } = 90;
+    public double? Shgc { get; set; }
+    public double? FrameFactor { get; set; } = 1;
+    public double InternalShadingFactor { get; set; } = 1;
+    public double ExternalShadingFactor { get; set; } = 1;
+    public double FixedShadingFactor { get; set; } = 1;
+    public double? IncidentIrradianceWPerM2 { get; set; }
+    public double? DirectIrradianceWPerM2 { get; set; }
+    public double? DiffuseIrradianceWPerM2 { get; set; }
+    public double? GroundReflectedIrradianceWPerM2 { get; set; }
+    public bool IsNight { get; set; }
+}
+
+internal sealed class EnergyBenchmarkSurfaceIrradianceInput
+{
+    public double SolarAltitudeDeg { get; set; }
+    public double SolarAzimuthDeg { get; set; } = 180;
+    public double SurfaceAzimuthDeg { get; set; } = 180;
+    public double SurfaceTiltDeg { get; set; } = 90;
+    public double DirectNormalIrradianceWPerM2 { get; set; }
+    public double DiffuseHorizontalIrradianceWPerM2 { get; set; }
+    public double GlobalHorizontalIrradianceWPerM2 { get; set; }
+    public double GroundReflectance { get; set; } = 0.2;
 }

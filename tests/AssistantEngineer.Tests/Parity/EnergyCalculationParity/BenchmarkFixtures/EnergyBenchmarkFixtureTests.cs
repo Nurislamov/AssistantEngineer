@@ -1,5 +1,9 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Solar;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.Solar;
+using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 
 namespace AssistantEngineer.Tests.Parity.EnergyCalculationParity.BenchmarkFixtures;
 
@@ -19,6 +23,10 @@ public class EnergyBenchmarkFixtureTests
         Assert.Contains("signed-component-balance-summer", fixtureNames);
         Assert.Contains("signed-component-balance-with-infiltration-winter", fixtureNames);
         Assert.Contains("signed-component-balance-with-ventilation-split-winter", fixtureNames);
+        Assert.Contains("solar-night-zero", fixtureNames);
+        Assert.Contains("window-solar-gain-basic", fixtureNames);
+        Assert.Contains("window-solar-gain-with-shading", fixtureNames);
+        Assert.Contains("surface-irradiance-night-zero", fixtureNames);
         Assert.All(result.Fixtures, fixture =>
         {
             Assert.Equal("Active", fixture.Status);
@@ -147,32 +155,22 @@ public class EnergyBenchmarkFixtureTests
 
         foreach (var fixture in loadResult.Fixtures)
         {
-            if (fixture.Category is not ("AnnualEnergyBalance" or "SignedComponentBalance"))
-            {
-                failures.Add($"Fixture '{fixture.FixtureName}' has unsupported benchmark category '{fixture.Category}'.");
-                continue;
-            }
+            var actualResult = CreateActualBenchmarkResult(fixture, engine, failures);
 
-            var input = CreateAnnualEnergyInput(fixture);
-            var result = engine.Calculate(input);
-
-            if (!result.IsSuccess)
-            {
-                failures.Add(WithFixtureContext(fixture, result.Error));
+            if (actualResult is null)
                 continue;
-            }
 
             failures.AddRange(EnergyBenchmarkComparison
-                .CompareExpectedNumericFields(fixture, result.Value)
+                .CompareExpectedNumericFields(fixture, actualResult)
                 .Where(comparison => !comparison.Passed)
                 .Select(comparison => WithFixtureContext(fixture, comparison.Message)));
 
             foreach (var expectedBoolean in EnergyBenchmarkComparison.GetExpectedBooleanValues(fixture))
             {
                 if (!EnergyBenchmarkComparison.TryGetBooleanValue(
-                        result.Value,
+                        actualResult,
                         expectedBoolean.Key,
-                        out var actual,
+                        out var actualValue,
                         out var failure))
                 {
                     failures.Add(WithFixtureContext(
@@ -181,16 +179,145 @@ public class EnergyBenchmarkFixtureTests
                     continue;
                 }
 
-                if (actual != expectedBoolean.Value)
+                if (actualValue != expectedBoolean.Value)
                 {
                     failures.Add(WithFixtureContext(
                         fixture,
-                        $"Fixture '{fixture.FixtureName}' field '{expectedBoolean.Key}' failed: expected {expectedBoolean.Value}, actual {actual}."));
+                        $"Fixture '{fixture.FixtureName}' field '{expectedBoolean.Key}' failed: expected {expectedBoolean.Value}, actual {actualValue}."));
                 }
             }
         }
 
         Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    private static object? CreateActualBenchmarkResult(
+        EnergyBenchmarkFixture fixture,
+        AnnualEnergyBalanceEngine annualEnergyEngine,
+        ICollection<string> failures) =>
+        fixture.Category switch
+        {
+            "AnnualEnergyBalance" or "SignedComponentBalance" =>
+                CreateAnnualEnergyBenchmarkResult(
+                    fixture,
+                    annualEnergyEngine,
+                    failures),
+            "SolarGains" or "WindowSolarGains" =>
+                CreateWindowSolarGainBenchmarkResult(
+                    fixture,
+                    failures),
+            "SurfaceIrradiance" =>
+                CreateSurfaceIrradianceBenchmarkResult(
+                    fixture,
+                    failures),
+            _ => AddUnsupportedFixtureFailure(
+                fixture,
+                failures)
+        };
+
+    private static object? CreateAnnualEnergyBenchmarkResult(
+        EnergyBenchmarkFixture fixture,
+        AnnualEnergyBalanceEngine engine,
+        ICollection<string> failures)
+    {
+        var input = CreateAnnualEnergyInput(fixture);
+        var result = engine.Calculate(input);
+
+        if (result.IsSuccess)
+            return result.Value;
+
+        failures.Add(WithFixtureContext(fixture, result.Error));
+        return null;
+    }
+
+    private static object? CreateWindowSolarGainBenchmarkResult(
+        EnergyBenchmarkFixture fixture,
+        ICollection<string> failures)
+    {
+        var input = fixture.Input.WindowSolarGain;
+        if (input is null)
+        {
+            failures.Add(WithFixtureContext(
+                fixture,
+                $"Fixture '{fixture.FixtureName}' is missing input.windowSolarGain."));
+            return null;
+        }
+
+        var result = new WindowSolarGainEngine().Calculate(
+            new WindowSolarGainInput(
+                WindowId: input.WindowId,
+                RoomId: input.RoomId,
+                AreaM2: input.AreaM2,
+                OrientationAzimuthDeg: input.OrientationAzimuthDeg,
+                TiltDeg: input.TiltDeg,
+                Shgc: input.Shgc,
+                FrameFactor: input.FrameFactor,
+                InternalShadingFactor: input.InternalShadingFactor,
+                ExternalShadingFactor: input.ExternalShadingFactor,
+                FixedShadingFactor: input.FixedShadingFactor,
+                IncidentIrradianceWPerM2: input.IncidentIrradianceWPerM2,
+                DirectIrradianceWPerM2: input.DirectIrradianceWPerM2,
+                DiffuseIrradianceWPerM2: input.DiffuseIrradianceWPerM2,
+                GroundReflectedIrradianceWPerM2: input.GroundReflectedIrradianceWPerM2,
+                IsNight: input.IsNight,
+                DiagnosticsContext: fixture.FixtureName));
+
+        if (result.IsSuccess)
+            return result.Value;
+
+        failures.Add(WithFixtureContext(fixture, result.Error));
+        return null;
+    }
+
+    private static object? CreateSurfaceIrradianceBenchmarkResult(
+        EnergyBenchmarkFixture fixture,
+        ICollection<string> failures)
+    {
+        var input = fixture.Input.SurfaceIrradiance;
+        if (input is null)
+        {
+            failures.Add(WithFixtureContext(
+                fixture,
+                $"Fixture '{fixture.FixtureName}' is missing input.surfaceIrradiance."));
+            return null;
+        }
+
+        var result = new IsotropicSkySurfaceIrradianceCalculator().Calculate(
+            new SurfaceIrradianceRequest(
+                SolarPosition: new SolarPositionResult(
+                    DayOfYear: 1,
+                    SolarDeclinationDegrees: 0,
+                    EquationOfTimeMinutes: 0,
+                    HourAngleDegrees: 0,
+                    SolarAltitudeDegrees: input.SolarAltitudeDeg,
+                    SolarAzimuthDegrees: input.SolarAzimuthDeg,
+                    ZenithAngleDegrees: 90 - input.SolarAltitudeDeg,
+                    RelativeAirMass: input.SolarAltitudeDeg > 0 ? 1 : 0),
+                Surface: new SurfaceOrientation(
+                    TiltDegrees: input.SurfaceTiltDeg,
+                    AzimuthDegrees: input.SurfaceAzimuthDeg),
+                DirectNormalIrradianceWm2: input.DirectNormalIrradianceWPerM2,
+                DiffuseHorizontalIrradianceWm2: input.DiffuseHorizontalIrradianceWPerM2,
+                GlobalHorizontalIrradianceWm2: input.GlobalHorizontalIrradianceWPerM2,
+                GroundReflectance: input.GroundReflectance,
+                DiagnosticsContext: fixture.FixtureName));
+
+        return new SurfaceIrradianceBenchmarkResult(
+            DirectOnSurfaceWPerM2: result.BeamIrradianceWm2,
+            DiffuseOnSurfaceWPerM2: result.DiffuseSkyIrradianceWm2,
+            GroundReflectedWPerM2: result.GroundReflectedIrradianceWm2,
+            TotalIncidentIrradianceWPerM2: result.TotalIrradianceWm2,
+            SolarAltitudeDeg: input.SolarAltitudeDeg,
+            SolarAzimuthDeg: input.SolarAzimuthDeg,
+            IncidenceAngleDeg: result.IncidenceAngleDegrees);
+    }
+
+    private static object? AddUnsupportedFixtureFailure(
+        EnergyBenchmarkFixture fixture,
+        ICollection<string> failures)
+    {
+        failures.Add($"Fixture '{fixture.FixtureName}' has unsupported benchmark category '{fixture.Category}'.");
+        return null;
     }
 
     private static AnnualEnergyBalanceInput CreateAnnualEnergyInput(EnergyBenchmarkFixture fixture)
@@ -320,4 +447,13 @@ public class EnergyBenchmarkFixtureTests
           ]
         }
         """;
+
+    private sealed record SurfaceIrradianceBenchmarkResult(
+        double DirectOnSurfaceWPerM2,
+        double DiffuseOnSurfaceWPerM2,
+        double GroundReflectedWPerM2,
+        double TotalIncidentIrradianceWPerM2,
+        double SolarAltitudeDeg,
+        double SolarAzimuthDeg,
+        double IncidenceAngleDeg);
 }

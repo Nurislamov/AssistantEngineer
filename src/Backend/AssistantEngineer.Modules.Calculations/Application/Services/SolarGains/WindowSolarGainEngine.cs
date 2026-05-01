@@ -47,6 +47,15 @@ public sealed class WindowSolarGainEngine
 
         if (input.IsNight || irradiance.IncidentIrradianceWPerM2 <= 0)
         {
+            if (input.IsNight)
+            {
+                diagnostics.Add(new SolarGainDiagnostic(
+                    SolarGainDiagnosticSeverity.Info,
+                    "SolarWeather.NightSolarClampedToZero",
+                    "Window solar gain was clamped to zero because the hour is marked as night.",
+                    input.DiagnosticsContext));
+            }
+
             diagnostics.Add(new SolarGainDiagnostic(
                 SolarGainDiagnosticSeverity.Info,
                 input.IsNight ? "SolarGains.Night" : "SolarGains.ZeroIrradiance",

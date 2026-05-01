@@ -7,7 +7,7 @@ Verification is based on internal deterministic fixtures, focused engine tests, 
 | Function | Status | Evidence |
 | --- | --- | --- |
 | Transmission Heat Transfer | InternalDeterministicTested | Engine tests, transmission fixtures, room load application pipeline integration |
-| Window Solar Gains | InternalDeterministicTested | Engine tests, solar fixtures, room cooling application pipeline integration, annual-climate source/fallback diagnostics |
+| Window Solar Gains | BenchmarkCompared | Engine tests, solar fixtures, room cooling application pipeline integration, annual-climate source/fallback diagnostics, deterministic window/surface benchmark fixtures; not ExternalParityCovered |
 | Ventilation and Infiltration Loads | InternalDeterministicTested | Engine tests, ventilation fixtures, room load application pipeline integration, default ACH diagnostics |
 | Internal Gains | InternalDeterministicTested | Engine tests, room cooling application pipeline integration, design-point schedule assumption diagnostics |
 | Room Heating Load | InternalDeterministicTested | Room load engine tests, fixtures, application pipeline tests, endpoint facade integration, requested/actual method diagnostics |
@@ -27,14 +27,14 @@ No function is marked ExternalParityCovered in this pass.
 
 The real backend calculation path now uses `EnergyCalculationPipelineService` behind `ILoadCalculationsFacade`.
 
-- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
+- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. Solar design-point input prefers annual climate solar data through the centralized surface irradiance path and reports reference-by-orientation fallback when used. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
 - Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, mechanical ventilation, natural ventilation, aggregate ventilation, separate infiltration, ground, solar and internal-gain components through to the annual engine.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values.
 - Room equipment selection uses the actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
 - Cooling, heating and energy-balance reports consume facade results built from the same application pipeline. Excel generation stays in Infrastructure integrations.
-- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. The active benchmark fixtures currently cover annual constant hourly deterministic cases and signed component balance deterministic cases. This is still only benchmark evidence when a comparison test actually runs and passes.
+- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. The active benchmark fixtures currently cover annual constant hourly deterministic cases, signed component balance deterministic cases, and deterministic window/surface solar cases. This is still only benchmark evidence when a comparison test actually runs and passes.
 
 ## Regression Rules
 
@@ -54,6 +54,30 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 ## Known Limits
 
 The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when the source data can evaluate them. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
+
+## Solar/weather layer
+
+The ISO52010-inspired solar/weather layer is internally deterministic tested for:
+
+- solar position at representative equinox, winter and night conditions;
+- isotropic sky surface irradiance;
+- night solar clamping to zero;
+- orientation/tilt influence on surface irradiance;
+- window solar gain from total/component surface irradiance;
+- room-level solar gain aggregation from hourly surface records;
+- application pipeline annual-climate source and reference-by-orientation fallback diagnostics.
+
+Current source diagnostics include:
+
+- `SolarWeather.HourlyWeatherSourceUsed`;
+- `SolarWeather.AnnualClimateSolarDataUsed`;
+- `SolarWeather.ReferenceByOrientationFallbackUsed`;
+- `SolarWeather.SyntheticWeatherUsed`;
+- `SolarWeather.MissingDirectDiffuseSolarData`;
+- `SolarWeather.NightSolarClampedToZero`;
+- `SolarWeather.SurfaceIrradianceCalculated`.
+
+Window solar gains are `BenchmarkCompared` for deterministic window fixtures. Surface irradiance night clamping is also `BenchmarkCompared` through deterministic benchmark fixtures. This does not claim `ExternalParityCovered`.
 START SECTION
 
 ## Signed hourly component balance
