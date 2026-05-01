@@ -197,30 +197,23 @@ The signed balance says:
 
 ## Infiltration status
 
-The current true hourly path does not expose infiltration as a separate signed component.
+The true hourly path now exposes infiltration as a separate component when the source can evaluate infiltration assumptions.
 
-If infiltration is modelled by the current hourly path, it may be included in combined ventilation contribution.
+For true hourly records:
 
-Therefore:
-
-```text
-InfiltrationW = 0
-InfiltrationBalanceW = 0
-```
-
-can mean:
+- `VentilationW` is the mechanical plus natural ventilation magnitude.
+- `InfiltrationW` is the separate infiltration magnitude.
+- `VentilationBalanceW` is the signed mechanical plus natural ventilation balance.
+- `InfiltrationBalanceW` is the signed infiltration balance.
 
 ```text
-separate infiltration split is not available
+ComponentBalanceW = ComponentHeatTransferWPerK x (OutdoorTemperatureC - OperativeTemperatureC)
+ComponentW = ComponentHeatTransferWPerK x abs(OutdoorTemperatureC - OperativeTemperatureC)
 ```
 
-not necessarily:
+`InfiltrationW = 0` and `InfiltrationBalanceW = 0` can be valid without warning when infiltration assumptions are explicitly zero.
 
-```text
-there is physically no infiltration
-```
-
-The mapper reports this with diagnostics:
+If a source cannot expose infiltration separately and may have included it in ventilation, the mapper reports this with diagnostics:
 
 ```text
 AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
@@ -246,11 +239,13 @@ AnnualEnergy.NegativeHourlyValueClamped
 Annual energy balance is currently:
 
 ```text
-InternalDeterministicTested
+InternalDeterministicTested for existing deterministic fixtures
+BenchmarkCompared for active constant hourly deterministic benchmark fixtures
 Application pipeline integrated
 TrueHourlySimulation supported when hourly source is available
 MonthlyBalanceAdapter fallback documented
-Signed component balance supported for available hourly components
+Separate hourly infiltration split supported when source data is available
+Signed component balance supported for transmission, ventilation, infiltration and ground
 ```
 
 It is not marked as:
@@ -259,5 +254,5 @@ It is not marked as:
 ExternalParityCovered
 ```
 
-because no external benchmark comparison is currently used as proof.
+because the active benchmark fixtures are deterministic benchmark references, not documented external reference evidence.
 END FILE

@@ -117,6 +117,7 @@ public class AnnualEnergyBalanceEngineTests
         Assert.True(result.IsSuccess);
         Assert.Equal(876, result.Value.ComponentBreakdown.TransmissionKWh, precision: 6);
         Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
+        Assert.Equal(175.2, result.Value.ComponentBreakdown.InfiltrationKWh, precision: 6);
         Assert.Equal(262.8, result.Value.ComponentBreakdown.GroundKWh, precision: 6);
         Assert.Equal(175.2, result.Value.ComponentBreakdown.SolarGainsKWh, precision: 6);
         Assert.Equal(87.6, result.Value.ComponentBreakdown.InternalGainsKWh, precision: 6);
@@ -139,6 +140,9 @@ public class AnnualEnergyBalanceEngineTests
 
         Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
         Assert.Equal(-438, result.Value.ComponentBreakdown.NetVentilationKWh, precision: 6);
+
+        Assert.Equal(175.2, result.Value.ComponentBreakdown.InfiltrationKWh, precision: 6);
+        Assert.Equal(-175.2, result.Value.ComponentBreakdown.NetInfiltrationKWh, precision: 6);
 
         Assert.Equal(262.8, result.Value.ComponentBreakdown.GroundKWh, precision: 6);
         Assert.Equal(87.6, result.Value.ComponentBreakdown.NetGroundKWh, precision: 6);
@@ -299,7 +303,7 @@ public class AnnualEnergyBalanceEngineTests
                     CoolingLoadW: 50,
                     TransmissionW: 100,
                     VentilationW: 50,
-                    InfiltrationW: 0,
+                    InfiltrationW: 20,
                     SolarGainsW: 20,
                     InternalGainsW: 10,
                     GroundW: 30));
@@ -324,14 +328,14 @@ public class AnnualEnergyBalanceEngineTests
                     CoolingLoadW: 50,
                     TransmissionW: 100,
                     VentilationW: 50,
-                    InfiltrationW: 0,
+                    InfiltrationW: 20,
                     SolarGainsW: 20,
                     InternalGainsW: 10,
                     GroundW: 30,
                     HourDurationH: 1,
                     TransmissionBalanceW: -100,
                     VentilationBalanceW: -50,
-                    InfiltrationBalanceW: 0,
+                    InfiltrationBalanceW: -20,
                     GroundBalanceW: 10));
             }
         }

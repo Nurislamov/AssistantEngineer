@@ -129,7 +129,8 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                     CalculateBuildingArea(building),
                     annualEnergyNeeds.Year,
                     hourlyRecords,
-                    $"Building {building.Id} ISO52016InspiredHourlyAnalysis");
+                    $"Building {building.Id} ISO52016InspiredHourlyAnalysis",
+                    infiltrationSplitAvailable: true);
 
                 result.HourlyBalanceRecords = hourlyMapping.Input.Hours.ToList();
                 result.Diagnostics.AddRange(hourlyMapping.Diagnostics);

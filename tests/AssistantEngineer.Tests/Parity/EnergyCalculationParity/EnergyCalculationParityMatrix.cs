@@ -89,10 +89,19 @@ public static class EnergyCalculationParityMatrix
             Code: "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
             Name: "Annual energy balance",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
-            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
-            Notes: "Covered by deterministic fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. True hourly source passes available transmission, combined ventilation, ground, solar and internal gains; infiltration remains partial when not separately modelled. This is not external parity proof."),
+            Notes: "InternalDeterministicTested by fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. BenchmarkCompared for constant hourly deterministic benchmark fixtures. True hourly source passes available transmission, mechanical/natural ventilation, separate infiltration, ground, solar and internal gains. This is not ExternalParityCovered."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
+            Name: "Signed component balance",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
+            Notes: "InternalDeterministicTested for signed hourly transmission, ventilation, infiltration and ground components. BenchmarkCompared for deterministic signed component benchmark fixtures, including separate infiltration. This is not ExternalParityCovered."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",

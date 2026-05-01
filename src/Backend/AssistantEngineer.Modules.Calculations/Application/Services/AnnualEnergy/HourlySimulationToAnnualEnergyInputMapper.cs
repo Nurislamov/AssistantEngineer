@@ -13,7 +13,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         double buildingAreaM2,
         int year,
         IReadOnlyList<AnnualEnergyBalanceHourInput> hourlyRecords,
-        string? diagnosticsContext = null)
+        string? diagnosticsContext = null,
+        bool infiltrationSplitAvailable = false)
     {
         ArgumentNullException.ThrowIfNull(hourlyRecords);
 
@@ -21,7 +22,10 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
             .OrderBy(record => record.HourIndex)
             .ToArray();
 
-        var diagnostics = BuildComponentDiagnostics(records, diagnosticsContext);
+        var diagnostics = BuildComponentDiagnostics(
+            records,
+            diagnosticsContext,
+            infiltrationSplitAvailable);
         var isTrueHourly8760 = records.Length == 8760;
 
         return new HourlySimulationAnnualEnergyInputMappingResult(
@@ -44,7 +48,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
 
     private static IReadOnlyList<CalculationDiagnostic> BuildComponentDiagnostics(
         IReadOnlyList<AnnualEnergyBalanceHourInput> records,
-        string? diagnosticsContext)
+        string? diagnosticsContext,
+        bool infiltrationSplitAvailable)
     {
         if (records.Count == 0)
             return [];
@@ -74,13 +79,16 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
             valueSelector: record => record.VentilationW,
             diagnosticsContext);
 
-        AddMissingComponentDiagnostic(
-            diagnostics,
-            records,
-            componentName: "infiltration",
-            fieldName: nameof(AnnualEnergyBalanceHourInput.InfiltrationW),
-            valueSelector: record => record.InfiltrationW,
-            diagnosticsContext);
+        if (!infiltrationSplitAvailable)
+        {
+            AddMissingComponentDiagnostic(
+                diagnostics,
+                records,
+                componentName: "infiltration",
+                fieldName: nameof(AnnualEnergyBalanceHourInput.InfiltrationW),
+                valueSelector: record => record.InfiltrationW,
+                diagnosticsContext);
+        }
 
         AddMissingComponentDiagnostic(
             diagnostics,
@@ -93,7 +101,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         AddSignedComponentBalanceDiagnostics(
             diagnostics,
             records,
-            diagnosticsContext);
+            diagnosticsContext,
+            infiltrationSplitAvailable);
 
         return diagnostics;
     }
@@ -119,7 +128,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
     private static void AddSignedComponentBalanceDiagnostics(
         ICollection<CalculationDiagnostic> diagnostics,
         IReadOnlyList<AnnualEnergyBalanceHourInput> records,
-        string? diagnosticsContext)
+        string? diagnosticsContext,
+        bool infiltrationSplitAvailable)
     {
         var availableSignedComponents = new List<string>();
 
@@ -152,7 +162,9 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         var hasInfiltrationSignedBalance = records.Any(record =>
             Math.Abs(record.InfiltrationBalanceW) > 0.000001);
 
-        if (!hasInfiltrationMagnitude && !hasInfiltrationSignedBalance)
+        if (!infiltrationSplitAvailable &&
+            !hasInfiltrationMagnitude &&
+            !hasInfiltrationSignedBalance)
         {
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,

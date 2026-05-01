@@ -27,6 +27,47 @@ internal sealed record Iso52016AdjacentBoundaryContribution(
     double HeatTransferCoefficientWPerK,
     double BoundaryTemperatureWeightedHeatTransferW);
 
+internal sealed record Iso52016HourlyVentilationComponents(
+    double MechanicalHeatTransferWPerK,
+    double NaturalHeatTransferWPerK,
+    double InfiltrationHeatTransferWPerK,
+    double TotalVentilationHeatTransferWPerK,
+    double MechanicalW = 0,
+    double NaturalW = 0,
+    double InfiltrationW = 0,
+    double TotalVentilationW = 0,
+    double MechanicalBalanceW = 0,
+    double NaturalBalanceW = 0,
+    double InfiltrationBalanceW = 0,
+    double TotalVentilationBalanceW = 0)
+{
+    public Iso52016HourlyVentilationComponents WithLoads(
+        double outdoorTemperatureC,
+        double operativeTemperatureC)
+    {
+        var deltaT = outdoorTemperatureC - operativeTemperatureC;
+        var magnitudeDeltaT = Math.Abs(deltaT);
+        var mechanicalW = MechanicalHeatTransferWPerK * magnitudeDeltaT;
+        var naturalW = NaturalHeatTransferWPerK * magnitudeDeltaT;
+        var infiltrationW = InfiltrationHeatTransferWPerK * magnitudeDeltaT;
+        var mechanicalBalanceW = MechanicalHeatTransferWPerK * deltaT;
+        var naturalBalanceW = NaturalHeatTransferWPerK * deltaT;
+        var infiltrationBalanceW = InfiltrationHeatTransferWPerK * deltaT;
+
+        return this with
+        {
+            MechanicalW = mechanicalW,
+            NaturalW = naturalW,
+            InfiltrationW = infiltrationW,
+            TotalVentilationW = mechanicalW + naturalW,
+            MechanicalBalanceW = mechanicalBalanceW,
+            NaturalBalanceW = naturalBalanceW,
+            InfiltrationBalanceW = infiltrationBalanceW,
+            TotalVentilationBalanceW = mechanicalBalanceW + naturalBalanceW
+        };
+    }
+}
+
 internal sealed record Iso52016RoomHourResult(
     int RoomId,
     Iso52016RoomHourlyEnergyNeed Hour);

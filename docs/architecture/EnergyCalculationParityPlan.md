@@ -58,7 +58,8 @@ Parity означает, что AssistantEngineer на одинаковых вх
 | ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION | Thermal zone aggregation | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION | Floor aggregation | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION | Building aggregation | InternalDeterministicTested |
-| ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE | Annual energy balance | InternalDeterministicTested |
+| ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE | Annual energy balance | BenchmarkCompared |
+| ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE | Signed component balance | BenchmarkCompared |
 | ENERGY_CALCULATION_PARITY.DHW_DEMAND | DHW demand | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY | System energy | InternalDeterministicTested |
 | ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION | Equipment sizing integration | InternalDeterministicTested |
@@ -89,14 +90,14 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
 - `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет separate project heating/cooling safety factors, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; cooling capacity is evaluated against catalog cooling capacity; otherwise diagnostics state the limitation.
 - Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
-- Benchmark verification now asks `ILoadCalculationsFacade` for the AssistantEngineer building cooling result, so comparison reports use the application pipeline result. Benchmark statuses still do not imply external parity coverage without passing comparison evidence.
+- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. Current active benchmark fixtures cover annual constant hourly deterministic cases and signed component balance deterministic cases. Benchmark statuses still do not imply external parity coverage without documented external source evidence.
 
 Старые calculators сохраняются как compatibility adapters или alternative method labels там, где они еще нужны для public contracts. Новые статусы выше `InternalDeterministicTested` не выставляются без benchmark comparison evidence. Для integrated paths notes должны содержать `Application pipeline integrated.`
 
 ### Current limitations
 
 - The load-calculations energy-balance endpoint is an annual aggregation adapter unless the upstream source provides true 8760 hourly records. If neither true hourly records nor monthly balances are available, the application path returns validation instead of fake annual values.
-- The current true hourly component breakdown does not split infiltration from ventilation. Infiltration remains partial and is diagnosed instead of being faked.
+- The true hourly component breakdown separates infiltration from mechanical/natural ventilation when source data can evaluate infiltration assumptions. Explicit zero infiltration can remain zero without warning.
 - The design-point room load path is not a full hourly balance and does not claim full ISO compliance.
 - Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed.
 - Internal schedules are expanded in existing hourly analysis paths, not in design-point room loads.
@@ -169,6 +170,18 @@ API/reporting integration.
 7. tolerance;
 8. assumptions.
 
+Benchmark comparison fixtures additionally require:
+
+1. `referenceType`: `InternalDeterministic`, `BenchmarkReference`, or `ExternalReference`;
+2. `status`: `Active`, `Pending`, or `Disabled`;
+3. fixed expected result field paths;
+4. absolute and/or relative percent tolerances;
+5. assumptions and notes preserved for failure messages.
+
+`BenchmarkCompared` means a passing comparison test exists against fixed expected benchmark/reference values. It does not automatically mean `ExternalParityCovered`.
+
+`ExternalParityCovered` requires a documented external source, fixed input, expected output, tolerance, passing comparison test, and source/version note.
+
 ## Tolerance policy
 
 Базовые значения:
@@ -179,6 +192,8 @@ API/reporting integration.
 - annual demand: ±0.1 kWh.
 
 Tolerance можно расширять только с documented assumption.
+
+Benchmark fixture tolerance passes when absolute difference is within absolute tolerance or relative difference percent is within relative tolerance. Expected zero is handled through absolute tolerance without division by zero.
 
 ## Deterministic fixtures added
 
@@ -233,6 +248,24 @@ Tolerance можно расширять только с documented assumption.
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-accepted.json` | Equipment sizing | Candidate accepted and margin |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-candidate-rejected.json` | Equipment sizing | Candidate rejected with reason |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures/equipment-no-equipment-found.json` | Equipment sizing | Empty catalog diagnostics |
+
+## Benchmark fixtures added
+
+These fixtures are deterministic benchmark references for the benchmark comparison infrastructure. They are active and must pass comparison tests, but they are not external parity proof.
+
+| Fixture | Scope | Status |
+|---|---|---|
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/annual-constant-heating-8760.json` | Annual constant heating demand aggregation | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/annual-constant-cooling-8760.json` | Annual constant cooling demand aggregation | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-winter.json` | Signed winter transmission, ventilation and ground balance | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-summer.json` | Signed summer transmission, ventilation and ground balance with gains | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-with-infiltration-winter.json` | Signed winter ventilation and separate infiltration balance | BenchmarkCompared |
+
+Annual Energy Balance remains `InternalDeterministicTested` for existing deterministic fixtures and is now `BenchmarkCompared` for the active constant hourly deterministic benchmark fixtures.
+
+Signed Component Balance is now `BenchmarkCompared` for deterministic signed component benchmark fixtures, including separate infiltration.
+
+No benchmark fixture in this section claims `ExternalParityCovered`.
 
 ## Fixtures still needed
 
@@ -289,26 +322,26 @@ Magnitude fields remain available and non-negative:
 | Hourly transmission magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
 | Hourly ventilation magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
 | Hourly ground magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
-| Hourly infiltration magnitude | Partial | Current hourly source does not expose separate infiltration split. |
-| Signed transmission balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
-| Signed ventilation balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
-| Signed ground balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss. |
-| Signed infiltration balance | Partial | Not faked; remains 0 until hourly path exposes infiltration separately. |
+| Hourly infiltration magnitude | InternalDeterministicTested | True hourly path separates infiltration from mechanical/natural ventilation when source data can evaluate it. |
+| Signed transmission balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
+| Signed ventilation balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
+| Signed ground balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
+| Signed infiltration balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss; covered by deterministic hourly split tests. |
 | Annual net transmission total | InternalDeterministicTested | Exposed as NetTransmissionKWh. |
 | Annual net ventilation total | InternalDeterministicTested | Exposed as NetVentilationKWh. |
 | Annual net ground total | InternalDeterministicTested | Exposed as NetGroundKWh. |
-| Annual net infiltration total | Partial | Exposed as NetInfiltrationKWh, but currently depends on missing hourly infiltration split. |
+| Annual net infiltration total | InternalDeterministicTested | Exposed as NetInfiltrationKWh and populated when hourly infiltration balance is present. |
 
 ### Verification notes
 
-Signed component balance is verified internally through deterministic tests.
+Signed component balance is verified internally through deterministic tests and benchmark compared through deterministic signed component benchmark fixtures.
 
 This update does not change external parity status.
 
 Current status remains:
 
-- InternalDeterministicTested for implemented signed hourly components.
-- Partial for infiltration split.
+- InternalDeterministicTested for hourly infiltration magnitude, signed infiltration balance, and annual net infiltration totals.
+- BenchmarkCompared for implemented signed hourly components covered by active deterministic benchmark fixtures, including infiltration.
 - Not ExternalParityCovered.
 
 External parity still requires benchmark comparison fixtures with documented source results and tolerances.

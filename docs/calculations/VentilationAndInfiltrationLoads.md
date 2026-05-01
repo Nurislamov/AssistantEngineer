@@ -124,6 +124,33 @@ When room-specific ventilation parameters are present, diagnostics record `Venti
 
 The load engine accepts `naturalVentilationAirflowM3PerHour` when an existing service has already calculated or supplied natural ventilation airflow. It does not introduce a new natural ventilation physics model in this stage.
 
+## True Hourly Component Split
+
+The ISO52016-inspired true hourly path keeps outdoor air components separate after heat-transfer calculation:
+
+- `VentilationW` means mechanical plus natural ventilation magnitude.
+- `InfiltrationW` means infiltration magnitude.
+- `VentilationBalanceW` preserves the sign of mechanical plus natural ventilation heat flow.
+- `InfiltrationBalanceW` preserves the sign of infiltration heat flow.
+
+The signed balance convention is:
+
+```text
+positive = heat gain to the room/building
+negative = heat loss from the room/building
+```
+
+The hourly balance uses:
+
+```text
+ComponentW = ComponentHeatTransferWPerK x abs(OutdoorTemperatureC - OperativeTemperatureC)
+ComponentBalanceW = ComponentHeatTransferWPerK x (OutdoorTemperatureC - OperativeTemperatureC)
+```
+
+Mechanical and natural ventilation remain ventilation contribution. Infiltration is not derived by splitting total ventilation proportionally; it is calculated from the existing infiltration heat-transfer path and remains separate.
+
+If infiltration assumptions are explicitly zero, `InfiltrationW` can be zero without warning. If an upstream hourly source cannot expose infiltration separately, annual mapping diagnostics should report that the infiltration split is unavailable instead of faking a split.
+
 ## Diagnostics
 
 The engine returns calculation diagnostics instead of silently accepting invalid input.
@@ -160,3 +187,4 @@ These fixtures verify the formula, unit conversion, heat recovery, ACH infiltrat
 - Wind and stack terms remain in existing services where already present; the load engine consumes normalized airflow or ACH.
 - Building-level aggregation relies on existing aggregation of room heating/cooling results.
 - Default ACH fallback exists only at the application assembler layer and is always diagnosed.
+- This does not claim full ISO compliance or external benchmark parity.

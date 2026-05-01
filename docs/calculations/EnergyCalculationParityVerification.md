@@ -15,7 +15,8 @@ Verification is based on internal deterministic fixtures, focused engine tests, 
 | Thermal Zone Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, application pipeline tests |
 | Floor Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, floor application pipeline tests |
 | Building Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, building application pipeline tests |
-| Annual Energy Balance | InternalDeterministicTested | Annual engine tests, fixtures, application pipeline adapter tests, hourly component mapper tests, report facade integration, monthly adapter/hourly source diagnostics |
+| Annual Energy Balance | BenchmarkCompared | InternalDeterministicTested by annual engine tests, fixtures, application pipeline adapter tests, hourly component mapper tests, report facade integration, monthly adapter/hourly source diagnostics; BenchmarkCompared for constant hourly deterministic benchmark fixtures and deterministic infiltration benchmark fixture; not ExternalParityCovered |
+| Signed Component Balance | BenchmarkCompared | InternalDeterministicTested for signed hourly transmission, ventilation, infiltration and ground components; BenchmarkCompared for deterministic signed component benchmark fixtures including infiltration; not ExternalParityCovered |
 | DHW Demand | InternalDeterministicTested | DHW deterministic service tests, fixtures, endpoint facade path |
 | System Energy | InternalDeterministicTested | System energy tests, fixtures, heating/cooling system services call SystemEnergyEngine |
 | Equipment Sizing Integration | InternalDeterministicTested | Equipment sizing tests, fixtures, room equipment application pipeline tests, endpoint/report integration, heating capacity diagnostics |
@@ -28,12 +29,12 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 
 - Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
-- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, combined ventilation, ground, solar and internal-gain components through to the annual engine; infiltration remains partial when not separately modelled.
+- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, mechanical/natural ventilation, separate infiltration, ground, solar and internal-gain components through to the annual engine.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values.
 - Room equipment selection uses the actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
 - Cooling, heating and energy-balance reports consume facade results built from the same application pipeline. Excel generation stays in Infrastructure integrations.
-- Benchmark verification obtains AssistantEngineer cooling results through `ILoadCalculationsFacade`, so the benchmark comparison path uses the same application pipeline result as the public load-calculation route. This is still only benchmark evidence when a comparison test actually runs and passes.
+- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. The active benchmark fixtures currently cover annual constant hourly deterministic cases and signed component balance deterministic cases. This is still only benchmark evidence when a comparison test actually runs and passes.
 
 ## Regression Rules
 
@@ -47,10 +48,12 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 - Room cooling separates solar, internal, transmission and ventilation components.
 - Room heating separates transmission, ventilation, infiltration and ground components.
 - Equipment sizing explains rejected candidates.
+- Active benchmark fixtures must load and pass tolerance comparison.
+- Pending and disabled benchmark fixtures must be skipped by default and reported by the loader.
 
 ## Known Limits
 
-The current status proves internal deterministic consistency and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown still reports infiltration as partial when it is not separately modelled. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
+The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates infiltration when the source data can evaluate it. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
 START SECTION
 
 ## Signed hourly component balance
@@ -96,34 +99,33 @@ At annual aggregation level, the signed hourly values are exposed as:
 
 These values preserve the sign of heat flow over the calculation period.
 
-### Current limitation
+### Infiltration split
 
-The current true hourly path does not expose infiltration as a separate split.
+The true hourly path separates infiltration from mechanical and natural ventilation.
 
-If infiltration is modelled by the active hourly calculation path, it may be included in the combined ventilation contribution.
+Current field meanings:
 
-Because of that:
+- `VentilationW`: mechanical plus natural ventilation magnitude.
+- `InfiltrationW`: separate infiltration magnitude.
+- `VentilationBalanceW`: signed mechanical plus natural ventilation balance.
+- `InfiltrationBalanceW`: signed infiltration balance.
 
-- InfiltrationW may remain 0.
-- InfiltrationBalanceW may remain 0.
-- NetInfiltrationKWh may remain 0.
+`InfiltrationW` may still be 0 when infiltration assumptions are explicitly zero.
 
-This does not necessarily mean that the building has no physical infiltration. It means that the current hourly source does not expose infiltration separately.
-
-The verification diagnostics should report this with:
+When a source cannot expose infiltration separately, diagnostics should report this with:
 
 - AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
 
 ### Verification status
 
-Signed component balance is internally deterministic tested for the currently available true hourly components.
+Signed component balance is internally deterministic tested for the currently available true hourly components and benchmark compared against deterministic signed component fixtures.
 
 Status:
 
-- Transmission signed balance: InternalDeterministicTested
-- Ventilation signed balance: InternalDeterministicTested
-- Ground signed balance: InternalDeterministicTested
-- Infiltration signed balance: Partial
+- Transmission signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
+- Ventilation signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
+- Infiltration signed balance: BenchmarkCompared for deterministic infiltration benchmark fixture
+- Ground signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
 
 This is not ExternalParityCovered.
 

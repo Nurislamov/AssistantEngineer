@@ -192,9 +192,11 @@ public class BuildingEnergyCalculatorTests
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
             diagnostic.Message.Contains("ground", StringComparison.OrdinalIgnoreCase));
-        Assert.Contains(result.Diagnostics, diagnostic =>
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
             diagnostic.Message.Contains("infiltration", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
         Assert.Equal(0, climateDataRepository.AvailableMonthsCallCount);
         Assert.Equal(
             result.AnnualHeatingDemandKWh + result.AnnualCoolingDemandKWh,
@@ -339,4 +341,3 @@ public class BuildingEnergyCalculatorTests
                     : null);
     }
 }
-

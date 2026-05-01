@@ -28,6 +28,8 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
         Assert.Equal(8759, result.Input.Hours[^1].HourIndex);
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial");
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
     }
 
     [Fact]
@@ -92,6 +94,29 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
     }
 
     [Fact]
+    public void Map_DoesNotWarnForExplicitZeroInfiltrationWhenSplitIsAvailable()
+    {
+        var mapper = new HourlySimulationToAnnualEnergyInputMapper();
+        var records = CreateHoursWithAvailableComponentsExceptInfiltration();
+
+        var result = mapper.Map(
+            buildingId: 1,
+            buildingName: "Building",
+            buildingAreaM2: 120,
+            year: 2026,
+            hourlyRecords: records,
+            diagnosticsContext: "test",
+            infiltrationSplitAvailable: true);
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("infiltration", StringComparison.OrdinalIgnoreCase));
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
+    }
+
+    [Fact]
     public void Map_PreservesSignedComponentBalanceFields()
     {
         var mapper = new HourlySimulationToAnnualEnergyInputMapper();
@@ -115,6 +140,28 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
         Assert.Contains(result.Diagnostics, diagnostic =>
             diagnostic.Severity == CalculationDiagnosticSeverity.Info &&
             diagnostic.Code == "AnnualEnergy.SignedComponentBalanceAvailable");
+    }
+
+    [Fact]
+    public void Map_PreservesInfiltrationMagnitudeAndSignedBalanceWhenProvided()
+    {
+        var mapper = new HourlySimulationToAnnualEnergyInputMapper();
+        var records = CreateSignedComponentHoursWithInfiltration();
+
+        var result = mapper.Map(
+            buildingId: 1,
+            buildingName: "Building",
+            buildingAreaM2: 120,
+            year: 2026,
+            hourlyRecords: records,
+            diagnosticsContext: "test");
+
+        var first = result.Input.Hours[0];
+
+        Assert.Equal(20.0, first.InfiltrationW, precision: 6);
+        Assert.Equal(-20.0, first.InfiltrationBalanceW, precision: 6);
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
     }
 
     [Fact]
@@ -252,6 +299,37 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
                     TransmissionBalanceW: -100,
                     VentilationBalanceW: -50,
                     InfiltrationBalanceW: 0,
+                    GroundBalanceW: 10));
+            }
+        }
+
+        return records;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateSignedComponentHoursWithInfiltration()
+    {
+        var records = new List<AnnualEnergyBalanceHourInput>(8760);
+        var hour = 0;
+
+        foreach (var (month, hours) in MonthHours())
+        {
+            for (var i = 0; i < hours; i++)
+            {
+                records.Add(new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour++,
+                    Month: month,
+                    HeatingLoadW: 100,
+                    CoolingLoadW: 50,
+                    TransmissionW: 100,
+                    VentilationW: 50,
+                    InfiltrationW: 20,
+                    SolarGainsW: 20,
+                    InternalGainsW: 10,
+                    GroundW: 30,
+                    HourDurationH: 1,
+                    TransmissionBalanceW: -100,
+                    VentilationBalanceW: -50,
+                    InfiltrationBalanceW: -20,
                     GroundBalanceW: 10));
             }
         }

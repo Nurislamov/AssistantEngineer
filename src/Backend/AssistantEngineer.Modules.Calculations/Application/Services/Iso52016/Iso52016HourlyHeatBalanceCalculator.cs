@@ -131,7 +131,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             var solarGains = GetHourlySolarGain(room, weather, dayOfYear, hourOfDay, preferences);
 
-            var ventilationHeatTransfer = GetHourlyVentilationHeatTransferForRoom(
+            var ventilationComponents = GetHourlyVentilationComponentsForRoom(
                 room,
                 heatingSetpoint,
                 weather.DryBulbTemperature,
@@ -162,12 +162,15 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             var totalHeatTransfer =
                 outdoorUa +
                 groundUa +
-                ventilationHeatTransfer +
+                ventilationComponents.TotalVentilationHeatTransferWPerK +
+                ventilationComponents.InfiltrationHeatTransferWPerK +
                 adjacent.HeatTransferCoefficientWPerK;
 
             var baseBalance =
                 thermalCapacityPerHour * previousRoomTemperature +
-                (outdoorUa + ventilationHeatTransfer) * weather.DryBulbTemperature +
+                outdoorUa * weather.DryBulbTemperature +
+                ventilationComponents.TotalVentilationHeatTransferWPerK * weather.DryBulbTemperature +
+                ventilationComponents.InfiltrationHeatTransferWPerK * weather.DryBulbTemperature +
                 groundUa * groundBoundaryReferenceTemperature +
                 adjacent.BoundaryTemperatureWeightedHeatTransferW +
                 internalGains +
@@ -209,8 +212,9 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             var transmissionW =
                 outdoorUa * Math.Abs(operativeTemperature - weather.DryBulbTemperature);
 
-            var ventilationW =
-                ventilationHeatTransfer * Math.Abs(operativeTemperature - weather.DryBulbTemperature);
+            var ventilationComponentLoads = ventilationComponents.WithLoads(
+                weather.DryBulbTemperature,
+                operativeTemperature);
 
             var groundW =
                 groundUa * Math.Abs(operativeTemperature - operativeGroundBoundaryReferenceTemperature);
@@ -220,9 +224,6 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             // Negative signed component = heat loss from the room.
             var transmissionBalanceW =
                 outdoorUa * (weather.DryBulbTemperature - operativeTemperature);
-
-            var ventilationBalanceW =
-                ventilationHeatTransfer * (weather.DryBulbTemperature - operativeTemperature);
 
             var groundBalanceW =
                 groundUa * (operativeGroundBoundaryReferenceTemperature - operativeTemperature);
@@ -242,12 +243,12 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                     InternalGainsW: Iso52016HourlyCalculatorMath.Round(internalGains),
                     SolarGainsW: Iso52016HourlyCalculatorMath.Round(solarGains),
                     TransmissionW: Iso52016HourlyCalculatorMath.Round(transmissionW),
-                    VentilationW: Iso52016HourlyCalculatorMath.Round(ventilationW),
-                    InfiltrationW: 0,
+                    VentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.TotalVentilationW),
+                    InfiltrationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.InfiltrationW),
                     GroundW: Iso52016HourlyCalculatorMath.Round(groundW),
                     TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(transmissionBalanceW),
-                    VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationBalanceW),
-                    InfiltrationBalanceW: 0,
+                    VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.TotalVentilationBalanceW),
+                    InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.InfiltrationBalanceW),
                     GroundBalanceW: Iso52016HourlyCalculatorMath.Round(groundBalanceW))));
         }
 
@@ -438,7 +439,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         return selector(profile)[hour];
     }
 
-    private double GetHourlyVentilationHeatTransferForRoom(
+    private Iso52016HourlyVentilationComponents GetHourlyVentilationComponentsForRoom(
         Room room,
         double indoorTemperatureC,
         double outdoorTemperatureC,
@@ -456,7 +457,13 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             hourOfDay) ?? 0.0;
 
         if (_ventilationCalculator is null)
-            return natural;
+        {
+            return new Iso52016HourlyVentilationComponents(
+                MechanicalHeatTransferWPerK: 0,
+                NaturalHeatTransferWPerK: natural,
+                InfiltrationHeatTransferWPerK: 0,
+                TotalVentilationHeatTransferWPerK: natural);
+        }
 
         var infiltration = _ventilationCalculator.CalculateInfiltration(
             room,
@@ -480,7 +487,11 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                     indoorTemperatureC,
                     outdoorTemperatureC)) * scheduleFactor;
 
-        return infiltration + mechanical + natural;
+        return new Iso52016HourlyVentilationComponents(
+            MechanicalHeatTransferWPerK: mechanical,
+            NaturalHeatTransferWPerK: natural,
+            InfiltrationHeatTransferWPerK: infiltration,
+            TotalVentilationHeatTransferWPerK: mechanical + natural);
     }
 
     private Iso52016AdjacentBoundaryContribution CalculateAdjacentBoundaryContributionForRoom(
