@@ -84,14 +84,20 @@ public class DomainBoundaryTests
     }
 
     [Fact]
-    public void RoomRejectsMalformedVentilationParametersAssignment()
+    public void RoomAcceptsVentilationParametersCreatedByValueObject()
     {
         var room = DomainInvariantTests.CreateRoom();
-        var malformedVentilation = CreateMalformedVentilationParameters(airChangesPerHour: -1, heatRecoveryEfficiency: 0.5);
+        var ventilation = VentilationParameters.Create(
+            airChangesPerHour: 1,
+            heatRecoveryEfficiency: 0.5,
+            infiltrationAirChangesPerHour: 0.1,
+            windExposureFactor: 2,
+            stackCoefficient: 3,
+            windCoefficient: 4).Value;
 
-        var result = room.SetVentilationParameters(malformedVentilation);
+        var result = room.SetVentilationParameters(ventilation);
 
-        Assert.True(result.IsFailure);
+        Assert.True(result.IsSuccess);
     }
 
     [Fact]
@@ -116,21 +122,6 @@ public class DomainBoundaryTests
         SetBackingField(schedule, nameof(HourlySchedule.Name), "Malformed schedule");
         SetBackingField(schedule, nameof(HourlySchedule.Factors), factors);
         return schedule;
-    }
-
-    private static VentilationParameters CreateMalformedVentilationParameters(
-        double airChangesPerHour,
-        double heatRecoveryEfficiency)
-    {
-        var ventilation = (VentilationParameters)Activator.CreateInstance(
-            typeof(VentilationParameters),
-            BindingFlags.Instance | BindingFlags.NonPublic,
-            binder: null,
-            args: [],
-            culture: null)!;
-        SetBackingField(ventilation, nameof(VentilationParameters.AirChangesPerHour), airChangesPerHour);
-        SetBackingField(ventilation, nameof(VentilationParameters.HeatRecoveryEfficiency), heatRecoveryEfficiency);
-        return ventilation;
     }
 
     private static void SetBackingField<T>(object target, string propertyName, T value)

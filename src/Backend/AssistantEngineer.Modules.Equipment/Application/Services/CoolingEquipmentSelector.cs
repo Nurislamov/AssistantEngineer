@@ -1,12 +1,13 @@
 using AssistantEngineer.Modules.Equipment.Application.Abstractions;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
+using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Equipment.Application.Services;
 
 public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
 {
-    public EquipmentSelectionResult? SelectForRoom(
+    public Result<EquipmentSelectionResult> SelectForRoom(
         int roomId,
         string systemType,
         string unitType,
@@ -24,9 +25,9 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
             .FirstOrDefault();
 
         if (suitable is null)
-            return null;
+            return Result<EquipmentSelectionResult>.NotFound("No suitable equipment found.");
 
-        return new EquipmentSelectionResult
+        return Result<EquipmentSelectionResult>.Success(new EquipmentSelectionResult
         {
             RoomId = roomId,
             TotalHeatLoadKw = totalHeatLoadKw,
@@ -41,6 +42,6 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
                 suitable.NominalCoolingCapacity.Kilowatts - designCapacityKw,
                 2,
                 MidpointRounding.AwayFromZero)
-        };
+        });
     }
 }

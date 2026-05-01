@@ -99,8 +99,7 @@ public sealed class Iso52016ReferenceDataProvider : IIso52016ReferenceDataProvid
 
         var completeClimateData = climateData!;
         var orderedHourlyData = completeClimateData.HourlyData
-            .Where(h => h.Hour.HasValue)
-            .OrderBy(h => h.Hour!.Value)
+            .OrderBy(h => h.Hour)
             .ToArray();
         var result = new Dictionary<CardinalDirection, IReadOnlyList<double>>();
         foreach (CardinalDirection orientation in Enum.GetValues<CardinalDirection>())
@@ -131,7 +130,7 @@ public sealed class Iso52016ReferenceDataProvider : IIso52016ReferenceDataProvid
             _ => 0
         };
 
-    private static double GetSolarRadiationForOrientation(CardinalDirection orientation, HourlyClimateData hourlyData) =>
+    private static double GetSolarRadiationForOrientation(CardinalDirection orientation, DesignDayHourlyData hourlyData) =>
         orientation switch
         {
             CardinalDirection.South => hourlyData.DirectSolarRadiation * 0.9 + hourlyData.DiffuseSolarRadiation,
@@ -163,8 +162,6 @@ public sealed class Iso52016ReferenceDataProvider : IIso52016ReferenceDataProvid
         climateData is not null &&
         climateData.HourlyData
             .Select(h => h.Hour)
-            .Where(h => h.HasValue)
-            .Select(h => h!.Value)
             .Distinct()
             .OrderBy(h => h)
             .SequenceEqual(Enumerable.Range(0, 24));

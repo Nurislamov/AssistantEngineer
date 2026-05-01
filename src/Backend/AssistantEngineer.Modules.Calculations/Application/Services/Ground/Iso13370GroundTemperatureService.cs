@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using Microsoft.Extensions.Options;
@@ -14,14 +14,13 @@ public sealed class Iso13370GroundTemperatureService : IGroundTemperatureService
         _options = options.Value;
     }
 
-    public double[] BuildHourlyProfile(IReadOnlyList<HourlyClimateData> hourlyClimateData)
+    public double[] BuildHourlyProfile(IReadOnlyList<AnnualHourlyData> hourlyClimateData)
     {
         if (hourlyClimateData.Count == 0)
             return Array.Empty<double>();
 
         var ordered = hourlyClimateData
-            .Where(h => h.HourOfYear.HasValue)
-            .OrderBy(h => h.HourOfYear!.Value)
+            .OrderBy(h => h.HourOfYear)
             .ToArray();
 
         if (ordered.Length == 0)
@@ -56,14 +55,13 @@ public sealed class Iso13370GroundTemperatureService : IGroundTemperatureService
         return result;
     }
 
-    public double GetMonthlyAverageTemperature(IReadOnlyList<HourlyClimateData> hourlyClimateData, int month)
+    public double GetMonthlyAverageTemperature(IReadOnlyList<AnnualHourlyData> hourlyClimateData, int month)
     {
         if (month < 1 || month > 12)
             throw new ArgumentOutOfRangeException(nameof(month));
 
         var ordered = hourlyClimateData
-            .Where(h => h.HourOfYear.HasValue)
-            .OrderBy(h => h.HourOfYear!.Value)
+            .OrderBy(h => h.HourOfYear)
             .ToArray();
 
         if (ordered.Length == 0)
@@ -90,7 +88,7 @@ public sealed class Iso13370GroundTemperatureService : IGroundTemperatureService
     }
 
     private static double[] BuildMonthlyOutdoorMeans(
-        IReadOnlyList<HourlyClimateData> ordered,
+        IReadOnlyList<AnnualHourlyData> ordered,
         int year)
     {
         var buckets = Enumerable.Range(1, 12)
@@ -98,11 +96,8 @@ public sealed class Iso13370GroundTemperatureService : IGroundTemperatureService
 
         foreach (var hour in ordered)
         {
-            if (!hour.HourOfYear.HasValue)
-                continue;
-
             var timestamp = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-                .AddHours(hour.HourOfYear.Value);
+                .AddHours(hour.HourOfYear);
 
             buckets[timestamp.Month].Add(hour.DryBulbTemperature);
         }

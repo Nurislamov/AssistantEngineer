@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ground;
@@ -53,8 +53,7 @@ public sealed class GroundTemperatureProfilePreviewService
         }
 
         var ordered = annualData.HourlyData
-            .Where(h => h.HourOfYear.HasValue)
-            .OrderBy(h => h.HourOfYear!.Value)
+            .OrderBy(h => h.HourOfYear)
             .ToArray();
 
         if (ordered.Length == 0)
@@ -94,7 +93,7 @@ public sealed class GroundTemperatureProfilePreviewService
     }
 
     private List<GroundTemperatureMonthlyPoint> BuildMonthlyAverages(
-        IReadOnlyList<AssistantEngineer.Modules.Buildings.Domain.Climate.HourlyClimateData> hourlyClimateData)
+        IReadOnlyList<AssistantEngineer.Modules.Buildings.Domain.Climate.AnnualHourlyData> hourlyClimateData)
     {
         var result = new List<GroundTemperatureMonthlyPoint>(12);
 

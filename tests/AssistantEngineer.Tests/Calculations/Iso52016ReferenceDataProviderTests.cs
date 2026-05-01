@@ -11,7 +11,7 @@ namespace AssistantEngineer.Tests;
 public class Iso52016ReferenceDataProviderTests
 {
     [Fact]
-    public async Task GetSolarRadiationAsyncUsesHourlyClimateData()
+    public async Task GetSolarRadiationAsyncUsesDesignDayHourlyData()
     {
         var climateZone = ClimateZone.Create(
             "Summer climate",
@@ -134,5 +134,4 @@ public class Iso52016ReferenceDataProviderTests
                     : []);
     }
 }
-
 

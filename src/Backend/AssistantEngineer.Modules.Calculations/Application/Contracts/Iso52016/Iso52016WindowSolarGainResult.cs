@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 
@@ -17,4 +18,4 @@ public sealed record Iso52016WindowSolarGainResult(
     double TotalSolarGainW,
     double SurfaceTotalIrradianceWm2,
     double EffectiveSolarFactor,
-    IReadOnlyList<SolarGainDiagnostic> Diagnostics);
+    IReadOnlyList<CalculationDiagnostic> Diagnostics);

@@ -22,7 +22,7 @@ public class SolarRadiationService : ISolarRadiationService
     }
 
     public double CalculateVerticalSurfaceRadiation(
-        HourlyClimateData hourlyData,
+        AnnualHourlyData hourlyData,
         CardinalDirection orientation,
         double latitude,
         int dayOfYear,
@@ -57,13 +57,13 @@ public class SolarRadiationService : ISolarRadiationService
                 DiffuseHorizontalIrradianceWm2: hourlyData.DiffuseSolarRadiation,
                 GlobalHorizontalIrradianceWm2: globalHorizontalIrradiance,
                 GroundReflectance: 0.2,
-                DiagnosticsContext: $"Annual climate hour {hourlyData.HourOfYear ?? hourlyData.Hour ?? hour} {surface.Code} surface"));
+                DiagnosticsContext: $"Annual climate hour {hourlyData.HourOfYear} {surface.Code} surface"));
 
         return Math.Max(0, result.TotalIrradianceWm2);
     }
 
     private static double CalculateGlobalHorizontalIrradiance(
-        HourlyClimateData hourlyData,
+        AnnualHourlyData hourlyData,
         SolarPositionResult solarPosition)
     {
         if (solarPosition.SolarAltitudeDegrees <= 0)

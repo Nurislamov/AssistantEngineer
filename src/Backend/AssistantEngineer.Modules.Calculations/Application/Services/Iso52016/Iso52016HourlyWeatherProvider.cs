@@ -50,8 +50,7 @@ internal sealed class Iso52016HourlyWeatherProvider
         }
 
         var hourlyData = annualData!.HourlyData
-            .Where(hour => hour.HourOfYear.HasValue)
-            .OrderBy(hour => hour.HourOfYear!.Value)
+            .OrderBy(hour => hour.HourOfYear)
             .ToArray();
 
         var groundProfile = _groundTemperatureService.BuildHourlyProfile(hourlyData);

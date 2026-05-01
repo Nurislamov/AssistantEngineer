@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
@@ -86,8 +86,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
             return null;
 
         var orderedHourlyData = annualData!.HourlyData
-            .Where(hour => hour.HourOfYear.HasValue)
-            .OrderBy(hour => hour.HourOfYear!.Value)
+            .OrderBy(hour => hour.HourOfYear)
             .ToArray();
 
         var zoneGroups = GetThermalZoneGroups(building);
@@ -96,7 +95,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         foreach (var zone in zoneGroups)
         {
             var groupedMonths = orderedHourlyData
-                .GroupBy(hour => GetMonth(hour.HourOfYear!.Value))
+                .GroupBy(hour => GetMonth(hour.HourOfYear))
                 .OrderBy(group => group.Key);
 
             foreach (var monthGroup in groupedMonths)
@@ -151,7 +150,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
     private MonthlyZoneEnergy CalculateZoneMonth(
         ThermalZoneGroup zone,
         int month,
-        IReadOnlyList<HourlyClimateData> monthHours,
+        IReadOnlyList<AnnualHourlyData> monthHours,
         CalculationPreferences? preferences,
         double groundBoundaryTemperatureC)
     {
@@ -179,7 +178,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
                 effectiveHeatingSetpoint,
                 hour.DryBulbTemperature,
                 hour.WindSpeedMPerS ?? 0,
-                hour.HourOfYear!.Value % 24));
+                hour.HourOfYear % 24));
 
         var outdoorUa = rooms.Sum(room => GetOutdoorTransmissionHeatTransferCoefficient(room, envelopeDefaults));
         var groundBoundaryConditions = rooms
@@ -188,7 +187,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         var groundUa = groundBoundaryConditions.Sum(x => x.HeatTransferCoefficientWPerK);var hours = monthHours.Count;
 
         var internalGainsKWh = monthHours.Sum(hour =>
-            rooms.Sum(room => GetHourlyInternalGain(room, hour.HourOfYear!.Value % 24))) / 1000.0;
+            rooms.Sum(room => GetHourlyInternalGain(room, hour.HourOfYear % 24))) / 1000.0;
 
         var solarGainsKWh = monthHours.Sum(hour =>
             rooms.Sum(room => GetHourlySolarGain(room, hour, preferences))) / 1000.0;
@@ -252,10 +251,10 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
 
     private double GetHourlySolarGain(
         Room room,
-        HourlyClimateData weather,
+        AnnualHourlyData weather,
         CalculationPreferences? preferences)
     {
-        var hourOfYear = weather.HourOfYear!.Value;
+        var hourOfYear = weather.HourOfYear;
         var hourOfDay = hourOfYear % 24;
         var dayOfYear = hourOfYear / 24 + 1;
 
@@ -412,8 +411,8 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
 
     private static double AverageScheduleFactor(
         Func<int, double> factorResolver,
-        IReadOnlyList<HourlyClimateData> monthHours) =>
-        monthHours.Average(hour => factorResolver(hour.HourOfYear!.Value % 24));
+        IReadOnlyList<AnnualHourlyData> monthHours) =>
+        monthHours.Average(hour => factorResolver(hour.HourOfYear % 24));
 
     private double GetSolarUtilizationFactor(CalculationPreferences? preferences) =>
         preferences is null
@@ -486,8 +485,6 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         annualData is not null &&
         annualData.HourlyData
             .Select(hour => hour.HourOfYear)
-            .Where(hour => hour.HasValue)
-            .Select(hour => hour!.Value)
             .Distinct()
             .OrderBy(hour => hour)
             .SequenceEqual(Enumerable.Range(0, 8760));

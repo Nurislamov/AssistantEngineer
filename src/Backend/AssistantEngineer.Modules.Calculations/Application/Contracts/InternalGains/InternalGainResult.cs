@@ -1,4 +1,6 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 
 public sealed record InternalGainResult(
     int RoomId,
@@ -28,9 +30,9 @@ public sealed record InternalGainResult(
     double ProcessScheduleFactor,
     double CustomScheduleFactor,
 
-    IReadOnlyList<InternalGainDiagnostic> Diagnostics)
+    IReadOnlyList<CalculationDiagnostic> Diagnostics)
 {
     public bool HasErrors =>
         Diagnostics.Any(diagnostic =>
-            diagnostic.Severity == InternalGainDiagnosticSeverity.Error);
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 }

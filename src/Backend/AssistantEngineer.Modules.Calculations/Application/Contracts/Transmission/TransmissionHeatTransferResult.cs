@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Transmission;
 
 public sealed record TransmissionHeatTransferResult(
@@ -6,8 +8,9 @@ public sealed record TransmissionHeatTransferResult(
     double TotalHeatGainW,
     double TotalHeatTransferCoefficientWPerK,
     IReadOnlyList<TransmissionElementResult> Elements,
-    IReadOnlyList<TransmissionDiagnostic> Diagnostics)
+    IReadOnlyList<CalculationDiagnostic> Diagnostics)
 {
-    public bool HasErrors => Diagnostics.Any(diagnostic =>
-        diagnostic.Severity == TransmissionDiagnosticSeverity.Error);
+    public bool HasErrors =>
+        Diagnostics.Any(diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 }

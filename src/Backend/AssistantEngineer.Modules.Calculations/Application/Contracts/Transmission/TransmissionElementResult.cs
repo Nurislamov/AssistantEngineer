@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Transmission;
 
 public sealed record TransmissionElementResult(
@@ -10,4 +12,4 @@ public sealed record TransmissionElementResult(
     double DeltaTC,
     double HeatFlowW,
     bool IsIncludedInLoad,
-    IReadOnlyList<TransmissionDiagnostic> Diagnostics);
+    IReadOnlyList<CalculationDiagnostic> Diagnostics);

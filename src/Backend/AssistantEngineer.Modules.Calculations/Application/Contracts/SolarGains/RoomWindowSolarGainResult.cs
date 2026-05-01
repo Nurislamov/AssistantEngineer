@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 
 public sealed record RoomWindowSolarGainResult(
@@ -6,8 +8,9 @@ public sealed record RoomWindowSolarGainResult(
     IReadOnlyList<WindowSolarGainResult> WindowBreakdown,
     double? PeakSolarGainW,
     int? PeakHour,
-    IReadOnlyList<SolarGainDiagnostic> Diagnostics)
+    IReadOnlyList<CalculationDiagnostic> Diagnostics)
 {
-    public bool HasErrors => Diagnostics.Any(diagnostic =>
-        diagnostic.Severity == SolarGainDiagnosticSeverity.Error);
+    public bool HasErrors =>
+        Diagnostics.Any(diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 }

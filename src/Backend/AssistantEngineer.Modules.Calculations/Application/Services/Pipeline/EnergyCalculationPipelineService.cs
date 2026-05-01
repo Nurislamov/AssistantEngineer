@@ -731,12 +731,11 @@ public sealed class EnergyCalculationPipelineService
 
         if (_solarRadiationService is not null &&
             climateContext.AnnualClimateData is not null &&
-            climateContext.AnnualClimateData.HourlyData.Any(hour => hour.HourOfYear.HasValue))
+            climateContext.AnnualClimateData.HourlyData.Count > 0)
         {
             foreach (var window in room.Windows)
             {
                 var irradiance = climateContext.AnnualClimateData.HourlyData
-                    .Where(hour => hour.HourOfYear.HasValue)
                     .Select(hour =>
                     {
                         var timestamp = new DateTime(
@@ -747,7 +746,7 @@ public sealed class EnergyCalculationPipelineService
                                 0,
                                 0,
                                 DateTimeKind.Utc)
-                            .AddHours(hour.HourOfYear!.Value);
+                            .AddHours(hour.HourOfYear);
                         return _solarRadiationService.CalculateVerticalSurfaceRadiation(
                             hour,
                             window.Orientation,
@@ -1390,8 +1389,7 @@ public sealed class EnergyCalculationPipelineService
 
     private static bool HasCompleteAnnualClimateData(AnnualClimateData? annualData) =>
         annualData?.HourlyData
-            .Where(hour => hour.HourOfYear.HasValue)
-            .Select(hour => hour.HourOfYear!.Value)
+            .Select(hour => hour.HourOfYear)
             .Distinct()
             .Count() == 8760;
 

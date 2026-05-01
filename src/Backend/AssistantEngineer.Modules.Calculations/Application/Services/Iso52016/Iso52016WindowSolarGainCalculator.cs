@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
@@ -57,7 +58,7 @@ public sealed class Iso52016WindowSolarGainCalculator : IIso52016WindowSolarGain
         if (engineResult.Value.HasErrors)
         {
             var firstError = engineResult.Value.Diagnostics.First(diagnostic =>
-                diagnostic.Severity == SolarGainDiagnosticSeverity.Error);
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error);
             return Result<Iso52016WindowSolarGainResult>.Validation(firstError.Message);
         }
 

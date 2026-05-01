@@ -883,10 +883,10 @@ public class EnergyCalculationPipelineServiceTests
             _temperatureC = temperatureC;
         }
 
-        public double[] BuildHourlyProfile(IReadOnlyList<HourlyClimateData> hourlyClimateData) =>
+        public double[] BuildHourlyProfile(IReadOnlyList<AnnualHourlyData> hourlyClimateData) =>
             Enumerable.Repeat(_temperatureC, 8760).ToArray();
 
-        public double GetMonthlyAverageTemperature(IReadOnlyList<HourlyClimateData> hourlyClimateData, int month) =>
+        public double GetMonthlyAverageTemperature(IReadOnlyList<AnnualHourlyData> hourlyClimateData, int month) =>
             _temperatureC;
     }
 
@@ -900,7 +900,7 @@ public class EnergyCalculationPipelineServiceTests
         }
 
         public double CalculateVerticalSurfaceRadiation(
-            HourlyClimateData hourlyData,
+            AnnualHourlyData hourlyData,
             CardinalDirection orientation,
             double latitude,
             int dayOfYear,

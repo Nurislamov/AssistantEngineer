@@ -23,7 +23,7 @@ public sealed class AnnualClimateDataNormalizer : IAnnualWeatherDataNormalizer
             return Result<AnnualWeatherDataSet>.Failure(validation);
 
         var orderedHours = request.AnnualClimateData.HourlyData
-            .OrderBy(hour => hour.HourOfYear!.Value)
+            .OrderBy(hour => hour.HourOfYear)
             .Select(hour => MapHour(
                 request.AnnualClimateData.Year,
                 request.TimeZoneOffset,
@@ -53,18 +53,8 @@ public sealed class AnnualClimateDataNormalizer : IAnnualWeatherDataNormalizer
                 "Annual climate data must contain hourly records.");
         }
 
-        var hoursWithoutHourOfYear = annualClimateData.HourlyData
-            .Where(hour => !hour.HourOfYear.HasValue)
-            .ToArray();
-
-        if (hoursWithoutHourOfYear.Length > 0)
-        {
-            return Result.Validation(
-                "Every annual climate hourly record must have HourOfYear.");
-        }
-
         var duplicateHours = annualClimateData.HourlyData
-            .GroupBy(hour => hour.HourOfYear!.Value)
+            .GroupBy(hour => hour.HourOfYear)
             .Where(group => group.Count() > 1)
             .Select(group => group.Key)
             .Order()
@@ -76,12 +66,7 @@ public sealed class AnnualClimateDataNormalizer : IAnnualWeatherDataNormalizer
                 $"Annual climate data contains duplicate hours: {string.Join(", ", duplicateHours)}.");
         }
 
-        var expectedHourCount = DateTime.IsLeapYear(annualClimateData.Year)
-            ? AnnualWeatherDataSet.LeapYearHourCount
-            : AnnualWeatherDataSet.NonLeapYearHourCount;
-
-        // Текущая доменная модель AnnualClimateData поддерживает 0..8759.
-        // Поэтому для високосного года пока допускаем только non-leap normalized dataset.
+        // AnnualClimateData currently supports 0..8759, so leap years are normalized as non-leap datasets.
         if (annualClimateData.HourlyData.Count != AnnualWeatherDataSet.NonLeapYearHourCount)
         {
             return Result.Validation(
@@ -93,7 +78,7 @@ public sealed class AnnualClimateDataNormalizer : IAnnualWeatherDataNormalizer
             .ToHashSet();
 
         var actualHours = annualClimateData.HourlyData
-            .Select(hour => hour.HourOfYear!.Value)
+            .Select(hour => hour.HourOfYear)
             .ToHashSet();
 
         expectedHours.ExceptWith(actualHours);
@@ -110,9 +95,9 @@ public sealed class AnnualClimateDataNormalizer : IAnnualWeatherDataNormalizer
     private static HourlyWeatherRecord MapHour(
         int year,
         TimeSpan timeZoneOffset,
-        HourlyClimateData source)
+        AnnualHourlyData source)
     {
-        var hourOfYear = source.HourOfYear!.Value;
+        var hourOfYear = source.HourOfYear;
 
         var timestamp = new DateTimeOffset(
                 year,

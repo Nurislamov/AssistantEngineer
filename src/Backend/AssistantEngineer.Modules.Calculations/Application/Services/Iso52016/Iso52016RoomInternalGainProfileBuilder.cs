@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
@@ -76,7 +77,7 @@ public sealed class Iso52016RoomInternalGainProfileBuilder : IIso52016RoomIntern
         if (result.Value.HasErrors)
         {
             var firstError = result.Value.Diagnostics.First(diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Error);
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 
             throw new InvalidOperationException(
                 $"Internal gain calculation has diagnostics error at hour {hourOfYear}: {firstError.Code} - {firstError.Message}");

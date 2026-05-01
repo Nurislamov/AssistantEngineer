@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -55,7 +56,7 @@ public sealed class En12831HeatingLoadCalculator :
                 indoorTemperature,
                 outdoorTemperature));
         var transmissionLoss = transmissionResult.Value.TotalHeatLossW;
-        LogTransmissionDiagnostics(room.Id, transmissionResult.Value.Diagnostics);
+        LogCalculationDiagnostics(room.Id, transmissionResult.Value.Diagnostics);
 
         var ventilationResult = _ventilationLoads.Calculate(
             CreateVentilationInput(room, indoorTemperature, outdoorTemperature, deltaT));
@@ -176,12 +177,12 @@ public sealed class En12831HeatingLoadCalculator :
         room.OutdoorTemperatureOverride?.Celsius ??
         _options.DefaultOutdoorHeatingDesignTemperatureC;
 
-    private void LogTransmissionDiagnostics(
+    private void LogCalculationDiagnostics(
         int roomId,
-        IReadOnlyList<Contracts.Transmission.TransmissionDiagnostic> diagnostics)
+        IReadOnlyList<CalculationDiagnostic> diagnostics)
     {
         foreach (var diagnostic in diagnostics.Where(diagnostic =>
-                     diagnostic.Severity == Contracts.Transmission.TransmissionDiagnosticSeverity.Error))
+                     diagnostic.Severity == CalculationDiagnosticSeverity.Error))
         {
             _logger.LogWarning(
                 "Transmission heat transfer diagnostic for room {RoomId}: {Code} {Message}",

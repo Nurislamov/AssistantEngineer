@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
 
 namespace AssistantEngineer.Tests.Calculations.InternalGains;
@@ -148,7 +149,7 @@ public class InternalGainEngineTests
         Assert.Contains(
             result.Value.Diagnostics,
             diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Error &&
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error &&
                 diagnostic.Code == "InternalGains.InvalidOccupancyScheduleFactor");
     }
 
@@ -167,7 +168,7 @@ public class InternalGainEngineTests
         Assert.Contains(
             result.Value.Diagnostics,
             diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Error &&
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error &&
                 diagnostic.Code == "InternalGains.InvalidLightingPowerDensity");
     }
 
@@ -185,7 +186,7 @@ public class InternalGainEngineTests
         Assert.Contains(
             result.Value.Diagnostics,
             diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Error &&
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error &&
                 diagnostic.Code == "InternalGains.MissingAreaForLightingPowerDensity");
     }
 
@@ -212,7 +213,7 @@ public class InternalGainEngineTests
         Assert.Contains(
             result.Value.Diagnostics,
             diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Warning &&
+                diagnostic.Severity == CalculationDiagnosticSeverity.Warning &&
                 diagnostic.Code == "InternalGains.LatentGainCalculatedButNotUsedByIso52016SensiblePath");
     }
 }

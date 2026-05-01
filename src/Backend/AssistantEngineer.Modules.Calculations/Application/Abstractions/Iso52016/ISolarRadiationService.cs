@@ -6,7 +6,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso520
 public interface ISolarRadiationService
 {
     double CalculateVerticalSurfaceRadiation(
-        HourlyClimateData hourlyData,
+        AnnualHourlyData hourlyData,
         CardinalDirection orientation,
         double latitude,
         int dayOfYear,

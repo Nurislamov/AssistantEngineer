@@ -282,10 +282,6 @@ public class Room
 
     public Result SetVentilationParameters(VentilationParameters? ventilationParameters)
     {
-        var validation = ValidateVentilationParameters(ventilationParameters);
-        if (validation.IsFailure)
-            return validation;
-
         VentilationParameters = ventilationParameters;
         VentilationParametersId = ventilationParameters?.Id;
         return Result.Success();
@@ -361,32 +357,6 @@ public class Room
         return Result.Success();
     }
 
-    private static Result ValidateVentilationParameters(VentilationParameters? ventilationParameters)
-    {
-        if (ventilationParameters is null)
-            return Result.Success();
-
-        if (ventilationParameters.AirChangesPerHour < 0)
-            return Result.Validation("Air changes per hour cannot be negative.");
-
-        if (ventilationParameters.HeatRecoveryEfficiency is < 0 or > 1)
-            return Result.Validation("Heat recovery efficiency must be between 0 and 1.");
-
-        if (ventilationParameters.InfiltrationAirChangesPerHour < 0)
-            return Result.Validation("Infiltration air changes per hour cannot be negative.");
-
-        if (ventilationParameters.WindExposureFactor is < 0 or > 5)
-            return Result.Validation("Wind exposure factor must be between 0 and 5.");
-
-        if (ventilationParameters.StackCoefficient is < 0 or > 1)
-            return Result.Validation("Stack coefficient must be between 0 and 1.");
-
-        if (ventilationParameters.WindCoefficient is < 0 or > 1)
-            return Result.Validation("Wind coefficient must be between 0 and 1.");
-
-        return Result.Success();
-    }
-    
     public Result UpdateArea(Area newArea)
     {
         Area = newArea;

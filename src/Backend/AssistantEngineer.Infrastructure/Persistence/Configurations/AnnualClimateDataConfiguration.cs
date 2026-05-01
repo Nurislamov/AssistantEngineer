@@ -9,7 +9,9 @@ public class AnnualClimateDataConfiguration : IEntityTypeConfiguration<AnnualCli
     public void Configure(EntityTypeBuilder<AnnualClimateData> builder)
     {
         builder.ToTable("AnnualClimateData");
+
         builder.HasKey(x => x.Id);
+
         builder.Property(x => x.Year).IsRequired();
 
         builder.HasOne(x => x.ClimateZone)
@@ -18,10 +20,13 @@ public class AnnualClimateDataConfiguration : IEntityTypeConfiguration<AnnualCli
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(x => x.HourlyData)
-            .WithOne(h => h.AnnualClimateData)
-            .HasForeignKey(h => h.AnnualClimateDataId)
+            .WithOne(x => x.AnnualClimateData)
+            .HasForeignKey(x => x.AnnualClimateDataId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => new { x.ClimateZoneId, x.Year }).IsUnique();
+
+        builder.Navigation(x => x.HourlyData)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

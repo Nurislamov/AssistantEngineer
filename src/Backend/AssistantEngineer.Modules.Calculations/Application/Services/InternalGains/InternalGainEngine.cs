@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
@@ -14,7 +15,7 @@ public sealed class InternalGainEngine
         var diagnostics = Validate(input);
 
         if (diagnostics.Any(diagnostic =>
-                diagnostic.Severity == InternalGainDiagnosticSeverity.Error))
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error))
         {
             return Result<InternalGainResult>.Success(
                 Empty(input, diagnostics));
@@ -75,16 +76,16 @@ public sealed class InternalGainEngine
         var totalInternalGainW =
             totalSensibleGainW + totalLatentGainW;
 
-        diagnostics.Add(new InternalGainDiagnostic(
-            InternalGainDiagnosticSeverity.Info,
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
             "InternalGains.Calculated",
             "Internal gains were calculated from occupancy, lighting, equipment, process and custom gain components.",
             input.DiagnosticsContext));
 
         if (totalLatentGainW > 0)
         {
-            diagnostics.Add(new InternalGainDiagnostic(
-                InternalGainDiagnosticSeverity.Warning,
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
                 "InternalGains.LatentGainCalculatedButNotUsedByIso52016SensiblePath",
                 "Latent internal gains were calculated, but the current ISO 52016 room heat-balance path consumes sensible internal gains only.",
                 input.DiagnosticsContext));
@@ -124,7 +125,7 @@ public sealed class InternalGainEngine
 
     private static InternalGainResult Empty(
         InternalGainInput input,
-        IReadOnlyList<InternalGainDiagnostic> diagnostics) =>
+        IReadOnlyList<CalculationDiagnostic> diagnostics) =>
         new(
             RoomId: input.RoomId,
 
@@ -155,10 +156,10 @@ public sealed class InternalGainEngine
 
             Diagnostics: diagnostics);
 
-    private static List<InternalGainDiagnostic> Validate(
+    private static List<CalculationDiagnostic> Validate(
         InternalGainInput input)
     {
-        var diagnostics = new List<InternalGainDiagnostic>();
+        var diagnostics = new List<CalculationDiagnostic>();
 
         if (input.RoomId < 0)
         {
@@ -309,7 +310,7 @@ public sealed class InternalGainEngine
     }
 
     private static void ValidateNonNegative(
-        ICollection<InternalGainDiagnostic> diagnostics,
+        ICollection<CalculationDiagnostic> diagnostics,
         double? value,
         string code,
         string message,
@@ -320,7 +321,7 @@ public sealed class InternalGainEngine
     }
 
     private static void ValidateScheduleFactor(
-        ICollection<InternalGainDiagnostic> diagnostics,
+        ICollection<CalculationDiagnostic> diagnostics,
         double value,
         string code,
         string message,
@@ -331,7 +332,7 @@ public sealed class InternalGainEngine
     }
 
     private static void ValidateAreaBasedGainHasArea(
-        ICollection<InternalGainDiagnostic> diagnostics,
+        ICollection<CalculationDiagnostic> diagnostics,
         double? areaM2,
         double? powerDensityWPerM2,
         string code,
@@ -363,12 +364,12 @@ public sealed class InternalGainEngine
         double? value) =>
         value.HasValue && value.Value > 0 ? value.Value : 0.0;
 
-    private static InternalGainDiagnostic Error(
+    private static CalculationDiagnostic Error(
         string code,
         string message,
         string? context) =>
         new(
-            InternalGainDiagnosticSeverity.Error,
+            CalculationDiagnosticSeverity.Error,
             code,
             message,
             context);

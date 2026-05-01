@@ -345,7 +345,7 @@ public class Iso52016HourlyComponentBreakdownTests
         return Building.Create("Building", project, climateZone).Value;
     }
 
-    private static HourlyClimateData CreateWeather(
+    private static AnnualHourlyData CreateWeather(
         int hourOfYear,
         double outdoorTemperatureC)
     {
@@ -356,12 +356,12 @@ public class Iso52016HourlyComponentBreakdownTests
                 Temperature.FromCelsius(-10).Value).Value,
             2026).Value;
 
-        return HourlyClimateData.CreateAnnual(
+        return AnnualHourlyData.Create(
             annual,
             hourOfYear,
             outdoorTemperatureC,
-            directSolar: 0,
-            diffuseSolar: 0,
+            directSolarRadiation: 0,
+            diffuseSolarRadiation: 0,
             windSpeedMPerS: 2).Value;
     }
 

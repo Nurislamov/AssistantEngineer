@@ -125,7 +125,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     cancellationToken,
                     annualProfileOptions,
                     weatherContext.GroundBoundaryTemperaturesC[
-                        Math.Clamp(weather.HourOfYear!.Value, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)]));
+                        Math.Clamp(weather.HourOfYear, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)]));
             }
 
             foreach (var zoneResult in currentHourResults)
@@ -192,7 +192,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
             cancellationToken.ThrowIfCancellationRequested();
 
             var groundBoundaryTemperatureC = weatherContext.GroundBoundaryTemperaturesC[
-                Math.Clamp(weather.HourOfYear!.Value, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)];
+                Math.Clamp(weather.HourOfYear, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)];
 
             var zoneResult = _heatBalanceCalculator.CalculateZoneHourEnergyNeed(
                 calculationContext.Zone,

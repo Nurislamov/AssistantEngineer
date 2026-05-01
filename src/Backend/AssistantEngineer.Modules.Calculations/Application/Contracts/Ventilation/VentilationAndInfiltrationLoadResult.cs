@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 
 public sealed record VentilationAndInfiltrationLoadResult(
@@ -13,8 +15,9 @@ public sealed record VentilationAndInfiltrationLoadResult(
     double TotalHeatingLoadW,
     double TotalCoolingLoadW,
     double SignedHeatFlowW,
-    IReadOnlyList<VentilationLoadDiagnostic> Diagnostics)
+    IReadOnlyList<CalculationDiagnostic> Diagnostics)
 {
-    public bool HasErrors => Diagnostics.Any(diagnostic =>
-        diagnostic.Severity == VentilationLoadDiagnosticSeverity.Error);
+    public bool HasErrors =>
+        Diagnostics.Any(diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 }

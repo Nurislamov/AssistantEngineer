@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Transmission;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -18,31 +19,38 @@ public sealed class TransmissionHeatTransferEngine
             return Result<TransmissionHeatTransferResult>.Validation("Transmission heat transfer elements are required.");
 
         var elements = new List<TransmissionElementResult>(request.Elements.Count);
-        var diagnostics = new List<TransmissionDiagnostic>();
+        var diagnostics = new List<CalculationDiagnostic>();
 
         foreach (var element in request.Elements)
         {
             var result = CalculateElement(element);
+
             elements.Add(result);
             diagnostics.AddRange(result.Diagnostics);
         }
 
         if (request.Elements.Count == 0)
         {
-            diagnostics.Add(new TransmissionDiagnostic(
-                TransmissionDiagnosticSeverity.Warning,
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
                 "Transmission.NoElements",
                 "No envelope elements were supplied for transmission heat transfer calculation."));
         }
 
-        var included = elements.Where(element => element.IsIncludedInLoad).ToArray();
+        var included = elements
+            .Where(element => element.IsIncludedInLoad)
+            .ToArray();
+
         var totalHeatFlowW = included.Sum(element => element.HeatFlowW);
+
         var totalHeatLossW = included
             .Where(element => element.HeatFlowW > 0)
             .Sum(element => element.HeatFlowW);
+
         var totalHeatGainW = included
             .Where(element => element.HeatFlowW < 0)
             .Sum(element => -element.HeatFlowW);
+
         var totalHeatTransferCoefficientWPerK = included
             .Sum(element => element.AreaM2 * element.UValueWPerM2K);
 
@@ -60,13 +68,17 @@ public sealed class TransmissionHeatTransferEngine
         TransmissionElementInput element)
     {
         var diagnostics = ValidateElement(element);
-        if (diagnostics.Any(diagnostic => diagnostic.Severity == TransmissionDiagnosticSeverity.Error))
+
+        if (diagnostics.Any(diagnostic =>
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error))
+        {
             return Excluded(element, diagnostics);
+        }
 
         if (element.BoundaryType == TransmissionBoundaryType.InternalAdiabatic)
         {
-            diagnostics.Add(new TransmissionDiagnostic(
-                TransmissionDiagnosticSeverity.Info,
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
                 "Transmission.InternalAdiabatic",
                 "Element is excluded from transmission load because the boundary is internal adiabatic.",
                 element.DiagnosticsContext));
@@ -84,15 +96,19 @@ public sealed class TransmissionHeatTransferEngine
                 Diagnostics: diagnostics);
         }
 
-        var boundaryTemperature = ResolveBoundaryTemperature(element, diagnostics);
+        var boundaryTemperature = ResolveBoundaryTemperature(
+            element,
+            diagnostics);
+
         if (!boundaryTemperature.HasValue)
             return Excluded(element, diagnostics);
 
         var correctionFactor = element.CorrectionFactor ?? 1.0;
+
         if (element.BoundaryType == TransmissionBoundaryType.Ground)
         {
-            diagnostics.Add(new TransmissionDiagnostic(
-                TransmissionDiagnosticSeverity.Warning,
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
                 "Transmission.GroundSimplified",
                 "Ground transmission heat transfer uses the supplied boundary temperature and correction factor.",
                 element.DiagnosticsContext));
@@ -114,10 +130,10 @@ public sealed class TransmissionHeatTransferEngine
             Diagnostics: diagnostics);
     }
 
-    private static List<TransmissionDiagnostic> ValidateElement(
+    private static List<CalculationDiagnostic> ValidateElement(
         TransmissionElementInput element)
     {
-        var diagnostics = new List<TransmissionDiagnostic>();
+        var diagnostics = new List<CalculationDiagnostic>();
 
         if (element.AreaM2 <= 0)
         {
@@ -155,19 +171,25 @@ public sealed class TransmissionHeatTransferEngine
 
     private static double? ResolveBoundaryTemperature(
         TransmissionElementInput element,
-        List<TransmissionDiagnostic> diagnostics)
+        List<CalculationDiagnostic> diagnostics)
     {
         var temperature = element.BoundaryType switch
         {
             TransmissionBoundaryType.Outdoor =>
                 element.OutdoorTemperatureC ?? element.BoundaryTemperatureC,
+
             TransmissionBoundaryType.AdjacentUnheatedSpace =>
                 element.AdjacentTemperatureC ?? element.BoundaryTemperatureC,
+
             TransmissionBoundaryType.AdjacentConditionedZone =>
                 element.AdjacentTemperatureC ?? element.BoundaryTemperatureC,
+
             TransmissionBoundaryType.Ground =>
                 element.GroundTemperatureC ?? element.BoundaryTemperatureC,
-            TransmissionBoundaryType.InternalAdiabatic => element.IndoorTemperatureC,
+
+            TransmissionBoundaryType.InternalAdiabatic =>
+                element.IndoorTemperatureC,
+
             _ => null
         };
 
@@ -177,6 +199,7 @@ public sealed class TransmissionHeatTransferEngine
                 "Transmission.MissingBoundaryTemperature",
                 $"Boundary temperature is required for {element.BoundaryType} transmission heat transfer.",
                 element.DiagnosticsContext));
+
             return null;
         }
 
@@ -188,14 +211,14 @@ public sealed class TransmissionHeatTransferEngine
             element.DiagnosticsContext);
 
         return diagnostics.Any(diagnostic =>
-            diagnostic.Severity == TransmissionDiagnosticSeverity.Error &&
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error &&
             diagnostic.Code == "Transmission.InvalidBoundaryTemperature")
             ? null
             : temperature.Value;
     }
 
     private static void AddTemperatureDiagnostic(
-        List<TransmissionDiagnostic> diagnostics,
+        ICollection<CalculationDiagnostic> diagnostics,
         double temperatureC,
         string code,
         string message,
@@ -207,7 +230,7 @@ public sealed class TransmissionHeatTransferEngine
 
     private static TransmissionElementResult Excluded(
         TransmissionElementInput element,
-        IReadOnlyList<TransmissionDiagnostic> diagnostics) =>
+        IReadOnlyList<CalculationDiagnostic> diagnostics) =>
         new(
             element.ElementId,
             element.ElementType,
@@ -220,12 +243,17 @@ public sealed class TransmissionHeatTransferEngine
             IsIncludedInLoad: false,
             Diagnostics: diagnostics);
 
-    private static TransmissionDiagnostic Error(
+    private static CalculationDiagnostic Error(
         string code,
         string message,
         string? context) =>
-        new(TransmissionDiagnosticSeverity.Error, code, message, context);
+        new(
+            CalculationDiagnosticSeverity.Error,
+            code,
+            message,
+            context);
 
-    private static double Round(double value) =>
+    private static double Round(
+        double value) =>
         Math.Round(value, 2, MidpointRounding.AwayFromZero);
 }

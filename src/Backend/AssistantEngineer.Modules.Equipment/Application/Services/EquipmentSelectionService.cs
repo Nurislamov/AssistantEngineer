@@ -72,7 +72,7 @@ public class EquipmentSelectionService
             totalHeatLoadKw,
             designCapacityKw);
 
-        if (result is null)
+        if (result.IsFailure)
         {
             _logger.LogWarning(
                 "No suitable equipment found for room {RoomId}, system {SystemType}, unit {UnitType}, design capacity {DesignCapacityKw} kW.",
@@ -81,14 +81,14 @@ public class EquipmentSelectionService
                 request.UnitType,
                 designCapacityKw);
 
-            return Result<EquipmentSelectionResult>.Failure("No suitable equipment found.");
+            return Result<EquipmentSelectionResult>.Failure(result);
         }
 
         _logger.LogInformation(
             "Selected catalog item {CatalogItemId} for room {RoomId}.",
-            result.SelectedCatalogItemId,
+            result.Value.SelectedCatalogItemId,
             roomId);
 
-        return Result<EquipmentSelectionResult>.Success(result);
+        return result;
     }
 }

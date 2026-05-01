@@ -1,11 +1,12 @@
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
+using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Equipment.Application.Abstractions;
 
 public interface ICoolingEquipmentSelector
 {
-    EquipmentSelectionResult? SelectForRoom(
+    Result<EquipmentSelectionResult> SelectForRoom(
         int roomId,
         string systemType,
         string unitType,

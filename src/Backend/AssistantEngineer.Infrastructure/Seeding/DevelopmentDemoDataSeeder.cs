@@ -388,8 +388,6 @@ public sealed class DevelopmentDemoDataSeeder : IDevelopmentDemoDataSeeder
     private static bool HasCompleteMonthlyHours(ClimateData data) =>
         data.HourlyData
             .Select(hour => hour.Hour)
-            .Where(hour => hour.HasValue)
-            .Select(hour => hour!.Value)
             .Distinct()
             .OrderBy(hour => hour)
             .SequenceEqual(Enumerable.Range(0, 24));
@@ -397,8 +395,6 @@ public sealed class DevelopmentDemoDataSeeder : IDevelopmentDemoDataSeeder
     private static bool HasCompleteAnnualHours(AnnualClimateData data) =>
         data.HourlyData
             .Select(hour => hour.HourOfYear)
-            .Where(hour => hour.HasValue)
-            .Select(hour => hour!.Value)
             .Distinct()
             .OrderBy(hour => hour)
             .SequenceEqual(Enumerable.Range(0, 8760));

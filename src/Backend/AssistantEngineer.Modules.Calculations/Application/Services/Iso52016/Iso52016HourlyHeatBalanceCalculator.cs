@@ -63,7 +63,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
     public Iso52016ZoneHourResult CalculateZoneHourEnergyNeed(
         Iso52016ThermalZoneGroup zone,
         Iso52016ThermalZoneState state,
-        HourlyClimateData weather,
+        AnnualHourlyData weather,
         IReadOnlyDictionary<int, double> previousRoomTemperatures,
         IReadOnlyDictionary<int, string> roomZoneMap,
         CalculationPreferences? preferences,
@@ -74,7 +74,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         cancellationToken.ThrowIfCancellationRequested();
 
         var rooms = zone.Rooms;
-        var hourOfYear = weather.HourOfYear!.Value;
+        var hourOfYear = weather.HourOfYear;
         var hourOfDay = hourOfYear % 24;
         var dayOfYear = hourOfYear / 24 + 1;
 
@@ -312,7 +312,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
     private double GetHourlySolarGain(
         Room room,
-        HourlyClimateData weather,
+        AnnualHourlyData weather,
         int dayOfYear,
         int hourOfDay,
         CalculationPreferences? preferences)

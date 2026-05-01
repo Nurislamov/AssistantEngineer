@@ -12,8 +12,6 @@ internal static class Iso52016HourlyCalculatorMath
         annualData is not null &&
         annualData.HourlyData
             .Select(hour => hour.HourOfYear)
-            .Where(hour => hour.HasValue)
-            .Select(hour => hour!.Value)
             .Distinct()
             .OrderBy(hour => hour)
             .SequenceEqual(Enumerable.Range(0, 8760));

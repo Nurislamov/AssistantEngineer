@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -12,26 +13,43 @@ public sealed class WindowSolarGainEngine
             return Result<WindowSolarGainResult>.Validation("Window solar gain input is required.");
 
         var diagnostics = Validate(input);
-        var frameFactor = input.FrameFactor;
 
+        var frameFactor = input.FrameFactor;
         if (!frameFactor.HasValue)
         {
             frameFactor = 1.0;
-            diagnostics.Add(new SolarGainDiagnostic(
-                SolarGainDiagnosticSeverity.Warning,
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
                 "SolarGains.FrameFactorDefaulted",
                 "Frame factor was not supplied and defaulted to 1.0.",
                 input.DiagnosticsContext));
         }
 
-        if (diagnostics.Any(diagnostic => diagnostic.Severity == SolarGainDiagnosticSeverity.Error))
-            return Result<WindowSolarGainResult>.Success(Excluded(input, frameFactor ?? 0.0, diagnostics));
+        if (diagnostics.Any(diagnostic =>
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error))
+        {
+            return Result<WindowSolarGainResult>.Success(
+                Excluded(
+                    input,
+                    frameFactor ?? 0.0,
+                    diagnostics));
+        }
 
-        var irradiance = ResolveIrradiance(input, diagnostics);
+        var irradiance = ResolveIrradiance(
+            input,
+            diagnostics);
+
         if (irradiance is null)
-            return Result<WindowSolarGainResult>.Success(Excluded(input, frameFactor.Value, diagnostics));
+        {
+            return Result<WindowSolarGainResult>.Success(
+                Excluded(
+                    input,
+                    frameFactor.Value,
+                    diagnostics));
+        }
 
         var shgc = input.Shgc!.Value;
+
         var effectiveSolarFactor =
             shgc *
             frameFactor.Value *
@@ -39,8 +57,8 @@ public sealed class WindowSolarGainEngine
             input.ExternalShadingFactor *
             input.FixedShadingFactor;
 
-        diagnostics.Add(new SolarGainDiagnostic(
-            SolarGainDiagnosticSeverity.Info,
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
             "SolarGains.EffectiveSolarFactor",
             $"Effective solar factor is {Round(effectiveSolarFactor)}.",
             input.DiagnosticsContext));
@@ -49,16 +67,18 @@ public sealed class WindowSolarGainEngine
         {
             if (input.IsNight)
             {
-                diagnostics.Add(new SolarGainDiagnostic(
-                    SolarGainDiagnosticSeverity.Info,
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Info,
                     "SolarWeather.NightSolarClampedToZero",
                     "Window solar gain was clamped to zero because the hour is marked as night.",
                     input.DiagnosticsContext));
             }
 
-            diagnostics.Add(new SolarGainDiagnostic(
-                SolarGainDiagnosticSeverity.Info,
-                input.IsNight ? "SolarGains.Night" : "SolarGains.ZeroIrradiance",
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                input.IsNight
+                    ? "SolarGains.Night"
+                    : "SolarGains.ZeroIrradiance",
                 input.IsNight
                     ? "Solar gain is zero because the hour is marked as night."
                     : "Solar gain is zero because incident irradiance is zero.",
@@ -94,10 +114,12 @@ public sealed class WindowSolarGainEngine
             input.AreaM2 *
             irradiance.DirectIrradianceWPerM2 *
             effectiveSolarFactor;
+
         var diffuseSolarGainW =
             input.AreaM2 *
             irradiance.DiffuseIrradianceWPerM2 *
             effectiveSolarFactor;
+
         var groundReflectedSolarGainW =
             input.AreaM2 *
             irradiance.GroundReflectedIrradianceWPerM2 *
@@ -144,11 +166,12 @@ public sealed class WindowSolarGainEngine
             return Result<RoomWindowSolarGainResult>.Validation("Room window solar gain inputs are required.");
 
         var windows = new List<WindowSolarGainResult>(request.Windows.Count);
-        var diagnostics = new List<SolarGainDiagnostic>();
+        var diagnostics = new List<CalculationDiagnostic>();
 
         foreach (var window in request.Windows)
         {
             var result = Calculate(window);
+
             if (result.IsFailure)
                 return Result<RoomWindowSolarGainResult>.Failure(result);
 
@@ -156,8 +179,12 @@ public sealed class WindowSolarGainEngine
             diagnostics.AddRange(result.Value.Diagnostics);
         }
 
-        var included = windows.Where(window => window.IsIncludedInLoad).ToArray();
+        var included = windows
+            .Where(window => window.IsIncludedInLoad)
+            .ToArray();
+
         var totalSolarGainW = included.Sum(window => window.SolarGainW);
+
         var hourlyGroups = included
             .Where(window => window.HourIndex.HasValue)
             .GroupBy(window => window.HourIndex!.Value)
@@ -175,18 +202,27 @@ public sealed class WindowSolarGainEngine
                 request.RoomId,
                 Round(totalSolarGainW),
                 windows,
-                hourlyGroups.Length > 0 ? Round(hourlyGroups[0].SolarGainW) : null,
-                hourlyGroups.Length > 0 ? hourlyGroups[0].Hour : null,
+                hourlyGroups.Length > 0
+                    ? Round(hourlyGroups[0].SolarGainW)
+                    : null,
+                hourlyGroups.Length > 0
+                    ? hourlyGroups[0].Hour
+                    : null,
                 diagnostics));
     }
 
-    private static List<SolarGainDiagnostic> Validate(
+    private static List<CalculationDiagnostic> Validate(
         WindowSolarGainInput input)
     {
-        var diagnostics = new List<SolarGainDiagnostic>();
+        var diagnostics = new List<CalculationDiagnostic>();
 
         if (input.AreaM2 <= 0)
-            diagnostics.Add(Error("SolarGains.InvalidArea", "Window area must be greater than zero.", input.DiagnosticsContext));
+        {
+            diagnostics.Add(Error(
+                "SolarGains.InvalidArea",
+                "Window area must be greater than zero.",
+                input.DiagnosticsContext));
+        }
 
         if (!input.Shgc.HasValue)
         {
@@ -204,36 +240,95 @@ public sealed class WindowSolarGainEngine
         }
 
         if (input.FrameFactor is < 0.0 or > 1.0)
-            diagnostics.Add(Error("SolarGains.InvalidFrameFactor", "Frame factor must be between 0 and 1.", input.DiagnosticsContext));
+        {
+            diagnostics.Add(Error(
+                "SolarGains.InvalidFrameFactor",
+                "Frame factor must be between 0 and 1.",
+                input.DiagnosticsContext));
+        }
 
-        ValidateFactor(diagnostics, input.InternalShadingFactor, "SolarGains.InvalidInternalShadingFactor", "Internal shading factor must be between 0 and 1.", input.DiagnosticsContext);
-        ValidateFactor(diagnostics, input.ExternalShadingFactor, "SolarGains.InvalidExternalShadingFactor", "External shading factor must be between 0 and 1.", input.DiagnosticsContext);
-        ValidateFactor(diagnostics, input.FixedShadingFactor, "SolarGains.InvalidFixedShadingFactor", "Fixed shading factor must be between 0 and 1.", input.DiagnosticsContext);
+        ValidateFactor(
+            diagnostics,
+            input.InternalShadingFactor,
+            "SolarGains.InvalidInternalShadingFactor",
+            "Internal shading factor must be between 0 and 1.",
+            input.DiagnosticsContext);
+
+        ValidateFactor(
+            diagnostics,
+            input.ExternalShadingFactor,
+            "SolarGains.InvalidExternalShadingFactor",
+            "External shading factor must be between 0 and 1.",
+            input.DiagnosticsContext);
+
+        ValidateFactor(
+            diagnostics,
+            input.FixedShadingFactor,
+            "SolarGains.InvalidFixedShadingFactor",
+            "Fixed shading factor must be between 0 and 1.",
+            input.DiagnosticsContext);
 
         if (input.OrientationAzimuthDeg is < 0.0 or > 360.0)
-            diagnostics.Add(Error("SolarGains.InvalidOrientation", "Window orientation azimuth must be between 0 and 360 degrees.", input.DiagnosticsContext));
+        {
+            diagnostics.Add(Error(
+                "SolarGains.InvalidOrientation",
+                "Window orientation azimuth must be between 0 and 360 degrees.",
+                input.DiagnosticsContext));
+        }
 
         if (input.TiltDeg is < 0.0 or > 180.0)
-            diagnostics.Add(Error("SolarGains.InvalidTilt", "Window tilt must be between 0 and 180 degrees.", input.DiagnosticsContext));
+        {
+            diagnostics.Add(Error(
+                "SolarGains.InvalidTilt",
+                "Window tilt must be between 0 and 180 degrees.",
+                input.DiagnosticsContext));
+        }
 
-        ValidateIrradiance(diagnostics, input.IncidentIrradianceWPerM2, "SolarGains.InvalidIncidentIrradiance", "Incident irradiance cannot be negative.", input.DiagnosticsContext);
-        ValidateIrradiance(diagnostics, input.DirectIrradianceWPerM2, "SolarGains.InvalidDirectIrradiance", "Direct irradiance cannot be negative.", input.DiagnosticsContext);
-        ValidateIrradiance(diagnostics, input.DiffuseIrradianceWPerM2, "SolarGains.InvalidDiffuseIrradiance", "Diffuse irradiance cannot be negative.", input.DiagnosticsContext);
-        ValidateIrradiance(diagnostics, input.GroundReflectedIrradianceWPerM2, "SolarGains.InvalidGroundReflectedIrradiance", "Ground-reflected irradiance cannot be negative.", input.DiagnosticsContext);
+        ValidateIrradiance(
+            diagnostics,
+            input.IncidentIrradianceWPerM2,
+            "SolarGains.InvalidIncidentIrradiance",
+            "Incident irradiance cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidateIrradiance(
+            diagnostics,
+            input.DirectIrradianceWPerM2,
+            "SolarGains.InvalidDirectIrradiance",
+            "Direct irradiance cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidateIrradiance(
+            diagnostics,
+            input.DiffuseIrradianceWPerM2,
+            "SolarGains.InvalidDiffuseIrradiance",
+            "Diffuse irradiance cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidateIrradiance(
+            diagnostics,
+            input.GroundReflectedIrradianceWPerM2,
+            "SolarGains.InvalidGroundReflectedIrradiance",
+            "Ground-reflected irradiance cannot be negative.",
+            input.DiagnosticsContext);
 
         return diagnostics;
     }
 
     private static WindowSolarIrradiance? ResolveIrradiance(
         WindowSolarGainInput input,
-        List<SolarGainDiagnostic> diagnostics)
+        List<CalculationDiagnostic> diagnostics)
     {
-        if (diagnostics.Any(diagnostic => diagnostic.Severity == SolarGainDiagnosticSeverity.Error))
+        if (diagnostics.Any(diagnostic =>
+                diagnostic.Severity == CalculationDiagnosticSeverity.Error))
+        {
             return null;
+        }
 
         var direct = input.DirectIrradianceWPerM2 ?? 0.0;
         var diffuse = input.DiffuseIrradianceWPerM2 ?? 0.0;
         var ground = input.GroundReflectedIrradianceWPerM2 ?? 0.0;
+
         var hasComponentIrradiance =
             input.DirectIrradianceWPerM2.HasValue ||
             input.DiffuseIrradianceWPerM2.HasValue ||
@@ -245,10 +340,12 @@ public sealed class WindowSolarGainEngine
                 "SolarGains.MissingIrradiance",
                 "Incident irradiance or component irradiance is required for window solar gains.",
                 input.DiagnosticsContext));
+
             return null;
         }
 
-        var incident = input.IncidentIrradianceWPerM2 ?? direct + diffuse + ground;
+        var incident = input.IncidentIrradianceWPerM2 ??
+                       direct + diffuse + ground;
 
         if (!hasComponentIrradiance)
         {
@@ -257,8 +354,8 @@ public sealed class WindowSolarGainEngine
             ground = 0.0;
         }
 
-        diagnostics.Add(new SolarGainDiagnostic(
-            SolarGainDiagnosticSeverity.Info,
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Info,
             hasComponentIrradiance
                 ? "SolarGains.ComponentIrradianceProvided"
                 : "SolarGains.IncidentIrradianceProvided",
@@ -275,7 +372,7 @@ public sealed class WindowSolarGainEngine
     }
 
     private static void ValidateFactor(
-        List<SolarGainDiagnostic> diagnostics,
+        List<CalculationDiagnostic> diagnostics,
         double value,
         string code,
         string message,
@@ -286,7 +383,7 @@ public sealed class WindowSolarGainEngine
     }
 
     private static void ValidateIrradiance(
-        List<SolarGainDiagnostic> diagnostics,
+        List<CalculationDiagnostic> diagnostics,
         double? value,
         string code,
         string message,
@@ -299,7 +396,7 @@ public sealed class WindowSolarGainEngine
     private static WindowSolarGainResult Excluded(
         WindowSolarGainInput input,
         double frameFactor,
-        IReadOnlyList<SolarGainDiagnostic> diagnostics) =>
+        IReadOnlyList<CalculationDiagnostic> diagnostics) =>
         new(
             input.WindowId,
             input.RoomId,
@@ -324,13 +421,18 @@ public sealed class WindowSolarGainEngine
             IsIncludedInLoad: false,
             diagnostics);
 
-    private static SolarGainDiagnostic Error(
+    private static CalculationDiagnostic Error(
         string code,
         string message,
         string? context) =>
-        new(SolarGainDiagnosticSeverity.Error, code, message, context);
+        new(
+            CalculationDiagnosticSeverity.Error,
+            code,
+            message,
+            context);
 
-    private static double Round(double value) =>
+    private static double Round(
+        double value) =>
         Math.Round(value, 6, MidpointRounding.AwayFromZero);
 
     private sealed record WindowSolarIrradiance(
