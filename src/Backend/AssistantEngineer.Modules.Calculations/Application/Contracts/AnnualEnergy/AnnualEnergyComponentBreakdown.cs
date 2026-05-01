@@ -10,4 +10,8 @@ public sealed record AnnualEnergyComponentBreakdown(
     double NetTransmissionKWh = 0,
     double NetVentilationKWh = 0,
     double NetInfiltrationKWh = 0,
-    double NetGroundKWh = 0);
+    double NetGroundKWh = 0,
+    double MechanicalVentilationKWh = 0,
+    double NaturalVentilationKWh = 0,
+    double NetMechanicalVentilationKWh = 0,
+    double NetNaturalVentilationKWh = 0);

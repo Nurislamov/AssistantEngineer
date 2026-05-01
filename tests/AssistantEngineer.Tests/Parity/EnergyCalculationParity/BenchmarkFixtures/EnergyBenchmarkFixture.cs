@@ -69,6 +69,8 @@ internal sealed class EnergyBenchmarkHourlyValues
 {
     public double HeatingLoadW { get; set; }
     public double CoolingLoadW { get; set; }
+    public double MechanicalVentilationW { get; set; }
+    public double NaturalVentilationW { get; set; }
     public double TransmissionW { get; set; }
     public double VentilationW { get; set; }
     public double InfiltrationW { get; set; }
@@ -77,6 +79,8 @@ internal sealed class EnergyBenchmarkHourlyValues
     public double GroundW { get; set; }
     public double HourDurationH { get; set; } = 1.0;
     public double TransmissionBalanceW { get; set; }
+    public double MechanicalVentilationBalanceW { get; set; }
+    public double NaturalVentilationBalanceW { get; set; }
     public double VentilationBalanceW { get; set; }
     public double InfiltrationBalanceW { get; set; }
     public double GroundBalanceW { get; set; }

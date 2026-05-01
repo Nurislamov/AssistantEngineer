@@ -117,6 +117,8 @@ public class AnnualEnergyBalanceEngineTests
         Assert.True(result.IsSuccess);
         Assert.Equal(876, result.Value.ComponentBreakdown.TransmissionKWh, precision: 6);
         Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
+        Assert.Equal(262.8, result.Value.ComponentBreakdown.MechanicalVentilationKWh, precision: 6);
+        Assert.Equal(175.2, result.Value.ComponentBreakdown.NaturalVentilationKWh, precision: 6);
         Assert.Equal(175.2, result.Value.ComponentBreakdown.InfiltrationKWh, precision: 6);
         Assert.Equal(262.8, result.Value.ComponentBreakdown.GroundKWh, precision: 6);
         Assert.Equal(175.2, result.Value.ComponentBreakdown.SolarGainsKWh, precision: 6);
@@ -140,6 +142,10 @@ public class AnnualEnergyBalanceEngineTests
 
         Assert.Equal(438, result.Value.ComponentBreakdown.VentilationKWh, precision: 6);
         Assert.Equal(-438, result.Value.ComponentBreakdown.NetVentilationKWh, precision: 6);
+        Assert.Equal(262.8, result.Value.ComponentBreakdown.MechanicalVentilationKWh, precision: 6);
+        Assert.Equal(-262.8, result.Value.ComponentBreakdown.NetMechanicalVentilationKWh, precision: 6);
+        Assert.Equal(175.2, result.Value.ComponentBreakdown.NaturalVentilationKWh, precision: 6);
+        Assert.Equal(-175.2, result.Value.ComponentBreakdown.NetNaturalVentilationKWh, precision: 6);
 
         Assert.Equal(175.2, result.Value.ComponentBreakdown.InfiltrationKWh, precision: 6);
         Assert.Equal(-175.2, result.Value.ComponentBreakdown.NetInfiltrationKWh, precision: 6);
@@ -306,7 +312,9 @@ public class AnnualEnergyBalanceEngineTests
                     InfiltrationW: 20,
                     SolarGainsW: 20,
                     InternalGainsW: 10,
-                    GroundW: 30));
+                    GroundW: 30,
+                    MechanicalVentilationW: 30,
+                    NaturalVentilationW: 20));
             }
         }
 
@@ -336,7 +344,11 @@ public class AnnualEnergyBalanceEngineTests
                     TransmissionBalanceW: -100,
                     VentilationBalanceW: -50,
                     InfiltrationBalanceW: -20,
-                    GroundBalanceW: 10));
+                    GroundBalanceW: 10,
+                    MechanicalVentilationW: 30,
+                    NaturalVentilationW: 20,
+                    MechanicalVentilationBalanceW: -30,
+                    NaturalVentilationBalanceW: -20));
             }
         }
 

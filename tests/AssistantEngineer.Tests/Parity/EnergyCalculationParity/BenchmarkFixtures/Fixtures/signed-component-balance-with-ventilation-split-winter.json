@@ -1,0 +1,57 @@
+{
+  "fixtureName": "signed-component-balance-with-ventilation-split-winter",
+  "description": "Benchmark reference fixture for winter signed ventilation subcomponent totals with mechanical and natural split.",
+  "category": "SignedComponentBalance",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation Parity / Annual 8760 Energy Balance Signed Components",
+  "status": "Active",
+  "sourceReference": "Internal benchmark reference values derived from constant signed hourly mechanical and natural ventilation component loads; no external parity claim.",
+  "input": {
+    "calculationBasis": "signed-component-balance",
+    "buildingId": 6,
+    "buildingName": "Signed winter ventilation split benchmark",
+    "buildingAreaM2": 100,
+    "year": 2026,
+    "hourlyPattern": "constant",
+    "hourlyRecordCount": 8760,
+    "energyDataSource": "TrueHourlySimulation",
+    "isTrueHourly8760": true,
+    "hourlyValues": {
+      "heatingLoadW": 100,
+      "coolingLoadW": 0,
+      "mechanicalVentilationW": 30,
+      "mechanicalVentilationBalanceW": -30,
+      "naturalVentilationW": 20,
+      "naturalVentilationBalanceW": -20,
+      "ventilationW": 50,
+      "ventilationBalanceW": -50,
+      "infiltrationW": 10,
+      "infiltrationBalanceW": -10,
+      "hourDurationH": 1
+    }
+  },
+  "expected": {
+    "componentBreakdown.mechanicalVentilationKWh": 262.8,
+    "componentBreakdown.netMechanicalVentilationKWh": -262.8,
+    "componentBreakdown.naturalVentilationKWh": 175.2,
+    "componentBreakdown.netNaturalVentilationKWh": -175.2,
+    "componentBreakdown.ventilationKWh": 438,
+    "componentBreakdown.netVentilationKWh": -438,
+    "componentBreakdown.infiltrationKWh": 87.6,
+    "componentBreakdown.netInfiltrationKWh": -87.6
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "Magnitude component fields are aggregated as non-negative kWh.",
+    "Net component fields preserve the sign of hourly balance values.",
+    "VentilationW is the aggregate of mechanicalVentilationW and naturalVentilationW.",
+    "Infiltration remains separate from aggregate ventilation."
+  ],
+  "notes": [
+    "This fixture verifies deterministic signed mechanical and natural ventilation benchmark comparison.",
+    "It is not ExternalParityCovered evidence."
+  ]
+}

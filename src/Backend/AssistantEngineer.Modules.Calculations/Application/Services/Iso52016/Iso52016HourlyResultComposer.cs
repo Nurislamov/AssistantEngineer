@@ -29,7 +29,11 @@ internal sealed class Iso52016HourlyResultComposer
                 TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.TransmissionBalanceW)),
                 VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.VentilationBalanceW)),
                 InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.InfiltrationBalanceW)),
-                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundBalanceW))))
+                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.GroundBalanceW)),
+                MechanicalVentilationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.MechanicalVentilationW)),
+                NaturalVentilationW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.NaturalVentilationW)),
+                MechanicalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.MechanicalVentilationBalanceW)),
+                NaturalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(group.Sum(hour => hour.NaturalVentilationBalanceW))))
             .OrderBy(hour => hour.HourOfYear)
             .ToArray();
 

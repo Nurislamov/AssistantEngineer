@@ -249,7 +249,11 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                     TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(transmissionBalanceW),
                     VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.TotalVentilationBalanceW),
                     InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.InfiltrationBalanceW),
-                    GroundBalanceW: Iso52016HourlyCalculatorMath.Round(groundBalanceW))));
+                    GroundBalanceW: Iso52016HourlyCalculatorMath.Round(groundBalanceW),
+                    MechanicalVentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.MechanicalVentilationW),
+                    NaturalVentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.NaturalVentilationW),
+                    MechanicalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.MechanicalVentilationBalanceW),
+                    NaturalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.NaturalVentilationBalanceW))));
         }
 
         var zoneHeating = roomResults.Sum(x => x.Hour.HeatingLoadW);
@@ -258,11 +262,15 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         var zoneSolar = roomResults.Sum(x => x.Hour.SolarGainsW);
         var zoneTransmission = roomResults.Sum(x => x.Hour.TransmissionW);
         var zoneVentilation = roomResults.Sum(x => x.Hour.VentilationW);
+        var zoneMechanicalVentilation = roomResults.Sum(x => x.Hour.MechanicalVentilationW);
+        var zoneNaturalVentilation = roomResults.Sum(x => x.Hour.NaturalVentilationW);
         var zoneInfiltration = roomResults.Sum(x => x.Hour.InfiltrationW);
         var zoneGround = roomResults.Sum(x => x.Hour.GroundW);
 
         var zoneTransmissionBalance = roomResults.Sum(x => x.Hour.TransmissionBalanceW);
         var zoneVentilationBalance = roomResults.Sum(x => x.Hour.VentilationBalanceW);
+        var zoneMechanicalVentilationBalance = roomResults.Sum(x => x.Hour.MechanicalVentilationBalanceW);
+        var zoneNaturalVentilationBalance = roomResults.Sum(x => x.Hour.NaturalVentilationBalanceW);
         var zoneInfiltrationBalance = roomResults.Sum(x => x.Hour.InfiltrationBalanceW);
         var zoneGroundBalance = roomResults.Sum(x => x.Hour.GroundBalanceW);
 
@@ -294,7 +302,11 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(zoneTransmissionBalance),
                 VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneVentilationBalance),
                 InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneInfiltrationBalance),
-                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(zoneGroundBalance)),
+                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(zoneGroundBalance),
+                MechanicalVentilationW: Iso52016HourlyCalculatorMath.Round(zoneMechanicalVentilation),
+                NaturalVentilationW: Iso52016HourlyCalculatorMath.Round(zoneNaturalVentilation),
+                MechanicalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneMechanicalVentilationBalance),
+                NaturalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneNaturalVentilationBalance)),
             roomResults);
     }
 

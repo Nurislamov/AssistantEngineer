@@ -47,21 +47,25 @@ public class Iso52016HourlyComponentBreakdownTests
         Assert.True(roomHour.HeatingLoadW > 0);
         Assert.True(roomHour.TransmissionW > 0);
         Assert.True(roomHour.VentilationW > 0);
+        Assert.True(roomHour.MechanicalVentilationW > 0);
+        Assert.Equal(0, roomHour.NaturalVentilationW, precision: 6);
         Assert.True(roomHour.GroundW > 0);
         Assert.Equal(0, roomHour.InfiltrationW, precision: 6);
         Assert.Equal(roomHour.TransmissionW, result.Hour.TransmissionW, precision: 6);
         Assert.Equal(roomHour.VentilationW, result.Hour.VentilationW, precision: 6);
+        Assert.Equal(roomHour.MechanicalVentilationW, result.Hour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(roomHour.NaturalVentilationW, result.Hour.NaturalVentilationW, precision: 6);
         Assert.Equal(roomHour.GroundW, result.Hour.GroundW, precision: 6);
     }
 
     [Fact]
-    public void HeatBalanceCalculator_SeparatesVentilationAndInfiltrationForColdOutdoorHour()
+    public void HeatBalanceCalculator_SeparatesMechanicalNaturalVentilationAndInfiltrationForColdOutdoorHour()
     {
         var room = CreateRoomWithEnvelope();
         var weather = CreateWeather(hourOfYear: 10, outdoorTemperatureC: -5);
         var calculator = CreateCalculator(new FixedVentilationHeatTransferCalculator(
             mechanicalWPerK: 5,
-            infiltrationWPerK: 2));
+            infiltrationWPerK: 1), new FixedNaturalVentilationAirflowService(2));
 
         var result = calculator.CalculateZoneHourEnergyNeed(
             new Iso52016ThermalZoneGroup("Zone A", [room]),
@@ -76,22 +80,28 @@ public class Iso52016HourlyComponentBreakdownTests
         var roomHour = Assert.Single(result.Rooms).Hour;
 
         Assert.Equal(20, roomHour.OperativeTemperatureC, precision: 6);
-        Assert.Equal(125, roomHour.VentilationW, precision: 6);
-        Assert.Equal(50, roomHour.InfiltrationW, precision: 6);
-        Assert.Equal(-125, roomHour.VentilationBalanceW, precision: 6);
-        Assert.Equal(-50, roomHour.InfiltrationBalanceW, precision: 6);
+        Assert.Equal(125, roomHour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(50, roomHour.NaturalVentilationW, precision: 6);
+        Assert.Equal(175, roomHour.VentilationW, precision: 6);
+        Assert.Equal(25, roomHour.InfiltrationW, precision: 6);
+        Assert.Equal(-125, roomHour.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(-50, roomHour.NaturalVentilationBalanceW, precision: 6);
+        Assert.Equal(-175, roomHour.VentilationBalanceW, precision: 6);
+        Assert.Equal(-25, roomHour.InfiltrationBalanceW, precision: 6);
+        Assert.Equal(roomHour.MechanicalVentilationW, result.Hour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(roomHour.NaturalVentilationW, result.Hour.NaturalVentilationW, precision: 6);
         Assert.Equal(roomHour.InfiltrationW, result.Hour.InfiltrationW, precision: 6);
         Assert.Equal(roomHour.InfiltrationBalanceW, result.Hour.InfiltrationBalanceW, precision: 6);
     }
 
     [Fact]
-    public void HeatBalanceCalculator_SeparatesVentilationAndInfiltrationForHotOutdoorHour()
+    public void HeatBalanceCalculator_SeparatesMechanicalNaturalVentilationAndInfiltrationForHotOutdoorHour()
     {
         var room = CreateRoomWithEnvelope();
         var weather = CreateWeather(hourOfYear: 1000, outdoorTemperatureC: 34);
         var calculator = CreateCalculator(new FixedVentilationHeatTransferCalculator(
             mechanicalWPerK: 5,
-            infiltrationWPerK: 2));
+            infiltrationWPerK: 1), new FixedNaturalVentilationAirflowService(2));
 
         var result = calculator.CalculateZoneHourEnergyNeed(
             new Iso52016ThermalZoneGroup("Zone A", [room]),
@@ -106,10 +116,74 @@ public class Iso52016HourlyComponentBreakdownTests
         var roomHour = Assert.Single(result.Rooms).Hour;
 
         Assert.Equal(24, roomHour.OperativeTemperatureC, precision: 6);
+        Assert.Equal(50, roomHour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(20, roomHour.NaturalVentilationW, precision: 6);
+        Assert.Equal(70, roomHour.VentilationW, precision: 6);
+        Assert.Equal(10, roomHour.InfiltrationW, precision: 6);
+        Assert.Equal(50, roomHour.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(20, roomHour.NaturalVentilationBalanceW, precision: 6);
+        Assert.Equal(70, roomHour.VentilationBalanceW, precision: 6);
+        Assert.Equal(10, roomHour.InfiltrationBalanceW, precision: 6);
+    }
+
+    [Fact]
+    public void HeatBalanceCalculator_DoesNotFakeNaturalVentilationWhenNaturalServiceIsAbsent()
+    {
+        var room = CreateRoomWithEnvelope();
+        var weather = CreateWeather(hourOfYear: 10, outdoorTemperatureC: -5);
+        var calculator = CreateCalculator(new FixedVentilationHeatTransferCalculator(
+            mechanicalWPerK: 5,
+            infiltrationWPerK: 1));
+
+        var result = calculator.CalculateZoneHourEnergyNeed(
+            new Iso52016ThermalZoneGroup("Zone A", [room]),
+            CreateZoneState(room, heatingSetpointC: 20, coolingSetpointC: 26),
+            weather,
+            new Dictionary<int, double> { [room.Id] = 0 },
+            new Dictionary<int, string> { [room.Id] = "Zone A" },
+            preferences: null,
+            CancellationToken.None,
+            groundBoundaryTemperatureC: 12);
+
+        var roomHour = Assert.Single(result.Rooms).Hour;
+
+        Assert.Equal(125, roomHour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(0, roomHour.NaturalVentilationW, precision: 6);
+        Assert.Equal(125, roomHour.VentilationW, precision: 6);
+        Assert.Equal(-125, roomHour.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(0, roomHour.NaturalVentilationBalanceW, precision: 6);
+        Assert.Equal(-125, roomHour.VentilationBalanceW, precision: 6);
+    }
+
+    [Fact]
+    public void HeatBalanceCalculator_DoesNotFakeMechanicalVentilationWhenMechanicalCalculatorIsAbsent()
+    {
+        var room = CreateRoomWithEnvelope();
+        var weather = CreateWeather(hourOfYear: 10, outdoorTemperatureC: -5);
+        var calculator = CreateCalculator(
+            ventilationCalculator: null,
+            naturalVentilationAirflowService: new FixedNaturalVentilationAirflowService(2),
+            useDefaultVentilationCalculator: false);
+
+        var result = calculator.CalculateZoneHourEnergyNeed(
+            new Iso52016ThermalZoneGroup("Zone A", [room]),
+            CreateZoneState(room, heatingSetpointC: 20, coolingSetpointC: 26),
+            weather,
+            new Dictionary<int, double> { [room.Id] = 0 },
+            new Dictionary<int, string> { [room.Id] = "Zone A" },
+            preferences: null,
+            CancellationToken.None,
+            groundBoundaryTemperatureC: 12);
+
+        var roomHour = Assert.Single(result.Rooms).Hour;
+
+        Assert.Equal(0, roomHour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(50, roomHour.NaturalVentilationW, precision: 6);
         Assert.Equal(50, roomHour.VentilationW, precision: 6);
-        Assert.Equal(20, roomHour.InfiltrationW, precision: 6);
-        Assert.Equal(50, roomHour.VentilationBalanceW, precision: 6);
-        Assert.Equal(20, roomHour.InfiltrationBalanceW, precision: 6);
+        Assert.Equal(0, roomHour.InfiltrationW, precision: 6);
+        Assert.Equal(0, roomHour.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(-50, roomHour.NaturalVentilationBalanceW, precision: 6);
+        Assert.Equal(-50, roomHour.VentilationBalanceW, precision: 6);
     }
 
     [Fact]
@@ -136,7 +210,11 @@ public class Iso52016HourlyComponentBreakdownTests
                 TransmissionBalanceW: -30,
                 VentilationBalanceW: -40,
                 InfiltrationBalanceW: -12,
-                GroundBalanceW: -50),
+                GroundBalanceW: -50,
+                MechanicalVentilationW: 25,
+                NaturalVentilationW: 15,
+                MechanicalVentilationBalanceW: -25,
+                NaturalVentilationBalanceW: -15),
             new Iso52016ZoneHourlyEnergyNeed(
                 "Zone B",
                 HourOfYear: 0,
@@ -154,7 +232,11 @@ public class Iso52016HourlyComponentBreakdownTests
                 TransmissionBalanceW: -35,
                 VentilationBalanceW: -45,
                 InfiltrationBalanceW: -13,
-                GroundBalanceW: -55)
+                GroundBalanceW: -55,
+                MechanicalVentilationW: 30,
+                NaturalVentilationW: 15,
+                MechanicalVentilationBalanceW: -30,
+                NaturalVentilationBalanceW: -15)
         };
 
         var annual = composer.ComposeAnnualResult(
@@ -167,25 +249,34 @@ public class Iso52016HourlyComponentBreakdownTests
 
         Assert.Equal(65, hour.TransmissionW, precision: 6);
         Assert.Equal(85, hour.VentilationW, precision: 6);
+        Assert.Equal(55, hour.MechanicalVentilationW, precision: 6);
+        Assert.Equal(30, hour.NaturalVentilationW, precision: 6);
         Assert.Equal(25, hour.InfiltrationW, precision: 6);
         Assert.Equal(105, hour.GroundW, precision: 6);
         Assert.Equal(45, hour.SolarGainsW, precision: 6);
         Assert.Equal(25, hour.InternalGainsW, precision: 6);
         Assert.Equal(300, hour.HeatingLoadW, precision: 6);
+        Assert.Equal(-55, hour.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(-30, hour.NaturalVentilationBalanceW, precision: 6);
+        Assert.Equal(-85, hour.VentilationBalanceW, precision: 6);
         Assert.Equal(-25, hour.InfiltrationBalanceW, precision: 6);
     }
 
     private static Iso52016HourlyHeatBalanceCalculator CreateCalculator(
-        IVentilationHeatTransferCalculator? ventilationCalculator = null) =>
+        IVentilationHeatTransferCalculator? ventilationCalculator = null,
+        INaturalVentilationAirflowService? naturalVentilationAirflowService = null,
+        bool useDefaultVentilationCalculator = true) =>
         new(
             new SolarRadiationService(),
-            ventilationCalculator ??
-            new VentilationHeatTransferCalculator(new Iso16798ReferenceData(new InternalLoadStandardProvider())),
+            useDefaultVentilationCalculator
+                ? ventilationCalculator ??
+                  new VentilationHeatTransferCalculator(new Iso16798ReferenceData(new InternalLoadStandardProvider()))
+                : null,
             null,
             new BuildingEnvelopeReferenceData(),
             new En16798ProfileCatalog(),
             new Iso13370GroundHeatTransferService(Options.Create(new Iso13370GroundHeatTransferOptions())),
-            null,
+            naturalVentilationAirflowService,
             new Iso52016EnergyNeedOptions
             {
                 DefaultGroundBoundaryTemperatureC = 12,
@@ -295,5 +386,24 @@ public class Iso52016HourlyComponentBreakdownTests
 
         public double CalculateInfiltration(Room room, VentilationCalculationContext context) =>
             _infiltrationWPerK;
+    }
+
+    private sealed class FixedNaturalVentilationAirflowService : INaturalVentilationAirflowService
+    {
+        private readonly double _heatTransferWPerK;
+
+        public FixedNaturalVentilationAirflowService(double heatTransferWPerK)
+        {
+            _heatTransferWPerK = heatTransferWPerK;
+        }
+
+        public double CalculateHeatTransferCoefficient(
+            Room room,
+            double indoorTemperatureC,
+            double outdoorTemperatureC,
+            double windSpeedMPerS,
+            double demandFactor,
+            int hourOfDay) =>
+            _heatTransferWPerK;
     }
 }

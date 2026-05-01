@@ -14,7 +14,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         int year,
         IReadOnlyList<AnnualEnergyBalanceHourInput> hourlyRecords,
         string? diagnosticsContext = null,
-        bool infiltrationSplitAvailable = false)
+        bool infiltrationSplitAvailable = false,
+        bool ventilationSubcomponentSplitAvailable = false)
     {
         ArgumentNullException.ThrowIfNull(hourlyRecords);
 
@@ -25,7 +26,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
         var diagnostics = BuildComponentDiagnostics(
             records,
             diagnosticsContext,
-            infiltrationSplitAvailable);
+            infiltrationSplitAvailable,
+            ventilationSubcomponentSplitAvailable);
         var isTrueHourly8760 = records.Length == 8760;
 
         return new HourlySimulationAnnualEnergyInputMappingResult(
@@ -49,7 +51,8 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
     private static IReadOnlyList<CalculationDiagnostic> BuildComponentDiagnostics(
         IReadOnlyList<AnnualEnergyBalanceHourInput> records,
         string? diagnosticsContext,
-        bool infiltrationSplitAvailable)
+        bool infiltrationSplitAvailable,
+        bool ventilationSubcomponentSplitAvailable)
     {
         if (records.Count == 0)
             return [];
@@ -71,12 +74,26 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
             valueSelector: record => record.TransmissionW,
             diagnosticsContext);
 
-        AddMissingComponentDiagnostic(
+        var hasVentilationSubcomponentSplit = HasVentilationSubcomponentSplit(records);
+        var ventilationSplitAvailable =
+            ventilationSubcomponentSplitAvailable ||
+            hasVentilationSubcomponentSplit;
+
+        if (!ventilationSplitAvailable)
+        {
+            AddMissingComponentDiagnostic(
+                diagnostics,
+                records,
+                componentName: "ventilation",
+                fieldName: nameof(AnnualEnergyBalanceHourInput.VentilationW),
+                valueSelector: record => record.VentilationW,
+                diagnosticsContext);
+        }
+
+        AddVentilationSubcomponentDiagnostics(
             diagnostics,
             records,
-            componentName: "ventilation",
-            fieldName: nameof(AnnualEnergyBalanceHourInput.VentilationW),
-            valueSelector: record => record.VentilationW,
+            ventilationSplitAvailable,
             diagnosticsContext);
 
         if (!infiltrationSplitAvailable)
@@ -106,6 +123,44 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
 
         return diagnostics;
     }
+
+    private static void AddVentilationSubcomponentDiagnostics(
+        ICollection<CalculationDiagnostic> diagnostics,
+        IReadOnlyList<AnnualEnergyBalanceHourInput> records,
+        bool ventilationSplitAvailable,
+        string? diagnosticsContext)
+    {
+        var hasAggregateVentilation = records.Any(record =>
+            Math.Abs(record.VentilationW) > 0.000001 ||
+            Math.Abs(record.VentilationBalanceW) > 0.000001);
+
+        if (ventilationSplitAvailable)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "AnnualEnergy.VentilationSubcomponentBreakdownAvailable",
+                "Hourly simulation provides mechanical and natural ventilation subcomponent fields. VentilationW remains the aggregate mechanical plus natural ventilation value.",
+                diagnosticsContext));
+            return;
+        }
+
+        if (hasAggregateVentilation)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "AnnualEnergy.VentilationSubcomponentBreakdownPartial",
+                "Hourly simulation provides aggregate ventilation but does not expose mechanical/natural split.",
+                diagnosticsContext));
+        }
+    }
+
+    private static bool HasVentilationSubcomponentSplit(
+        IReadOnlyList<AnnualEnergyBalanceHourInput> records) =>
+        records.Any(record =>
+            Math.Abs(record.MechanicalVentilationW) > 0.000001 ||
+            Math.Abs(record.NaturalVentilationW) > 0.000001 ||
+            Math.Abs(record.MechanicalVentilationBalanceW) > 0.000001 ||
+            Math.Abs(record.NaturalVentilationBalanceW) > 0.000001);
 
     private static void AddMissingComponentDiagnostic(
         ICollection<CalculationDiagnostic> diagnostics,
@@ -138,6 +193,12 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
 
         if (records.Any(record => Math.Abs(record.VentilationBalanceW) > 0.000001))
             availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.VentilationBalanceW));
+
+        if (records.Any(record => Math.Abs(record.MechanicalVentilationBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.MechanicalVentilationBalanceW));
+
+        if (records.Any(record => Math.Abs(record.NaturalVentilationBalanceW) > 0.000001))
+            availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.NaturalVentilationBalanceW));
 
         if (records.Any(record => Math.Abs(record.InfiltrationBalanceW) > 0.000001))
             availableSignedComponents.Add(nameof(AnnualEnergyBalanceHourInput.InfiltrationBalanceW));

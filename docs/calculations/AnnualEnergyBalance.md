@@ -85,6 +85,8 @@ The annual component breakdown includes magnitude fields:
 ```text
 TransmissionKWh
 VentilationKWh
+MechanicalVentilationKWh
+NaturalVentilationKWh
 InfiltrationKWh
 GroundKWh
 SolarGainsKWh
@@ -114,6 +116,8 @@ The annual component breakdown also includes signed/net fields:
 ```text
 NetTransmissionKWh
 NetVentilationKWh
+NetMechanicalVentilationKWh
+NetNaturalVentilationKWh
 NetInfiltrationKWh
 NetGroundKWh
 ```
@@ -195,20 +199,33 @@ The signed balance says:
 250 W left the room/building through transmission.
 ```
 
-## Infiltration status
+## Ventilation and infiltration split
 
-The true hourly path now exposes infiltration as a separate component when the source can evaluate infiltration assumptions.
+The true hourly path exposes outdoor air components separately when the source can evaluate them.
 
 For true hourly records:
 
-- `VentilationW` is the mechanical plus natural ventilation magnitude.
+- `MechanicalVentilationW` is mechanical ventilation magnitude.
+- `NaturalVentilationW` is natural ventilation magnitude.
+- `VentilationW` is `MechanicalVentilationW + NaturalVentilationW`.
 - `InfiltrationW` is the separate infiltration magnitude.
-- `VentilationBalanceW` is the signed mechanical plus natural ventilation balance.
+- `MechanicalVentilationBalanceW` is signed mechanical ventilation balance.
+- `NaturalVentilationBalanceW` is signed natural ventilation balance.
+- `VentilationBalanceW` is `MechanicalVentilationBalanceW + NaturalVentilationBalanceW`.
 - `InfiltrationBalanceW` is the signed infiltration balance.
 
 ```text
 ComponentBalanceW = ComponentHeatTransferWPerK x (OutdoorTemperatureC - OperativeTemperatureC)
 ComponentW = ComponentHeatTransferWPerK x abs(OutdoorTemperatureC - OperativeTemperatureC)
+```
+
+Annual mechanical and natural ventilation totals are exposed as:
+
+```text
+MechanicalVentilationKWh
+NaturalVentilationKWh
+NetMechanicalVentilationKWh
+NetNaturalVentilationKWh
 ```
 
 `InfiltrationW = 0` and `InfiltrationBalanceW = 0` can be valid without warning when infiltration assumptions are explicitly zero.
@@ -230,6 +247,8 @@ AnnualEnergy.MonthlyBalanceAdapter
 AnnualEnergy.SourceUnavailable
 AnnualEnergy.HourlyComponentBreakdownPartial
 AnnualEnergy.SignedComponentBalanceAvailable
+AnnualEnergy.VentilationSubcomponentBreakdownAvailable
+AnnualEnergy.VentilationSubcomponentBreakdownPartial
 AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable
 AnnualEnergy.NegativeHourlyValueClamped
 ```
@@ -240,12 +259,13 @@ Annual energy balance is currently:
 
 ```text
 InternalDeterministicTested for existing deterministic fixtures
-BenchmarkCompared for active constant hourly deterministic benchmark fixtures
+BenchmarkCompared for active constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture
 Application pipeline integrated
 TrueHourlySimulation supported when hourly source is available
 MonthlyBalanceAdapter fallback documented
 Separate hourly infiltration split supported when source data is available
-Signed component balance supported for transmission, ventilation, infiltration and ground
+Separate hourly mechanical/natural ventilation split supported when source data is available
+Signed component balance supported for transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground
 ```
 
 It is not marked as:

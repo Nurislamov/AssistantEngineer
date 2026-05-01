@@ -104,14 +104,37 @@ public sealed class AnnualEnergyBalanceEngine
             .ThenBy(hour => hour.HourIndex)
             .FirstOrDefault();
 
+        var mechanicalVentilationKWh = Round(input.Hours.Sum(hour =>
+            Positive(hour.MechanicalVentilationW, nameof(hour.MechanicalVentilationW), diagnostics) *
+            hour.HourDurationH) / 1000.0);
+
+        var naturalVentilationKWh = Round(input.Hours.Sum(hour =>
+            Positive(hour.NaturalVentilationW, nameof(hour.NaturalVentilationW), diagnostics) *
+            hour.HourDurationH) / 1000.0);
+
+        var netMechanicalVentilationKWh = Round(input.Hours.Sum(hour =>
+            hour.MechanicalVentilationBalanceW * hour.HourDurationH) / 1000.0);
+
+        var netNaturalVentilationKWh = Round(input.Hours.Sum(hour =>
+            hour.NaturalVentilationBalanceW * hour.HourDurationH) / 1000.0);
+
+        var hasVentilationSubcomponentSplit =
+            input.Hours.Any(hour =>
+                Math.Abs(hour.MechanicalVentilationW) > 0.000001 ||
+                Math.Abs(hour.NaturalVentilationW) > 0.000001 ||
+                Math.Abs(hour.MechanicalVentilationBalanceW) > 0.000001 ||
+                Math.Abs(hour.NaturalVentilationBalanceW) > 0.000001);
+
         var componentBreakdown = new AnnualEnergyComponentBreakdown(
             TransmissionKWh: Round(input.Hours.Sum(hour =>
                 Positive(hour.TransmissionW, nameof(hour.TransmissionW), diagnostics) *
                 hour.HourDurationH) / 1000.0),
 
-            VentilationKWh: Round(input.Hours.Sum(hour =>
-                Positive(hour.VentilationW, nameof(hour.VentilationW), diagnostics) *
-                hour.HourDurationH) / 1000.0),
+            VentilationKWh: hasVentilationSubcomponentSplit
+                ? Round(mechanicalVentilationKWh + naturalVentilationKWh)
+                : Round(input.Hours.Sum(hour =>
+                    Positive(hour.VentilationW, nameof(hour.VentilationW), diagnostics) *
+                    hour.HourDurationH) / 1000.0),
 
             InfiltrationKWh: Round(input.Hours.Sum(hour =>
                 Positive(hour.InfiltrationW, nameof(hour.InfiltrationW), diagnostics) *
@@ -132,14 +155,24 @@ public sealed class AnnualEnergyBalanceEngine
             NetTransmissionKWh: Round(input.Hours.Sum(hour =>
                 hour.TransmissionBalanceW * hour.HourDurationH) / 1000.0),
 
-            NetVentilationKWh: Round(input.Hours.Sum(hour =>
-                hour.VentilationBalanceW * hour.HourDurationH) / 1000.0),
+            NetVentilationKWh: hasVentilationSubcomponentSplit
+                ? Round(netMechanicalVentilationKWh + netNaturalVentilationKWh)
+                : Round(input.Hours.Sum(hour =>
+                    hour.VentilationBalanceW * hour.HourDurationH) / 1000.0),
 
             NetInfiltrationKWh: Round(input.Hours.Sum(hour =>
                 hour.InfiltrationBalanceW * hour.HourDurationH) / 1000.0),
 
             NetGroundKWh: Round(input.Hours.Sum(hour =>
-                hour.GroundBalanceW * hour.HourDurationH) / 1000.0));
+                hour.GroundBalanceW * hour.HourDurationH) / 1000.0),
+
+            MechanicalVentilationKWh: mechanicalVentilationKWh,
+
+            NaturalVentilationKWh: naturalVentilationKWh,
+
+            NetMechanicalVentilationKWh: netMechanicalVentilationKWh,
+
+            NetNaturalVentilationKWh: netNaturalVentilationKWh);
 
         return Result<AnnualEnergyBalanceResult>.Success(
             new AnnualEnergyBalanceResult(
@@ -332,6 +365,8 @@ public sealed class AnnualEnergyBalanceEngine
             hours.Any(hour =>
                 Math.Abs(hour.TransmissionBalanceW) > 0.000001 ||
                 Math.Abs(hour.VentilationBalanceW) > 0.000001 ||
+                Math.Abs(hour.MechanicalVentilationBalanceW) > 0.000001 ||
+                Math.Abs(hour.NaturalVentilationBalanceW) > 0.000001 ||
                 Math.Abs(hour.InfiltrationBalanceW) > 0.000001 ||
                 Math.Abs(hour.GroundBalanceW) > 0.000001);
 

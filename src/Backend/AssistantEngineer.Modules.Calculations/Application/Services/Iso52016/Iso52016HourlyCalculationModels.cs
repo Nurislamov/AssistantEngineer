@@ -32,12 +32,12 @@ internal sealed record Iso52016HourlyVentilationComponents(
     double NaturalHeatTransferWPerK,
     double InfiltrationHeatTransferWPerK,
     double TotalVentilationHeatTransferWPerK,
-    double MechanicalW = 0,
-    double NaturalW = 0,
+    double MechanicalVentilationW = 0,
+    double NaturalVentilationW = 0,
     double InfiltrationW = 0,
     double TotalVentilationW = 0,
-    double MechanicalBalanceW = 0,
-    double NaturalBalanceW = 0,
+    double MechanicalVentilationBalanceW = 0,
+    double NaturalVentilationBalanceW = 0,
     double InfiltrationBalanceW = 0,
     double TotalVentilationBalanceW = 0)
 {
@@ -56,12 +56,12 @@ internal sealed record Iso52016HourlyVentilationComponents(
 
         return this with
         {
-            MechanicalW = mechanicalW,
-            NaturalW = naturalW,
+            MechanicalVentilationW = mechanicalW,
+            NaturalVentilationW = naturalW,
             InfiltrationW = infiltrationW,
             TotalVentilationW = mechanicalW + naturalW,
-            MechanicalBalanceW = mechanicalBalanceW,
-            NaturalBalanceW = naturalBalanceW,
+            MechanicalVentilationBalanceW = mechanicalBalanceW,
+            NaturalVentilationBalanceW = naturalBalanceW,
             InfiltrationBalanceW = infiltrationBalanceW,
             TotalVentilationBalanceW = mechanicalBalanceW + naturalBalanceW
         };

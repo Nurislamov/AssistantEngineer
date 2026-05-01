@@ -15,8 +15,8 @@ Verification is based on internal deterministic fixtures, focused engine tests, 
 | Thermal Zone Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, application pipeline tests |
 | Floor Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, floor application pipeline tests |
 | Building Aggregation | InternalDeterministicTested | Aggregation engine tests, fixtures, building application pipeline tests |
-| Annual Energy Balance | BenchmarkCompared | InternalDeterministicTested by annual engine tests, fixtures, application pipeline adapter tests, hourly component mapper tests, report facade integration, monthly adapter/hourly source diagnostics; BenchmarkCompared for constant hourly deterministic benchmark fixtures and deterministic infiltration benchmark fixture; not ExternalParityCovered |
-| Signed Component Balance | BenchmarkCompared | InternalDeterministicTested for signed hourly transmission, ventilation, infiltration and ground components; BenchmarkCompared for deterministic signed component benchmark fixtures including infiltration; not ExternalParityCovered |
+| Annual Energy Balance | BenchmarkCompared | InternalDeterministicTested by annual engine tests, fixtures, application pipeline adapter tests, hourly component mapper tests, report facade integration, monthly adapter/hourly source diagnostics; BenchmarkCompared for constant hourly deterministic benchmark fixtures, deterministic infiltration benchmark fixture, and deterministic ventilation split fixture; not ExternalParityCovered |
+| Signed Component Balance | BenchmarkCompared | InternalDeterministicTested for signed hourly transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground components; BenchmarkCompared for deterministic signed component benchmark fixtures including infiltration and ventilation split; not ExternalParityCovered |
 | DHW Demand | InternalDeterministicTested | DHW deterministic service tests, fixtures, endpoint facade path |
 | System Energy | InternalDeterministicTested | System energy tests, fixtures, heating/cooling system services call SystemEnergyEngine |
 | Equipment Sizing Integration | InternalDeterministicTested | Equipment sizing tests, fixtures, room equipment application pipeline tests, endpoint/report integration, heating capacity diagnostics |
@@ -29,7 +29,7 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 
 - Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Energy Calculation Parity design-point pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
-- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, mechanical/natural ventilation, separate infiltration, ground, solar and internal-gain components through to the annual engine.
+- Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, mechanical ventilation, natural ventilation, aggregate ventilation, separate infiltration, ground, solar and internal-gain components through to the annual engine.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values.
 - Room equipment selection uses the actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
@@ -53,7 +53,7 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 
 ## Known Limits
 
-The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates infiltration when the source data can evaluate it. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
+The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when the source data can evaluate them. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.
 START SECTION
 
 ## Signed hourly component balance
@@ -64,6 +64,8 @@ The existing magnitude fields remain available:
 
 - TransmissionW
 - VentilationW
+- MechanicalVentilationW
+- NaturalVentilationW
 - InfiltrationW
 - GroundW
 - SolarGainsW
@@ -75,6 +77,8 @@ The signed balance fields are:
 
 - TransmissionBalanceW
 - VentilationBalanceW
+- MechanicalVentilationBalanceW
+- NaturalVentilationBalanceW
 - InfiltrationBalanceW
 - GroundBalanceW
 
@@ -94,20 +98,26 @@ At annual aggregation level, the signed hourly values are exposed as:
 
 - NetTransmissionKWh
 - NetVentilationKWh
+- NetMechanicalVentilationKWh
+- NetNaturalVentilationKWh
 - NetInfiltrationKWh
 - NetGroundKWh
 
 These values preserve the sign of heat flow over the calculation period.
 
-### Infiltration split
+### Ventilation and infiltration split
 
 The true hourly path separates infiltration from mechanical and natural ventilation.
 
 Current field meanings:
 
-- `VentilationW`: mechanical plus natural ventilation magnitude.
+- `MechanicalVentilationW`: mechanical ventilation magnitude.
+- `NaturalVentilationW`: natural ventilation magnitude.
+- `VentilationW`: `MechanicalVentilationW + NaturalVentilationW`.
 - `InfiltrationW`: separate infiltration magnitude.
-- `VentilationBalanceW`: signed mechanical plus natural ventilation balance.
+- `MechanicalVentilationBalanceW`: signed mechanical ventilation balance.
+- `NaturalVentilationBalanceW`: signed natural ventilation balance.
+- `VentilationBalanceW`: `MechanicalVentilationBalanceW + NaturalVentilationBalanceW`.
 - `InfiltrationBalanceW`: signed infiltration balance.
 
 `InfiltrationW` may still be 0 when infiltration assumptions are explicitly zero.
@@ -124,6 +134,8 @@ Status:
 
 - Transmission signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
 - Ventilation signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
+- Mechanical ventilation signed balance: BenchmarkCompared for deterministic ventilation split benchmark fixture
+- Natural ventilation signed balance: BenchmarkCompared for deterministic ventilation split benchmark fixture
 - Infiltration signed balance: BenchmarkCompared for deterministic infiltration benchmark fixture
 - Ground signed balance: BenchmarkCompared for deterministic signed component benchmark fixtures
 

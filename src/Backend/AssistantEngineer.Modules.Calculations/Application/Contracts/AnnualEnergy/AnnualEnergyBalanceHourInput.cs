@@ -15,4 +15,8 @@ public sealed record AnnualEnergyBalanceHourInput(
     double TransmissionBalanceW = 0,
     double VentilationBalanceW = 0,
     double InfiltrationBalanceW = 0,
-    double GroundBalanceW = 0);
+    double GroundBalanceW = 0,
+    double MechanicalVentilationW = 0,
+    double NaturalVentilationW = 0,
+    double MechanicalVentilationBalanceW = 0,
+    double NaturalVentilationBalanceW = 0);

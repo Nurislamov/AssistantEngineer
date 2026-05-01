@@ -120,7 +120,11 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                         TransmissionBalanceW: hour.TransmissionBalanceW,
                         VentilationBalanceW: hour.VentilationBalanceW,
                         InfiltrationBalanceW: hour.InfiltrationBalanceW,
-                        GroundBalanceW: hour.GroundBalanceW))
+                        GroundBalanceW: hour.GroundBalanceW,
+                        MechanicalVentilationW: hour.MechanicalVentilationW,
+                        NaturalVentilationW: hour.NaturalVentilationW,
+                        MechanicalVentilationBalanceW: hour.MechanicalVentilationBalanceW,
+                        NaturalVentilationBalanceW: hour.NaturalVentilationBalanceW))
                     .ToList();
 
                 var hourlyMapping = new HourlySimulationToAnnualEnergyInputMapper().Map(
@@ -130,7 +134,8 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
                     annualEnergyNeeds.Year,
                     hourlyRecords,
                     $"Building {building.Id} ISO52016InspiredHourlyAnalysis",
-                    infiltrationSplitAvailable: true);
+                    infiltrationSplitAvailable: true,
+                    ventilationSubcomponentSplitAvailable: true);
 
                 result.HourlyBalanceRecords = hourlyMapping.Input.Hours.ToList();
                 result.Diagnostics.AddRange(hourlyMapping.Diagnostics);

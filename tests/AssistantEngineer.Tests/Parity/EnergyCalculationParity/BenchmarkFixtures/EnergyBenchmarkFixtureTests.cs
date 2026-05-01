@@ -18,6 +18,7 @@ public class EnergyBenchmarkFixtureTests
         Assert.Contains("signed-component-balance-winter", fixtureNames);
         Assert.Contains("signed-component-balance-summer", fixtureNames);
         Assert.Contains("signed-component-balance-with-infiltration-winter", fixtureNames);
+        Assert.Contains("signed-component-balance-with-ventilation-split-winter", fixtureNames);
         Assert.All(result.Fixtures, fixture =>
         {
             Assert.Equal("Active", fixture.Status);
@@ -220,7 +221,11 @@ public class EnergyBenchmarkFixtureTests
                 TransmissionBalanceW: values.TransmissionBalanceW,
                 VentilationBalanceW: values.VentilationBalanceW,
                 InfiltrationBalanceW: values.InfiltrationBalanceW,
-                GroundBalanceW: values.GroundBalanceW))
+                GroundBalanceW: values.GroundBalanceW,
+                MechanicalVentilationW: values.MechanicalVentilationW,
+                NaturalVentilationW: values.NaturalVentilationW,
+                MechanicalVentilationBalanceW: values.MechanicalVentilationBalanceW,
+                NaturalVentilationBalanceW: values.NaturalVentilationBalanceW))
             .ToArray();
 
         return new AnnualEnergyBalanceInput(

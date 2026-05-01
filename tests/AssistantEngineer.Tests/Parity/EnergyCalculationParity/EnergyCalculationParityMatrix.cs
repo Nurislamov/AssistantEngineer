@@ -92,7 +92,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
-            Notes: "InternalDeterministicTested by fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. BenchmarkCompared for constant hourly deterministic benchmark fixtures. True hourly source passes available transmission, mechanical/natural ventilation, separate infiltration, ground, solar and internal gains. This is not ExternalParityCovered."),
+            Notes: "InternalDeterministicTested by fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. BenchmarkCompared for constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture. True hourly source passes available transmission, mechanical ventilation, natural ventilation, separate infiltration, ground, solar and internal gains. This is not ExternalParityCovered."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
@@ -101,7 +101,7 @@ public static class EnergyCalculationParityMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
-            Notes: "InternalDeterministicTested for signed hourly transmission, ventilation, infiltration and ground components. BenchmarkCompared for deterministic signed component benchmark fixtures, including separate infiltration. This is not ExternalParityCovered."),
+            Notes: "InternalDeterministicTested for signed hourly transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground components. BenchmarkCompared for deterministic signed component benchmark fixtures, including separate infiltration and ventilation subcomponent split. This is not ExternalParityCovered."),
 
         new(
             Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",

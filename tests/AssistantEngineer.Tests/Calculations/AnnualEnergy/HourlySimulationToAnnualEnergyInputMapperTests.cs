@@ -29,6 +29,10 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial");
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownPartial");
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownAvailable");
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
     }
 
@@ -91,6 +95,9 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
 
         Assert.Contains(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
+
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownPartial");
     }
 
     [Fact]
@@ -106,11 +113,15 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
             year: 2026,
             hourlyRecords: records,
             diagnosticsContext: "test",
-            infiltrationSplitAvailable: true);
+            infiltrationSplitAvailable: true,
+            ventilationSubcomponentSplitAvailable: true);
 
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
             diagnostic.Message.Contains("infiltration", StringComparison.OrdinalIgnoreCase));
+
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownPartial");
 
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
@@ -162,6 +173,32 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
         Assert.Equal(-20.0, first.InfiltrationBalanceW, precision: 6);
         Assert.DoesNotContain(result.Diagnostics, diagnostic =>
             diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
+    }
+
+    [Fact]
+    public void Map_PreservesMechanicalAndNaturalVentilationSplitWhenProvided()
+    {
+        var mapper = new HourlySimulationToAnnualEnergyInputMapper();
+        var records = CreateSignedComponentHoursWithVentilationSplit();
+
+        var result = mapper.Map(
+            buildingId: 1,
+            buildingName: "Building",
+            buildingAreaM2: 120,
+            year: 2026,
+            hourlyRecords: records,
+            diagnosticsContext: "test");
+
+        var first = result.Input.Hours[0];
+
+        Assert.Equal(30.0, first.MechanicalVentilationW, precision: 6);
+        Assert.Equal(20.0, first.NaturalVentilationW, precision: 6);
+        Assert.Equal(-30.0, first.MechanicalVentilationBalanceW, precision: 6);
+        Assert.Equal(-20.0, first.NaturalVentilationBalanceW, precision: 6);
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownPartial");
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.VentilationSubcomponentBreakdownAvailable");
     }
 
     [Fact]
@@ -242,7 +279,44 @@ public class HourlySimulationToAnnualEnergyInputMapperTests
                     InfiltrationW: includeComponents ? heatingW * 0.05 : 0,
                     SolarGainsW: coolingW,
                     InternalGainsW: coolingW * 0.2,
-                    GroundW: includeComponents ? heatingW * 0.02 : 0));
+                    GroundW: includeComponents ? heatingW * 0.02 : 0,
+                    MechanicalVentilationW: includeComponents ? heatingW * 0.06 : 0,
+                    NaturalVentilationW: includeComponents ? heatingW * 0.04 : 0));
+            }
+        }
+
+        return records;
+    }
+
+    private static IReadOnlyList<AnnualEnergyBalanceHourInput> CreateSignedComponentHoursWithVentilationSplit()
+    {
+        var records = new List<AnnualEnergyBalanceHourInput>(8760);
+        var hour = 0;
+
+        foreach (var (month, hours) in MonthHours())
+        {
+            for (var i = 0; i < hours; i++)
+            {
+                records.Add(new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour++,
+                    Month: month,
+                    HeatingLoadW: 100,
+                    CoolingLoadW: 50,
+                    TransmissionW: 100,
+                    VentilationW: 50,
+                    InfiltrationW: 10,
+                    SolarGainsW: 20,
+                    InternalGainsW: 10,
+                    GroundW: 30,
+                    HourDurationH: 1,
+                    TransmissionBalanceW: -100,
+                    VentilationBalanceW: -50,
+                    InfiltrationBalanceW: -10,
+                    GroundBalanceW: 10,
+                    MechanicalVentilationW: 30,
+                    NaturalVentilationW: 20,
+                    MechanicalVentilationBalanceW: -30,
+                    NaturalVentilationBalanceW: -20));
             }
         }
 

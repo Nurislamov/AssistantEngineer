@@ -59,6 +59,7 @@ Expected zero is handled without division by zero. A nonzero actual value agains
 - `signed-component-balance-winter.json`: SignedComponentBalance, negative net transmission/ventilation/ground totals.
 - `signed-component-balance-summer.json`: SignedComponentBalance, positive net transmission/ventilation/ground totals plus solar/internal gains.
 - `signed-component-balance-with-infiltration-winter.json`: SignedComponentBalance, negative net ventilation and separate infiltration totals.
+- `signed-component-balance-with-ventilation-split-winter.json`: SignedComponentBalance, negative net mechanical ventilation, natural ventilation, aggregate ventilation and separate infiltration totals.
 
 These fixtures are deterministic benchmark references. They are not `ExternalParityCovered`.
 

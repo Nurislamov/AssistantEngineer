@@ -84,20 +84,20 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Room solar gains prefer available annual/weather solar context. If it is unavailable, the orientation reference irradiance fallback is used with a diagnostic warning.
 - Room ventilation falls back to project/default ACH only with diagnostics that include the value. Room responses expose the effective ACH/airflow values and source. Invalid default ACH returns validation/diagnostics.
 - Design-point internal gains use full schedule factor `1.0` and report that assumption. Existing hourly analysis paths remain responsible for schedule expansion.
-- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It tries existing true hourly simulation records first, maps them through `HourlySimulationToAnnualEnergyInputMapper`, and distinguishes `TrueHourlySimulation` from `MonthlyBalanceAdapter`. True hourly records carry heating, cooling, transmission, combined ventilation, ground, solar and internal gains where the source computes them. Results expose `isTrueHourly8760` and `hourlyRecordCount`; representative monthly records are not labelled as true 8760 simulation.
+- `GET /api/v1/buildings/{buildingId}/load-calculations/energy-balance` uses an explicit annual aggregation adapter and then `AnnualEnergyBalanceEngine`. It tries existing true hourly simulation records first, maps them through `HourlySimulationToAnnualEnergyInputMapper`, and distinguishes `TrueHourlySimulation` from `MonthlyBalanceAdapter`. True hourly records carry heating, cooling, transmission, mechanical ventilation, natural ventilation, aggregate ventilation, separate infiltration, ground, solar and internal gains where the source computes them. Results expose `isTrueHourly8760` and `hourlyRecordCount`; representative monthly records are not labelled as true 8760 simulation.
 - `POST /api/v1/domestic-hot-water/demand` остается на deterministic DHW service path.
 - Building energy analysis heating/cooling system routes используют `SystemEnergyEngine`; useful, final и primary energy не смешиваются.
 - Building energy analysis routes remain a separate `ISO52016InspiredHourlyAnalysis`/monthly analysis mode. This path is labelled separately and is not silently mixed with the load-calculations annual adapter.
 - `POST /api/v1/rooms/{roomId}/equipment-selection` берет actual room load из pipeline, применяет separate project heating/cooling safety factors, вызывает `EquipmentSizingEngine` и затем маппит accepted/rejected catalog candidates. Heating capacity is evaluated when catalog rows expose it; cooling capacity is evaluated against catalog cooling capacity; otherwise diagnostics state the limitation.
 - Cooling, heating и energy-balance reports потребляют facade results, построенные из нового pipeline. ClosedXML остается только в Infrastructure integrations.
-- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. Current active benchmark fixtures cover annual constant hourly deterministic cases and signed component balance deterministic cases. Benchmark statuses still do not imply external parity coverage without documented external source evidence.
+- Benchmark fixture verification compares fixed expected benchmark/reference values with AssistantEngineer results through test-only comparison helpers. Current active benchmark fixtures cover annual constant hourly deterministic cases and signed component balance deterministic cases, including separate infiltration and mechanical/natural ventilation split. Benchmark statuses still do not imply external parity coverage without documented external source evidence.
 
 Старые calculators сохраняются как compatibility adapters или alternative method labels там, где они еще нужны для public contracts. Новые статусы выше `InternalDeterministicTested` не выставляются без benchmark comparison evidence. Для integrated paths notes должны содержать `Application pipeline integrated.`
 
 ### Current limitations
 
 - The load-calculations energy-balance endpoint is an annual aggregation adapter unless the upstream source provides true 8760 hourly records. If neither true hourly records nor monthly balances are available, the application path returns validation instead of fake annual values.
-- The true hourly component breakdown separates infiltration from mechanical/natural ventilation when source data can evaluate infiltration assumptions. Explicit zero infiltration can remain zero without warning.
+- The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when source data can evaluate those assumptions. Aggregate `VentilationW` remains mechanical plus natural ventilation; explicit zero ventilation or infiltration can remain zero without warning.
 - The design-point room load path is not a full hourly balance and does not claim full ISO compliance.
 - Annual climate solar data is used when available; otherwise the orientation reference irradiance fallback remains documented and diagnosed.
 - Internal schedules are expanded in existing hourly analysis paths, not in design-point room loads.
@@ -260,10 +260,11 @@ These fixtures are deterministic benchmark references for the benchmark comparis
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-winter.json` | Signed winter transmission, ventilation and ground balance | BenchmarkCompared |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-summer.json` | Signed summer transmission, ventilation and ground balance with gains | BenchmarkCompared |
 | `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-with-infiltration-winter.json` | Signed winter ventilation and separate infiltration balance | BenchmarkCompared |
+| `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures/signed-component-balance-with-ventilation-split-winter.json` | Signed winter mechanical/natural ventilation split with separate infiltration balance | BenchmarkCompared |
 
-Annual Energy Balance remains `InternalDeterministicTested` for existing deterministic fixtures and is now `BenchmarkCompared` for the active constant hourly deterministic benchmark fixtures.
+Annual Energy Balance remains `InternalDeterministicTested` for existing deterministic fixtures and is now `BenchmarkCompared` for the active constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture.
 
-Signed Component Balance is now `BenchmarkCompared` for deterministic signed component benchmark fixtures, including separate infiltration.
+Signed Component Balance is now `BenchmarkCompared` for deterministic signed component benchmark fixtures, including separate infiltration and mechanical/natural ventilation split.
 
 No benchmark fixture in this section claims `ExternalParityCovered`.
 
@@ -291,6 +292,8 @@ The following signed hourly fields are available in the true hourly simulation p
 
 - TransmissionBalanceW
 - VentilationBalanceW
+- MechanicalVentilationBalanceW
+- NaturalVentilationBalanceW
 - InfiltrationBalanceW
 - GroundBalanceW
 
@@ -298,6 +301,8 @@ The following annual net fields are available in annual component breakdown:
 
 - NetTransmissionKWh
 - NetVentilationKWh
+- NetMechanicalVentilationKWh
+- NetNaturalVentilationKWh
 - NetInfiltrationKWh
 - NetGroundKWh
 
@@ -312,6 +317,8 @@ Magnitude fields remain available and non-negative:
 
 - TransmissionW
 - VentilationW
+- MechanicalVentilationW
+- NaturalVentilationW
 - InfiltrationW
 - GroundW
 
@@ -321,14 +328,20 @@ Magnitude fields remain available and non-negative:
 |---|---|---|
 | Hourly transmission magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
 | Hourly ventilation magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
+| Hourly mechanical ventilation magnitude | InternalDeterministicTested | Available in true hourly simulation path when mechanical ventilation heat transfer is evaluated. |
+| Hourly natural ventilation magnitude | InternalDeterministicTested | Available in true hourly simulation path when natural ventilation heat transfer is evaluated; zero when the service is absent or returns zero. |
 | Hourly ground magnitude | InternalDeterministicTested | Available in true hourly simulation path. |
-| Hourly infiltration magnitude | InternalDeterministicTested | True hourly path separates infiltration from mechanical/natural ventilation when source data can evaluate it. |
+| Hourly infiltration magnitude | InternalDeterministicTested | True hourly path separates infiltration from aggregate ventilation when source data can evaluate it. |
 | Signed transmission balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
 | Signed ventilation balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
+| Signed mechanical ventilation balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic ventilation split benchmark fixture. |
+| Signed natural ventilation balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic ventilation split benchmark fixture. |
 | Signed ground balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic signed component benchmark fixtures. |
-| Signed infiltration balance | InternalDeterministicTested | Positive means heat gain, negative means heat loss; covered by deterministic hourly split tests. |
+| Signed infiltration balance | BenchmarkCompared | Positive means heat gain, negative means heat loss; covered by deterministic infiltration and ventilation split benchmark fixtures. |
 | Annual net transmission total | InternalDeterministicTested | Exposed as NetTransmissionKWh. |
 | Annual net ventilation total | InternalDeterministicTested | Exposed as NetVentilationKWh. |
+| Annual mechanical ventilation total | InternalDeterministicTested | Exposed as MechanicalVentilationKWh and NetMechanicalVentilationKWh. |
+| Annual natural ventilation total | InternalDeterministicTested | Exposed as NaturalVentilationKWh and NetNaturalVentilationKWh. |
 | Annual net ground total | InternalDeterministicTested | Exposed as NetGroundKWh. |
 | Annual net infiltration total | InternalDeterministicTested | Exposed as NetInfiltrationKWh and populated when hourly infiltration balance is present. |
 
@@ -340,8 +353,8 @@ This update does not change external parity status.
 
 Current status remains:
 
-- InternalDeterministicTested for hourly infiltration magnitude, signed infiltration balance, and annual net infiltration totals.
-- BenchmarkCompared for implemented signed hourly components covered by active deterministic benchmark fixtures, including infiltration.
+- InternalDeterministicTested for hourly mechanical ventilation, natural ventilation, infiltration magnitude, signed balances, and annual net subcomponent totals.
+- BenchmarkCompared for implemented signed hourly components covered by active deterministic benchmark fixtures, including infiltration and mechanical/natural ventilation split.
 - Not ExternalParityCovered.
 
 External parity still requires benchmark comparison fixtures with documented source results and tolerances.

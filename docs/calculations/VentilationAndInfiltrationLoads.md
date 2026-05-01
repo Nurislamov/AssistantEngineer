@@ -128,9 +128,13 @@ The load engine accepts `naturalVentilationAirflowM3PerHour` when an existing se
 
 The ISO52016-inspired true hourly path keeps outdoor air components separate after heat-transfer calculation:
 
-- `VentilationW` means mechanical plus natural ventilation magnitude.
-- `InfiltrationW` means infiltration magnitude.
-- `VentilationBalanceW` preserves the sign of mechanical plus natural ventilation heat flow.
+- `MechanicalVentilationW` means mechanical ventilation magnitude.
+- `NaturalVentilationW` means natural ventilation magnitude.
+- `VentilationW` means `MechanicalVentilationW + NaturalVentilationW`.
+- `InfiltrationW` means separate infiltration magnitude.
+- `MechanicalVentilationBalanceW` preserves the sign of mechanical ventilation heat flow.
+- `NaturalVentilationBalanceW` preserves the sign of natural ventilation heat flow.
+- `VentilationBalanceW` means `MechanicalVentilationBalanceW + NaturalVentilationBalanceW`.
 - `InfiltrationBalanceW` preserves the sign of infiltration heat flow.
 
 The signed balance convention is:
@@ -149,7 +153,9 @@ ComponentBalanceW = ComponentHeatTransferWPerK x (OutdoorTemperatureC - Operativ
 
 Mechanical and natural ventilation remain ventilation contribution. Infiltration is not derived by splitting total ventilation proportionally; it is calculated from the existing infiltration heat-transfer path and remains separate.
 
-If infiltration assumptions are explicitly zero, `InfiltrationW` can be zero without warning. If an upstream hourly source cannot expose infiltration separately, annual mapping diagnostics should report that the infiltration split is unavailable instead of faking a split.
+If the natural ventilation service is absent or returns zero, `NaturalVentilationW` and `NaturalVentilationBalanceW` remain zero. If the mechanical calculator is absent, `MechanicalVentilationW` and `MechanicalVentilationBalanceW` remain zero. No proportional split is inferred from aggregate `VentilationW`.
+
+If infiltration assumptions are explicitly zero, `InfiltrationW` can be zero without warning. If an upstream hourly source cannot expose infiltration separately, annual mapping diagnostics should report that the infiltration split is unavailable instead of faking a split. If an upstream hourly source provides aggregate ventilation but not mechanical/natural subcomponents, annual mapping diagnostics report `AnnualEnergy.VentilationSubcomponentBreakdownPartial`.
 
 ## Diagnostics
 
