@@ -55,13 +55,23 @@ Invoke-Step "Engineering Core API contract snapshot guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ApiContractSnapshotTests"
 }
 
+Invoke-Step "Engineering Core OpenAPI contract guard tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1OpenApiContractTests"
+}
+
 Invoke-Step "Engineering Core report contract snapshot guard tests" {
     .\scripts\engineering-core\generate-engineering-core-v1-report-contract-snapshots.ps1
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ReportContractSnapshotTests"
 }
 
-Invoke-Step "Engineering Core OpenAPI contract guard tests" {
-    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1OpenApiContractTests"
+Invoke-Step "Engineering Core validation registry guard tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-readiness.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationCaseRegistryTests"
+}
+
+Invoke-Step "Engineering Core traceability matrix guard tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-traceability-matrix.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1TraceabilityMatrixTests"
 }
 
 Invoke-Step "Engineering Core frontend visibility guard tests" {
@@ -78,11 +88,6 @@ Invoke-Step "Engineering Core hourly heat-balance, zone, ground and adjacent clo
 
 Invoke-Step "EnergyPlus/ASHRAE 140 validation harness guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidation"
-}
-
-Invoke-Step "Engineering Core validation registry guard tests" {
-    .\scripts\engineering-core\generate-engineering-core-v1-validation-readiness.ps1
-    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationCaseRegistryTests"
 }
 
 if (-not $SkipFullDotnet -and -not $Fast) {
@@ -102,6 +107,10 @@ Write-Host "- report disclosures"
 Write-Host "- diagnostics catalog"
 Write-Host "- release evidence package"
 Write-Host "- API contract snapshots"
+Write-Host "- OpenAPI contract"
+Write-Host "- report contract snapshots"
+Write-Host "- validation registry"
+Write-Host "- traceability matrix"
 Write-Host "- frontend visibility guards"
 Write-Host "- EPW/PVGIS 8760 gates"
 Write-Host "- annual true hourly 8760 gate"
@@ -109,7 +118,3 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
-
-
-
-

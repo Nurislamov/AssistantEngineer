@@ -94,3 +94,10 @@ Engineering Core V1 does not claim:
 - docs/validation/EnergyPlusValidationCaseRegistry.md
 - docs/reports/EngineeringCoreV1ValidationReadiness.md
 - scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1
+
+## Traceability matrix
+
+- docs/traceability/EngineeringCoreV1TraceabilityMatrix.json
+- docs/traceability/EngineeringCoreV1TraceabilityMatrix.md
+- docs/traceability/README.md
+- scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1

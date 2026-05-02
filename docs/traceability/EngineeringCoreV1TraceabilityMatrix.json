@@ -1,0 +1,773 @@
+﻿{
+    "matrixName":  "Engineering Core V1 Traceability Matrix",
+    "version":  "v1",
+    "status":  "ClosedV1",
+    "sourceManifest":  "docs/releases/EngineeringCoreV1Manifest.json",
+    "sourceDiagnosticsCatalog":  "docs/calculations/EngineeringCoreV1DiagnosticsCatalog.json",
+    "sourceValidationRegistry":  "docs/validation/EnergyPlusValidationCaseRegistry.json",
+    "generatedFrom":  [
+                          "docs/releases/EngineeringCoreV1Manifest.json",
+                          "docs/calculations/EngineeringCoreV1DiagnosticsCatalog.json",
+                          "docs/validation/EnergyPlusValidationCaseRegistry.json"
+                      ],
+    "closedFormulaGateCount":  17,
+    "diagnosticsCount":  43,
+    "validationCaseCount":  5,
+    "annual8760Requirements":  [
+                                   "EnergyDataSource = TrueHourlySimulation",
+                                   "IsTrueHourly8760 = true",
+                                   "HourlyRecordCount = 8760"
+                               ],
+    "outOfScopeV1":  [
+                         "HVAC.LATENT_LOAD",
+                         "HVAC.MOISTURE_BALANCE"
+                     ],
+    "plannedValidation":  [
+                              "VALIDATION.ENERGYPLUS_ASHRAE140"
+                          ],
+    "applicationEndpoints":  [
+                                 "GET /api/v1/calculations/engineering-core/v1/status"
+                             ],
+    "frontendVisibility":  [
+                               "src/Frontend/src/widgets/engineering-core-status/ui/EngineeringCoreStatusPanel.tsx",
+                               "src/Frontend/src/widgets/engineering-core-disclosure/ui/EngineeringCoreDisclosurePanel.tsx",
+                               "src/Frontend/src/widgets/building-workspace/ui/BuildingWorkspace.tsx",
+                               "src/Frontend/src/pages/dashboard/ui/DashboardPage.tsx"
+                           ],
+    "backendVisibility":  [
+                              "src/Backend/AssistantEngineer.Modules.Calculations/Application/Facades/EngineeringCoreStatusFacade.cs",
+                              "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringCoreStatusController.cs",
+                              "src/Backend/AssistantEngineer.Modules.Reporting/Application/Contracts/Reports/Common/CalculationDisclosure.cs"
+                          ],
+    "documentationFiles":  [
+                               "docs/calculations/EngineeringCoreV1Scope.md",
+                               "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                               "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                               "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                               "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                               "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                               "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                               "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                               "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                               "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                               "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                               "docs/ci/EngineeringCoreV1CI.md",
+                               "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                               "docs/releases/EngineeringCoreV1.md",
+                               "docs/releases/EngineeringCoreV1Manifest.json",
+                               "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                               "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                               "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                            ],
+    "ciWorkflows":  [
+                        ".github/workflows/engineering-core-v1.yml"
+                    ],
+    "explicitNonClaims":  [
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No full ISO 52016 node/matrix solver parity claim.",
+                              "No full ISO 52010 climate conversion parity claim.",
+                              "No full ISO 13370 implementation claim.",
+                              "No full EN 15316 generation/distribution/storage/emission chain claim.",
+                              "No full coupled multi-zone heat-balance simulation claim.",
+                              "No latent/moisture/humidity calculation claim."
+                          ],
+    "closedFormulaGates":  [
+                               {
+                                   "calculationId":  "HVAC.ADJACENT_ZONE.SIMPLIFIED",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+                                                       "Transmission.MissingBoundaryTemperature"
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.AGGREGATION.LOAD_SUMMARY",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+                                                       "Aggregation.HourlyUnavailable",
+                                                       "Aggregation.InvalidRoomArea",
+                                                       "Aggregation.NoRooms"
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+                                                       "AnnualEnergy.InvalidArea",
+                                                       "AnnualEnergy.InvalidBuildingId",
+                                                       "AnnualEnergy.InvalidHourDuration",
+                                                       "AnnualEnergy.InvalidMonth",
+                                                       "AnnualEnergy.MonthlyBalanceAdapter",
+                                                       "AnnualEnergy.NegativeHourlyValueClamped",
+                                                       "AnnualEnergy.NoHourlyInputs",
+                                                       "AnnualEnergy.Not8760",
+                                                       "AnnualEnergy.SignedComponentBalanceAvailable",
+                                                       "AnnualEnergy.SourceUnavailable",
+                                                       "AnnualEnergy.SyntheticWeather",
+                                                       "AnnualEnergy.TrueHourlySimulationPartial",
+                                                       "AnnualEnergy.TrueHourlySimulationUsed",
+                                                       "SolarWeather.SyntheticWeatherUsed"
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.DHW.SIMPLIFIED",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+                                                       "EquipmentSizing.CoolingSafetyFactorApplied",
+                                                       "EquipmentSizing.DefaultCoolingSafetyFactorUsed",
+                                                       "EquipmentSizing.DefaultHeatingSafetyFactorUsed",
+                                                       "EquipmentSizing.HeatingSafetyFactorApplied",
+                                                       "EquipmentSizing.InvalidCoolingLoad",
+                                                       "EquipmentSizing.InvalidCoolingSafetyFactor",
+                                                       "EquipmentSizing.InvalidHeatingLoad",
+                                                       "EquipmentSizing.InvalidHeatingSafetyFactor",
+                                                       "EquipmentSizing.InvalidSafetyFactor",
+                                                       "EquipmentSizing.InvalidTargetId",
+                                                       "EquipmentSizing.NoEquipmentFound",
+                                                       "EquipmentSizing.NoRecommendedEquipment"
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.GROUND.SIMPLIFIED",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.HOURLY_HEAT_BALANCE.SIMPLIFIED_RC",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.INTERNAL_GAINS.SENSIBLE",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.ROOM_LOAD.DESIGN_POINT",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.SOLAR.SURFACE_IRRADIANCE_ISOTROPIC",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+                                                       "SystemEnergy.CoolingAssumptionMissing",
+                                                       "SystemEnergy.DhwAssumptionMissing",
+                                                       "SystemEnergy.HeatingAssumptionMissing",
+                                                       "SystemEnergy.InvalidCoolingCop",
+                                                       "SystemEnergy.InvalidDhwCop",
+                                                       "SystemEnergy.InvalidDhwEfficiency",
+                                                       "SystemEnergy.InvalidFanEnergy",
+                                                       "SystemEnergy.InvalidHeatingCop",
+                                                       "SystemEnergy.InvalidHeatingEfficiency",
+                                                       "SystemEnergy.InvalidPrimaryEnergyFactor",
+                                                       "SystemEnergy.InvalidUsefulCooling",
+                                                       "SystemEnergy.InvalidUsefulDhw",
+                                                       "SystemEnergy.InvalidUsefulHeating"
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.THERMAL_ZONE.SINGLE_ZONE",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.TRANSMISSION.SIMPLE_UA",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.VENTILATION.SENSIBLE_AIRFLOW",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "HVAC.WINDOW_SOLAR.SIMPLE_SHGC",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "WEATHER.EPW_8760",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               },
+                               {
+                                   "calculationId":  "WEATHER.PVGIS_8760",
+                                   "status":  "ClosedV1",
+                                   "diagnostics":  [
+
+                                                   ],
+                                   "apiVisible":  true,
+                                   "reportDisclosureVisible":  true,
+                                   "frontendVisible":  true,
+                                   "documentationFiles":  [
+                                                              "docs/calculations/EngineeringCoreV1Scope.md",
+                                                              "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                              "docs/calculations/EngineeringCoreV1ApiExamples.md",
+                                                              "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+                                                              "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+                                                              "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+                                                              "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+                                                              "docs/validation/EnergyPlusValidationCaseTemplate.md",
+                                                              "docs/frontend/EngineeringCoreV1StatusPanel.md",
+                                                              "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+                                                              "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+                                                              "docs/ci/EngineeringCoreV1CI.md",
+                                                              "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+                                                              "docs/releases/EngineeringCoreV1.md",
+                                                              "docs/releases/EngineeringCoreV1Manifest.json",
+                                                              "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+                                                              "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+                                                              "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+                                                          ],
+                                   "verificationScripts":  [
+                                                               "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                                                               "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+                                                           ]
+                               }
+                           ],
+    "validationCases":  [
+                            {
+                                "caseId":  "EP-SMOKE-001",
+                                "stage":  "Smoke",
+                                "status":  "ReferenceFixturePlaceholder",
+                                "metrics":  [
+                                                "annual-heating-kwh",
+                                                "peak-heating-w",
+                                                "annual-cooling-kwh"
+                                            ],
+                                "nonClaims":  [
+                                                  "Does not claim exact EnergyPlus numerical parity.",
+                                                  "Does not claim ASHRAE 140 validation coverage.",
+                                                  "Does not claim full ISO 52016 node/matrix solver parity."
+                                              ]
+                            },
+                            {
+                                "caseId":  "EP-SMOKE-002",
+                                "stage":  "Smoke",
+                                "status":  "ReferenceFixturePlaceholder",
+                                "metrics":  [
+                                                "annual-cooling-kwh",
+                                                "peak-cooling-w",
+                                                "solar-orientation-response"
+                                            ],
+                                "nonClaims":  [
+                                                  "Does not claim exact EnergyPlus numerical parity.",
+                                                  "Does not claim ASHRAE 140 validation coverage.",
+                                                  "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                                              ]
+                            },
+                            {
+                                "caseId":  "EP-SMOKE-003",
+                                "stage":  "Smoke",
+                                "status":  "ReferenceFixturePlaceholder",
+                                "metrics":  [
+                                                "annual-cooling-kwh",
+                                                "annual-heating-kwh",
+                                                "internal-gain-response"
+                                            ],
+                                "nonClaims":  [
+                                                  "Does not claim exact EnergyPlus numerical parity.",
+                                                  "Does not claim ASHRAE 140 validation coverage.",
+                                                  "Does not claim latent or moisture validation coverage."
+                                              ]
+                            },
+                            {
+                                "caseId":  "ASHRAE140-STYLE-001",
+                                "stage":  "Ashrae140Style",
+                                "status":  "Planned",
+                                "metrics":  [
+                                                "cooling-mass-response",
+                                                "heating-mass-response"
+                                            ],
+                                "nonClaims":  [
+                                                  "Does not claim exact EnergyPlus numerical parity.",
+                                                  "Does not claim ASHRAE 140 validation coverage.",
+                                                  "Does not claim full ISO 52016 node/matrix solver parity."
+                                              ]
+                            },
+                            {
+                                "caseId":  "ASHRAE140-STYLE-002",
+                                "stage":  "Ashrae140Style",
+                                "status":  "Planned",
+                                "metrics":  [
+                                                "orientation-cooling-response",
+                                                "solar-gain-response"
+                                            ],
+                                "nonClaims":  [
+                                                  "Does not claim exact EnergyPlus numerical parity.",
+                                                  "Does not claim ASHRAE 140 validation coverage.",
+                                                  "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                                              ]
+                            }
+                        ]
+}
