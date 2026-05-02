@@ -64,3 +64,18 @@ This fixture does not claim:
 Run:
 
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusSmoke001FixtureScaffoldTests"
+
+## Placeholder comparison harness
+
+Generate placeholder comparison result:
+
+    .\scripts\engineering-core\compare-ep-smoke-001-placeholder.ps1
+
+Generated outputs:
+
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.md
+
+The result status is PlaceholderComparison.
+
+It is not a real EnergyPlus validation and not ASHRAE 140 validation coverage.

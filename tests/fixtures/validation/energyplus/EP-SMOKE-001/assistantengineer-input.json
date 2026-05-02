@@ -1,44 +1,45 @@
 ﻿{
-  "caseId": "EP-SMOKE-001",
-  "engine": "AssistantEngineer",
-  "inputKind": "EngineeringCoreV1SmokeFixture",
-  "calculationScope": "Transmission-only heating smoke case",
-  "building": {
-    "floorAreaM2": 50.0,
-    "heightM": 3.0,
-    "volumeM3": 150.0
-  },
-  "zone": {
-    "zoneId": "single-zone",
-    "name": "Single Zone",
-    "indoorHeatingSetpointC": 20.0
-  },
-  "envelope": {
-    "opaqueAreaM2": 180.0,
-    "uValueWPerM2K": 0.35
-  },
-  "weather": {
-    "outdoorDryBulbC": -5.0,
-    "durationHours": 24,
-    "isSynthetic": true
-  },
-  "ventilation": {
-    "airflowM3PerS": 0.0
-  },
-  "internalGains": {
-    "sensibleW": 0.0
-  },
-  "calculationFormula": {
-    "transmissionHeatLossW": "U * A * (T_indoor - T_outdoor)",
-    "expectedTransmissionHeatLossW": 1575.0,
-    "expectedDailyHeatingEnergyKwh": 37.8
-  },
-  "disclosure": {
-    "coreStatus": "ClosedV1",
-    "nonClaims": [
-      "Does not claim exact EnergyPlus numerical parity.",
-      "Does not claim ASHRAE 140 validation coverage.",
-      "Does not claim full ISO 52016 node/matrix solver parity."
-    ]
-  }
+    "caseId":  "EP-SMOKE-001",
+    "engine":  "AssistantEngineer",
+    "inputKind":  "EngineeringCoreV1SmokeFixture",
+    "calculationScope":  "Transmission-only heating smoke case",
+    "building":  {
+                     "floorAreaM2":  50.0,
+                     "heightM":  3.0,
+                     "volumeM3":  150.0
+                 },
+    "zone":  {
+                 "zoneId":  "single-zone",
+                 "name":  "Single Zone",
+                 "indoorHeatingSetpointC":  20.0
+             },
+    "envelope":  {
+                     "opaqueAreaM2":  180.0,
+                     "uValueWPerM2K":  0.35
+                 },
+    "weather":  {
+                    "outdoorDryBulbC":  -5.0,
+                    "durationHours":  24,
+                    "isSynthetic":  true
+                },
+    "ventilation":  {
+                        "airflowM3PerS":  0.0
+                    },
+    "internalGains":  {
+                          "sensibleW":  0.0
+                      },
+    "calculationFormula":  {
+                               "transmissionHeatLossW":  "U * A * (T_indoor - T_outdoor)",
+                               "expectedTransmissionHeatLossW":  1575.0,
+                               "expectedDailyHeatingEnergyKwh":  37.8,
+                               "expectedCoolingEnergyKwh":  0
+                           },
+    "disclosure":  {
+                       "coreStatus":  "ClosedV1",
+                       "nonClaims":  [
+                                         "Does not claim exact EnergyPlus numerical parity.",
+                                         "Does not claim ASHRAE 140 validation coverage.",
+                                         "Does not claim full ISO 52016 node/matrix solver parity."
+                                     ]
+                   }
 }

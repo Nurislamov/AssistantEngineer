@@ -146,3 +146,9 @@ Engineering Core V1 does not claim:
 - docs/validation/fixtures/EP-SMOKE-001/README.md
 - docs/reports/validation/EP-SMOKE-001-ComparisonReadiness.md
 - scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1
+
+## First validation comparison harness
+
+- scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.md
