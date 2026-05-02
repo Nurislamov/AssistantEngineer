@@ -113,3 +113,28 @@ export interface BuildingEnergyBalanceApiResponse {
   annualTotalDemandKWh: number;
   monthlyBalances: MonthlyEnergyBalanceApiResponse[];
 }
+
+export interface EngineeringCoreV1GateStatusApiResponse {
+  calculationId: string;
+  name: string;
+  status: string;
+  priority: string;
+  scope: string;
+  limitation: string;
+}
+
+export interface EngineeringCoreV1StatusApiResponse {
+  coreName: string;
+  version: string;
+  status: string;
+  formulaGatesClosed: boolean;
+  weather8760GatesClosed: boolean;
+  annualHourly8760GateClosed: boolean;
+  successfulResultsMustNotContainErrorDiagnostics: boolean;
+  formulaGates: EngineeringCoreV1GateStatusApiResponse[];
+  explicitNonClaims: string[];
+  outOfScopeV1: string[];
+  plannedValidation: string[];
+  requiredAnnual8760Flags: string[];
+  documentationFiles: string[];
+}

@@ -1,4 +1,4 @@
-import { apiRoutes } from "@/shared/api/apiRoutes";
+﻿import { apiRoutes } from "@/shared/api/apiRoutes";
 import { apiRequest } from "@/shared/api/httpClient";
 import { calculationMethods } from "@/shared/constants/calculationMethods";
 import { mapBuildingCalculationResult, mapRoomCalculationResult } from "../lib/calculationAdapters";
@@ -7,6 +7,7 @@ import type {
   BuildingEnergyBalanceApiResponse,
   BuildingHeatingLoadApiResponse,
   CalculationResultDto,
+  EngineeringCoreV1StatusApiResponse,
   RoomCoolingLoadApiResponse,
   RoomHeatingLoadApiResponse,
 } from "../types";
@@ -53,6 +54,12 @@ export const calculationsApi = {
           heatingMethod: calculationMethods.heating,
         },
       },
+    );
+  },
+
+  async getEngineeringCoreV1Status(): Promise<EngineeringCoreV1StatusApiResponse> {
+    return apiRequest<EngineeringCoreV1StatusApiResponse>(
+      apiRoutes.calculations.engineeringCoreV1Status(),
     );
   },
 };

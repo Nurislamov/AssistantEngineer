@@ -1,4 +1,4 @@
-import ApartmentIcon from "@mui/icons-material/Apartment";
+﻿import ApartmentIcon from "@mui/icons-material/Apartment";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { Button, Stack, Typography } from "@mui/material";
@@ -77,3 +77,4 @@ function DashboardCard({ icon, title, description, to, action }: DashboardCardPr
     </DataCard>
   );
 }
+

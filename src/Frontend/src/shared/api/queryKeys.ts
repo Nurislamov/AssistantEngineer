@@ -1,4 +1,4 @@
-export const queryKeys = {
+﻿export const queryKeys = {
   projects: {
     all: ["projects"] as const,
   },
@@ -25,7 +25,9 @@ export const queryKeys = {
     all: ["equipment-catalog"] as const,
   },
   calculations: {
+    engineeringCoreV1Status: ["calculations", "engineering-core", "v1", "status"] as const,
     buildingLatest: (buildingId: number) => ["calculations", "building", buildingId, "latest"] as const,
     roomLatest: (roomId: number) => ["calculations", "room", roomId, "latest"] as const,
   },
 } as const;
+

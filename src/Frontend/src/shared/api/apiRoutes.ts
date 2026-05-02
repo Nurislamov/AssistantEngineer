@@ -1,4 +1,4 @@
-import { appConfig } from "@/shared/config/env";
+﻿import { appConfig } from "@/shared/config/env";
 
 const apiPrefix = `/api/v${appConfig.apiVersion}`;
 
@@ -69,6 +69,7 @@ export const apiRoutes = {
       `${apiPrefix}/buildings/${buildingId}/load-calculations/heating-load`,
     buildingEnergyBalance: (buildingId: number) =>
       `${apiPrefix}/buildings/${buildingId}/load-calculations/energy-balance`,
+    engineeringCoreV1Status: () => `${apiPrefix}/calculations/engineering-core/v1/status`,
     roomCoolingLoad: (roomId: number) =>
       `${apiPrefix}/rooms/${roomId}/load-calculations/cooling-load`,
     roomHeatingLoad: (roomId: number) =>
@@ -99,3 +100,6 @@ export const backendEndpointAvailability = {
     latestByBuilding: false,
   },
 } as const;
+
+
+
