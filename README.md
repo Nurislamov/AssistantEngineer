@@ -301,3 +301,79 @@ Development:
 - [ ] Download Excel report
 - [ ] Add equipment
 - [ ] Run equipment selection
+
+---
+
+## Engineering Core V1
+
+Engineering Core V1 is the closed calculation-core layer for HVAC engineering calculations.
+
+Current status:
+
+    Engineering Core V1 = ClosedV1 as an engineering formula gate
+
+Covered in V1:
+
+- design-point heating load;
+- design-point cooling load;
+- transmission heat transfer;
+- ventilation and infiltration sensible loads;
+- internal sensible gains;
+- simplified SHGC window solar gains;
+- ISO52010-inspired solar position and isotropic surface irradiance;
+- room/floor/building aggregation;
+- simplified hourly heat balance;
+- single-zone calculation path;
+- EPW/PVGIS 8760 weather import gates;
+- annual true hourly 8760 integration;
+- simplified ground heat transfer;
+- simplified adjacent boundary handling;
+- simplified DHW;
+- simplified system final/primary energy;
+- equipment capacity sizing.
+
+Out of scope for V1:
+
+- latent load;
+- moisture balance;
+- detailed psychrometrics;
+- detailed HVAC plant simulation;
+- exact EnergyPlus numerical parity;
+- exact pyBuildingEnergy numerical parity;
+- ASHRAE 140 validation coverage;
+- full ISO 52016 node/matrix solver parity.
+
+Main verification command:
+
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1
+
+Fast local profile:
+
+    .\scripts\engineering-core\verify-engineering-core-v1-smoke.ps1 -SkipFrontend
+
+Contracts profile:
+
+    .\scripts\engineering-core\verify-engineering-core-v1-contracts.ps1 -SkipFrontend
+
+Release readiness gate:
+
+    .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
+Key documentation:
+
+- Engineering Core V1 documentation index: docs/engineering-core/README.md
+- Engineering Core V1 release manifest: docs/releases/EngineeringCoreV1ReleaseManifest.md
+- Engineering Core V1 release readiness checklist: docs/releases/EngineeringCoreV1ReleaseReadinessChecklist.md
+- Engineering Core V1 release evidence: docs/reports/EngineeringCoreV1ReleaseEvidence.md
+- Engineering Core V1 traceability matrix: docs/traceability/EngineeringCoreV1TraceabilityMatrix.md
+- EnergyPlus / ASHRAE 140-style validation registry: docs/validation/EnergyPlusValidationCaseRegistry.md
+
+Recommended release wording:
+
+    Engineering Core V1 is closed as an engineering formula gate with documented limitations.
+
+Forbidden release wording:
+
+    EnergyPlus parity achieved.
+    ASHRAE 140 validated.
+    Full ISO 52016 implemented.

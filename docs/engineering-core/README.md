@@ -121,3 +121,11 @@ Engineering Core V1 does not claim:
 - scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1
 - docs/runbooks/EngineeringCoreV1ReleaseReadinessRunbook.md
 - docs/releases/EngineeringCoreV1ReleaseReadinessChecklist.md
+
+## Repository release communication
+
+- README.md
+- docs/releases/EngineeringCoreV1PublicReleaseNotes.md
+- docs/releases/EngineeringCoreV1AnnouncementDraft.md
+- docs/releases/EngineeringCoreV1TaggingGuide.md
+- docs/runbooks/EngineeringCoreV1RepositoryCommunicationRunbook.md
