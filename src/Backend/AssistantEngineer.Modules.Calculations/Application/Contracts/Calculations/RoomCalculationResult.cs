@@ -11,7 +11,14 @@ public class RoomCalculationResult
     public string RequestedMethod { get; set; } = string.Empty;
     public string ActualMethod { get; set; } = string.Empty;
     public string CalculationMethodLabel { get; set; } = string.Empty;
-    public int? PeakHour { get; set; }
+    public int? PeakHourOfYear { get; set; }
+
+    [Obsolete("Use PeakHourOfYear.")]
+    public int? PeakHour
+    {
+        get => PeakHourOfYear;
+        set => PeakHourOfYear = value;
+    }
 
     public double AreaM2 { get; set; }
     public double HeightM { get; set; }
@@ -42,9 +49,23 @@ public class RoomCalculationResult
     public double LightingHeatGainW { get; set; }
     public double InternalHeatGainW { get; set; }
 
-    public double TotalHeatLoadW { get; set; }
-    public double TotalHeatLoadKw { get; set; }
     public double CoolingLoadW { get; set; }
+    public double CoolingLoadKw { get; set; }
+
+    [Obsolete("Use CoolingLoadW.")]
+    public double TotalHeatLoadW
+    {
+        get => CoolingLoadW;
+        set => CoolingLoadW = value;
+    }
+
+    [Obsolete("Use CoolingLoadKw.")]
+    public double TotalHeatLoadKw
+    {
+        get => CoolingLoadKw;
+        set => CoolingLoadKw = value;
+    }
+
     public double CoolingLoadWPerM2 { get; set; }
 
     public double DeltaTemperatureC { get; set; }

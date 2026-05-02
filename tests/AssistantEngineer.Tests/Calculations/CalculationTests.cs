@@ -24,7 +24,9 @@ public class CalculationTests
 
         Assert.Equal(nameof(CoolingLoadCalculationMethod.Simplified), result.CalculationMethod);
         Assert.Equal(1050, result.BaseRoomLoadW);
-        Assert.Equal(1050, result.TotalHeatLoadW);
+        Assert.Equal(1050, result.CoolingLoadW);
+        Assert.Equal(1.05, result.CoolingLoadKw);
+        Assert.Null(result.PeakHourOfYear);
         Assert.Equal(1155, result.DesignCapacityW);
         Assert.Equal(24, result.HourlyHeatLoadW.Count);
     }
@@ -45,9 +47,8 @@ public class CalculationTests
 
         Assert.Equal(nameof(CoolingLoadCalculationMethod.Iso52016), result.CalculationMethod);
         Assert.Equal(24, result.HourlyHeatLoadW.Count);
-        Assert.NotNull(result.PeakHour);
-        Assert.InRange(result.PeakHour.Value, 0, 23);
-        Assert.True(result.TotalHeatLoadW > 0);
+        Assert.Null(result.PeakHourOfYear);
+        Assert.True(result.CoolingLoadW > 0);
     }
 
     [Fact]

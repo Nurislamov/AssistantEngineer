@@ -89,7 +89,7 @@ public sealed class BuildingComfortMetricsService
             CoolingSeasonStartMonth = request.CoolingSeasonStartMonth,
             CoolingSeasonEndMonth = request.CoolingSeasonEndMonth,
             PeakOperativeTemperatureC = double.MinValue,
-            PeakHourOfYear = 0,
+            PeakHourOfYear = null,
             Monthly = monthly
         };
 

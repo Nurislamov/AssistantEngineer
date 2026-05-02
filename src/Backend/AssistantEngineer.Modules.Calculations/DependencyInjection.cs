@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Calculations.Composition;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AssistantEngineer.Modules.Calculations;
 
@@ -11,7 +12,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddMemoryCache();
-        services.AddSingleton(TimeProvider.System);
+        services.TryAddSingleton(TimeProvider.System);
 
         services.AddCalculationOptions(configuration);
         services.AddCalculationReferenceData();

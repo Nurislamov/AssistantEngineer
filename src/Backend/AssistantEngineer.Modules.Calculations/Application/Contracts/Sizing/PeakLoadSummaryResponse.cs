@@ -14,7 +14,7 @@ public sealed class PeakLoadSummaryResponse
 
     public double SafetyFactor { get; set; }
 
-    public int PeakHourOfYear { get; set; }
+    public int? PeakHourOfYear { get; set; }
     public int Month { get; set; }
 
     public double OperativeTemperatureC { get; set; }

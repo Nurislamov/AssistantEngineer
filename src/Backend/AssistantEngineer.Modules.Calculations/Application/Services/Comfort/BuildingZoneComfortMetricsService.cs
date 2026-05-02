@@ -107,7 +107,7 @@ public sealed class BuildingZoneComfortMetricsService
             {
                 ZoneName = zoneGroup.Name,
                 PeakOperativeTemperatureC = double.MinValue,
-                PeakHourOfYear = 0,
+                PeakHourOfYear = null,
                 Monthly = InitializeMonthly()
             };
 

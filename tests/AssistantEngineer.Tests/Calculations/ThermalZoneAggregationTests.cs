@@ -43,9 +43,10 @@ public class ThermalZoneAggregationTests
         Assert.Equal(2, result.ThermalZones.Count);
         Assert.Contains(result.ThermalZones, zone => zone.ThermalZoneName == "North zone" && zone.RoomIds.SequenceEqual([101]));
         Assert.Contains(result.ThermalZones, zone => zone.ThermalZoneName == "South zone" && zone.RoomIds.SequenceEqual([102]));
+        Assert.Null(result.PeakHourOfYear);
         Assert.Equal(
-            result.ThermalZones.Sum(zone => zone.HourlyHeatLoadW[result.PeakHour!.Value]),
-            result.TotalHeatLoadW,
+            result.HourlyHeatLoadW.Max(),
+            result.CoolingLoadW,
             precision: 2);
     }
 

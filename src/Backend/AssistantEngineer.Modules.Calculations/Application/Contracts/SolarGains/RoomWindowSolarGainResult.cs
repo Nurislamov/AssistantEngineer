@@ -7,9 +7,12 @@ public sealed record RoomWindowSolarGainResult(
     double TotalSolarGainW,
     IReadOnlyList<WindowSolarGainResult> WindowBreakdown,
     double? PeakSolarGainW,
-    int? PeakHour,
+    int? PeakHourOfYear,
     IReadOnlyList<CalculationDiagnostic> Diagnostics)
 {
+    [Obsolete("Use PeakHourOfYear.")]
+    public int? PeakHour => PeakHourOfYear;
+
     public bool HasErrors =>
         Diagnostics.Any(diagnostic =>
             diagnostic.Severity == CalculationDiagnosticSeverity.Error);

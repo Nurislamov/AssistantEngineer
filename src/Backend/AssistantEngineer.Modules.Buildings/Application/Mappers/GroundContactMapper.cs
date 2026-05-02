@@ -14,7 +14,7 @@ public static class GroundContactMapper
         GroundContactTypeDto.BasementUnconditioned => GroundContactType.BasementUnconditioned,
         GroundContactTypeDto.CrawlSpace => GroundContactType.CrawlSpace,
         GroundContactTypeDto.VentilatedCrawlSpace => GroundContactType.VentilatedCrawlSpace,
-        _ => GroundContactType.SlabOnGround
+        _ => throw new ArgumentOutOfRangeException(nameof(dto), dto, "Unsupported ground contact contract value.")
     };
 
     public static GroundContactTypeDto ToContract(this GroundContactType domain) => domain switch
@@ -24,7 +24,7 @@ public static class GroundContactMapper
         GroundContactType.BasementUnconditioned => GroundContactTypeDto.BasementUnconditioned,
         GroundContactType.CrawlSpace => GroundContactTypeDto.CrawlSpace,
         GroundContactType.VentilatedCrawlSpace => GroundContactTypeDto.VentilatedCrawlSpace,
-        _ => GroundContactTypeDto.SlabOnGround
+        _ => throw new ArgumentOutOfRangeException(nameof(domain), domain, "Unsupported ground contact domain value.")
     };
 
     public static RoomGroundContactResponse ToResponse(this GroundContactMetadata metadata, int roomId, string roomName) =>

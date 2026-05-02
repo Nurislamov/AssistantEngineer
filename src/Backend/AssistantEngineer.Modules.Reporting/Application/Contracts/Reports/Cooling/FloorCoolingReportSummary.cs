@@ -10,6 +10,20 @@ public class FloorCoolingReportSummary
     public double DesignCapacityW { get; set; }
     public double DesignCapacityKw { get; set; }
 
-    public double TotalHeatLoadW { get; set; }
-    public double TotalHeatLoadKw { get; set; }
+    public double CoolingLoadW { get; set; }
+    public double CoolingLoadKw { get; set; }
+
+    [Obsolete("Use CoolingLoadW.")]
+    public double TotalHeatLoadW
+    {
+        get => CoolingLoadW;
+        set => CoolingLoadW = value;
+    }
+
+    [Obsolete("Use CoolingLoadKw.")]
+    public double TotalHeatLoadKw
+    {
+        get => CoolingLoadKw;
+        set => CoolingLoadKw = value;
+    }
 }

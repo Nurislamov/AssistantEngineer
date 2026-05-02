@@ -5,7 +5,15 @@ public class BuildingCoolingReport
     public string ProjectName { get; set; } = string.Empty;
     public string BuildingName { get; set; } = string.Empty;
     public string CalculationMethod { get; set; } = string.Empty;
-    public int? PeakHour { get; set; }
+    public int? PeakHourOfYear { get; set; }
+
+    [Obsolete("Use PeakHourOfYear.")]
+    public int? PeakHour
+    {
+        get => PeakHourOfYear;
+        set => PeakHourOfYear = value;
+    }
+
     public DateTime GeneratedAtUtc { get; set; }
 
     public int FloorsCount { get; set; }
@@ -15,8 +23,22 @@ public class BuildingCoolingReport
     public double DesignCapacityW { get; set; }
     public double DesignCapacityKw { get; set; }
 
-    public double TotalHeatLoadW { get; set; }
-    public double TotalHeatLoadKw { get; set; }
+    public double CoolingLoadW { get; set; }
+    public double CoolingLoadKw { get; set; }
+
+    [Obsolete("Use CoolingLoadW.")]
+    public double TotalHeatLoadW
+    {
+        get => CoolingLoadW;
+        set => CoolingLoadW = value;
+    }
+
+    [Obsolete("Use CoolingLoadKw.")]
+    public double TotalHeatLoadKw
+    {
+        get => CoolingLoadKw;
+        set => CoolingLoadKw = value;
+    }
 
     public List<FloorCoolingReportSummary> FloorSummaries { get; set; } = [];
     public List<RoomCoolingReportRow> Rooms { get; set; } = [];

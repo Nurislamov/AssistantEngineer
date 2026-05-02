@@ -51,9 +51,9 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
         worksheet.Cell(5, 1).Value = "Calculation method";
         worksheet.Cell(5, 2).Value = report.CalculationMethod;
 
-        worksheet.Cell(6, 1).Value = "Peak hour";
-        if (report.PeakHour.HasValue)
-            worksheet.Cell(6, 2).Value = report.PeakHour.Value;
+        worksheet.Cell(6, 1).Value = "Peak hour of year";
+        if (report.PeakHourOfYear.HasValue)
+            worksheet.Cell(6, 2).Value = report.PeakHourOfYear.Value;
 
         worksheet.Cell(7, 1).Value = "Generated at UTC";
         worksheet.Cell(7, 2).Value = report.GeneratedAtUtc;
@@ -64,11 +64,11 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
         worksheet.Cell(9, 1).Value = "Rooms count";
         worksheet.Cell(9, 2).Value = report.RoomsCount;
 
-        worksheet.Cell(10, 1).Value = "Total heat load, W";
-        worksheet.Cell(10, 2).Value = report.TotalHeatLoadW;
+        worksheet.Cell(10, 1).Value = "Cooling load, W";
+        worksheet.Cell(10, 2).Value = report.CoolingLoadW;
 
-        worksheet.Cell(11, 1).Value = "Total heat load, kW";
-        worksheet.Cell(11, 2).Value = report.TotalHeatLoadKw;
+        worksheet.Cell(11, 1).Value = "Cooling load, kW";
+        worksheet.Cell(11, 2).Value = report.CoolingLoadKw;
 
         worksheet.Cell(12, 1).Value = "Reserve factor";
         worksheet.Cell(12, 2).Value = report.DesignReserveFactor;
@@ -114,8 +114,8 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
             "Floor ID",
             "Floor",
             "Rooms count",
-            "Total heat load, W",
-            "Total heat load, kW",
+            "Cooling load, W",
+            "Cooling load, kW",
             "Reserve factor",
             "Design capacity, W",
             "Design capacity, kW");
@@ -129,8 +129,8 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
             worksheet.Cell(row, 1).Value = floor.FloorId;
             worksheet.Cell(row, 2).Value = floor.FloorName;
             worksheet.Cell(row, 3).Value = floor.RoomsCount;
-            worksheet.Cell(row, 4).Value = floor.TotalHeatLoadW;
-            worksheet.Cell(row, 5).Value = floor.TotalHeatLoadKw;
+            worksheet.Cell(row, 4).Value = floor.CoolingLoadW;
+            worksheet.Cell(row, 5).Value = floor.CoolingLoadKw;
             worksheet.Cell(row, 6).Value = floor.DesignReserveFactor;
             worksheet.Cell(row, 7).Value = floor.DesignCapacityW;
             worksheet.Cell(row, 8).Value = floor.DesignCapacityKw;
@@ -154,7 +154,7 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
             worksheet,
             "Room ID",
             "Calculation method",
-            "Peak hour",
+            "Peak hour of year",
             "Project",
             "Building",
             "Floor",
@@ -197,8 +197,8 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
             worksheet.Cell(row, 1).Value = room.RoomId;
             worksheet.Cell(row, 2).Value = room.CalculationMethod;
 
-            if (room.PeakHour.HasValue)
-                worksheet.Cell(row, 3).Value = room.PeakHour.Value;
+            if (room.PeakHourOfYear.HasValue)
+                worksheet.Cell(row, 3).Value = room.PeakHourOfYear.Value;
 
             worksheet.Cell(row, 4).Value = room.ProjectName;
             worksheet.Cell(row, 5).Value = room.BuildingName;
@@ -225,8 +225,8 @@ public sealed class BuildingCoolingExcelReportExporter : IBuildingCoolingReportE
             worksheet.Cell(row, 21).Value = room.WallHeatGainW;
             worksheet.Cell(row, 22).Value = room.InternalHeatGainW;
 
-            worksheet.Cell(row, 23).Value = room.TotalHeatLoadW;
-            worksheet.Cell(row, 24).Value = room.TotalHeatLoadKw;
+            worksheet.Cell(row, 23).Value = room.CoolingLoadW;
+            worksheet.Cell(row, 24).Value = room.CoolingLoadKw;
 
             worksheet.Cell(row, 25).Value = room.DesignReserveFactor;
             worksheet.Cell(row, 26).Value = room.DesignCapacityW;

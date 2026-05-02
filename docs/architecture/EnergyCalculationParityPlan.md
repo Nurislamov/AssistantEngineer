@@ -104,6 +104,18 @@ Parity означает, что AssistantEngineer на одинаковых вх
 - Equipment heating selection depends on catalog heating capacity fields being populated.
 - No feature is marked `ExternalParityCovered` in this pass.
 
+### Closed calculation review items
+
+- Calculation diagnostics use the unified `CalculationDiagnostic` contract instead of duplicated internal/solar/transmission/ventilation diagnostic types.
+- Runtime climate data is split into `DesignDayHourlyData`, `AnnualHourlyData`, and `WeatherRecord`; `HourlyClimateData` remains only in historical migrations.
+- `VentilationParameters` is the validation source of truth; `Room` no longer duplicates those validation rules.
+- Cooling equipment selection is Result-based, and legacy cooling selector responses now expose explicit adapter diagnostics instead of silent reserved zeros.
+- Equipment selection responses map required heating/cooling capacities, reserve capacities, safety factors, accepted/rejected candidates, best-match fields, and diagnostics from `EquipmentSizingResult`.
+- Cooling DTOs use `CoolingLoadW`/`CoolingLoadKw` as canonical names; `TotalHeatLoadW`/`TotalHeatLoadKw` remain compatibility aliases only.
+- `PeakHourOfYear` is the nullable canonical peak-hour field where public calculation/report DTOs expose an annual hour; design-point paths leave it null instead of using fake zero.
+- Ground contact enum mapping is strict and no longer silently falls back to `SlabOnGround` for unknown values.
+- `TimeProvider.System` is registered once through composition with non-duplicating `TryAddSingleton`.
+
 ## P1 — расширение до полного расчётного покрытия
 
 | Code | Feature | Current AssistantEngineer status |

@@ -31,7 +31,7 @@ public sealed class HourlyProfileAggregator : IHourlyProfileAggregator
         return result;
     }
 
-    public int FindPeakHour(IReadOnlyList<double> hourlyHeatLoadW)
+    public int FindPeakLoadHourIndex(IReadOnlyList<double> hourlyHeatLoadW)
     {
         if (hourlyHeatLoadW.Count == 0)
             return 0;

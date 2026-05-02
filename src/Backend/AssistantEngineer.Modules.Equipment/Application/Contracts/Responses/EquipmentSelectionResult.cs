@@ -4,7 +4,18 @@ public class EquipmentSelectionResult
 {
     public int RoomId { get; set; }
 
-    public double TotalHeatLoadKw { get; set; }
+    public bool EquipmentSelected { get; set; }
+    public string CalculationMethod { get; set; } = string.Empty;
+
+    public double CoolingLoadKw { get; set; }
+
+    [Obsolete("Use CoolingLoadKw.")]
+    public double TotalHeatLoadKw
+    {
+        get => CoolingLoadKw;
+        set => CoolingLoadKw = value;
+    }
+
     public double DesignCapacityKw { get; set; }
     public double RequiredCoolingCapacityW { get; set; }
     public double RequiredHeatingCapacityW { get; set; }
@@ -25,6 +36,22 @@ public class EquipmentSelectionResult
     public List<EquipmentSelectionCandidateResult> AcceptedCandidates { get; set; } = new();
     public List<EquipmentSelectionRejectedCandidate> RejectedCandidates { get; set; } = new();
     public List<EquipmentSelectionDiagnostic> Diagnostics { get; set; } = new();
+
+    public static EquipmentSelectionResult NotRequested(int roomId) =>
+        new()
+        {
+            RoomId = roomId,
+            CalculationMethod = "NotRequested",
+            Diagnostics =
+            [
+                new EquipmentSelectionDiagnostic
+                {
+                    Severity = "Info",
+                    Code = "EquipmentSelection.NotRequested",
+                    Message = "Equipment selection was not requested for this report row."
+                }
+            ]
+        };
 }
 
 public sealed class EquipmentSelectionCandidateResult

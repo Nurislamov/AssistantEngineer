@@ -22,7 +22,7 @@ public sealed class RoomComfortMetricsResponse
     public double CoolingSeasonDegreeHoursAboveOverheatingThreshold { get; set; }
 
     public double PeakOperativeTemperatureC { get; set; }
-    public int PeakHourOfYear { get; set; }
+    public int? PeakHourOfYear { get; set; }
 
     public List<MonthlyComfortMetricsResponse> Monthly { get; set; } = new();
 }

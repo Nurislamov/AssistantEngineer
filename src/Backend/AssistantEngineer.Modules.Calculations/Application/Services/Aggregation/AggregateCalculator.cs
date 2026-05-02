@@ -62,7 +62,7 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             roomProfiles,
             cancellationToken);
         var totalHeatLoad = hourlyHeatLoad.Count > 0 ? hourlyHeatLoad.Max() : 0;
-        var peakHour = hourlyHeatLoad.Count > 0 ? _profileAggregator.FindPeakHour(hourlyHeatLoad) : 0;
+        var peakHourOfYear = hourlyHeatLoad.Count == 8760 ? (int?)_profileAggregator.FindPeakLoadHourIndex(hourlyHeatLoad) : null;
         var reserveFactor = GetReserveFactor(preferences);
         var designLoad = totalHeatLoad * reserveFactor;
 
@@ -77,10 +77,10 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             FloorId = floor.Id,
             FloorName = floor.Name,
             CalculationMethod = method.ToString(),
-            PeakHour = peakHour,
+            PeakHourOfYear = peakHourOfYear,
             RoomsCount = roomCount,
-            TotalHeatLoadW = Round(totalHeatLoad),
-            TotalHeatLoadKw = Round(totalHeatLoad / 1000.0),
+            CoolingLoadW = Round(totalHeatLoad),
+            CoolingLoadKw = Round(totalHeatLoad / 1000.0),
             DesignReserveFactor = reserveFactor,
             DesignCapacityW = Round(designLoad),
             DesignCapacityKw = Round(designLoad / 1000.0),
@@ -130,7 +130,7 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             floorProfiles,
             cancellationToken);
         var totalHeatLoad = hourlyHeatLoad.Count > 0 ? hourlyHeatLoad.Max() : 0;
-        var peakHour = hourlyHeatLoad.Count > 0 ? _profileAggregator.FindPeakHour(hourlyHeatLoad) : 0;
+        var peakHourOfYear = hourlyHeatLoad.Count == 8760 ? (int?)_profileAggregator.FindPeakLoadHourIndex(hourlyHeatLoad) : null;
         var reserveFactor = GetReserveFactor(preferences);
         var designLoad = totalHeatLoad * reserveFactor;
 
@@ -146,11 +146,11 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             BuildingId = building.Id,
             BuildingName = building.Name,
             CalculationMethod = method.ToString(),
-            PeakHour = peakHour,
+            PeakHourOfYear = peakHourOfYear,
             FloorsCount = floorCount,
             RoomsCount = roomCount,
-            TotalHeatLoadW = Round(totalHeatLoad),
-            TotalHeatLoadKw = Round(totalHeatLoad / 1000.0),
+            CoolingLoadW = Round(totalHeatLoad),
+            CoolingLoadKw = Round(totalHeatLoad / 1000.0),
             DesignReserveFactor = reserveFactor,
             DesignCapacityW = Round(designLoad),
             DesignCapacityKw = Round(designLoad / 1000.0),
@@ -203,7 +203,7 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             zoneResults.Select(zone => zone.HourlyHeatLoadW),
             cancellationToken);
         var totalHeatLoad = hourlyHeatLoad.Count > 0 ? hourlyHeatLoad.Max() : 0;
-        var peakHour = hourlyHeatLoad.Count > 0 ? _profileAggregator.FindPeakHour(hourlyHeatLoad) : 0;
+        var peakHourOfYear = hourlyHeatLoad.Count == 8760 ? (int?)_profileAggregator.FindPeakLoadHourIndex(hourlyHeatLoad) : null;
         var reserveFactor = GetReserveFactor(preferences);
         var designLoad = totalHeatLoad * reserveFactor;
 
@@ -218,11 +218,11 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             BuildingId = building.Id,
             BuildingName = building.Name,
             CalculationMethod = method.ToString(),
-            PeakHour = peakHour,
+            PeakHourOfYear = peakHourOfYear,
             FloorsCount = building.Floors.Count,
             RoomsCount = allRooms.Length,
-            TotalHeatLoadW = Round(totalHeatLoad),
-            TotalHeatLoadKw = Round(totalHeatLoad / 1000.0),
+            CoolingLoadW = Round(totalHeatLoad),
+            CoolingLoadKw = Round(totalHeatLoad / 1000.0),
             DesignReserveFactor = reserveFactor,
             DesignCapacityW = Round(designLoad),
             DesignCapacityKw = Round(designLoad / 1000.0),
@@ -279,14 +279,14 @@ public sealed class AggregateCalculator : IAggregateLoadCalculator
             roomProfiles,
             cancellationToken);
         var totalHeatLoad = hourlyHeatLoad.Count > 0 ? hourlyHeatLoad.Max() : 0;
-        var peakHour = hourlyHeatLoad.Count > 0 ? _profileAggregator.FindPeakHour(hourlyHeatLoad) : 0;
+        var peakHourOfYear = hourlyHeatLoad.Count == 8760 ? (int?)_profileAggregator.FindPeakLoadHourIndex(hourlyHeatLoad) : null;
 
         return new ThermalZoneCalculationResult
         {
             RoomsCount = roomCount,
-            PeakHour = peakHour,
-            TotalHeatLoadW = Round(totalHeatLoad),
-            TotalHeatLoadKw = Round(totalHeatLoad / 1000.0),
+            PeakHourOfYear = peakHourOfYear,
+            CoolingLoadW = Round(totalHeatLoad),
+            CoolingLoadKw = Round(totalHeatLoad / 1000.0),
             HourlyHeatLoadW = hourlyHeatLoad
         };
     }

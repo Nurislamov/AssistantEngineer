@@ -51,6 +51,14 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 - Active benchmark fixtures must load and pass tolerance comparison.
 - Pending and disabled benchmark fixtures must be skipped by default and reported by the loader.
 
+## Closed Calculation Review Items
+
+- Unified calculation diagnostics, runtime hourly-climate split, and `VentilationParameters` validation source-of-truth cleanup are closed.
+- Equipment selector contracts are Result-based; equipment selection responses are populated from `EquipmentSizingResult` where the application pipeline is used, with explicit legacy adapter diagnostics for the old cooling selector.
+- Cooling DTO naming now treats `CoolingLoadW`/`CoolingLoadKw` as canonical and keeps `TotalHeatLoadW`/`TotalHeatLoadKw` only as compatibility aliases.
+- Peak-hour DTOs use nullable `PeakHourOfYear` where an annual hour is meaningful; design-point paths leave it null.
+- Ground-contact enum mapping is strict for unmapped values, and `TimeProvider.System` is registered once through DI composition.
+
 ## Known Limits
 
 The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when the source data can evaluate them. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark parity.

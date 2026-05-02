@@ -27,7 +27,7 @@ internal sealed class BuildingCoolingReportGenerator
             ProjectName = building.Project.Name,
             BuildingName = building.Name,
             CalculationMethod = buildingCalculation.CalculationMethod,
-            PeakHour = buildingCalculation.PeakHour,
+            PeakHourOfYear = buildingCalculation.PeakHourOfYear,
             GeneratedAtUtc = _timeProvider.GetUtcNow().UtcDateTime,
 
             FloorsCount = buildingCalculation.FloorsCount,
@@ -37,8 +37,8 @@ internal sealed class BuildingCoolingReportGenerator
             DesignCapacityW = buildingCalculation.DesignCapacityW,
             DesignCapacityKw = buildingCalculation.DesignCapacityKw,
 
-            TotalHeatLoadW = buildingCalculation.TotalHeatLoadW,
-            TotalHeatLoadKw = buildingCalculation.TotalHeatLoadKw,
+            CoolingLoadW = buildingCalculation.CoolingLoadW,
+            CoolingLoadKw = buildingCalculation.CoolingLoadKw,
 
             FloorSummaries = data.FloorCalculations
                 .Select(ToFloorSummary)
@@ -70,8 +70,8 @@ internal sealed class BuildingCoolingReportGenerator
             FloorId = calculation.FloorId,
             FloorName = calculation.FloorName,
             RoomsCount = calculation.RoomsCount,
-            TotalHeatLoadW = calculation.TotalHeatLoadW,
-            TotalHeatLoadKw = calculation.TotalHeatLoadKw,
+            CoolingLoadW = calculation.CoolingLoadW,
+            CoolingLoadKw = calculation.CoolingLoadKw,
             DesignReserveFactor = calculation.DesignReserveFactor,
             DesignCapacityW = calculation.DesignCapacityW,
             DesignCapacityKw = calculation.DesignCapacityKw
@@ -89,7 +89,7 @@ internal sealed class BuildingCoolingReportGenerator
                 {
                     RoomId = item.Room.Id,
                     CalculationMethod = calculation.CalculationMethod,
-                    PeakHour = calculation.PeakHour,
+                    PeakHourOfYear = calculation.PeakHourOfYear,
 
                     ProjectName = data.Building.Project.Name,
                     BuildingName = data.Building.Name,
@@ -116,8 +116,8 @@ internal sealed class BuildingCoolingReportGenerator
                     WallHeatGainW = calculation.WallHeatGainW,
                     InternalHeatGainW = calculation.InternalHeatGainW,
 
-                    TotalHeatLoadW = calculation.TotalHeatLoadW,
-                    TotalHeatLoadKw = calculation.TotalHeatLoadKw,
+                    CoolingLoadW = calculation.CoolingLoadW,
+                    CoolingLoadKw = calculation.CoolingLoadKw,
 
                     DesignReserveFactor = calculation.DesignReserveFactor,
                     DesignCapacityW = calculation.DesignCapacityW,
@@ -126,12 +126,12 @@ internal sealed class BuildingCoolingReportGenerator
                     RequestedSystemType = data.RequestedSystemType,
                     RequestedUnitType = data.RequestedUnitType,
 
-                    SelectedCatalogItemId = selection?.SelectedCatalogItemId,
-                    SelectedManufacturer = selection?.SelectedManufacturer ?? string.Empty,
-                    SelectedModelName = selection?.SelectedModelName ?? string.Empty,
-                    SelectedNominalCoolingCapacityKw = selection?.SelectedNominalCoolingCapacityKw,
-                    SelectionReserveKw = selection?.CapacityReserveKw,
-                    EquipmentSelected = selection is not null
+                    SelectedCatalogItemId = selection.EquipmentSelected ? selection.SelectedCatalogItemId : null,
+                    SelectedManufacturer = selection.EquipmentSelected ? selection.SelectedManufacturer : string.Empty,
+                    SelectedModelName = selection.EquipmentSelected ? selection.SelectedModelName : string.Empty,
+                    SelectedNominalCoolingCapacityKw = selection.EquipmentSelected ? selection.SelectedNominalCoolingCapacityKw : null,
+                    SelectionReserveKw = selection.EquipmentSelected ? selection.CapacityReserveKw : null,
+                    EquipmentSelected = selection.EquipmentSelected
                 };
             })
             .ToList();

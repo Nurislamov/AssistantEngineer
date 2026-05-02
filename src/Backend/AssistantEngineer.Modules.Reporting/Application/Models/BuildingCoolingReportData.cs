@@ -17,4 +17,4 @@ internal sealed record RoomCoolingReportCalculation(
     Floor Floor,
     Room Room,
     RoomCalculationResult Calculation,
-    EquipmentSelectionResult? EquipmentSelection);
+    EquipmentSelectionResult EquipmentSelection);

@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Equipment;
 using AssistantEngineer.Modules.Reporting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AssistantEngineer.Api.Configuration;
 
@@ -12,6 +13,8 @@ internal static class ApplicationModulesRegistration
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.TryAddSingleton(TimeProvider.System);
+
         services.AddBuildingsModule(configuration);
         services.AddCalculationsModule(configuration);
         services.AddEquipmentModule();

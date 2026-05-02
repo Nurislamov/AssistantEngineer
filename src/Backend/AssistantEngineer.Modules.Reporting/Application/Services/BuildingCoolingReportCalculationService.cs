@@ -66,7 +66,7 @@ internal sealed class BuildingCoolingReportCalculationService
                 if (roomCalculation.IsFailure)
                     return Result<BuildingCoolingReportData>.Failure(roomCalculation);
 
-                EquipmentSelectionResult? equipmentSelection = null;
+                var equipmentSelection = EquipmentSelectionResult.NotRequested(room.Id);
 
                 if (equipmentSelectionRequested)
                 {
@@ -126,7 +126,9 @@ internal sealed class BuildingCoolingReportCalculationService
         return new EquipmentSelectionResult
         {
             RoomId = roomId,
-            TotalHeatLoadKw = RoundKw(Math.Max(sizing.RequiredHeatingCapacityW, sizing.RequiredCoolingCapacityW)),
+            EquipmentSelected = best is not null,
+            CalculationMethod = "EnergyCalculationParityEquipmentSizing",
+            CoolingLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
             DesignCapacityKw = RoundKw(capacityWithReserveW),
             RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,
             RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,

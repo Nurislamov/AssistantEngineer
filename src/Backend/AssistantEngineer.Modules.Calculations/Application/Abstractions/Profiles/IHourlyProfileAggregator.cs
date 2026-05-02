@@ -6,5 +6,5 @@ public interface IHourlyProfileAggregator
         IEnumerable<IReadOnlyList<double>> profiles,
         CancellationToken cancellationToken = default);
 
-    int FindPeakHour(IReadOnlyList<double> hourlyHeatLoadW);
+    int FindPeakLoadHourIndex(IReadOnlyList<double> hourlyHeatLoadW);
 }

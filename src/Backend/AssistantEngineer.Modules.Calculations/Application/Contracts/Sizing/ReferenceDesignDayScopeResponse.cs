@@ -7,7 +7,7 @@ public sealed class ReferenceDesignDayScopeResponse
     public string? ParentScopeName { get; set; }
 
     public int DayOfYear { get; set; }
-    public int PeakHourOfYear { get; set; }
+    public int? PeakHourOfYear { get; set; }
     public int PeakMonth { get; set; }
 
     public double RawPeakLoadW { get; set; }

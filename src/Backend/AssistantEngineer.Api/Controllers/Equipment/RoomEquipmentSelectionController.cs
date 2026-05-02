@@ -57,7 +57,9 @@ public sealed class RoomEquipmentSelectionController : ControllerBase
         return new EquipmentSelectionResult
         {
             RoomId = roomId,
-            TotalHeatLoadKw = RoundKw(Math.Max(sizing.RequiredHeatingCapacityW, sizing.RequiredCoolingCapacityW)),
+            EquipmentSelected = best is not null,
+            CalculationMethod = "EnergyCalculationParityEquipmentSizing",
+            CoolingLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
             DesignCapacityKw = RoundKw(capacityWithReserveW),
             RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,
             RequiredHeatingCapacityW = sizing.RequiredHeatingCapacityW,

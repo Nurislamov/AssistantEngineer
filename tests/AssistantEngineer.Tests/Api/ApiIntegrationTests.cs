@@ -175,6 +175,12 @@ public class ApiIntegrationTests
 
         Assert.NotNull(result);
         Assert.Equal(1, result.SelectedCatalogItemId);
+        Assert.True(result.EquipmentSelected);
+        Assert.True(result.RequiredCoolingCapacityW > 0);
+        Assert.True(result.RequiredHeatingCapacityW > 0);
+        Assert.NotEmpty(result.AcceptedCandidates);
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
         Assert.True(result.DesignCapacityKw > 0);
     }
     

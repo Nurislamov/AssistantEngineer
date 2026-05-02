@@ -222,7 +222,7 @@ public class VentilationAndInfiltrationLoadEngineTests
         Assert.Equal(335, result.VentilationHeatGainW);
         Assert.Equal(167.5, result.InfiltrationHeatGainW);
         Assert.Equal(0, result.NaturalVentilationHeatGainW);
-        Assert.Equal(502.5, result.TotalHeatLoadW);
+        Assert.Equal(502.5, result.CoolingLoadW);
     }
 
     private VentilationAndInfiltrationLoadResult Calculate(

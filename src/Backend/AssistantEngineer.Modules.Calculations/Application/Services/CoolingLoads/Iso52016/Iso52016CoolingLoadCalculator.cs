@@ -85,7 +85,7 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             [transmissionProfile, ventilationProfiles.TotalCoolingLoadW, solarProfile, internalGainProfile],
             cancellationToken);
         var hourlyHeatLoad = ApplyThermalMassDamping(room, rawLoadProfile, cancellationToken);
-        var peakHour = _profileAggregator.FindPeakHour(hourlyHeatLoad);
+        var peakHour = _profileAggregator.FindPeakLoadHourIndex(hourlyHeatLoad);
         var totalLoad = hourlyHeatLoad[peakHour];
         var peopleGain = GetPeopleGain(room, peakHour);
         var equipmentGain = GetScheduledGain(room.EquipmentLoad.Watts, room.EquipmentSchedule, peakHour);
@@ -113,10 +113,10 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
             reserveFactor,
             cancellationToken);
         _logger.LogDebug(
-            "ISO 52016 cooling calculation finished for room {RoomId}: peak hour {PeakHour}, total load {TotalHeatLoadW} W.",
+            "ISO 52016 cooling calculation finished for room {RoomId}: peak design-day hour {PeakDesignDayHour}, cooling load {CoolingLoadW} W.",
             room.Id,
-            result.PeakHour,
-            result.TotalHeatLoadW);
+            peakHour,
+            result.CoolingLoadW);
         return result;
     }
 
