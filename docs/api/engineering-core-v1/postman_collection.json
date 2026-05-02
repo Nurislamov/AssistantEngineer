@@ -1,0 +1,73 @@
+﻿{
+  "info": {
+    "name": "AssistantEngineer Engineering Core V1",
+    "_postman_id": "engineering-core-v1-contract",
+    "description": "Engineering Core V1 status and diagnostics catalog endpoints. ClosedV1 means engineering formula gates are closed with documented limitations; it does not claim exact EnergyPlus, pyBuildingEnergy or ASHRAE 140 parity.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:5001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get Engineering Core V1 status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/calculations/engineering-core/v1/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "calculations",
+            "engineering-core",
+            "v1",
+            "status"
+          ]
+        },
+        "description": "Returns ClosedV1 status, formula gates, annual 8760 requirements, explicit non-claims, out-of-scope v1 items, planned validation and documentation files."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Engineering Core V1 diagnostics catalog",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/calculations/engineering-core/v1/diagnostics-catalog",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "calculations",
+            "engineering-core",
+            "v1",
+            "diagnostics-catalog"
+          ]
+        },
+        "description": "Returns Error/Warning/Info rules and user-facing diagnostics with code, severity, category, userMessage, userAction and closedV1Gate."
+      },
+      "response": []
+    }
+  ]
+}

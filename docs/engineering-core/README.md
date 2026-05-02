@@ -69,3 +69,13 @@ Engineering Core V1 does not claim:
 - full ISO 13370 implementation;
 - full EN 15316 implementation;
 - latent/moisture/humidity support in v1.
+
+## API contract package
+
+- docs/api/engineering-core-v1/openapi.fragment.yml
+- docs/api/engineering-core-v1/postman_collection.json
+- docs/api/engineering-core-v1/status.sample.json
+- docs/api/engineering-core-v1/diagnostics-catalog.sample.json
+- docs/api/engineering-core-v1/engineering-core-v1.http
+- docs/api/engineering-core-v1/ConsumerGuide.md
+- docs/api/engineering-core-v1/CHANGELOG.md

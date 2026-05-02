@@ -1,0 +1,248 @@
+﻿openapi: 3.0.3
+info:
+  title: AssistantEngineer Engineering Core V1 API
+  version: v1
+  description: >
+    API contract fragment for Engineering Core V1 status and diagnostics catalog.
+    Engineering Core V1 is closed as an engineering formula gate and does not claim
+    exact EnergyPlus, pyBuildingEnergy or ASHRAE 140 parity.
+
+paths:
+  /api/v1/calculations/engineering-core/v1/status:
+    get:
+      operationId: getEngineeringCoreV1Status
+      summary: Get Engineering Core V1 status
+      description: >
+        Returns ClosedV1 status, formula gates, annual 8760 requirements,
+        explicit non-claims, out-of-scope v1 items, planned validation items
+        and documentation references.
+      tags:
+        - EngineeringCoreV1
+      responses:
+        "200":
+          description: Engineering Core V1 status response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EngineeringCoreV1StatusResponse"
+
+  /api/v1/calculations/engineering-core/v1/diagnostics-catalog:
+    get:
+      operationId: getEngineeringCoreV1DiagnosticsCatalog
+      summary: Get Engineering Core V1 diagnostics catalog
+      description: >
+        Returns diagnostics severity rules and user-facing diagnostic catalog items.
+        Error diagnostics represent invalid mandatory inputs and must fail calculation.
+        Warning diagnostics represent fallbacks, simplifications or partial sources.
+        Info diagnostics represent source, method or metadata.
+      tags:
+        - EngineeringCoreV1
+      responses:
+        "200":
+          description: Engineering Core V1 diagnostics catalog response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EngineeringCoreV1DiagnosticsCatalogResponse"
+
+components:
+  schemas:
+    EngineeringCoreV1StatusResponse:
+      type: object
+      required:
+        - coreName
+        - version
+        - status
+        - formulaGatesClosed
+        - weather8760GatesClosed
+        - annualHourly8760GateClosed
+        - successfulResultsMustNotContainErrorDiagnostics
+        - formulaGates
+        - explicitNonClaims
+        - outOfScopeV1
+        - plannedValidation
+        - requiredAnnual8760Flags
+        - documentationFiles
+      properties:
+        coreName:
+          type: string
+          example: AssistantEngineer Engineering Core
+        version:
+          type: string
+          example: v1
+        status:
+          type: string
+          enum:
+            - ClosedV1
+          example: ClosedV1
+        formulaGatesClosed:
+          type: boolean
+          example: true
+        weather8760GatesClosed:
+          type: boolean
+          example: true
+        annualHourly8760GateClosed:
+          type: boolean
+          example: true
+        successfulResultsMustNotContainErrorDiagnostics:
+          type: boolean
+          example: true
+        formulaGates:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngineeringCoreV1GateStatus"
+        explicitNonClaims:
+          type: array
+          items:
+            type: string
+          example:
+            - No exact EnergyPlus numerical parity claim.
+            - No exact pyBuildingEnergy numerical parity claim.
+            - No ASHRAE 140 validation coverage claim.
+        outOfScopeV1:
+          type: array
+          items:
+            type: string
+          example:
+            - HVAC.LATENT_LOAD
+            - HVAC.MOISTURE_BALANCE
+        plannedValidation:
+          type: array
+          items:
+            type: string
+          example:
+            - VALIDATION.ENERGYPLUS_ASHRAE140
+        requiredAnnual8760Flags:
+          type: array
+          items:
+            type: string
+          example:
+            - EnergyDataSource = TrueHourlySimulation
+            - IsTrueHourly8760 = true
+            - HourlyRecordCount = 8760
+        documentationFiles:
+          type: array
+          items:
+            type: string
+
+    EngineeringCoreV1GateStatus:
+      type: object
+      required:
+        - calculationId
+        - name
+        - status
+        - priority
+        - scope
+        - limitation
+      properties:
+        calculationId:
+          type: string
+          example: HVAC.ANNUAL_ENERGY.HOURLY_KWH
+        name:
+          type: string
+          example: Annual and monthly energy balance from hourly records
+        status:
+          type: string
+          enum:
+            - ClosedV1
+          example: ClosedV1
+        priority:
+          type: string
+          example: P0
+        scope:
+          type: string
+        limitation:
+          type: string
+
+    EngineeringCoreV1DiagnosticsCatalogResponse:
+      type: object
+      required:
+        - catalogName
+        - version
+        - status
+        - rules
+        - diagnostics
+      properties:
+        catalogName:
+          type: string
+          example: Engineering Core V1 Diagnostics Catalog
+        version:
+          type: string
+          example: v1
+        status:
+          type: string
+          enum:
+            - ClosedV1
+          example: ClosedV1
+        rules:
+          $ref: "#/components/schemas/EngineeringCoreV1DiagnosticsRules"
+        diagnostics:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngineeringCoreV1DiagnosticCatalogItem"
+
+    EngineeringCoreV1DiagnosticsRules:
+      type: object
+      required:
+        - error
+        - warning
+        - info
+        - successRule
+      properties:
+        error:
+          type: string
+          example: Invalid mandatory input. Calculation must fail.
+        warning:
+          type: string
+          example: Fallback, simplification, missing optional assumption or partial source. Calculation may succeed.
+        info:
+          type: string
+          example: Method, source, status or metadata. Calculation may succeed.
+        successRule:
+          type: string
+          example: A successful calculation result must not contain CalculationDiagnosticSeverity.Error.
+
+    EngineeringCoreV1DiagnosticCatalogItem:
+      type: object
+      required:
+        - code
+        - severity
+        - category
+        - userMessage
+        - userAction
+        - closedV1Gate
+      properties:
+        code:
+          type: string
+          example: AnnualEnergy.Not8760
+        severity:
+          type: string
+          enum:
+            - Error
+            - Warning
+            - Info
+          example: Warning
+        category:
+          type: string
+          example: AnnualEnergy
+        userMessage:
+          type: string
+        userAction:
+          type: string
+        closedV1Gate:
+          type: string
+          example: HVAC.ANNUAL_ENERGY.HOURLY_KWH
+
+x-engineering-core-v1:
+  releaseType: engineering-formula-gate
+  status: ClosedV1
+  annual8760RequiredFlags:
+    - EnergyDataSource = TrueHourlySimulation
+    - IsTrueHourly8760 = true
+    - HourlyRecordCount = 8760
+  nonClaims:
+    - No exact EnergyPlus numerical parity claim.
+    - No exact pyBuildingEnergy numerical parity claim.
+    - No ASHRAE 140 validation coverage claim.
+    - No full ISO 52016 node/matrix solver parity claim.
+    - No latent/moisture/humidity calculation claim.

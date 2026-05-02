@@ -89,3 +89,16 @@ Snapshots must keep these non-claims visible:
 - no ASHRAE 140 validation coverage;
 - no full ISO 52016 node/matrix solver parity;
 - no latent/moisture/humidity support in v1.
+
+## OpenAPI and REST client artifacts
+
+Additional contract artifacts:
+
+- docs/api/engineering-core-v1/openapi.fragment.yml
+- docs/api/engineering-core-v1/postman_collection.json
+- docs/api/engineering-core-v1/ConsumerGuide.md
+- docs/api/engineering-core-v1/CHANGELOG.md
+
+Guard test:
+
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1OpenApiContractTests"

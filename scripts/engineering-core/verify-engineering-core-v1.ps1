@@ -55,6 +55,10 @@ Invoke-Step "Engineering Core API contract snapshot guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ApiContractSnapshotTests"
 }
 
+Invoke-Step "Engineering Core OpenAPI contract guard tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1OpenApiContractTests"
+}
+
 Invoke-Step "Engineering Core frontend visibility guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreFrontendIntegrationGuardTests"
 }
@@ -95,3 +99,4 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
