@@ -1,0 +1,84 @@
+﻿{
+    "projectName":  "Engineering Core V1 Sample",
+    "buildingName":  "Cooling Sample Building",
+    "calculationMethod":  "EngineeringCoreV1.DesignPointCooling",
+    "peakHourOfYear":  5200,
+    "generatedAtUtc":  "2026-01-01T00:00:00Z",
+    "floorsCount":  1,
+    "roomsCount":  2,
+    "designReserveFactor":  1.15,
+    "designCapacityW":  6900,
+    "designCapacityKw":  6.9,
+    "coolingLoadW":  6000,
+    "coolingLoadKw":  6,
+    "calculationDisclosure":  {
+                                  "coreStatus":  "ClosedV1",
+                                  "calculationScope":  "Engineering-core v1 cooling design-point report.",
+                                  "calculationMethod":  "EngineeringCoreV1.DesignPointCooling",
+                                  "actualMethod":  "EngineeringCoreV1.DesignPointCooling",
+                                  "warnings":  [
+                                                   "Cooling report uses engineering design-point load calculation.",
+                                                   "Report does not claim full ISO 52016 node/matrix solver parity.",
+                                                   "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity.",
+                                                   "Latent load, moisture balance and detailed psychrometrics are out of scope for engineering-core v1."
+                                               ],
+                                  "assumptions":  [
+                                                      "Cooling load is assembled from transmission, ventilation, infiltration, solar and internal gain components.",
+                                                      "Window solar gains use simplified SHGC/shading based engineering model.",
+                                                      "Surface irradiance uses ISO52010-inspired solar geometry and isotropic sky transposition.",
+                                                      "Equipment selection, when requested, is capacity-margin based and does not model part-load curves."
+                                                  ],
+                                  "explicitNonClaims":  [
+                                                            "No exact pyBuildingEnergy numerical parity claim.",
+                                                            "No exact EnergyPlus numerical parity claim.",
+                                                            "No ASHRAE 140 validation coverage claim.",
+                                                            "No full ISO 52016 node/matrix solver parity claim.",
+                                                            "No full ISO 52010 climate conversion parity claim.",
+                                                            "No full ISO 13370 implementation claim.",
+                                                            "No full EN 15316 generation/distribution/storage/emission chain claim.",
+                                                            "No full coupled multi-zone heat-balance simulation claim.",
+                                                            "No latent/moisture/humidity calculation claim."
+                                                        ],
+                                  "outOfScopeV1":  [
+                                                       "HVAC.LATENT_LOAD",
+                                                       "HVAC.MOISTURE_BALANCE",
+                                                       "Humidification/dehumidification conditions",
+                                                       "Detailed psychrometric supply-air treatment",
+                                                       "Detailed HVAC plant simulation"
+                                                   ],
+                                  "documentationFiles":  [
+                                                             "docs/calculations/EngineeringCoreV1Scope.md",
+                                                             "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                             "docs/calculations/EnergyPlusAshrae140ValidationPlan.md"
+                                                         ]
+                              },
+    "floorSummaries":  [
+                           {
+                               "floorId":  1,
+                               "floorName":  "Level 1",
+                               "roomsCount":  2,
+                               "coolingLoadW":  6000,
+                               "coolingLoadKw":  6
+                           }
+                       ],
+    "rooms":  [
+                  {
+                      "roomId":  201,
+                      "roomName":  "Meeting Room",
+                      "coolingLoadW":  3600,
+                      "coolingLoadKw":  3.6,
+                      "windowHeatGainW":  900,
+                      "wallHeatGainW":  700,
+                      "internalHeatGainW":  1200
+                  },
+                  {
+                      "roomId":  202,
+                      "roomName":  "Open Office",
+                      "coolingLoadW":  2400,
+                      "coolingLoadKw":  2.4,
+                      "windowHeatGainW":  550,
+                      "wallHeatGainW":  500,
+                      "internalHeatGainW":  850
+                  }
+              ]
+}

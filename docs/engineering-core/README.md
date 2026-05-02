@@ -79,3 +79,11 @@ Engineering Core V1 does not claim:
 - docs/api/engineering-core-v1/engineering-core-v1.http
 - docs/api/engineering-core-v1/ConsumerGuide.md
 - docs/api/engineering-core-v1/CHANGELOG.md
+
+## Report contract snapshots
+
+- docs/reports/engineering-core-v1/heating-report.sample.json
+- docs/reports/engineering-core-v1/cooling-report.sample.json
+- docs/reports/engineering-core-v1/annual-energy-disclosure.sample.json
+- docs/reports/engineering-core-v1/README.md
+- docs/reports/engineering-core-v1/ConsumerGuide.md
