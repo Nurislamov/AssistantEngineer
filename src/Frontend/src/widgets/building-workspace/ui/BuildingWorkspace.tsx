@@ -1,4 +1,4 @@
-import AddIcon from "@mui/icons-material/Add";
+﻿import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
@@ -66,6 +66,7 @@ import { downloadBlob } from "@/shared/lib/downloadFile";
 import { formatNumber } from "@/shared/lib/format";
 import { getErrorMessage } from "@/shared/lib/getErrorMessage";
 import { DataCard } from "@/shared/ui/DataCard";
+import { EngineeringCoreDisclosurePanel } from "@/widgets/engineering-core-disclosure/ui/EngineeringCoreDisclosurePanel";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { QueryState } from "@/shared/ui/QueryState";
 
@@ -225,7 +226,7 @@ function SummaryPanel({ buildingId }: { buildingId: number }): JSX.Element {
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6">{buildingQuery.data?.name}</Typography>
             <Typography variant="body2" color="text.secondary">
-              Building #{buildingId} · Project #{buildingQuery.data?.projectId}
+              Building #{buildingId} В· Project #{buildingQuery.data?.projectId}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Climate zone: {buildingQuery.data?.climateZoneName ?? buildingQuery.data?.climateZoneId ?? "-"}
@@ -975,6 +976,7 @@ export function ReportsPanel({ buildingId }: { buildingId: number }): JSX.Elemen
           <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => void download("cooling")}>Cooling Excel</Button>
           <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => void download("energy")}>Energy balance Excel</Button>
         </Stack>
+        {report ? <EngineeringCoreDisclosurePanel report={report} /> : null}
         {report ? <JsonBlock title="Report" value={report} /> : null}
       </Stack>
     </DataCard>
@@ -1241,3 +1243,4 @@ function defaultEquipment(): UpsertEquipmentCatalogItemRequest {
     isActive: true,
   };
 }
+
