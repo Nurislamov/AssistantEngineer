@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "calculations", "calculation
 		docs\calculations\EngineeringCoreV1Scope.md = docs\calculations\EngineeringCoreV1Scope.md
 		docs\calculations\EngineeringCoreV1ReleaseNotes.md = docs\calculations\EngineeringCoreV1ReleaseNotes.md
 		docs\calculations\EnergyPlusAshrae140ValidationPlan.md = docs\calculations\EnergyPlusAshrae140ValidationPlan.md
+		docs\calculations\EngineeringCoreV1ApiExamples.md = docs\calculations\EngineeringCoreV1ApiExamples.md
 	EndProjectSection
 EndProject
 Global
