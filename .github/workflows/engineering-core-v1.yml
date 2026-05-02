@@ -1,0 +1,49 @@
+﻿name: Engineering Core V1
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+      - Energy_Calculation_Parity
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - Energy_Calculation_Parity
+  workflow_dispatch:
+
+jobs:
+  verify-engineering-core-v1:
+    name: Verify Engineering Core V1
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore backend
+        run: dotnet restore .\AssistantEngineer.sln
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix .\src\Frontend
+
+      - name: Verify Engineering Core V1
+        shell: pwsh
+        run: .\scripts\engineering-core\verify-engineering-core-v1.ps1
+
+      - name: Show git status after verification
+        shell: pwsh
+        run: git status --short
