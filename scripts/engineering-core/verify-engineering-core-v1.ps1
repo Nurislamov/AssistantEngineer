@@ -60,7 +60,7 @@ Invoke-Step "Engineering Core OpenAPI contract guard tests" {
 }
 
 Invoke-Step "Engineering Core frontend visibility guard tests" {
-    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreFrontendIntegrationGuardTests"
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreFrontendIntegrationGuardTests|EngineeringCoreDiagnosticsCatalogPanelFrontendGuardTests"
 }
 
 Invoke-Step "Engineering Core weather and annual 8760 gate tests" {
@@ -99,4 +99,5 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
 

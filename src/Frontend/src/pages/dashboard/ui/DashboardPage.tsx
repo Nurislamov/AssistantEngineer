@@ -9,6 +9,7 @@ import { DataCard } from "@/shared/ui/DataCard";
 import { PageContainer } from "@/shared/ui/PageContainer";
 import { PageHeader } from "@/shared/ui/PageHeader";
 import { EngineeringCoreStatusPanel } from "@/widgets/engineering-core-status/ui/EngineeringCoreStatusPanel";
+import { EngineeringCoreDiagnosticsCatalogPanel } from "@/widgets/engineering-core-diagnostics-catalog/ui/EngineeringCoreDiagnosticsCatalogPanel";
 
 export function DashboardPage(): JSX.Element {
   const { selectedProjectId } = useProjectSelection();
