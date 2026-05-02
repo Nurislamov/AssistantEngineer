@@ -108,3 +108,10 @@ Engineering Core V1 does not claim:
 - docs/reports/engineering-core-v1/ExportDisclosureTemplate.md
 - docs/reports/engineering-core-v1/ExportDisclosureChecklist.md
 - scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1
+
+## Test profiles
+
+- docs/runbooks/EngineeringCoreV1TestProfiles.md
+- scripts/engineering-core/verify-engineering-core-v1-smoke.ps1
+- scripts/engineering-core/verify-engineering-core-v1-contracts.ps1
+- scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1
