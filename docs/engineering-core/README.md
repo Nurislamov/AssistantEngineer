@@ -87,3 +87,10 @@ Engineering Core V1 does not claim:
 - docs/reports/engineering-core-v1/annual-energy-disclosure.sample.json
 - docs/reports/engineering-core-v1/README.md
 - docs/reports/engineering-core-v1/ConsumerGuide.md
+
+## Validation case registry
+
+- docs/validation/EnergyPlusValidationCaseRegistry.json
+- docs/validation/EnergyPlusValidationCaseRegistry.md
+- docs/reports/EngineeringCoreV1ValidationReadiness.md
+- scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1

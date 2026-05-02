@@ -80,6 +80,11 @@ Invoke-Step "EnergyPlus/ASHRAE 140 validation harness guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidation"
 }
 
+Invoke-Step "Engineering Core validation registry guard tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-readiness.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationCaseRegistryTests"
+}
+
 if (-not $SkipFullDotnet -and -not $Fast) {
     Invoke-Step "Full backend test suite" {
         dotnet test .\AssistantEngineer.sln
@@ -104,6 +109,7 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
 
 
 
