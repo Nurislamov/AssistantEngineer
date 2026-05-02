@@ -30,6 +30,15 @@ public sealed class AnnualEnergyBalanceEngine
             return Result<AnnualEnergyBalanceResult>.Validation("Annual energy balance hourly inputs are required.");
 
         var diagnostics = Validate(input);
+
+        if (HasErrorDiagnostics(diagnostics))
+        {
+            return Result<AnnualEnergyBalanceResult>.Validation(
+                BuildValidationFailureMessage(
+                    "Annual energy balance validation failed",
+                    diagnostics));
+        }
+
         var assumptions = new List<string>
         {
             "Hourly energy is calculated as sum(W x hourDurationH) / 1000.",
@@ -46,6 +55,7 @@ public sealed class AnnualEnergyBalanceEngine
                 "AnnualEnergy.SyntheticWeather",
                 "Synthetic weather profile was used for annual energy balance.",
                 input.DiagnosticsContext));
+
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,
                 "SolarWeather.SyntheticWeatherUsed",
@@ -76,6 +86,14 @@ public sealed class AnnualEnergyBalanceEngine
             diagnostics,
             input.Hours,
             input.DiagnosticsContext);
+
+        if (HasErrorDiagnostics(diagnostics))
+        {
+            return Result<AnnualEnergyBalanceResult>.Validation(
+                BuildValidationFailureMessage(
+                    "Annual energy balance validation failed",
+                    diagnostics));
+        }
 
         var monthly = Enumerable.Range(1, 12)
             .Select(month =>
@@ -192,7 +210,7 @@ public sealed class AnnualEnergyBalanceEngine
                 Round(annualHeating),
                 Round(annualCooling),
                 Round(annualTotal),
-                input.BuildingAreaM2 > 0 ? Round(annualTotal / input.BuildingAreaM2) : 0,
+                Round(annualTotal / input.BuildingAreaM2),
                 monthly,
                 peakHeating is null ? 0 : Round(Math.Max(0, peakHeating.HeatingLoadW)),
                 peakCooling is null ? 0 : Round(Math.Max(0, peakCooling.CoolingLoadW)),
@@ -433,6 +451,26 @@ public sealed class AnnualEnergyBalanceEngine
             code,
             message,
             context);
+
+    private static bool HasErrorDiagnostics(
+        IEnumerable<CalculationDiagnostic> diagnostics) =>
+        diagnostics.Any(diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
+
+    private static string BuildValidationFailureMessage(
+        string prefix,
+        IEnumerable<CalculationDiagnostic> diagnostics)
+    {
+        var errorCodes = diagnostics
+            .Where(diagnostic => diagnostic.Severity == CalculationDiagnosticSeverity.Error)
+            .Select(diagnostic => diagnostic.Code)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        return errorCodes.Length == 0
+            ? prefix + "."
+            : $"{prefix}: {string.Join(", ", errorCodes)}.";
+    }
 
     private static double Round(
         double value) =>

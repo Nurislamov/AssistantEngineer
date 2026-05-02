@@ -12,6 +12,15 @@ public sealed class SystemEnergyEngine
             return Result<SystemEnergyResult>.Validation("System energy input is required.");
 
         var diagnostics = Validate(input);
+
+        if (HasErrorDiagnostics(diagnostics))
+        {
+            return Result<SystemEnergyResult>.Validation(
+                BuildValidationFailureMessage(
+                    "System energy validation failed",
+                    diagnostics));
+        }
+
         var assumptions = new List<string>
         {
             "System energy is a simplified engineering model.",
@@ -27,6 +36,7 @@ public sealed class SystemEnergyEngine
             "No heating efficiency or COP was supplied; useful heating energy was carried through as final energy.",
             input.DiagnosticsContext,
             diagnostics);
+
         var finalCooling = ConvertUsefulToFinal(
             input.UsefulCoolingEnergyKWh,
             efficiency: null,
@@ -35,6 +45,7 @@ public sealed class SystemEnergyEngine
             "No cooling COP was supplied; useful cooling energy was carried through as final energy.",
             input.DiagnosticsContext,
             diagnostics);
+
         var finalDhw = ConvertUsefulToFinal(
             input.UsefulDhwEnergyKWh,
             input.DhwEfficiency,
@@ -46,6 +57,7 @@ public sealed class SystemEnergyEngine
 
         var finalFan = Math.Max(0, input.FanEnergyKWh);
         var totalFinal = finalHeating + finalCooling + finalDhw + finalFan;
+
         var primary = input.PrimaryEnergyFactor.HasValue
             ? totalFinal * input.PrimaryEnergyFactor.Value
             : (double?)null;
@@ -68,17 +80,75 @@ public sealed class SystemEnergyEngine
     {
         var diagnostics = new List<CalculationDiagnostic>();
 
-        ValidateNonNegative(diagnostics, input.UsefulHeatingEnergyKWh, "SystemEnergy.InvalidUsefulHeating", "Useful heating energy cannot be negative.", input.DiagnosticsContext);
-        ValidateNonNegative(diagnostics, input.UsefulCoolingEnergyKWh, "SystemEnergy.InvalidUsefulCooling", "Useful cooling energy cannot be negative.", input.DiagnosticsContext);
-        ValidateNonNegative(diagnostics, input.UsefulDhwEnergyKWh, "SystemEnergy.InvalidUsefulDhw", "Useful DHW energy cannot be negative.", input.DiagnosticsContext);
-        ValidateNonNegative(diagnostics, input.FanEnergyKWh, "SystemEnergy.InvalidFanEnergy", "Fan energy cannot be negative.", input.DiagnosticsContext);
+        ValidateNonNegative(
+            diagnostics,
+            input.UsefulHeatingEnergyKWh,
+            "SystemEnergy.InvalidUsefulHeating",
+            "Useful heating energy cannot be negative.",
+            input.DiagnosticsContext);
 
-        ValidatePositiveIfSupplied(diagnostics, input.HeatingEfficiency, "SystemEnergy.InvalidHeatingEfficiency", "Heating efficiency must be greater than zero.", input.DiagnosticsContext);
-        ValidatePositiveIfSupplied(diagnostics, input.HeatingCop, "SystemEnergy.InvalidHeatingCop", "Heating COP must be greater than zero.", input.DiagnosticsContext);
-        ValidatePositiveIfSupplied(diagnostics, input.CoolingCop, "SystemEnergy.InvalidCoolingCop", "Cooling COP must be greater than zero.", input.DiagnosticsContext);
-        ValidatePositiveIfSupplied(diagnostics, input.DhwEfficiency, "SystemEnergy.InvalidDhwEfficiency", "DHW efficiency must be greater than zero.", input.DiagnosticsContext);
-        ValidatePositiveIfSupplied(diagnostics, input.DhwCop, "SystemEnergy.InvalidDhwCop", "DHW COP must be greater than zero.", input.DiagnosticsContext);
-        ValidatePositiveIfSupplied(diagnostics, input.PrimaryEnergyFactor, "SystemEnergy.InvalidPrimaryEnergyFactor", "Primary energy factor must be greater than zero.", input.DiagnosticsContext);
+        ValidateNonNegative(
+            diagnostics,
+            input.UsefulCoolingEnergyKWh,
+            "SystemEnergy.InvalidUsefulCooling",
+            "Useful cooling energy cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidateNonNegative(
+            diagnostics,
+            input.UsefulDhwEnergyKWh,
+            "SystemEnergy.InvalidUsefulDhw",
+            "Useful DHW energy cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidateNonNegative(
+            diagnostics,
+            input.FanEnergyKWh,
+            "SystemEnergy.InvalidFanEnergy",
+            "Fan energy cannot be negative.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.HeatingEfficiency,
+            "SystemEnergy.InvalidHeatingEfficiency",
+            "Heating efficiency must be greater than zero.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.HeatingCop,
+            "SystemEnergy.InvalidHeatingCop",
+            "Heating COP must be greater than zero.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.CoolingCop,
+            "SystemEnergy.InvalidCoolingCop",
+            "Cooling COP must be greater than zero.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.DhwEfficiency,
+            "SystemEnergy.InvalidDhwEfficiency",
+            "DHW efficiency must be greater than zero.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.DhwCop,
+            "SystemEnergy.InvalidDhwCop",
+            "DHW COP must be greater than zero.",
+            input.DiagnosticsContext);
+
+        ValidatePositiveIfSupplied(
+            diagnostics,
+            input.PrimaryEnergyFactor,
+            "SystemEnergy.InvalidPrimaryEnergyFactor",
+            "Primary energy factor must be greater than zero.",
+            input.DiagnosticsContext);
 
         return diagnostics;
     }
@@ -93,6 +163,7 @@ public sealed class SystemEnergyEngine
         List<CalculationDiagnostic> diagnostics)
     {
         useful = Math.Max(0, useful);
+
         if (useful == 0)
             return 0;
 
@@ -107,6 +178,7 @@ public sealed class SystemEnergyEngine
             missingCode,
             missingMessage,
             context));
+
         return useful;
     }
 
@@ -118,7 +190,13 @@ public sealed class SystemEnergyEngine
         string? context)
     {
         if (value < 0)
-            diagnostics.Add(new CalculationDiagnostic(CalculationDiagnosticSeverity.Error, code, message, context));
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Error,
+                code,
+                message,
+                context));
+        }
     }
 
     private static void ValidatePositiveIfSupplied(
@@ -129,7 +207,33 @@ public sealed class SystemEnergyEngine
         string? context)
     {
         if (value is <= 0)
-            diagnostics.Add(new CalculationDiagnostic(CalculationDiagnosticSeverity.Error, code, message, context));
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Error,
+                code,
+                message,
+                context));
+        }
+    }
+
+    private static bool HasErrorDiagnostics(
+        IEnumerable<CalculationDiagnostic> diagnostics) =>
+        diagnostics.Any(diagnostic =>
+            diagnostic.Severity == CalculationDiagnosticSeverity.Error);
+
+    private static string BuildValidationFailureMessage(
+        string prefix,
+        IEnumerable<CalculationDiagnostic> diagnostics)
+    {
+        var errorCodes = diagnostics
+            .Where(diagnostic => diagnostic.Severity == CalculationDiagnosticSeverity.Error)
+            .Select(diagnostic => diagnostic.Code)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        return errorCodes.Length == 0
+            ? prefix + "."
+            : $"{prefix}: {string.Join(", ", errorCodes)}.";
     }
 
     private static double Round(double value) =>

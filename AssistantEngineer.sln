@@ -44,6 +44,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "calculations", "calculations", "{4C5FD739-DE4F-45C7-B32B-A6932DF7B1AB}"
 	ProjectSection(SolutionItems) = preProject
 		docs\calculations\InternalGains.md = docs\calculations\InternalGains.md
+		docs\calculations\EngineeringCoreV1Scope.md = docs\calculations\EngineeringCoreV1Scope.md
 	EndProjectSection
 EndProject
 Global
