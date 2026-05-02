@@ -1,0 +1,122 @@
+﻿{
+    "summaryName":  "Engineering Core V1 Validation Comparison Summary",
+    "version":  "v1",
+    "status":  "PlannedValidation",
+    "generatedAtUtc":  "2026-05-02 20:34:37 UTC",
+    "registryFile":  "docs/validation/EnergyPlusValidationCaseRegistry.json",
+    "comparisonResultFiles":  [
+                                  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json"
+                              ],
+    "totals":  {
+                   "totalCases":  5,
+                   "casesWithComparison":  1,
+                   "casesPassing":  1,
+                   "placeholderComparisons":  1,
+                   "plannedOnly":  4
+               },
+    "cases":  [
+                  {
+                      "caseId":  "ASHRAE140-STYLE-001",
+                      "name":  "Lightweight vs heavyweight envelope sensitivity",
+                      "stage":  "Ashrae140Style",
+                      "registryStatus":  "Planned",
+                      "comparisonStatus":  "NotGenerated",
+                      "referenceStatus":  "NotAvailable",
+                      "hasComparisonResult":  false,
+                      "allMetricsPassed":  false,
+                      "metricsTotal":  2,
+                      "metricsPassed":  0,
+                      "metricsFailed":  2,
+                      "resultFile":  "",
+                      "nonClaims":  [
+                                        "Does not claim exact EnergyPlus numerical parity.",
+                                        "Does not claim ASHRAE 140 validation coverage.",
+                                        "Does not claim full ISO 52016 node/matrix solver parity."
+                                    ]
+                  },
+                  {
+                      "caseId":  "ASHRAE140-STYLE-002",
+                      "name":  "Window orientation solar sensitivity",
+                      "stage":  "Ashrae140Style",
+                      "registryStatus":  "Planned",
+                      "comparisonStatus":  "NotGenerated",
+                      "referenceStatus":  "NotAvailable",
+                      "hasComparisonResult":  false,
+                      "allMetricsPassed":  false,
+                      "metricsTotal":  2,
+                      "metricsPassed":  0,
+                      "metricsFailed":  2,
+                      "resultFile":  "",
+                      "nonClaims":  [
+                                        "Does not claim exact EnergyPlus numerical parity.",
+                                        "Does not claim ASHRAE 140 validation coverage.",
+                                        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                                    ]
+                  },
+                  {
+                      "caseId":  "EP-SMOKE-001",
+                      "name":  "Single zone transmission-only heating smoke case",
+                      "stage":  "Smoke",
+                      "registryStatus":  "ReferenceFixturePlaceholder",
+                      "comparisonStatus":  "PlaceholderComparison",
+                      "referenceStatus":  "PlaceholderReferenceOutput",
+                      "hasComparisonResult":  true,
+                      "allMetricsPassed":  true,
+                      "metricsTotal":  3,
+                      "metricsPassed":  3,
+                      "metricsFailed":  0,
+                      "resultFile":  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
+                      "nonClaims":  [
+                                        "Does not claim exact EnergyPlus numerical parity.",
+                                        "Does not claim ASHRAE 140 validation coverage.",
+                                        "Does not claim full ISO 52016 node/matrix solver parity."
+                                    ]
+                  },
+                  {
+                      "caseId":  "EP-SMOKE-002",
+                      "name":  "Single zone solar cooling smoke case",
+                      "stage":  "Smoke",
+                      "registryStatus":  "ReferenceFixturePlaceholder",
+                      "comparisonStatus":  "NotGenerated",
+                      "referenceStatus":  "NotAvailable",
+                      "hasComparisonResult":  false,
+                      "allMetricsPassed":  false,
+                      "metricsTotal":  3,
+                      "metricsPassed":  0,
+                      "metricsFailed":  3,
+                      "resultFile":  "",
+                      "nonClaims":  [
+                                        "Does not claim exact EnergyPlus numerical parity.",
+                                        "Does not claim ASHRAE 140 validation coverage.",
+                                        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                                    ]
+                  },
+                  {
+                      "caseId":  "EP-SMOKE-003",
+                      "name":  "Single zone internal gains cooling smoke case",
+                      "stage":  "Smoke",
+                      "registryStatus":  "ReferenceFixturePlaceholder",
+                      "comparisonStatus":  "NotGenerated",
+                      "referenceStatus":  "NotAvailable",
+                      "hasComparisonResult":  false,
+                      "allMetricsPassed":  false,
+                      "metricsTotal":  3,
+                      "metricsPassed":  0,
+                      "metricsFailed":  3,
+                      "resultFile":  "",
+                      "nonClaims":  [
+                                        "Does not claim exact EnergyPlus numerical parity.",
+                                        "Does not claim ASHRAE 140 validation coverage.",
+                                        "Does not claim latent or moisture validation coverage."
+                                    ]
+                  }
+              ],
+    "requiredNonClaims":  [
+                              "Does not claim exact EnergyPlus numerical parity.",
+                              "Does not claim ASHRAE 140 validation coverage.",
+                              "Does not claim full ISO 52016 node/matrix solver parity.",
+                              "PlaceholderComparison is not real EnergyPlus validation.",
+                              "Future real validation must remain tolerance-based."
+                          ],
+    "interpretation":  "Validation summary is a readiness and comparison index. Current EP-SMOKE-001 result is PlaceholderComparison only. This does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
+}

@@ -1,6 +1,6 @@
 ﻿# EP-SMOKE-001 Comparison Readiness
 
-Generated at: 2026-05-02 20:30:30 UTC
+Generated at: 2026-05-02 20:34:29 UTC
 
 ## Status
 

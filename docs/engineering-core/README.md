@@ -152,3 +152,10 @@ Engineering Core V1 does not claim:
 - scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1
 - docs/reports/validation/EP-SMOKE-001-ComparisonResult.json
 - docs/reports/validation/EP-SMOKE-001-ComparisonResult.md
+
+## Validation comparison summary
+
+- docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json
+- docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.md
+- docs/reports/validation/README.md
+- scripts/engineering-core/generate-engineering-core-v1-validation-comparison-summary.ps1
