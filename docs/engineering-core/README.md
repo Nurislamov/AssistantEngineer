@@ -136,3 +136,13 @@ Engineering Core V1 does not claim:
 - .github/workflows/engineering-core-v1-smoke.yml
 - .github/workflows/engineering-core-v1-contracts.yml
 - .github/workflows/engineering-core-v1-release-ready.yml
+
+## First validation fixture scaffold
+
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/case-metadata.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/assistantengineer-input.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/reference-output.placeholder.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/comparison-tolerances.json
+- docs/validation/fixtures/EP-SMOKE-001/README.md
+- docs/reports/validation/EP-SMOKE-001-ComparisonReadiness.md
+- scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1
