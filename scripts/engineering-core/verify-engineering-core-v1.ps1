@@ -53,6 +53,10 @@ Invoke-Step "Engineering Core repository communication guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1RepositoryCommunicationTests"
 }
 
+Invoke-Step "Engineering Core CI profile workflow guard tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1CiProfileWorkflowTests"
+}
+
 Invoke-Step "Engineering Core diagnostics catalog guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests"
 }
@@ -136,6 +140,7 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
 
 
 

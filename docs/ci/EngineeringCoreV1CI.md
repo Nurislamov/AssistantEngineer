@@ -93,3 +93,15 @@ The workflow should end with:
     Engineering Core V1 verification completed successfully.
 
 If CI fails, fix the failing build/test/documentation guard before merging.
+
+## CI profiles
+
+Additional profile workflows are documented in:
+
+    docs/ci/EngineeringCoreV1CIProfiles.md
+
+Profile workflows:
+
+    .github/workflows/engineering-core-v1-smoke.yml
+    .github/workflows/engineering-core-v1-contracts.yml
+    .github/workflows/engineering-core-v1-release-ready.yml

@@ -1,0 +1,40 @@
+﻿name: Engineering Core V1 Release Ready
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "engineering-core-v1*"
+
+jobs:
+  release-ready:
+    name: Engineering Core V1 release readiness gate
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore backend
+        run: dotnet restore .\AssistantEngineer.sln
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix .\src\Frontend
+
+      - name: Run release readiness gate
+        shell: pwsh
+        run: .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
+      - name: Show final git status
+        shell: pwsh
+        run: git status --short

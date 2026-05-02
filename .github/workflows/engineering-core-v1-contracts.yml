@@ -1,0 +1,65 @@
+﻿name: Engineering Core V1 Contracts
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+      - Energy_Calculation_Parity
+    paths:
+      - "docs/**"
+      - "scripts/engineering-core/**"
+      - "tests/**"
+      - ".github/workflows/engineering-core-v1-contracts.yml"
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - Energy_Calculation_Parity
+    paths:
+      - "docs/**"
+      - "scripts/engineering-core/**"
+      - "tests/**"
+      - ".github/workflows/engineering-core-v1-contracts.yml"
+  workflow_dispatch:
+
+jobs:
+  contracts:
+    name: Engineering Core V1 contracts profile
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore backend
+        run: dotnet restore .\AssistantEngineer.sln
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix .\src\Frontend
+
+      - name: Run contracts profile
+        shell: pwsh
+        run: .\scripts\engineering-core\verify-engineering-core-v1-contracts.ps1
+
+      - name: Fail if generated artifacts are stale
+        shell: pwsh
+        run: |
+          $changes = git status --short
+          if (-not [string]::IsNullOrWhiteSpace($changes)) {
+            Write-Host "Generated artifacts are stale or workflow changed files:"
+            Write-Host $changes
+            throw "Run scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1 and commit generated changes."
+          }

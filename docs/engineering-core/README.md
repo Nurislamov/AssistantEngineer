@@ -129,3 +129,10 @@ Engineering Core V1 does not claim:
 - docs/releases/EngineeringCoreV1AnnouncementDraft.md
 - docs/releases/EngineeringCoreV1TaggingGuide.md
 - docs/runbooks/EngineeringCoreV1RepositoryCommunicationRunbook.md
+
+## CI profiles
+
+- docs/ci/EngineeringCoreV1CIProfiles.md
+- .github/workflows/engineering-core-v1-smoke.yml
+- .github/workflows/engineering-core-v1-contracts.yml
+- .github/workflows/engineering-core-v1-release-ready.yml
