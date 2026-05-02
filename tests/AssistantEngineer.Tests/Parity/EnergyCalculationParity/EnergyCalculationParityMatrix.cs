@@ -5,22 +5,148 @@ public static class EnergyCalculationParityMatrix
     public static IReadOnlyList<EnergyCalculationParityFeature> Features { get; } =
     [
         new(
+            Code: "ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER",
+            Name: "Transmission heat transfer",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Transmission",
+            Notes: "Covered by deterministic fixtures and engine tests. Application pipeline integrated, including explicit ground boundary temperature diagnostics. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
+            Name: "Window solar gains",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SolarGains",
+            Notes: "Covered by deterministic fixtures and engine tests. BenchmarkCompared for deterministic window solar gain and night-zero fixtures. Application pipeline integrated; annual climate solar data uses the centralized surface irradiance path and orientation reference fallback is diagnosed. This is not ExternalParityCovered."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
+            Name: "Ventilation and infiltration loads",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Ventilation",
+            Notes: "Covered by deterministic fixtures and engine tests. Application pipeline integrated; default ACH fallback is documented and diagnosed. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
+            Name: "Internal gains",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.InternalGains",
+            Notes: "Covered by deterministic engine tests. Application pipeline integrated; design-point schedule factor 1.0 is documented and hourly schedule expansion remains partial. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
+            Name: "Room heating load",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated with requested/actual method diagnostics. Design-point, not full hourly balance. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
+            Name: "Room cooling load",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads",
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated with requested/actual method diagnostics. Design-point, not full hourly balance. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
+            Name: "Thermal zone aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
+            Name: "Floor aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures, engine tests, and floor application pipeline tests. Application pipeline integrated. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
+            Name: "Building aggregation",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Aggregation",
+            Notes: "Covered by deterministic fixtures, engine tests, and building application pipeline tests. Application pipeline integrated. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
+            Name: "Annual energy balance",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
+            Notes: "InternalDeterministicTested by fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. BenchmarkCompared for constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture. True hourly source passes available transmission, mechanical ventilation, natural ventilation, separate infiltration, ground, solar and internal gains. This is not ExternalParityCovered."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
+            Name: "Signed component balance",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy",
+            Notes: "InternalDeterministicTested for signed hourly transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground components. BenchmarkCompared for deterministic signed component benchmark fixtures, including separate infiltration and ventilation subcomponent split. This is not ExternalParityCovered."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
+            Name: "DHW demand",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater",
+            Notes: "Covered by deterministic fixtures and service tests; endpoint uses the deterministic facade path. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
+            Name: "System energy",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy",
+            Notes: "Covered by deterministic fixtures and engine tests; system services call SystemEnergyEngine. This is not external parity proof."),
+
+        new(
+            Code: "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION",
+            Name: "Equipment sizing integration",
+            ReferenceStatus: ReferenceFeatureStatus.Implemented,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
+            Priority: EnergyCalculationParityPriority.P0,
+            AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing",
+            Notes: "Covered by deterministic fixtures, engine tests, and room equipment application pipeline tests. Application pipeline integrated; cooling and heating are evaluated when catalog capacity fields exist, otherwise heating limitation is diagnosed. This is not external parity proof."),
+
+        new(
             Code: "ISO52010.CLIMATE_CONVERSION",
             Name: "ISO 52010 external climate conversion",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Нужно выделить отдельный ISO 52010 weather/solar layer."),
+            Notes: "Solar position has deterministic tests and is used by the weather-solar surface irradiance path. Broader external climate conversion remains Partial and is not ExternalParityCovered."),
 
         new(
             Code: "ISO52010.SURFACE_IRRADIANCE",
             Name: "Solar irradiance on tilted and oriented surfaces",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
-            AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
+            AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
             Priority: EnergyCalculationParityPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Нужны reference tests для N/E/S/W/horizontal surfaces."),
+            Notes: "InternalDeterministicTested for isotropic sky surface irradiance, orientation/tilt behavior, horizontal midday irradiance, night clamping to zero, and weather-solar diagnostics. BenchmarkCompared for deterministic surface night-zero fixture. External parity remains not covered."),
 
         new(
             Code: "WEATHER.EPW",

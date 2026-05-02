@@ -130,6 +130,49 @@ public class EnergyCalculationParityMatrixTests
     }
 
     [Fact]
+    public void ParityMatrixContainsFinalEnergyCalculationParityFunctions()
+    {
+        var codes = EnergyCalculationParityMatrix.Features
+            .Select(feature => feature.Code)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var requiredCodes = new[]
+        {
+            "ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER",
+            "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
+            "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
+            "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
+            "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
+            "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
+            "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
+            "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
+            "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
+            "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
+            "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
+            "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
+            "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
+            "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION"
+        };
+
+        foreach (var requiredCode in requiredCodes)
+            Assert.Contains(requiredCode, codes);
+    }
+
+    [Fact]
+    public void NoFeatureClaimsExternalParityWithoutEvidence()
+    {
+        var violations = EnergyCalculationParityMatrix.Features
+            .Where(feature => feature.AssistantEngineerStatus == AssistantEngineerFeatureStatus.ExternalParityCovered)
+            .Select(feature => feature.Code)
+            .Order(StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"ExternalParityCovered requires documented benchmark evidence: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
     public void OutOfScopeFeaturesAreOnlyP3()
     {
         var violations = EnergyCalculationParityMatrix.Features

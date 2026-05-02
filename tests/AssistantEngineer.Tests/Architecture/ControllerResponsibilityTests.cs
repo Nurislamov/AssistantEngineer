@@ -101,7 +101,6 @@ public class ControllerResponsibilityTests
         Assert.Equal(
             new[]
             {
-                typeof(IEquipmentFacade),
                 typeof(ILoadCalculationsFacade)
             }.OrderBy(type => type.FullName, StringComparer.Ordinal),
             parameters);

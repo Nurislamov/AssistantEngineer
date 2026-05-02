@@ -1,0 +1,57 @@
+{
+  "fixtureName": "OutdoorCoolingGain",
+  "description": "Outdoor boundary warmer than the room creates transmission heat gain into the room.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Transmission Heat Transfer",
+  "sourceReference": "AssistantEngineer deterministic fixture for transmission heat flow sign convention.",
+  "assumptions": [
+    "Positive heat flow means heat leaves the room.",
+    "Negative heat flow means heat enters the room and is reported as heat gain magnitude."
+  ],
+  "notes": [
+    "This fixture verifies direction and sign for cooling conditions."
+  ],
+  "input": {
+    "calculationBasis": "transmission-heat-transfer",
+    "transmission": {
+      "elements": [
+        {
+          "elementId": 5,
+          "elementType": "Wall",
+          "roomId": 101,
+          "areaM2": 10,
+          "uValueWPerM2K": 0.5,
+          "indoorTemperatureC": 24,
+          "outdoorTemperatureC": 34,
+          "boundaryType": "Outdoor",
+          "diagnosticsContext": "OutdoorCoolingGain wall"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalHeatFlowW": -50,
+    "totalHeatLossW": 0,
+    "totalHeatGainW": 50,
+    "elements": [
+      {
+        "elementId": 5,
+        "elementType": "Wall",
+        "boundaryType": "Outdoor",
+        "areaM2": 10,
+        "uValueWPerM2K": 0.5,
+        "deltaTC": -10,
+        "heatFlowW": -50,
+        "isIncludedInLoad": true,
+        "expectedDiagnosticCodes": []
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

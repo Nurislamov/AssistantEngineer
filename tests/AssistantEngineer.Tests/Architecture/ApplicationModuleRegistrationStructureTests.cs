@@ -1,4 +1,6 @@
 using AssistantEngineer.Api;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Tests.Architecture;
 
@@ -93,6 +95,27 @@ public class ApplicationModuleRegistrationStructureTests
             "AddInfrastructure(",
             text,
             StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ApplicationModulesRegistrationRegistersGlobalTimeProviderOnce()
+    {
+        var type = typeof(Program).Assembly.GetType(
+            "AssistantEngineer.Api.Configuration.ApplicationModulesRegistration");
+        Assert.NotNull(type);
+
+        var method = type.GetMethod("AddAssistantEngineerApplicationModules");
+        Assert.NotNull(method);
+
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().Build();
+
+        method.Invoke(null, [services, configuration]);
+
+        Assert.Single(services, service => service.ServiceType == typeof(TimeProvider));
+
+        using var provider = services.BuildServiceProvider();
+        Assert.Same(TimeProvider.System, provider.GetRequiredService<TimeProvider>());
     }
 
     [Fact]

@@ -1,0 +1,55 @@
+﻿{
+    "projectName":  "Engineering Core V1 Sample",
+    "buildingName":  "Annual Energy Sample Building",
+    "energyDataSource":  "TrueHourlySimulation",
+    "isTrueHourly8760":  true,
+    "hourlyRecordCount":  8760,
+    "annualHeatingKwh":  18000,
+    "annualCoolingKwh":  6200,
+    "annualTotalKwh":  24200,
+    "euiKwhPerM2":  121,
+    "calculationDisclosure":  {
+                                  "coreStatus":  "ClosedV1",
+                                  "calculationScope":  "Engineering-core v1 hourly annual energy integration report.",
+                                  "calculationMethod":  "TrueHourlySimulation",
+                                  "actualMethod":  "EngineeringCoreV1.TrueHourly8760",
+                                  "warnings":  [
+                                                   "Annual energy is true hourly 8760 only when EnergyDataSource=TrueHourlySimulation, IsTrueHourly8760=true and HourlyRecordCount=8760.",
+                                                   "Monthly adapter, synthetic weather and deterministic short fixtures must not be presented as true hourly 8760 annual simulation.",
+                                                   "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity."
+                                               ],
+                                  "assumptions":  [
+                                                      "Annual energy is calculated as sum of hourly W*h divided by 1000.",
+                                                      "Monthly totals are aggregated from hourly records.",
+                                                      "EPW and PVGIS import gates normalize weather to 8760 hourly records."
+                                                  ],
+                                  "explicitNonClaims":  [
+                                                            "No exact pyBuildingEnergy numerical parity claim.",
+                                                            "No exact EnergyPlus numerical parity claim.",
+                                                            "No ASHRAE 140 validation coverage claim.",
+                                                            "No full ISO 52016 node/matrix solver parity claim.",
+                                                            "No full ISO 52010 climate conversion parity claim.",
+                                                            "No full ISO 13370 implementation claim.",
+                                                            "No full EN 15316 generation/distribution/storage/emission chain claim.",
+                                                            "No full coupled multi-zone heat-balance simulation claim.",
+                                                            "No latent/moisture/humidity calculation claim."
+                                                        ],
+                                  "outOfScopeV1":  [
+                                                       "HVAC.LATENT_LOAD",
+                                                       "HVAC.MOISTURE_BALANCE",
+                                                       "Humidification/dehumidification conditions",
+                                                       "Detailed psychrometric supply-air treatment",
+                                                       "Detailed HVAC plant simulation"
+                                                   ],
+                                  "documentationFiles":  [
+                                                             "docs/calculations/EngineeringCoreV1Scope.md",
+                                                             "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+                                                             "docs/calculations/EnergyPlusAshrae140ValidationPlan.md"
+                                                         ]
+                              },
+    "requiredAnnual8760Flags":  [
+                                    "EnergyDataSource = TrueHourlySimulation",
+                                    "IsTrueHourly8760 = true",
+                                    "HourlyRecordCount = 8760"
+                                ]
+}

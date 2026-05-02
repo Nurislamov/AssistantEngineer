@@ -8,6 +8,7 @@ internal static class TestPaths
         Path.Combine(
             RepoRoot,
             "src",
+            "Backend",
             "AssistantEngineer.Api");
 
     private static string FindRepoRoot()

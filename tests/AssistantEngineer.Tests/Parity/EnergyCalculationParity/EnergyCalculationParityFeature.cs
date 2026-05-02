@@ -19,6 +19,9 @@ public enum AssistantEngineerFeatureStatus
 {
     NotStarted,
     Partial,
+    InternalDeterministicTested,
+    BenchmarkCompared,
+    ExternalParityCovered,
     Covered,
     OutOfScope
 }

@@ -36,6 +36,7 @@ public class ApiVersioningTests
     [InlineData(typeof(AnnualProfilesController), "api/v{version:apiVersion}/profiles/annual")]
     [InlineData(typeof(StandardProfilesController), "api/v{version:apiVersion}/standard-profiles/en16798")]
     [InlineData(typeof(ProjectsController), "api/v{version:apiVersion}/projects")]
+    [InlineData(typeof(DevelopmentDemoDataController), "api/v{version:apiVersion}/development/demo-data")]
     [InlineData(typeof(StandardTablesController), "api/v{version:apiVersion}/standard-tables")]
     [InlineData(typeof(BuildingCoolingReportsController), "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/cooling")]
     [InlineData(typeof(BuildingEnergyBalanceReportsController), "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/energy-balance")]

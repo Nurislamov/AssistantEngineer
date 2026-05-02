@@ -24,7 +24,9 @@ public class CalculationTests
 
         Assert.Equal(nameof(CoolingLoadCalculationMethod.Simplified), result.CalculationMethod);
         Assert.Equal(1050, result.BaseRoomLoadW);
-        Assert.Equal(1050, result.TotalHeatLoadW);
+        Assert.Equal(1050, result.CoolingLoadW);
+        Assert.Equal(1.05, result.CoolingLoadKw);
+        Assert.Null(result.PeakHourOfYear);
         Assert.Equal(1155, result.DesignCapacityW);
         Assert.Equal(24, result.HourlyHeatLoadW.Count);
     }
@@ -45,9 +47,8 @@ public class CalculationTests
 
         Assert.Equal(nameof(CoolingLoadCalculationMethod.Iso52016), result.CalculationMethod);
         Assert.Equal(24, result.HourlyHeatLoadW.Count);
-        Assert.NotNull(result.PeakHour);
-        Assert.InRange(result.PeakHour.Value, 0, 23);
-        Assert.True(result.TotalHeatLoadW > 0);
+        Assert.Null(result.PeakHourOfYear);
+        Assert.True(result.CoolingLoadW > 0);
     }
 
     [Fact]
@@ -158,7 +159,7 @@ public class CalculationTests
         var result = await calculator.CalculateAsync(room);
 
         Assert.Equal(1.0, result.AirChangesPerHour);
-        Assert.Equal(754.8, result.VentilationHeatLossW);
+        Assert.Equal(743.7, result.VentilationHeatLossW);
     }
 
     [Fact]
@@ -183,7 +184,7 @@ public class CalculationTests
 
         Assert.Equal(-15, result.OutdoorDesignTemperatureC);
         Assert.Equal(37, result.DeltaTemperatureC);
-        Assert.Equal(377.4, result.VentilationHeatLossW);
+        Assert.Equal(371.85, result.VentilationHeatLossW);
     }
 
     [Fact]

@@ -13,6 +13,7 @@ using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Models.Heating;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
@@ -52,7 +53,7 @@ public class ApiIntegrationTests
 
         var response = await client.GetAsync("/api/v1/reports/buildings/0/heating?method=En12831");
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessWithBodyAsync(response);
         var report = await response.Content.ReadFromJsonAsync<BuildingHeatingReport>();
         Assert.NotNull(report);
         Assert.Equal("Integration project", report.ProjectName);
@@ -72,7 +73,7 @@ public class ApiIntegrationTests
         var response = await client.GetAsync(
             "/api/v1/buildings/0/load-calculations/energy-balance?coolingMethod=Simplified&heatingMethod=En12831");
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessWithBodyAsync(response);
 
         var balance = await response.Content.ReadFromJsonAsync<BuildingEnergyBalanceResult>();
 
@@ -91,7 +92,7 @@ public class ApiIntegrationTests
         var response = await client.GetAsync(
             "/api/v1/buildings/0/load-calculations/cooling-load?method=Iso52016");
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessWithBodyAsync(response);
 
         var result = await response.Content.ReadFromJsonAsync<BuildingCalculationResult>();
 
@@ -130,12 +131,57 @@ public class ApiIntegrationTests
         var response = await client.GetAsync(
             "/api/v1/reports/buildings/0/energy-balance/excel?coolingMethod=Simplified&heatingMethod=En12831");
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessWithBodyAsync(response);
         Assert.Equal(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             response.Content.Headers.ContentType?.MediaType);
         var content = await response.Content.ReadAsByteArrayAsync();
         Assert.True(content.Length > 0);
+    }
+
+    [Fact]
+    public async Task GetCoolingReportExcelReturnsWorkbook()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/reports/buildings/0/cooling/excel?method=Simplified&systemType=Split&unitType=Wall");
+
+        await EnsureSuccessWithBodyAsync(response);
+        Assert.Equal(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            response.Content.Headers.ContentType?.MediaType);
+        var content = await response.Content.ReadAsByteArrayAsync();
+        Assert.True(content.Length > 0);
+    }
+
+    [Fact]
+    public async Task PostRoomEquipmentSelectionReturnsSelectedCatalogItem()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/rooms/101/equipment-selection?method=Simplified",
+            new EquipmentSelectionRequest
+            {
+                SystemType = "Split",
+                UnitType = "Wall"
+            });
+
+        await EnsureSuccessWithBodyAsync(response);
+        var result = await response.Content.ReadFromJsonAsync<EquipmentSelectionResult>();
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.SelectedCatalogItemId);
+        Assert.True(result.EquipmentSelected);
+        Assert.True(result.RequiredCoolingCapacityW > 0);
+        Assert.True(result.RequiredHeatingCapacityW > 0);
+        Assert.NotEmpty(result.AcceptedCandidates);
+        Assert.Contains(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
+        Assert.True(result.DesignCapacityKw > 0);
     }
     
     [Fact]
@@ -358,6 +404,18 @@ public class ApiIntegrationTests
             }
             : null;
 
+    private static async Task EnsureSuccessWithBodyAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+            return;
+
+        var body = await response.Content.ReadAsStringAsync();
+        throw new HttpRequestException(
+            $"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}). Body: {body}",
+            inner: null,
+            response.StatusCode);
+    }
+
     private sealed class AssistantEngineerApiFactory : WebApplicationFactory<Program>
     {
         private readonly Building _building;
@@ -466,6 +524,8 @@ public class ApiIntegrationTests
             builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll<IBuildingRepository>();
+                services.RemoveAll<IFloorRepository>();
+                services.RemoveAll<IRoomRepository>();
                 services.RemoveAll<IBuildingHeatingReadModelRepository>();
                 services.RemoveAll<ICalculationPreferencesRepository>();
                 services.RemoveAll<IEquipmentCatalogRepository>();
@@ -473,6 +533,10 @@ public class ApiIntegrationTests
                 services.RemoveAll<IEnergyPlusBenchmarkRunner>();
 
                 services.AddScoped<IBuildingRepository>(_ => new BuildingRepositoryStub(_buildings));
+                services.AddScoped<IFloorRepository>(_ => new FloorRepositoryStub(
+                    _buildings.SelectMany(building => building.Floors).ToArray()));
+                services.AddScoped<IRoomRepository>(_ => new RoomRepositoryStub(
+                    _buildings.SelectMany(building => building.Floors).SelectMany(floor => floor.Rooms).ToArray()));
                 services.AddScoped<IBuildingHeatingReadModelRepository>(_ => new BuildingHeatingReadModelRepositoryStub(_building));
                 services.AddScoped<ICalculationPreferencesRepository, EmptyPreferencesRepository>();
                 services.AddScoped<IEquipmentCatalogRepository>(_ => new EquipmentCatalogRepositoryStub(_equipmentCatalogItems));
@@ -565,6 +629,109 @@ public class ApiIntegrationTests
                 _buildings.Where(building => building.ProjectId == projectId).ToArray());
 
         public void Add(Building building) => throw new NotSupportedException();
+
+        public void Remove(Building building) => throw new NotSupportedException();
+    }
+
+    private sealed class FloorRepositoryStub : IFloorRepository
+    {
+        private readonly IReadOnlyList<Floor> _floors;
+
+        public FloorRepositoryStub(IReadOnlyList<Floor> floors) => _floors = floors;
+
+        public Task<Floor?> GetByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_floors.FirstOrDefault(floor => floor.Id == id));
+
+        public Task<Floor?> GetWithRoomsAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_floors.FirstOrDefault(floor => floor.Id == id));
+
+        public Task<Floor?> GetForCalculationAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_floors.FirstOrDefault(floor => floor.Id == id));
+
+        public Task<IReadOnlyList<Floor>> ListByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Floor>>(
+                _floors.Where(floor => floor.BuildingId == buildingId).ToArray());
+
+        public void Add(Floor floor) => throw new NotSupportedException();
+
+        public void Remove(Floor floor) => throw new NotSupportedException();
+    }
+
+    private sealed class RoomRepositoryStub : IRoomRepository
+    {
+        private readonly IReadOnlyList<Room> _rooms;
+
+        public RoomRepositoryStub(IReadOnlyList<Room> rooms) => _rooms = rooms;
+
+        public Task<Room?> GetByIdAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<Room?> GetForCalculationAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<Room?> GetWithWindowsAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<Room?> GetWithWallsAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<Room?> GetWithWindowsAndWallsAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<Room?> GetWithVentilationAsync(
+            int id,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.FirstOrDefault(room => room.Id == id));
+
+        public Task<IReadOnlyList<Room>> ListAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms);
+
+        public Task<IReadOnlyList<Room>> ListByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Room>>(
+                _rooms.Where(room => room.Floor.BuildingId == buildingId).ToArray());
+
+        public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
+            Task.FromResult(_rooms.Any(room => room.Id == id));
+
+        public Task<IReadOnlyList<Window>> ListWindowsAsync(
+            int roomId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Window>>(
+                _rooms.FirstOrDefault(room => room.Id == roomId)?.Windows.ToArray() ?? []);
+
+        public Task<IReadOnlyList<Wall>> ListWallsAsync(
+            int roomId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Wall>>(
+                _rooms.FirstOrDefault(room => room.Id == roomId)?.Walls.ToArray() ?? []);
+
+        public void Add(Room room) => throw new NotSupportedException();
+
+        public void Remove(Room room) => throw new NotSupportedException();
+
+        public void RemoveWindow(Window window) => throw new NotSupportedException();
+
+        public void RemoveWall(Wall wall) => throw new NotSupportedException();
     }
 
     private sealed class EmptyPreferencesRepository : ICalculationPreferencesRepository

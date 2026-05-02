@@ -1,12 +1,13 @@
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Benchmarks.Application.Contracts.Benchmarks;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Benchmarks.Application.Services;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
-using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
@@ -25,19 +26,14 @@ public class VerificationServiceTests
         var artifacts = CreateArtifactStore(tempDirectory);
         var building = CreateBuilding();
         var repository = new BuildingRepositoryStub(building);
-        var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
-        var coolingService = new BuildingCoolingLoadService(
-            repository,
-            new EmptyPreferencesRepository(),
-            CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
-            CalculationTestFactory.CreateIso52016ClimateDataValidator());
+        var loadCalculations = new LoadCalculationsFacadeStub(building);
         var exporter = new ExporterStub();
         var runner = new RunnerStub(artifacts);
         var parser = new ParserStub();
         var comparator = new ComparatorStub();
         var service = new VerificationService(
             repository,
-            coolingService,
+            loadCalculations,
             exporter,
             runner,
             parser,
@@ -58,6 +54,7 @@ public class VerificationServiceTests
         Assert.True(runner.Called);
         Assert.True(parser.Called);
         Assert.True(comparator.Called);
+        Assert.True(loadCalculations.Called);
         Assert.Equal("weather.epw", runner.Request?.WeatherArtifactId);
         Assert.Equal("exported-model.idf", runner.Request?.ModelArtifactId);
         Assert.Contains("--readvars", runner.Request?.AdditionalArguments ?? []);
@@ -78,16 +75,11 @@ public class VerificationServiceTests
         var building = CreateBuilding();
         var artifacts = CreateArtifactStore(tempDirectory);
         var repository = new BuildingRepositoryStub(building);
-        var roomCalculator = CalculationTestFactory.CreateRoomCoolingLoadCalculator();
-        var coolingService = new BuildingCoolingLoadService(
-            repository,
-            new EmptyPreferencesRepository(),
-            CalculationTestFactory.CreateAggregateCalculator(roomCalculator),
-            CalculationTestFactory.CreateIso52016ClimateDataValidator());
+        var loadCalculations = new LoadCalculationsFacadeStub(building);
         var runner = new RunnerStub(artifacts);
         var service = new VerificationService(
             repository,
-            coolingService,
+            loadCalculations,
             new ExporterStub(),
             runner,
             new ParserStub(),
@@ -102,6 +94,7 @@ public class VerificationServiceTests
         Assert.True(result.IsFailure);
         Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
         Assert.False(runner.Called);
+        Assert.False(loadCalculations.Called);
         }
         finally
         {
@@ -168,14 +161,8 @@ public class VerificationServiceTests
             throw new NotSupportedException();
 
         public void Add(Building building) => throw new NotSupportedException();
-    }
 
-    private sealed class EmptyPreferencesRepository : ICalculationPreferencesRepository
-    {
-        public Task<CalculationPreferences?> GetByProjectIdAsync(
-            int projectId,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult<CalculationPreferences?>(null);
+        public void Remove(Building building) => throw new NotSupportedException();
     }
 
     private sealed class ExporterStub : IEnergyPlusModelExporter
@@ -277,6 +264,84 @@ public class VerificationServiceTests
         var path = Path.Combine(Path.GetTempPath(), $"assistant-engineer-tests-{Guid.NewGuid():N}");
         Directory.CreateDirectory(path);
         return path;
+    }
+
+    private sealed class LoadCalculationsFacadeStub : ILoadCalculationsFacade
+    {
+        private readonly Building _building;
+
+        public LoadCalculationsFacadeStub(Building building)
+        {
+            _building = building;
+        }
+
+        public bool Called { get; private set; }
+
+        public Task<Result<BuildingCalculationResult>> CalculateBuildingCoolingLoadAsync(
+            int buildingId,
+            CoolingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken)
+        {
+            Called = true;
+            if (buildingId != _building.Id)
+                return Task.FromResult(Result<BuildingCalculationResult>.NotFound($"Building with id {buildingId} not found."));
+
+            return Task.FromResult(Result<BuildingCalculationResult>.Success(new BuildingCalculationResult
+            {
+                BuildingId = _building.Id,
+                BuildingName = _building.Name,
+                CoolingLoadW = 1200,
+                CalculationMethod = "Energy Calculation Parity / Application Load Aggregation Pipeline",
+                RequestedMethod = method.ToString(),
+                ActualMethod = "EnergyCalculationParityDesignPoint",
+                CalculationMethodLabel = "Energy Calculation Parity design-point aggregation"
+            }));
+        }
+
+        public Task<Result<BuildingHeatingLoadResult>> CalculateBuildingHeatingLoadAsync(
+            int buildingId,
+            HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<BuildingEnergyBalanceResult>> CalculateBuildingEnergyBalanceAsync(
+            int buildingId,
+            CoolingLoadCalculationMethodDto coolingMethod,
+            HeatingLoadCalculationMethodDto heatingMethod,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<FloorCalculationResult>> CalculateFloorCoolingLoadAsync(
+            int floorId,
+            CoolingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<FloorCalculationResult>> CalculateFloorHeatingLoadAsync(
+            int floorId,
+            HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<RoomCalculationResult>> CalculateRoomCoolingLoadAsync(
+            int roomId,
+            CoolingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<RoomHeatingLoadResult>> CalculateRoomHeatingLoadAsync(
+            int roomId,
+            HeatingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
+            int roomId,
+            string systemType,
+            string unitType,
+            CoolingLoadCalculationMethodDto method,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 
     private static LocalEnergyPlusArtifactStore CreateArtifactStore(string rootDirectory) =>

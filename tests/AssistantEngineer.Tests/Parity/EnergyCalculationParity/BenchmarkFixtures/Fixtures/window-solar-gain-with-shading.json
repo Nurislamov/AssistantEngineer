@@ -1,0 +1,35 @@
+{
+  "fixtureName": "window-solar-gain-with-shading",
+  "description": "Window solar gain with frame and shading factors.",
+  "category": "WindowSolarGains",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation Parity / Window Solar Gain",
+  "status": "Active",
+  "input": {
+    "calculationBasis": "window-solar-gain",
+    "windowSolarGain": {
+      "areaM2": 2,
+      "incidentIrradianceWPerM2": 500,
+      "shgc": 0.6,
+      "frameFactor": 0.9,
+      "internalShadingFactor": 0.8,
+      "externalShadingFactor": 0.75,
+      "fixedShadingFactor": 1
+    }
+  },
+  "expected": {
+    "effectiveSolarFactor": 0.324,
+    "solarGainW": 324
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "Effective solar factor = 0.6 x 0.9 x 0.8 x 0.75 x 1.0.",
+    "Expected value is deterministic arithmetic, not external parity evidence."
+  ],
+  "notes": [
+    "No ExternalParityCovered claim."
+  ]
+}

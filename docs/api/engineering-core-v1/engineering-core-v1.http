@@ -1,0 +1,9 @@
+﻿@baseUrl = https://localhost:5001
+
+### Engineering Core V1 status
+GET {{baseUrl}}/api/v1/calculations/engineering-core/v1/status
+Accept: application/json
+
+### Engineering Core V1 diagnostics catalog
+GET {{baseUrl}}/api/v1/calculations/engineering-core/v1/diagnostics-catalog
+Accept: application/json

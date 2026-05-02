@@ -1,0 +1,96 @@
+﻿{
+  "coreName": "AssistantEngineer Engineering Core",
+  "version": "v1",
+  "status": "ClosedV1",
+  "releaseType": "engineering-formula-gate",
+  "formulaGatesClosed": true,
+  "weather8760GatesClosed": true,
+  "annualHourly8760GateClosed": true,
+  "successfulResultsMustNotContainErrorDiagnostics": true,
+  "closedFormulaGates": [
+    "HVAC.TRANSMISSION.SIMPLE_UA",
+    "HVAC.VENTILATION.SENSIBLE_AIRFLOW",
+    "HVAC.INTERNAL_GAINS.SENSIBLE",
+    "HVAC.WINDOW_SOLAR.SIMPLE_SHGC",
+    "HVAC.SOLAR.SURFACE_IRRADIANCE_ISOTROPIC",
+    "HVAC.ROOM_LOAD.DESIGN_POINT",
+    "HVAC.AGGREGATION.LOAD_SUMMARY",
+    "HVAC.ANNUAL_ENERGY.HOURLY_KWH",
+    "WEATHER.EPW_8760",
+    "WEATHER.PVGIS_8760",
+    "HVAC.DHW.SIMPLIFIED",
+    "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
+    "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN",
+    "HVAC.GROUND.SIMPLIFIED",
+    "HVAC.HOURLY_HEAT_BALANCE.SIMPLIFIED_RC",
+    "HVAC.THERMAL_ZONE.SINGLE_ZONE",
+    "HVAC.ADJACENT_ZONE.SIMPLIFIED"
+  ],
+  "outOfScopeV1": [
+    "HVAC.LATENT_LOAD",
+    "HVAC.MOISTURE_BALANCE"
+  ],
+  "plannedValidation": [
+    "VALIDATION.ENERGYPLUS_ASHRAE140"
+  ],
+  "requiredAnnual8760Flags": [
+    "EnergyDataSource = TrueHourlySimulation",
+    "IsTrueHourly8760 = true",
+    "HourlyRecordCount = 8760"
+  ],
+  "applicationEndpoints": [
+    "GET /api/v1/calculations/engineering-core/v1/status"
+  ],
+  "frontendVisibility": [
+    "src/Frontend/src/widgets/engineering-core-status/ui/EngineeringCoreStatusPanel.tsx",
+    "src/Frontend/src/widgets/engineering-core-disclosure/ui/EngineeringCoreDisclosurePanel.tsx",
+    "src/Frontend/src/widgets/building-workspace/ui/BuildingWorkspace.tsx",
+    "src/Frontend/src/pages/dashboard/ui/DashboardPage.tsx"
+  ],
+  "backendVisibility": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Facades/EngineeringCoreStatusFacade.cs",
+    "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringCoreStatusController.cs",
+    "src/Backend/AssistantEngineer.Modules.Reporting/Application/Contracts/Reports/Common/CalculationDisclosure.cs"
+  ],
+  "verificationScripts": [
+    "scripts/engineering-core/verify-engineering-core-v1.ps1",
+    "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1"
+  ],
+  "ciWorkflows": [
+    ".github/workflows/engineering-core-v1.yml"
+  ],
+  "documentationFiles": [
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
+    "docs/calculations/EngineeringCoreV1ApiExamples.md",
+    "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
+    "docs/calculations/EngineeringCoreV1VerificationRunbook.md",
+    "docs/calculations/EnergyPlusAshrae140ValidationPlan.md",
+    "docs/validation/EnergyPlusAshrae140ValidationHarness.md",
+    "docs/validation/EnergyPlusValidationCaseTemplate.md",
+    "docs/frontend/EngineeringCoreV1StatusPanel.md",
+    "docs/frontend/EngineeringCoreV1ReportDisclosurePanel.md",
+    "docs/frontend/EngineeringCoreV1FrontendIntegrationGuard.md",
+    "docs/ci/EngineeringCoreV1CI.md",
+    "docs/contributing/EngineeringCoreV1ContributionGuide.md",
+    "docs/releases/EngineeringCoreV1.md",
+    "docs/releases/EngineeringCoreV1Manifest.json",
+    "docs/releases/EngineeringCoreV1ReleaseManifest.md",
+    "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
+    "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+  ],
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 node/matrix solver parity claim.",
+    "No full ISO 52010 climate conversion parity claim.",
+    "No full ISO 13370 implementation claim.",
+    "No full EN 15316 generation/distribution/storage/emission chain claim.",
+    "No full coupled multi-zone heat-balance simulation claim.",
+    "No latent/moisture/humidity calculation claim."
+  ],
+  "releaseVerificationCommand": ".\\scripts\\engineering-core\\verify-engineering-core-v1.ps1",
+  "fastVerificationCommand": ".\\scripts\\engineering-core\\verify-engineering-core-v1.ps1 -Fast",
+  "manifestVerificationCommand": ".\\scripts\\engineering-core\\verify-engineering-core-v1-manifest.ps1"
+}

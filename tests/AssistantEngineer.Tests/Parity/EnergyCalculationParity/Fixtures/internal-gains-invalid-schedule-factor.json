@@ -1,0 +1,16 @@
+{
+  "fixtureName": "InvalidScheduleFactorFailsDiagnostics",
+  "description": "Invalid schedule factor produces diagnostic error.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Internal Gains",
+  "category": "InternalGains",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "internal-gains",
+    "internalGainCalculation": { "roomId": 1, "occupancyPeople": 4, "sensibleGainPerPersonW": 75, "occupancyScheduleFactor": 1.25 }
+  },
+  "expected": { "hasErrors": true, "expectedDiagnosticCodes": [ "InternalGains.InvalidOccupancyScheduleFactor" ] },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Schedule factors must be between 0 and 1." ],
+  "notes": [ "The result is zeroed when validation errors exist." ]
+}

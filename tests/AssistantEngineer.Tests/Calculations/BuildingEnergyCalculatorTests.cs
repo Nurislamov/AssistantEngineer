@@ -9,6 +9,8 @@ using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Services;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
+using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.SharedKernel.ValueObjects;
 
 namespace AssistantEngineer.Tests;
@@ -158,7 +160,8 @@ public class BuildingEnergyCalculatorTests
         var climateDataRepository = new ClimateDataRepositoryStub();
         var annualCalculator = new Iso52016HourlySteadyStateCalculator(
             new AnnualClimateDataProviderStub(CreateAnnualClimateData(climateZone)),
-            new SolarRadiationService());
+            new SolarRadiationService(),
+            new VentilationHeatTransferCalculator(new Iso16798ReferenceData(new InternalLoadStandardProvider())));
         var calculator = new Iso52016BuildingEnergyCalculator(
             new CountingRoomCoolingLoadCalculator(),
             new CountingRoomHeatingLoadCalculator(),
@@ -173,6 +176,27 @@ public class BuildingEnergyCalculatorTests
         Assert.Equal(12, result.MonthlyBalances.Count);
         Assert.True(result.AnnualHeatingDemandKWh > 0);
         Assert.True(result.AnnualCoolingDemandKWh > 0);
+        Assert.Equal("TrueHourlySimulation", result.EnergyDataSource);
+        Assert.True(result.IsTrueHourly8760);
+        Assert.Equal(8760, result.HourlyRecordCount);
+        Assert.Contains(result.HourlyBalanceRecords, hour => hour.TransmissionW > 0);
+        Assert.Contains(result.HourlyBalanceRecords, hour => hour.VentilationW > 0);
+        Assert.Contains(result.HourlyBalanceRecords, hour => hour.GroundW > 0);
+        Assert.All(result.HourlyBalanceRecords, hour => Assert.Equal(0, hour.InfiltrationW, precision: 6));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("transmission", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("ventilation", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("ground", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.HourlyComponentBreakdownPartial" &&
+            diagnostic.Message.Contains("infiltration", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(result.Diagnostics, diagnostic =>
+            diagnostic.Code == "AnnualEnergy.InfiltrationBalanceNotSeparatelyAvailable");
         Assert.Equal(0, climateDataRepository.AvailableMonthsCallCount);
         Assert.Equal(
             result.AnnualHeatingDemandKWh + result.AnnualCoolingDemandKWh,
@@ -317,5 +341,3 @@ public class BuildingEnergyCalculatorTests
                     : null);
     }
 }
-
-

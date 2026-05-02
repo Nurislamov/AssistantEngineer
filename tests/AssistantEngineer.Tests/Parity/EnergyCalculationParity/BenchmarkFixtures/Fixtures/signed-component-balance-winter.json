@@ -1,0 +1,51 @@
+{
+  "fixtureName": "signed-component-balance-winter",
+  "description": "Benchmark reference fixture for winter signed component totals with negative heat-flow balance.",
+  "category": "SignedComponentBalance",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation Parity / Annual 8760 Energy Balance Signed Components",
+  "status": "Active",
+  "sourceReference": "Internal benchmark reference values derived from constant signed hourly component loads; no external parity claim.",
+  "input": {
+    "calculationBasis": "signed-component-balance",
+    "buildingId": 3,
+    "buildingName": "Signed winter benchmark",
+    "buildingAreaM2": 100,
+    "year": 2026,
+    "hourlyPattern": "constant",
+    "hourlyRecordCount": 8760,
+    "energyDataSource": "TrueHourlySimulation",
+    "isTrueHourly8760": true,
+    "hourlyValues": {
+      "heatingLoadW": 100,
+      "coolingLoadW": 0,
+      "transmissionW": 100,
+      "transmissionBalanceW": -100,
+      "ventilationW": 50,
+      "ventilationBalanceW": -50,
+      "groundW": 30,
+      "groundBalanceW": -30,
+      "hourDurationH": 1
+    }
+  },
+  "expected": {
+    "componentBreakdown.transmissionKWh": 876,
+    "componentBreakdown.netTransmissionKWh": -876,
+    "componentBreakdown.ventilationKWh": 438,
+    "componentBreakdown.netVentilationKWh": -438,
+    "componentBreakdown.groundKWh": 262.8,
+    "componentBreakdown.netGroundKWh": -262.8
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "Magnitude component fields are aggregated as non-negative kWh.",
+    "Net component fields preserve the sign of hourly balance values."
+  ],
+  "notes": [
+    "This fixture verifies signed transmission, ventilation and ground totals only.",
+    "It is not ExternalParityCovered evidence."
+  ]
+}

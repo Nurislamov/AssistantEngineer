@@ -1,0 +1,89 @@
+{
+  "fixtureName": "single-zone-solar-south-window",
+  "description": "Single zone with one south-facing window and deterministic south-surface irradiance. This fixture isolates window solar-gain math.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Window Solar Gains",
+  "category": "SolarGains",
+  "sourceReference": "AssistantEngineer deterministic reference fixture v1; solar gains are calculated from area, frame fraction, SHGC, shading factor, and south-surface irradiance.",
+  "assumptions": [
+    "Only the south window contributes solar gains.",
+    "The frame fraction reduces effective glazing area.",
+    "The shading factor is a scalar multiplier applied to beam, diffuse sky, and ground-reflected components.",
+    "No external reference implementation is claimed for this fixture."
+  ],
+  "input": {
+    "calculationBasis": "window-solar-gain",
+    "zone": {
+      "zoneName": "Solar Reference Zone",
+      "floorAreaM2": 20,
+      "heightM": 3
+    },
+    "solar": {
+      "window": {
+        "orientation": "South",
+        "areaM2": 4,
+        "solarHeatGainCoefficient": 0.5,
+        "frameFraction": 0.1,
+        "shadingFactor": 0.8
+      },
+      "hourlySouthSurfaceIrradiance": [
+        { "hourOfYear": 8, "beamIrradianceWm2": 160, "diffuseSkyIrradianceWm2": 30, "groundReflectedIrradianceWm2": 10 },
+        { "hourOfYear": 9, "beamIrradianceWm2": 330, "diffuseSkyIrradianceWm2": 50, "groundReflectedIrradianceWm2": 20 },
+        { "hourOfYear": 10, "beamIrradianceWm2": 460, "diffuseSkyIrradianceWm2": 65, "groundReflectedIrradianceWm2": 25 },
+        { "hourOfYear": 11, "beamIrradianceWm2": 540, "diffuseSkyIrradianceWm2": 80, "groundReflectedIrradianceWm2": 30 },
+        { "hourOfYear": 12, "beamIrradianceWm2": 500, "diffuseSkyIrradianceWm2": 80, "groundReflectedIrradianceWm2": 20 },
+        { "hourOfYear": 13, "beamIrradianceWm2": 410, "diffuseSkyIrradianceWm2": 70, "groundReflectedIrradianceWm2": 20 },
+        { "hourOfYear": 14, "beamIrradianceWm2": 280, "diffuseSkyIrradianceWm2": 55, "groundReflectedIrradianceWm2": 15 },
+        { "hourOfYear": 15, "beamIrradianceWm2": 110, "diffuseSkyIrradianceWm2": 30, "groundReflectedIrradianceWm2": 10 }
+      ]
+    },
+    "simulation": {
+      "hourCount": 24,
+      "outdoorTemperatureC": 20,
+      "heatingSetpointC": 20,
+      "coolingSetpointC": 26,
+      "initialIndoorTemperatureC": 22,
+      "timeStepSeconds": 3600
+    }
+  },
+  "expectedHourlyResults": {
+    "hourCount": 24,
+    "representativeHours": [
+      {
+        "hourOfYear": 12,
+        "solarGainsW": 864,
+        "beamSolarGainW": 720,
+        "diffuseSkySolarGainW": 115.2,
+        "groundReflectedSolarGainW": 28.8
+      }
+    ]
+  },
+  "expectedMonthlyResults": [
+    {
+      "month": 1,
+      "hours": 24,
+      "heatingDemandKWh": 0,
+      "coolingDemandKWh": 0,
+      "solarGainsKWh": 4.896,
+      "internalGainsKWh": 0,
+      "peakHeatingLoadW": 0,
+      "peakCoolingLoadW": 0
+    }
+  ],
+  "expectedAnnualResults": {
+    "heatingDemandKWh": 0,
+    "coolingDemandKWh": 0,
+    "solarGainsKWh": 4.896,
+    "internalGainsKWh": 0,
+    "peakHeatingLoadW": 0,
+    "peakCoolingLoadW": 0,
+    "hourCount": 24
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.05,
+    "hourlyLoadW": 1,
+    "monthlyDemandKWh": 0.01,
+    "annualDemandKWh": 0.1,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

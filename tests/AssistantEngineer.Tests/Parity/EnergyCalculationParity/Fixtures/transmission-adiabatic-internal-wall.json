@@ -1,0 +1,58 @@
+{
+  "fixtureName": "AdiabaticInternalWall",
+  "description": "Internal adiabatic wall is excluded from transmission heat transfer.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation Parity / Transmission Heat Transfer",
+  "sourceReference": "AssistantEngineer deterministic fixture for adiabatic envelope boundary handling.",
+  "assumptions": [
+    "Internal adiabatic boundaries do not contribute to heating or cooling load.",
+    "Area and U-value are retained in the element metadata but not included in load."
+  ],
+  "notes": [
+    "Diagnostic output must make the exclusion explicit."
+  ],
+  "input": {
+    "calculationBasis": "transmission-heat-transfer",
+    "transmission": {
+      "elements": [
+        {
+          "elementId": 3,
+          "elementType": "Wall",
+          "roomId": 101,
+          "areaM2": 12,
+          "uValueWPerM2K": 1.0,
+          "indoorTemperatureC": 20,
+          "boundaryType": "InternalAdiabatic",
+          "diagnosticsContext": "AdiabaticInternalWall wall"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalHeatFlowW": 0,
+    "totalHeatLossW": 0,
+    "totalHeatGainW": 0,
+    "elements": [
+      {
+        "elementId": 3,
+        "elementType": "Wall",
+        "boundaryType": "InternalAdiabatic",
+        "areaM2": 12,
+        "uValueWPerM2K": 1.0,
+        "deltaTC": 0,
+        "heatFlowW": 0,
+        "isIncludedInLoad": false,
+        "expectedDiagnosticCodes": [
+          "Transmission.InternalAdiabatic"
+        ]
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

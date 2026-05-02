@@ -1,0 +1,24 @@
+using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
+using FluentValidation;
+
+namespace AssistantEngineer.Modules.Equipment.Application.Validation;
+
+public class UpdateEquipmentCatalogItemRequestValidator : AbstractValidator<UpdateEquipmentCatalogItemRequest>
+{
+    public UpdateEquipmentCatalogItemRequestValidator()
+    {
+        RuleFor(x => x.Manufacturer)
+            .NotEmpty()
+            .MaximumLength(100);
+        RuleFor(x => x.SystemType)
+            .NotEmpty()
+            .MaximumLength(50);
+        RuleFor(x => x.UnitType)
+            .NotEmpty()
+            .MaximumLength(50);
+        RuleFor(x => x.ModelName)
+            .NotEmpty()
+            .MaximumLength(150);
+        RuleFor(x => x.NominalCoolingCapacityKw).InclusiveBetween(0.1, 1000);
+    }
+}
