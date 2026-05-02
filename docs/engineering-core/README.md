@@ -101,3 +101,10 @@ Engineering Core V1 does not claim:
 - docs/traceability/EngineeringCoreV1TraceabilityMatrix.md
 - docs/traceability/README.md
 - scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1
+
+## Report/export disclosure policy
+
+- docs/reports/engineering-core-v1/ExportDisclosurePolicy.md
+- docs/reports/engineering-core-v1/ExportDisclosureTemplate.md
+- docs/reports/engineering-core-v1/ExportDisclosureChecklist.md
+- scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1

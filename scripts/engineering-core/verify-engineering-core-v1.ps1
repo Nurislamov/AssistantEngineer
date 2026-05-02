@@ -64,6 +64,11 @@ Invoke-Step "Engineering Core report contract snapshot guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ReportContractSnapshotTests"
 }
 
+Invoke-Step "Engineering Core report export disclosure guard tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-export-disclosure-checklist.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ReportExportDisclosureGuardTests"
+}
+
 Invoke-Step "Engineering Core validation registry guard tests" {
     .\scripts\engineering-core\generate-engineering-core-v1-validation-readiness.ps1
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationCaseRegistryTests"
@@ -109,6 +114,7 @@ Write-Host "- release evidence package"
 Write-Host "- API contract snapshots"
 Write-Host "- OpenAPI contract"
 Write-Host "- report contract snapshots"
+Write-Host "- report export disclosure policy"
 Write-Host "- validation registry"
 Write-Host "- traceability matrix"
 Write-Host "- frontend visibility guards"
