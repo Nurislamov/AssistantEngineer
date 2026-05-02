@@ -1,0 +1,92 @@
+﻿name: Engineering Core formula change
+description: Propose or track a new/changed Engineering Core calculation formula.
+title: "[Engineering Core] "
+labels:
+  - engineering-core
+  - calculations
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for formula, diagnostics, weather, annual energy, reporting or disclosure changes.
+
+  - type: input
+    id: calculation-id
+    attributes:
+      label: CalculationId
+      description: FormulaAuditMatrix calculation id, for example HVAC.TRANSMISSION.SIMPLE_UA.
+      placeholder: HVAC.NEW_FORMULA.ID
+    validations:
+      required: true
+
+  - type: textarea
+    id: formula
+    attributes:
+      label: Formula / algorithm
+      description: Provide the formula, algorithm or calculation steps.
+      placeholder: Q = U * A * ΔT
+    validations:
+      required: true
+
+  - type: textarea
+    id: units
+    attributes:
+      label: Units
+      description: Document input and output units.
+      placeholder: W = W/(m²·K) * m² * K
+    validations:
+      required: true
+
+  - type: textarea
+    id: source-principle
+    attributes:
+      label: Source principle
+      description: ISO/pyBuildingEnergy/engineering principle this is based on.
+      placeholder: ISO-inspired engineering heat transfer principle.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: diagnostics
+    attributes:
+      label: Diagnostics requirements
+      options:
+        - label: Invalid mandatory input fails with Error.
+        - label: Fallbacks/simplifications are Warning.
+        - label: Method/source metadata is Info.
+        - label: Successful result does not contain Error diagnostics.
+
+  - type: checkboxes
+    id: non-claims
+    attributes:
+      label: Non-claims
+      options:
+        - label: Does not claim exact EnergyPlus numerical parity.
+        - label: Does not claim exact pyBuildingEnergy numerical parity.
+        - label: Does not claim ASHRAE 140 validation coverage.
+        - label: Does not claim full ISO/EN implementation unless separately validated.
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Required tests
+      description: List unit, edge-case, fixture and integration tests that must be added/updated.
+    validations:
+      required: true
+
+  - type: textarea
+    id: disclosure
+    attributes:
+      label: User-visible disclosure impact
+      description: Does this affect reports, API response, frontend panels, assumptions, warnings or documentation links?
+    validations:
+      required: false
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification command
+      description: Paste expected verification command.
+      value: .\scripts\engineering-core\verify-engineering-core-v1.ps1
+    validations:
+      required: true

@@ -1,0 +1,83 @@
+﻿name: EnergyPlus / ASHRAE 140 validation case
+description: Propose a future comparative validation case.
+title: "[Validation] "
+labels:
+  - validation
+  - energyplus
+  - ashrae-140
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for future EnergyPlus / ASHRAE 140-style validation cases.
+        Validation is comparative with documented tolerances. It is not exact parity.
+
+  - type: input
+    id: case-id
+    attributes:
+      label: Case id
+      placeholder: EP-SMOKE-004
+    validations:
+      required: true
+
+  - type: input
+    id: case-name
+    attributes:
+      label: Case name
+      placeholder: Single-zone ventilation sensitivity case
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Validation stage
+      options:
+        - Smoke
+        - SimplifiedEnergyPlusComparison
+        - Ashrae140Style
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference-model
+    attributes:
+      label: Reference model
+      description: EnergyPlus model, ASHRAE 140-style case, or other reference source.
+    validations:
+      required: true
+
+  - type: textarea
+    id: assumptions
+    attributes:
+      label: Assumptions
+      description: Geometry, weather, envelope, internal gains, ventilation, HVAC controls.
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Metrics and tolerances
+      description: Annual heating/cooling, peak load, trend, sign or other metrics with tolerances.
+      placeholder: Annual heating energy ±20%; peak heating load ±25%.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: non-claims
+    attributes:
+      label: Required non-claims
+      options:
+        - label: Does not claim exact EnergyPlus numerical parity.
+        - label: Does not claim ASHRAE 140 validation coverage.
+        - label: Does not claim full ISO 52016 node/matrix solver parity.
+        - label: Tolerances and known differences are documented.
+
+  - type: textarea
+    id: fixture-plan
+    attributes:
+      label: Fixture plan
+      description: Where will reference outputs be stored and how will tests compare them?
+    validations:
+      required: true
