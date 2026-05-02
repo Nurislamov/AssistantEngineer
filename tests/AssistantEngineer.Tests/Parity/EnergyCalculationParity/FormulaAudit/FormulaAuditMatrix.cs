@@ -180,11 +180,11 @@ public static class FormulaAuditMatrix
             Units: "W = W/K * K; W/K = W/(m²·K) * m²",
             SourcePrinciple: "ISO13370-inspired ground coupling using equivalent U/H values and engineering metadata.",
             ImplementationArea: "AssistantEngineer.Modules.Calculations.Application.Services.Ground",
-            Diagnostics: "Ground contact type, characteristic dimension, perimeter/burial/insulation factors and fallback warnings.",
-            Tests: "Ground deterministic tests and ground preview/service tests.",
-            Status: FormulaAuditStatus.Partial,
+            Diagnostics: "Ground contact type, characteristic dimension, perimeter/burial/insulation factors, boundary temperature weights and fallback warnings.",
+            Tests: "Ground deterministic tests, ground preview/service tests and explicit simplified ground metadata closure tests.",
+            Status: FormulaAuditStatus.ClosedV1,
             Priority: FormulaAuditPriority.P1,
-            Limitations: "ISO13370-inspired simplified model; does not claim full ISO 13370 implementation."),
+            Limitations: "Closed as simplified ground heat-transfer gate for engineering-core v1; does not claim full ISO 13370 implementation."),
 
         new(
             CalculationId: "HVAC.HOURLY_HEAT_BALANCE.SIMPLIFIED_RC",
@@ -219,11 +219,11 @@ public static class FormulaAuditMatrix
             Units: "W = W/(m²·K) * m² * K * dimensionless",
             SourcePrinciple: "Engineering adjacent boundary heat-transfer treatment inspired by ISO zone boundary concepts.",
             ImplementationArea: "AssistantEngineer.Modules.Calculations.Application.Services.Transmission and Iso52016 adjacent-zone helpers",
-            Diagnostics: "Adjacent conditioned/unconditioned boundary diagnostics and fallback temperature assumptions.",
-            Tests: "Adjacent conditioned transmission fixtures and planned adjacent-zone hourly tests.",
-            Status: FormulaAuditStatus.Partial,
+            Diagnostics: "Adjacent conditioned/unconditioned boundary diagnostics, fallback boundary temperature and heat-flow sign direction.",
+            Tests: "Adjacent conditioned transmission fixtures and explicit adjacent simplified boundary closure tests.",
+            Status: FormulaAuditStatus.ClosedV1,
             Priority: FormulaAuditPriority.P1,
-            Limitations: "Simplified adjacent boundary model; does not claim coupled multi-zone solver parity."),
+            Limitations: "Closed as simplified adjacent boundary gate for engineering-core v1; does not claim coupled multi-zone solver parity."),
 
         new(
             CalculationId: "HVAC.LATENT_LOAD",

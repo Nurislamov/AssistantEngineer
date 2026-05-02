@@ -31,6 +31,10 @@ The following calculation areas are considered closed for engineering-core v1 wh
 | Weather EPW | Normalized 8760 hourly weather import gate. |
 | Weather PVGIS | Normalized 8760 hourly weather import gate. |
 | Annual energy | Hourly-to-monthly and hourly-to-annual kWh integration from true hourly 8760 records. |
+| ISO52016-inspired hourly heat balance | Simplified hourly RC / quasi-implicit heat-balance model. |
+| Single thermal zone | Single-zone engineering path with assigned-room-only aggregation and no double-counting. |
+| Ground heat transfer | ISO13370-inspired simplified ground heat-transfer model using equivalent U/H values and boundary weights. |
+| Adjacent zones | Simplified adjacent boundary model, not a coupled multi-zone solver. |
 | DHW | Simplified DHW demand by water volume, temperature lift and configured losses. |
 | System energy | Simplified final/primary energy conversion using efficiency, COP and primary factor. |
 | Equipment sizing | Capacity sizing by required load, safety factor and deterministic margin ranking. |

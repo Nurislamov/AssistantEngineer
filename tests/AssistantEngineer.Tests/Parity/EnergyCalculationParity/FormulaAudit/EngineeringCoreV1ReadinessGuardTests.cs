@@ -19,6 +19,8 @@ public class EngineeringCoreV1ReadinessGuardTests
             "WEATHER.PVGIS_8760",
             "HVAC.HOURLY_HEAT_BALANCE.SIMPLIFIED_RC",
             "HVAC.THERMAL_ZONE.SINGLE_ZONE",
+            "HVAC.GROUND.SIMPLIFIED",
+            "HVAC.ADJACENT_ZONE.SIMPLIFIED",
             "HVAC.DHW.SIMPLIFIED",
             "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
             "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
@@ -37,11 +39,11 @@ public class EngineeringCoreV1ReadinessGuardTests
     }
 
     [Fact]
-    public void EngineeringCoreV1HasNoP0FormulaBlockers()
+    public void EngineeringCoreV1HasNoP0OrP1FormulaBlockers()
     {
-        var p0Blockers = FormulaAuditMatrix.Features
+        var blockers = FormulaAuditMatrix.Features
             .Where(feature =>
-                feature.Priority == FormulaAuditPriority.P0 &&
+                feature.Priority is FormulaAuditPriority.P0 or FormulaAuditPriority.P1 &&
                 feature.Status != FormulaAuditStatus.ClosedV1 &&
                 feature.Status != FormulaAuditStatus.OutOfScopeV1)
             .Select(feature => feature.CalculationId)
@@ -49,20 +51,20 @@ public class EngineeringCoreV1ReadinessGuardTests
             .ToArray();
 
         Assert.True(
-            p0Blockers.Length == 0,
-            $"Engineering-core v1 must not be declared closed while P0 formula blockers remain: {string.Join(", ", p0Blockers)}.");
+            blockers.Length == 0,
+            $"Engineering-core v1 must not be declared closed while P0/P1 formula blockers remain: {string.Join(", ", blockers)}.");
     }
 
     [Fact]
     public void EngineeringCoreV1CanBeDeclaredClosedWithDocumentedLimitations()
     {
-        var p0Features = FormulaAuditMatrix.Features
-            .Where(feature => feature.Priority == FormulaAuditPriority.P0)
+        var p0AndP1Features = FormulaAuditMatrix.Features
+            .Where(feature => feature.Priority is FormulaAuditPriority.P0 or FormulaAuditPriority.P1)
             .ToArray();
 
-        Assert.NotEmpty(p0Features);
+        Assert.NotEmpty(p0AndP1Features);
 
-        Assert.All(p0Features, feature =>
+        Assert.All(p0AndP1Features, feature =>
         {
             Assert.Equal(
                 FormulaAuditStatus.ClosedV1,
@@ -134,9 +136,9 @@ public class EngineeringCoreV1ReadinessGuardTests
         var closedV1Count = FormulaAuditMatrix.Features
             .Count(feature => feature.Status == FormulaAuditStatus.ClosedV1);
 
-        var p0PartialCount = FormulaAuditMatrix.Features
+        var p0OrP1PartialCount = FormulaAuditMatrix.Features
             .Count(feature =>
-                feature.Priority == FormulaAuditPriority.P0 &&
+                feature.Priority is FormulaAuditPriority.P0 or FormulaAuditPriority.P1 &&
                 feature.Status == FormulaAuditStatus.Partial);
 
         var outOfScopeCount = FormulaAuditMatrix.Features
@@ -146,33 +148,25 @@ public class EngineeringCoreV1ReadinessGuardTests
             .Count(feature => feature.Status == FormulaAuditStatus.PlannedValidation);
 
         Assert.True(
-            closedV1Count >= 15,
-            $"Expected at least 15 ClosedV1 features after validation/weather/annual/hourly-zone gates, but found {closedV1Count}.");
+            closedV1Count >= 17,
+            $"Expected at least 17 ClosedV1 features after validation/weather/annual/hourly-zone/ground/adjacent gates, but found {closedV1Count}.");
 
-        Assert.Equal(0, p0PartialCount);
+        Assert.Equal(0, p0OrP1PartialCount);
         Assert.True(outOfScopeCount >= 2);
         Assert.Equal(1, plannedValidationCount);
     }
 
     [Fact]
-    public void EngineeringCoreV1RemainingPartialItemsAreNotP0FormulaBlockers()
+    public void EngineeringCoreV1HasNoRemainingPartialFormulaItems()
     {
         var partialFeatures = FormulaAuditMatrix.Features
             .Where(feature => feature.Status == FormulaAuditStatus.Partial)
+            .Select(feature => feature.CalculationId)
+            .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.NotEmpty(partialFeatures);
-
-        Assert.All(partialFeatures, feature =>
-        {
-            Assert.NotEqual(
-                FormulaAuditPriority.P0,
-                feature.Priority);
-
-            Assert.Contains(
-                "does not claim",
-                feature.Limitations,
-                StringComparison.OrdinalIgnoreCase);
-        });
+        Assert.True(
+            partialFeatures.Length == 0,
+            $"Engineering-core v1 formula matrix must not contain remaining Partial items after ground and adjacent closure: {string.Join(", ", partialFeatures)}.");
     }
 }
