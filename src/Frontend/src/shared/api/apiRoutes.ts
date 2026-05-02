@@ -70,6 +70,7 @@ export const apiRoutes = {
     buildingEnergyBalance: (buildingId: number) =>
       `${apiPrefix}/buildings/${buildingId}/load-calculations/energy-balance`,
     engineeringCoreV1Status: () => `${apiPrefix}/calculations/engineering-core/v1/status`,
+    engineeringCoreV1DiagnosticsCatalog: () => `${apiPrefix}/calculations/engineering-core/v1/diagnostics-catalog`,
     roomCoolingLoad: (roomId: number) =>
       `${apiPrefix}/rooms/${roomId}/load-calculations/cooling-load`,
     roomHeatingLoad: (roomId: number) =>
@@ -100,6 +101,8 @@ export const backendEndpointAvailability = {
     latestByBuilding: false,
   },
 } as const;
+
+
 
 
 

@@ -8,6 +8,7 @@ import type {
   BuildingHeatingLoadApiResponse,
   CalculationResultDto,
   EngineeringCoreV1StatusApiResponse,
+  EngineeringCoreV1DiagnosticsCatalogApiResponse,
   RoomCoolingLoadApiResponse,
   RoomHeatingLoadApiResponse,
 } from "../types";
@@ -60,6 +61,11 @@ export const calculationsApi = {
   async getEngineeringCoreV1Status(): Promise<EngineeringCoreV1StatusApiResponse> {
     return apiRequest<EngineeringCoreV1StatusApiResponse>(
       apiRoutes.calculations.engineeringCoreV1Status(),
+    );
+  },
+  async getEngineeringCoreV1DiagnosticsCatalog(): Promise<EngineeringCoreV1DiagnosticsCatalogApiResponse> {
+    return apiRequest<EngineeringCoreV1DiagnosticsCatalogApiResponse>(
+      apiRoutes.calculations.engineeringCoreV1DiagnosticsCatalog(),
     );
   },
 };

@@ -138,3 +138,27 @@ export interface EngineeringCoreV1StatusApiResponse {
   requiredAnnual8760Flags: string[];
   documentationFiles: string[];
 }
+
+export interface EngineeringCoreV1DiagnosticsRulesApiResponse {
+  error: string;
+  warning: string;
+  info: string;
+  successRule: string;
+}
+
+export interface EngineeringCoreV1DiagnosticCatalogItemApiResponse {
+  code: string;
+  severity: string;
+  category: string;
+  userMessage: string;
+  userAction: string;
+  closedV1Gate: string;
+}
+
+export interface EngineeringCoreV1DiagnosticsCatalogApiResponse {
+  catalogName: string;
+  version: string;
+  status: string;
+  rules: EngineeringCoreV1DiagnosticsRulesApiResponse;
+  diagnostics: EngineeringCoreV1DiagnosticCatalogItemApiResponse[];
+}

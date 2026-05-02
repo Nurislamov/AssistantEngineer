@@ -26,4 +26,11 @@ public class EngineeringCoreStatusController : ControllerBase
 
         return result.ToActionResult(this);
     }
+    [HttpGet("v1/diagnostics-catalog")]
+    public ActionResult<EngineeringCoreV1DiagnosticsCatalogResponse> GetEngineeringCoreV1DiagnosticsCatalog()
+    {
+        var result = _engineeringCoreStatus.GetEngineeringCoreV1DiagnosticsCatalog();
+
+        return result.ToActionResult(this);
+    }
 }

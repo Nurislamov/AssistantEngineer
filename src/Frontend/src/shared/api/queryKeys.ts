@@ -26,8 +26,10 @@
   },
   calculations: {
     engineeringCoreV1Status: ["calculations", "engineering-core", "v1", "status"] as const,
+    engineeringCoreV1DiagnosticsCatalog: ["calculations", "engineering-core", "v1", "diagnostics-catalog"] as const,
     buildingLatest: (buildingId: number) => ["calculations", "building", buildingId, "latest"] as const,
     roomLatest: (roomId: number) => ["calculations", "room", roomId, "latest"] as const,
   },
 } as const;
+
 

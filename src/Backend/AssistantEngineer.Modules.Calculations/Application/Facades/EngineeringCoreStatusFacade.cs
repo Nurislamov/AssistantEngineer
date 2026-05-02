@@ -65,6 +65,175 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
 
         return Result<EngineeringCoreV1StatusResponse>.Success(response);
     }
+    public Result<EngineeringCoreV1DiagnosticsCatalogResponse> GetEngineeringCoreV1DiagnosticsCatalog()
+    {
+        var response = new EngineeringCoreV1DiagnosticsCatalogResponse(
+            CatalogName: "Engineering Core V1 Diagnostics Catalog",
+            Version: "v1",
+            Status: ClosedV1,
+            Rules: new EngineeringCoreV1DiagnosticsRules(
+                Error: "Invalid mandatory input. Calculation must fail.",
+                Warning: "Fallback, simplification, missing optional assumption or partial source. Calculation may succeed.",
+                Info: "Method, source, status or metadata. Calculation may succeed.",
+                SuccessRule: "A successful calculation result must not contain CalculationDiagnosticSeverity.Error."),
+            Diagnostics:
+            [
+                new(
+                    Code: "AnnualEnergy.InvalidArea",
+                    Severity: "Error",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Building area must be greater than zero for EUI calculation.",
+                    UserAction: "Enter a positive building area before calculating annual EUI.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.NoHourlyInputs",
+                    Severity: "Error",
+                    Category: "AnnualEnergy",
+                    UserMessage: "At least one hourly energy balance input is required.",
+                    UserAction: "Provide hourly records or run a calculation path that generates hourly inputs.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.InvalidHourDuration",
+                    Severity: "Error",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Hour duration must be greater than zero.",
+                    UserAction: "Check the hourly weather/profile source and remove invalid hour durations.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.InvalidMonth",
+                    Severity: "Error",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Month must be between 1 and 12.",
+                    UserAction: "Check hourly profile month mapping.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.Not8760",
+                    Severity: "Warning",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Hourly input count is not 8760; annual totals use the supplied calculation period.",
+                    UserAction: "Do not present this result as true hourly annual 8760 simulation unless HourlyRecordCount is 8760.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.SyntheticWeather",
+                    Severity: "Warning",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Synthetic weather profile was used for annual energy balance.",
+                    UserAction: "Use EPW or PVGIS normalized weather for weather-driven annual analysis.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.MonthlyBalanceAdapter",
+                    Severity: "Warning",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Annual energy balance uses representative monthly records generated from monthly balances; this is not a true hourly 8760 simulation.",
+                    UserAction: "Show this as an adapted monthly balance, not true hourly 8760 simulation.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "AnnualEnergy.TrueHourlySimulationUsed",
+                    Severity: "Info",
+                    Category: "AnnualEnergy",
+                    UserMessage: "Annual energy balance was calculated from true hourly simulation records.",
+                    UserAction: "This supports true hourly annual reporting when the 8760 flags are also satisfied.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "SolarWeather.SyntheticWeatherUsed",
+                    Severity: "Warning",
+                    Category: "Weather",
+                    UserMessage: "Synthetic weather profile was used; solar/weather source data is representative rather than true hourly weather.",
+                    UserAction: "Treat the result as representative, not a true external weather simulation.",
+                    ClosedV1Gate: "HVAC.ANNUAL_ENERGY.HOURLY_KWH"),
+
+                new(
+                    Code: "SystemEnergy.InvalidCoolingCop",
+                    Severity: "Error",
+                    Category: "SystemEnergy",
+                    UserMessage: "Cooling COP must be greater than zero.",
+                    UserAction: "Enter a positive cooling COP.",
+                    ClosedV1Gate: "HVAC.SYSTEM_ENERGY.SIMPLIFIED"),
+
+                new(
+                    Code: "SystemEnergy.HeatingAssumptionMissing",
+                    Severity: "Warning",
+                    Category: "SystemEnergy",
+                    UserMessage: "No heating efficiency or COP was supplied; useful heating energy was carried through as final energy.",
+                    UserAction: "Provide heating efficiency or COP for final energy conversion.",
+                    ClosedV1Gate: "HVAC.SYSTEM_ENERGY.SIMPLIFIED"),
+
+                new(
+                    Code: "SystemEnergy.CoolingAssumptionMissing",
+                    Severity: "Warning",
+                    Category: "SystemEnergy",
+                    UserMessage: "No cooling COP was supplied; useful cooling energy was carried through as final energy.",
+                    UserAction: "Provide cooling COP for final energy conversion.",
+                    ClosedV1Gate: "HVAC.SYSTEM_ENERGY.SIMPLIFIED"),
+
+                new(
+                    Code: "EquipmentSizing.InvalidSafetyFactor",
+                    Severity: "Error",
+                    Category: "EquipmentSizing",
+                    UserMessage: "Safety factor must be greater than zero.",
+                    UserAction: "Enter a positive safety factor.",
+                    ClosedV1Gate: "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"),
+
+                new(
+                    Code: "EquipmentSizing.NoEquipmentFound",
+                    Severity: "Warning",
+                    Category: "EquipmentSizing",
+                    UserMessage: "No equipment candidates were supplied.",
+                    UserAction: "Add equipment candidates before expecting recommendations.",
+                    ClosedV1Gate: "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"),
+
+                new(
+                    Code: "EquipmentSizing.NoRecommendedEquipment",
+                    Severity: "Warning",
+                    Category: "EquipmentSizing",
+                    UserMessage: "No equipment candidate satisfied the sizing requirements.",
+                    UserAction: "Review required load, safety factor or equipment catalog.",
+                    ClosedV1Gate: "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"),
+
+                new(
+                    Code: "Aggregation.InvalidRoomArea",
+                    Severity: "Error",
+                    Category: "Aggregation",
+                    UserMessage: "Room area must not be negative.",
+                    UserAction: "Correct room geometry before aggregation.",
+                    ClosedV1Gate: "HVAC.AGGREGATION.LOAD_SUMMARY"),
+
+                new(
+                    Code: "Aggregation.NoRooms",
+                    Severity: "Warning",
+                    Category: "Aggregation",
+                    UserMessage: "No rooms were supplied for load aggregation.",
+                    UserAction: "Check room assignment to building, floor or thermal zone.",
+                    ClosedV1Gate: "HVAC.AGGREGATION.LOAD_SUMMARY"),
+
+                new(
+                    Code: "Aggregation.HourlyUnavailable",
+                    Severity: "Warning",
+                    Category: "Aggregation",
+                    UserMessage: "Hourly aggregation is not available; design-point aggregation was used.",
+                    UserAction: "Provide hourly profiles for coincident hourly aggregation.",
+                    ClosedV1Gate: "HVAC.AGGREGATION.LOAD_SUMMARY"),
+
+                new(
+                    Code: "Transmission.MissingBoundaryTemperature",
+                    Severity: "Error",
+                    Category: "Transmission",
+                    UserMessage: "Boundary temperature is required for this transmission element.",
+                    UserAction: "Provide adjacent, boundary or outdoor temperature for the element.",
+                    ClosedV1Gate: "HVAC.ADJACENT_ZONE.SIMPLIFIED")
+            ]);
+
+        return Result<EngineeringCoreV1DiagnosticsCatalogResponse>.Success(response);
+    }
+
 
     private static IReadOnlyList<EngineeringCoreV1GateStatus> FormulaGates() =>
     [
