@@ -8,6 +8,7 @@ import { useProjectSelection } from "@/features/projects/project-selection/model
 import { DataCard } from "@/shared/ui/DataCard";
 import { PageContainer } from "@/shared/ui/PageContainer";
 import { PageHeader } from "@/shared/ui/PageHeader";
+import { EngineeringCoreStatusPanel } from "@/widgets/engineering-core-status/ui/EngineeringCoreStatusPanel";
 
 export function DashboardPage(): JSX.Element {
   const { selectedProjectId } = useProjectSelection();
@@ -22,6 +23,8 @@ export function DashboardPage(): JSX.Element {
             : "No project selected. Create or select a project to start."
         }
       />
+      <EngineeringCoreStatusPanel />
+
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
           icon={<ApartmentIcon color="primary" />}
@@ -77,4 +80,5 @@ function DashboardCard({ icon, title, description, to, action }: DashboardCardPr
     </DataCard>
   );
 }
+
 
