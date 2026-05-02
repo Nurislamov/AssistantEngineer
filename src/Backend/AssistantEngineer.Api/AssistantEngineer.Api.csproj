@@ -36,7 +36,6 @@
     <ItemGroup>
       <Folder Include="Controllers\Benchmarks\" />
       <Folder Include="Controllers\Buildings\" />
-      <Folder Include="Controllers\Calculations\" />
       <Folder Include="Controllers\Equipment\" />
       <Folder Include="Controllers\Profiles\" />
       <Folder Include="Controllers\Projects\" />

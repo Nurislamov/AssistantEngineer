@@ -36,6 +36,9 @@ public class FacadeBoundaryTests
         "AssistantEngineer.Modules.Calculations.Application.Facades.IBuildingSizingAnalysisFacade",
         "AssistantEngineer.Modules.Calculations.Application.Facades.BuildingSizingAnalysisFacade",
 
+        "AssistantEngineer.Modules.Calculations.Application.Facades.IEngineeringCoreStatusFacade",
+        "AssistantEngineer.Modules.Calculations.Application.Facades.EngineeringCoreStatusFacade",
+
         "AssistantEngineer.Modules.Equipment.Application.Facades.IEquipmentFacade",
         "AssistantEngineer.Modules.Equipment.Application.Facades.EquipmentFacade",
 

@@ -1,4 +1,6 @@
-﻿namespace AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
+﻿using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
+
+namespace AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 
 public class BuildingCoolingReport
 {
@@ -39,6 +41,9 @@ public class BuildingCoolingReport
         get => CoolingLoadKw;
         set => CoolingLoadKw = value;
     }
+
+    public CalculationDisclosure CalculationDisclosure { get; set; } =
+        EngineeringCoreReportDisclosures.CoolingDesignPoint();
 
     public List<FloorCoolingReportSummary> FloorSummaries { get; set; } = [];
     public List<RoomCoolingReportRow> Rooms { get; set; } = [];

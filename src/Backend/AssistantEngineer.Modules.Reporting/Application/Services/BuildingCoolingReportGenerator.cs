@@ -1,4 +1,5 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 using AssistantEngineer.Modules.Reporting.Application.Models;
 
@@ -39,6 +40,12 @@ internal sealed class BuildingCoolingReportGenerator
 
             CoolingLoadW = buildingCalculation.CoolingLoadW,
             CoolingLoadKw = buildingCalculation.CoolingLoadKw,
+
+            CalculationDisclosure = EngineeringCoreReportDisclosures.CoolingDesignPoint(
+                buildingCalculation.CalculationMethod,
+                string.IsNullOrWhiteSpace(buildingCalculation.ActualMethod)
+                    ? buildingCalculation.CalculationMethod
+                    : buildingCalculation.ActualMethod),
 
             FloorSummaries = data.FloorCalculations
                 .Select(ToFloorSummary)

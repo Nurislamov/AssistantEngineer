@@ -18,6 +18,8 @@ internal static class CalculationFacadeRegistration
         services.AddScoped<IBuildingComfortAnalysisFacade, BuildingComfortAnalysisFacade>();
         services.AddScoped<IBuildingSizingAnalysisFacade, BuildingSizingAnalysisFacade>();
 
+        services.AddScoped<IEngineeringCoreStatusFacade, EngineeringCoreStatusFacade>();
+
         return services;
     }
 }

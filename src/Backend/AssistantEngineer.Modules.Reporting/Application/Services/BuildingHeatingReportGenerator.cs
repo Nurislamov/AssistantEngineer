@@ -1,4 +1,5 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Services;
@@ -48,6 +49,12 @@ internal sealed class BuildingHeatingReportGenerator
             TotalVentilationLossW = Round(ventilationLoss),
             TotalDesignHeatingLoadW = Round(totalLoad),
             TotalDesignHeatingLoadKw = Round(totalLoad / 1000.0),
+
+            CalculationDisclosure = EngineeringCoreReportDisclosures.HeatingDesignPoint(
+                data.CalculationMethod,
+                string.IsNullOrWhiteSpace(data.ActualMethod)
+                    ? data.CalculationMethod
+                    : data.ActualMethod),
 
             Rooms = rooms
                 .OrderBy(room => room.RoomId)

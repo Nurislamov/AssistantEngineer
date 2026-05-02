@@ -1,4 +1,5 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
 
 namespace AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 
@@ -17,6 +18,9 @@ public class BuildingHeatingReport
     public double TotalVentilationLossW { get; set; }
     public double TotalDesignHeatingLoadW { get; set; }
     public double TotalDesignHeatingLoadKw { get; set; }
+
+    public CalculationDisclosure CalculationDisclosure { get; set; } =
+        EngineeringCoreReportDisclosures.HeatingDesignPoint();
 
     public List<RoomHeatingLoadResult> Rooms { get; set; } = [];
 }
