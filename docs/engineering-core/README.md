@@ -189,3 +189,9 @@ Engineering Core V1 does not claim:
 - docs/validation/EnergyPlusValidationFixtureCatalog.json
 - docs/validation/EnergyPlusValidationFixtureCatalog.md
 - docs/validation/EnergyPlusValidationFixtureCatalogGuide.md
+
+## Validation fixture authoring kit
+
+- docs/validation/EnergyPlusValidationFixtureAuthoringGuide.md
+- docs/validation/fixtures/_template
+- scripts/engineering-core/new-energyplus-validation-fixture.ps1

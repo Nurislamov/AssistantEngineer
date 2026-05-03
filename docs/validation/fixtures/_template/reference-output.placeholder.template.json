@@ -1,0 +1,23 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "referenceEngine": "EnergyPlus",
+  "status": "PlaceholderReferenceOutput",
+  "source": "Placeholder committed for validation harness readiness. Replace with real EnergyPlus output in future validation milestone.",
+  "notAClaim": [
+    "This placeholder does not claim EnergyPlus validation.",
+    "This placeholder does not claim exact EnergyPlus numerical parity.",
+    "This placeholder does not claim ASHRAE 140 validation coverage."
+  ],
+  "referenceOutputs": {
+    "annualHeatingEnergyKwh": 0.0,
+    "annualCoolingEnergyKwh": 0.0,
+    "peakHeatingLoadW": 0.0,
+    "peakCoolingLoadW": 0.0,
+    "directionalResponseIndex": 1.0
+  },
+  "notes": [
+    "Values are engineering placeholder outputs for fixture readiness.",
+    "Future real EnergyPlus outputs must replace this file or be added alongside it with provenance metadata.",
+    "Comparison tests must remain tolerance-based and non-parity."
+  ]
+}

@@ -64,3 +64,13 @@ The catalog must keep visible:
 Run:
 
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationFixtureCatalogTests"
+
+## Adding new fixtures
+
+Use the fixture authoring guide:
+
+    docs/validation/EnergyPlusValidationFixtureAuthoringGuide.md
+
+Scaffold command:
+
+    .\scripts\engineering-core\new-energyplus-validation-fixture.ps1 -CaseId EP-SMOKE-004 -Name "New smoke case"
