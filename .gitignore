@@ -13,3 +13,7 @@ dist/
 *.tsbuildinfo
 .env
 .env.local
+
+# Generated ISO52016 Matrix baseline summaries
+artifacts/iso52016/matrix-baselines/
+
