@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 $requiredFiles = @(
     "docs\calculations\Iso52016MatrixBaselineFixtures.md",
     "docs\releases\Iso52016MatrixBaselineFixturesManifest.json",
+    "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixBaselineFixtureTests.cs",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Baselines\neutral-no-hvac.json",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Baselines\winter-heating-24h.json",
