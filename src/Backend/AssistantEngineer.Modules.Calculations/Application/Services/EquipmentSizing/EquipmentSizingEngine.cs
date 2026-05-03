@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -65,6 +65,15 @@ public sealed class EquipmentSizingEngine
             FormattableString.Invariant($"Cooling safety factor {Round(coolingSafetyFactor)} was applied."),
             input.DiagnosticsContext));
 
+        if (input.MaximumOversizingPercent.HasValue)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "EquipmentSizing.MaximumOversizingLimitApplied",
+                FormattableString.Invariant($"Maximum oversizing limit {Round(input.MaximumOversizingPercent.Value)}% was applied."),
+                input.DiagnosticsContext));
+        }
+
         var requiredHeatingWithReserve = Math.Max(0, input.RequiredHeatingLoadW) * heatingSafetyFactor;
         var requiredCoolingWithReserve = Math.Max(0, input.RequiredCoolingLoadW) * coolingSafetyFactor;
 
@@ -86,7 +95,8 @@ public sealed class EquipmentSizingEngine
                 candidate,
                 input,
                 requiredHeatingWithReserve,
-                requiredCoolingWithReserve);
+                requiredCoolingWithReserve,
+                input.MaximumOversizingPercent);
 
             if (reasons.Count > 0)
             {
@@ -214,6 +224,15 @@ public sealed class EquipmentSizingEngine
                 input.DiagnosticsContext));
         }
 
+                if (input.MaximumOversizingPercent is <= 0)
+        {
+            diagnostics.Add(Error(
+                "EquipmentSizing.InvalidMaximumOversizingPercent",
+                "Maximum oversizing percent must be greater than zero.",
+                input.DiagnosticsContext));
+        }
+
+
         return diagnostics;
     }
 
@@ -221,7 +240,8 @@ public sealed class EquipmentSizingEngine
         EquipmentSizingCandidateInput candidate,
         EquipmentSizingInput input,
         double requiredHeatingWithReserve,
-        double requiredCoolingWithReserve)
+        double requiredCoolingWithReserve,
+        double? maximumOversizingPercent)
     {
         var reasons = new List<string>();
 
@@ -240,6 +260,8 @@ public sealed class EquipmentSizingEngine
                 reasons.Add("missing heating capacity");
             else if (candidate.HeatingCapacityW.Value < requiredHeatingWithReserve)
                 reasons.Add("insufficient heating capacity");
+            else if (IsOversized(candidate.HeatingCapacityW.Value, requiredHeatingWithReserve, maximumOversizingPercent))
+                reasons.Add("excessive heating oversizing");
         }
 
         if (requiredCoolingWithReserve > 0)
@@ -248,12 +270,27 @@ public sealed class EquipmentSizingEngine
                 reasons.Add("missing cooling capacity");
             else if (candidate.CoolingCapacityW.Value < requiredCoolingWithReserve)
                 reasons.Add("insufficient cooling capacity");
+            else if (IsOversized(candidate.CoolingCapacityW.Value, requiredCoolingWithReserve, maximumOversizingPercent))
+                reasons.Add("excessive cooling oversizing");
         }
 
         if (requiredHeatingWithReserve <= 0 && requiredCoolingWithReserve <= 0)
             reasons.Add("no matching mode");
 
         return reasons;
+    }
+
+    private static bool IsOversized(
+        double capacityW,
+        double requiredWithReserveW,
+        double? maximumOversizingPercent)
+    {
+        if (!maximumOversizingPercent.HasValue || requiredWithReserveW <= 0)
+            return false;
+
+        var marginPercent = (capacityW - requiredWithReserveW) / requiredWithReserveW * 100.0;
+
+        return marginPercent > maximumOversizingPercent.Value;
     }
 
     private static double CalculateScore(
@@ -305,3 +342,5 @@ public sealed class EquipmentSizingEngine
         double value) =>
         Math.Round(value, 6, MidpointRounding.AwayFromZero);
 }
+
+
