@@ -17,7 +17,7 @@
 
 | Metric | Type | AssistantEngineer | Reference | Absolute difference | Effective absolute tolerance | Passed |
 |---|---|---:|---:|---:|---:|---|
-| annual-heating-kwh | NumericWithinTolerance | 37,8 | 37,8 | 0 | 0 | True |
+| annual-heating-kwh | NumericWithinTolerance | 37.8 | 37.8 | 0 | 0 | True |
 | peak-heating-w | NumericWithinTolerance | 1575 | 1575 | 0 | 0 | True |
 | annual-cooling-kwh | NumericWithinTolerance | 0 | 0 | 0 | 0 | True |
 

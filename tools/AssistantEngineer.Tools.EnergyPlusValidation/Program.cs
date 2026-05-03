@@ -15,6 +15,8 @@ internal static class Program
 
     public static int Main(string[] args)
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
         try
         {
             if (args.Length == 0 || args[0] is "-h" or "--help" or "help")
