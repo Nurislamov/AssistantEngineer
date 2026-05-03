@@ -105,3 +105,17 @@ Current status:
     PlaceholderComparison
 
 These are not real EnergyPlus validation results.
+
+## Fixture catalog
+
+Generate fixture catalog:
+
+    .\scripts\engineering-core\generate-energyplus-validation-fixture-catalog.ps1
+
+Generated outputs:
+
+- docs/validation/EnergyPlusValidationFixtureCatalog.json
+- docs/validation/EnergyPlusValidationFixtureCatalog.md
+- docs/validation/EnergyPlusValidationFixtureCatalogGuide.md
+
+The catalog synchronizes registry entries, fixture folders and comparison outputs.

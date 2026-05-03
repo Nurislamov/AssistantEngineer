@@ -1,0 +1,122 @@
+﻿{
+    "catalogName":  "EnergyPlus Validation Fixture Catalog",
+    "version":  "v1",
+    "status":  "PlannedValidation",
+    "generatedAtUtc":  "2026-05-03 05:57:22 UTC",
+    "registryPath":  "docs/validation/EnergyPlusValidationCaseRegistry.json",
+    "fixturesRoot":  "tests/fixtures/validation/energyplus",
+    "reportsDirectory":  "docs/reports/validation",
+    "totals":  {
+                   "registryCases":  5,
+                   "registrySmokeCases":  3,
+                   "fixtureDirectories":  3,
+                   "fixturesWithComparison":  3,
+                   "placeholderComparisons":  3,
+                   "realEnergyPlusComparisons":  0,
+                   "fixturesWithoutRegistry":  0,
+                   "registryCasesWithoutFixture":  0,
+                   "fixturesMissingRequiredFiles":  0,
+                   "fixturesMissingComparison":  0
+               },
+    "sync":  {
+                 "registryCasesWithoutFixture":  [
+
+                                                 ],
+                 "fixturesWithoutRegistry":  [
+
+                                             ],
+                 "fixturesMissingRequiredFiles":  [
+
+                                                  ],
+                 "fixturesMissingComparison":  [
+
+                                               ]
+             },
+    "fixtures":  [
+                     {
+                         "caseId":  "EP-SMOKE-001",
+                         "registryListed":  true,
+                         "registryStage":  "Smoke",
+                         "registryStatus":  "ReferenceFixturePlaceholder",
+                         "metadataStage":  "Smoke",
+                         "metadataStatus":  "ReferenceFixturePlaceholder",
+                         "hasMetadata":  true,
+                         "hasAssistantEngineerInput":  true,
+                         "hasComparisonTolerances":  true,
+                         "hasPlaceholderReference":  true,
+                         "hasRealReference":  false,
+                         "hasProvenance":  false,
+                         "hasFixtureReadme":  true,
+                         "hasComparisonJson":  true,
+                         "hasComparisonMarkdown":  true,
+                         "comparisonStatus":  "PlaceholderComparison",
+                         "referenceStatus":  "PlaceholderReferenceOutput",
+                         "allMetricsPassed":  true,
+                         "metricCount":  3,
+                         "missingRequiredFixtureFiles":  [
+
+                                                         ],
+                         "resultJson":  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
+                         "resultMarkdown":  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.md"
+                     },
+                     {
+                         "caseId":  "EP-SMOKE-002",
+                         "registryListed":  true,
+                         "registryStage":  "Smoke",
+                         "registryStatus":  "ReferenceFixturePlaceholder",
+                         "metadataStage":  "Smoke",
+                         "metadataStatus":  "ReferenceFixturePlaceholder",
+                         "hasMetadata":  true,
+                         "hasAssistantEngineerInput":  true,
+                         "hasComparisonTolerances":  true,
+                         "hasPlaceholderReference":  true,
+                         "hasRealReference":  false,
+                         "hasProvenance":  false,
+                         "hasFixtureReadme":  true,
+                         "hasComparisonJson":  true,
+                         "hasComparisonMarkdown":  true,
+                         "comparisonStatus":  "PlaceholderComparison",
+                         "referenceStatus":  "PlaceholderReferenceOutput",
+                         "allMetricsPassed":  true,
+                         "metricCount":  4,
+                         "missingRequiredFixtureFiles":  [
+
+                                                         ],
+                         "resultJson":  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.json",
+                         "resultMarkdown":  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.md"
+                     },
+                     {
+                         "caseId":  "EP-SMOKE-003",
+                         "registryListed":  true,
+                         "registryStage":  "Smoke",
+                         "registryStatus":  "ReferenceFixturePlaceholder",
+                         "metadataStage":  "Smoke",
+                         "metadataStatus":  "ReferenceFixturePlaceholder",
+                         "hasMetadata":  true,
+                         "hasAssistantEngineerInput":  true,
+                         "hasComparisonTolerances":  true,
+                         "hasPlaceholderReference":  true,
+                         "hasRealReference":  false,
+                         "hasProvenance":  false,
+                         "hasFixtureReadme":  true,
+                         "hasComparisonJson":  true,
+                         "hasComparisonMarkdown":  true,
+                         "comparisonStatus":  "PlaceholderComparison",
+                         "referenceStatus":  "PlaceholderReferenceOutput",
+                         "allMetricsPassed":  true,
+                         "metricCount":  4,
+                         "missingRequiredFixtureFiles":  [
+
+                                                         ],
+                         "resultJson":  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.json",
+                         "resultMarkdown":  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.md"
+                     }
+                 ],
+    "requiredNonClaims":  [
+                              "Does not claim exact EnergyPlus numerical parity.",
+                              "Does not claim ASHRAE 140 validation coverage.",
+                              "Does not claim full ISO 52016 node/matrix solver parity.",
+                              "PlaceholderComparison is not real EnergyPlus validation.",
+                              "Future real validation must remain tolerance-based."
+                          ]
+}

@@ -182,3 +182,10 @@ Engineering Core V1 does not claim:
 - docs/validation/fixtures/EP-SMOKE-003/README.md
 - docs/reports/validation/EP-SMOKE-002-ComparisonResult.json
 - docs/reports/validation/EP-SMOKE-003-ComparisonResult.json
+
+## Validation fixture catalog
+
+- scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1
+- docs/validation/EnergyPlusValidationFixtureCatalog.json
+- docs/validation/EnergyPlusValidationFixtureCatalog.md
+- docs/validation/EnergyPlusValidationFixtureCatalogGuide.md
