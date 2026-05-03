@@ -1,0 +1,20 @@
+{
+  "scenarioName": "manual-steady-state-heating",
+  "description": "One air node, one outdoor boundary, no gains. Heating load is H * (T_heat_setpoint - T_outdoor).",
+  "mode": "Heating",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 0.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 0.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 2000.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 2.0,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 20.0
+  }
+}

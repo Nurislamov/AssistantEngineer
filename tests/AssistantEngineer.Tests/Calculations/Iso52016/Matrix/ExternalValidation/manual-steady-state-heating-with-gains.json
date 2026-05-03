@@ -1,0 +1,20 @@
+{
+  "scenarioName": "manual-steady-state-heating-with-gains",
+  "description": "One air node with internal gains. Heating load is H * (T_heat_setpoint - T_outdoor) - gains.",
+  "mode": "Heating",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 0.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 500.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 1500.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 1.5,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 20.0
+  }
+}

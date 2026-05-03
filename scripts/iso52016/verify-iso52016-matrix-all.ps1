@@ -4,7 +4,8 @@ param(
     [switch] $SkipStage,
     [switch] $SkipBaselines,
     [switch] $SkipApplicationBaselines,
-    [switch] $SkipSummaryExporter
+    [switch] $SkipSummaryExporter,
+    [switch] $SkipExternalValidation
 )
 
 Set-StrictMode -Version Latest
@@ -36,6 +37,7 @@ $requiredFiles = @(
     "scripts\iso52016\verify-iso52016-matrix-baselines.ps1",
     "scripts\iso52016\verify-iso52016-matrix-application-baselines.ps1",
     "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1",
+    "scripts\iso52016\verify-iso52016-matrix-external-validation.ps1",
     "docs\calculations\Iso52016MatrixVerificationRunbook.md",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs"
 )
@@ -88,6 +90,18 @@ if (-not $SkipApplicationBaselines) {
         -Arguments $args
 }
 
+
+if (-not $SkipExternalValidation) {
+    $args = @()
+
+    if ($SkipTests) {
+        $args += "-SkipTests"
+    }
+
+    Invoke-RepoScript `
+        -RelativePath "scripts\iso52016\verify-iso52016-matrix-external-validation.ps1" `
+        -Arguments $args
+}
 if (-not $SkipSummaryExporter) {
     Invoke-RepoScript `
         -RelativePath "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1"
@@ -96,7 +110,7 @@ if (-not $SkipSummaryExporter) {
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {
-        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter"
+        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture"
     }
     finally {
         Pop-Location
