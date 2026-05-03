@@ -102,7 +102,8 @@ public sealed class BuildingPerformanceService
             MonthFilter: month,
             HourCount: hourly.Length,
             CalculationTimeStep: Iso52016CalculationTimeStepDto.Hourly,
-            HourlyResults: hourly));
+            HourlyResults: hourly,
+            Diagnostics: energyNeed.Value.Diagnostics));
     }
 
     public async Task<Result<Iso52016MonthlyResultsResponse>> GetIso52016MonthlyResultsAsync(
@@ -127,7 +128,8 @@ public sealed class BuildingPerformanceService
             MonthlyResults: energyNeed.Value.MonthlyResults,
             AnnualHeatingDemandKWh: energyNeed.Value.AnnualHeatingDemandKWh,
             AnnualCoolingDemandKWh: energyNeed.Value.AnnualCoolingDemandKWh,
-            Breakdown: energyNeed.Value.Breakdown));
+            Breakdown: energyNeed.Value.Breakdown,
+            Diagnostics: energyNeed.Value.Diagnostics));
     }
 
     public async Task<Result<Iso52016MonthlyResultsResponse>> GetIso52016MonthlyMethodResultsAsync(
@@ -147,7 +149,8 @@ public sealed class BuildingPerformanceService
             MonthlyResults: energyNeed.Value.MonthlyResults,
             AnnualHeatingDemandKWh: energyNeed.Value.AnnualHeatingDemandKWh,
             AnnualCoolingDemandKWh: energyNeed.Value.AnnualCoolingDemandKWh,
-            Breakdown: energyNeed.Value.Breakdown));
+            Breakdown: energyNeed.Value.Breakdown,
+            Diagnostics: energyNeed.Value.Diagnostics));
     }
 
     public async Task<Result<EnergySignatureResult>> GetEnergySignatureAsync(
