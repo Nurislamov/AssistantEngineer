@@ -16,20 +16,24 @@
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationBaselines/building-cold-two-room-heating.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationBaselines/building-hot-single-room-cooling.json"
                  ],
+    "applicationBaselinesIntegrated":  true,
     "documentationFiles":  [
                                "docs/calculations/Iso52016MatrixBaselineFixtures.md",
                                "docs/releases/Iso52016MatrixBaselineFixturesManifest.json",
                                "docs/calculations/Iso52016MatrixBaselineSummaryExporter.md",
-                               "docs/calculations/Iso52016MatrixApplicationBaselineFixtures.md"
+                               "docs/calculations/Iso52016MatrixApplicationBaselineFixtures.md",
+                               "docs/calculations/Iso52016MatrixVerificationRunbook.md"
                            ],
     "verificationScripts":  [
                                 "scripts/iso52016/export-iso52016-matrix-baseline-summary.ps1",
-                                "scripts/iso52016/verify-iso52016-matrix-application-baselines.ps1"
+                                "scripts/iso52016/verify-iso52016-matrix-application-baselines.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-all.ps1"
                             ],
     "testGuards":  [
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs",
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineSummaryExporterTests.cs",
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationBaselineFixtureTests.cs"
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationBaselineFixtureTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixAllVerificationScriptTests.cs"
                    ],
-    "applicationBaselinesIntegrated":  true
+    "allInOneVerificationIntegrated":  true
 }

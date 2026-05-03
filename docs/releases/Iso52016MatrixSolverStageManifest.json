@@ -34,15 +34,19 @@
                                "docs/traceability/Iso52016MatrixSolverTraceabilityMatrix.json",
                                "docs/calculations/Iso52016MatrixBaselineFixtures.md",
                                "docs/releases/Iso52016MatrixBaselineFixturesManifest.json",
-                               "docs/calculations/Iso52016MatrixVerificationGate.md"
+                               "docs/calculations/Iso52016MatrixVerificationGate.md",
+                               "docs/calculations/Iso52016MatrixVerificationRunbook.md"
                            ],
     "verificationScripts":  [
                                 "scripts/iso52016/verify-iso52016-matrix-solver-stage.ps1",
-                                "scripts/iso52016/verify-iso52016-matrix-baselines.ps1"
+                                "scripts/iso52016/verify-iso52016-matrix-baselines.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-all.ps1"
                             ],
     "testGuards":  [
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/V2/Iso52016MatrixSolverStageTraceabilityTests.cs",
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs",
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixVerificationGateTests.cs"
-                   ]
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixVerificationGateTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixAllVerificationScriptTests.cs"
+                   ],
+    "allInOneVerificationIntegrated":  true
 }
