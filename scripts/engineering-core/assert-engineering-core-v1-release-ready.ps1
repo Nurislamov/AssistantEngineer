@@ -13,16 +13,19 @@ Set-Location $repoRoot
 $toolArgs = @()
 
 if ($SkipFrontend) {
-    $toolArgs += "--s-ki-pf-ro-nt-en-d"
+    $toolArgs += "--skip-frontend"
 }
+
 if ($SkipFullDotnet) {
-    $toolArgs += "--s-ki-pf-ul-ld-ot-ne-t"
+    $toolArgs += "--skip-full-dotnet"
 }
+
 if ($SkipGitStatus) {
-    $toolArgs += "--s-ki-pg-it-st-at-us"
+    $toolArgs += "--skip-git-status"
 }
+
 if ($Fast) {
-    $toolArgs += "--f-as-t"
+    $toolArgs += "--fast"
 }
 
 dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- assert-release-ready @toolArgs

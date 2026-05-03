@@ -1,10 +1,9 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace AssistantEngineer.Tools.RepositoryBoundaries;
 
-internal static partial class Program
+internal static class Program
 {
     private const string StableGeneratedAtUtc = "2026-01-01 00:00:00 UTC";
 
@@ -22,12 +21,17 @@ internal static partial class Program
             Directory.SetCurrentDirectory(repoRoot);
 
             var command = args[0];
-            var failOnHeavyScripts = args.Any(arg =>
+
+            var strict = args.Any(arg =>
+                string.Equals(arg, "--strict", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(arg, "--fail-on-heavy-scripts", StringComparison.OrdinalIgnoreCase));
+
+            var failOnUnknownScripts = strict || args.Any(arg =>
+                string.Equals(arg, "--fail-on-unknown-scripts", StringComparison.OrdinalIgnoreCase));
 
             return command switch
             {
-                "audit-script-boundaries" => AuditScriptBoundaries(failOnHeavyScripts),
+                "audit-script-boundaries" => AuditScriptBoundaries(strict, failOnUnknownScripts),
                 _ => Unknown(command)
             };
         }
@@ -45,7 +49,11 @@ internal static partial class Program
         Console.WriteLine("AssistantEngineer repository boundary tools");
         Console.WriteLine();
         Console.WriteLine("Commands:");
+        Console.WriteLine("  audit-script-boundaries [--strict]");
         Console.WriteLine("  audit-script-boundaries [--fail-on-heavy-scripts]");
+        Console.WriteLine("  audit-script-boundaries [--fail-on-unknown-scripts]");
+        Console.WriteLine();
+        Console.WriteLine("Strict mode fails when any PowerShell script is not a known thin wrapper.");
     }
 
     private static int Unknown(string command)
@@ -55,7 +63,9 @@ internal static partial class Program
         return 1;
     }
 
-    private static int AuditScriptBoundaries(bool failOnHeavyScripts)
+    private static int AuditScriptBoundaries(
+        bool failOnNonThinScripts,
+        bool failOnUnknownScripts)
     {
         var scriptsRoot = "scripts";
 
@@ -72,13 +82,17 @@ internal static partial class Program
         var thinScripts = scriptRows.Count(script => script.Classification == "ThinWrapper");
         var heavyScripts = scriptRows.Count(script => script.Classification == "HeavyPowerShellLogic");
         var unknownScripts = scriptRows.Count(script => script.Classification == "UnknownPowerShellScript");
+        var nonThinScripts = heavyScripts + unknownScripts;
+
+        var status = nonThinScripts == 0 ? "Compliant" : "MigrationInProgress";
 
         var report = new Dictionary<string, object?>
         {
             ["reportName"] = "Repository Script Boundary Audit",
             ["version"] = "v1",
-            ["status"] = heavyScripts == 0 ? "Compliant" : "MigrationInProgress",
+            ["status"] = status,
             ["generatedAtUtc"] = StableGeneratedAtUtc,
+            ["strictModeReady"] = nonThinScripts == 0,
             ["policy"] = new Dictionary<string, object?>
             {
                 ["srcBackend"] = "application code",
@@ -94,12 +108,13 @@ internal static partial class Program
                 ["scripts"] = scriptRows.Length,
                 ["thinScripts"] = thinScripts,
                 ["heavyScripts"] = heavyScripts,
-                ["unknownScripts"] = unknownScripts
+                ["unknownScripts"] = unknownScripts,
+                ["nonThinScripts"] = nonThinScripts
             },
             ["scripts"] = scriptRows,
-            ["requiredNextStep"] = heavyScripts == 0
+            ["requiredNextStep"] = nonThinScripts == 0
                 ? "Keep scripts as wrappers and implement new automation in tools."
-                : "Move remaining heavy PowerShell logic into C# tools and leave scripts as wrappers only."
+                : "Move remaining non-thin PowerShell logic into C# tools and leave scripts as wrappers only."
         };
 
         Directory.CreateDirectory("docs/reports/repository");
@@ -115,12 +130,12 @@ internal static partial class Program
         File.WriteAllText(
             "docs/reports/repository/ScriptBoundaryAudit.json",
             json + Environment.NewLine,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            Utf8WithBom());
 
         File.WriteAllText(
             "docs/reports/repository/ScriptBoundaryAudit.md",
-            BuildMarkdown(scriptRows, thinScripts, heavyScripts, unknownScripts),
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            BuildMarkdown(scriptRows, thinScripts, heavyScripts, unknownScripts, nonThinScripts, status),
+            Utf8WithBom());
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Repository script boundary audit generated:");
@@ -131,10 +146,17 @@ internal static partial class Program
         Console.WriteLine($"Thin wrappers: {thinScripts}");
         Console.WriteLine($"Heavy PowerShell scripts: {heavyScripts}");
         Console.WriteLine($"Unknown PowerShell scripts: {unknownScripts}");
+        Console.WriteLine($"Non-thin PowerShell scripts: {nonThinScripts}");
 
-        if (failOnHeavyScripts && heavyScripts > 0)
+        if (failOnNonThinScripts && nonThinScripts > 0)
         {
-            Console.Error.WriteLine("Heavy PowerShell scripts remain. Move logic into C# tools before enabling strict mode.");
+            Console.Error.WriteLine("Non-thin PowerShell scripts remain. Move logic into C# tools or convert scripts to known wrappers.");
+            return 1;
+        }
+
+        if (failOnUnknownScripts && unknownScripts > 0)
+        {
+            Console.Error.WriteLine("Unknown PowerShell scripts remain. Convert them to known thin wrappers or update the boundary classifier.");
             return 1;
         }
 
@@ -145,6 +167,7 @@ internal static partial class Program
     {
         var content = File.ReadAllText(path);
         var normalizedPath = NormalizePath(path);
+
         var nonEmptyLines = content
             .Split(["\r\n", "\n"], StringSplitOptions.None)
             .Select(line => line.Trim())
@@ -153,45 +176,44 @@ internal static partial class Program
 
         var invokesCSharpTool =
             content.Contains("dotnet run --project", StringComparison.Ordinal) &&
-            content.Contains(@"\tools\", StringComparison.OrdinalIgnoreCase) ||
-            content.Contains("./tools/", StringComparison.OrdinalIgnoreCase) ||
-            content.Contains(".\\tools\\", StringComparison.OrdinalIgnoreCase);
+            (
+                content.Contains(@"\tools\", StringComparison.OrdinalIgnoreCase) ||
+                content.Contains("./tools/", StringComparison.OrdinalIgnoreCase) ||
+                content.Contains(".\\tools\\", StringComparison.OrdinalIgnoreCase)
+            );
 
-        var heavyPatterns = new[]
-        {
-            "ConvertTo-Json",
-            "ConvertFrom-Json",
-            "Get-ChildItem",
-            "Import-Csv",
-            "Select-String",
-            "Get-FileHash",
-            "Set-Content",
-            "Out-File",
-            "Add-Content",
-            "New-Item",
-            "Copy-Item",
-            "Remove-Item",
-            "Invoke-RestMethod",
-            "Invoke-WebRequest",
-            "function ",
-            "class ",
-            "ForEach-Object",
-            "Where-Object"
-        };
+        var targetTool = DetectTargetTool(content);
 
-        var matchedHeavyPatterns = heavyPatterns
+        var matchedHeavyPatterns = HeavyPatterns()
             .Where(pattern => content.Contains(pattern, StringComparison.OrdinalIgnoreCase))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(pattern => pattern, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        var classification = invokesCSharpTool && matchedHeavyPatterns.Length <= 2 && nonEmptyLines.Length <= 18
+        var wrapperOnlyPatterns = new[]
+        {
+            "param(",
+            "$ErrorActionPreference",
+            "Resolve-Path",
+            "Join-Path",
+            "Set-Location",
+            "$toolArgs",
+            "if (",
+            "dotnet run --project"
+        };
+
+        var wrapperLike =
+            invokesCSharpTool &&
+            !string.IsNullOrWhiteSpace(targetTool) &&
+            matchedHeavyPatterns.Length == 0 &&
+            nonEmptyLines.Length <= 80 &&
+            wrapperOnlyPatterns.Any(pattern => content.Contains(pattern, StringComparison.OrdinalIgnoreCase));
+
+        var classification = wrapperLike
             ? "ThinWrapper"
             : matchedHeavyPatterns.Length > 0
                 ? "HeavyPowerShellLogic"
                 : "UnknownPowerShellScript";
-
-        var targetTool = DetectTargetTool(content);
 
         return new ScriptBoundaryRow(
             normalizedPath,
@@ -201,25 +223,52 @@ internal static partial class Program
             matchedHeavyPatterns);
     }
 
+    private static string[] HeavyPatterns() =>
+    [
+        "ConvertTo-Json",
+        "ConvertFrom-Json",
+        "Get-ChildItem",
+        "Import-Csv",
+        "Select-String",
+        "Get-FileHash",
+        "Set-Content",
+        "Out-File",
+        "Add-Content",
+        "New-Item",
+        "Copy-Item",
+        "Remove-Item",
+        "Invoke-RestMethod",
+        "Invoke-WebRequest",
+        "function ",
+        "class ",
+        "ForEach-Object",
+        "Where-Object"
+    ];
+
     private static string DetectTargetTool(string content)
     {
-        if (content.Contains("AssistantEngineer.Tools.EngineeringCore", StringComparison.Ordinal))
-            return "AssistantEngineer.Tools.EngineeringCore";
+        var knownTools = new[]
+        {
+            "AssistantEngineer.Tools.EngineeringCoreVerification",
+            "AssistantEngineer.Tools.EngineeringCoreRelease",
+            "AssistantEngineer.Tools.EngineeringCoreContracts",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "AssistantEngineer.Tools.EngineeringCore",
+            "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+            "AssistantEngineer.Tools.EnergyPlusValidation",
+            "AssistantEngineer.Tools.RepositoryBoundaries"
+        };
 
-        if (content.Contains("AssistantEngineer.Tools.EnergyPlusValidation", StringComparison.Ordinal))
-            return "AssistantEngineer.Tools.EnergyPlusValidation";
-
-        if (content.Contains("AssistantEngineer.Tools.RepositoryBoundaries", StringComparison.Ordinal))
-            return "AssistantEngineer.Tools.RepositoryBoundaries";
-
-        return "";
+        return knownTools.FirstOrDefault(tool => content.Contains(tool, StringComparison.Ordinal)) ?? "";
     }
 
     private static string BuildMarkdown(
         IReadOnlyList<ScriptBoundaryRow> scripts,
         int thinScripts,
         int heavyScripts,
-        int unknownScripts)
+        int unknownScripts,
+        int nonThinScripts,
+        string status)
     {
         var builder = new StringBuilder();
 
@@ -235,7 +284,9 @@ internal static partial class Program
         builder.AppendLine($"| Thin wrappers | {thinScripts} |");
         builder.AppendLine($"| Heavy PowerShell scripts | {heavyScripts} |");
         builder.AppendLine($"| Unknown PowerShell scripts | {unknownScripts} |");
-        builder.AppendLine($"| Status | {(heavyScripts == 0 ? "Compliant" : "MigrationInProgress")} |");
+        builder.AppendLine($"| Non-thin PowerShell scripts | {nonThinScripts} |");
+        builder.AppendLine($"| Strict mode ready | {nonThinScripts == 0} |");
+        builder.AppendLine($"| Status | {status} |");
         builder.AppendLine();
         builder.AppendLine("## Repository boundary");
         builder.AppendLine();
@@ -261,13 +312,13 @@ internal static partial class Program
         builder.AppendLine("## Interpretation");
         builder.AppendLine();
 
-        if (heavyScripts == 0)
+        if (nonThinScripts == 0)
         {
-            builder.AppendLine("All audited PowerShell scripts are thin wrappers or contain no heavy automation logic.");
+            builder.AppendLine("All audited PowerShell scripts are known thin wrappers. Strict mode is ready.");
         }
         else
         {
-            builder.AppendLine("Heavy PowerShell scripts remain. Their generation, validation or release logic must be moved into C# tools before strict mode is enabled.");
+            builder.AppendLine("Non-thin PowerShell scripts remain. Their generation, validation or release logic must be moved into C# tools, or the wrapper classifier must be updated intentionally.");
         }
 
         return builder.ToString();
@@ -290,6 +341,9 @@ internal static partial class Program
 
     private static string NormalizePath(string path) =>
         path.Replace("\\", "/");
+
+    private static Encoding Utf8WithBom() =>
+        new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
 
     private sealed record ScriptBoundaryRow(
         string Path,

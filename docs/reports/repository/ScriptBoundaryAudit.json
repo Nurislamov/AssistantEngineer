@@ -3,6 +3,7 @@
   "version": "v1",
   "status": "Compliant",
   "generatedAtUtc": "2026-01-01 00:00:00 UTC",
+  "strictModeReady": true,
   "policy": {
     "srcBackend": "application code",
     "srcFrontend": "frontend code",
@@ -14,15 +15,16 @@
   },
   "totals": {
     "scripts": 26,
-    "thinScripts": 23,
+    "thinScripts": 26,
     "heavyScripts": 0,
-    "unknownScripts": 3
+    "unknownScripts": 0,
+    "nonThinScripts": 0
   },
   "scripts": [
     {
       "path": "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
-      "classification": "UnknownPowerShellScript",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreRelease",
       "nonEmptyLines": 23,
       "heavyPatterns": []
     },
@@ -64,35 +66,35 @@
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-api-contract-snapshots.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreContracts",
       "nonEmptyLines": 12,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreEvidence",
       "nonEmptyLines": 12,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-release-evidence.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreEvidence",
       "nonEmptyLines": 12,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-report-contract-snapshots.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreContracts",
       "nonEmptyLines": 12,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreEvidence",
       "nonEmptyLines": 12,
       "heavyPatterns": []
     },
@@ -126,15 +128,15 @@
     },
     {
       "path": "scripts/engineering-core/new-energyplus-validation-fixture.ps1",
-      "classification": "UnknownPowerShellScript",
-      "targetTool": "",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
       "nonEmptyLines": 30,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreRelease",
       "nonEmptyLines": 11,
       "heavyPatterns": []
     },
@@ -169,21 +171,21 @@
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-contracts.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreRelease",
       "nonEmptyLines": 15,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreRelease",
       "nonEmptyLines": 11,
       "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-smoke.ps1",
       "classification": "ThinWrapper",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreRelease",
       "nonEmptyLines": 11,
       "heavyPatterns": []
     },
@@ -196,8 +198,8 @@
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1.ps1",
-      "classification": "UnknownPowerShellScript",
-      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCoreVerification",
       "nonEmptyLines": 19,
       "heavyPatterns": []
     }

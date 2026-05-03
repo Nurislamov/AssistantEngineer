@@ -25,19 +25,22 @@ public class RepositoryBoundaryToolingAuditTests
     }
 
     [Fact]
-    public void ToolOwnsScriptBoundaryAuditCommand()
+    public void ToolOwnsScriptBoundaryAuditCommandAndStrictMode()
     {
         var content = File.ReadAllText(ToolProgramPath);
 
         var requiredPhrases = new[]
         {
             "audit-script-boundaries",
+            "--strict",
             "--fail-on-heavy-scripts",
+            "--fail-on-unknown-scripts",
             "ThinWrapper",
             "HeavyPowerShellLogic",
+            "UnknownPowerShellScript",
             "Repository Script Boundary Audit",
-            "scripts",
-            "tools"
+            "strictModeReady",
+            "nonThinScripts"
         };
 
         foreach (var requiredPhrase in requiredPhrases)
@@ -47,7 +50,7 @@ public class RepositoryBoundaryToolingAuditTests
     }
 
     [Fact]
-    public void AuditJsonDeclaresRepositoryBoundaryAndScriptTotals()
+    public void AuditJsonDeclaresRepositoryBoundaryAndStrictScriptTotals()
     {
         using var document = JsonDocument.Parse(File.ReadAllText(AuditJsonPath));
         var root = document.RootElement;
@@ -65,12 +68,39 @@ public class RepositoryBoundaryToolingAuditTests
         Assert.Equal("thin wrappers only", policy.GetProperty("scripts").GetString());
 
         var totals = root.GetProperty("totals");
+
         Assert.True(totals.GetProperty("scripts").GetInt32() >= 1);
         Assert.True(totals.GetProperty("thinScripts").GetInt32() >= 1);
+        Assert.Equal(0, totals.GetProperty("heavyScripts").GetInt32());
+        Assert.Equal(0, totals.GetProperty("unknownScripts").GetInt32());
+        Assert.Equal(0, totals.GetProperty("nonThinScripts").GetInt32());
+
+        Assert.True(root.GetProperty("strictModeReady").GetBoolean());
+        Assert.Equal("Compliant", root.GetProperty("status").GetString());
     }
 
     [Fact]
-    public void AuditMarkdownDocumentsBoundaryAndMigrationStatus()
+    public void AllScriptsAreClassifiedAsThinWrappersAndHaveKnownTargets()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(AuditJsonPath));
+        var scripts = document.RootElement.GetProperty("scripts").EnumerateArray().ToArray();
+
+        Assert.NotEmpty(scripts);
+
+        foreach (var script in scripts)
+        {
+            Assert.Equal("ThinWrapper", script.GetProperty("classification").GetString());
+
+            var targetTool = script.GetProperty("targetTool").GetString();
+
+            Assert.False(
+                string.IsNullOrWhiteSpace(targetTool),
+                $"Script has no target tool: {script.GetProperty("path").GetString()}");
+        }
+    }
+
+    [Fact]
+    public void AuditMarkdownDocumentsStrictBoundaryAndMigrationStatus()
     {
         var content = File.ReadAllText(AuditMarkdownPath);
 
@@ -84,7 +114,33 @@ public class RepositoryBoundaryToolingAuditTests
             "tools",
             "scripts",
             "thin wrappers",
-            "Heavy PowerShell scripts"
+            "Heavy PowerShell scripts",
+            "Unknown PowerShell scripts",
+            "Non-thin PowerShell scripts",
+            "Strict mode ready",
+            "All audited PowerShell scripts are known thin wrappers"
+        };
+
+        foreach (var requiredPhrase in requiredPhrases)
+        {
+            Assert.Contains(requiredPhrase, content, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void PolicyDocumentsThinWrapperDefinitionAndStrictMode()
+    {
+        var content = File.ReadAllText(PolicyPath);
+
+        var requiredPhrases = new[]
+        {
+            "Thin wrapper definition",
+            "accept PowerShell-friendly parameters",
+            "call `dotnet run --project",
+            "must not own generation, validation or release logic",
+            "--strict",
+            "UnknownPowerShellScript",
+            "HeavyPowerShellLogic"
         };
 
         foreach (var requiredPhrase in requiredPhrases)
