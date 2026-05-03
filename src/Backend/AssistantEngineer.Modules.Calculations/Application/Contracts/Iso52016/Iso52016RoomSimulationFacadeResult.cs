@@ -1,10 +1,11 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 public sealed record Iso52016RoomSimulationFacadeResult(
     string RoomCode,
     Iso52016WeatherSolarContext WeatherSolarContext,
     Iso52016RoomEnergySimulationRequest SimulationRequest,
-    Iso52016RoomEnergySimulationResult SimulationResult)
+    Iso52016RoomEnergySimulationResult SimulationResult,
+    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Legacy)
 {
     public int HourCount => SimulationResult.HourCount;
 
