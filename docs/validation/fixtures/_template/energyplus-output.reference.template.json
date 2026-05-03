@@ -1,0 +1,27 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "referenceEngine": "EnergyPlus",
+  "referenceStatus": "RealEnergyPlusOutput",
+  "source": "Real EnergyPlus output normalized from energyplus-output.raw.csv. See provenance.json.",
+  "referenceOutputs": {
+    "annualHeatingEnergyKwh": 0.0,
+    "annualCoolingEnergyKwh": 0.0,
+    "peakHeatingLoadW": 0.0,
+    "peakCoolingLoadW": 0.0,
+    "directionalResponseIndex": 1.0
+  },
+  "sourceFiles": [
+    "energyplus-model.idf",
+    "weather.epw",
+    "energyplus-output.raw.csv",
+    "provenance.json"
+  ],
+  "unitConversionNotes": [
+    "{{UNIT_CONVERSION_1}}"
+  ],
+  "notAClaim": [
+    "This real fixture does not claim exact EnergyPlus numerical parity.",
+    "This real fixture does not claim ASHRAE 140 validation coverage.",
+    "This real fixture does not claim full ISO 52016 node/matrix solver parity."
+  ]
+}

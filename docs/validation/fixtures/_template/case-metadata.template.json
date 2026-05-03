@@ -1,0 +1,59 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "name": "{{CASE_NAME}}",
+  "stage": "{{STAGE}}",
+  "status": "ReferenceFixturePlaceholder",
+  "source": "Offline committed reference fixture placeholder; real EnergyPlus model/output to be added in a future validation milestone.",
+  "purpose": "{{PURPOSE}}; not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "notAClaim": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity."
+  ],
+  "weatherSource": "{{WEATHER_SOURCE}}",
+  "geometry": {
+    "type": "single-zone-box",
+    "floorAreaM2": 50.0,
+    "heightM": 3.0,
+    "volumeM3": 150.0,
+    "description": "{{GEOMETRY_DESCRIPTION}}"
+  },
+  "envelope": {
+    "description": "{{ENVELOPE_DESCRIPTION}}",
+    "opaqueAreaM2": 180.0,
+    "uValueWPerM2K": 0.35,
+    "windowAreaM2": 0.0
+  },
+  "setpoints": {
+    "heatingSetpointC": 20.0,
+    "coolingSetpointC": 24.0
+  },
+  "weather": {
+    "outdoorDryBulbC": 0.0,
+    "durationHours": 24,
+    "profile": "{{WEATHER_PROFILE}}"
+  },
+  "internalGains": {
+    "sensibleW": 0.0,
+    "latentW": 0.0,
+    "description": "{{INTERNAL_GAINS_DESCRIPTION}}"
+  },
+  "ventilation": {
+    "airflowM3PerS": 0.0,
+    "description": "{{VENTILATION_DESCRIPTION}}"
+  },
+  "hvacControl": {
+    "type": "IdealLoads",
+    "description": "{{HVAC_CONTROL_DESCRIPTION}}"
+  },
+  "expectedEngineeringBehavior": [
+    "{{EXPECTED_BEHAVIOR_1}}",
+    "{{EXPECTED_BEHAVIOR_2}}",
+    "{{EXPECTED_BEHAVIOR_3}}"
+  ],
+  "knownDifferences": [
+    "AssistantEngineer uses engineering component formulas and simplified hourly balance.",
+    "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
+    "Exact watt-by-watt parity is not expected."
+  ]
+}

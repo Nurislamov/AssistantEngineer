@@ -1,0 +1,49 @@
+﻿{
+  "caseId": "EP-SMOKE-003",
+  "engine": "AssistantEngineer",
+  "inputKind": "EngineeringCoreV1SmokeFixture",
+  "calculationScope": "Internal sensible gains cooling smoke case",
+  "building": {
+    "floorAreaM2": 60.0,
+    "heightM": 3.0,
+    "volumeM3": 180.0
+  },
+  "zone": {
+    "zoneId": "single-zone",
+    "name": "Single Zone",
+    "indoorCoolingSetpointC": 24.0
+  },
+  "envelope": {
+    "opaqueAreaM2": 200.0,
+    "uValueWPerM2K": 0.30,
+    "windowAreaM2": 0.0
+  },
+  "weather": {
+    "outdoorDryBulbC": 24.0,
+    "durationHours": 24,
+    "isSynthetic": true
+  },
+  "ventilation": {
+    "airflowM3PerS": 0.0
+  },
+  "internalGains": {
+    "sensibleW": 1200.0,
+    "latentW": 0.0
+  },
+  "calculationFormula": {
+    "internalSensibleCoolingLoadW": "Q_internal_sensible",
+    "expectedPeakCoolingLoadW": 1200.0,
+    "expectedDailyCoolingEnergyKwh": 28.8,
+    "internalGainResponseIndex": 1.0,
+    "expectedHeatingEnergyKwh": 0.0
+  },
+  "disclosure": {
+    "coreStatus": "ClosedV1",
+    "nonClaims": [
+      "Does not claim exact EnergyPlus numerical parity.",
+      "Does not claim ASHRAE 140 validation coverage.",
+      "Does not claim full ISO 52016 node/matrix solver parity.",
+      "Does not claim latent or moisture validation coverage."
+    ]
+  }
+}

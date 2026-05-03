@@ -121,3 +121,92 @@ Engineering Core V1 does not claim:
 - scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1
 - docs/runbooks/EngineeringCoreV1ReleaseReadinessRunbook.md
 - docs/releases/EngineeringCoreV1ReleaseReadinessChecklist.md
+
+## Repository release communication
+
+- README.md
+- docs/releases/EngineeringCoreV1PublicReleaseNotes.md
+- docs/releases/EngineeringCoreV1AnnouncementDraft.md
+- docs/releases/EngineeringCoreV1TaggingGuide.md
+- docs/runbooks/EngineeringCoreV1RepositoryCommunicationRunbook.md
+
+## CI profiles
+
+- docs/ci/EngineeringCoreV1CIProfiles.md
+- .github/workflows/engineering-core-v1-smoke.yml
+- .github/workflows/engineering-core-v1-contracts.yml
+- .github/workflows/engineering-core-v1-release-ready.yml
+
+## First validation fixture scaffold
+
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/case-metadata.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/assistantengineer-input.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/reference-output.placeholder.json
+- tests/fixtures/validation/energyplus/EP-SMOKE-001/comparison-tolerances.json
+- docs/validation/fixtures/EP-SMOKE-001/README.md
+- docs/reports/validation/EP-SMOKE-001-ComparisonReadiness.md
+- scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1
+
+## First validation comparison harness
+
+- scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-001-ComparisonResult.md
+
+## Validation comparison summary
+
+- docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json
+- docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.md
+- docs/reports/validation/README.md
+- scripts/engineering-core/generate-engineering-core-v1-validation-comparison-summary.ps1
+
+## Real EnergyPlus fixture intake
+
+- docs/validation/EnergyPlusRealFixtureIntakePolicy.md
+- docs/validation/fixtures/EP-SMOKE-001/RealEnergyPlusFixtureIntakeChecklist.md
+- docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md
+- scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1
+
+## Generic validation fixture runner
+
+- scripts/engineering-core/compare-energyplus-validation-fixtures.ps1
+- docs/validation/EnergyPlusValidationGenericRunner.md
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md
+
+## Additional validation smoke fixtures
+
+- tests/fixtures/validation/energyplus/EP-SMOKE-002
+- tests/fixtures/validation/energyplus/EP-SMOKE-003
+- docs/validation/fixtures/EP-SMOKE-002/README.md
+- docs/validation/fixtures/EP-SMOKE-003/README.md
+- docs/reports/validation/EP-SMOKE-002-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-003-ComparisonResult.json
+
+## Validation fixture catalog
+
+- scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1
+- docs/validation/EnergyPlusValidationFixtureCatalog.json
+- docs/validation/EnergyPlusValidationFixtureCatalog.md
+- docs/validation/EnergyPlusValidationFixtureCatalogGuide.md
+
+## Validation fixture authoring kit
+
+- docs/validation/EnergyPlusValidationFixtureAuthoringGuide.md
+- docs/validation/fixtures/_template
+- scripts/engineering-core/new-energyplus-validation-fixture.ps1
+
+## Validation profile
+
+- scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1
+- scripts/engineering-core/verify-engineering-core-v1-validation.ps1
+- docs/runbooks/EngineeringCoreV1ValidationProfile.md
+- docs/ci/EngineeringCoreV1ValidationCI.md
+- .github/workflows/engineering-core-v1-validation.yml
+
+## Validation evidence package
+
+- scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.json
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.md
+- docs/validation/EnergyPlusValidationEvidenceGuide.md

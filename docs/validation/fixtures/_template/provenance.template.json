@@ -1,0 +1,30 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "referenceEngine": "EnergyPlus",
+  "referenceStatus": "RealEnergyPlusOutput",
+  "energyPlusVersion": "{{ENERGYPLUS_VERSION}}",
+  "operatingSystem": "{{OPERATING_SYSTEM}}",
+  "runDateUtc": "{{RUN_DATE_UTC}}",
+  "sourceModelFile": "energyplus-model.idf",
+  "weatherFile": "weather.epw",
+  "rawOutputFile": "energyplus-output.raw.csv",
+  "normalizedReferenceOutputFile": "energyplus-output.reference.json",
+  "outputVariables": [
+    "{{OUTPUT_VARIABLE_1}}",
+    "{{OUTPUT_VARIABLE_2}}"
+  ],
+  "unitConversions": [
+    "{{UNIT_CONVERSION_1}}"
+  ],
+  "knownDifferences": [
+    "AssistantEngineer uses engineering formulas and simplified balance models.",
+    "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
+    "Exact watt-by-watt parity is not expected."
+  ],
+  "tolerancePolicy": "Tolerance-based comparison; no exact EnergyPlus parity claim.",
+  "requiredNonClaims": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity."
+  ]
+}

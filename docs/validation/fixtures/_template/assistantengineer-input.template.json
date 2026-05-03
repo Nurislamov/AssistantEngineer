@@ -1,0 +1,51 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "engine": "AssistantEngineer",
+  "inputKind": "EngineeringCoreV1SmokeFixture",
+  "calculationScope": "{{CALCULATION_SCOPE}}",
+  "building": {
+    "floorAreaM2": 50.0,
+    "heightM": 3.0,
+    "volumeM3": 150.0
+  },
+  "zone": {
+    "zoneId": "single-zone",
+    "name": "Single Zone",
+    "indoorHeatingSetpointC": 20.0,
+    "indoorCoolingSetpointC": 24.0
+  },
+  "envelope": {
+    "opaqueAreaM2": 180.0,
+    "uValueWPerM2K": 0.35,
+    "windowAreaM2": 0.0,
+    "windowShgc": 0.0
+  },
+  "weather": {
+    "outdoorDryBulbC": 0.0,
+    "durationHours": 24,
+    "isSynthetic": true
+  },
+  "ventilation": {
+    "airflowM3PerS": 0.0
+  },
+  "internalGains": {
+    "sensibleW": 0.0,
+    "latentW": 0.0
+  },
+  "calculationFormula": {
+    "primaryMetricFormula": "{{PRIMARY_METRIC_FORMULA}}",
+    "expectedHeatingEnergyKwh": 0.0,
+    "expectedCoolingEnergyKwh": 0.0,
+    "expectedPeakHeatingLoadW": 0.0,
+    "expectedPeakCoolingLoadW": 0.0,
+    "directionalResponseIndex": 1.0
+  },
+  "disclosure": {
+    "coreStatus": "ClosedV1",
+    "nonClaims": [
+      "Does not claim exact EnergyPlus numerical parity.",
+      "Does not claim ASHRAE 140 validation coverage.",
+      "Does not claim full ISO 52016 node/matrix solver parity."
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+﻿{
+  "caseId": "{{CASE_ID}}",
+  "tolerancePolicy": "Smoke fixture tolerance policy. Future real EnergyPlus comparison remains tolerance-based and non-parity.",
+  "metrics": [
+    {
+      "metricId": "annual-heating-kwh",
+      "name": "Annual or fixture-period heating energy",
+      "unit": "kWh",
+      "type": "NumericWithinTolerance",
+      "assistantEngineerPath": "calculationFormula.expectedHeatingEnergyKwh",
+      "referencePath": "referenceOutputs.annualHeatingEnergyKwh",
+      "tolerancePercent": 20.0,
+      "absoluteTolerance": 0.5
+    },
+    {
+      "metricId": "annual-cooling-kwh",
+      "name": "Annual or fixture-period cooling energy",
+      "unit": "kWh",
+      "type": "NumericWithinTolerance",
+      "assistantEngineerPath": "calculationFormula.expectedCoolingEnergyKwh",
+      "referencePath": "referenceOutputs.annualCoolingEnergyKwh",
+      "tolerancePercent": 20.0,
+      "absoluteTolerance": 0.5
+    },
+    {
+      "metricId": "directional-response",
+      "name": "Directional response",
+      "unit": "index",
+      "type": "DirectionalTrend",
+      "assistantEngineerPath": "calculationFormula.directionalResponseIndex",
+      "referencePath": "referenceOutputs.directionalResponseIndex",
+      "tolerancePercent": 0.0,
+      "absoluteTolerance": 0.0
+    }
+  ],
+  "requiredNonClaims": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity."
+  ]
+}

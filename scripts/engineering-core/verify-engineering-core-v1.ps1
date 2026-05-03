@@ -49,6 +49,14 @@ Invoke-Step "Engineering Core release readiness gate tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1ReleaseReadinessGateTests"
 }
 
+Invoke-Step "Engineering Core repository communication guard tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1RepositoryCommunicationTests"
+}
+
+Invoke-Step "Engineering Core CI profile workflow guard tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1CiProfileWorkflowTests"
+}
+
 Invoke-Step "Engineering Core diagnostics catalog guard tests" {
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests"
 }
@@ -80,6 +88,55 @@ Invoke-Step "Engineering Core report export disclosure guard tests" {
 Invoke-Step "Engineering Core validation registry guard tests" {
     .\scripts\engineering-core\generate-engineering-core-v1-validation-readiness.ps1
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationCaseRegistryTests"
+}
+
+Invoke-Step "EnergyPlus smoke fixture scaffold guard tests" {
+    .\scripts\engineering-core\generate-ep-smoke-001-comparison-readiness.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusSmoke001FixtureScaffoldTests"
+}
+
+Invoke-Step "EnergyPlus smoke fixture comparison harness tests" {
+    .\scripts\engineering-core\compare-ep-smoke-001-placeholder.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusSmoke001ComparisonHarnessTests"
+}
+
+Invoke-Step "EnergyPlus validation comparison summary tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-comparison-summary.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationComparisonSummaryTests"
+}
+
+Invoke-Step "EnergyPlus real fixture intake gate tests" {
+    .\scripts\engineering-core\assert-ep-smoke-001-real-fixture-ready.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusRealFixtureIntakeGateTests"
+}
+
+Invoke-Step "Generic EnergyPlus validation fixture runner tests" {
+    .\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationGenericComparisonRunnerTests"
+}
+
+Invoke-Step "EnergyPlus smoke 002/003 fixture scaffold tests" {
+    .\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-comparison-summary.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusSmoke002And003FixtureScaffoldTests"
+}
+
+Invoke-Step "EnergyPlus validation fixture catalog tests" {
+    .\scripts\engineering-core\generate-energyplus-validation-fixture-catalog.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationFixtureCatalogTests"
+}
+
+Invoke-Step "EnergyPlus validation fixture authoring kit tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationFixtureAuthoringKitTests"
+}
+
+Invoke-Step "EnergyPlus validation profile script tests" {
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationProfileScriptsTests"
+}
+
+Invoke-Step "EnergyPlus validation evidence package tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationEvidencePackageTests"
 }
 
 Invoke-Step "Engineering Core traceability matrix guard tests" {
@@ -132,5 +189,17 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
+
+
+
+
+
+
+
+
+
+
+
 
 

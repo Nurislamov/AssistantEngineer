@@ -1,0 +1,76 @@
+﻿{
+    "caseId":  "EP-SMOKE-002",
+    "name":  "Single zone solar cooling smoke case",
+    "stage":  "Smoke",
+    "comparisonRunner":  "GenericEnergyPlusValidationFixtureRunner",
+    "comparisonStatus":  "PlaceholderComparison",
+    "referenceStatus":  "PlaceholderReferenceOutput",
+    "referenceFile":  "D:/Project/AssistantEngineer/tests/fixtures/validation/energyplus/EP-SMOKE-002/reference-output.placeholder.json",
+    "generatedAtUtc":  "2026-05-03 06:27:23 UTC",
+    "allMetricsPassed":  true,
+    "metrics":  [
+                    {
+                        "metricId":  "annual-cooling-kwh",
+                        "name":  "Annual or fixture-period cooling energy",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "kWh",
+                        "assistantEngineerValue":  18,
+                        "referenceValue":  18,
+                        "absoluteDifference":  0,
+                        "percentDifference":  0,
+                        "tolerancePercent":  20,
+                        "absoluteTolerance":  0.5,
+                        "effectiveAbsoluteTolerance":  3.6,
+                        "passed":  true
+                    },
+                    {
+                        "metricId":  "peak-cooling-w",
+                        "name":  "Peak cooling load",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "W",
+                        "assistantEngineerValue":  3600,
+                        "referenceValue":  3600,
+                        "absoluteDifference":  0,
+                        "percentDifference":  0,
+                        "tolerancePercent":  25,
+                        "absoluteTolerance":  100,
+                        "effectiveAbsoluteTolerance":  900,
+                        "passed":  true
+                    },
+                    {
+                        "metricId":  "solar-orientation-response",
+                        "name":  "Solar orientation response",
+                        "type":  "DirectionalTrend",
+                        "unit":  "index",
+                        "assistantEngineerValue":  1,
+                        "referenceValue":  1,
+                        "absoluteDifference":  0,
+                        "percentDifference":  0,
+                        "tolerancePercent":  0,
+                        "absoluteTolerance":  0,
+                        "effectiveAbsoluteTolerance":  0,
+                        "passed":  true
+                    },
+                    {
+                        "metricId":  "annual-heating-kwh",
+                        "name":  "Annual or fixture-period heating energy",
+                        "type":  "SameSign",
+                        "unit":  "kWh",
+                        "assistantEngineerValue":  0,
+                        "referenceValue":  0,
+                        "absoluteDifference":  0,
+                        "percentDifference":  0,
+                        "tolerancePercent":  0,
+                        "absoluteTolerance":  0.1,
+                        "effectiveAbsoluteTolerance":  0.1,
+                        "passed":  true
+                    }
+                ],
+    "requiredNonClaims":  [
+                              "Does not claim exact EnergyPlus numerical parity.",
+                              "Does not claim ASHRAE 140 validation coverage.",
+                              "Does not claim full ISO 52016 node/matrix solver parity.",
+                              "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                          ],
+    "interpretation":  "Fixture compared against placeholder reference output only. This is not a real EnergyPlus validation and not an ASHRAE 140 validation claim."
+}

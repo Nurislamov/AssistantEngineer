@@ -1,0 +1,52 @@
+﻿{
+  "caseId": "EP-SMOKE-002",
+  "tolerancePolicy": "Smoke fixture tolerance policy. Future real EnergyPlus comparison remains tolerance-based and non-parity.",
+  "metrics": [
+    {
+      "metricId": "annual-cooling-kwh",
+      "name": "Annual or fixture-period cooling energy",
+      "unit": "kWh",
+      "type": "NumericWithinTolerance",
+      "assistantEngineerPath": "calculationFormula.expectedDailyCoolingEnergyKwh",
+      "referencePath": "referenceOutputs.annualCoolingEnergyKwh",
+      "tolerancePercent": 20.0,
+      "absoluteTolerance": 0.5
+    },
+    {
+      "metricId": "peak-cooling-w",
+      "name": "Peak cooling load",
+      "unit": "W",
+      "type": "NumericWithinTolerance",
+      "assistantEngineerPath": "calculationFormula.expectedPeakCoolingLoadW",
+      "referencePath": "referenceOutputs.peakCoolingLoadW",
+      "tolerancePercent": 25.0,
+      "absoluteTolerance": 100.0
+    },
+    {
+      "metricId": "solar-orientation-response",
+      "name": "Solar orientation response",
+      "unit": "index",
+      "type": "DirectionalTrend",
+      "assistantEngineerPath": "calculationFormula.solarOrientationResponseIndex",
+      "referencePath": "referenceOutputs.solarOrientationResponseIndex",
+      "tolerancePercent": 0.0,
+      "absoluteTolerance": 0.0
+    },
+    {
+      "metricId": "annual-heating-kwh",
+      "name": "Annual or fixture-period heating energy",
+      "unit": "kWh",
+      "type": "SameSign",
+      "assistantEngineerPath": "calculationFormula.expectedHeatingEnergyKwh",
+      "referencePath": "referenceOutputs.annualHeatingEnergyKwh",
+      "tolerancePercent": 0.0,
+      "absoluteTolerance": 0.1
+    }
+  ],
+  "requiredNonClaims": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity.",
+    "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+  ]
+}

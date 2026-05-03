@@ -126,3 +126,17 @@ Do not weaken:
 - report/export disclosure guards;
 - non-parity claims;
 - traceability matrix.
+
+## Profile 5: Validation
+
+Use this when changing validation fixtures, registry, tolerances, comparison outputs or validation scripts.
+
+    .\scripts\engineering-core\verify-engineering-core-v1-validation.ps1
+
+Regenerate only validation artifacts:
+
+    .\scripts\engineering-core\regenerate-engineering-core-v1-validation-artifacts.ps1
+
+Strict future mode requiring real EnergyPlus references:
+
+    .\scripts\engineering-core\verify-engineering-core-v1-validation.ps1 -RequireRealReferences

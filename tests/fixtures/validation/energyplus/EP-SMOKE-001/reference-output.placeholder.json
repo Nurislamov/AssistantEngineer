@@ -1,0 +1,21 @@
+﻿{
+  "caseId": "EP-SMOKE-001",
+  "referenceEngine": "EnergyPlus",
+  "status": "PlaceholderReferenceOutput",
+  "source": "Placeholder committed for validation harness readiness. Replace with real EnergyPlus output in future validation milestone.",
+  "notAClaim": [
+    "This placeholder does not claim EnergyPlus validation.",
+    "This placeholder does not claim exact EnergyPlus numerical parity.",
+    "This placeholder does not claim ASHRAE 140 validation coverage."
+  ],
+  "referenceOutputs": {
+    "annualHeatingEnergyKwh": 37.8,
+    "peakHeatingLoadW": 1575.0,
+    "annualCoolingEnergyKwh": 0.0
+  },
+  "notes": [
+    "Values are engineering placeholder outputs based on U*A*ΔT and 24-hour duration.",
+    "Future real EnergyPlus outputs must replace this file or be added alongside it with provenance metadata.",
+    "Comparison tests must remain tolerance-based and non-parity."
+  ]
+}
