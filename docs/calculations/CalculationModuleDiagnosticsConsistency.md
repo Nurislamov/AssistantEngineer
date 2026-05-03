@@ -31,12 +31,15 @@ Examples:
 - synthetic weather is used;
 - monthly balance adapter is used instead of true hourly 8760;
 - non-8760 record count is used;
+- annual-energy hourly inputs do not cover all 12 calendar months;
 - negative values are clamped.
 - contradictory system performance assumptions are supplied;
 
 - SystemEnergy.HeatingDualPerformanceAssumption and SystemEnergy.DhwDualPerformanceAssumption warnings must be emitted when both efficiency and COP are supplied for the same useful-energy end use.
 
 - Aggregation.HourlyProfileLengthMismatch warning must be emitted when hourly room profiles have different lengths and the shortest common profile length is used.
+
+- AnnualEnergy.MonthlyCoverageIncomplete warning must be emitted when supplied hourly annual-energy inputs do not cover all 12 calendar months.
 
 ### Info diagnostics
 
@@ -45,6 +48,7 @@ Info diagnostics may be used for traceability when the result is valid and no fa
 Examples:
 
 - true hourly simulation source used;
+- annual-energy hourly inputs cover all 12 calendar months;
 - signed component balance is available;
 - external weather source was identified.
 
@@ -73,6 +77,7 @@ Diagnostics consistency does not claim ASHRAE 140 validation coverage.
 Diagnostics consistency does not claim full ISO 52016 node/matrix solver parity.
 
 Diagnostics consistency only protects internal transparency of current calculation behavior.
+
 
 
 

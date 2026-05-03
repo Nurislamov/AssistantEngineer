@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -80,6 +80,11 @@ public sealed class AnnualEnergyBalanceEngine
         AddWeatherSourceDiagnostics(
             diagnostics,
             input,
+            input.DiagnosticsContext);
+
+        AddMonthlyCoverageDiagnostics(
+            diagnostics,
+            input.Hours,
             input.DiagnosticsContext);
 
         AddSignedBalanceDiagnostics(
@@ -396,6 +401,43 @@ public sealed class AnnualEnergyBalanceEngine
             CalculationDiagnosticSeverity.Info,
             "SolarWeather.HourlyWeatherSourceUsed",
             $"Annual energy balance weather source: {input.WeatherSource}.",
+            context));
+    }
+
+    private static void AddMonthlyCoverageDiagnostics(
+        ICollection<CalculationDiagnostic> diagnostics,
+        IReadOnlyList<AnnualEnergyBalanceHourInput> hours,
+        string? context)
+    {
+        if (hours.Count == 0)
+            return;
+
+        var coveredMonths = hours
+            .Select(ResolveMonth)
+            .Distinct()
+            .Order()
+            .ToArray();
+
+        var missingMonths = Enumerable
+            .Range(1, 12)
+            .Except(coveredMonths)
+            .ToArray();
+
+        if (missingMonths.Length == 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "AnnualEnergy.MonthlyCoverageComplete",
+                "Annual energy input covers all 12 calendar months.",
+                context));
+
+            return;
+        }
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "AnnualEnergy.MonthlyCoverageIncomplete",
+            $"Annual energy input does not cover all 12 calendar months. Missing months: {string.Join(", ", missingMonths)}.",
             context));
     }
 
