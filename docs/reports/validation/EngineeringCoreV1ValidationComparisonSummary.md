@@ -1,38 +1,19 @@
 ﻿# Engineering Core V1 Validation Comparison Summary
 
-Generated at: 2026-01-01 00:00:00 UTC
+Status: PlannedValidation.
 
-## Status
+EP-SMOKE-001, EP-SMOKE-002, EP-SMOKE-003.
 
-| Field | Value |
-|---|---|
-| Status | PlannedValidation |
-| Cases with comparison | 3 |
-| Cases passing | 3 |
-| Placeholder comparisons | 3 |
-| Real EnergyPlus comparisons | 0 |
-| Planned-only cases | 2 |
+PlaceholderComparison / PlaceholderReferenceOutput.
 
-## Cases
+Cases with comparison: 3.
 
-| CaseId | Stage | Comparison status | Reference status | Metrics | All passed |
-|---|---|---|---|---:|---|
-| ASHRAE140-STYLE-001 | Ashrae140Style | NotGenerated | NotAvailable | 0/0 | False |
-| ASHRAE140-STYLE-002 | Ashrae140Style | NotGenerated | NotAvailable | 0/0 | False |
-| EP-SMOKE-001 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 3/3 | True |
-| EP-SMOKE-002 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
-| EP-SMOKE-003 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
+Placeholder comparisons: 3.
 
-## Required non-claims
-
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
-- PlaceholderComparison is not real EnergyPlus validation.
-- Future real validation must remain tolerance-based.
-
-Future real validation must use committed EnergyPlus/reference model files.
+Planned-only cases: 2.
 
 This does not claim exact EnergyPlus numerical parity.
 
 This does not claim ASHRAE 140 validation coverage.
+
+Future real validation must use committed EnergyPlus/reference model files.

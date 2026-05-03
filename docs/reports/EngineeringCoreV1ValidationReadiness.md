@@ -1,23 +1,23 @@
 ﻿# Engineering Core V1 Validation Readiness
 
-Generated at: 2026-01-01 00:00:00 UTC
-
 ## Registry summary
 
-| Field | Value |
-|---|---|
-| Registry name | Engineering Core V1 EnergyPlus / ASHRAE 140-style Validation Case Registry |
-| Version | v1 |
-| Status | PlannedValidation |
-| Case count | 5 |
-| Smoke cases | 3 |
-| ASHRAE 140-style cases | 2 |
-| Planned cases | 2 |
-| Reference fixture placeholders | 3 |
-| Metric count | 13 |
+EnergyPlusValidationCaseRegistry.json is present.
 
-This registry is ready as a future validation backlog and smoke-fixture scaffold.
+## Default tolerances
 
-It is not exact EnergyPlus numerical parity.
+Default tolerances are documented for NumericWithinTolerance, DirectionalTrend, and SameSign metrics.
 
-It is not ASHRAE 140 certification.
+## Cases
+
+- EP-SMOKE-001
+- EP-SMOKE-002
+- EP-SMOKE-003
+- ASHRAE140-STYLE-001
+- ASHRAE140-STYLE-002
+
+## Required non-claims
+
+This is not exact EnergyPlus numerical parity.
+This is not ASHRAE 140 certification.
+PlaceholderComparison is not real EnergyPlus validation.

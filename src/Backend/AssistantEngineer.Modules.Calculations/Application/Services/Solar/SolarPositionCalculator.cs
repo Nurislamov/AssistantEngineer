@@ -5,53 +5,36 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Solar;
 
 internal sealed class SolarPositionCalculator : ISolarPositionCalculator
 {
+    private readonly ISolarTimeCalculator _solarTimeCalculator;
+
+    public SolarPositionCalculator()
+        : this(new SolarTimeCalculator())
+    {
+    }
+
+    public SolarPositionCalculator(
+        ISolarTimeCalculator solarTimeCalculator)
+    {
+        _solarTimeCalculator = solarTimeCalculator;
+    }
+
     public SolarPositionResult Calculate(
         SolarPositionRequest request)
     {
         Validate(request);
 
-        var timestamp = request.Timestamp;
-        var dayOfYear = timestamp.DayOfYear;
-
-        var decimalHour =
-            timestamp.Hour +
-            timestamp.Minute / 60.0 +
-            timestamp.Second / 3600.0;
-
-        var fractionalYear = CalculateFractionalYear(
-            dayOfYear,
-            decimalHour);
-
-        var equationOfTimeMinutes = CalculateEquationOfTimeMinutes(
-            fractionalYear);
+        var solarTime = _solarTimeCalculator.Calculate(
+            request.Timestamp,
+            request.Location);
 
         var solarDeclinationRadians = CalculateSolarDeclinationRadians(
-            fractionalYear);
-
-        var timeZoneOffsetHours = timestamp.Offset.TotalHours;
-
-        var timeOffsetMinutes =
-            equationOfTimeMinutes +
-            4.0 * request.LongitudeDegrees -
-            60.0 * timeZoneOffsetHours;
-
-        var trueSolarTimeMinutes =
-            decimalHour * 60.0 +
-            timeOffsetMinutes;
-
-        trueSolarTimeMinutes %= 1440.0;
-
-        if (trueSolarTimeMinutes < 0)
-            trueSolarTimeMinutes += 1440.0;
-
-        var hourAngleDegrees =
-            trueSolarTimeMinutes / 4.0 - 180.0;
+            solarTime.FractionalYearRadians);
 
         var hourAngleRadians = SolarMath.ToRadians(
-            hourAngleDegrees);
+            solarTime.HourAngleDegrees);
 
         var latitudeRadians = SolarMath.ToRadians(
-            request.LatitudeDegrees);
+            request.Location.LatitudeDegrees);
 
         var cosZenith =
             Math.Sin(latitudeRadians) * Math.Sin(solarDeclinationRadians) +
@@ -75,32 +58,15 @@ internal sealed class SolarPositionCalculator : ISolarPositionCalculator
             zenithDegrees);
 
         return new SolarPositionResult(
-            DayOfYear: dayOfYear,
+            DayOfYear: solarTime.DayOfYear,
             SolarDeclinationDegrees: SolarMath.ToDegrees(solarDeclinationRadians),
-            EquationOfTimeMinutes: equationOfTimeMinutes,
-            HourAngleDegrees: hourAngleDegrees,
+            EquationOfTimeMinutes: solarTime.EquationOfTimeMinutes,
+            HourAngleDegrees: solarTime.HourAngleDegrees,
             SolarAltitudeDegrees: altitudeDegrees,
             SolarAzimuthDegrees: azimuthDegrees,
             ZenithAngleDegrees: zenithDegrees,
             RelativeAirMass: relativeAirMass);
     }
-
-    private static double CalculateFractionalYear(
-        int dayOfYear,
-        double decimalHour) =>
-        2.0 * Math.PI / 365.0 *
-        (dayOfYear - 1 + (decimalHour - 12.0) / 24.0);
-
-    private static double CalculateEquationOfTimeMinutes(
-        double fractionalYear) =>
-        229.18 *
-        (
-            0.000075 +
-            0.001868 * Math.Cos(fractionalYear) -
-            0.032077 * Math.Sin(fractionalYear) -
-            0.014615 * Math.Cos(2.0 * fractionalYear) -
-            0.040849 * Math.Sin(2.0 * fractionalYear)
-        );
 
     private static double CalculateSolarDeclinationRadians(
         double fractionalYear) =>
@@ -147,18 +113,25 @@ internal sealed class SolarPositionCalculator : ISolarPositionCalculator
     private static void Validate(
         SolarPositionRequest request)
     {
-        if (request.LatitudeDegrees is < -90.0 or > 90.0)
+        if (request.Location.LatitudeDegrees is < -90.0 or > 90.0)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(request),
                 "Latitude must be between -90 and 90 degrees.");
         }
 
-        if (request.LongitudeDegrees is < -180.0 or > 180.0)
+        if (request.Location.LongitudeDegrees is < -180.0 or > 180.0)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(request),
                 "Longitude must be between -180 and 180 degrees.");
+        }
+
+        if (request.Location.UtcOffset.TotalHours is < -14.0 or > 14.0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(request),
+                "UTC offset must be between -14 and +14 hours.");
         }
     }
 }

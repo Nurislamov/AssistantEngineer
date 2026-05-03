@@ -1,0 +1,27 @@
+﻿{
+  "name": "AE-SOLAR-003 south summer overhang shading benchmark",
+  "input": {
+    "windowId": 3,
+    "roomId": 201,
+    "areaM2": 1.5,
+    "orientationAzimuthDeg": 180.0,
+    "tiltDeg": 90.0,
+    "shgc": 0.6,
+    "frameFactor": 0.9,
+    "internalShadingFactor": 1.0,
+    "externalShadingFactor": 0.55,
+    "fixedShadingFactor": 1.0,
+    "directIrradianceWPerM2": 600.0,
+    "diffuseIrradianceWPerM2": 100.0,
+    "groundReflectedIrradianceWPerM2": 20.0,
+    "hourIndex": 4000,
+    "isNight": false
+  },
+  "expected": {
+    "effectiveSolarFactor": 0.297,
+    "directSolarGainW": 267.3,
+    "diffuseSolarGainW": 44.55,
+    "groundReflectedSolarGainW": 8.91,
+    "totalSolarGainW": 320.76
+  }
+}

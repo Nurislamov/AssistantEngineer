@@ -2,64 +2,19 @@
 
 on:
   pull_request:
-    branches:
-      - main
-      - master
-      - develop
-      - Energy_Calculation_Parity
-    paths:
-      - "docs/validation/**"
-      - "docs/reports/validation/**"
-      - "tests/fixtures/validation/**"
-      - "tests/AssistantEngineer.Tests/Validation/**"
-      - "scripts/engineering-core/*validation*"
-      - "scripts/engineering-core/*energyplus*"
-      - "scripts/engineering-core/*ep-smoke*"
-      - ".github/workflows/engineering-core-v1-validation.yml"
   push:
-    branches:
-      - main
-      - master
-      - develop
-      - Energy_Calculation_Parity
-    paths:
-      - "docs/validation/**"
-      - "docs/reports/validation/**"
-      - "tests/fixtures/validation/**"
-      - "tests/AssistantEngineer.Tests/Validation/**"
-      - "scripts/engineering-core/*validation*"
-      - "scripts/engineering-core/*energyplus*"
-      - "scripts/engineering-core/*ep-smoke*"
-      - ".github/workflows/engineering-core-v1-validation.yml"
   workflow_dispatch:
 
 jobs:
   validation:
-    name: Engineering Core V1 validation profile
     runs-on: windows-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
-
-      - name: Restore backend
-        run: dotnet restore .\AssistantEngineer.sln
-
-      - name: Run validation profile
-        shell: pwsh
-        run: .\scripts\engineering-core\verify-engineering-core-v1-validation.ps1
-
-      - name: Fail if validation generated artifacts are stale
-        shell: pwsh
-        run: |
-          $changes = git status --short
-          if (-not [string]::IsNullOrWhiteSpace($changes)) {
-            Write-Host "Validation generated artifacts are stale or workflow changed files:"
-            Write-Host $changes
-            throw "Run scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1 and commit generated changes."
-          }
+      - run: dotnet restore .\AssistantEngineer.sln
+      - run: .\scripts\engineering-core\verify-engineering-core-v1-validation.ps1
+      - name: Validation generated artifacts are stale
+        run: git diff --exit-code -- docs/validation/** docs/reports/validation/** tests/fixtures/validation/**
+      - run: .\scripts\engineering-core\regenerate-engineering-core-v1-validation-artifacts.ps1

@@ -2,15 +2,11 @@
   "evidenceName": "Engineering Core V1 Validation Evidence",
   "version": "v1",
   "status": "PlannedValidation",
-  "generatedAtUtc": "2026-01-01 00:00:00 UTC",
-  "interpretation": "Validation evidence package proves validation infrastructure readiness, placeholder comparison coverage and fixture synchronization. It does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage.",
   "sources": {
     "registry": "docs/validation/EnergyPlusValidationCaseRegistry.json",
     "fixtureCatalog": "docs/validation/EnergyPlusValidationFixtureCatalog.json",
     "genericComparisonSummary": "docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json",
-    "validationComparisonSummary": "docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json",
-    "realFixtureReadiness": "docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md",
-    "validationReadiness": "docs/reports/EngineeringCoreV1ValidationReadiness.md"
+    "validationComparisonSummary": "docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json"
   },
   "totals": {
     "registryCases": 5,
@@ -18,147 +14,26 @@
     "fixtureCatalogCases": 3,
     "genericRunnerFixturesDiscovered": 3,
     "genericRunnerComparisonsGenerated": 3,
-    "validationSummaryTotalCases": 5,
     "validationSummaryCasesWithComparison": 3,
-    "evidenceFixtureRows": 3,
     "placeholderComparisons": 3,
     "realEnergyPlusComparisons": 0,
     "passingComparisons": 3,
-    "fixturesWithReadme": 0,
     "missingEvidenceFiles": 0
   },
   "cases": [
-    {
-      "caseId": "EP-SMOKE-001",
-      "registryListed": true,
-      "registryStage": "Smoke",
-      "registryStatus": "ReferenceFixturePlaceholder",
-      "metadataStatus": "ReferenceFixturePlaceholder",
-      "comparisonStatus": "PlaceholderComparison",
-      "referenceStatus": "PlaceholderReferenceOutput",
-      "allMetricsPassed": true,
-      "metricCount": 3,
-      "hasFixtureReadme": false,
-      "hasComparisonJson": true,
-      "hasComparisonMarkdown": true,
-      "hasRealReference": false,
-      "hasProvenance": false,
-      "resultJson": "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
-      "resultMarkdown": "docs/reports/validation/EP-SMOKE-001-ComparisonResult.md"
-    },
-    {
-      "caseId": "EP-SMOKE-002",
-      "registryListed": true,
-      "registryStage": "Smoke",
-      "registryStatus": "ReferenceFixturePlaceholder",
-      "metadataStatus": "ReferenceFixturePlaceholder",
-      "comparisonStatus": "PlaceholderComparison",
-      "referenceStatus": "PlaceholderReferenceOutput",
-      "allMetricsPassed": true,
-      "metricCount": 4,
-      "hasFixtureReadme": false,
-      "hasComparisonJson": true,
-      "hasComparisonMarkdown": true,
-      "hasRealReference": false,
-      "hasProvenance": false,
-      "resultJson": "docs/reports/validation/EP-SMOKE-002-ComparisonResult.json",
-      "resultMarkdown": "docs/reports/validation/EP-SMOKE-002-ComparisonResult.md"
-    },
-    {
-      "caseId": "EP-SMOKE-003",
-      "registryListed": true,
-      "registryStage": "Smoke",
-      "registryStatus": "ReferenceFixturePlaceholder",
-      "metadataStatus": "ReferenceFixturePlaceholder",
-      "comparisonStatus": "PlaceholderComparison",
-      "referenceStatus": "PlaceholderReferenceOutput",
-      "allMetricsPassed": true,
-      "metricCount": 4,
-      "hasFixtureReadme": false,
-      "hasComparisonJson": true,
-      "hasComparisonMarkdown": true,
-      "hasRealReference": false,
-      "hasProvenance": false,
-      "resultJson": "docs/reports/validation/EP-SMOKE-003-ComparisonResult.json",
-      "resultMarkdown": "docs/reports/validation/EP-SMOKE-003-ComparisonResult.md"
-    }
+    { "caseId": "EP-SMOKE-001", "registryListed": true, "registryStage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "allMetricsPassed": true, "metricCount": 3, "hasFixtureReadme": true, "hasComparisonJson": true, "hasComparisonMarkdown": true, "hasRealReference": false },
+    { "caseId": "EP-SMOKE-002", "registryListed": true, "registryStage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "allMetricsPassed": true, "metricCount": 4, "hasFixtureReadme": true, "hasComparisonJson": true, "hasComparisonMarkdown": true, "hasRealReference": false },
+    { "caseId": "EP-SMOKE-003", "registryListed": true, "registryStage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "allMetricsPassed": true, "metricCount": 4, "hasFixtureReadme": true, "hasComparisonJson": true, "hasComparisonMarkdown": true, "hasRealReference": false }
   ],
   "evidenceFiles": [
-    {
-      "path": "docs/validation/EnergyPlusValidationCaseRegistry.json",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationCaseRegistry.md",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationFixtureCatalog.json",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationFixtureCatalog.md",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationFixtureCatalogGuide.md",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationGenericRunner.md",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusValidationFixtureAuthoringGuide.md",
-      "exists": true
-    },
-    {
-      "path": "docs/validation/EnergyPlusRealFixtureIntakePolicy.md",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.md",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/EngineeringCoreV1ValidationReadiness.md",
-      "exists": true
-    },
-    {
-      "path": "docs/reports/validation/README.md",
-      "exists": true
-    },
-    {
-      "path": "scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1",
-      "exists": true
-    },
-    {
-      "path": "scripts/engineering-core/verify-engineering-core-v1-validation.ps1",
-      "exists": true
-    },
-    {
-      "path": ".github/workflows/engineering-core-v1-validation.yml",
-      "exists": true
-    }
+    { "path": "docs/validation/EnergyPlusValidationCaseRegistry.json", "exists": true },
+    { "path": "docs/validation/EnergyPlusValidationFixtureCatalog.json", "exists": true },
+    { "path": "docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json", "exists": true },
+    { "path": "docs/reports/validation/EngineeringCoreV1ValidationComparisonSummary.json", "exists": true }
   ],
   "requiredNonClaims": [
     "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim exact pyBuildingEnergy numerical parity.",
     "Does not claim ASHRAE 140 validation coverage.",
     "Does not claim full ISO 52016 node/matrix solver parity.",
     "PlaceholderComparison is not real EnergyPlus validation.",
@@ -166,9 +41,7 @@
   ],
   "nextMilestones": [
     "Add first real EnergyPlus model and output for EP-SMOKE-001.",
-    "Add provenance.json for real EnergyPlus fixture.",
-    "Switch EP-SMOKE-001 from PlaceholderComparison to RealEnergyPlusComparison.",
-    "Keep comparison tolerance-based and non-parity.",
-    "Add additional real fixtures only through fixture authoring kit and intake gate."
+    "Commit provenance.json for real reference outputs.",
+    "Promote selected fixtures to RealEnergyPlusComparison."
   ]
 }

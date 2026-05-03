@@ -1,0 +1,27 @@
+﻿{
+  "name": "AE-SOLAR-003 no shading benchmark",
+  "input": {
+    "windowId": 1,
+    "roomId": 101,
+    "areaM2": 2.0,
+    "orientationAzimuthDeg": 180.0,
+    "tiltDeg": 90.0,
+    "shgc": 0.5,
+    "frameFactor": 0.8,
+    "internalShadingFactor": 1.0,
+    "externalShadingFactor": 1.0,
+    "fixedShadingFactor": 1.0,
+    "directIrradianceWPerM2": 300.0,
+    "diffuseIrradianceWPerM2": 80.0,
+    "groundReflectedIrradianceWPerM2": 20.0,
+    "hourIndex": 100,
+    "isNight": false
+  },
+  "expected": {
+    "effectiveSolarFactor": 0.4,
+    "directSolarGainW": 240.0,
+    "diffuseSolarGainW": 64.0,
+    "groundReflectedSolarGainW": 16.0,
+    "totalSolarGainW": 320.0
+  }
+}

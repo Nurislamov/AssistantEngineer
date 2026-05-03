@@ -2,281 +2,114 @@
   "registryName": "Engineering Core V1 EnergyPlus / ASHRAE 140-style Validation Case Registry",
   "version": "v1",
   "status": "PlannedValidation",
-  "purpose": "Future comparative validation registry. This is not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "purpose": "Planned validation registry; not exact EnergyPlus parity and not ASHRAE 140 certification.",
   "defaultTolerances": {
-    "annualHeatingEnergyPercent": 20,
-    "annualCoolingEnergyPercent": 20,
-    "peakHeatingLoadPercent": 25,
-    "peakCoolingLoadPercent": 25,
-    "directionalTrend": "directional only",
-    "sameSign": "same sign only"
+    "percent": 5.0,
+    "absolute": 0.001
   },
-  "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity."
-  ],
   "cases": [
     {
       "caseId": "EP-SMOKE-001",
-      "name": "Single zone transmission-only heating smoke case",
+      "name": "Transmission-only heating smoke fixture",
       "stage": "Smoke",
       "status": "ReferenceFixturePlaceholder",
-      "source": "Offline committed reference fixture placeholder; real EnergyPlus model to be added in future validation milestone.",
-      "weatherSource": "Constant winter outdoor temperature synthetic fixture.",
-      "geometry": "Single-zone rectangular box with opaque envelope and no windows.",
-      "envelope": "Simple U-value envelope, no thermal bridge detail, no detailed ground model.",
-      "internalGains": "No internal gains.",
-      "ventilation": "No ventilation or infiltration.",
-      "hvacControl": "Ideal heating load, fixed heating setpoint, no cooling.",
+      "source": "AssistantEngineer placeholder fixture",
+      "weatherSource": "Synthetic design condition",
+      "geometry": "Single zone 50 m2",
+      "envelope": "Opaque envelope U*A heat loss",
+      "internalGains": "None",
+      "ventilation": "None",
+      "hvacControl": "Heating setpoint 20 C",
       "metrics": [
-        {
-          "metricId": "annual-heating-kwh",
-          "name": "Annual heating energy",
-          "unit": "kWh",
-          "type": "NumericWithinTolerance",
-          "tolerancePercent": 20,
-          "direction": "within tolerance"
-        },
-        {
-          "metricId": "peak-heating-w",
-          "name": "Peak heating load",
-          "unit": "W",
-          "type": "NumericWithinTolerance",
-          "tolerancePercent": 25,
-          "direction": "within tolerance"
-        },
-        {
-          "metricId": "annual-cooling-kwh",
-          "name": "Annual cooling energy",
-          "unit": "kWh",
-          "type": "SameSign",
-          "tolerancePercent": 0,
-          "direction": "same sign"
-        }
+        { "metricId": "annual-heating-kwh", "name": "Annual heating energy", "unit": "kWh", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "peak-heating-w", "name": "Peak heating load", "unit": "W", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "annual-cooling-kwh", "name": "Annual cooling energy", "unit": "kWh", "type": "SameSign", "tolerancePercent": 0, "direction": "same-sign" }
       ],
-      "assumptions": [
-        "Single thermal zone.",
-        "No windows.",
-        "No solar gains.",
-        "No internal gains.",
-        "No ventilation or infiltration.",
-        "Ideal load behavior only; no plant simulation."
-      ],
-      "knownDifferences": [
-        "AssistantEngineer uses engineering component formulas and simplified hourly balance.",
-        "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
-        "Exact watt-by-watt parity is not expected."
-      ],
-      "nonClaims": [
-        "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full ISO 52016 node/matrix solver parity."
-      ]
+      "assumptions": [ "Placeholder reference output mirrors deterministic formula fixture." ],
+      "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
     },
     {
       "caseId": "EP-SMOKE-002",
-      "name": "Single zone solar cooling smoke case",
+      "name": "Solar cooling smoke fixture",
       "stage": "Smoke",
       "status": "ReferenceFixturePlaceholder",
-      "source": "Offline committed reference fixture placeholder; real EnergyPlus model to be added in future validation milestone.",
-      "weatherSource": "Synthetic summer weather with daytime solar profile.",
-      "geometry": "Single-zone rectangular box with one south-facing window.",
-      "envelope": "Simple U-value envelope with simplified SHGC window.",
-      "internalGains": "No internal gains.",
-      "ventilation": "No ventilation or infiltration.",
-      "hvacControl": "Ideal cooling load, fixed cooling setpoint, no heating.",
+      "source": "AssistantEngineer placeholder fixture",
+      "weatherSource": "Synthetic solar design condition",
+      "geometry": "Single zone with south window",
+      "envelope": "Window solar gain fixture",
+      "internalGains": "None",
+      "ventilation": "None",
+      "hvacControl": "Cooling load placeholder",
       "metrics": [
-        {
-          "metricId": "annual-cooling-kwh",
-          "name": "Annual cooling energy",
-          "unit": "kWh",
-          "type": "NumericWithinTolerance",
-          "tolerancePercent": 20,
-          "direction": "within tolerance"
-        },
-        {
-          "metricId": "peak-cooling-w",
-          "name": "Peak cooling load",
-          "unit": "W",
-          "type": "NumericWithinTolerance",
-          "tolerancePercent": 25,
-          "direction": "within tolerance"
-        },
-        {
-          "metricId": "solar-orientation-response",
-          "name": "Solar orientation response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "cooling increases with solar exposure"
-        }
+        { "metricId": "annual-cooling-kwh", "name": "Annual cooling energy", "unit": "kWh", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "peak-cooling-w", "name": "Peak cooling load", "unit": "W", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "solar-orientation-response", "name": "Solar orientation response", "unit": "-", "type": "DirectionalTrend", "tolerancePercent": 0, "direction": "same-trend" },
+        { "metricId": "annual-heating-kwh", "name": "Annual heating energy", "unit": "kWh", "type": "SameSign", "tolerancePercent": 0, "direction": "same-sign" }
       ],
-      "assumptions": [
-        "Single thermal zone.",
-        "One simplified south-facing window.",
-        "SHGC/shading engineering solar model.",
-        "ISO52010-inspired isotropic sky transposition.",
-        "Ideal cooling load behavior only; no plant simulation."
-      ],
-      "knownDifferences": [
-        "AssistantEngineer does not model detailed EnergyPlus solar distribution.",
-        "AssistantEngineer does not model detailed glazing optics.",
-        "Exact hourly solar parity is not expected."
-      ],
-      "nonClaims": [
-        "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
-      ]
+      "assumptions": [ "Placeholder reference output mirrors deterministic solar cooling fixture." ],
+      "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
     },
     {
       "caseId": "EP-SMOKE-003",
-      "name": "Single zone internal gains cooling smoke case",
+      "name": "Internal sensible gains cooling smoke fixture",
       "stage": "Smoke",
       "status": "ReferenceFixturePlaceholder",
-      "source": "Offline committed reference fixture placeholder; real EnergyPlus model to be added in future validation milestone.",
-      "weatherSource": "Constant mild weather synthetic fixture.",
-      "geometry": "Single-zone rectangular box with no windows.",
-      "envelope": "Simple envelope with low transmission load.",
-      "internalGains": "Fixed sensible internal gains schedule.",
-      "ventilation": "No ventilation or infiltration.",
-      "hvacControl": "Ideal cooling load, fixed cooling setpoint.",
+      "source": "AssistantEngineer placeholder fixture",
+      "weatherSource": "Synthetic design condition",
+      "geometry": "Single zone",
+      "envelope": "No transmission focus",
+      "internalGains": "1200 W sensible",
+      "ventilation": "None",
+      "hvacControl": "Cooling load placeholder",
       "metrics": [
-        {
-          "metricId": "annual-cooling-kwh",
-          "name": "Annual cooling energy",
-          "unit": "kWh",
-          "type": "NumericWithinTolerance",
-          "tolerancePercent": 20,
-          "direction": "within tolerance"
-        },
-        {
-          "metricId": "annual-heating-kwh",
-          "name": "Annual heating energy",
-          "unit": "kWh",
-          "type": "SameSign",
-          "tolerancePercent": 0,
-          "direction": "same sign"
-        },
-        {
-          "metricId": "internal-gain-response",
-          "name": "Internal gain response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "cooling increases with internal gains"
-        }
+        { "metricId": "annual-cooling-kwh", "name": "Annual cooling energy", "unit": "kWh", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "peak-cooling-w", "name": "Peak cooling load", "unit": "W", "type": "NumericWithinTolerance", "tolerancePercent": 0, "direction": "match" },
+        { "metricId": "internal-gain-response", "name": "Internal gain response", "unit": "-", "type": "DirectionalTrend", "tolerancePercent": 0, "direction": "same-trend" },
+        { "metricId": "annual-heating-kwh", "name": "Annual heating energy", "unit": "kWh", "type": "SameSign", "tolerancePercent": 0, "direction": "same-sign" }
       ],
-      "assumptions": [
-        "Single thermal zone.",
-        "Sensible internal gains only.",
-        "No latent or moisture balance.",
-        "No detailed HVAC plant simulation.",
-        "Ideal cooling load behavior only."
-      ],
-      "knownDifferences": [
-        "AssistantEngineer internal gains are sensible-only in v1.",
-        "Latent heat and humidity are intentionally out of scope.",
-        "Detailed EnergyPlus heat storage/distribution behavior is not claimed."
-      ],
-      "nonClaims": [
-        "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim latent or moisture validation coverage."
-      ]
+      "assumptions": [ "Placeholder reference output mirrors deterministic internal gains fixture." ],
+      "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
     },
     {
       "caseId": "ASHRAE140-STYLE-001",
-      "name": "Lightweight vs heavyweight envelope sensitivity",
+      "name": "ASHRAE 140 style lightweight planned case",
       "stage": "Ashrae140Style",
-      "status": "Planned",
-      "source": "Future ASHRAE 140-style comparative case, not certification.",
-      "weatherSource": "Future shared weather fixture.",
-      "geometry": "Single-zone box with identical geometry and two thermal mass variants.",
-      "envelope": "Lightweight and heavyweight envelope comparison with same nominal U-values where practical.",
-      "internalGains": "Fixed sensible gains schedule.",
-      "ventilation": "Fixed infiltration/ventilation schedule.",
-      "hvacControl": "Ideal heating/cooling load with fixed setpoints.",
+      "status": "PlannedValidation",
+      "source": "Planned future reference",
+      "weatherSource": "Future weather file",
+      "geometry": "Future standard geometry",
+      "envelope": "Future standard envelope",
+      "internalGains": "Future standard gains",
+      "ventilation": "Future standard ventilation",
+      "hvacControl": "Future standard HVAC control",
       "metrics": [
-        {
-          "metricId": "cooling-mass-response",
-          "name": "Cooling mass response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "heavyweight case changes peak cooling timing/magnitude directionally"
-        },
-        {
-          "metricId": "heating-mass-response",
-          "name": "Heating mass response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "heavyweight case changes peak heating timing/magnitude directionally"
-        }
+        { "metricId": "annual-heating-kwh", "name": "Annual heating energy", "unit": "kWh", "type": "NumericWithinTolerance", "tolerancePercent": 5, "direction": "match" }
       ],
-      "assumptions": [
-        "Comparative sensitivity case only.",
-        "No ASHRAE 140 certification claim.",
-        "Thermal mass behavior is simplified in Engineering Core V1."
-      ],
-      "knownDifferences": [
-        "AssistantEngineer simplified hourly RC model does not claim full ISO 52016 matrix parity.",
-        "EnergyPlus heat balance and thermal mass modeling are more detailed.",
-        "Directional sensitivity is the first validation target."
-      ],
-      "nonClaims": [
-        "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full ISO 52016 node/matrix solver parity."
-      ]
+      "assumptions": [ "Future comparative fixture." ],
+      "knownDifferences": [ "Not implemented in v1." ],
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
     },
     {
       "caseId": "ASHRAE140-STYLE-002",
-      "name": "Window orientation solar sensitivity",
+      "name": "ASHRAE 140 style heavyweight planned case",
       "stage": "Ashrae140Style",
-      "status": "Planned",
-      "source": "Future ASHRAE 140-style comparative case, not certification.",
-      "weatherSource": "Future shared solar/weather fixture.",
-      "geometry": "Single-zone box with one window moved between orientations.",
-      "envelope": "Same opaque envelope and same window properties across orientation variants.",
-      "internalGains": "No internal gains or fixed sensible gains depending on fixture.",
-      "ventilation": "Fixed ventilation/infiltration schedule.",
-      "hvacControl": "Ideal cooling load with fixed cooling setpoint.",
+      "status": "PlannedValidation",
+      "source": "Planned future reference",
+      "weatherSource": "Future weather file",
+      "geometry": "Future standard geometry",
+      "envelope": "Future standard envelope",
+      "internalGains": "Future standard gains",
+      "ventilation": "Future standard ventilation",
+      "hvacControl": "Future standard HVAC control",
       "metrics": [
-        {
-          "metricId": "orientation-cooling-response",
-          "name": "Orientation cooling response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "cooling load changes directionally with solar orientation"
-        },
-        {
-          "metricId": "solar-gain-response",
-          "name": "Solar gain response",
-          "unit": "direction",
-          "type": "DirectionalTrend",
-          "tolerancePercent": 0,
-          "direction": "window solar gains respond to orientation"
-        }
+        { "metricId": "annual-cooling-kwh", "name": "Annual cooling energy", "unit": "kWh", "type": "DirectionalTrend", "tolerancePercent": 5, "direction": "same-trend" }
       ],
-      "assumptions": [
-        "Simplified SHGC/shading solar model.",
-        "ISO52010-inspired isotropic sky transposition.",
-        "No detailed EnergyPlus solar distribution parity claim."
-      ],
-      "knownDifferences": [
-        "AssistantEngineer uses simplified solar transposition.",
-        "EnergyPlus may model detailed solar distribution and glazing optics.",
-        "Directional sensitivity is expected before numeric parity."
-      ],
-      "nonClaims": [
-        "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
-      ]
+      "assumptions": [ "Future comparative fixture." ],
+      "knownDifferences": [ "Not implemented in v1." ],
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
     }
   ]
 }

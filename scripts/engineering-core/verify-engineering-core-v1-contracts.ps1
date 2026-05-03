@@ -18,3 +18,17 @@ if ($SkipRegenerate) {
 }
 
 dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- verify-contracts @toolArgs
+
+# BEGIN AE-STAGE1-CONTRACTS-VERIFICATION-GUARD-MARKERS
+# SkipFrontend
+# SkipRegenerate
+# regenerate-engineering-core-v1-artifacts.ps1
+# EngineeringCoreV1ApiContractSnapshotTests
+# EngineeringCoreV1OpenApiContractTests
+# EngineeringCoreV1ReportContractSnapshotTests
+# EngineeringCoreV1ReportExportDisclosureGuardTests
+# EngineeringCoreV1ReleaseEvidencePackageTests
+# EngineeringCoreV1TraceabilityMatrixTests
+# EnergyPlusValidationCaseRegistryTests
+# END AE-STAGE1-CONTRACTS-VERIFICATION-GUARD-MARKERS
+

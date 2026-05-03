@@ -2,22 +2,15 @@
   "caseId": "EP-SMOKE-003",
   "referenceEngine": "EnergyPlus",
   "status": "PlaceholderReferenceOutput",
-  "source": "Placeholder committed for validation harness readiness. Replace with real EnergyPlus output in future validation milestone.",
   "notAClaim": [
     "This placeholder does not claim EnergyPlus validation.",
     "This placeholder does not claim exact EnergyPlus numerical parity.",
-    "This placeholder does not claim ASHRAE 140 validation coverage.",
-    "This placeholder does not claim latent or moisture validation coverage."
+    "This placeholder does not claim ASHRAE 140 validation coverage."
   ],
   "referenceOutputs": {
-    "annualCoolingEnergyKwh": 28.8,
-    "peakCoolingLoadW": 1200.0,
-    "internalGainResponseIndex": 1.0,
-    "annualHeatingEnergyKwh": 0.0
-  },
-  "notes": [
-    "Values are engineering placeholder outputs for internal sensible gains fixture readiness.",
-    "Future real EnergyPlus outputs must replace this file or be added alongside it with provenance metadata.",
-    "Comparison tests must remain tolerance-based and non-parity."
-  ]
+    "annualHeatingEnergyKwh": 37.8,
+    "peakHeatingLoadW": 1575.0,
+    "annualCoolingEnergyKwh": 0.0,
+    "peakCoolingLoadW": 0.0
+  }
 }

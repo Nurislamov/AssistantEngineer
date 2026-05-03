@@ -1,59 +1,10 @@
 ﻿{
-    "caseId":  "EP-SMOKE-001",
-    "name":  "Single zone transmission-only heating smoke case",
-    "stage":  "Smoke",
-    "status":  "ReferenceFixturePlaceholder",
-    "source":  "Offline committed reference fixture placeholder; real EnergyPlus model/output to be added in a future validation milestone.",
-    "purpose":  "Prepare first comparative validation fixture structure for transmission-only heating behavior; not exact EnergyPlus parity and not ASHRAE 140 certification.",
-    "notAClaim":  [
-                      "Does not claim exact EnergyPlus numerical parity.",
-                      "Does not claim ASHRAE 140 validation coverage.",
-                      "Does not claim full ISO 52016 node/matrix solver parity."
-                  ],
-    "weatherSource":  "Constant winter outdoor temperature synthetic fixture.",
-    "geometry":  {
-                     "type":  "single-zone-box",
-                     "floorAreaM2":  50.0,
-                     "heightM":  3.0,
-                     "volumeM3":  150.0,
-                     "description":  "Single-zone rectangular box with opaque envelope and no windows."
-                 },
-    "envelope":  {
-                     "description":  "Simple U-value envelope, no thermal bridge detail, no detailed ground model.",
-                     "opaqueAreaM2":  180.0,
-                     "uValueWPerM2K":  0.35,
-                     "uaWPerK":  63.0
-                 },
-    "setpoints":  {
-                      "heatingSetpointC":  20.0,
-                      "coolingSetpointC":  null
-                  },
-    "weather":  {
-                    "outdoorDryBulbC":  -5.0,
-                    "durationHours":  24,
-                    "profile":  "constant"
-                },
-    "internalGains":  {
-                          "sensibleW":  0.0,
-                          "latentW":  0.0,
-                          "description":  "No internal gains."
-                      },
-    "ventilation":  {
-                        "airflowM3PerS":  0.0,
-                        "description":  "No ventilation or infiltration."
-                    },
-    "hvacControl":  {
-                        "type":  "IdealLoadsHeatingOnly",
-                        "description":  "Ideal heating load, fixed heating setpoint, no cooling."
-                    },
-    "expectedEngineeringBehavior":  [
-                                        "Heating load is positive when indoor setpoint is above outdoor temperature.",
-                                        "Cooling load remains zero or same-sign neutral for this winter heating-only smoke case.",
-                                        "Transmission heat loss follows U*A*ΔT directionally."
-                                    ],
-    "knownDifferences":  [
-                             "AssistantEngineer uses engineering component formulas and simplified hourly balance.",
-                             "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
-                             "Exact watt-by-watt parity is not expected."
-                         ]
+  "caseId": "EP-SMOKE-001",
+  "stage": "Smoke",
+  "status": "ReferenceFixturePlaceholder",
+  "purpose": "transmission-only heating smoke fixture; not exact EnergyPlus parity.",
+  "notAClaim": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage."
+  ]
 }
