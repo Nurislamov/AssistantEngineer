@@ -1,0 +1,35 @@
+﻿{
+  "buildingId": 1,
+  "buildingName": "Example building",
+  "year": 2026,
+  "calculationTimeStep": "Hourly",
+  "monthlyResults": [],
+  "annualHeatingDemandKWh": 0.0,
+  "annualCoolingDemandKWh": 0.0,
+  "breakdown": {
+    "solarGainsKWh": 1250.0,
+    "internalGainsKWh": 0.0,
+    "heatingInputKWh": 0.0,
+    "coolingExtractedKWh": 0.0
+  },
+  "diagnostics": [
+    {
+      "severity": "Info",
+      "code": "Iso52016.WeatherSolarContextUsed",
+      "message": "Annual hourly ISO 52016 steady-state calculation used the ISO 52016 weather-solar context for window solar gains.",
+      "context": "ISO 52016 annual steady-state run 2026"
+    },
+    {
+      "severity": "Info",
+      "code": "Iso52016.SolarGainComponentPathUsed",
+      "message": "Window solar gains were fed from separated beam, diffuse sky and ground-reflected surface irradiance components.",
+      "context": "ISO 52016 annual steady-state run 2026"
+    },
+    {
+      "severity": "Info",
+      "code": "Iso52016.PerezAnisotropicModelVisibleInAnnualResult",
+      "message": "Perez anisotropic surface irradiance diagnostics were visible in the annual ISO 52016 result.",
+      "context": "ISO 52016 annual steady-state run 2026"
+    }
+  ]
+}
