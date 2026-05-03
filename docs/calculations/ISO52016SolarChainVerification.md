@@ -1,4 +1,4 @@
-﻿# ISO 52016 Solar Chain Verification
+# ISO 52016 Solar Chain Verification
 
 Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez → ISO52016 solar chain.
 
@@ -55,7 +55,7 @@ The manifest lists:
 - `Iso52016.WeatherSolarContextUsed`
 - `Iso52016.SolarGainComponentPathUsed`
 - `Iso52016.PerezAnisotropicModelVisibleInAnnualResult`
-- `Iso52016.LegacySolarRadiationFallbackUsed`
+- `Iso52016.MatrixSolarRadiationFallbackUsed`
 - `SolarWeather.PerezAnisotropicModelUsed`
 - `SolarWeather.PerezSkyState`
 

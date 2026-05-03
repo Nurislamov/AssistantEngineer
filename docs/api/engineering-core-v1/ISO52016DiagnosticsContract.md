@@ -1,4 +1,4 @@
-﻿# ISO 52016 Diagnostics API Contract
+# ISO 52016 Diagnostics API Contract
 
 Stage 10 documents and guards the public API contract for ISO 52016 solar-path diagnostics.
 
@@ -24,7 +24,7 @@ The field is optional for backward compatibility, but when present it must be fo
 - `Iso52016.WeatherSolarContextUsed`
 - `Iso52016.SolarGainComponentPathUsed`
 - `Iso52016.PerezAnisotropicModelVisibleInAnnualResult`
-- `Iso52016.LegacySolarRadiationFallbackUsed`
+- `Iso52016.MatrixSolarRadiationFallbackUsed`
 
 ## Consumer rule
 
@@ -34,7 +34,7 @@ The source/method path must be read from `diagnostics`:
 
 - `Iso52016.WeatherSolarContextUsed` means the ISO 52016 weather-solar context path was used.
 - `Iso52016.SolarGainComponentPathUsed` means beam, diffuse sky and ground-reflected components fed window solar gains.
-- `Iso52016.LegacySolarRadiationFallbackUsed` means the legacy fallback path was used and should be shown as a warning.
+- `Iso52016.MatrixSolarRadiationFallbackUsed` means the legacy fallback path was used and should be shown as a warning.
 
 ## Explicit non-claims
 

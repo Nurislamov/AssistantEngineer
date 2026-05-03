@@ -45,7 +45,7 @@ Example request body:
   "longitudeDegrees": 69.2,
   "timeZoneOffset": "05:00:00",
   "weatherYear": 2026,
-  "simulationEngine": "V2Matrix",
+  "simulationEngine": "Matrix",
   "heatBalanceOptions": {
     "initialIndoorTemperatureC": 22,
     "timeStepSeconds": 3600

@@ -163,15 +163,15 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
 
         if (climateDataMonths.Count == 0)
         {
-            result.ActualMethod = "LegacyMonthlyEstimate";
-            result.CalculationMethodLabel = "Legacy monthly estimate compatibility path";
-            result.EnergyDataSource = "LegacyMonthlyEstimate";
+            result.ActualMethod = "MatrixMonthlyEstimate";
+            result.CalculationMethodLabel = "Matrix monthly estimate compatibility path";
+            result.EnergyDataSource = "MatrixMonthlyEstimate";
             result.IsTrueHourly8760 = false;
             result.HourlyRecordCount = 0;
 
             result.Diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,
-                "EnergyBalance.LegacyMonthlyEstimateUnavailable",
+                "EnergyBalance.MatrixMonthlyEstimateUnavailable",
                 "No climate months were available for the legacy monthly estimate path.",
                 $"Building {building.Id} legacy energy balance"));
 
@@ -215,15 +215,15 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
             2,
             MidpointRounding.AwayFromZero);
 
-        result.ActualMethod = "LegacyMonthlyEstimate";
-        result.CalculationMethodLabel = "Legacy monthly estimate compatibility path";
-        result.EnergyDataSource = "LegacyMonthlyEstimate";
+        result.ActualMethod = "MatrixMonthlyEstimate";
+        result.CalculationMethodLabel = "Matrix monthly estimate compatibility path";
+        result.EnergyDataSource = "MatrixMonthlyEstimate";
         result.IsTrueHourly8760 = false;
         result.HourlyRecordCount = 0;
 
         result.Diagnostics.Add(new CalculationDiagnostic(
             CalculationDiagnosticSeverity.Warning,
-            "EnergyBalance.LegacyMonthlyEstimatePath",
+            "EnergyBalance.MatrixMonthlyEstimatePath",
             "Energy balance used the legacy monthly estimate compatibility path; this is not a true hourly 8760 simulation.",
             $"Building {building.Id} legacy energy balance"));
 

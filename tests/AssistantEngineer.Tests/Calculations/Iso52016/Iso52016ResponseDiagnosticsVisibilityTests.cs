@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
@@ -40,8 +40,8 @@ public class Iso52016ResponseDiagnosticsVisibilityTests
         {
             new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Warning,
-                "Iso52016.LegacySolarRadiationFallbackUsed",
-                "Legacy fallback was used.",
+                "Iso52016.MatrixSolarRadiationFallbackUsed",
+                "Matrix fallback was used.",
                 "test")
         };
 
@@ -62,7 +62,7 @@ public class Iso52016ResponseDiagnosticsVisibilityTests
 
         Assert.NotNull(response.Diagnostics);
         Assert.Contains(response.Diagnostics!, diagnostic =>
-            diagnostic.Code == "Iso52016.LegacySolarRadiationFallbackUsed");
+            diagnostic.Code == "Iso52016.MatrixSolarRadiationFallbackUsed");
     }
 
     [Fact]

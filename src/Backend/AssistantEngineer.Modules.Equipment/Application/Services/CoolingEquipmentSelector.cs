@@ -62,7 +62,7 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
         {
             RoomId = roomId,
             EquipmentSelected = true,
-            CalculationMethod = "LegacyCoolingEquipmentSelectorAdapter",
+            CalculationMethod = "MatrixCoolingEquipmentSelectorAdapter",
             CoolingLoadKw = totalHeatLoadKw,
             DesignCapacityKw = designCapacityKw,
             RequiredCoolingCapacityW = coolingLoadW,
@@ -100,7 +100,7 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
                         MidpointRounding.AwayFromZero),
                     Notes =
                     [
-                        "Legacy cooling selector ranks active matching candidates by nearest cooling capacity."
+                        "Matrix cooling selector ranks active matching candidates by nearest cooling capacity."
                     ]
                 })
                 .ToList(),
@@ -120,8 +120,8 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
                 new EquipmentSelectionDiagnostic
                 {
                     Severity = "Info",
-                    Code = "EquipmentSelection.LegacyCoolingSelectorAdapter",
-                    Message = "Legacy cooling selector uses cooling catalog capacity only; the Energy Calculation Parity equipment sizing pipeline provides multi-criteria heating/cooling diagnostics."
+                    Code = "EquipmentSelection.MatrixCoolingSelectorAdapter",
+                    Message = "Matrix cooling selector uses cooling catalog capacity only; the Energy Calculation Parity equipment sizing pipeline provides multi-criteria heating/cooling diagnostics."
                 },
                 new EquipmentSelectionDiagnostic
                 {

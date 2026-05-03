@@ -20,7 +20,7 @@ public class Iso52016V2RoomEnergySimulationResultMapperTests
     private readonly Iso52016V2RoomEnergySimulationResultMapper _mapper = new();
 
     [Fact]
-    public void Map_ConvertsV2ResultToLegacyRoomEnergySimulationContract()
+    public void Map_ConvertsV2ResultToMatrixRoomEnergySimulationContract()
     {
         var v2Result = _v2Service.Simulate(
             CreateRequest());

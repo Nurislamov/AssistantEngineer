@@ -30,7 +30,6 @@ internal static class Iso52016Registration
         services.AddScoped<IIso52016RoomInternalGainProfileBuilder, Iso52016RoomInternalGainProfileBuilder>();
 
         services.AddScoped<IIso52016RoomHourlyInputProfileBuilder, Iso52016RoomHourlyInputProfileBuilder>();
-        services.AddScoped<IIso52016RoomHeatBalanceSolver, Iso52016RoomHeatBalanceSolver>();
         services.AddScoped<IIso52016RoomEnergySimulationService, Iso52016RoomEnergySimulationService>();
 
         services.AddScoped<IIso52016ScheduleProfileExpander, Iso52016ScheduleProfileExpander>();

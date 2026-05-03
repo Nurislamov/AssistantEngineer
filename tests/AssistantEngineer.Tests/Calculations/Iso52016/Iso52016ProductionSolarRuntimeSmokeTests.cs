@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations;
@@ -49,7 +49,7 @@ public class Iso52016ProductionSolarRuntimeSmokeTests
             diagnostic.Code == "Iso52016.SolarGainComponentPathUsed");
 
         Assert.DoesNotContain(result.Diagnostics!, diagnostic =>
-            diagnostic.Code == "Iso52016.LegacySolarRadiationFallbackUsed");
+            diagnostic.Code == "Iso52016.MatrixSolarRadiationFallbackUsed");
 
         Assert.True(
             result.Breakdown.SolarGainsKWh > 0,

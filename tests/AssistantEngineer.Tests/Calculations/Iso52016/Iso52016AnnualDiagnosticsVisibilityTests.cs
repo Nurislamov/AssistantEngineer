@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
@@ -59,7 +59,7 @@ public class Iso52016AnnualDiagnosticsVisibilityTests
     }
 
     [Fact]
-    public async Task CalculateBuildingEnergyNeedsAsync_ExposesLegacyFallbackDiagnosticWhenContextIsAbsent()
+    public async Task CalculateBuildingEnergyNeedsAsync_ExposesMatrixFallbackDiagnosticWhenContextIsAbsent()
     {
         var annualClimateData = CreateAnnualClimateData();
         var building = CreateBuildingWithSouthWindow(annualClimateData.ClimateZone);
@@ -81,7 +81,7 @@ public class Iso52016AnnualDiagnosticsVisibilityTests
         Assert.NotNull(result);
         Assert.NotNull(result.Diagnostics);
         Assert.Contains(result.Diagnostics!, diagnostic =>
-            diagnostic.Code == "Iso52016.LegacySolarRadiationFallbackUsed");
+            diagnostic.Code == "Iso52016.MatrixSolarRadiationFallbackUsed");
     }
 
     private static Building CreateBuildingWithSouthWindow(

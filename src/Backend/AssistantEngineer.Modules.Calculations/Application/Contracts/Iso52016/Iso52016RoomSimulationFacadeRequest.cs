@@ -17,4 +17,4 @@ public sealed record Iso52016RoomSimulationFacadeRequest(
     double? HeatingSetpointOverrideC = null,
     double? CoolingSetpointOverrideC = null,
     Iso52016RoomHeatBalanceOptions? HeatBalanceOptions = null,
-    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Legacy);
+    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Matrix);

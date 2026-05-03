@@ -1,4 +1,4 @@
-﻿# ISO 52016 Annual Diagnostics Visibility
+# ISO 52016 Annual Diagnostics Visibility
 
 Stage 5 makes the annual ISO 52016 result disclose which solar path was used.
 
@@ -7,7 +7,7 @@ Stage 5 makes the annual ISO 52016 result disclose which solar path was used.
 - `Iso52016AnnualEnergyNeedResult` carries calculation diagnostics.
 - Annual steady-state results expose `Iso52016.WeatherSolarContextUsed` when the ISO 52016 weather-solar context feeds the heat balance.
 - Annual steady-state results expose `Iso52016.SolarGainComponentPathUsed` when window solar gains are fed from beam/diffuse/ground component irradiance.
-- Annual steady-state results expose `Iso52016.LegacySolarRadiationFallbackUsed` when the legacy radiation path is used.
+- Annual steady-state results expose `Iso52016.MatrixSolarRadiationFallbackUsed` when the legacy radiation path is used.
 - Perez/weather-solar diagnostics from the context are propagated into the annual result.
 
 ## Explicit non-claims
@@ -20,4 +20,4 @@ Stage 5 makes the annual ISO 52016 result disclose which solar path was used.
 ## Guard tests
 
 - `Iso52016AnnualDiagnosticsVisibilityTests.CalculateBuildingEnergyNeedsAsync_ExposesWeatherSolarContextDiagnosticsWhenContextIsAvailable`
-- `Iso52016AnnualDiagnosticsVisibilityTests.CalculateBuildingEnergyNeedsAsync_ExposesLegacyFallbackDiagnosticWhenContextIsAbsent`
+- `Iso52016AnnualDiagnosticsVisibilityTests.CalculateBuildingEnergyNeedsAsync_ExposesMatrixFallbackDiagnosticWhenContextIsAbsent`

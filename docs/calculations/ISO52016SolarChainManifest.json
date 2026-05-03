@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "AE-ISO52016-SOLAR-CHAIN",
   "status": "closed-guarded",
   "scope": "ISO52010/Perez solar foundation through ISO52016 annual results, response diagnostics and frontend/report rendering",
@@ -57,7 +57,7 @@
     "Iso52016.WeatherSolarContextUsed",
     "Iso52016.SolarGainComponentPathUsed",
     "Iso52016.PerezAnisotropicModelVisibleInAnnualResult",
-    "Iso52016.LegacySolarRadiationFallbackUsed",
+    "Iso52016.MatrixSolarRadiationFallbackUsed",
     "SolarWeather.PerezAnisotropicModelUsed",
     "SolarWeather.PerezSkyState"
   ],

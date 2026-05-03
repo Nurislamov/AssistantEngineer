@@ -108,7 +108,7 @@ public class Iso52016V2SolverStageTraceabilityTests
         Assert.Contains("Iso52016SimulationEngine", sourceText);
         Assert.Contains("Iso52016BuildingEnergySimulationCommand", sourceText);
         Assert.Contains("SimulateIso52016", sourceText);
-        Assert.Contains("V2Matrix", sourceText);
+        Assert.Contains("Matrix", sourceText);
     }
 
     [Fact]

@@ -8,8 +8,8 @@
     "AE-ZONES-001"
   ],
   "simulationEngines": [
-    "Legacy",
-    "V2Matrix"
+    "Matrix",
+    "Matrix"
   ],
   "primaryApiEndpoint": "POST /api/v1/buildings/{buildingId}/energy-analysis/iso52016/simulate",
   "implementationGuards": [

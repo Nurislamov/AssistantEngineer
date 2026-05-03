@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Services.EquipmentSizing;
 
@@ -101,7 +101,7 @@ public class EquipmentSizingOversizingLimitTests
     }
 
     [Fact]
-    public void MissingMaximumOversizingPercentKeepsLegacyCapacityOnlySelection()
+    public void MissingMaximumOversizingPercentKeepsMatrixCapacityOnlySelection()
     {
         var engine = new EquipmentSizingEngine();
 

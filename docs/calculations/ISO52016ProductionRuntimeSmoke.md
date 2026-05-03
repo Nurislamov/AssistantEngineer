@@ -1,4 +1,4 @@
-﻿# ISO 52016 Production Runtime Smoke
+# ISO 52016 Production Runtime Smoke
 
 Stage 9 verifies that the normal production composition root reaches the ISO 52016 weather-solar path at runtime.
 
@@ -11,7 +11,7 @@ Stage 9 verifies that the normal production composition root reaches the ISO 520
   - `Iso52016.WeatherSolarContextUsed`;
   - `Iso52016.SolarGainComponentPathUsed`.
 - The annual result must not expose:
-  - `Iso52016.LegacySolarRadiationFallbackUsed`.
+  - `Iso52016.MatrixSolarRadiationFallbackUsed`.
 - The annual result must produce non-zero `SolarGainsKWh` for a south-facing window case.
 
 ## Why this matters

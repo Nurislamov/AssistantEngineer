@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
@@ -261,7 +261,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
 
         diagnostics.Add(new CalculationDiagnostic(
             CalculationDiagnosticSeverity.Warning,
-            "Iso52016.LegacySolarRadiationFallbackUsed",
+            "Iso52016.MatrixSolarRadiationFallbackUsed",
             "Annual hourly ISO 52016 steady-state calculation used the legacy ISolarRadiationService fallback because no ISO 52016 weather-solar context was available.",
             context));
 

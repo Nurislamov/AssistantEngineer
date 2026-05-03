@@ -5,7 +5,7 @@ public sealed record Iso52016RoomSimulationFacadeResult(
     Iso52016WeatherSolarContext WeatherSolarContext,
     Iso52016RoomEnergySimulationRequest SimulationRequest,
     Iso52016RoomEnergySimulationResult SimulationResult,
-    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Legacy)
+    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Matrix)
 {
     public int HourCount => SimulationResult.HourCount;
 

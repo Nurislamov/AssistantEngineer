@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Frontend;
 
@@ -21,7 +21,7 @@ public class EngineeringCoreDiagnosticsFrontendRenderingTests
         Assert.Contains("Calculation diagnostics", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.WeatherSolarContextUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.SolarGainComponentPathUsed", content, StringComparison.Ordinal);
-        Assert.Contains("Iso52016.LegacySolarRadiationFallbackUsed", content, StringComparison.Ordinal);
+        Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", content, StringComparison.Ordinal);
         Assert.Contains("legacy solar radiation fallback", content, StringComparison.Ordinal);
     }
 
@@ -52,7 +52,7 @@ public class EngineeringCoreDiagnosticsFrontendRenderingTests
 
         Assert.Contains("Iso52016.WeatherSolarContextUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.SolarGainComponentPathUsed", content, StringComparison.Ordinal);
-        Assert.Contains("Iso52016.LegacySolarRadiationFallbackUsed", content, StringComparison.Ordinal);
+        Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", content, StringComparison.Ordinal);
         Assert.Contains("must not be hidden only in raw JSON", content, StringComparison.OrdinalIgnoreCase);
     }
 

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -33,7 +33,7 @@ public class Iso52016ApiDiagnosticsContractEvidenceTests
     }
 
     [Fact]
-    public void Iso52016ApiContractDocumentationExplainsLegacyFallbackWarning()
+    public void Iso52016ApiContractDocumentationExplainsMatrixFallbackWarning()
     {
         var docPath = Path.Combine(
             TestPaths.RepoRoot,
@@ -49,7 +49,7 @@ public class Iso52016ApiDiagnosticsContractEvidenceTests
         Assert.Contains("Iso52016.WeatherSolarContextUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.SolarGainComponentPathUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.PerezAnisotropicModelVisibleInAnnualResult", content, StringComparison.Ordinal);
-        Assert.Contains("Iso52016.LegacySolarRadiationFallbackUsed", content, StringComparison.Ordinal);
+        Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", content, StringComparison.Ordinal);
         Assert.Contains("should be shown as a warning", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("must not infer the solar calculation path only from `solarGainsKWh`", content, StringComparison.OrdinalIgnoreCase);
     }
@@ -107,7 +107,7 @@ public class Iso52016ApiDiagnosticsContractEvidenceTests
         Assert.Contains("Diagnostics", monthlyResponse, StringComparison.Ordinal);
         Assert.Contains("Diagnostics: energyNeed.Value.Diagnostics", performanceService, StringComparison.Ordinal);
         Assert.Contains("Calculation diagnostics", frontendPanel, StringComparison.Ordinal);
-        Assert.Contains("Iso52016.LegacySolarRadiationFallbackUsed", frontendPanel, StringComparison.Ordinal);
+        Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", frontendPanel, StringComparison.Ordinal);
     }
 
     [Fact]

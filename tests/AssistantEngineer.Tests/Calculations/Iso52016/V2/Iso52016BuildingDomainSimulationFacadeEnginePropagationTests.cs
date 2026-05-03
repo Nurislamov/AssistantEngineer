@@ -29,12 +29,12 @@ public class Iso52016BuildingDomainSimulationFacadeEnginePropagationTests
                 LatitudeDegrees: 41.3,
                 LongitudeDegrees: 69.2,
                 TimeZoneOffset: TimeSpan.FromHours(5),
-                SimulationEngine: Iso52016SimulationEngine.V2Matrix));
+                SimulationEngine: Iso52016SimulationEngine.Matrix));
 
         Assert.True(result.IsSuccess, result.Error);
         Assert.NotNull(buildingFacade.LastRequest);
-        Assert.Equal(Iso52016SimulationEngine.V2Matrix, buildingFacade.LastRequest!.SimulationEngine);
-        Assert.Equal(Iso52016SimulationEngine.V2Matrix, result.Value.SimulationEngine);
+        Assert.Equal(Iso52016SimulationEngine.Matrix, buildingFacade.LastRequest!.SimulationEngine);
+        Assert.Equal(Iso52016SimulationEngine.Matrix, result.Value.SimulationEngine);
     }
 
     private static Building CreateBuildingWithRoom()
