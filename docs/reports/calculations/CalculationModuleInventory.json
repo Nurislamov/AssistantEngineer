@@ -1,131 +1,129 @@
 ﻿{
-    "inventoryName":  "Calculation Module Deepening Inventory",
-    "version":  "v1",
-    "status":  "DeepeningBaseline",
-    "generatedAtUtc":  "2026-01-01 00:00:00 UTC",
-    "sourceRoot":  "src/Backend/AssistantEngineer.Modules.Calculations",
-    "testsRoot":  "tests/AssistantEngineer.Tests",
-    "totals":  {
-                   "serviceFiles":  117,
-                   "contractFiles":  196,
-                   "abstractionFiles":  48,
-                   "calculationTests":  72,
-                   "parityTests":  37,
-                   "keyEngines":  12,
-                   "missingKeyEngines":  0
-               },
-    "keyEngines":  {
-                       "RoomLoadCalculationEngine":  {
-                                                         "name":  "RoomLoadCalculationEngine",
-                                                         "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/RoomLoads/RoomLoadCalculationEngine.cs",
-                                                         "layer":  "Room load orchestration",
-                                                         "purpose":  "Combines room-level heating/cooling load components.",
-                                                         "exists":  true
-                                                     },
-                       "LoadAggregationEngine":  {
-                                                     "name":  "LoadAggregationEngine",
-                                                     "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Aggregation/LoadAggregationEngine.cs",
-                                                     "layer":  "Aggregation",
-                                                     "purpose":  "Aggregates room/floor/building load results.",
-                                                     "exists":  true
-                                                 },
-                       "AnnualEnergyBalanceEngine":  {
-                                                         "name":  "AnnualEnergyBalanceEngine",
-                                                         "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/AnnualEnergyBalanceEngine.cs",
-                                                         "layer":  "Annual energy",
-                                                         "purpose":  "Calculates annual energy balance from hourly/monthly inputs.",
-                                                         "exists":  true
-                                                     },
-                       "HourlySimulationToAnnualEnergyInputMapper":  {
-                                                                         "name":  "HourlySimulationToAnnualEnergyInputMapper",
-                                                                         "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/HourlySimulationToAnnualEnergyInputMapper.cs",
-                                                                         "layer":  "Annual energy input mapping",
-                                                                         "purpose":  "Maps hourly simulation records into annual energy input.",
-                                                                         "exists":  true
-                                                                     },
-                       "SystemEnergyEngine":  {
-                                                  "name":  "SystemEnergyEngine",
-                                                  "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyEngine.cs",
-                                                  "layer":  "System energy",
-                                                  "purpose":  "Keeps useful, final and primary energy distinct.",
-                                                  "exists":  true
-                                              },
-                       "EquipmentSizingEngine":  {
-                                                     "name":  "EquipmentSizingEngine",
-                                                     "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/EquipmentSizing/EquipmentSizingEngine.cs",
-                                                     "layer":  "Equipment sizing",
-                                                     "purpose":  "Applies capacity margin/sizing rules.",
-                                                     "exists":  true
-                                                 },
-                       "TransmissionHeatTransferEngine":  {
-                                                              "name":  "TransmissionHeatTransferEngine",
-                                                              "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Transmission/TransmissionHeatTransferEngine.cs",
-                                                              "layer":  "Envelope transmission",
-                                                              "purpose":  "Calculates transmission heat transfer.",
-                                                              "exists":  true
-                                                          },
-                       "VentilationAndInfiltrationLoadEngine":  {
-                                                                    "name":  "VentilationAndInfiltrationLoadEngine",
-                                                                    "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/VentilationAndInfiltrationLoadEngine.cs",
-                                                                    "layer":  "Ventilation",
-                                                                    "purpose":  "Calculates sensible ventilation/infiltration loads.",
-                                                                    "exists":  true
-                                                                },
-                       "InternalGainEngine":  {
-                                                  "name":  "InternalGainEngine",
-                                                  "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InternalGains/InternalGainEngine.cs",
-                                                  "layer":  "Internal gains",
-                                                  "purpose":  "Calculates sensible internal gain components.",
-                                                  "exists":  true
-                                              },
-                       "WindowSolarGainEngine":  {
-                                                     "name":  "WindowSolarGainEngine",
-                                                     "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SolarGains/WindowSolarGainEngine.cs",
-                                                     "layer":  "Window solar gains",
-                                                     "purpose":  "Calculates simplified SHGC/window solar gains.",
-                                                     "exists":  true
-                                                 },
-                       "AnnualWeatherSolarProfileBuilder":  {
-                                                                "name":  "AnnualWeatherSolarProfileBuilder",
-                                                                "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/WeatherSolar/AnnualWeatherSolarProfileBuilder.cs",
-                                                                "layer":  "Weather/solar profile",
-                                                                "purpose":  "Builds annual solar/weather profile context.",
-                                                                "exists":  true
-                                                            },
-                       "EnergyCalculationPipelineService":  {
-                                                                "name":  "EnergyCalculationPipelineService",
-                                                                "path":  "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs",
-                                                                "layer":  "Application pipeline",
-                                                                "purpose":  "Coordinates the real application calculation path.",
-                                                                "exists":  true
-                                                            }
-                   },
-    "missingKeyEngines":  [
-
-                          ],
-    "requiredDocuments":  {
-                              "CalculationModuleDeepeningPlan":  {
-                                                                     "path":  "docs/calculations/CalculationModuleDeepeningPlan.md",
-                                                                     "exists":  true
-                                                                 },
-                              "CalculationModuleBoundaryPolicy":  {
-                                                                      "path":  "docs/calculations/CalculationModuleBoundaryPolicy.md",
-                                                                      "exists":  true
-                                                                  }
-                          },
-    "deepeningAxes":  [
-                          "Input normalization and units policy.",
-                          "Scenario fixtures for room, floor, building and annual-energy paths.",
-                          "Diagnostics consistency across all calculation engines.",
-                          "Cross-engine balance invariants: component sum, aggregation sum, useful/final/primary energy separation.",
-                          "Method strategy isolation: simplified, ISO-inspired and future external validation paths must stay explicit.",
-                          "No silent fallback: simplifications and adapters must be visible as diagnostics."
-                      ],
-    "requiredNonClaims":  [
-                              "Does not claim exact EnergyPlus numerical parity.",
-                              "Does not claim ASHRAE 140 validation coverage.",
-                              "Does not claim full ISO 52016 node/matrix solver parity.",
-                              "Does not claim full ISO 13370 implementation.",
-                              "Does not claim full EN 15316 system-chain implementation."
-                          ]
+  "inventoryName": "Calculation Module Deepening Inventory",
+  "version": "v1",
+  "status": "DeepeningBaseline",
+  "generatedAtUtc": "2026-01-01 00:00:00 UTC",
+  "sourceRoot": "src/Backend/AssistantEngineer.Modules.Calculations",
+  "testsRoot": "tests/AssistantEngineer.Tests",
+  "totals": {
+    "serviceFiles": 117,
+    "contractFiles": 196,
+    "abstractionFiles": 48,
+    "calculationTests": 74,
+    "parityTests": 37,
+    "keyEngines": 12,
+    "missingKeyEngines": 0
+  },
+  "keyEngines": {
+    "RoomLoadCalculationEngine": {
+      "name": "RoomLoadCalculationEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/RoomLoads/RoomLoadCalculationEngine.cs",
+      "layer": "Room load orchestration",
+      "purpose": "Combines room-level heating/cooling load components.",
+      "exists": true
+    },
+    "LoadAggregationEngine": {
+      "name": "LoadAggregationEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Aggregation/LoadAggregationEngine.cs",
+      "layer": "Aggregation",
+      "purpose": "Aggregates room/floor/building load results.",
+      "exists": true
+    },
+    "AnnualEnergyBalanceEngine": {
+      "name": "AnnualEnergyBalanceEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/AnnualEnergyBalanceEngine.cs",
+      "layer": "Annual energy",
+      "purpose": "Calculates annual energy balance from hourly/monthly inputs.",
+      "exists": true
+    },
+    "HourlySimulationToAnnualEnergyInputMapper": {
+      "name": "HourlySimulationToAnnualEnergyInputMapper",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/HourlySimulationToAnnualEnergyInputMapper.cs",
+      "layer": "Annual energy input mapping",
+      "purpose": "Maps hourly simulation records into annual energy input.",
+      "exists": true
+    },
+    "SystemEnergyEngine": {
+      "name": "SystemEnergyEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyEngine.cs",
+      "layer": "System energy",
+      "purpose": "Keeps useful, final and primary energy distinct.",
+      "exists": true
+    },
+    "EquipmentSizingEngine": {
+      "name": "EquipmentSizingEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/EquipmentSizing/EquipmentSizingEngine.cs",
+      "layer": "Equipment sizing",
+      "purpose": "Applies capacity margin/sizing rules.",
+      "exists": true
+    },
+    "TransmissionHeatTransferEngine": {
+      "name": "TransmissionHeatTransferEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Transmission/TransmissionHeatTransferEngine.cs",
+      "layer": "Envelope transmission",
+      "purpose": "Calculates transmission heat transfer.",
+      "exists": true
+    },
+    "VentilationAndInfiltrationLoadEngine": {
+      "name": "VentilationAndInfiltrationLoadEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/VentilationAndInfiltrationLoadEngine.cs",
+      "layer": "Ventilation",
+      "purpose": "Calculates sensible ventilation/infiltration loads.",
+      "exists": true
+    },
+    "InternalGainEngine": {
+      "name": "InternalGainEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InternalGains/InternalGainEngine.cs",
+      "layer": "Internal gains",
+      "purpose": "Calculates sensible internal gain components.",
+      "exists": true
+    },
+    "WindowSolarGainEngine": {
+      "name": "WindowSolarGainEngine",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SolarGains/WindowSolarGainEngine.cs",
+      "layer": "Window solar gains",
+      "purpose": "Calculates simplified SHGC/window solar gains.",
+      "exists": true
+    },
+    "AnnualWeatherSolarProfileBuilder": {
+      "name": "AnnualWeatherSolarProfileBuilder",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/WeatherSolar/AnnualWeatherSolarProfileBuilder.cs",
+      "layer": "Weather/solar profile",
+      "purpose": "Builds annual solar/weather profile context.",
+      "exists": true
+    },
+    "EnergyCalculationPipelineService": {
+      "name": "EnergyCalculationPipelineService",
+      "path": "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs",
+      "layer": "Application pipeline",
+      "purpose": "Coordinates the real application calculation path.",
+      "exists": true
+    }
+  },
+  "missingKeyEngines": [],
+  "requiredDocuments": {
+    "CalculationModuleDeepeningPlan": {
+      "path": "docs/calculations/CalculationModuleDeepeningPlan.md",
+      "exists": true
+    },
+    "CalculationModuleBoundaryPolicy": {
+      "path": "docs/calculations/CalculationModuleBoundaryPolicy.md",
+      "exists": true
+    }
+  },
+  "deepeningAxes": [
+    "Input normalization and units policy.",
+    "Scenario fixtures for room, floor, building and annual-energy paths.",
+    "Diagnostics consistency across all calculation engines.",
+    "Cross-engine balance invariants: component sum, aggregation sum, useful/final/primary energy separation.",
+    "Method strategy isolation: simplified, ISO-inspired and future external validation paths must stay explicit.",
+    "No silent fallback: simplifications and adapters must be visible as diagnostics."
+  ],
+  "requiredNonClaims": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity.",
+    "Does not claim full ISO 13370 implementation.",
+    "Does not claim full EN 15316 system-chain implementation."
+  ]
 }

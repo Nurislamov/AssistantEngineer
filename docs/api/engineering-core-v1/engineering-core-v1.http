@@ -1,4 +1,4 @@
-﻿@baseUrl = https://localhost:5001
+@baseUrl = https://localhost:5001
 
 ### Engineering Core V1 status
 GET {{baseUrl}}/api/v1/calculations/engineering-core/v1/status

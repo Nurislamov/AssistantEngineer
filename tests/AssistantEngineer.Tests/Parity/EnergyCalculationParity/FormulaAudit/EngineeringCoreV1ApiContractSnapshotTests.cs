@@ -243,16 +243,25 @@ public class EngineeringCoreV1ApiContractSnapshotTests
     [Fact]
     public void GeneratorScriptReadsManifestAndDiagnosticsCatalogAndWritesSnapshots()
     {
-        var content = File.ReadAllText(GeneratorScriptPath);
+        var script = File.ReadAllText(GeneratorScriptPath);
 
-        Assert.Contains("EngineeringCoreV1Manifest.json", content, StringComparison.Ordinal);
-        Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", content, StringComparison.Ordinal);
-        Assert.Contains("status.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("diagnostics-catalog.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("engineering-core-v1.http", content, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreContracts.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("generate-api-contract-snapshots", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConvertTo-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("[ordered]@", script, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(ToolProgramPath);
+
+        Assert.Contains("EngineeringCoreV1Manifest.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", tool, StringComparison.Ordinal);
+        Assert.Contains("status.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("diagnostics-catalog.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("engineering-core-v1.http", tool, StringComparison.Ordinal);
     }
-
-    private static JsonDocument ReadJson(string path) =>
+private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 
     private static string[] ReadStringArray(JsonElement root, string propertyName) =>
@@ -283,4 +292,11 @@ public class EngineeringCoreV1ApiContractSnapshotTests
 
     private static string DiagnosticsCatalogPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "EngineeringCoreV1DiagnosticsCatalog.json");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreContracts",
+            "Program.cs");
 }
+

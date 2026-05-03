@@ -267,14 +267,24 @@ public class CalculationModuleBalanceInvariantTests
         Assert.Contains("Aggregation.HourlyUnavailable", document, StringComparison.Ordinal);
         Assert.Contains("does not claim exact EnergyPlus numerical parity", document, StringComparison.OrdinalIgnoreCase);
 
-        var script = File.ReadAllText(VerifyScriptPath);
-        Assert.Contains("CalculationModuleBalanceInvariantTests", script, StringComparison.Ordinal);
-        Assert.Contains("dotnet test", script, StringComparison.Ordinal);
-    }
+        var wrapper = File.ReadAllText(VerifyScriptPath);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCore.csproj", wrapper, StringComparison.Ordinal);
+        Assert.Contains("verify-calculation-module-balance-invariants", wrapper, StringComparison.Ordinal);
+        Assert.DoesNotContain("dotnet test", wrapper, StringComparison.Ordinal);
 
-    private static string BalanceInvariantDocumentPath =>
+        var tool = File.ReadAllText(ToolProgramPath);
+        Assert.Contains("CalculationModuleBalanceInvariantTests", tool, StringComparison.Ordinal);
+    }
+private static string BalanceInvariantDocumentPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "CalculationModuleBalanceInvariants.md");
 
     private static string VerifyScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "verify-calculation-module-balance-invariants.ps1");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCore",
+            "Program.cs");
 }
+

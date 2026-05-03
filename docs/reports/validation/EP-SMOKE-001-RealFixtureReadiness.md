@@ -44,7 +44,7 @@ EP-SMOKE-001 currently remains a placeholder comparison unless all real fixture 
 
 Missing real fixture files do not fail Engineering Core V1 closure.
 
-They only fail when this script is run with -RequireRealFixture.
+They only fail when this tool is run with --require-real-fixture.
 
 ## Required non-claims
 

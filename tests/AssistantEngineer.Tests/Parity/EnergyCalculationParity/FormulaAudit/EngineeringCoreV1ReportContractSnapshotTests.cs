@@ -204,17 +204,25 @@ public class EngineeringCoreV1ReportContractSnapshotTests
     [Fact]
     public void ReportSnapshotGeneratorWritesAllExpectedSnapshots()
     {
-        var content = File.ReadAllText(GeneratorScriptPath);
+        var script = File.ReadAllText(GeneratorScriptPath);
 
-        Assert.Contains("heating-report.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("cooling-report.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("annual-energy-disclosure.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("calculationDisclosure", content, StringComparison.Ordinal);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", content, StringComparison.Ordinal);
-        Assert.Contains("HourlyRecordCount = 8760", content, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreContracts.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("generate-report-contract-snapshots", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("ConvertTo-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("[ordered]@", script, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(ToolProgramPath);
+
+        Assert.Contains("heating-report.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("cooling-report.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("annual-energy-disclosure.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1.DesignPointHeating", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1.DesignPointCooling", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1.TrueHourly8760", tool, StringComparison.Ordinal);
     }
-
-    private static void AssertRequiredDisclosure(JsonElement disclosure)
+private static void AssertRequiredDisclosure(JsonElement disclosure)
     {
         Assert.Equal("ClosedV1", disclosure.GetProperty("coreStatus").GetString());
 
@@ -280,5 +288,11 @@ public class EngineeringCoreV1ReportContractSnapshotTests
 
     private static string GeneratorScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "generate-engineering-core-v1-report-contract-snapshots.ps1");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreContracts",
+            "Program.cs");
 }
 

@@ -209,17 +209,25 @@ public class EngineeringCoreV1ReportExportDisclosureGuardTests
     [Fact]
     public void GeneratorScriptReadsSnapshotsAndWritesChecklist()
     {
-        var content = File.ReadAllText(GeneratorScriptPath);
+        var script = File.ReadAllText(GeneratorScriptPath);
 
-        Assert.Contains("heating-report.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("cooling-report.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("annual-energy-disclosure.sample.json", content, StringComparison.Ordinal);
-        Assert.Contains("ExportDisclosureChecklist.md", content, StringComparison.Ordinal);
-        Assert.Contains("calculationDisclosure", content, StringComparison.Ordinal);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", content, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreEvidence.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("generate-export-disclosure-checklist", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("Set-Content", script, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(ToolProgramPath);
+
+        Assert.Contains("heating-report.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("cooling-report.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("annual-energy-disclosure.sample.json", tool, StringComparison.Ordinal);
+        Assert.Contains("ExportDisclosureChecklist.md", tool, StringComparison.Ordinal);
+        Assert.Contains("calculationDisclosure", tool, StringComparison.Ordinal);
+        Assert.Contains("No exact EnergyPlus numerical parity claim.", tool, StringComparison.Ordinal);
     }
-
-    private static string[] SnapshotPaths =>
+private static string[] SnapshotPaths =>
     [
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "heating-report.sample.json"),
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "cooling-report.sample.json"),
@@ -237,4 +245,11 @@ public class EngineeringCoreV1ReportExportDisclosureGuardTests
 
     private static string GeneratorScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "generate-engineering-core-v1-export-disclosure-checklist.ps1");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "Program.cs");
 }
+

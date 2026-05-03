@@ -34,35 +34,24 @@ public class EngineeringCoreV1ReleaseEvidencePackageTests
     [Fact]
     public void ReleaseEvidenceScriptReadsManifestAndDiagnosticsCatalogAndWritesReport()
     {
-        var content = File.ReadAllText(ReleaseEvidenceScriptPath);
+        var script = File.ReadAllText(ReleaseEvidenceScriptPath);
 
-        Assert.Contains(
-            "EngineeringCoreV1Manifest.json",
-            content,
-            StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreEvidence.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("generate-release-evidence", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
 
-        Assert.Contains(
-            "EngineeringCoreV1DiagnosticsCatalog.json",
-            content,
-            StringComparison.Ordinal);
+        Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("ForEach-Object", script, StringComparison.Ordinal);
 
-        Assert.Contains(
-            "EngineeringCoreV1ReleaseEvidence.md",
-            content,
-            StringComparison.Ordinal);
+        var tool = File.ReadAllText(ToolProgramPath);
 
-        Assert.Contains(
-            "Closed formula gates",
-            content,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "Diagnostics by category",
-            content,
-            StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1Manifest.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1ReleaseEvidence.md", tool, StringComparison.Ordinal);
+        Assert.Contains("Closed formula gates", tool, StringComparison.Ordinal);
+        Assert.Contains("Diagnostics by category", tool, StringComparison.Ordinal);
     }
-
-    [Fact]
+[Fact]
     public void GeneratedReleaseEvidenceReportExistsAndContainsSummary()
     {
         Assert.True(
@@ -260,4 +249,11 @@ public class EngineeringCoreV1ReleaseEvidencePackageTests
             "docs",
             "engineering-core",
             "README.md");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "Program.cs");
 }
+
