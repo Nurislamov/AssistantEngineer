@@ -1,357 +1,357 @@
-﻿{
-    "catalogName":  "Engineering Core V1 Diagnostics Catalog",
-    "version":  "v1",
-    "status":  "ClosedV1",
-    "rules":  {
-                  "error":  "Invalid mandatory input. Calculation must fail.",
-                  "warning":  "Fallback, simplification, missing optional assumption or partial source. Calculation may succeed.",
-                  "info":  "Method, source, status or metadata. Calculation may succeed.",
-                  "successRule":  "A successful calculation result must not contain CalculationDiagnosticSeverity.Error."
-              },
-    "diagnostics":  [
-                        {
-                            "code":  "AnnualEnergy.InvalidBuildingId",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Building id must not be negative.",
-                            "userAction":  "Check the building selection and retry the annual energy calculation.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.InvalidArea",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Building area must be greater than zero for EUI calculation.",
-                            "userAction":  "Enter a positive building area before calculating annual EUI.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.NoHourlyInputs",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "At least one hourly energy balance input is required.",
-                            "userAction":  "Provide hourly records or run a calculation path that generates hourly inputs.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.InvalidHourDuration",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Hour duration must be greater than zero.",
-                            "userAction":  "Check the hourly weather/profile source and remove invalid hour durations.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.InvalidMonth",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Month must be between 1 and 12.",
-                            "userAction":  "Check hourly profile month mapping.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.Not8760",
-                            "severity":  "Warning",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Hourly input count is not 8760; annual totals use the supplied calculation period.",
-                            "userAction":  "Do not present this result as true hourly annual 8760 simulation unless HourlyRecordCount is 8760.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.SyntheticWeather",
-                            "severity":  "Warning",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Synthetic weather profile was used for annual energy balance.",
-                            "userAction":  "Use EPW or PVGIS normalized weather for weather-driven annual analysis.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "SolarWeather.SyntheticWeatherUsed",
-                            "severity":  "Warning",
-                            "category":  "Weather",
-                            "userMessage":  "Synthetic weather profile was used; solar/weather source data is representative rather than true hourly weather.",
-                            "userAction":  "Treat the result as representative, not a true external weather simulation.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.TrueHourlySimulationUsed",
-                            "severity":  "Info",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Annual energy balance was calculated from true hourly simulation records.",
-                            "userAction":  "This supports true hourly annual reporting when the 8760 flags are also satisfied.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.TrueHourlySimulationPartial",
-                            "severity":  "Warning",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Annual energy balance was calculated from hourly records, but the record count is not 8760.",
-                            "userAction":  "Use the result for the supplied period only; do not label it as full annual 8760.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.MonthlyBalanceAdapter",
-                            "severity":  "Warning",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Annual energy balance uses representative monthly records generated from monthly balances; this is not a true hourly 8760 simulation.",
-                            "userAction":  "Show this as an adapted monthly balance, not true hourly 8760 simulation.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.SourceUnavailable",
-                            "severity":  "Error",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Annual energy balance source data is unavailable.",
-                            "userAction":  "Generate or import source records before annual energy calculation.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.SignedComponentBalanceAvailable",
-                            "severity":  "Info",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "Annual energy balance contains signed component totals.",
-                            "userAction":  "Positive net values mean heat gain to the building; negative net values mean heat loss from the building.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "AnnualEnergy.NegativeHourlyValueClamped",
-                            "severity":  "Warning",
-                            "category":  "AnnualEnergy",
-                            "userMessage":  "A negative hourly component was clamped to zero.",
-                            "userAction":  "Review the component source if this appears unexpectedly.",
-                            "closedV1Gate":  "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidUsefulHeating",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Useful heating energy cannot be negative.",
-                            "userAction":  "Correct useful heating energy input.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidUsefulCooling",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Useful cooling energy cannot be negative.",
-                            "userAction":  "Correct useful cooling energy input.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidUsefulDhw",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Useful DHW energy cannot be negative.",
-                            "userAction":  "Correct useful DHW energy input.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidFanEnergy",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Fan energy cannot be negative.",
-                            "userAction":  "Correct fan energy input.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidHeatingEfficiency",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Heating efficiency must be greater than zero.",
-                            "userAction":  "Enter a positive heating efficiency.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidHeatingCop",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Heating COP must be greater than zero.",
-                            "userAction":  "Enter a positive heating COP.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidCoolingCop",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Cooling COP must be greater than zero.",
-                            "userAction":  "Enter a positive cooling COP.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidDhwEfficiency",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "DHW efficiency must be greater than zero.",
-                            "userAction":  "Enter a positive DHW efficiency.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidDhwCop",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "DHW COP must be greater than zero.",
-                            "userAction":  "Enter a positive DHW COP.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.InvalidPrimaryEnergyFactor",
-                            "severity":  "Error",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "Primary energy factor must be greater than zero.",
-                            "userAction":  "Enter a positive primary energy factor.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.HeatingAssumptionMissing",
-                            "severity":  "Warning",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "No heating efficiency or COP was supplied; useful heating energy was carried through as final energy.",
-                            "userAction":  "Provide heating efficiency or COP for final energy conversion.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.CoolingAssumptionMissing",
-                            "severity":  "Warning",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "No cooling COP was supplied; useful cooling energy was carried through as final energy.",
-                            "userAction":  "Provide cooling COP for final energy conversion.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "SystemEnergy.DhwAssumptionMissing",
-                            "severity":  "Warning",
-                            "category":  "SystemEnergy",
-                            "userMessage":  "No DHW efficiency or COP was supplied; useful DHW energy was carried through as final energy.",
-                            "userAction":  "Provide DHW efficiency or COP for final energy conversion.",
-                            "closedV1Gate":  "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidTargetId",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Target id must not be negative.",
-                            "userAction":  "Check the selected sizing target.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidHeatingLoad",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Required heating load cannot be negative.",
-                            "userAction":  "Recalculate heating load or correct sizing input.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidCoolingLoad",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Required cooling load cannot be negative.",
-                            "userAction":  "Recalculate cooling load or correct sizing input.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidSafetyFactor",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Safety factor must be greater than zero.",
-                            "userAction":  "Enter a positive safety factor.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidHeatingSafetyFactor",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Heating safety factor must be greater than zero.",
-                            "userAction":  "Enter a positive heating safety factor.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.InvalidCoolingSafetyFactor",
-                            "severity":  "Error",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Cooling safety factor must be greater than zero.",
-                            "userAction":  "Enter a positive cooling safety factor.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.DefaultHeatingSafetyFactorUsed",
-                            "severity":  "Warning",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Heating safety factor was not supplied and documented default was used.",
-                            "userAction":  "Confirm default safety factor is acceptable.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.DefaultCoolingSafetyFactorUsed",
-                            "severity":  "Warning",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Cooling safety factor was not supplied and documented default was used.",
-                            "userAction":  "Confirm default safety factor is acceptable.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.HeatingSafetyFactorApplied",
-                            "severity":  "Info",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Heating safety factor was applied.",
-                            "userAction":  "Use this value when reviewing selected equipment capacity margin.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.CoolingSafetyFactorApplied",
-                            "severity":  "Info",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "Cooling safety factor was applied.",
-                            "userAction":  "Use this value when reviewing selected equipment capacity margin.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.NoEquipmentFound",
-                            "severity":  "Warning",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "No equipment candidates were supplied.",
-                            "userAction":  "Add equipment candidates before expecting recommendations.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "EquipmentSizing.NoRecommendedEquipment",
-                            "severity":  "Warning",
-                            "category":  "EquipmentSizing",
-                            "userMessage":  "No equipment candidate satisfied the sizing requirements.",
-                            "userAction":  "Review required load, safety factor or equipment catalog.",
-                            "closedV1Gate":  "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
-                        },
-                        {
-                            "code":  "Aggregation.InvalidRoomArea",
-                            "severity":  "Error",
-                            "category":  "Aggregation",
-                            "userMessage":  "Room area must not be negative.",
-                            "userAction":  "Correct room geometry before aggregation.",
-                            "closedV1Gate":  "HVAC.AGGREGATION.LOAD_SUMMARY"
-                        },
-                        {
-                            "code":  "Aggregation.NoRooms",
-                            "severity":  "Warning",
-                            "category":  "Aggregation",
-                            "userMessage":  "No rooms were supplied for load aggregation.",
-                            "userAction":  "Check room assignment to building, floor or thermal zone.",
-                            "closedV1Gate":  "HVAC.AGGREGATION.LOAD_SUMMARY"
-                        },
-                        {
-                            "code":  "Aggregation.HourlyUnavailable",
-                            "severity":  "Warning",
-                            "category":  "Aggregation",
-                            "userMessage":  "Hourly aggregation is not available; design-point aggregation was used.",
-                            "userAction":  "Provide hourly profiles for coincident hourly aggregation.",
-                            "closedV1Gate":  "HVAC.AGGREGATION.LOAD_SUMMARY"
-                        },
-                        {
-                            "code":  "Transmission.MissingBoundaryTemperature",
-                            "severity":  "Error",
-                            "category":  "Transmission",
-                            "userMessage":  "Boundary temperature is required for this transmission element.",
-                            "userAction":  "Provide adjacent, boundary or outdoor temperature for the element.",
-                            "closedV1Gate":  "HVAC.ADJACENT_ZONE.SIMPLIFIED"
-                        }
-                    ]
+{
+  "catalogName": "Engineering Core V1 Diagnostics Catalog",
+  "version": "v1",
+  "status": "ClosedV1",
+  "rules": {
+    "error": "Invalid mandatory input. Calculation must fail.",
+    "warning": "Fallback, simplification, missing optional assumption or partial source. Calculation may succeed.",
+    "info": "Method, source, status or metadata. Calculation may succeed.",
+    "successRule": "A successful calculation result must not contain CalculationDiagnosticSeverity.Error."
+  },
+  "diagnostics": [
+    {
+      "code": "AnnualEnergy.InvalidBuildingId",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "Building id must not be negative.",
+      "userAction": "Check the building selection and retry the annual energy calculation.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.InvalidArea",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "Building area must be greater than zero for EUI calculation.",
+      "userAction": "Enter a positive building area before calculating annual EUI.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.NoHourlyInputs",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "At least one hourly energy balance input is required.",
+      "userAction": "Provide hourly records or run a calculation path that generates hourly inputs.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.InvalidHourDuration",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "Hour duration must be greater than zero.",
+      "userAction": "Check the hourly weather/profile source and remove invalid hour durations.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.InvalidMonth",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "Month must be between 1 and 12.",
+      "userAction": "Check hourly profile month mapping.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.Not8760",
+      "severity": "Warning",
+      "category": "AnnualEnergy",
+      "userMessage": "Hourly input count is not 8760; annual totals use the supplied calculation period.",
+      "userAction": "Do not present this result as true hourly annual 8760 simulation unless HourlyRecordCount is 8760.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.SyntheticWeather",
+      "severity": "Warning",
+      "category": "AnnualEnergy",
+      "userMessage": "Synthetic weather profile was used for annual energy balance.",
+      "userAction": "Use EPW or PVGIS normalized weather for weather-driven annual analysis.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "SolarWeather.SyntheticWeatherUsed",
+      "severity": "Warning",
+      "category": "Weather",
+      "userMessage": "Synthetic weather profile was used; solar/weather source data is representative rather than true hourly weather.",
+      "userAction": "Treat the result as representative, not a true external weather simulation.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.TrueHourlySimulationUsed",
+      "severity": "Info",
+      "category": "AnnualEnergy",
+      "userMessage": "Annual energy balance was calculated from true hourly simulation records.",
+      "userAction": "This supports true hourly annual reporting when the 8760 flags are also satisfied.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.TrueHourlySimulationPartial",
+      "severity": "Warning",
+      "category": "AnnualEnergy",
+      "userMessage": "Annual energy balance was calculated from hourly records, but the record count is not 8760.",
+      "userAction": "Use the result for the supplied period only; do not label it as full annual 8760.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.MonthlyBalanceAdapter",
+      "severity": "Warning",
+      "category": "AnnualEnergy",
+      "userMessage": "Annual energy balance uses representative monthly records generated from monthly balances; this is not a true hourly 8760 simulation.",
+      "userAction": "Show this as an adapted monthly balance, not true hourly 8760 simulation.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.SourceUnavailable",
+      "severity": "Error",
+      "category": "AnnualEnergy",
+      "userMessage": "Annual energy balance source data is unavailable.",
+      "userAction": "Generate or import source records before annual energy calculation.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.SignedComponentBalanceAvailable",
+      "severity": "Info",
+      "category": "AnnualEnergy",
+      "userMessage": "Annual energy balance contains signed component totals.",
+      "userAction": "Positive net values mean heat gain to the building; negative net values mean heat loss from the building.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "AnnualEnergy.NegativeHourlyValueClamped",
+      "severity": "Warning",
+      "category": "AnnualEnergy",
+      "userMessage": "A negative hourly component was clamped to zero.",
+      "userAction": "Review the component source if this appears unexpectedly.",
+      "closedV1Gate": "HVAC.ANNUAL_ENERGY.HOURLY_KWH"
+    },
+    {
+      "code": "SystemEnergy.InvalidUsefulHeating",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Useful heating energy cannot be negative.",
+      "userAction": "Correct useful heating energy input.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidUsefulCooling",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Useful cooling energy cannot be negative.",
+      "userAction": "Correct useful cooling energy input.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidUsefulDhw",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Useful DHW energy cannot be negative.",
+      "userAction": "Correct useful DHW energy input.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidFanEnergy",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Fan energy cannot be negative.",
+      "userAction": "Correct fan energy input.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidHeatingEfficiency",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Heating efficiency must be greater than zero.",
+      "userAction": "Enter a positive heating efficiency.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidHeatingCop",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Heating COP must be greater than zero.",
+      "userAction": "Enter a positive heating COP.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidCoolingCop",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Cooling COP must be greater than zero.",
+      "userAction": "Enter a positive cooling COP.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidDhwEfficiency",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "DHW efficiency must be greater than zero.",
+      "userAction": "Enter a positive DHW efficiency.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidDhwCop",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "DHW COP must be greater than zero.",
+      "userAction": "Enter a positive DHW COP.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.InvalidPrimaryEnergyFactor",
+      "severity": "Error",
+      "category": "SystemEnergy",
+      "userMessage": "Primary energy factor must be greater than zero.",
+      "userAction": "Enter a positive primary energy factor.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.HeatingAssumptionMissing",
+      "severity": "Warning",
+      "category": "SystemEnergy",
+      "userMessage": "No heating efficiency or COP was supplied; useful heating energy was carried through as final energy.",
+      "userAction": "Provide heating efficiency or COP for final energy conversion.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.CoolingAssumptionMissing",
+      "severity": "Warning",
+      "category": "SystemEnergy",
+      "userMessage": "No cooling COP was supplied; useful cooling energy was carried through as final energy.",
+      "userAction": "Provide cooling COP for final energy conversion.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "SystemEnergy.DhwAssumptionMissing",
+      "severity": "Warning",
+      "category": "SystemEnergy",
+      "userMessage": "No DHW efficiency or COP was supplied; useful DHW energy was carried through as final energy.",
+      "userAction": "Provide DHW efficiency or COP for final energy conversion.",
+      "closedV1Gate": "HVAC.SYSTEM_ENERGY.SIMPLIFIED"
+    },
+    {
+      "code": "EquipmentSizing.InvalidTargetId",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Target id must not be negative.",
+      "userAction": "Check the selected sizing target.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.InvalidHeatingLoad",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Required heating load cannot be negative.",
+      "userAction": "Recalculate heating load or correct sizing input.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.InvalidCoolingLoad",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Required cooling load cannot be negative.",
+      "userAction": "Recalculate cooling load or correct sizing input.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.InvalidSafetyFactor",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Safety factor must be greater than zero.",
+      "userAction": "Enter a positive safety factor.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.InvalidHeatingSafetyFactor",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Heating safety factor must be greater than zero.",
+      "userAction": "Enter a positive heating safety factor.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.InvalidCoolingSafetyFactor",
+      "severity": "Error",
+      "category": "EquipmentSizing",
+      "userMessage": "Cooling safety factor must be greater than zero.",
+      "userAction": "Enter a positive cooling safety factor.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.DefaultHeatingSafetyFactorUsed",
+      "severity": "Warning",
+      "category": "EquipmentSizing",
+      "userMessage": "Heating safety factor was not supplied and documented default was used.",
+      "userAction": "Confirm default safety factor is acceptable.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.DefaultCoolingSafetyFactorUsed",
+      "severity": "Warning",
+      "category": "EquipmentSizing",
+      "userMessage": "Cooling safety factor was not supplied and documented default was used.",
+      "userAction": "Confirm default safety factor is acceptable.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.HeatingSafetyFactorApplied",
+      "severity": "Info",
+      "category": "EquipmentSizing",
+      "userMessage": "Heating safety factor was applied.",
+      "userAction": "Use this value when reviewing selected equipment capacity margin.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.CoolingSafetyFactorApplied",
+      "severity": "Info",
+      "category": "EquipmentSizing",
+      "userMessage": "Cooling safety factor was applied.",
+      "userAction": "Use this value when reviewing selected equipment capacity margin.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.NoEquipmentFound",
+      "severity": "Warning",
+      "category": "EquipmentSizing",
+      "userMessage": "No equipment candidates were supplied.",
+      "userAction": "Add equipment candidates before expecting recommendations.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "EquipmentSizing.NoRecommendedEquipment",
+      "severity": "Warning",
+      "category": "EquipmentSizing",
+      "userMessage": "No equipment candidate satisfied the sizing requirements.",
+      "userAction": "Review required load, safety factor or equipment catalog.",
+      "closedV1Gate": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN"
+    },
+    {
+      "code": "Aggregation.InvalidRoomArea",
+      "severity": "Error",
+      "category": "Aggregation",
+      "userMessage": "Room area must not be negative.",
+      "userAction": "Correct room geometry before aggregation.",
+      "closedV1Gate": "HVAC.AGGREGATION.LOAD_SUMMARY"
+    },
+    {
+      "code": "Aggregation.NoRooms",
+      "severity": "Warning",
+      "category": "Aggregation",
+      "userMessage": "No rooms were supplied for load aggregation.",
+      "userAction": "Check room assignment to building, floor or thermal zone.",
+      "closedV1Gate": "HVAC.AGGREGATION.LOAD_SUMMARY"
+    },
+    {
+      "code": "Aggregation.HourlyUnavailable",
+      "severity": "Warning",
+      "category": "Aggregation",
+      "userMessage": "Hourly aggregation is not available; design-point aggregation was used.",
+      "userAction": "Provide hourly profiles for coincident hourly aggregation.",
+      "closedV1Gate": "HVAC.AGGREGATION.LOAD_SUMMARY"
+    },
+    {
+      "code": "Transmission.MissingBoundaryTemperature",
+      "severity": "Error",
+      "category": "Transmission",
+      "userMessage": "Boundary temperature is required for this transmission element.",
+      "userAction": "Provide adjacent, boundary or outdoor temperature for the element.",
+      "closedV1Gate": "HVAC.ADJACENT_ZONE.SIMPLIFIED"
+    }
+  ]
 }

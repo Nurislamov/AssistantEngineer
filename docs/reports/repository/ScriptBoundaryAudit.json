@@ -14,8 +14,8 @@
   },
   "totals": {
     "scripts": 26,
-    "thinScripts": 18,
-    "heavyScripts": 6,
+    "thinScripts": 20,
+    "heavyScripts": 4,
     "unknownScripts": 2
   },
   "scripts": [
@@ -63,16 +63,10 @@
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-api-contract-snapshots.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 72,
-      "heavyPatterns": [
-        "ConvertFrom-Json",
-        "ConvertTo-Json",
-        "ForEach-Object",
-        "New-Item",
-        "Set-Content"
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1",
@@ -100,14 +94,10 @@
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-report-contract-snapshots.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 192,
-      "heavyPatterns": [
-        "ConvertTo-Json",
-        "New-Item",
-        "Set-Content"
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1",
