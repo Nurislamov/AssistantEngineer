@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Export Disclosure Checklist
+# Engineering Core V1 Export Disclosure Checklist
 
 Generated from report contract snapshots.
 

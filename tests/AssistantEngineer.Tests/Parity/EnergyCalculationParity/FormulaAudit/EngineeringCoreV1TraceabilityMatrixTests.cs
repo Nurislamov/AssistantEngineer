@@ -210,16 +210,24 @@ public class EngineeringCoreV1TraceabilityMatrixTests
     [Fact]
     public void TraceabilityGeneratorReadsManifestDiagnosticsValidationRegistryAndWritesJsonAndMarkdown()
     {
-        var content = File.ReadAllText(GeneratorScriptPath);
+        var script = File.ReadAllText(GeneratorScriptPath);
 
-        Assert.Contains("EngineeringCoreV1Manifest.json", content, StringComparison.Ordinal);
-        Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", content, StringComparison.Ordinal);
-        Assert.Contains("EnergyPlusValidationCaseRegistry.json", content, StringComparison.Ordinal);
-        Assert.Contains("EngineeringCoreV1TraceabilityMatrix.json", content, StringComparison.Ordinal);
-        Assert.Contains("EngineeringCoreV1TraceabilityMatrix.md", content, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreEvidence.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("generate-traceability-matrix", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConvertTo-Json", script, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(ToolProgramPath);
+
+        Assert.Contains("EngineeringCoreV1Manifest.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EnergyPlusValidationCaseRegistry.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1TraceabilityMatrix.json", tool, StringComparison.Ordinal);
+        Assert.Contains("EngineeringCoreV1TraceabilityMatrix.md", tool, StringComparison.Ordinal);
     }
-
-    private static JsonDocument ReadJson(string path) =>
+private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 
     private static string[] ReadStringArray(
@@ -252,4 +260,11 @@ public class EngineeringCoreV1TraceabilityMatrixTests
 
     private static string ValidationRegistryPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "validation", "EnergyPlusValidationCaseRegistry.json");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "Program.cs");
 }
+

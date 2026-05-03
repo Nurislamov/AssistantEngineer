@@ -7,8 +7,8 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Field | Value |
 |---|---|
 | Scripts | 26 |
-| Thin wrappers | 20 |
-| Heavy PowerShell scripts | 4 |
+| Thin wrappers | 23 |
+| Heavy PowerShell scripts | 1 |
 | Unknown PowerShell scripts | 2 |
 | Status | MigrationInProgress |
 
@@ -33,10 +33,10 @@ Generated at: 2026-01-01 00:00:00 UTC
 | `scripts/engineering-core/generate-calculation-module-inventory.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 8 |  |
 | `scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-api-contract-snapshots.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 12 |  |
-| `scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1` | HeavyPowerShellLogic |  | 111 | ConvertFrom-Json, New-Item, Set-Content |
-| `scripts/engineering-core/generate-engineering-core-v1-release-evidence.ps1` | HeavyPowerShellLogic |  | 99 | ConvertFrom-Json, ForEach-Object, New-Item, Set-Content, Where-Object |
+| `scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 12 |  |
+| `scripts/engineering-core/generate-engineering-core-v1-release-evidence.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 12 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-report-contract-snapshots.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 12 |  |
-| `scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1` | HeavyPowerShellLogic |  | 181 | ConvertFrom-Json, ConvertTo-Json, ForEach-Object, New-Item, Set-Content |
+| `scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 12 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-validation-comparison-summary.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |

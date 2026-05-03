@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Traceability Matrix
+# Engineering Core V1 Traceability Matrix
 
 ## Status
 
