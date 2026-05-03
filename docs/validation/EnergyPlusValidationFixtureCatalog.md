@@ -7,11 +7,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Field | Value |
 |---|---|
 | Catalog | EnergyPlus Validation Fixture Catalog |
-| Version | v1 |
 | Status | PlannedValidation |
-| Registry | docs/validation/EnergyPlusValidationCaseRegistry.json |
-| Fixtures root | tests/fixtures/validation/energyplus |
-| Reports directory | docs/reports/validation |
 | Registry cases | 5 |
 | Registry smoke cases | 3 |
 | Fixture directories | 3 |
@@ -21,11 +17,11 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Fixtures
 
-| CaseId | Registry listed | Metadata status | Comparison status | Reference status | Metrics | All metrics passed |
-|---|---|---|---|---|---:|---|
-| EP-SMOKE-001 | True | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 3 | True |
-| EP-SMOKE-002 | True | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 4 | True |
-| EP-SMOKE-003 | True | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 4 | True |
+| CaseId | Registry listed | Comparison status | Reference status | Metrics | All passed |
+|---|---|---|---|---:|---|
+| EP-SMOKE-001 | True | PlaceholderComparison | PlaceholderReferenceOutput | 3 | True |
+| EP-SMOKE-002 | True | PlaceholderComparison | PlaceholderReferenceOutput | 4 | True |
+| EP-SMOKE-003 | True | PlaceholderComparison | PlaceholderReferenceOutput | 4 | True |
 
 ## Registry cases without fixture
 
@@ -51,12 +47,8 @@ Generated at: 2026-01-01 00:00:00 UTC
 - PlaceholderComparison is not real EnergyPlus validation.
 - Future real validation must remain tolerance-based.
 
-## Interpretation
-
-The fixture catalog checks synchronization between the validation registry, committed fixture folders and generated comparison outputs.
-
-Current smoke fixtures are PlaceholderComparison unless a real EnergyPlus reference output is committed.
-
 PlaceholderComparison is not real EnergyPlus validation.
 
-This does not claim exact EnergyPlus numerical parity or ASHRAE 140 validation coverage.
+This does not claim exact EnergyPlus numerical parity.
+
+This does not claim ASHRAE 140 validation coverage.

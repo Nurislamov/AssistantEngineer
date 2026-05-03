@@ -10,24 +10,25 @@
 | Runner | GenericEnergyPlusValidationFixtureRunner |
 | Comparison status | PlaceholderComparison |
 | Reference status | PlaceholderReferenceOutput |
-| Reference file | D:/Project/AssistantEngineer/tests/fixtures/validation/energyplus/EP-SMOKE-002/reference-output.placeholder.json |
+| Reference file | tests/fixtures/validation/energyplus/EP-SMOKE-002/reference-output.placeholder.json |
 | All metrics passed | True |
 
 ## Metrics
 
 | Metric | Type | AssistantEngineer | Reference | Absolute difference | Effective absolute tolerance | Passed |
 |---|---|---:|---:|---:|---:|---|
-| annual-cooling-kwh | NumericWithinTolerance | 18 | 18 | 0 | 3.6 | True |
+| annual-cooling-kwh | NumericWithinTolerance | 18 | 18 | 0 | 3,6 | True |
 | peak-cooling-w | NumericWithinTolerance | 3600 | 3600 | 0 | 900 | True |
 | solar-orientation-response | DirectionalTrend | 1 | 1 | 0 | 0 | True |
-| annual-heating-kwh | SameSign | 0 | 0 | 0 | 0.1 | True |
+| annual-heating-kwh | SameSign | 0 | 0 | 0 | 0,1 | True |
 
 ## Required non-claims
 
 - Does not claim exact EnergyPlus numerical parity.
 - Does not claim ASHRAE 140 validation coverage.
 - Does not claim full ISO 52016 node/matrix solver parity.
-- Does not claim full optical glazing or EnergyPlus solar distribution parity.
+- PlaceholderComparison is not real EnergyPlus validation.
+- Future real validation must remain tolerance-based.
 
 ## Interpretation
 
