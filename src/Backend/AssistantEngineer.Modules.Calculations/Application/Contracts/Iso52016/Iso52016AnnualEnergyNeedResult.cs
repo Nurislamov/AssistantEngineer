@@ -1,4 +1,5 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 public sealed record Iso52016AnnualEnergyNeedResult(
     int BuildingId,
@@ -10,4 +11,5 @@ public sealed record Iso52016AnnualEnergyNeedResult(
     double AnnualCoolingDemandKWh,
     Iso52016EnergyBalanceBreakdown Breakdown,
     IReadOnlyList<Iso52016ZoneHourlyEnergyNeed>? ZoneHourlyResults = null,
-    IReadOnlyList<Iso52016RoomHourlyEnergyNeed>? RoomHourlyResults = null);
+    IReadOnlyList<Iso52016RoomHourlyEnergyNeed>? RoomHourlyResults = null,
+    IReadOnlyList<CalculationDiagnostic>? Diagnostics = null);

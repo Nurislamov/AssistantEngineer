@@ -7,6 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ground;
@@ -169,7 +170,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
             building,
             weatherContext.Year,
             zoneHourlyResults,
-            roomHourlyResults);
+            roomHourlyResults,
+            BuildAnnualDiagnostics(weatherContext));
     }
 
     public async Task<List<double>> CalculateHourlyCoolingLoadsAsync(
@@ -219,6 +221,51 @@ public sealed class Iso52016HourlySteadyStateCalculator
         }
 
         return result;
+    }
+
+    private static IReadOnlyList<CalculationDiagnostic> BuildAnnualDiagnostics(
+        Iso52016HourlyWeatherContext weatherContext)
+    {
+        var context = $"ISO 52016 annual steady-state run {weatherContext.Year}";
+        var diagnostics = new List<CalculationDiagnostic>();
+
+        if (weatherContext.WeatherSolarContext is not null)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "Iso52016.WeatherSolarContextUsed",
+                "Annual hourly ISO 52016 steady-state calculation used the ISO 52016 weather-solar context for window solar gains.",
+                context));
+
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "Iso52016.SolarGainComponentPathUsed",
+                "Window solar gains were fed from separated beam, diffuse sky and ground-reflected surface irradiance components.",
+                context));
+
+            if (weatherContext.WeatherSolarContext.Diagnostics.Any(diagnostic =>
+                    diagnostic.Code == "SolarWeather.PerezAnisotropicModelUsed" ||
+                    diagnostic.Code == "Iso52016.PerezAnisotropicModelUsed"))
+            {
+                diagnostics.Add(new CalculationDiagnostic(
+                    CalculationDiagnosticSeverity.Info,
+                    "Iso52016.PerezAnisotropicModelVisibleInAnnualResult",
+                    "Perez anisotropic surface irradiance diagnostics were visible in the annual ISO 52016 result.",
+                    context));
+            }
+
+            diagnostics.AddRange(weatherContext.WeatherSolarContext.Diagnostics);
+
+            return diagnostics;
+        }
+
+        diagnostics.Add(new CalculationDiagnostic(
+            CalculationDiagnosticSeverity.Warning,
+            "Iso52016.LegacySolarRadiationFallbackUsed",
+            "Annual hourly ISO 52016 steady-state calculation used the legacy ISolarRadiationService fallback because no ISO 52016 weather-solar context was available.",
+            context));
+
+        return diagnostics;
     }
 }
 
