@@ -53,4 +53,8 @@ public interface IBuildingEnergyAnalysisFacade
         int? year,
         BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken);
-}
+
+    Task<Result<Iso52016BuildingEnergySimulationApplicationResult>> SimulateIso52016Async(
+        int buildingId,
+        Iso52016BuildingEnergySimulationCommand request,
+        CancellationToken cancellationToken);}
