@@ -48,12 +48,12 @@ internal static class Iso52016Registration
         services.AddScoped<Iso52016HourlySteadyStateCalculator>();
         services.AddScoped<Iso52016MonthlyQuasiSteadyStateCalculator>();
 
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2HourlySolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2HourlySolver>();
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016InternalGainReferenceDataProvider, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016InternalGainReferenceDataProvider>();
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016AdjacentUnconditionedZoneTemperatureSolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016AdjacentUnconditionedZoneTemperatureSolver>();
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2ReducedRoomModelBuilder, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2ReducedRoomModelBuilder>();
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2RoomEnergySimulationService, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2RoomEnergySimulationService>();
-        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2RoomEnergySimulationResultMapper, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2RoomEnergySimulationResultMapper>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016MatrixHourlySolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016MatrixHourlySolver>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016InternalGainReferenceDataProvider, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016InternalGainReferenceDataProvider>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016AdjacentUnconditionedZoneTemperatureSolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016AdjacentUnconditionedZoneTemperatureSolver>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016MatrixReducedRoomModelBuilder, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016MatrixReducedRoomModelBuilder>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016MatrixRoomEnergySimulationService, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016MatrixRoomEnergySimulationService>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016MatrixRoomEnergySimulationResultMapper, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016MatrixRoomEnergySimulationResultMapper>();
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
 
         return services;

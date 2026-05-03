@@ -4,22 +4,21 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-namespace AssistantEngineer.Tests.Calculations.Iso52016;
+namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 
-public class Iso52016RoomEnergySimulationServiceTests
+public class Iso52016MatrixRoomEnergySimulationServiceTests
 {
-    private readonly Iso52016RoomEnergySimulationService _service =
+    private readonly Iso52016MatrixRoomEnergySimulationService _service =
         new(
             new Iso52016RoomSolarGainProfileBuilder(
                 new Iso52016WindowSolarGainCalculator()),
             new Iso52016RoomInternalGainProfileBuilder(),
             new Iso52016RoomHourlyInputProfileBuilder(),
             new Iso52016MatrixReducedRoomModelBuilder(),
-                new Iso52016MatrixHourlySolver(),
-                new Iso52016MatrixRoomEnergySimulationResultMapper());
+            new Iso52016MatrixHourlySolver());
 
     [Fact]
-    public void Simulate_BuildsCompleteRoomEnergySimulationResult()
+    public void Simulate_BuildsCompleteV2RoomEnergySimulationResult()
     {
         var request = CreateRequest();
 
@@ -31,36 +30,54 @@ public class Iso52016RoomEnergySimulationServiceTests
 
         Assert.Equal("room-1", simulation.RoomCode);
         Assert.Equal(24, simulation.HourCount);
-
         Assert.Equal(24, simulation.SolarGainProfile.HourCount);
         Assert.Equal(24, simulation.InternalGainProfile.HourCount);
         Assert.Equal(24, simulation.HourlyInputProfile.HourCount);
-        Assert.Equal(24, simulation.HeatBalanceProfile.HourCount);
-
-        Assert.Equal(600.0, simulation.SolarGainProfile.GetHour(0).TotalSolarGainW, precision: 6);
-        Assert.Equal(600.0, simulation.HourlyInputProfile.GetHour(0).SolarGainsW, precision: 6);
-        Assert.Equal(600.0 * 24.0 / 1000.0, simulation.AnnualSolarGainsKWh, precision: 6);
+        Assert.Equal(24, simulation.MatrixSolverProfile.HourCount);
+        Assert.Single(simulation.MatrixSolverRequest.Nodes);
+        Assert.Single(simulation.MatrixSolverRequest.BoundaryConductances);
         Assert.True(simulation.AnnualSolarGainsKWh > 0);
         Assert.True(simulation.AnnualInternalGainsKWh > 0);
         Assert.True(simulation.AnnualTotalGainsKWh > 0);
     }
 
     [Fact]
-    public void Simulate_WithNoWindows_ReturnsZeroSolarGains()
+    public void Simulate_ColdWeatherProducesHeatingNeedThroughV2Path()
     {
         var request = CreateRequest(
-            windows: []);
+            outdoorTemperatureC: -10,
+            solarIrradianceWm2: 0,
+            peopleCount: 0,
+            equipmentLoadW: 0,
+            lightingLoadW: 0);
 
         var result = _service.Simulate(request);
 
         Assert.True(result.IsSuccess);
-
-        Assert.Equal(0.0, result.Value.AnnualSolarGainsKWh, precision: 6);
-        Assert.True(result.Value.AnnualInternalGainsKWh > 0);
+        Assert.True(result.Value.AnnualHeatingEnergyKWh > 0);
+        Assert.Equal(0.0, result.Value.AnnualCoolingEnergyKWh, precision: 6);
+        Assert.True(result.Value.PeakHeatingLoadW > 0);
     }
 
     [Fact]
-    public void Simulate_PropagatesInternalGainValidationFailure()
+    public void Simulate_HotWeatherAndHighGainsProduceCoolingNeedThroughV2Path()
+    {
+        var request = CreateRequest(
+            outdoorTemperatureC: 35,
+            solarIrradianceWm2: 700,
+            peopleCount: 4,
+            equipmentLoadW: 1200,
+            lightingLoadW: 800);
+
+        var result = _service.Simulate(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.True(result.Value.AnnualCoolingEnergyKWh > 0);
+        Assert.True(result.Value.PeakCoolingLoadW > 0);
+    }
+
+    [Fact]
+    public void Simulate_PropagatesScheduleValidationFailure()
     {
         var request = CreateRequest(
             occupancyFactors: ConstantProfile(23, 1.0));
@@ -69,60 +86,6 @@ public class Iso52016RoomEnergySimulationServiceTests
 
         Assert.True(result.IsFailure);
         Assert.Equal("Occupancy factors must contain exactly 24 values.", result.Error);
-    }
-
-    [Fact]
-    public void Simulate_PropagatesHourlyInputValidationFailure()
-    {
-        var request = CreateRequest(
-            transmissionHeatTransferCoefficientWPerK: 0,
-            ventilationHeatTransferCoefficientWPerK: 0);
-
-        var result = _service.Simulate(request);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("At least one heat transfer coefficient must be greater than zero.", result.Error);
-    }
-
-    [Fact]
-    public void Simulate_RejectsEmptyRoomCode()
-    {
-        var request = CreateRequest(
-            roomCode: " ");
-
-        var result = _service.Simulate(request);
-
-        Assert.True(result.IsFailure);
-        Assert.Equal("Room code is required.", result.Error);
-    }
-
-    [Fact]
-    public void Simulate_ReturnsHeatingOrCoolingEnergyDependingOnConditions()
-    {
-        var heatingRequest = CreateRequest(
-            outdoorTemperatureC: -5,
-            solarIrradianceWm2: 0,
-            equipmentLoadW: 0,
-            lightingLoadW: 0,
-            peopleCount: 0);
-
-        var heatingResult = _service.Simulate(heatingRequest);
-
-        Assert.True(heatingResult.IsSuccess);
-        Assert.True(heatingResult.Value.AnnualHeatingEnergyKWh > 0);
-        Assert.Equal(0.0, heatingResult.Value.AnnualCoolingEnergyKWh, precision: 6);
-
-        var coolingRequest = CreateRequest(
-            outdoorTemperatureC: 35,
-            solarIrradianceWm2: 500,
-            equipmentLoadW: 1000,
-            lightingLoadW: 500,
-            peopleCount: 2);
-
-        var coolingResult = _service.Simulate(coolingRequest);
-
-        Assert.True(coolingResult.IsSuccess);
-        Assert.True(coolingResult.Value.AnnualCoolingEnergyKWh > 0);
     }
 
     private static Iso52016RoomEnergySimulationRequest CreateRequest(

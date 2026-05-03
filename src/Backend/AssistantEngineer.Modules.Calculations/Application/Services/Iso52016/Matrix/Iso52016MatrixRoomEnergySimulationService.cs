@@ -4,45 +4,37 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-/// <summary>
-/// Primary ISO 52016 room simulation service. The old simplified RC solver path has been removed;
-/// this service now always routes through the Matrix node solver and maps the result to the existing
-/// public room energy simulation contract.
-/// </summary>
-public sealed class Iso52016RoomEnergySimulationService : IIso52016RoomEnergySimulationService
+public sealed class Iso52016MatrixRoomEnergySimulationService : IIso52016MatrixRoomEnergySimulationService
 {
     private readonly IIso52016RoomSolarGainProfileBuilder _solarGainProfileBuilder;
     private readonly IIso52016RoomInternalGainProfileBuilder _internalGainProfileBuilder;
     private readonly IIso52016RoomHourlyInputProfileBuilder _hourlyInputProfileBuilder;
-    private readonly IIso52016MatrixReducedRoomModelBuilder _matrixModelBuilder;
-    private readonly IIso52016MatrixHourlySolver _matrixSolver;
-    private readonly IIso52016MatrixRoomEnergySimulationResultMapper _matrixResultMapper;
+    private readonly IIso52016MatrixReducedRoomModelBuilder _reducedRoomModelBuilder;
+    private readonly IIso52016MatrixHourlySolver _hourlySolver;
 
-    public Iso52016RoomEnergySimulationService(
+    public Iso52016MatrixRoomEnergySimulationService(
         IIso52016RoomSolarGainProfileBuilder solarGainProfileBuilder,
         IIso52016RoomInternalGainProfileBuilder internalGainProfileBuilder,
         IIso52016RoomHourlyInputProfileBuilder hourlyInputProfileBuilder,
-        IIso52016MatrixReducedRoomModelBuilder matrixModelBuilder,
-        IIso52016MatrixHourlySolver matrixSolver,
-        IIso52016MatrixRoomEnergySimulationResultMapper matrixResultMapper)
+        IIso52016MatrixReducedRoomModelBuilder reducedRoomModelBuilder,
+        IIso52016MatrixHourlySolver hourlySolver)
     {
         _solarGainProfileBuilder = solarGainProfileBuilder;
         _internalGainProfileBuilder = internalGainProfileBuilder;
         _hourlyInputProfileBuilder = hourlyInputProfileBuilder;
-        _matrixModelBuilder = matrixModelBuilder;
-        _matrixSolver = matrixSolver;
-        _matrixResultMapper = matrixResultMapper;
+        _reducedRoomModelBuilder = reducedRoomModelBuilder;
+        _hourlySolver = hourlySolver;
     }
 
-    public Result<Iso52016RoomEnergySimulationResult> Simulate(
+    public Result<Iso52016MatrixRoomEnergySimulationResult> Simulate(
         Iso52016RoomEnergySimulationRequest request)
     {
         var validation = Validate(request);
 
         if (validation.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(validation);
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(validation);
 
         var solarGainResult = _solarGainProfileBuilder.Build(
             new Iso52016RoomSolarGainProfileRequest(
@@ -51,7 +43,7 @@ public sealed class Iso52016RoomEnergySimulationService : IIso52016RoomEnergySim
                 Windows: request.Windows));
 
         if (solarGainResult.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(solarGainResult);
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(solarGainResult);
 
         var internalGainResult = _internalGainProfileBuilder.Build(
             new Iso52016RoomInternalGainProfileRequest(
@@ -66,7 +58,7 @@ public sealed class Iso52016RoomEnergySimulationService : IIso52016RoomEnergySim
                 LightingFactors: request.LightingFactors));
 
         if (internalGainResult.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(internalGainResult);
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(internalGainResult);
 
         var hourlyInputResult = _hourlyInputProfileBuilder.Build(
             new Iso52016RoomHourlyInputProfileRequest(
@@ -81,38 +73,36 @@ public sealed class Iso52016RoomEnergySimulationService : IIso52016RoomEnergySim
                 CoolingSetpointC: request.CoolingSetpointC));
 
         if (hourlyInputResult.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(hourlyInputResult);
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(hourlyInputResult);
 
-        var matrixRequestResult = _matrixModelBuilder.Build(
+        var matrixRequestResult = _reducedRoomModelBuilder.Build(
             new Iso52016MatrixReducedRoomModelRequest(
                 HourlyInputProfile: hourlyInputResult.Value,
                 HeatBalanceOptions: request.HeatBalanceOptions));
 
         if (matrixRequestResult.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(matrixRequestResult);
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(matrixRequestResult);
 
-        var matrixProfileResult = _matrixSolver.Solve(
-            matrixRequestResult.Value);
+        var matrixResult = _hourlySolver.Solve(matrixRequestResult.Value);
 
-        if (matrixProfileResult.IsFailure)
-            return Result<Iso52016RoomEnergySimulationResult>.Failure(matrixProfileResult);
+        if (matrixResult.IsFailure)
+            return Result<Iso52016MatrixRoomEnergySimulationResult>.Failure(matrixResult);
 
-        var matrixResult = new Iso52016MatrixRoomEnergySimulationResult(
-            RoomCode: request.RoomCode.Trim(),
-            SolarGainProfile: solarGainResult.Value,
-            InternalGainProfile: internalGainResult.Value,
-            HourlyInputProfile: hourlyInputResult.Value,
-            MatrixSolverRequest: matrixRequestResult.Value,
-            MatrixSolverProfile: matrixProfileResult.Value);
-
-        return _matrixResultMapper.Map(matrixResult);
+        return Result<Iso52016MatrixRoomEnergySimulationResult>.Success(
+            new Iso52016MatrixRoomEnergySimulationResult(
+                RoomCode: request.RoomCode.Trim(),
+                SolarGainProfile: solarGainResult.Value,
+                InternalGainProfile: internalGainResult.Value,
+                HourlyInputProfile: hourlyInputResult.Value,
+                MatrixSolverRequest: matrixRequestResult.Value,
+                MatrixSolverProfile: matrixResult.Value));
     }
 
     private static Result Validate(
         Iso52016RoomEnergySimulationRequest request)
     {
         if (request is null)
-            return Result.Validation("ISO 52016 room energy simulation request is required.");
+            return Result.Validation("ISO 52016 Matrix room energy simulation request is required.");
 
         if (string.IsNullOrWhiteSpace(request.RoomCode))
             return Result.Validation("Room code is required.");

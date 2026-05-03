@@ -7,7 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Solar;
 using AssistantEngineer.Modules.Calculations.Application.Services.Weather;
 using AssistantEngineer.Modules.Calculations.Application.Services.WeatherSolar;
 using AssistantEngineer.SharedKernel.ValueObjects;
-using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -32,9 +32,9 @@ public class Iso52016BuildingDomainSimulationFacadeTests
                         new Iso52016WindowSolarGainCalculator()),
                     new Iso52016RoomInternalGainProfileBuilder(),
                     new Iso52016RoomHourlyInputProfileBuilder(),
-                    new Iso52016V2ReducedRoomModelBuilder(),
-                new Iso52016V2HourlySolver(),
-                new Iso52016V2RoomEnergySimulationResultMapper())));
+                    new Iso52016MatrixReducedRoomModelBuilder(),
+                new Iso52016MatrixHourlySolver(),
+                new Iso52016MatrixRoomEnergySimulationResultMapper())));
 
     [Fact]
     public void Simulate_ReturnsBuildingDomainSimulation()

@@ -1,6 +1,6 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.V2;
-using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
@@ -11,12 +11,12 @@ public static class Iso52016MatrixTestSolver
         Iso52016RoomHourlyInputProfile inputProfile,
         Iso52016RoomHeatBalanceOptions options)
     {
-        var modelBuilder = new Iso52016V2ReducedRoomModelBuilder();
-        var solver = new Iso52016V2HourlySolver();
-        var mapper = new Iso52016V2RoomEnergySimulationResultMapper();
+        var modelBuilder = new Iso52016MatrixReducedRoomModelBuilder();
+        var solver = new Iso52016MatrixHourlySolver();
+        var mapper = new Iso52016MatrixRoomEnergySimulationResultMapper();
 
         var matrixRequest = modelBuilder.Build(
-            new Iso52016V2ReducedRoomModelRequest(
+            new Iso52016MatrixReducedRoomModelRequest(
                 HourlyInputProfile: inputProfile,
                 HeatBalanceOptions: options));
 
@@ -30,7 +30,7 @@ public static class Iso52016MatrixTestSolver
             return Result<Iso52016RoomHeatBalanceProfile>.Failure(matrixProfile);
 
         var mapped = mapper.Map(
-            new Iso52016V2RoomEnergySimulationResult(
+            new Iso52016MatrixRoomEnergySimulationResult(
                 RoomCode: inputProfile.RoomCode,
                 SolarGainProfile: BuildSolarGainProfile(inputProfile),
                 InternalGainProfile: BuildInternalGainProfile(inputProfile),
