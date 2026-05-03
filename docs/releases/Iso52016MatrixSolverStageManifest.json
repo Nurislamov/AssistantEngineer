@@ -1,41 +1,48 @@
 {
-  "stageId": "ISO52016-MATRIX-SOLVER",
-  "stageName": "ISO 52016 Matrix Solver Stage",
-  "status": "Closed",
-  "closedWorkItems": [
-    "AE-ISO52016-001",
-    "AE-GAINS-001",
-    "AE-ZONES-001"
-  ],
-  "calculationPaths": [
-        "Matrix"
-  ],
-  "primaryApiEndpoint": "POST /api/v1/buildings/{buildingId}/energy-analysis/iso52016/simulate",
-  "implementationGuards": [
-    "Iso52016MatrixHourlySolver",
-    "Iso52016InternalGainReferenceDataProvider",
-    "AdjacentUnconditioned",
-    "Iso52016MatrixReducedRoomModelBuilder",
-    "Iso52016MatrixRoomEnergySimulationService",
-    "Iso52016MatrixRoomEnergySimulationResultMapper",
-        "Iso52016BuildingEnergySimulationCommand"
-  ],
-  "documentationFiles": [
-    "docs/calculations/Iso52016MatrixSolverStage.md",
-    "docs/releases/Iso52016MatrixSolverStageManifest.json",
-    "docs/traceability/Iso52016MatrixSolverTraceabilityMatrix.json"
-  ],
-  "verificationScripts": [
-    "scripts/iso52016/verify-iso52016-matrix-solver-stage.ps1"
-  ],
-  "testGuards": [
-    "tests/AssistantEngineer.Tests/Calculations/Iso52016/V2/Iso52016MatrixSolverStageTraceabilityTests.cs"
-  ],
-  "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full coupled multi-zone heat-balance simulation claim.",
-    "No latent/moisture/humidity calculation claim."
-  ]
+    "stageId":  "ISO52016-MATRIX-SOLVER",
+    "stageName":  "ISO 52016 Matrix Solver Stage",
+    "status":  "Closed",
+    "baselineVerificationIntegrated":  true,
+    "closedWorkItems":  [
+                            "AE-ISO52016-001",
+                            "AE-GAINS-001",
+                            "AE-ZONES-001"
+                        ],
+    "calculationPaths":  [
+                             "Matrix"
+                         ],
+    "primaryApiEndpoint":  "POST /api/v1/buildings/{buildingId}/energy-analysis/iso52016/simulate",
+    "implementationGuards":  [
+                                 "Iso52016MatrixHourlySolver",
+                                 "Iso52016InternalGainReferenceDataProvider",
+                                 "AdjacentUnconditioned",
+                                 "Iso52016MatrixReducedRoomModelBuilder",
+                                 "Iso52016MatrixRoomEnergySimulationService",
+                                 "Iso52016MatrixRoomEnergySimulationResultMapper",
+                                 "Iso52016BuildingEnergySimulationCommand"
+                             ],
+    "explicitNonClaims":  [
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No full coupled multi-zone heat-balance simulation claim.",
+                              "No latent/moisture/humidity calculation claim."
+                          ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016MatrixSolverStage.md",
+                               "docs/releases/Iso52016MatrixSolverStageManifest.json",
+                               "docs/traceability/Iso52016MatrixSolverTraceabilityMatrix.json",
+                               "docs/calculations/Iso52016MatrixBaselineFixtures.md",
+                               "docs/releases/Iso52016MatrixBaselineFixturesManifest.json",
+                               "docs/calculations/Iso52016MatrixVerificationGate.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-matrix-solver-stage.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-baselines.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/V2/Iso52016MatrixSolverStageTraceabilityTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixVerificationGateTests.cs"
+                   ]
 }

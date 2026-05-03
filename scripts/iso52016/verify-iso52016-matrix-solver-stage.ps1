@@ -1,6 +1,7 @@
 param(
     [string] $RepoRoot = (Get-Location).Path,
-    [switch] $SkipTests
+    [switch] $SkipTests,
+    [switch] $SkipBaselines
 )
 
 Set-StrictMode -Version Latest
@@ -13,7 +14,11 @@ $requiredFiles = @(
     "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016BuildingEnergySimulationCommand.cs",
     "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Matrix\Iso52016MatrixHourlySolverRequest.cs",
     "src\Backend\AssistantEngineer.Modules.Calculations\Application\Services\Iso52016\Matrix\Iso52016MatrixHourlySolver.cs",
-    "src\Backend\AssistantEngineer.Api\Controllers\Analysis\BuildingEnergyAnalysisController.cs"
+    "src\Backend\AssistantEngineer.Api\Controllers\Analysis\BuildingEnergyAnalysisController.cs",
+    "docs\releases\Iso52016MatrixBaselineFixturesManifest.json",
+    "docs\calculations\Iso52016MatrixBaselineFixtures.md",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixBaselineFixtureTests.cs",
+    "scripts\iso52016\verify-iso52016-matrix-baselines.ps1"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -52,6 +57,16 @@ foreach ($guard in @(
     }
 }
 
+
+if (-not $SkipBaselines) {
+    Push-Location $RepoRoot
+    try {
+        .\scripts\iso52016\verify-iso52016-matrix-baselines.ps1 -SkipTests
+    }
+    finally {
+        Pop-Location
+    }
+}
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {
