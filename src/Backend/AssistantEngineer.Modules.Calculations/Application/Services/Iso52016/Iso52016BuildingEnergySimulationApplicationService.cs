@@ -83,8 +83,7 @@ public sealed class Iso52016BuildingEnergySimulationApplicationService : IIso520
                 Defaults: request.Defaults,
                 HeatingSetpointOverrideC: request.HeatingSetpointOverrideC,
                 CoolingSetpointOverrideC: request.CoolingSetpointOverrideC,
-                HeatBalanceOptions: request.HeatBalanceOptions,
-                SimulationEngine: request.SimulationEngine));
+                HeatBalanceOptions: request.HeatBalanceOptions));
 
         if (simulationResult.IsFailure)
             return Result<Iso52016BuildingEnergySimulationApplicationResult>.Failure(simulationResult);
@@ -106,11 +105,7 @@ public sealed class Iso52016BuildingEnergySimulationApplicationService : IIso520
     {
         if (request.BuildingId <= 0)
             return Result.Validation("Building id must be greater than zero.");
-
-        if (!Enum.IsDefined(request.SimulationEngine))
-            return Result.Validation("Unsupported ISO 52016 simulation engine.");
-
-        if (request.LatitudeDegrees is < -90.0 or > 90.0)
+if (request.LatitudeDegrees is < -90.0 or > 90.0)
             return Result.Validation("Latitude must be between -90 and 90 degrees.");
 
         if (request.LongitudeDegrees is < -180.0 or > 180.0)

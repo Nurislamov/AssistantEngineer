@@ -100,7 +100,6 @@ public sealed class BuildingEnergyAnalysisFacade : IBuildingEnergyAnalysisFacade
                 Defaults: request.Defaults,
                 HeatingSetpointOverrideC: request.HeatingSetpointOverrideC,
                 CoolingSetpointOverrideC: request.CoolingSetpointOverrideC,
-                HeatBalanceOptions: request.HeatBalanceOptions,
-                SimulationEngine: request.SimulationEngine),
+                HeatBalanceOptions: request.HeatBalanceOptions),
             cancellationToken);
     }}

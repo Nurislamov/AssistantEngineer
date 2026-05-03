@@ -27,7 +27,7 @@ Main pieces:
 - Reduced room model adapter from the existing room hourly input profile to V2 matrix input
 - V2 room energy simulation service
 - V2 result mapper back to the existing room energy simulation contract
-- `Iso52016SimulationEngine` switch
+- `Iso52016CalculationPath` switch
 - Room facade, building facade, domain facade and application request propagation
 - API command and endpoint for explicit simulation engine selection
 
@@ -45,7 +45,6 @@ Example request body:
   "longitudeDegrees": 69.2,
   "timeZoneOffset": "05:00:00",
   "weatherYear": 2026,
-  "simulationEngine": "Matrix",
   "heatBalanceOptions": {
     "initialIndoorTemperatureC": 22,
     "timeStepSeconds": 3600

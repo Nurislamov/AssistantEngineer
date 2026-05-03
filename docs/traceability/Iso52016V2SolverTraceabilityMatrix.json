@@ -13,7 +13,7 @@
         "Iso52016V2ReducedRoomModelBuilder",
         "Iso52016V2RoomEnergySimulationService",
         "Iso52016V2RoomEnergySimulationResultMapper",
-        "Iso52016SimulationEngine"
+        "Iso52016CalculationPath"
       ],
       "testGuards": [
         "Iso52016V2HourlySolver",

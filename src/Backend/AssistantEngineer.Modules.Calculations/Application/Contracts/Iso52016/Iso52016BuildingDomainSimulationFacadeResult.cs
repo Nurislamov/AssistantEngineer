@@ -8,10 +8,7 @@ public sealed record Iso52016BuildingDomainSimulationFacadeResult(
     IReadOnlyList<Room> Rooms,
     Iso52016BuildingSimulationFacadeResult SimulationResult)
 {
-    public Iso52016SimulationEngine SimulationEngine =>
-        SimulationResult.SimulationEngine;
-
-    public int RoomCount => Rooms.Count;
+public int RoomCount => Rooms.Count;
 
     public int HourCount => SimulationResult.HourCount;
 

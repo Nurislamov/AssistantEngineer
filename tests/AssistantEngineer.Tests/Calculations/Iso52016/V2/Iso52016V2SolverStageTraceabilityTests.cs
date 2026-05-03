@@ -105,9 +105,11 @@ public class Iso52016V2SolverStageTraceabilityTests
         Assert.Contains("AdjacentUnconditioned", sourceText);
         Assert.Contains("Iso52016V2RoomEnergySimulationService", sourceText);
         Assert.Contains("Iso52016V2RoomEnergySimulationResultMapper", sourceText);
-        Assert.Contains("Iso52016SimulationEngine", sourceText);
         Assert.Contains("Iso52016BuildingEnergySimulationCommand", sourceText);
         Assert.Contains("SimulateIso52016", sourceText);
+        Assert.DoesNotContain("Iso52016SimulationEngine", sourceText);
+        Assert.DoesNotContain("V2Matrix", sourceText);
+        Assert.DoesNotContain("Legacy", sourceText);
         Assert.Contains("Matrix", sourceText);
     }
 

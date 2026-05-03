@@ -1,16 +1,25 @@
 # ISO 52016 Matrix-only decision
 
-The project is not public yet, so the old simplified RC heat-balance path has been removed as a selectable or registered path.
+The project is not public yet, so the old simplified RC heat-balance path and the temporary simulation-engine selector have been removed.
 
-The only supported ISO 52016 simulation engine is:
+There is now one single Matrix calculation path:
 
-```csharp
-Iso52016SimulationEngine.Matrix
+```text
+ISO 52016 Matrix
 ```
 
-## Removed path
+## Removed public/internal selector
 
-The previous simplified room heat-balance solver was removed from the primary code path and from dependency injection.
+The following public/internal selector was removed because it no longer represents a real choice:
+
+- `ISO 52016 calculation path`
+- `calculationPath` API field
+- `Matrix`
+- `Matrix`
+
+## Removed legacy solver path
+
+The previous simplified room heat-balance solver was removed from dependency injection and from the primary source tree.
 
 Removed implementation guards:
 
@@ -20,7 +29,7 @@ Removed implementation guards:
 - old heat-balance solver registration
 - old heat-balance solver tests
 
-## Kept contracts
+## Kept result contracts
 
 The existing result contracts are kept to avoid unnecessary API churn:
 
@@ -32,14 +41,6 @@ These names describe result shape, not the removed solver implementation.
 
 ## Public/API behavior
 
-The API no longer exposes `Legacy` or `V2Matrix` as supported values.
+The API has no public simulation engine selector. Requests should omit any `calculationPath` field.
 
-Use:
-
-```json
-{
-  "simulationEngine": "Matrix"
-}
-```
-
-The field may later be removed entirely if no alternate engines are planned.
+The ISO 52016 simulation endpoint always uses the Matrix path.

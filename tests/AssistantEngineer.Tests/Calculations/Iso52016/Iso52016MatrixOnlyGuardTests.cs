@@ -1,16 +1,23 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
-
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
 public class Iso52016MatrixOnlyGuardTests
 {
     [Fact]
-    public void SimulationEngine_ExposesOnlyMatrix()
+    public void SourceTree_DoesNotExposeSimulationEngineSelection()
     {
-        var names = Enum.GetNames<Iso52016SimulationEngine>();
+        var repoRoot = FindRepositoryRoot();
 
-        var name = Assert.Single(names);
-        Assert.Equal("Matrix", name);
+        var sourceText = string.Join(
+            Environment.NewLine,
+            Directory
+                .GetFiles(Path.Combine(repoRoot, "src", "Backend"), "*.cs", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+
+        Assert.DoesNotContain("Iso52016SimulationEngine", sourceText);
+        Assert.DoesNotContain("SimulationEngine", sourceText);
+        Assert.DoesNotContain("simulationEngine", sourceText);
+        Assert.DoesNotContain("V2Matrix", sourceText);
+        Assert.DoesNotContain("Legacy", sourceText);
     }
 
     [Fact]
@@ -27,12 +34,10 @@ public class Iso52016MatrixOnlyGuardTests
         Assert.DoesNotContain("IIso52016RoomHeatBalanceSolver", sourceText);
         Assert.DoesNotContain("Iso52016RoomHeatBalanceSolver", sourceText);
         Assert.DoesNotContain("Iso52016RoomHeatBalanceRequest", sourceText);
-        Assert.DoesNotContain("Iso52016SimulationEngine.Legacy", sourceText);
-        Assert.DoesNotContain("Iso52016SimulationEngine.V2Matrix", sourceText);
     }
 
     [Fact]
-    public void Documentation_RecordsMatrixOnlyDecision()
+    public void Documentation_RecordsMatrixOnlyDecisionWithoutPublicEngineSwitch()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -47,8 +52,8 @@ public class Iso52016MatrixOnlyGuardTests
         var text = File.ReadAllText(docPath);
 
         Assert.Contains("Matrix-only", text);
-        Assert.Contains("Iso52016SimulationEngine.Matrix", text);
-        Assert.Contains("old simplified RC heat-balance path has been removed", text);
+        Assert.Contains("single Matrix calculation path", text);
+        Assert.Contains("no public simulation engine selector", text);
     }
 
     private static string FindRepositoryRoot()

@@ -10,10 +10,7 @@ public sealed record Iso52016BuildingEnergySimulationApplicationResult(
     TimeSpan TimeZoneOffset,
     Iso52016BuildingDomainSimulationFacadeResult Simulation)
 {
-    public Iso52016SimulationEngine SimulationEngine =>
-        Simulation.SimulationEngine;
-
-    public int RoomCount => Simulation.RoomCount;
+public int RoomCount => Simulation.RoomCount;
 
     public int HourCount => Simulation.HourCount;
 

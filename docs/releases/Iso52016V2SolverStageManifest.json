@@ -7,9 +7,8 @@
     "AE-GAINS-001",
     "AE-ZONES-001"
   ],
-  "simulationEngines": [
-    "Matrix",
-    "Matrix"
+  "calculationPaths": [
+        "Matrix"
   ],
   "primaryApiEndpoint": "POST /api/v1/buildings/{buildingId}/energy-analysis/iso52016/simulate",
   "implementationGuards": [
@@ -19,8 +18,7 @@
     "Iso52016V2ReducedRoomModelBuilder",
     "Iso52016V2RoomEnergySimulationService",
     "Iso52016V2RoomEnergySimulationResultMapper",
-    "Iso52016SimulationEngine",
-    "Iso52016BuildingEnergySimulationCommand"
+        "Iso52016BuildingEnergySimulationCommand"
   ],
   "documentationFiles": [
     "docs/calculations/Iso52016V2SolverStage.md",

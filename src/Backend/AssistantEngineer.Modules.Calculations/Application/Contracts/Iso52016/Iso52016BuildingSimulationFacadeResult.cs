@@ -5,8 +5,7 @@ public sealed record Iso52016BuildingSimulationFacadeResult(
     Iso52016WeatherSolarContext WeatherSolarContext,
     IReadOnlyList<Iso52016RoomEnergySimulationResult> RoomResults,
     IReadOnlyList<Iso52016HourlyBuildingSimulationRecord> Hours,
-    IReadOnlyList<Iso52016MonthlyBuildingSimulationSummary> MonthlySummaries,
-    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Matrix)
+    IReadOnlyList<Iso52016MonthlyBuildingSimulationSummary> MonthlySummaries)
 {
     public int RoomCount => RoomResults.Count;
 

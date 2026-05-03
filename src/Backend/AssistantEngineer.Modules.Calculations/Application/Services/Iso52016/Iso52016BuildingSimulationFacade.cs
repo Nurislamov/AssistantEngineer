@@ -85,8 +85,7 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
                 WeatherSolarContext: weatherSolarContextResult.Value,
                 RoomResults: roomResults,
                 Hours: hourlyResults,
-                MonthlySummaries: monthlySummaries,
-                SimulationEngine: Iso52016SimulationEngine.Matrix));
+                MonthlySummaries: monthlySummaries));
     }
 
     private static IReadOnlyList<Iso52016HourlyBuildingSimulationRecord> AggregateHourlyResults(
@@ -153,11 +152,7 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
     {
         if (string.IsNullOrWhiteSpace(request.BuildingCode))
             return Result.Validation("Building code is required.");
-
-        if (request.SimulationEngine != Iso52016SimulationEngine.Matrix)
-            return Result.Validation("Unsupported ISO 52016 simulation engine.");
-
-        if (request.Rooms is null)
+if (request.Rooms is null)
             return Result.Validation("Building room list is required.");
 
         if (request.Rooms.Count == 0)

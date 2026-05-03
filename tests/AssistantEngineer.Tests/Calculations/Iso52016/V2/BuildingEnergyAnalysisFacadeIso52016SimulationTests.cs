@@ -24,7 +24,6 @@ public class BuildingEnergyAnalysisFacadeIso52016SimulationTests
                 LongitudeDegrees: 69.2,
                 TimeZoneOffset: TimeSpan.FromHours(5),
                 WeatherYear: 2026,
-                SimulationEngine: Iso52016SimulationEngine.Matrix,
                 HeatBalanceOptions: new Iso52016RoomHeatBalanceOptions(
                     InitialIndoorTemperatureC: 22)),
             cancellationToken: CancellationToken.None);
@@ -39,7 +38,7 @@ public class BuildingEnergyAnalysisFacadeIso52016SimulationTests
         Assert.Equal(69.2, request.LongitudeDegrees, precision: 6);
         Assert.Equal(TimeSpan.FromHours(5), request.TimeZoneOffset);
         Assert.Equal(2026, request.WeatherYear);
-        Assert.Equal(Iso52016SimulationEngine.Matrix, request.SimulationEngine);
+
         Assert.NotNull(request.HeatBalanceOptions);
         Assert.Equal(22.0, request.HeatBalanceOptions!.InitialIndoorTemperatureC, precision: 6);
     }

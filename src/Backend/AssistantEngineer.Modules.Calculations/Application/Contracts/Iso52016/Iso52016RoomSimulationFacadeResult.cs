@@ -4,8 +4,7 @@ public sealed record Iso52016RoomSimulationFacadeResult(
     string RoomCode,
     Iso52016WeatherSolarContext WeatherSolarContext,
     Iso52016RoomEnergySimulationRequest SimulationRequest,
-    Iso52016RoomEnergySimulationResult SimulationResult,
-    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Matrix)
+    Iso52016RoomEnergySimulationResult SimulationResult)
 {
     public int HourCount => SimulationResult.HourCount;
 

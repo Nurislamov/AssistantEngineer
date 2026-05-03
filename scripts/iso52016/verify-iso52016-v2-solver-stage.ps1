@@ -10,7 +10,7 @@ $requiredFiles = @(
     "docs\calculations\Iso52016V2SolverStage.md",
     "docs\releases\Iso52016V2SolverStageManifest.json",
     "docs\traceability\Iso52016V2SolverTraceabilityMatrix.json",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016SimulationEngine.cs",
+    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016CalculationPath.cs",
     "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016BuildingEnergySimulationCommand.cs",
     "src\Backend\AssistantEngineer.Api\Controllers\Analysis\BuildingEnergyAnalysisController.cs"
 )
@@ -41,8 +41,7 @@ foreach ($guard in @(
     "Iso52016InternalGainReferenceDataProvider",
     "AdjacentUnconditioned",
     "Iso52016V2RoomEnergySimulationService",
-    "Iso52016SimulationEngine",
-    "Iso52016BuildingEnergySimulationCommand",
+        "Iso52016BuildingEnergySimulationCommand",
     "SimulateIso52016"
 )) {
     if (-not $sourceText.Contains($guard)) {
