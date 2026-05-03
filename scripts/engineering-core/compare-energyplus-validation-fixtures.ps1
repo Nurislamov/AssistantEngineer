@@ -174,7 +174,7 @@ function Invoke-ValidationFixtureComparison {
         comparisonStatus = $comparisonStatus
         referenceStatus = $referenceStatus
         referenceFile = $referencePath.Replace("\", "/")
-        generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+        generatedAtUtc = "2026-01-01 00:00:00 UTC"
         allMetricsPassed = [bool]$allPassed
         metrics = $metricResults
         requiredNonClaims = @($tolerances.requiredNonClaims)
@@ -291,7 +291,7 @@ $summary = [ordered]@{
     version = "v1"
     status = "PlannedValidation"
     runner = "GenericEnergyPlusValidationFixtureRunner"
-    generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+    generatedAtUtc = "2026-01-01 00:00:00 UTC"
     fixturesRoot = $FixturesRoot
     outputDirectory = $OutputDirectory
     totals = [ordered]@{
@@ -368,4 +368,5 @@ Write-Host ""
 Write-Host "Generic EnergyPlus validation fixture comparison completed." -ForegroundColor Green
 Write-Host "- $summaryJsonPath"
 Write-Host "- $summaryMarkdownPath"
+
 

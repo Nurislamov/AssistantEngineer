@@ -65,7 +65,7 @@ if ($missingPlaceholderFiles.Count -gt 0) {
 
 $realFixtureReady = $missingRealFixtureFiles.Count -eq 0
 $status = if ($realFixtureReady) { "ReadyForRealComparison" } else { "NotReadyRealFixtureMissingFiles" }
-$generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+$generatedAt = "2026-01-01 00:00:00 UTC"
 
 $placeholderRowsMarkdown = @($placeholderStatusRows | ForEach-Object {
     "| $($_.file) | $($_.exists) |"
@@ -142,3 +142,4 @@ if ($RequireRealFixture -and -not $realFixtureReady) {
 
 Write-Host "EP-SMOKE-001 real fixture readiness report generated: $OutputPath" -ForegroundColor Green
 Write-Host "Status: $status"
+

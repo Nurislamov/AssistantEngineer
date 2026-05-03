@@ -30,7 +30,7 @@ $metricRows = @($tolerances.metrics | ForEach-Object {
 
 $nonClaimRows = @($tolerances.requiredNonClaims | ForEach-Object { "- $_" })
 
-$generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+$generatedAt = "2026-01-01 00:00:00 UTC"
 
 $report = @"
 # EP-SMOKE-001 Comparison Readiness
@@ -93,3 +93,4 @@ if (-not [string]::IsNullOrWhiteSpace($directory)) {
 Set-Content $OutputPath $report -Encoding utf8
 
 Write-Host "EP-SMOKE-001 comparison readiness report generated: $OutputPath" -ForegroundColor Green
+

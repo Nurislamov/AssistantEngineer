@@ -92,7 +92,7 @@ $summary = [ordered]@{
     summaryName = "Engineering Core V1 Validation Comparison Summary"
     version = "v1"
     status = "PlannedValidation"
-    generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+    generatedAtUtc = "2026-01-01 00:00:00 UTC"
     registryFile = $registryPath
     comparisonResultFiles = @($comparisonResultFiles | ForEach-Object {
         $_.FullName.Replace($repoRoot.Path + "\", "").Replace("\", "/")
@@ -192,3 +192,4 @@ Write-Host "- $OutputMarkdownPath"
 Write-Host "Cases: $totalCases"
 Write-Host "Cases with comparison: $casesWithComparison"
 Write-Host "Placeholder comparisons: $placeholderComparisons"
+

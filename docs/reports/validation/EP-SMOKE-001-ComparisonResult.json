@@ -6,7 +6,7 @@
     "comparisonStatus":  "PlaceholderComparison",
     "referenceStatus":  "PlaceholderReferenceOutput",
     "referenceFile":  "D:/Project/AssistantEngineer/tests/fixtures/validation/energyplus/EP-SMOKE-001/reference-output.placeholder.json",
-    "generatedAtUtc":  "2026-05-03 06:27:23 UTC",
+    "generatedAtUtc":  "2026-01-01 00:00:00 UTC",
     "allMetricsPassed":  true,
     "metrics":  [
                     {

@@ -50,7 +50,7 @@ $diagnosticRows = @($diagnosticsCatalog.diagnostics |
     Sort-Object code |
     ForEach-Object { "| $($_.code) | $($_.severity) | $($_.category) | $($_.closedV1Gate) |" })
 
-$generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+$generatedAt = "2026-01-01 00:00:00 UTC"
 
 $report = @"
 # Engineering Core V1 Release Evidence
@@ -175,3 +175,4 @@ Set-Content $OutputPath $report -Encoding utf8
 Write-Host "Engineering Core V1 release evidence generated: $OutputPath" -ForegroundColor Green
 Write-Host "Closed formula gates: $closedGateCount"
 Write-Host "Diagnostics: $diagnosticCount total, $errorCount Error, $warningCount Warning, $infoCount Info"
+

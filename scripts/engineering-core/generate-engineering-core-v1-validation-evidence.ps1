@@ -109,7 +109,7 @@ $evidence = [ordered]@{
     evidenceName = "Engineering Core V1 Validation Evidence"
     version = "v1"
     status = "PlannedValidation"
-    generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+    generatedAtUtc = "2026-01-01 00:00:00 UTC"
     interpretation = "Validation evidence package proves validation infrastructure readiness, placeholder comparison coverage and fixture synchronization. It does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
     sources = [ordered]@{
         registry = $registryPath
@@ -244,3 +244,4 @@ else {
 
 Write-Host "- $OutputJsonPath"
 Write-Host "- $OutputMarkdownPath"
+

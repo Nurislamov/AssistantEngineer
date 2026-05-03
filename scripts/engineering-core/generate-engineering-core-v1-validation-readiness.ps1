@@ -36,7 +36,7 @@ $metricRows = @($cases | Sort-Object caseId | ForEach-Object {
 
 $nonClaimRows = @($registry.requiredNonClaims | ForEach-Object { "- $_" })
 
-$generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+$generatedAt = "2026-01-01 00:00:00 UTC"
 
 $report = @"
 # Engineering Core V1 Validation Readiness
@@ -107,3 +107,4 @@ Set-Content $OutputPath $report -Encoding utf8
 Write-Host "Engineering Core V1 validation readiness report generated: $OutputPath" -ForegroundColor Green
 Write-Host "Cases: $caseCount"
 Write-Host "Metrics: $metricCount"
+

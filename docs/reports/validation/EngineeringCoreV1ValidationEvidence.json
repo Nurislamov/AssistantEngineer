@@ -2,7 +2,7 @@
     "evidenceName":  "Engineering Core V1 Validation Evidence",
     "version":  "v1",
     "status":  "PlannedValidation",
-    "generatedAtUtc":  "2026-05-03 06:27:40 UTC",
+    "generatedAtUtc":  "2026-01-01 00:00:00 UTC",
     "interpretation":  "Validation evidence package proves validation infrastructure readiness, placeholder comparison coverage and fixture synchronization. It does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage.",
     "sources":  {
                     "registry":  "docs/validation/EnergyPlusValidationCaseRegistry.json",

@@ -132,7 +132,7 @@ $catalog = [ordered]@{
     catalogName = "EnergyPlus Validation Fixture Catalog"
     version = "v1"
     status = "PlannedValidation"
-    generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+    generatedAtUtc = "2026-01-01 00:00:00 UTC"
     registryPath = $RegistryPath
     fixturesRoot = $FixturesRoot
     reportsDirectory = $ReportsDirectory
@@ -278,3 +278,4 @@ Write-Host "- $OutputJsonPath"
 Write-Host "- $OutputMarkdownPath"
 Write-Host "Fixture directories: $($catalog.totals.fixtureDirectories)"
 Write-Host "Fixtures with comparison: $($catalog.totals.fixturesWithComparison)"
+

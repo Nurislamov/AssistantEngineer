@@ -134,7 +134,7 @@ foreach ($metric in @($tolerances.metrics)) {
 }
 
 $allPassed = -not (@($metricResults | Where-Object { -not $_.passed }).Count -gt 0)
-$generatedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
+$generatedAt = "2026-01-01 00:00:00 UTC"
 
 $result = [ordered]@{
     caseId = $metadata.caseId
@@ -214,3 +214,4 @@ Write-Host "EP-SMOKE-001 comparison result generated:" -ForegroundColor Green
 Write-Host "- $OutputJsonPath"
 Write-Host "- $OutputMarkdownPath"
 Write-Host "All metrics passed: $allPassed"
+
