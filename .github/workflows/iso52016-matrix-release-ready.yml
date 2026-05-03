@@ -1,0 +1,49 @@
+name: ISO52016 Matrix release-ready
+
+on:
+  pull_request:
+    paths:
+      - "src/Backend/AssistantEngineer.Modules.Calculations/**"
+      - "src/Backend/AssistantEngineer.Api/**"
+      - "tests/AssistantEngineer.Tests/**"
+      - "docs/calculations/Iso52016Matrix*.md"
+      - "docs/releases/Iso52016Matrix*.json"
+      - "scripts/iso52016/**"
+      - ".github/workflows/iso52016-matrix-release-ready.yml"
+  push:
+    branches:
+      - main
+      - master
+      - iso52016-matrix-only
+    paths:
+      - "src/Backend/AssistantEngineer.Modules.Calculations/**"
+      - "src/Backend/AssistantEngineer.Api/**"
+      - "tests/AssistantEngineer.Tests/**"
+      - "docs/calculations/Iso52016Matrix*.md"
+      - "docs/releases/Iso52016Matrix*.json"
+      - "scripts/iso52016/**"
+      - ".github/workflows/iso52016-matrix-release-ready.yml"
+  workflow_dispatch:
+
+jobs:
+  release-ready:
+    name: ISO52016 Matrix release-ready
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        shell: pwsh
+        run: dotnet restore
+
+      - name: Assert ISO52016 Matrix release-ready
+        shell: pwsh
+        run: .\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -RequireCleanGit
