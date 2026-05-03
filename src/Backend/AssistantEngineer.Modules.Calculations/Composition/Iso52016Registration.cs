@@ -52,6 +52,8 @@ internal static class Iso52016Registration
         services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2HourlySolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2HourlySolver>();
         services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016InternalGainReferenceDataProvider, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016InternalGainReferenceDataProvider>();
         services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016AdjacentUnconditionedZoneTemperatureSolver, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016AdjacentUnconditionedZoneTemperatureSolver>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2ReducedRoomModelBuilder, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2ReducedRoomModelBuilder>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2.IIso52016V2RoomEnergySimulationService, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.V2.Iso52016V2RoomEnergySimulationService>();
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
 
         return services;
