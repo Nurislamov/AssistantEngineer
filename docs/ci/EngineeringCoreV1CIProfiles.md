@@ -106,3 +106,17 @@ CI success does not claim:
 - latent/moisture/humidity support in V1.
 
 CI success means the Engineering Core V1 formula gate, diagnostics, disclosures, contracts, traceability and release-readiness guards passed.
+
+## Validation workflow
+
+Validation workflow documentation:
+
+    docs/ci/EngineeringCoreV1ValidationCI.md
+
+Workflow file:
+
+    .github/workflows/engineering-core-v1-validation.yml
+
+Command:
+
+    .\scripts\engineering-core\verify-engineering-core-v1-validation.ps1

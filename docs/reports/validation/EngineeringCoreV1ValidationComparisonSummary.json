@@ -2,7 +2,7 @@
     "summaryName":  "Engineering Core V1 Validation Comparison Summary",
     "version":  "v1",
     "status":  "PlannedValidation",
-    "generatedAtUtc":  "2026-05-03 06:05:53 UTC",
+    "generatedAtUtc":  "2026-05-03 06:12:54 UTC",
     "registryFile":  "docs/validation/EnergyPlusValidationCaseRegistry.json",
     "comparisonResultFiles":  [
                                   "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json"

@@ -39,4 +39,4 @@ This is not ASHRAE 140 validation coverage.
 
 This does not claim exact EnergyPlus numerical parity.
 
-Future work must replace or supplement placeholder references with real EnergyPlus model/output files and provenance metadata.
+Future work must replace or supplement the placeholder reference with real EnergyPlus model/output files and provenance metadata.

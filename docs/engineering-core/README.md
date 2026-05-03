@@ -195,3 +195,11 @@ Engineering Core V1 does not claim:
 - docs/validation/EnergyPlusValidationFixtureAuthoringGuide.md
 - docs/validation/fixtures/_template
 - scripts/engineering-core/new-energyplus-validation-fixture.ps1
+
+## Validation profile
+
+- scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1
+- scripts/engineering-core/verify-engineering-core-v1-validation.ps1
+- docs/runbooks/EngineeringCoreV1ValidationProfile.md
+- docs/ci/EngineeringCoreV1ValidationCI.md
+- .github/workflows/engineering-core-v1-validation.yml
