@@ -32,6 +32,7 @@ internal static class Program
                 "verify-calculation-module-room-load-useful-gains" => VerifyCalculationModuleRoomLoadUsefulGains(repoRoot),
                 "verify-calculation-module-system-energy-assumptions" => VerifyCalculationModuleSystemEnergyAssumptions(repoRoot),
                 "verify-calculation-module-equipment-sizing-oversizing" => VerifyCalculationModuleEquipmentSizingOversizing(repoRoot),
+                "verify-calculation-module-aggregation-hourly-profiles" => VerifyCalculationModuleAggregationHourlyProfiles(repoRoot),
                 "verify-calculation-module-deepening-all" => VerifyCalculationModuleDeepeningAll(repoRoot),
                 _ => UnknownCommand(command)
             };
@@ -57,6 +58,7 @@ internal static class Program
         Console.WriteLine("  verify-calculation-module-room-load-useful-gains");
         Console.WriteLine("  verify-calculation-module-system-energy-assumptions");
         Console.WriteLine("  verify-calculation-module-equipment-sizing-oversizing");
+        Console.WriteLine("  verify-calculation-module-aggregation-hourly-profiles");
         Console.WriteLine("  verify-calculation-module-deepening-all");
     }
 
@@ -306,6 +308,12 @@ internal static class Program
         return RunDotnetTest("EquipmentSizingOversizingLimitTests");
     }
 
+    private static int VerifyCalculationModuleAggregationHourlyProfiles(string repoRoot)
+    {
+        WriteStep("Run aggregation hourly profile diagnostics tests");
+        return RunDotnetTest("LoadAggregationHourlyProfileDiagnosticsTests");
+    }
+
     private static int VerifyCalculationModuleDeepeningAll(string repoRoot)
     {
         var steps = new Func<string, int>[]
@@ -314,6 +322,7 @@ internal static class Program
             VerifyCalculationModuleRoomLoadUsefulGains,
             VerifyCalculationModuleSystemEnergyAssumptions,
             VerifyCalculationModuleEquipmentSizingOversizing,
+            VerifyCalculationModuleAggregationHourlyProfiles,
             VerifyCalculationModuleBalanceInvariants,
             VerifyCalculationModuleDiagnosticsConsistency
         };
@@ -519,6 +528,7 @@ internal static class Program
         string Purpose,
         bool Exists);
 }
+
 
 
 

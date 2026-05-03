@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -56,6 +56,19 @@ public sealed class LoadAggregationEngine
             rooms.Length > 0 &&
             rooms.All(room => room.HourlyHeatingLoadW is { Count: > 0 } && room.HourlyCoolingLoadW is { Count: > 0 });
 
+        var hourlyRecordCountUsed = useHourly
+            ? HourlyRecordCountUsed(rooms)
+            : (int?)null;
+
+        if (useHourly && HasHourlyProfileLengthMismatch(rooms))
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "Aggregation.HourlyProfileLengthMismatch",
+                "Hourly aggregation profiles have different lengths; coincident aggregation used the shortest available common profile length.",
+                input.DiagnosticsContext));
+        }
+
         if (input.Mode == LoadAggregationMode.Hourly && !useHourly)
         {
             diagnostics.Add(new CalculationDiagnostic(
@@ -107,7 +120,8 @@ public sealed class LoadAggregationEngine
             components,
             useHourly ? HourlyMethod : DesignPointMethod,
             diagnostics,
-            _timeProvider.GetUtcNow()));
+            _timeProvider.GetUtcNow(),
+            hourlyRecordCountUsed));
     }
 
     private static IEnumerable<AggregationRoomLoadInput> SelectTargetRooms(LoadAggregationInput input) =>
@@ -118,6 +132,35 @@ public sealed class LoadAggregationEngine
             LoadAggregationTargetType.Building => input.Rooms.Where(room => room.BuildingId == input.TargetId),
             _ => []
         };
+
+    private static int HourlyRecordCountUsed(IReadOnlyList<AggregationRoomLoadInput> rooms)
+    {
+        var counts = rooms
+            .SelectMany(room => new[]
+            {
+                room.HourlyHeatingLoadW?.Count ?? 0,
+                room.HourlyCoolingLoadW?.Count ?? 0
+            })
+            .Where(count => count > 0)
+            .ToArray();
+
+        return counts.Length == 0 ? 0 : counts.Min();
+    }
+
+    private static bool HasHourlyProfileLengthMismatch(IReadOnlyList<AggregationRoomLoadInput> rooms)
+    {
+        var counts = rooms
+            .SelectMany(room => new[]
+            {
+                room.HourlyHeatingLoadW?.Count ?? 0,
+                room.HourlyCoolingLoadW?.Count ?? 0
+            })
+            .Where(count => count > 0)
+            .Distinct()
+            .ToArray();
+
+        return counts.Length > 1;
+    }
 
     private static double PeakCoincident(IReadOnlyList<IReadOnlyList<double>> profiles)
     {
