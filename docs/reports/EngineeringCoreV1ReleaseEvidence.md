@@ -1,6 +1,6 @@
-﻿# Engineering Core V1 Release Evidence
+# Engineering Core V1 Release Evidence
 
-Generated at: 2026-05-03 06:26:37 UTC
+Generated at: 2026-01-01 00:00:00 UTC
 
 ## Status summary
 
@@ -50,8 +50,6 @@ Generated at: 2026-05-03 06:26:37 UTC
 | WEATHER.PVGIS_8760 | ClosedV1 |
 
 ## Annual 8760 requirements
-
-True hourly annual energy requires:
 
 - EnergyDataSource = TrueHourlySimulation
 - IsTrueHourly8760 = true

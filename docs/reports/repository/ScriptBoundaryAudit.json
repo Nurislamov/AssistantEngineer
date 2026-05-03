@@ -1,0 +1,206 @@
+﻿{
+  "reportName": "Repository Script Boundary Audit",
+  "version": "v1",
+  "status": "Compliant",
+  "generatedAtUtc": "2026-01-01 00:00:00 UTC",
+  "policy": {
+    "srcBackend": "application code",
+    "srcFrontend": "frontend code",
+    "tests": "test code",
+    "docs": "documentation and generated evidence",
+    "tools": "C# automation, validation and release tools",
+    "scripts": "thin wrappers only",
+    "githubWorkflows": "CI entry points that call tools/scripts"
+  },
+  "totals": {
+    "scripts": 26,
+    "thinScripts": 23,
+    "heavyScripts": 0,
+    "unknownScripts": 3
+  },
+  "scripts": [
+    {
+      "path": "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
+      "classification": "UnknownPowerShellScript",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 23,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/compare-energyplus-validation-fixtures.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-calculation-module-inventory.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-api-contract-snapshots.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-release-evidence.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-report-contract-snapshots.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 12,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-validation-comparison-summary.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/new-energyplus-validation-fixture.ps1",
+      "classification": "UnknownPowerShellScript",
+      "targetTool": "",
+      "nonEmptyLines": 30,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-calculation-module-balance-invariants.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-calculation-module-deepening.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-calculation-module-diagnostics-consistency.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-engineering-core-v1-contracts.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 15,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-engineering-core-v1-smoke.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-engineering-core-v1-validation.ps1",
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "nonEmptyLines": 8,
+      "heavyPatterns": []
+    },
+    {
+      "path": "scripts/engineering-core/verify-engineering-core-v1.ps1",
+      "classification": "UnknownPowerShellScript",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 19,
+      "heavyPatterns": []
+    }
+  ],
+  "requiredNextStep": "Keep scripts as wrappers and implement new automation in tools."
+}

@@ -159,32 +159,32 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
     [Fact]
     public void ScaffoldScriptUsesTemplatesValidatesCaseIdAndExplainsNextSteps()
     {
-        var content = File.ReadAllText(ScaffoldScriptPath);
+        var script = File.ReadAllText(ScaffoldScriptPath);
 
-        var requiredPhrases = new[]
-        {
-            "new-energyplus-validation-fixture.ps1",
-            "CaseId",
-            "Name",
-            "Stage",
-            "Force",
-            "case-metadata.template.json",
-            "assistantengineer-input.template.json",
-            "reference-output.placeholder.template.json",
-            "comparison-tolerances.template.json",
-            "README.template.md",
-            "EnergyPlusValidationCaseRegistry.json",
-            "compare-energyplus-validation-fixtures.ps1",
-            "generate-energyplus-validation-fixture-catalog.ps1"
-        };
+        Assert.Contains("new-energyplus-validation-fixture.ps1", script, StringComparison.Ordinal);
+        Assert.Contains("CaseId", script, StringComparison.Ordinal);
+        Assert.Contains("Name", script, StringComparison.Ordinal);
+        Assert.Contains("Stage", script, StringComparison.Ordinal);
+        Assert.Contains("Force", script, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj", script, StringComparison.Ordinal);
+        Assert.Contains("new-fixture", script, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", script, StringComparison.Ordinal);
 
-        foreach (var requiredPhrase in requiredPhrases)
-        {
-            Assert.Contains(requiredPhrase, content, StringComparison.Ordinal);
-        }
+        Assert.DoesNotContain("function Expand-Template", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("Set-Content $DestinationPath", script, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(FixtureAuthoringToolProgramPath);
+
+        Assert.Contains("case-metadata.template.json", tool, StringComparison.Ordinal);
+        Assert.Contains("assistantengineer-input.template.json", tool, StringComparison.Ordinal);
+        Assert.Contains("reference-output.placeholder.template.json", tool, StringComparison.Ordinal);
+        Assert.Contains("comparison-tolerances.template.json", tool, StringComparison.Ordinal);
+        Assert.Contains("README.template.md", tool, StringComparison.Ordinal);
+        Assert.Contains("EnergyPlusValidationCaseRegistry.json", tool, StringComparison.Ordinal);
+        Assert.Contains("compare-energyplus-validation-fixtures.ps1", tool, StringComparison.Ordinal);
+        Assert.Contains("generate-energyplus-validation-fixture-catalog.ps1", tool, StringComparison.Ordinal);
     }
-
-    [Fact]
+[Fact]
     public void AuthoringGuideDocumentsTemplateFolderScaffoldCommandRegistryUpdateGenerationRealReferenceAndNonClaims()
     {
         var content = File.ReadAllText(AuthoringGuidePath);
@@ -212,14 +212,18 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
     }
 
     [Fact]
-    public void MainVerificationScriptIncludesAuthoringKitGuardTests()
+    public void MainVerificationProfileIncludesAuthoringKitGuardTests()
     {
-        var content = File.ReadAllText(MainVerificationScriptPath);
+        var wrapper = File.ReadAllText(MainVerificationScriptPath);
 
-        Assert.Contains("EnergyPlusValidationFixtureAuthoringKitTests", content, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCoreVerification.csproj", wrapper, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", wrapper, StringComparison.Ordinal);
+
+        var tool = File.ReadAllText(VerificationToolProgramPath);
+
+        Assert.Contains("EnergyPlusValidationFixtureAuthoringKitTests", tool, StringComparison.Ordinal);
     }
-
-    private static string TemplateRoot =>
+private static string TemplateRoot =>
         Path.Combine(TestPaths.RepoRoot, "docs", "validation", "fixtures", "_template");
 
     private static string CaseMetadataTemplatePath =>
@@ -272,4 +276,18 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
         ProvenanceTemplatePath,
         RealReferenceTemplatePath
     ];
+    private static string FixtureAuthoringToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+            "Program.cs");
+
+    private static string VerificationToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreVerification",
+            "Program.cs");
 }
+
