@@ -11,6 +11,9 @@ $requiredFiles = @(
     "docs\releases\Iso52016MatrixBaselineFixturesManifest.json",
     "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixBaselineFixtureTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixApplicationBaselineFixtureTests.cs",
+    "docs\calculations\Iso52016MatrixApplicationBaselineFixtures.md",
+    "scripts\iso52016\verify-iso52016-matrix-application-baselines.ps1",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Baselines\neutral-no-hvac.json",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Baselines\winter-heating-24h.json",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Baselines\summer-cooling-24h.json",
@@ -31,6 +34,14 @@ if ($fixtureCount -lt 4) {
     throw "Expected at least 4 ISO52016 Matrix baseline fixtures, found $fixtureCount."
 }
 
+
+Push-Location $RepoRoot
+try {
+    .\scripts\iso52016\verify-iso52016-matrix-application-baselines.ps1 -SkipTests
+}
+finally {
+    Pop-Location
+}
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {

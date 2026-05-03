@@ -1,0 +1,46 @@
+{
+  "scenarioName": "building-hot-single-room-cooling",
+  "description": "One room, hot annual weather, high internal and solar loads. Cooling demand must be positive.",
+  "buildingCode": "matrix-baseline-hot-building",
+  "year": 2026,
+  "outdoorTemperatureC": 38.0,
+  "directSolarWm2Day": 700.0,
+  "diffuseSolarWm2Day": 120.0,
+  "latitudeDegrees": 41.3,
+  "longitudeDegrees": 69.2,
+  "timeZoneOffsetHours": 5,
+  "initialIndoorTemperatureC": 26.0,
+  "rooms": [
+    {
+      "name": "Hot Room 1",
+      "areaM2": 25.0,
+      "peopleCount": 4,
+      "equipmentLoadW": 1200.0,
+      "lightingLoadW": 800.0,
+      "wallAreaM2": 80.0,
+      "wallUValueWPerM2K": 1.2,
+      "windowAreaM2": 8.0
+    }
+  ],
+  "expected": {
+    "hourCount": 8760,
+    "roomCount": 1,
+    "annualHeatingEnergyKWh": {
+      "min": 0.0,
+      "max": 1000000.0
+    },
+    "annualCoolingEnergyKWh": {
+      "min": 1.0,
+      "max": 1000000.0
+    },
+    "peakHeatingLoadW": {
+      "min": 0.0,
+      "max": 1000000.0
+    },
+    "peakCoolingLoadW": {
+      "min": 1.0,
+      "max": 1000000.0
+    },
+    "monthlySummaryCount": 12
+  }
+}

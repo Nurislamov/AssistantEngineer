@@ -1,0 +1,56 @@
+{
+  "scenarioName": "building-cold-two-room-heating",
+  "description": "Two rooms, cold annual weather, no internal loads, high envelope heat loss. Heating demand must be positive and cooling demand must be zero.",
+  "buildingCode": "matrix-baseline-cold-building",
+  "year": 2026,
+  "outdoorTemperatureC": -30.0,
+  "directSolarWm2Day": 0.0,
+  "diffuseSolarWm2Day": 0.0,
+  "latitudeDegrees": 41.3,
+  "longitudeDegrees": 69.2,
+  "timeZoneOffsetHours": 5,
+  "initialIndoorTemperatureC": 22.0,
+  "rooms": [
+    {
+      "name": "Cold Room 1",
+      "areaM2": 20.0,
+      "peopleCount": 0,
+      "equipmentLoadW": 0.0,
+      "lightingLoadW": 0.0,
+      "wallAreaM2": 200.0,
+      "wallUValueWPerM2K": 1.5,
+      "windowAreaM2": 2.0
+    },
+    {
+      "name": "Cold Room 2",
+      "areaM2": 15.0,
+      "peopleCount": 0,
+      "equipmentLoadW": 0.0,
+      "lightingLoadW": 0.0,
+      "wallAreaM2": 180.0,
+      "wallUValueWPerM2K": 1.5,
+      "windowAreaM2": 2.0
+    }
+  ],
+  "expected": {
+    "hourCount": 8760,
+    "roomCount": 2,
+    "annualHeatingEnergyKWh": {
+      "min": 1.0,
+      "max": 1000000.0
+    },
+    "annualCoolingEnergyKWh": {
+      "min": 0.0,
+      "max": 1e-06
+    },
+    "peakHeatingLoadW": {
+      "min": 1.0,
+      "max": 1000000.0
+    },
+    "peakCoolingLoadW": {
+      "min": 0.0,
+      "max": 1e-06
+    },
+    "monthlySummaryCount": 12
+  }
+}
