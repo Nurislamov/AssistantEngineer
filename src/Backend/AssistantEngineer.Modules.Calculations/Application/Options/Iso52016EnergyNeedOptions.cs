@@ -20,6 +20,9 @@ public sealed class Iso52016EnergyNeedOptions
     public double MinimumDirectSolarShadingReductionFactor { get; init; } = 0.15;
     public double DiffuseSolarShareUnaffectedByShading { get; init; } = 0.3;
     public double LatitudeDegrees { get; init; } = 41.0;
+    public double LongitudeDegrees { get; init; } = 69.0;
+    public double TimeZoneOffsetHours { get; init; } = 5.0;
+    public double GroundReflectance { get; init; } = 0.2;
 
     public double DefaultGroundBoundaryTemperatureC { get; init; } = 12.0;
     public double AdjacentUnconditionedTemperatureWeight { get; init; } = 0.5;

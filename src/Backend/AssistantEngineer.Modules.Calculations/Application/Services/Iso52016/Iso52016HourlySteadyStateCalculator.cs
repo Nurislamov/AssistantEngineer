@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
+﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
@@ -37,7 +37,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
         HourlyInternalGainProfileService? hourlyProfiles = null,
         IGroundTemperatureService? groundTemperatureService = null,
         IGroundHeatTransferService? groundHeatTransferService = null,
-        ILogger<Iso52016HourlySteadyStateCalculator>? logger = null)
+        ILogger<Iso52016HourlySteadyStateCalculator>? logger = null,
+        IIso52016WeatherSolarContextBuilder? weatherSolarContextBuilder = null)
     {
         var resolvedOptions = options?.Value ?? new Iso52016EnergyNeedOptions();
         var resolvedProfileOptions = profileOptions?.Value ?? new En16798ProfileOptions();
@@ -64,6 +65,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
             climateDataProvider,
             resolvedGroundTemperatureService,
             resolvedOptions,
+            weatherSolarContextBuilder,
             logger);
 
         _contextFactory = new Iso52016HourlyCalculationContextFactory(
@@ -125,7 +127,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
                     cancellationToken,
                     annualProfileOptions,
                     weatherContext.GroundBoundaryTemperaturesC[
-                        Math.Clamp(weather.HourOfYear, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)]));
+                        Math.Clamp(weather.HourOfYear, 0, weatherContext.GroundBoundaryTemperaturesC.Length - 1)],
+                    weatherSolarHour: weatherContext.WeatherSolarContext?.GetHour(weather.HourOfYear)));
             }
 
             foreach (var zoneResult in currentHourResults)
@@ -203,7 +206,8 @@ public sealed class Iso52016HourlySteadyStateCalculator
                 preferences: null,
                 cancellationToken,
                 annualProfileOptions,
-                groundBoundaryTemperatureC);
+                groundBoundaryTemperatureC,
+                weatherSolarHour: weatherContext.WeatherSolarContext?.GetHour(weather.HourOfYear));
 
             foreach (var roomResult in zoneResult.Rooms)
             {
@@ -217,3 +221,4 @@ public sealed class Iso52016HourlySteadyStateCalculator
         return result;
     }
 }
+
