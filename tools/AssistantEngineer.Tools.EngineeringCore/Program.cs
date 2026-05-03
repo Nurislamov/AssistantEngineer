@@ -30,6 +30,7 @@ internal static class Program
                 "verify-calculation-module-balance-invariants" => VerifyCalculationModuleBalanceInvariants(repoRoot),
                 "verify-calculation-module-diagnostics-consistency" => VerifyCalculationModuleDiagnosticsConsistency(repoRoot),
                 "verify-calculation-module-room-load-useful-gains" => VerifyCalculationModuleRoomLoadUsefulGains(repoRoot),
+                "verify-calculation-module-system-energy-assumptions" => VerifyCalculationModuleSystemEnergyAssumptions(repoRoot),
                 "verify-calculation-module-deepening-all" => VerifyCalculationModuleDeepeningAll(repoRoot),
                 _ => UnknownCommand(command)
             };
@@ -53,6 +54,7 @@ internal static class Program
         Console.WriteLine("  verify-calculation-module-balance-invariants");
         Console.WriteLine("  verify-calculation-module-diagnostics-consistency");
         Console.WriteLine("  verify-calculation-module-room-load-useful-gains");
+        Console.WriteLine("  verify-calculation-module-system-energy-assumptions");
         Console.WriteLine("  verify-calculation-module-deepening-all");
     }
 
@@ -290,12 +292,19 @@ internal static class Program
         return RunDotnetTest("RoomLoadHeatingUsefulGainOffsetTests");
     }
 
+    private static int VerifyCalculationModuleSystemEnergyAssumptions(string repoRoot)
+    {
+        WriteStep("Run system energy performance assumption tests");
+        return RunDotnetTest("SystemEnergyPerformanceAssumptionTests");
+    }
+
     private static int VerifyCalculationModuleDeepeningAll(string repoRoot)
     {
         var steps = new Func<string, int>[]
         {
             VerifyCalculationModuleDeepening,
             VerifyCalculationModuleRoomLoadUsefulGains,
+            VerifyCalculationModuleSystemEnergyAssumptions,
             VerifyCalculationModuleBalanceInvariants,
             VerifyCalculationModuleDiagnosticsConsistency
         };
@@ -501,5 +510,6 @@ internal static class Program
         string Purpose,
         bool Exists);
 }
+
 
 

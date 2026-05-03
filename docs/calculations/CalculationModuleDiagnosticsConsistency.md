@@ -31,6 +31,9 @@ Examples:
 - monthly balance adapter is used instead of true hourly 8760;
 - non-8760 record count is used;
 - negative values are clamped.
+- contradictory system performance assumptions are supplied;
+
+- SystemEnergy.HeatingDualPerformanceAssumption and SystemEnergy.DhwDualPerformanceAssumption warnings must be emitted when both efficiency and COP are supplied for the same useful-energy end use.
 
 ### Info diagnostics
 
@@ -67,4 +70,5 @@ Diagnostics consistency does not claim ASHRAE 140 validation coverage.
 Diagnostics consistency does not claim full ISO 52016 node/matrix solver parity.
 
 Diagnostics consistency only protects internal transparency of current calculation behavior.
+
 

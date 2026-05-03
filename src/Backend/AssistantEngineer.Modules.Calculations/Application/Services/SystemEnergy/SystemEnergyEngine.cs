@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -25,8 +25,27 @@ public sealed class SystemEnergyEngine
         {
             "System energy is a simplified engineering model.",
             "Final energy is useful energy divided by efficiency or COP when a system assumption is supplied.",
-            "If no system assumption is supplied for an end use, useful energy is returned as final energy with diagnostics."
+            "If no system assumption is supplied for an end use, useful energy is returned as final energy with diagnostics.",
+            "If both efficiency and COP are supplied for the same end use, efficiency takes precedence and a warning is emitted."
         };
+
+        AddDualPerformanceAssumptionWarning(
+            input.UsefulHeatingEnergyKWh,
+            input.HeatingEfficiency,
+            input.HeatingCop,
+            "SystemEnergy.HeatingDualPerformanceAssumption",
+            "Both heating efficiency and heating COP were supplied; heating efficiency is used for final energy conversion.",
+            input.DiagnosticsContext,
+            diagnostics);
+
+        AddDualPerformanceAssumptionWarning(
+            input.UsefulDhwEnergyKWh,
+            input.DhwEfficiency,
+            input.DhwCop,
+            "SystemEnergy.DhwDualPerformanceAssumption",
+            "Both DHW efficiency and DHW COP were supplied; DHW efficiency is used for final energy conversion.",
+            input.DiagnosticsContext,
+            diagnostics);
 
         var finalHeating = ConvertUsefulToFinal(
             input.UsefulHeatingEnergyKWh,
@@ -151,6 +170,28 @@ public sealed class SystemEnergyEngine
             input.DiagnosticsContext);
 
         return diagnostics;
+    }
+
+    private static void AddDualPerformanceAssumptionWarning(
+        double useful,
+        double? efficiency,
+        double? cop,
+        string code,
+        string message,
+        string? context,
+        List<CalculationDiagnostic> diagnostics)
+    {
+        if (useful <= 0)
+            return;
+
+        if (efficiency is > 0 && cop is > 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                code,
+                message,
+                context));
+        }
     }
 
     private static double ConvertUsefulToFinal(

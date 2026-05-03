@@ -14,7 +14,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Service files | 117 |
 | Contract files | 196 |
 | Abstraction files | 48 |
-| Calculation tests | 75 |
+| Calculation tests | 76 |
 | Parity tests | 37 |
 | Key engines | 12 |
 | Missing key engines | 0 |
