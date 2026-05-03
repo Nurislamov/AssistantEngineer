@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace AssistantEngineer.Tools.EngineeringCoreRelease;
 
@@ -390,7 +390,7 @@ internal static class Program
     {
         var startInfo = new ProcessStartInfo
         {
-            FileName = fileName,
+            FileName = ResolveProcessFileName(fileName),
             Arguments = arguments,
             UseShellExecute = false,
             RedirectStandardOutput = true,
@@ -425,6 +425,40 @@ internal static class Program
     private static bool Has(IReadOnlyCollection<string> args, string option) =>
         args.Any(arg => string.Equals(arg, option, StringComparison.OrdinalIgnoreCase));
 
+    private static string ResolveProcessFileName(string fileName)
+    {
+        if (!OperatingSystem.IsWindows())
+            return fileName;
+
+        if (!string.Equals(fileName, "npm", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(fileName, "npx", StringComparison.OrdinalIgnoreCase))
+        {
+            return fileName;
+        }
+
+        if (fileName.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
+            fileName.EndsWith(".bat", StringComparison.OrdinalIgnoreCase) ||
+            fileName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+        {
+            return fileName;
+        }
+
+        var pathValue = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+        var candidateExtensions = new[] { ".cmd", ".exe", ".bat" };
+
+        foreach (var directory in pathValue.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            foreach (var extension in candidateExtensions)
+            {
+                var candidate = Path.Combine(directory.Trim('"'), fileName + extension);
+
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+        }
+
+        return fileName + ".cmd";
+    }
     private static string FindRepositoryRoot()
     {
         var current = new DirectoryInfo(Directory.GetCurrentDirectory());

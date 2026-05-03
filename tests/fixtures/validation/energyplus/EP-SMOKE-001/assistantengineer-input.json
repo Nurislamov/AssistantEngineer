@@ -1,14 +1,25 @@
-﻿{
-  "caseId": "EP-SMOKE-001",
-  "engine": "AssistantEngineer",
-  "inputKind": "EngineeringCoreV1SmokeFixture",
-  "building": { "floorAreaM2": 50.0 },
-  "envelope": { "opaqueAreaM2": 180.0, "uValueWPerM2K": 0.35 },
-  "zone": { "indoorHeatingSetpointC": 20.0 },
-  "weather": { "outdoorDryBulbC": -5.0 },
-  "calculationFormula": {
-    "transmissionHeatLossW": "U * A * (T_indoor - T_outdoor)",
-    "expectedTransmissionHeatLossW": 1575.0,
-    "expectedDailyHeatingEnergyKwh": 37.8
-  }
+{
+    "caseId":  "EP-SMOKE-001",
+    "engine":  "AssistantEngineer",
+    "inputKind":  "EngineeringCoreV1SmokeFixture",
+    "building":  {
+                     "floorAreaM2":  50.0
+                 },
+    "envelope":  {
+                     "opaqueAreaM2":  180.0,
+                     "uValueWPerM2K":  0.35
+                 },
+    "zone":  {
+                 "indoorHeatingSetpointC":  20.0
+             },
+    "weather":  {
+                    "outdoorDryBulbC":  -5.0
+                },
+    "calculationFormula":  {
+                               "transmissionHeatLossW":  "U * A * (T_indoor - T_outdoor)",
+                               "expectedTransmissionHeatLossW":  1575.0,
+                               "expectedDailyHeatingEnergyKwh":  37.8,
+                               "expectedCoolingEnergyKwh":  0,
+                               "expectedPeakCoolingLoadW":  0
+                           }
 }
