@@ -43,7 +43,8 @@ $generators = @(
     ".\scripts\engineering-core\generate-engineering-core-v1-validation-comparison-summary.ps1",
     ".\scripts\engineering-core\assert-ep-smoke-001-real-fixture-ready.ps1",
     ".\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1",
-    ".\scripts\engineering-core\generate-energyplus-validation-fixture-catalog.ps1"
+    ".\scripts\engineering-core\generate-energyplus-validation-fixture-catalog.ps1",
+    ".\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1"
 )
 
 foreach ($generator in $generators) {
@@ -52,6 +53,7 @@ foreach ($generator in $generators) {
 
 Write-Host ""
 Write-Host "Engineering Core V1 artifact regeneration completed successfully." -ForegroundColor Green
+
 
 
 

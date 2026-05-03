@@ -56,6 +56,11 @@ Invoke-Step "Validation fixture authoring kit tests" {
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationFixtureAuthoringKitTests"
 }
 
+Invoke-Step "Validation evidence package tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationEvidencePackageTests"
+}
+
 Write-Host ""
 Write-Host "Engineering Core V1 validation profile completed successfully." -ForegroundColor Green
 Write-Host ""
@@ -72,3 +77,4 @@ Write-Host "- real fixture intake gate"
 Write-Host "- fixture catalog synchronization"
 Write-Host "- fixture authoring kit"
 Write-Host "- non-parity and non-ASHRAE-140 claims"
+

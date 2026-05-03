@@ -9,18 +9,25 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $repoRoot
 
 $registryPath = "docs/validation/EnergyPlusValidationCaseRegistry.json"
-$epSmoke001ResultPath = "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json"
+$reportsDirectory = "docs/reports/validation"
 
 if (-not (Test-Path $registryPath)) {
     throw "Validation registry not found: $registryPath"
 }
 
+if (-not (Test-Path $reportsDirectory)) {
+    throw "Validation reports directory not found: $reportsDirectory"
+}
+
 $registry = Get-Content $registryPath -Raw | ConvertFrom-Json
+
+$comparisonResultFiles = Get-ChildItem -Path $reportsDirectory -File -Filter "EP-SMOKE-*-ComparisonResult.json" |
+    Sort-Object Name
 
 $comparisonResults = @()
 
-if (Test-Path $epSmoke001ResultPath) {
-    $comparisonResults += Get-Content $epSmoke001ResultPath -Raw | ConvertFrom-Json
+foreach ($file in $comparisonResultFiles) {
+    $comparisonResults += Get-Content $file.FullName -Raw | ConvertFrom-Json
 }
 
 $comparisonByCaseId = @{}
@@ -43,6 +50,20 @@ foreach ($case in @($registry.cases | Sort-Object caseId)) {
     $metricsTotal = if ($hasComparison) { @($comparison.metrics).Count } else { @($case.metrics).Count }
     $metricsPassed = if ($hasComparison) { @($comparison.metrics | Where-Object { $_.passed -eq $true }).Count } else { 0 }
 
+    $resultFile = ""
+
+    if ($hasComparison) {
+        $matchingFile = $comparisonResultFiles |
+            Where-Object {
+                (Get-Content $_.FullName -Raw | ConvertFrom-Json).caseId -eq $caseId
+            } |
+            Select-Object -First 1
+
+        if ($null -ne $matchingFile) {
+            $resultFile = $matchingFile.FullName.Replace($repoRoot.Path + "\", "").Replace("\", "/")
+        }
+    }
+
     $caseSummaries += [ordered]@{
         caseId = $caseId
         name = $case.name
@@ -55,7 +76,7 @@ foreach ($case in @($registry.cases | Sort-Object caseId)) {
         metricsTotal = [int]$metricsTotal
         metricsPassed = [int]$metricsPassed
         metricsFailed = [int]($metricsTotal - $metricsPassed)
-        resultFile = if ($hasComparison) { $epSmoke001ResultPath } else { "" }
+        resultFile = $resultFile
         nonClaims = @($case.nonClaims)
     }
 }
@@ -64,6 +85,7 @@ $totalCases = @($caseSummaries).Count
 $casesWithComparison = @($caseSummaries | Where-Object { $_.hasComparisonResult }).Count
 $casesPassing = @($caseSummaries | Where-Object { $_.hasComparisonResult -and $_.allMetricsPassed }).Count
 $placeholderComparisons = @($caseSummaries | Where-Object { $_.comparisonStatus -eq "PlaceholderComparison" }).Count
+$realComparisons = @($caseSummaries | Where-Object { $_.comparisonStatus -eq "RealEnergyPlusComparison" }).Count
 $plannedOnly = @($caseSummaries | Where-Object { -not $_.hasComparisonResult }).Count
 
 $summary = [ordered]@{
@@ -72,14 +94,15 @@ $summary = [ordered]@{
     status = "PlannedValidation"
     generatedAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss 'UTC'")
     registryFile = $registryPath
-    comparisonResultFiles = @($comparisonResults | ForEach-Object {
-        if ($_.caseId -eq "EP-SMOKE-001") { $epSmoke001ResultPath } else { "" }
-    } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    comparisonResultFiles = @($comparisonResultFiles | ForEach-Object {
+        $_.FullName.Replace($repoRoot.Path + "\", "").Replace("\", "/")
+    })
     totals = [ordered]@{
         totalCases = [int]$totalCases
         casesWithComparison = [int]$casesWithComparison
         casesPassing = [int]$casesPassing
         placeholderComparisons = [int]$placeholderComparisons
+        realEnergyPlusComparisons = [int]$realComparisons
         plannedOnly = [int]$plannedOnly
     }
     cases = $caseSummaries
@@ -90,7 +113,7 @@ $summary = [ordered]@{
         "PlaceholderComparison is not real EnergyPlus validation.",
         "Future real validation must remain tolerance-based."
     )
-    interpretation = "Validation summary is a readiness and comparison index. Current EP-SMOKE-001 result is PlaceholderComparison only. This does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
+    interpretation = "Validation summary is a readiness and comparison index. Current EP-SMOKE results are PlaceholderComparison only. This does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
 }
 
 $jsonDirectory = Split-Path $OutputJsonPath -Parent
@@ -111,6 +134,7 @@ $caseRows = @($caseSummaries | ForEach-Object {
     "| $($_.caseId) | $($_.stage) | $($_.registryStatus) | $($_.comparisonStatus) | $($_.referenceStatus) | $($_.metricsPassed)/$($_.metricsTotal) | $($_.allMetricsPassed) |"
 })
 
+$comparisonFileRows = @($summary.comparisonResultFiles | ForEach-Object { "- $_" })
 $nonClaimRows = @($summary.requiredNonClaims | ForEach-Object { "- $_" })
 
 $markdown = @"
@@ -130,6 +154,7 @@ Generated at: $($summary.generatedAtUtc)
 | Cases with comparison | $($summary.totals.casesWithComparison) |
 | Cases passing | $($summary.totals.casesPassing) |
 | Placeholder comparisons | $($summary.totals.placeholderComparisons) |
+| Real EnergyPlus comparisons | $($summary.totals.realEnergyPlusComparisons) |
 | Planned-only cases | $($summary.totals.plannedOnly) |
 
 ## Cases
@@ -140,7 +165,7 @@ $($caseRows -join "`n")
 
 ## Comparison result files
 
-$(@($summary.comparisonResultFiles | ForEach-Object { "- $_" }) -join "`n")
+$($comparisonFileRows -join "`n")
 
 ## Required non-claims
 
@@ -150,7 +175,7 @@ $($nonClaimRows -join "`n")
 
 Validation summary is a readiness and comparison index.
 
-Current EP-SMOKE-001 result is PlaceholderComparison only.
+Current EP-SMOKE results are PlaceholderComparison only.
 
 This does not claim exact EnergyPlus numerical parity.
 

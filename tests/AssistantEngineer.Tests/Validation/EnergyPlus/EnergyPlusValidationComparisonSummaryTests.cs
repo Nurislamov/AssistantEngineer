@@ -167,12 +167,12 @@ public class EnergyPlusValidationComparisonSummaryTests
     }
 
     [Fact]
-    public void SummaryScriptReadsRegistryAndEpSmoke001ComparisonResultAndWritesOutputs()
+    public void SummaryScriptReadsRegistryAndSmokeComparisonResultsAndWritesOutputs()
     {
         var content = File.ReadAllText(SummaryScriptPath);
 
         Assert.Contains("EnergyPlusValidationCaseRegistry.json", content, StringComparison.Ordinal);
-        Assert.Contains("EP-SMOKE-001-ComparisonResult.json", content, StringComparison.Ordinal);
+        Assert.Contains("EP-SMOKE-*-ComparisonResult.json", content, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1ValidationComparisonSummary.json", content, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1ValidationComparisonSummary.md", content, StringComparison.Ordinal);
         Assert.Contains("PlaceholderComparison", content, StringComparison.Ordinal);
@@ -219,3 +219,4 @@ public class EnergyPlusValidationComparisonSummaryTests
             "validation",
             "EnergyPlusValidationCaseRegistry.json");
 }
+

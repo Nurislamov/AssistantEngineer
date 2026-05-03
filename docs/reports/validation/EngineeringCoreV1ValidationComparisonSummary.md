@@ -1,6 +1,6 @@
 ﻿# Engineering Core V1 Validation Comparison Summary
 
-Generated at: 2026-05-03 06:12:54 UTC
+Generated at: 2026-05-03 06:27:23 UTC
 
 ## Status
 
@@ -11,10 +11,11 @@ Generated at: 2026-05-03 06:12:54 UTC
 | Status | PlannedValidation |
 | Registry file | docs/validation/EnergyPlusValidationCaseRegistry.json |
 | Total cases | 5 |
-| Cases with comparison | 1 |
-| Cases passing | 1 |
-| Placeholder comparisons | 1 |
-| Planned-only cases | 4 |
+| Cases with comparison | 3 |
+| Cases passing | 3 |
+| Placeholder comparisons | 3 |
+| Real EnergyPlus comparisons | 0 |
+| Planned-only cases | 2 |
 
 ## Cases
 
@@ -23,12 +24,14 @@ Generated at: 2026-05-03 06:12:54 UTC
 | ASHRAE140-STYLE-001 | Ashrae140Style | Planned | NotGenerated | NotAvailable | 0/2 | False |
 | ASHRAE140-STYLE-002 | Ashrae140Style | Planned | NotGenerated | NotAvailable | 0/2 | False |
 | EP-SMOKE-001 | Smoke | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 3/3 | True |
-| EP-SMOKE-002 | Smoke | ReferenceFixturePlaceholder | NotGenerated | NotAvailable | 0/3 | False |
-| EP-SMOKE-003 | Smoke | ReferenceFixturePlaceholder | NotGenerated | NotAvailable | 0/3 | False |
+| EP-SMOKE-002 | Smoke | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
+| EP-SMOKE-003 | Smoke | ReferenceFixturePlaceholder | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
 
 ## Comparison result files
 
 - docs/reports/validation/EP-SMOKE-001-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-002-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-003-ComparisonResult.json
 
 ## Required non-claims
 
@@ -42,7 +45,7 @@ Generated at: 2026-05-03 06:12:54 UTC
 
 Validation summary is a readiness and comparison index.
 
-Current EP-SMOKE-001 result is PlaceholderComparison only.
+Current EP-SMOKE results are PlaceholderComparison only.
 
 This does not claim exact EnergyPlus numerical parity.
 

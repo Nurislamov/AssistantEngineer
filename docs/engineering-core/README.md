@@ -203,3 +203,10 @@ Engineering Core V1 does not claim:
 - docs/runbooks/EngineeringCoreV1ValidationProfile.md
 - docs/ci/EngineeringCoreV1ValidationCI.md
 - .github/workflows/engineering-core-v1-validation.yml
+
+## Validation evidence package
+
+- scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.json
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.md
+- docs/validation/EnergyPlusValidationEvidenceGuide.md

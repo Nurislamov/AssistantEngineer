@@ -2,17 +2,20 @@
     "summaryName":  "Engineering Core V1 Validation Comparison Summary",
     "version":  "v1",
     "status":  "PlannedValidation",
-    "generatedAtUtc":  "2026-05-03 06:12:54 UTC",
+    "generatedAtUtc":  "2026-05-03 06:27:23 UTC",
     "registryFile":  "docs/validation/EnergyPlusValidationCaseRegistry.json",
     "comparisonResultFiles":  [
-                                  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json"
+                                  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
+                                  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.json",
+                                  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.json"
                               ],
     "totals":  {
                    "totalCases":  5,
-                   "casesWithComparison":  1,
-                   "casesPassing":  1,
-                   "placeholderComparisons":  1,
-                   "plannedOnly":  4
+                   "casesWithComparison":  3,
+                   "casesPassing":  3,
+                   "placeholderComparisons":  3,
+                   "realEnergyPlusComparisons":  0,
+                   "plannedOnly":  2
                },
     "cases":  [
                   {
@@ -77,14 +80,14 @@
                       "name":  "Single zone solar cooling smoke case",
                       "stage":  "Smoke",
                       "registryStatus":  "ReferenceFixturePlaceholder",
-                      "comparisonStatus":  "NotGenerated",
-                      "referenceStatus":  "NotAvailable",
-                      "hasComparisonResult":  false,
-                      "allMetricsPassed":  false,
-                      "metricsTotal":  3,
-                      "metricsPassed":  0,
-                      "metricsFailed":  3,
-                      "resultFile":  "",
+                      "comparisonStatus":  "PlaceholderComparison",
+                      "referenceStatus":  "PlaceholderReferenceOutput",
+                      "hasComparisonResult":  true,
+                      "allMetricsPassed":  true,
+                      "metricsTotal":  4,
+                      "metricsPassed":  4,
+                      "metricsFailed":  0,
+                      "resultFile":  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.json",
                       "nonClaims":  [
                                         "Does not claim exact EnergyPlus numerical parity.",
                                         "Does not claim ASHRAE 140 validation coverage.",
@@ -96,14 +99,14 @@
                       "name":  "Single zone internal gains cooling smoke case",
                       "stage":  "Smoke",
                       "registryStatus":  "ReferenceFixturePlaceholder",
-                      "comparisonStatus":  "NotGenerated",
-                      "referenceStatus":  "NotAvailable",
-                      "hasComparisonResult":  false,
-                      "allMetricsPassed":  false,
-                      "metricsTotal":  3,
-                      "metricsPassed":  0,
-                      "metricsFailed":  3,
-                      "resultFile":  "",
+                      "comparisonStatus":  "PlaceholderComparison",
+                      "referenceStatus":  "PlaceholderReferenceOutput",
+                      "hasComparisonResult":  true,
+                      "allMetricsPassed":  true,
+                      "metricsTotal":  4,
+                      "metricsPassed":  4,
+                      "metricsFailed":  0,
+                      "resultFile":  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.json",
                       "nonClaims":  [
                                         "Does not claim exact EnergyPlus numerical parity.",
                                         "Does not claim ASHRAE 140 validation coverage.",
@@ -118,5 +121,5 @@
                               "PlaceholderComparison is not real EnergyPlus validation.",
                               "Future real validation must remain tolerance-based."
                           ],
-    "interpretation":  "Validation summary is a readiness and comparison index. Current EP-SMOKE-001 result is PlaceholderComparison only. This does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
+    "interpretation":  "Validation summary is a readiness and comparison index. Current EP-SMOKE results are PlaceholderComparison only. This does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
 }

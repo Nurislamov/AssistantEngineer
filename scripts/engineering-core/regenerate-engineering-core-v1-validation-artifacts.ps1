@@ -53,6 +53,10 @@ Invoke-Generator "EnergyPlus validation fixture catalog" {
     .\scripts\engineering-core\generate-energyplus-validation-fixture-catalog.ps1
 }
 
+Invoke-Generator "Validation evidence package" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1
+}
+
 Write-Host ""
 Write-Host "Engineering Core V1 validation artifact regeneration completed successfully." -ForegroundColor Green
 Write-Host ""
@@ -66,3 +70,4 @@ Write-Host "- docs/reports/validation/EngineeringCoreV1ValidationComparisonSumma
 Write-Host "- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json/md"
 Write-Host "- docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md"
 Write-Host "- docs/validation/EnergyPlusValidationFixtureCatalog.json/md"
+

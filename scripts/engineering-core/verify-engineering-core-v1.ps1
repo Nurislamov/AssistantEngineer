@@ -134,6 +134,11 @@ Invoke-Step "EnergyPlus validation profile script tests" {
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationProfileScriptsTests"
 }
 
+Invoke-Step "EnergyPlus validation evidence package tests" {
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationEvidencePackageTests"
+}
+
 Invoke-Step "Engineering Core traceability matrix guard tests" {
     .\scripts\engineering-core\generate-engineering-core-v1-traceability-matrix.ps1
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1TraceabilityMatrixTests"
@@ -184,6 +189,7 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
 
 
 

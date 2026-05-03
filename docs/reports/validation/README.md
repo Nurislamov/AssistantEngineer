@@ -119,3 +119,15 @@ Generated outputs:
 - docs/validation/EnergyPlusValidationFixtureCatalogGuide.md
 
 The catalog synchronizes registry entries, fixture folders and comparison outputs.
+
+## Validation evidence package
+
+Generate validation evidence package:
+
+    .\scripts\engineering-core\generate-engineering-core-v1-validation-evidence.ps1
+
+Generated outputs:
+
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.json
+- docs/reports/validation/EngineeringCoreV1ValidationEvidence.md
+- docs/validation/EnergyPlusValidationEvidenceGuide.md
