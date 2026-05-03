@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.V2;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -9,15 +10,21 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
     private readonly IIso52016WeatherSolarContextBuilder _weatherSolarContextBuilder;
     private readonly IIso52016RoomEnergySimulationRequestBuilder _roomSimulationRequestBuilder;
     private readonly IIso52016RoomEnergySimulationService _roomSimulationService;
+    private readonly IIso52016V2RoomEnergySimulationService? _v2RoomSimulationService;
+    private readonly IIso52016V2RoomEnergySimulationResultMapper? _v2ResultMapper;
 
     public Iso52016BuildingSimulationFacade(
         IIso52016WeatherSolarContextBuilder weatherSolarContextBuilder,
         IIso52016RoomEnergySimulationRequestBuilder roomSimulationRequestBuilder,
-        IIso52016RoomEnergySimulationService roomSimulationService)
+        IIso52016RoomEnergySimulationService roomSimulationService,
+        IIso52016V2RoomEnergySimulationService? v2RoomSimulationService = null,
+        IIso52016V2RoomEnergySimulationResultMapper? v2ResultMapper = null)
     {
         _weatherSolarContextBuilder = weatherSolarContextBuilder;
         _roomSimulationRequestBuilder = roomSimulationRequestBuilder;
         _roomSimulationService = roomSimulationService;
+        _v2RoomSimulationService = v2RoomSimulationService;
+        _v2ResultMapper = v2ResultMapper;
     }
 
     public Result<Iso52016BuildingSimulationFacadeResult> Simulate(
@@ -57,11 +64,20 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
             if (roomRequestResult.IsFailure)
                 return Result<Iso52016BuildingSimulationFacadeResult>.Failure(roomRequestResult);
 
-            var roomSimulationResult = _roomSimulationService.Simulate(
-                roomRequestResult.Value with
-                {
-                    HeatBalanceOptions = request.HeatBalanceOptions
-                });
+            var roomSimulationRequest = roomRequestResult.Value with
+            {
+                HeatBalanceOptions = request.HeatBalanceOptions
+            };
+
+            var roomSimulationResult = request.SimulationEngine switch
+            {
+                Iso52016SimulationEngine.Legacy => _roomSimulationService.Simulate(
+                    roomSimulationRequest),
+                Iso52016SimulationEngine.V2Matrix => SimulateRoomWithV2Matrix(
+                    roomSimulationRequest),
+                _ => Result<Iso52016RoomEnergySimulationResult>.Validation(
+                    "Unsupported ISO 52016 simulation engine.")
+            };
 
             if (roomSimulationResult.IsFailure)
                 return Result<Iso52016BuildingSimulationFacadeResult>.Failure(roomSimulationResult);
@@ -83,9 +99,34 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
                 WeatherSolarContext: weatherSolarContextResult.Value,
                 RoomResults: roomResults,
                 Hours: hourlyResults,
-                MonthlySummaries: monthlySummaries));
+                MonthlySummaries: monthlySummaries,
+                SimulationEngine: request.SimulationEngine));
     }
 
+    private Result<Iso52016RoomEnergySimulationResult> SimulateRoomWithV2Matrix(
+        Iso52016RoomEnergySimulationRequest roomSimulationRequest)
+    {
+        if (_v2RoomSimulationService is null)
+        {
+            return Result<Iso52016RoomEnergySimulationResult>.Failure(
+                "ISO 52016 V2 room simulation service is not registered.");
+        }
+
+        if (_v2ResultMapper is null)
+        {
+            return Result<Iso52016RoomEnergySimulationResult>.Failure(
+                "ISO 52016 V2 result mapper is not registered.");
+        }
+
+        var v2Result = _v2RoomSimulationService.Simulate(
+            roomSimulationRequest);
+
+        if (v2Result.IsFailure)
+            return Result<Iso52016RoomEnergySimulationResult>.Failure(v2Result);
+
+        return _v2ResultMapper.Map(
+            v2Result.Value);
+    }
     private static IReadOnlyList<Iso52016HourlyBuildingSimulationRecord> AggregateHourlyResults(
         Iso52016WeatherSolarContext weatherSolarContext,
         IReadOnlyList<Iso52016RoomEnergySimulationResult> roomResults)
@@ -150,6 +191,9 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
     {
         if (string.IsNullOrWhiteSpace(request.BuildingCode))
             return Result.Validation("Building code is required.");
+
+        if (!Enum.IsDefined(request.SimulationEngine))
+            return Result.Validation("Unsupported ISO 52016 simulation engine.");
 
         if (request.Rooms is null)
             return Result.Validation("Building room list is required.");

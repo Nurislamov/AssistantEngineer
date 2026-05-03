@@ -1,11 +1,12 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 public sealed record Iso52016BuildingSimulationFacadeResult(
     string BuildingCode,
     Iso52016WeatherSolarContext WeatherSolarContext,
     IReadOnlyList<Iso52016RoomEnergySimulationResult> RoomResults,
     IReadOnlyList<Iso52016HourlyBuildingSimulationRecord> Hours,
-    IReadOnlyList<Iso52016MonthlyBuildingSimulationSummary> MonthlySummaries)
+    IReadOnlyList<Iso52016MonthlyBuildingSimulationSummary> MonthlySummaries,
+    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Legacy)
 {
     public int RoomCount => RoomResults.Count;
 
