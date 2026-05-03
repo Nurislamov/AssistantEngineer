@@ -7,9 +7,9 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Field | Value |
 |---|---|
 | Scripts | 26 |
-| Thin wrappers | 14 |
-| Heavy PowerShell scripts | 12 |
-| Unknown PowerShell scripts | 0 |
+| Thin wrappers | 18 |
+| Heavy PowerShell scripts | 6 |
+| Unknown PowerShell scripts | 2 |
 | Status | MigrationInProgress |
 
 ## Repository boundary
@@ -26,7 +26,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 | Script | Classification | Target tool | Non-empty lines | Heavy patterns |
 |---|---|---|---:|---|
-| `scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1` | HeavyPowerShellLogic |  | 99 | function  |
+| `scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1` | UnknownPowerShellScript | AssistantEngineer.Tools.EngineeringCore | 23 |  |
 | `scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/compare-energyplus-validation-fixtures.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
@@ -42,16 +42,16 @@ Generated at: 2026-01-01 00:00:00 UTC
 | `scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/new-energyplus-validation-fixture.ps1` | HeavyPowerShellLogic |  | 83 | function , New-Item, Set-Content |
-| `scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1` | HeavyPowerShellLogic |  | 45 | function  |
+| `scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 11 |  |
 | `scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/verify-calculation-module-balance-invariants.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 8 |  |
 | `scripts/engineering-core/verify-calculation-module-deepening.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 8 |  |
 | `scripts/engineering-core/verify-calculation-module-diagnostics-consistency.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 8 |  |
-| `scripts/engineering-core/verify-engineering-core-v1-contracts.ps1` | HeavyPowerShellLogic |  | 42 | function  |
-| `scripts/engineering-core/verify-engineering-core-v1-manifest.ps1` | HeavyPowerShellLogic |  | 36 | function  |
-| `scripts/engineering-core/verify-engineering-core-v1-smoke.ps1` | HeavyPowerShellLogic |  | 36 | function  |
+| `scripts/engineering-core/verify-engineering-core-v1-contracts.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 15 |  |
+| `scripts/engineering-core/verify-engineering-core-v1-manifest.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 11 |  |
+| `scripts/engineering-core/verify-engineering-core-v1-smoke.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 11 |  |
 | `scripts/engineering-core/verify-engineering-core-v1-validation.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
-| `scripts/engineering-core/verify-engineering-core-v1.ps1` | HeavyPowerShellLogic |  | 154 | function  |
+| `scripts/engineering-core/verify-engineering-core-v1.ps1` | UnknownPowerShellScript | AssistantEngineer.Tools.EngineeringCore | 19 |  |
 
 ## Interpretation
 

@@ -14,19 +14,17 @@
   },
   "totals": {
     "scripts": 26,
-    "thinScripts": 14,
-    "heavyScripts": 12,
-    "unknownScripts": 0
+    "thinScripts": 18,
+    "heavyScripts": 6,
+    "unknownScripts": 2
   },
   "scripts": [
     {
       "path": "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 99,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "UnknownPowerShellScript",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 23,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1",
@@ -165,12 +163,10 @@
     },
     {
       "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 45,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1",
@@ -202,30 +198,24 @@
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-contracts.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 42,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 15,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 36,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-smoke.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 36,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "ThinWrapper",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 11,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1-validation.ps1",
@@ -236,12 +226,10 @@
     },
     {
       "path": "scripts/engineering-core/verify-engineering-core-v1.ps1",
-      "classification": "HeavyPowerShellLogic",
-      "targetTool": "",
-      "nonEmptyLines": 154,
-      "heavyPatterns": [
-        "function "
-      ]
+      "classification": "UnknownPowerShellScript",
+      "targetTool": "AssistantEngineer.Tools.EngineeringCore",
+      "nonEmptyLines": 19,
+      "heavyPatterns": []
     }
   ],
   "requiredNextStep": "Move remaining heavy PowerShell logic into C# tools and leave scripts as wrappers only."
