@@ -151,16 +151,19 @@ public class CalculationModuleDeepeningGuardTests
     }
 
     [Fact]
-    public void VerifyScriptRunsGeneratorAndGuardTests()
+    public void VerifyScriptIsThinWrapperAndCSharpToolOwnsGeneratorAndGuardTests()
     {
-        var content = File.ReadAllText(VerifyScriptPath);
+        var wrapper = File.ReadAllText(VerifyScriptPath);
+        Assert.Contains("AssistantEngineer.Tools.EngineeringCore.csproj", wrapper, StringComparison.Ordinal);
+        Assert.Contains("verify-calculation-module-deepening", wrapper, StringComparison.Ordinal);
+        Assert.Contains("dotnet run --project", wrapper, StringComparison.Ordinal);
+        Assert.DoesNotContain("dotnet test", wrapper, StringComparison.Ordinal);
 
-        Assert.Contains("generate-calculation-module-inventory.ps1", content, StringComparison.Ordinal);
-        Assert.Contains("CalculationModuleDeepeningGuardTests", content, StringComparison.Ordinal);
-        Assert.Contains("dotnet test", content, StringComparison.Ordinal);
+        var tool = File.ReadAllText(ToolProgramPath);
+        Assert.Contains("generate-calculation-module-inventory", tool, StringComparison.Ordinal);
+        Assert.Contains("CalculationModuleDeepeningGuardTests", tool, StringComparison.Ordinal);
     }
-
-    private static JsonDocument ReadJson(string path) =>
+private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 
     private static string PlanPath =>
@@ -180,4 +183,11 @@ public class CalculationModuleDeepeningGuardTests
 
     private static string InventoryMarkdownPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "calculations", "CalculationModuleInventory.md");
+    private static string ToolProgramPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCore",
+            "Program.cs");
 }
+

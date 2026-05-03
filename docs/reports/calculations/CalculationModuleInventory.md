@@ -14,7 +14,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Service files | 117 |
 | Contract files | 196 |
 | Abstraction files | 48 |
-| Calculation tests | 72 |
+| Calculation tests | 74 |
 | Parity tests | 37 |
 | Key engines | 12 |
 | Missing key engines | 0 |
@@ -23,18 +23,18 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 | Engine | Layer | Exists | Path |
 |---|---|---|---|
-| RoomLoadCalculationEngine | Room load orchestration | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| LoadAggregationEngine | Aggregation | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| AnnualEnergyBalanceEngine | Annual energy | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| HourlySimulationToAnnualEnergyInputMapper | Annual energy input mapping | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| SystemEnergyEngine | System energy | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| EquipmentSizingEngine | Equipment sizing | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| TransmissionHeatTransferEngine | Envelope transmission | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| VentilationAndInfiltrationLoadEngine | Ventilation | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| InternalGainEngine | Internal gains | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| WindowSolarGainEngine | Window solar gains | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| AnnualWeatherSolarProfileBuilder | Weather/solar profile | True | $(System.Collections.Specialized.OrderedDictionary.path) |
-| EnergyCalculationPipelineService | Application pipeline | True | $(System.Collections.Specialized.OrderedDictionary.path) |
+| RoomLoadCalculationEngine | Room load orchestration | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/RoomLoads/RoomLoadCalculationEngine.cs` |
+| LoadAggregationEngine | Aggregation | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Aggregation/LoadAggregationEngine.cs` |
+| AnnualEnergyBalanceEngine | Annual energy | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/AnnualEnergyBalanceEngine.cs` |
+| HourlySimulationToAnnualEnergyInputMapper | Annual energy input mapping | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/AnnualEnergy/HourlySimulationToAnnualEnergyInputMapper.cs` |
+| SystemEnergyEngine | System energy | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyEngine.cs` |
+| EquipmentSizingEngine | Equipment sizing | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/EquipmentSizing/EquipmentSizingEngine.cs` |
+| TransmissionHeatTransferEngine | Envelope transmission | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Transmission/TransmissionHeatTransferEngine.cs` |
+| VentilationAndInfiltrationLoadEngine | Ventilation | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/VentilationAndInfiltrationLoadEngine.cs` |
+| InternalGainEngine | Internal gains | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InternalGains/InternalGainEngine.cs` |
+| WindowSolarGainEngine | Window solar gains | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SolarGains/WindowSolarGainEngine.cs` |
+| AnnualWeatherSolarProfileBuilder | Weather/solar profile | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/WeatherSolar/AnnualWeatherSolarProfileBuilder.cs` |
+| EnergyCalculationPipelineService | Application pipeline | True | `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs` |
 
 ## Missing key engines
 
