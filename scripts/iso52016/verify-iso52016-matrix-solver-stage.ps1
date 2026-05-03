@@ -10,8 +10,9 @@ $requiredFiles = @(
     "docs\calculations\Iso52016MatrixSolverStage.md",
     "docs\releases\Iso52016MatrixSolverStageManifest.json",
     "docs\traceability\Iso52016MatrixSolverTraceabilityMatrix.json",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016CalculationPath.cs",
     "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Iso52016BuildingEnergySimulationCommand.cs",
+    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Matrix\Iso52016MatrixHourlySolverRequest.cs",
+    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Services\Iso52016\Matrix\Iso52016MatrixHourlySolver.cs",
     "src\Backend\AssistantEngineer.Api\Controllers\Analysis\BuildingEnergyAnalysisController.cs"
 )
 
@@ -42,6 +43,8 @@ foreach ($guard in @(
     "AdjacentUnconditioned",
     "Iso52016MatrixRoomEnergySimulationService",
         "Iso52016BuildingEnergySimulationCommand",
+    "Iso52016MatrixRoomEnergySimulationResultMapper",
+    "Iso52016MatrixReducedRoomModelBuilder",
     "SimulateIso52016"
 )) {
     if (-not $sourceText.Contains($guard)) {
