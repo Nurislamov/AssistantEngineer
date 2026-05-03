@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
+﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Solar;
@@ -18,7 +18,7 @@ public class SolarRadiationService : ISolarRadiationService
         ISurfaceIrradianceCalculator? surfaceIrradianceCalculator = null)
     {
         _solarPositionCalculator = solarPositionCalculator ?? new SolarPositionCalculator();
-        _surfaceIrradianceCalculator = surfaceIrradianceCalculator ?? new IsotropicSkySurfaceIrradianceCalculator();
+        _surfaceIrradianceCalculator = surfaceIrradianceCalculator ?? new PerezAnisotropicSurfaceIrradianceCalculator();
     }
 
     public double CalculateVerticalSurfaceRadiation(

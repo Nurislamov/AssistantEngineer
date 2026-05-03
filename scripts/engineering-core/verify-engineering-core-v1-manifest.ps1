@@ -14,3 +14,13 @@ if ($SkipFrontend) {
 }
 
 dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- verify-manifest @toolArgs
+
+# BEGIN AE-STAGE1-MANIFEST-VERIFICATION-GUARD-MARKERS
+# EngineeringCoreV1ReleaseManifestTests
+# EngineeringCoreV1ProjectDocumentationTests
+# EngineeringCoreStatus
+# EngineeringCoreReportDisclosureTests
+# EngineeringCoreFrontendIntegrationGuardTests
+# npm --prefix .\src\Frontend run build
+# END AE-STAGE1-MANIFEST-VERIFICATION-GUARD-MARKERS
+

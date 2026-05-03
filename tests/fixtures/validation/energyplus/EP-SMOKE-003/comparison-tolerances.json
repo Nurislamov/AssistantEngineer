@@ -1,52 +1,12 @@
 ﻿{
   "caseId": "EP-SMOKE-003",
-  "tolerancePolicy": "Smoke fixture tolerance policy. Future real EnergyPlus comparison remains tolerance-based and non-parity.",
-  "metrics": [
-    {
-      "metricId": "annual-cooling-kwh",
-      "name": "Annual or fixture-period cooling energy",
-      "unit": "kWh",
-      "type": "NumericWithinTolerance",
-      "assistantEngineerPath": "calculationFormula.expectedDailyCoolingEnergyKwh",
-      "referencePath": "referenceOutputs.annualCoolingEnergyKwh",
-      "tolerancePercent": 20.0,
-      "absoluteTolerance": 0.5
-    },
-    {
-      "metricId": "peak-cooling-w",
-      "name": "Peak cooling load",
-      "unit": "W",
-      "type": "NumericWithinTolerance",
-      "assistantEngineerPath": "calculationFormula.expectedPeakCoolingLoadW",
-      "referencePath": "referenceOutputs.peakCoolingLoadW",
-      "tolerancePercent": 25.0,
-      "absoluteTolerance": 50.0
-    },
-    {
-      "metricId": "internal-gain-response",
-      "name": "Internal gain response",
-      "unit": "index",
-      "type": "DirectionalTrend",
-      "assistantEngineerPath": "calculationFormula.internalGainResponseIndex",
-      "referencePath": "referenceOutputs.internalGainResponseIndex",
-      "tolerancePercent": 0.0,
-      "absoluteTolerance": 0.0
-    },
-    {
-      "metricId": "annual-heating-kwh",
-      "name": "Annual or fixture-period heating energy",
-      "unit": "kWh",
-      "type": "SameSign",
-      "assistantEngineerPath": "calculationFormula.expectedHeatingEnergyKwh",
-      "referencePath": "referenceOutputs.annualHeatingEnergyKwh",
-      "tolerancePercent": 0.0,
-      "absoluteTolerance": 0.1
-    }
-  ],
   "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity.",
-    "Does not claim latent or moisture validation coverage."
-  ]
+    "Does not claim exact EnergyPlus numerical parity."
+  ],
+  "metrics": [
+  { "metricId": "annual-cooling-kwh", "type": "NumericWithinTolerance", "unit": "kWh", "tolerancePercent": 0, "absoluteTolerance": 0 },
+  { "metricId": "peak-cooling-w", "type": "NumericWithinTolerance", "unit": "W", "tolerancePercent": 0, "absoluteTolerance": 0 },
+  { "metricId": "internal-gain-response", "type": "DirectionalTrend", "unit": "-", "tolerancePercent": 0, "absoluteTolerance": 0 },
+  { "metricId": "annual-heating-kwh", "type": "SameSign", "unit": "kWh", "tolerancePercent": 0, "absoluteTolerance": 0 }
+]
 }

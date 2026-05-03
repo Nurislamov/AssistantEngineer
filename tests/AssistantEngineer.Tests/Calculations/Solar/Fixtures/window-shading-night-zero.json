@@ -1,0 +1,27 @@
+﻿{
+  "name": "AE-SOLAR-003 night zero benchmark",
+  "input": {
+    "windowId": 4,
+    "roomId": 301,
+    "areaM2": 2.4,
+    "orientationAzimuthDeg": 90.0,
+    "tiltDeg": 90.0,
+    "shgc": 0.45,
+    "frameFactor": 0.85,
+    "internalShadingFactor": 1.0,
+    "externalShadingFactor": 1.0,
+    "fixedShadingFactor": 1.0,
+    "directIrradianceWPerM2": 500.0,
+    "diffuseIrradianceWPerM2": 50.0,
+    "groundReflectedIrradianceWPerM2": 10.0,
+    "hourIndex": 20,
+    "isNight": true
+  },
+  "expected": {
+    "effectiveSolarFactor": 0.3825,
+    "directSolarGainW": 0.0,
+    "diffuseSolarGainW": 0.0,
+    "groundReflectedSolarGainW": 0.0,
+    "totalSolarGainW": 0.0
+  }
+}

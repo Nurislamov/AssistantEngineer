@@ -1,60 +1,10 @@
 ﻿{
   "caseId": "EP-SMOKE-003",
-  "name": "Single zone internal gains cooling smoke case",
   "stage": "Smoke",
   "status": "ReferenceFixturePlaceholder",
-  "source": "Offline committed reference fixture placeholder; real EnergyPlus model/output to be added in a future validation milestone.",
-  "purpose": "Prepare comparative validation fixture structure for sensible internal gains cooling behavior; not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "purpose": "internal sensible gains cooling smoke fixture; not exact EnergyPlus parity.",
   "notAClaim": [
     "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity.",
-    "Does not claim latent or moisture validation coverage."
-  ],
-  "weatherSource": "Constant mild outdoor temperature synthetic fixture.",
-  "geometry": {
-    "type": "single-zone-box",
-    "floorAreaM2": 60.0,
-    "heightM": 3.0,
-    "volumeM3": 180.0,
-    "description": "Single-zone rectangular box with no windows."
-  },
-  "envelope": {
-    "description": "Simple envelope with low transmission load.",
-    "opaqueAreaM2": 200.0,
-    "uValueWPerM2K": 0.30,
-    "windowAreaM2": 0.0
-  },
-  "setpoints": {
-    "heatingSetpointC": null,
-    "coolingSetpointC": 24.0
-  },
-  "weather": {
-    "outdoorDryBulbC": 24.0,
-    "durationHours": 24,
-    "profile": "constant-mild"
-  },
-  "internalGains": {
-    "sensibleW": 1200.0,
-    "latentW": 0.0,
-    "description": "Fixed sensible internal gains schedule; no latent gains."
-  },
-  "ventilation": {
-    "airflowM3PerS": 0.0,
-    "description": "No ventilation or infiltration."
-  },
-  "hvacControl": {
-    "type": "IdealLoadsCoolingOnly",
-    "description": "Ideal cooling load, fixed cooling setpoint."
-  },
-  "expectedEngineeringBehavior": [
-    "Cooling load increases with sensible internal gains.",
-    "Heating load remains zero or same-sign neutral for this mild cooling case.",
-    "Latent and moisture effects are out of scope."
-  ],
-  "knownDifferences": [
-    "AssistantEngineer internal gains are sensible-only in v1.",
-    "Latent heat and humidity are intentionally out of scope.",
-    "Detailed EnergyPlus heat storage/distribution behavior is not claimed."
+    "Does not claim ASHRAE 140 validation coverage."
   ]
 }

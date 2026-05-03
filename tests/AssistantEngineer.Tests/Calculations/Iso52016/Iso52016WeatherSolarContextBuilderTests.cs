@@ -16,7 +16,7 @@ public class Iso52016WeatherSolarContextBuilderTests
             new AnnualClimateDataNormalizer(),
             new AnnualWeatherSolarProfileBuilder(
                 new SolarPositionCalculator(),
-                new IsotropicSkySurfaceIrradianceCalculator()),
+                new PerezAnisotropicSurfaceIrradianceCalculator()),
             new PeriodicIso52016GroundBoundaryTemperatureProvider());
 
     [Fact]
@@ -211,3 +211,4 @@ public class Iso52016WeatherSolarContextBuilderTests
         return climateZone.Value;
     }
 }
+

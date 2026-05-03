@@ -88,6 +88,33 @@ public class SolarPositionCalculatorTests
             result.RelativeAirMass);
     }
 
+    [Fact]
+    public void Calculate_WithExplicitTashkentLocation_UsesLocalSolarTime()
+    {
+        var result = _calculator.Calculate(
+            new SolarPositionRequest(
+                Timestamp: new DateTimeOffset(
+                    year: 2026,
+                    month: 6,
+                    day: 21,
+                    hour: 12,
+                    minute: 0,
+                    second: 0,
+                    offset: TimeSpan.FromHours(5)),
+                Location: new SolarLocation(
+                    LatitudeDegrees: 41.2995,
+                    LongitudeDegrees: 69.2401,
+                    UtcOffset: TimeSpan.FromHours(5))));
+
+        Assert.InRange(
+            result.HourAngleDegrees,
+            -9.0,
+            -4.0);
+
+        Assert.True(
+            result.SolarAltitudeDegrees > 70.0);
+    }
+
     [Theory]
     [InlineData(-91.0, 0.0)]
     [InlineData(91.0, 0.0)]
@@ -103,5 +130,18 @@ public class SolarPositionCalculatorTests
                     Timestamp: DateTimeOffset.UtcNow,
                     LatitudeDegrees: latitude,
                     LongitudeDegrees: longitude)));
+    }
+
+    [Fact]
+    public void Calculate_RejectsInvalidUtcOffset()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            _calculator.Calculate(
+                new SolarPositionRequest(
+                    Timestamp: DateTimeOffset.UtcNow,
+                    Location: new SolarLocation(
+                        LatitudeDegrees: 41.3,
+                        LongitudeDegrees: 69.2,
+                        UtcOffset: TimeSpan.FromHours(15)))));
     }
 }

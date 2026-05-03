@@ -33,4 +33,15 @@
     <ProjectReference Include="..\..\src\Backend\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Calculations\Solar\Fixtures\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Calculations\Solar\Fixtures\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
+

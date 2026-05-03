@@ -1,4 +1,5 @@
-using AssistantEngineer.Modules.Buildings.Domain.Entities;
+﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
@@ -9,7 +10,8 @@ internal sealed class Iso52016HourlyResultComposer
         Building building,
         int weatherYear,
         IReadOnlyCollection<Iso52016ZoneHourlyEnergyNeed> zoneHourlyResults,
-        IReadOnlyCollection<Iso52016RoomHourlyEnergyNeed> roomHourlyResults)
+        IReadOnlyCollection<Iso52016RoomHourlyEnergyNeed> roomHourlyResults,
+        IReadOnlyList<CalculationDiagnostic>? diagnostics = null)
     {
         var groupedHourlyResults = zoneHourlyResults
             .GroupBy(hour => hour.HourOfYear)
@@ -60,6 +62,8 @@ internal sealed class Iso52016HourlyResultComposer
                 HeatingInputKWh: Iso52016HourlyCalculatorMath.Round(monthlyResults.Sum(month => month.HeatingDemandKWh)),
                 CoolingExtractedKWh: Iso52016HourlyCalculatorMath.Round(monthlyResults.Sum(month => month.CoolingDemandKWh))),
             ZoneHourlyResults: zoneHourlyResults.ToArray(),
-            RoomHourlyResults: roomHourlyResults.ToArray());
+            RoomHourlyResults: roomHourlyResults.ToArray(),
+            Diagnostics: diagnostics ?? []);
     }
 }
+

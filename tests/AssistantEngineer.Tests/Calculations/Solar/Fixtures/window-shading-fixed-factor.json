@@ -1,0 +1,27 @@
+﻿{
+  "name": "AE-SOLAR-003 fixed external shading factor benchmark",
+  "input": {
+    "windowId": 2,
+    "roomId": 101,
+    "areaM2": 2.0,
+    "orientationAzimuthDeg": 180.0,
+    "tiltDeg": 90.0,
+    "shgc": 0.5,
+    "frameFactor": 0.8,
+    "internalShadingFactor": 1.0,
+    "externalShadingFactor": 0.7,
+    "fixedShadingFactor": 1.0,
+    "directIrradianceWPerM2": 300.0,
+    "diffuseIrradianceWPerM2": 80.0,
+    "groundReflectedIrradianceWPerM2": 20.0,
+    "hourIndex": 101,
+    "isNight": false
+  },
+  "expected": {
+    "effectiveSolarFactor": 0.28,
+    "directSolarGainW": 168.0,
+    "diffuseSolarGainW": 44.8,
+    "groundReflectedSolarGainW": 11.2,
+    "totalSolarGainW": 224.0
+  }
+}

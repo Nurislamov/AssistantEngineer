@@ -188,12 +188,9 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
                 context));
         }
 
-        var hasNightClamp = profile.Hours.Any(hour =>
-            hour.SurfaceIrradiance.Any(surface =>
-                surface.Irradiance.Diagnostics.Any(diagnostic =>
-                    diagnostic.Code == "SolarWeather.NightSolarClampedToZero")));
-
-        if (hasNightClamp)
+        if (HasSurfaceDiagnostic(
+                profile,
+                "SolarWeather.NightSolarClampedToZero"))
         {
             diagnostics.Add(new CalculationDiagnostic(
                 CalculationDiagnosticSeverity.Info,
@@ -202,9 +199,44 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
                 context));
         }
 
+        if (HasSurfaceDiagnostic(
+                profile,
+                "SolarWeather.PerezAnisotropicModelUsed"))
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.PerezAnisotropicModelUsed",
+                "Perez anisotropic surface irradiance diagnostics were propagated into the ISO 52016 weather-solar context.",
+                context));
+
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "Iso52016.PerezAnisotropicModelUsed",
+                "ISO 52016 weather-solar context was built from Perez anisotropic surface irradiance components.",
+                context));
+        }
+
+        if (HasSurfaceDiagnostic(
+                profile,
+                "SolarWeather.PerezSkyState"))
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "SolarWeather.PerezSkyState",
+                "At least one hourly surface calculation reported Perez clearness/brightness sky-state diagnostics.",
+                context));
+        }
+
         return diagnostics;
     }
 
+    private static bool HasSurfaceDiagnostic(
+        AnnualWeatherSolarProfile profile,
+        string diagnosticCode) =>
+        profile.Hours.Any(hour =>
+            hour.SurfaceIrradiance.Any(surface =>
+                surface.Irradiance.Diagnostics.Any(diagnostic =>
+                    diagnostic.Code == diagnosticCode)));
     private static Result Validate(
         Iso52016WeatherSolarContextRequest request)
     {
@@ -223,3 +255,4 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
         return Result.Success();
     }
 }
+

@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
+﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
@@ -7,7 +7,8 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 internal sealed record Iso52016HourlyWeatherContext(
     int Year,
     AnnualHourlyData[] HourlyData,
-    double[] GroundBoundaryTemperaturesC);
+    double[] GroundBoundaryTemperaturesC,
+    Iso52016WeatherSolarContext? WeatherSolarContext = null);
 
 internal sealed record Iso52016ThermalZoneGroup(
     string Name,
@@ -88,3 +89,4 @@ internal sealed record Iso52016HourlyZoneCalculationContext(
     Iso52016ThermalZoneState ZoneState,
     IReadOnlyDictionary<int, string> RoomZoneMap,
     Dictionary<int, double> PreviousRoomTemperatures);
+
