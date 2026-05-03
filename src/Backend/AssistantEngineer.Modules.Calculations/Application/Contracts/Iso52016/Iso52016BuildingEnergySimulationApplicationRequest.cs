@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
@@ -14,4 +14,5 @@ public sealed record Iso52016BuildingEnergySimulationApplicationRequest(
     Iso52016RoomSimulationDefaults? Defaults = null,
     double? HeatingSetpointOverrideC = null,
     double? CoolingSetpointOverrideC = null,
-    Iso52016RoomHeatBalanceOptions? HeatBalanceOptions = null);
+    Iso52016RoomHeatBalanceOptions? HeatBalanceOptions = null,
+    Iso52016SimulationEngine SimulationEngine = Iso52016SimulationEngine.Legacy);

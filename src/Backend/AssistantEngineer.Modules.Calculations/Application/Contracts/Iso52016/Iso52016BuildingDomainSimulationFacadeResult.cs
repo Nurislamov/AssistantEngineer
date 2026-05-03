@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
@@ -8,6 +8,9 @@ public sealed record Iso52016BuildingDomainSimulationFacadeResult(
     IReadOnlyList<Room> Rooms,
     Iso52016BuildingSimulationFacadeResult SimulationResult)
 {
+    public Iso52016SimulationEngine SimulationEngine =>
+        SimulationResult.SimulationEngine;
+
     public int RoomCount => Rooms.Count;
 
     public int HourCount => SimulationResult.HourCount;

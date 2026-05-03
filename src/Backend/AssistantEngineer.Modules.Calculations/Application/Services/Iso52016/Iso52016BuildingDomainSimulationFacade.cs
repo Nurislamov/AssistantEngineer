@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -45,7 +45,8 @@ public sealed class Iso52016BuildingDomainSimulationFacade : IIso52016BuildingDo
                 Defaults: request.Defaults,
                 HeatingSetpointOverrideC: request.HeatingSetpointOverrideC,
                 CoolingSetpointOverrideC: request.CoolingSetpointOverrideC,
-                HeatBalanceOptions: request.HeatBalanceOptions));
+                HeatBalanceOptions: request.HeatBalanceOptions,
+                SimulationEngine: request.SimulationEngine));
 
         if (simulationResult.IsFailure)
             return Result<Iso52016BuildingDomainSimulationFacadeResult>.Failure(simulationResult);
@@ -63,6 +64,9 @@ public sealed class Iso52016BuildingDomainSimulationFacade : IIso52016BuildingDo
     {
         if (request.Building is null)
             return Result.Validation("Building is required.");
+
+        if (!Enum.IsDefined(request.SimulationEngine))
+            return Result.Validation("Unsupported ISO 52016 simulation engine.");
 
         if (request.AnnualClimateData is null)
             return Result.Validation("Annual climate data is required.");
