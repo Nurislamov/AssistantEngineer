@@ -22,7 +22,7 @@ public class EngineeringCoreDiagnosticsFrontendRenderingTests
         Assert.Contains("Iso52016.WeatherSolarContextUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.SolarGainComponentPathUsed", content, StringComparison.Ordinal);
         Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", content, StringComparison.Ordinal);
-        Assert.Contains("legacy solar radiation fallback", content, StringComparison.Ordinal);
+        Assert.Contains("matrix solar radiation fallback", content, StringComparison.Ordinal);
     }
 
     [Fact]

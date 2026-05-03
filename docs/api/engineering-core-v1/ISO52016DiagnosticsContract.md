@@ -34,7 +34,7 @@ The source/method path must be read from `diagnostics`:
 
 - `Iso52016.WeatherSolarContextUsed` means the ISO 52016 weather-solar context path was used.
 - `Iso52016.SolarGainComponentPathUsed` means beam, diffuse sky and ground-reflected components fed window solar gains.
-- `Iso52016.MatrixSolarRadiationFallbackUsed` means the legacy fallback path was used and should be shown as a warning.
+- `Iso52016.MatrixSolarRadiationFallbackUsed` means the matrix fallback path was used and should be shown as a warning.
 
 ## Explicit non-claims
 
