@@ -1,4 +1,4 @@
-﻿param(
+param(
     [switch] $SkipFrontend,
     [switch] $SkipFullDotnet,
     [switch] $Fast
@@ -9,6 +9,9 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 Set-Location $repoRoot
 
+if (-not $SkipFrontend -and -not (Get-Command npm -ErrorAction SilentlyContinue)) {
+    throw "npm was not found on PATH. Install Node.js locally or add actions/setup-node before running Engineering Core V1 frontend verification."
+}
 $toolArgs = @()
 
 if ($SkipFrontend) {
