@@ -61,3 +61,17 @@ These reports must keep visible:
 Run:
 
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationComparisonSummaryTests"
+
+## Real fixture intake readiness
+
+Generate EP-SMOKE-001 real fixture readiness report:
+
+    .\scripts\engineering-core\assert-ep-smoke-001-real-fixture-ready.ps1
+
+Strict future gate:
+
+    .\scripts\engineering-core\assert-ep-smoke-001-real-fixture-ready.ps1 -RequireRealFixture
+
+Generated output:
+
+- docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md
