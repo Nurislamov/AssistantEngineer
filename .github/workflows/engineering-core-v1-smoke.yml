@@ -1,4 +1,4 @@
-﻿name: Engineering Core V1 Smoke
+name: Engineering Core V1 Smoke
 
 on:
   pull_request:
@@ -41,12 +41,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: src/Frontend/package-lock.json
 
       - name: Restore backend
         run: dotnet restore .\AssistantEngineer.sln
 
       - name: Install frontend dependencies
-        run: npm ci --prefix .\src\Frontend
+        shell: pwsh
+        run: |
+          npm --version
+          npm ci --prefix .\src\Frontend
 
       - name: Run smoke profile
         shell: pwsh
