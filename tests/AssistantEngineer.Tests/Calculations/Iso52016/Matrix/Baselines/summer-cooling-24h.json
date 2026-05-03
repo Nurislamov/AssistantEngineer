@@ -1,0 +1,37 @@
+{
+  "scenarioName": "summer-cooling-24h",
+  "description": "Hot outdoor boundary with strong air-node gains. Matrix solver must hold the air node at the cooling setpoint.",
+  "hourCount": 24,
+  "outdoorTemperatureC": 35.0,
+  "airNodeHeatGainW": 2500.0,
+  "massNodeHeatGainW": 0.0,
+  "initialAirTemperatureC": 26.0,
+  "initialMassTemperatureC": 26.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "annualHeatingEnergyKWh": 0.0,
+    "annualCoolingEnergyKWh": 80.035523645,
+    "peakHeatingLoadW": 0.0,
+    "peakCoolingLoadW": 3353.580789788,
+    "annualTotalNodeHeatGainsKWh": 60.0,
+    "representativeHours": [
+      {
+        "hourOfYear": 0,
+        "airTemperatureBeforeHvacC": 33.159860221,
+        "airTemperatureAfterHvacC": 26.0,
+        "massTemperatureAfterHvacC": 26.059282752,
+        "heatingLoadW": 0.0,
+        "coolingLoadW": 3312.371310071
+      },
+      {
+        "hourOfYear": 23,
+        "airTemperatureBeforeHvacC": 33.248936622,
+        "airTemperatureAfterHvacC": 26.0,
+        "massTemperatureAfterHvacC": 27.089519745,
+        "heatingLoadW": 0.0,
+        "coolingLoadW": 3353.580789788
+      }
+    ]
+  }
+}

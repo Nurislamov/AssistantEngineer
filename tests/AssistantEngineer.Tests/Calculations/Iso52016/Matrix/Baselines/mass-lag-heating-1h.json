@@ -1,0 +1,29 @@
+{
+  "scenarioName": "mass-lag-heating-1h",
+  "description": "Cold outdoor boundary with warm mass node. The mass node remains warmer than the controlled air node after one implicit step.",
+  "hourCount": 1,
+  "outdoorTemperatureC": -10.0,
+  "airNodeHeatGainW": 0.0,
+  "massNodeHeatGainW": 0.0,
+  "initialAirTemperatureC": 20.0,
+  "initialMassTemperatureC": 24.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "annualHeatingEnergyKWh": 2.551768724,
+    "annualCoolingEnergyKWh": 0.0,
+    "peakHeatingLoadW": 2551.76872408,
+    "peakCoolingLoadW": 0.0,
+    "annualTotalNodeHeatGainsKWh": 0.0,
+    "representativeHours": [
+      {
+        "hourOfYear": 0,
+        "airTemperatureBeforeHvacC": 14.484221221,
+        "airTemperatureAfterHvacC": 20.0,
+        "massTemperatureAfterHvacC": 23.705781898,
+        "heatingLoadW": 2551.76872408,
+        "coolingLoadW": 0.0
+      }
+    ]
+  }
+}
