@@ -1,11 +1,40 @@
 ﻿# EP-SMOKE-001 Comparison Readiness
 
-Status: ReferenceFixturePlaceholder.
+Generated at: 2026-01-01 00:00:00 UTC
 
-Reference status: PlaceholderReferenceOutput.
+## Status
 
-Metrics: annual-heating-kwh, peak-heating-w, annual-cooling-kwh.
+| Field | Value |
+|---|---|
+| Case id | EP-SMOKE-001 |
+| Status | ReferenceFixturePlaceholder |
+| Reference status | PlaceholderReferenceOutput |
+| Comparison status | not a real EnergyPlus comparison yet |
+| Ready for placeholder comparison | True |
 
-This is not a real EnergyPlus comparison yet.
+## Metrics
 
-This must not claim exact EnergyPlus parity.
+- annual-heating-kwh
+- peak-heating-w
+- annual-cooling-kwh
+
+## Required non-claims
+
+- This placeholder is not a real EnergyPlus comparison yet.
+- This placeholder must not claim exact EnergyPlus parity.
+- This placeholder must not claim ASHRAE 140 validation coverage.
+
+## Files
+
+| File | Exists |
+|---|---|
+| case-metadata.json | True |
+| assistantengineer-input.json | True |
+| reference-output.placeholder.json | True |
+| comparison-tolerances.json | True |
+
+PlaceholderComparison is not real EnergyPlus validation.
+
+This does not claim exact EnergyPlus numerical parity.
+
+This does not claim ASHRAE 140 validation coverage.

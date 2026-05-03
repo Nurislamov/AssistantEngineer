@@ -683,8 +683,7 @@
       ],
       "nonClaims": [
         "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full ISO 52016 node/matrix solver parity."
+        "Does not claim ASHRAE 140 validation coverage."
       ]
     },
     {
@@ -694,12 +693,12 @@
       "metrics": [
         "annual-cooling-kwh",
         "peak-cooling-w",
-        "solar-orientation-response"
+        "solar-orientation-response",
+        "annual-heating-kwh"
       ],
       "nonClaims": [
         "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+        "Does not claim ASHRAE 140 validation coverage."
       ]
     },
     {
@@ -708,41 +707,37 @@
       "status": "ReferenceFixturePlaceholder",
       "metrics": [
         "annual-cooling-kwh",
-        "annual-heating-kwh",
-        "internal-gain-response"
+        "peak-cooling-w",
+        "internal-gain-response",
+        "annual-heating-kwh"
       ],
       "nonClaims": [
         "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim latent or moisture validation coverage."
+        "Does not claim ASHRAE 140 validation coverage."
       ]
     },
     {
       "caseId": "ASHRAE140-STYLE-001",
       "stage": "Ashrae140Style",
-      "status": "Planned",
+      "status": "PlannedValidation",
       "metrics": [
-        "cooling-mass-response",
-        "heating-mass-response"
+        "annual-heating-kwh"
       ],
       "nonClaims": [
         "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full ISO 52016 node/matrix solver parity."
+        "Does not claim ASHRAE 140 validation coverage."
       ]
     },
     {
       "caseId": "ASHRAE140-STYLE-002",
       "stage": "Ashrae140Style",
-      "status": "Planned",
+      "status": "PlannedValidation",
       "metrics": [
-        "orientation-cooling-response",
-        "solar-gain-response"
+        "annual-cooling-kwh"
       ],
       "nonClaims": [
         "Does not claim exact EnergyPlus numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+        "Does not claim ASHRAE 140 validation coverage."
       ]
     }
   ]

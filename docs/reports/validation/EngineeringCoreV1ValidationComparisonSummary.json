@@ -2,6 +2,7 @@
   "summaryName": "Engineering Core V1 Validation Comparison Summary",
   "version": "v1",
   "status": "PlannedValidation",
+  "generatedAtUtc": "2026-01-01 00:00:00 UTC",
   "registryFile": "docs/validation/EnergyPlusValidationCaseRegistry.json",
   "comparisonResultFiles": [
     "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
@@ -13,19 +14,82 @@
     "casesWithComparison": 3,
     "casesPassing": 3,
     "placeholderComparisons": 3,
+    "realEnergyPlusComparisons": 0,
     "plannedOnly": 2
   },
-  "requiredNonClaims": [
-  "Does not claim exact EnergyPlus numerical parity.",
-  "Does not claim exact pyBuildingEnergy numerical parity.",
-  "Does not claim ASHRAE 140 validation coverage.",
-  "Does not claim full ISO 52016 node/matrix solver parity.",
-  "PlaceholderComparison is not real EnergyPlus validation.",
-  "Future real validation must remain tolerance-based and use committed provenance."
-],
   "cases": [
-  { "caseId": "EP-SMOKE-001", "stage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "hasComparisonResult": true, "allMetricsPassed": true, "metricsTotal": 3, "metricsPassed": 3, "metricsFailed": 0 },
-  { "caseId": "EP-SMOKE-002", "stage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "hasComparisonResult": true, "allMetricsPassed": true, "metricsTotal": 4, "metricsPassed": 4, "metricsFailed": 0 },
-  { "caseId": "EP-SMOKE-003", "stage": "Smoke", "comparisonStatus": "PlaceholderComparison", "referenceStatus": "PlaceholderReferenceOutput", "hasComparisonResult": true, "allMetricsPassed": true, "metricsTotal": 4, "metricsPassed": 4, "metricsFailed": 0 }
-]
+    {
+      "caseId": "ASHRAE140-STYLE-001",
+      "name": "ASHRAE 140 style lightweight planned case",
+      "stage": "Ashrae140Style",
+      "registryStatus": "PlannedValidation",
+      "hasComparisonResult": false,
+      "comparisonStatus": "NotGenerated",
+      "referenceStatus": "NotAvailable",
+      "allMetricsPassed": false,
+      "metricsTotal": 0,
+      "metricsPassed": 0,
+      "metricsFailed": 0
+    },
+    {
+      "caseId": "ASHRAE140-STYLE-002",
+      "name": "ASHRAE 140 style heavyweight planned case",
+      "stage": "Ashrae140Style",
+      "registryStatus": "PlannedValidation",
+      "hasComparisonResult": false,
+      "comparisonStatus": "NotGenerated",
+      "referenceStatus": "NotAvailable",
+      "allMetricsPassed": false,
+      "metricsTotal": 0,
+      "metricsPassed": 0,
+      "metricsFailed": 0
+    },
+    {
+      "caseId": "EP-SMOKE-001",
+      "name": "Transmission-only heating smoke fixture",
+      "stage": "Smoke",
+      "registryStatus": "ReferenceFixturePlaceholder",
+      "hasComparisonResult": true,
+      "comparisonStatus": "PlaceholderComparison",
+      "referenceStatus": "PlaceholderReferenceOutput",
+      "allMetricsPassed": true,
+      "metricsTotal": 3,
+      "metricsPassed": 3,
+      "metricsFailed": 0
+    },
+    {
+      "caseId": "EP-SMOKE-002",
+      "name": "Solar cooling smoke fixture",
+      "stage": "Smoke",
+      "registryStatus": "ReferenceFixturePlaceholder",
+      "hasComparisonResult": true,
+      "comparisonStatus": "PlaceholderComparison",
+      "referenceStatus": "PlaceholderReferenceOutput",
+      "allMetricsPassed": true,
+      "metricsTotal": 4,
+      "metricsPassed": 4,
+      "metricsFailed": 0
+    },
+    {
+      "caseId": "EP-SMOKE-003",
+      "name": "Internal sensible gains cooling smoke fixture",
+      "stage": "Smoke",
+      "registryStatus": "ReferenceFixturePlaceholder",
+      "hasComparisonResult": true,
+      "comparisonStatus": "PlaceholderComparison",
+      "referenceStatus": "PlaceholderReferenceOutput",
+      "allMetricsPassed": true,
+      "metricsTotal": 4,
+      "metricsPassed": 4,
+      "metricsFailed": 0
+    }
+  ],
+  "requiredNonClaims": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim exact pyBuildingEnergy numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity.",
+    "PlaceholderComparison is not real EnergyPlus validation.",
+    "Future real validation must remain tolerance-based."
+  ]
 }

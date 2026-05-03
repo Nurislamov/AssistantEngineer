@@ -1,39 +1,40 @@
 {
-  "caseId": "EP-SMOKE-001",
-  "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage."
-  ],
-  "metrics": [
-    {
-      "metricId": "annual-heating-kwh",
-      "name": "Annual or fixture-period heating energy",
-      "type": "NumericWithinTolerance",
-      "unit": "kWh",
-      "assistantEngineerPath": "calculationFormula.expectedDailyHeatingEnergyKwh",
-      "referencePath": "referenceOutputs.annualHeatingEnergyKwh",
-      "tolerancePercent": 0.0,
-      "absoluteTolerance": 0.0
-    },
-    {
-      "metricId": "peak-heating-w",
-      "name": "Peak heating load",
-      "type": "NumericWithinTolerance",
-      "unit": "W",
-      "assistantEngineerPath": "calculationFormula.expectedTransmissionHeatLossW",
-      "referencePath": "referenceOutputs.peakHeatingLoadW",
-      "tolerancePercent": 0.0,
-      "absoluteTolerance": 0.0
-    },
-    {
-      "metricId": "annual-cooling-kwh",
-      "name": "Annual or fixture-period cooling energy sign",
-      "type": "SameSign",
-      "unit": "kWh",
-      "assistantEngineerPath": "calculationFormula.expectedCoolingEnergyKwh",
-      "referencePath": "referenceOutputs.annualCoolingEnergyKwh",
-      "tolerancePercent": 0.0,
-      "absoluteTolerance": 0.0
-    }
-  ]
+    "caseId":  "EP-SMOKE-001",
+    "metrics":  [
+                    {
+                        "metricId":  "annual-heating-kwh",
+                        "name":  "Annual or fixture-period heating energy",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "kWh",
+                        "assistantEngineerPath":  "calculationFormula.expectedDailyHeatingEnergyKwh",
+                        "referencePath":  "referenceOutputs.annualHeatingEnergyKwh",
+                        "tolerancePercent":  0.0,
+                        "absoluteTolerance":  0.0
+                    },
+                    {
+                        "metricId":  "peak-heating-w",
+                        "name":  "Peak heating load",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "W",
+                        "assistantEngineerPath":  "calculationFormula.expectedTransmissionHeatLossW",
+                        "referencePath":  "referenceOutputs.peakHeatingLoadW",
+                        "tolerancePercent":  0.0,
+                        "absoluteTolerance":  0.0
+                    },
+                    {
+                        "metricId":  "annual-cooling-kwh",
+                        "name":  "Annual or fixture-period cooling energy sign",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "kWh",
+                        "assistantEngineerPath":  "calculationFormula.expectedCoolingEnergyKwh",
+                        "referencePath":  "referenceOutputs.annualCoolingEnergyKwh",
+                        "tolerancePercent":  0,
+                        "absoluteTolerance":  0
+                    }
+                ],
+    "requiredNonClaims":  [
+                              "Does not claim exact EnergyPlus numerical parity.",
+                              "Does not claim ASHRAE 140 validation coverage.",
+                              "Does not claim full ISO 52016 node/matrix solver parity."
+                          ]
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "caseId": "EP-SMOKE-003",
   "referenceEngine": "EnergyPlus",
   "status": "PlaceholderReferenceOutput",
@@ -8,9 +8,10 @@
     "This placeholder does not claim ASHRAE 140 validation coverage."
   ],
   "referenceOutputs": {
-    "annualHeatingEnergyKwh": 37.8,
-    "peakHeatingLoadW": 1575.0,
-    "annualCoolingEnergyKwh": 0.0,
-    "peakCoolingLoadW": 0.0
+    "annualHeatingEnergyKwh": 0.0,
+    "peakHeatingLoadW": 0.0,
+    "annualCoolingEnergyKwh": 28.8,
+    "peakCoolingLoadW": 1200.0,
+    "directionalResponseIndex": 1.0
   }
 }

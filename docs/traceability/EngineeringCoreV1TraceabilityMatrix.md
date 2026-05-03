@@ -54,10 +54,10 @@
 | CaseId | Stage | Status | Metrics |
 |---|---|---|---:|
 | EP-SMOKE-001 | Smoke | ReferenceFixturePlaceholder | 3 |
-| EP-SMOKE-002 | Smoke | ReferenceFixturePlaceholder | 3 |
-| EP-SMOKE-003 | Smoke | ReferenceFixturePlaceholder | 3 |
-| ASHRAE140-STYLE-001 | Ashrae140Style | Planned | 2 |
-| ASHRAE140-STYLE-002 | Ashrae140Style | Planned | 2 |
+| EP-SMOKE-002 | Smoke | ReferenceFixturePlaceholder | 4 |
+| EP-SMOKE-003 | Smoke | ReferenceFixturePlaceholder | 4 |
+| ASHRAE140-STYLE-001 | Ashrae140Style | PlannedValidation | 1 |
+| ASHRAE140-STYLE-002 | Ashrae140Style | PlannedValidation | 1 |
 
 ## Out of scope v1
 

@@ -1,10 +1,14 @@
-﻿{
-  "caseId": "EP-SMOKE-002",
-  "engine": "AssistantEngineer",
-  "inputKind": "EngineeringCoreV1SmokeFixture",
-  "calculationFormula": {
-    "expectedPeakWindowSolarGainW": 2860.0,
-    "expectedPeakCoolingLoadW": 3600.0,
-    "expectedDailyCoolingEnergyKwh": 18.0
-  }
+{
+    "caseId":  "EP-SMOKE-002",
+    "engine":  "AssistantEngineer",
+    "inputKind":  "EngineeringCoreV1SmokeFixture",
+    "calculationFormula":  {
+                               "expectedPeakWindowSolarGainW":  2860.0,
+                               "expectedPeakCoolingLoadW":  3600.0,
+                               "expectedDailyCoolingEnergyKwh":  18.0,
+                               "expectedHeatingEnergyKwh":  0,
+                               "expectedPeakHeatingLoadW":  0,
+                               "expectedCoolingEnergyKwh":  18,
+                               "directionalResponseIndex":  1
+                           }
 }

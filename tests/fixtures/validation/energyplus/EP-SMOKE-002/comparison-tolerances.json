@@ -1,12 +1,50 @@
-﻿{
-  "caseId": "EP-SMOKE-002",
-  "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity."
-  ],
-  "metrics": [
-  { "metricId": "annual-cooling-kwh", "type": "NumericWithinTolerance", "unit": "kWh", "tolerancePercent": 0, "absoluteTolerance": 0 },
-  { "metricId": "peak-cooling-w", "type": "NumericWithinTolerance", "unit": "W", "tolerancePercent": 0, "absoluteTolerance": 0 },
-  { "metricId": "solar-orientation-response", "type": "DirectionalTrend", "unit": "-", "tolerancePercent": 0, "absoluteTolerance": 0 },
-  { "metricId": "annual-heating-kwh", "type": "SameSign", "unit": "kWh", "tolerancePercent": 0, "absoluteTolerance": 0 }
-]
+{
+    "caseId":  "EP-SMOKE-002",
+    "metrics":  [
+                    {
+                        "metricId":  "annual-cooling-kwh",
+                        "name":  "Annual or fixture-period cooling energy",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "kWh",
+                        "assistantEngineerPath":  "calculationFormula.expectedCoolingEnergyKwh",
+                        "referencePath":  "referenceOutputs.annualCoolingEnergyKwh",
+                        "tolerancePercent":  0.0,
+                        "absoluteTolerance":  0.0
+                    },
+                    {
+                        "metricId":  "peak-cooling-w",
+                        "name":  "Peak cooling load",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "W",
+                        "assistantEngineerPath":  "calculationFormula.expectedPeakCoolingLoadW",
+                        "referencePath":  "referenceOutputs.peakCoolingLoadW",
+                        "tolerancePercent":  0.0,
+                        "absoluteTolerance":  0.0
+                    },
+                    {
+                        "metricId":  "solar-orientation-response",
+                        "name":  "Solar orientation response",
+                        "type":  "DirectionalTrend",
+                        "unit":  "-",
+                        "assistantEngineerPath":  "calculationFormula.directionalResponseIndex",
+                        "referencePath":  "referenceOutputs.directionalResponseIndex",
+                        "tolerancePercent":  0.0,
+                        "absoluteTolerance":  0.0
+                    },
+                    {
+                        "metricId":  "annual-heating-kwh",
+                        "name":  "Annual heating energy sign",
+                        "type":  "NumericWithinTolerance",
+                        "unit":  "kWh",
+                        "assistantEngineerPath":  "calculationFormula.expectedHeatingEnergyKwh",
+                        "referencePath":  "referenceOutputs.annualHeatingEnergyKwh",
+                        "tolerancePercent":  0,
+                        "absoluteTolerance":  0
+                    }
+                ],
+    "requiredNonClaims":  [
+                              "Does not claim exact EnergyPlus numerical parity.",
+                              "Does not claim ASHRAE 140 validation coverage.",
+                              "Does not claim full ISO 52016 node/matrix solver parity."
+                          ]
 }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -380,7 +380,21 @@ internal static class Program
         builder.AppendLine("|---|---|");
         builder.AppendLine("| Case id | EP-SMOKE-001 |");
         builder.AppendLine("| Status | ReferenceFixturePlaceholder |");
+        builder.AppendLine("| Reference status | PlaceholderReferenceOutput |");
+        builder.AppendLine("| Comparison status | not a real EnergyPlus comparison yet |");
         builder.AppendLine($"| Ready for placeholder comparison | {allReady} |");
+        builder.AppendLine();
+        builder.AppendLine("## Metrics");
+        builder.AppendLine();
+        builder.AppendLine("- annual-heating-kwh");
+        builder.AppendLine("- peak-heating-w");
+        builder.AppendLine("- annual-cooling-kwh");
+        builder.AppendLine();
+        builder.AppendLine("## Required non-claims");
+        builder.AppendLine();
+        builder.AppendLine("- This placeholder is not a real EnergyPlus comparison yet.");
+        builder.AppendLine("- This placeholder must not claim exact EnergyPlus parity.");
+        builder.AppendLine("- This placeholder must not claim ASHRAE 140 validation coverage.");
         builder.AppendLine();
         builder.AppendLine("## Files");
         builder.AppendLine();
@@ -611,6 +625,29 @@ internal static class Program
         markdown.AppendLine($"| Planned cases | {cases.Count(item => item["status"]?.GetValue<string>() == "Planned")} |");
         markdown.AppendLine($"| Reference fixture placeholders | {cases.Count(item => item["status"]?.GetValue<string>() == "ReferenceFixturePlaceholder")} |");
         markdown.AppendLine($"| Metric count | {metricsCount} |");
+        markdown.AppendLine();
+        markdown.AppendLine("## Default tolerances");
+        markdown.AppendLine();
+        markdown.AppendLine("| Metric type | Default interpretation |");
+        markdown.AppendLine("|---|---|");
+        markdown.AppendLine("| NumericWithinTolerance | Compare numeric values with documented tolerance percent and absolute tolerance. |");
+        markdown.AppendLine("| DirectionalTrend | Compare expected response direction only. |");
+        markdown.AppendLine("| SameSign | Compare positive/negative/zero sign only. |");
+        markdown.AppendLine();
+        markdown.AppendLine("## Cases");
+        markdown.AppendLine();
+        markdown.AppendLine("| Case id | Stage | Status | Metrics |");
+        markdown.AppendLine("|---|---|---|---:|");
+        foreach (var item in cases.OrderBy(item => item["caseId"]!.GetValue<string>(), StringComparer.Ordinal))
+        {
+            markdown.AppendLine($"| {item["caseId"]!.GetValue<string>()} | {item["stage"]?.GetValue<string>() ?? ""} | {item["status"]?.GetValue<string>() ?? ""} | {item["metrics"]?.AsArray().Count ?? 0} |");
+        }
+        markdown.AppendLine();
+        markdown.AppendLine("## Required non-claims");
+        markdown.AppendLine();
+        markdown.AppendLine("- This readiness report is not exact EnergyPlus numerical parity.");
+        markdown.AppendLine("- This readiness report is not ASHRAE 140 certification.");
+        markdown.AppendLine("- This readiness report is not full ISO 52016 node/matrix solver parity.");
         markdown.AppendLine();
         markdown.AppendLine("This registry is ready as a future validation backlog and smoke-fixture scaffold.");
         markdown.AppendLine();
@@ -1097,6 +1134,7 @@ internal static class Program
     private static string[] RequiredValidationNonClaims() =>
     [
         "Does not claim exact EnergyPlus numerical parity.",
+            "Does not claim exact pyBuildingEnergy numerical parity.",
         "Does not claim ASHRAE 140 validation coverage.",
         "Does not claim full ISO 52016 node/matrix solver parity.",
         "PlaceholderComparison is not real EnergyPlus validation.",

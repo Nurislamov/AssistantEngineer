@@ -302,35 +302,54 @@ internal static class Program
         if (!OperatingSystem.IsWindows())
             return fileName;
 
-        if (!string.Equals(fileName, "npm", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(fileName, "npx", StringComparison.OrdinalIgnoreCase))
+        var normalized = fileName.Trim();
+
+        if (string.Equals(normalized, "pwsh", StringComparison.OrdinalIgnoreCase))
         {
-            return fileName;
+            var pwsh = FindExecutableOnPath("pwsh", ".exe", ".cmd", ".bat");
+            if (pwsh is not null)
+                return pwsh;
+
+            var powershell = FindExecutableOnPath("powershell", ".exe", ".cmd", ".bat");
+            if (powershell is not null)
+                return powershell;
+
+            return "powershell.exe";
         }
 
-        if (fileName.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
-            fileName.EndsWith(".bat", StringComparison.OrdinalIgnoreCase) ||
-            fileName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(normalized, "npm", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "npx", StringComparison.OrdinalIgnoreCase))
         {
-            return fileName;
+            var npm = FindExecutableOnPath(normalized, ".cmd", ".exe", ".bat");
+            if (npm is not null)
+                return npm;
+
+            return normalized + ".cmd";
         }
 
+        return fileName;
+    }
+
+    private static string? FindExecutableOnPath(string fileName, params string[] extensions)
+    {
         var pathValue = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        var candidateExtensions = new[] { ".cmd", ".exe", ".bat" };
 
         foreach (var directory in pathValue.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
         {
-            foreach (var extension in candidateExtensions)
+            var trimmedDirectory = directory.Trim('"');
+
+            foreach (var extension in extensions)
             {
-                var candidate = Path.Combine(directory.Trim('"'), fileName + extension);
+                var candidate = Path.Combine(trimmedDirectory, fileName + extension);
 
                 if (File.Exists(candidate))
                     return candidate;
             }
         }
 
-        return fileName + ".cmd";
+        return null;
     }
+
     private static string FindRepositoryRoot()
     {
         var current = new DirectoryInfo(Directory.GetCurrentDirectory());

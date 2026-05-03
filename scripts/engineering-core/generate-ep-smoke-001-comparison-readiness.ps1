@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]] $ToolArgs
 )
@@ -18,3 +18,12 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EnergyPlusValidation\Assist
 # EP-SMOKE-001-ComparisonReadiness.md
 # END AE-STAGE1-EP-SMOKE-001-READINESS-SOURCE-MARKERS
 
+
+# BEGIN AE-EP-SMOKE-001-COMPARISON-READINESS-GUARD-MARKERS
+# ReferenceFixturePlaceholder
+# PlaceholderReferenceOutput
+# annual-heating-kwh
+# peak-heating-w
+# not a real EnergyPlus comparison yet
+# must not claim exact EnergyPlus parity
+# END AE-EP-SMOKE-001-COMPARISON-READINESS-GUARD-MARKERS

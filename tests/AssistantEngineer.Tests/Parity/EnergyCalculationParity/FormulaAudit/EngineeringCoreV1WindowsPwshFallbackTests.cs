@@ -1,11 +1,11 @@
 namespace AssistantEngineer.Tests.Parity.EnergyCalculationParity.FormulaAudit;
 
-public class EngineeringCoreV1WindowsCommandResolutionTests
+public class EngineeringCoreV1WindowsPwshFallbackTests
 {
     [Theory]
     [InlineData("tools/AssistantEngineer.Tools.EngineeringCoreRelease/Program.cs")]
     [InlineData("tools/AssistantEngineer.Tools.EngineeringCoreVerification/Program.cs")]
-    public void EngineeringCoreTools_ResolveNpmToWindowsCommandShim(
+    public void EngineeringCoreTools_ResolvePwshToWindowsPowerShellFallback(
         string relativePath)
     {
         var repoRoot = FindRepositoryRoot();
@@ -17,11 +17,10 @@ public class EngineeringCoreV1WindowsCommandResolutionTests
         var source = File.ReadAllText(path);
 
         Assert.Contains("ResolveProcessFileName(fileName)", source);
-        Assert.Contains("private static string ResolveProcessFileName(string fileName)", source);
-        Assert.Contains("normalized + \".cmd\"", source);
-        Assert.Contains("Path.PathSeparator", source);
-        Assert.Contains("FindExecutableOnPath(normalized, \".cmd\", \".exe\", \".bat\")", source);
-        Assert.Contains("StringComparison.OrdinalIgnoreCase", source);
+        Assert.Contains("string.Equals(normalized, \"pwsh\", StringComparison.OrdinalIgnoreCase)", source);
+        Assert.Contains("FindExecutableOnPath(\"pwsh\"", source);
+        Assert.Contains("FindExecutableOnPath(\"powershell\"", source);
+        Assert.Contains("return \"powershell.exe\";", source);
     }
 
     private static string FindRepositoryRoot()

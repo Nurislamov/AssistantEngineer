@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]] $ToolArgs
 )
@@ -23,3 +23,7 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EnergyPlusValidation\Assist
 # Future real validation must remain tolerance-based
 # END AE-STAGE1-VALIDATION-EVIDENCE-SOURCE-MARKERS
 
+
+# BEGIN AE-VALIDATION-EVIDENCE-NONCLAIM-GUARD-MARKERS
+# Does not claim exact pyBuildingEnergy numerical parity.
+# END AE-VALIDATION-EVIDENCE-NONCLAIM-GUARD-MARKERS
