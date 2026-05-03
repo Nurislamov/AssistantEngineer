@@ -1,0 +1,86 @@
+﻿{
+  "id": "AE-ISO52016-SOLAR-CHAIN",
+  "status": "closed-guarded",
+  "scope": "ISO52010/Perez solar foundation through ISO52016 annual results, response diagnostics and frontend/report rendering",
+  "closedStages": [
+    {
+      "stage": 1,
+      "name": "ISO52010/Perez solar foundation",
+      "closedItems": [
+        "AE-ISO52010-001",
+        "AE-ISO52010-002",
+        "AE-SOLAR-003"
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "ISO52016 weather-solar context integration"
+    },
+    {
+      "stage": 3,
+      "name": "ISO52016 solar components into hourly heat balance"
+    },
+    {
+      "stage": 4,
+      "name": "Annual loop passes weatherSolarHour"
+    },
+    {
+      "stage": 5,
+      "name": "Annual result diagnostics visibility"
+    },
+    {
+      "stage": 6,
+      "name": "Response/API diagnostics visibility"
+    },
+    {
+      "stage": 7,
+      "name": "Frontend/report diagnostics rendering"
+    },
+    {
+      "stage": 8,
+      "name": "Production DI registration for Perez solar path"
+    },
+    {
+      "stage": 9,
+      "name": "Production DI runtime smoke"
+    },
+    {
+      "stage": 10,
+      "name": "API diagnostics contract and consumer evidence"
+    },
+    {
+      "stage": 11,
+      "name": "Verification script and evidence manifest"
+    }
+  ],
+  "requiredDiagnosticCodes": [
+    "Iso52016.WeatherSolarContextUsed",
+    "Iso52016.SolarGainComponentPathUsed",
+    "Iso52016.PerezAnisotropicModelVisibleInAnnualResult",
+    "Iso52016.LegacySolarRadiationFallbackUsed",
+    "SolarWeather.PerezAnisotropicModelUsed",
+    "SolarWeather.PerezSkyState"
+  ],
+  "criticalVerificationTests": [
+    "Iso52016WeatherSolarContextPerezDiagnosticsTests",
+    "Iso52016WeatherSolarWindowGainIntegrationTests",
+    "Iso52016HourlyHeatBalanceSolarContextIntegrationTests",
+    "Iso52016HourlySteadyStateWeatherSolarContextIntegrationTests",
+    "Iso52016AnnualDiagnosticsVisibilityTests",
+    "Iso52016ResponseDiagnosticsVisibilityTests",
+    "EngineeringCoreDiagnosticsFrontendRenderingTests",
+    "Iso52016ProductionSolarPathRegistrationTests",
+    "Iso52016ProductionSolarRuntimeSmokeTests",
+    "Iso52016ApiDiagnosticsContractEvidenceTests",
+    "Iso52016SolarChainVerificationEvidenceTests"
+  ],
+  "verificationScript": "scripts/engineering-core/verify-iso52016-solar-chain.ps1",
+  "apiSample": "docs/api/engineering-core-v1/iso52016-diagnostics.sample.json",
+  "explicitNonClaims": [
+    "No exact EnergyPlus numerical parity claim.",
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 node/matrix solver parity claim.",
+    "No latent/moisture/humidity simulation claim."
+  ]
+}
