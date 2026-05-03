@@ -8,9 +8,9 @@ Generated at: 2026-01-01 00:00:00 UTC
 |---|---|
 | Scripts | 26 |
 | Thin wrappers | 23 |
-| Heavy PowerShell scripts | 1 |
-| Unknown PowerShell scripts | 2 |
-| Status | MigrationInProgress |
+| Heavy PowerShell scripts | 0 |
+| Unknown PowerShell scripts | 3 |
+| Status | Compliant |
 
 ## Repository boundary
 
@@ -41,7 +41,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 | `scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
-| `scripts/engineering-core/new-energyplus-validation-fixture.ps1` | HeavyPowerShellLogic |  | 83 | function , New-Item, Set-Content |
+| `scripts/engineering-core/new-energyplus-validation-fixture.ps1` | UnknownPowerShellScript |  | 30 |  |
 | `scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 11 |  |
 | `scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1` | ThinWrapper | AssistantEngineer.Tools.EnergyPlusValidation | 8 |  |
 | `scripts/engineering-core/verify-calculation-module-balance-invariants.ps1` | ThinWrapper | AssistantEngineer.Tools.EngineeringCore | 8 |  |
@@ -55,4 +55,4 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Interpretation
 
-Heavy PowerShell scripts remain. Their generation, validation or release logic must be moved into C# tools before strict mode is enabled.
+All audited PowerShell scripts are thin wrappers or contain no heavy automation logic.

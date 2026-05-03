@@ -1,7 +1,7 @@
 ﻿{
   "reportName": "Repository Script Boundary Audit",
   "version": "v1",
-  "status": "MigrationInProgress",
+  "status": "Compliant",
   "generatedAtUtc": "2026-01-01 00:00:00 UTC",
   "policy": {
     "srcBackend": "application code",
@@ -15,8 +15,8 @@
   "totals": {
     "scripts": 26,
     "thinScripts": 23,
-    "heavyScripts": 1,
-    "unknownScripts": 2
+    "heavyScripts": 0,
+    "unknownScripts": 3
   },
   "scripts": [
     {
@@ -126,14 +126,10 @@
     },
     {
       "path": "scripts/engineering-core/new-energyplus-validation-fixture.ps1",
-      "classification": "HeavyPowerShellLogic",
+      "classification": "UnknownPowerShellScript",
       "targetTool": "",
-      "nonEmptyLines": 83,
-      "heavyPatterns": [
-        "function ",
-        "New-Item",
-        "Set-Content"
-      ]
+      "nonEmptyLines": 30,
+      "heavyPatterns": []
     },
     {
       "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
@@ -206,5 +202,5 @@
       "heavyPatterns": []
     }
   ],
-  "requiredNextStep": "Move remaining heavy PowerShell logic into C# tools and leave scripts as wrappers only."
+  "requiredNextStep": "Keep scripts as wrappers and implement new automation in tools."
 }
