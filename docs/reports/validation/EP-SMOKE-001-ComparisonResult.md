@@ -1,7 +1,5 @@
 ﻿# EP-SMOKE-001 Comparison Result
 
-Generated at: 2026-05-03 05:35:26 UTC
-
 ## Status
 
 | Field | Value |
@@ -9,8 +7,10 @@ Generated at: 2026-05-03 05:35:26 UTC
 | Case id | EP-SMOKE-001 |
 | Name | Single zone transmission-only heating smoke case |
 | Stage | Smoke |
+| Runner | GenericEnergyPlusValidationFixtureRunner |
 | Comparison status | PlaceholderComparison |
 | Reference status | PlaceholderReferenceOutput |
+| Reference file | D:/Project/AssistantEngineer/tests/fixtures/validation/energyplus/EP-SMOKE-001/reference-output.placeholder.json |
 | All metrics passed | True |
 
 ## Metrics
@@ -29,12 +29,12 @@ Generated at: 2026-05-03 05:35:26 UTC
 
 ## Interpretation
 
-EP-SMOKE-001 placeholder comparison passed tolerance checks against placeholder reference outputs.
+Fixture compared against placeholder reference output only. This is not a real EnergyPlus validation and not an ASHRAE 140 validation claim.
 
-This is not a real EnergyPlus validation.
+PlaceholderComparison is not real EnergyPlus validation.
 
 This is not ASHRAE 140 validation coverage.
 
 This does not claim exact EnergyPlus numerical parity.
 
-Future work must replace or supplement the placeholder reference with real EnergyPlus model/output files and provenance metadata.
+Future work must replace or supplement placeholder references with real EnergyPlus model/output files and provenance metadata.

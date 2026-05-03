@@ -2,9 +2,11 @@
     "caseId":  "EP-SMOKE-001",
     "name":  "Single zone transmission-only heating smoke case",
     "stage":  "Smoke",
+    "comparisonRunner":  "GenericEnergyPlusValidationFixtureRunner",
     "comparisonStatus":  "PlaceholderComparison",
     "referenceStatus":  "PlaceholderReferenceOutput",
-    "generatedAtUtc":  "2026-05-03 05:35:26 UTC",
+    "referenceFile":  "D:/Project/AssistantEngineer/tests/fixtures/validation/energyplus/EP-SMOKE-001/reference-output.placeholder.json",
+    "generatedAtUtc":  "2026-05-03 05:41:45 UTC",
     "allMetricsPassed":  true,
     "metrics":  [
                     {
@@ -55,5 +57,5 @@
                               "Does not claim ASHRAE 140 validation coverage.",
                               "Does not claim full ISO 52016 node/matrix solver parity."
                           ],
-    "interpretation":  "EP-SMOKE-001 placeholder comparison passed tolerance checks against placeholder reference outputs. This is not a real EnergyPlus validation and not an ASHRAE 140 validation claim."
+    "interpretation":  "Fixture compared against placeholder reference output only. This is not a real EnergyPlus validation and not an ASHRAE 140 validation claim."
 }

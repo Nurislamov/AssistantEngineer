@@ -166,3 +166,10 @@ Engineering Core V1 does not claim:
 - docs/validation/fixtures/EP-SMOKE-001/RealEnergyPlusFixtureIntakeChecklist.md
 - docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md
 - scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1
+
+## Generic validation fixture runner
+
+- scripts/engineering-core/compare-energyplus-validation-fixtures.ps1
+- docs/validation/EnergyPlusValidationGenericRunner.md
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md

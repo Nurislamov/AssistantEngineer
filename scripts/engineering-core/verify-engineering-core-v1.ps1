@@ -110,6 +110,11 @@ Invoke-Step "EnergyPlus real fixture intake gate tests" {
     dotnet test .\AssistantEngineer.sln --filter "EnergyPlusRealFixtureIntakeGateTests"
 }
 
+Invoke-Step "Generic EnergyPlus validation fixture runner tests" {
+    .\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1
+    dotnet test .\AssistantEngineer.sln --filter "EnergyPlusValidationGenericComparisonRunnerTests"
+}
+
 Invoke-Step "Engineering Core traceability matrix guard tests" {
     .\scripts\engineering-core\generate-engineering-core-v1-traceability-matrix.ps1
     dotnet test .\AssistantEngineer.sln --filter "EngineeringCoreV1TraceabilityMatrixTests"
@@ -160,6 +165,7 @@ Write-Host "- hourly heat-balance and single-zone gates"
 Write-Host "- ground and adjacent simplified gates"
 Write-Host "- EnergyPlus/ASHRAE 140 validation harness scaffold"
 Write-Host "- release/scope/developer documentation"
+
 
 
 

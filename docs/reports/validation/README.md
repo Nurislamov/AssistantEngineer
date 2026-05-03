@@ -75,3 +75,18 @@ Strict future gate:
 Generated output:
 
 - docs/reports/validation/EP-SMOKE-001-RealFixtureReadiness.md
+
+## Generic validation fixture runner
+
+Run all committed validation fixtures:
+
+    .\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1
+
+Strict future mode:
+
+    .\scripts\engineering-core\compare-energyplus-validation-fixtures.ps1 -RequireRealReferences
+
+Generated outputs:
+
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json
+- docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md
