@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
 
 public sealed record RoomLoadFixedComponentInput(
     double HeatingTransmissionW = 0,
@@ -12,4 +12,7 @@ public sealed record RoomLoadFixedComponentInput(
     double CoolingVentilationW = 0,
     double CoolingInfiltrationW = 0,
     double CoolingSolarW = 0,
-    double CoolingInternalGainsW = 0);
+    double CoolingInternalGainsW = 0,
+    double HeatingUsefulSolarGainOffsetW = 0,
+    double HeatingUsefulInternalGainOffsetW = 0);
+

@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SolarGains;
@@ -52,7 +52,7 @@ public sealed class RoomLoadCalculationEngine
         {
             "Heating load sums positive heat-loss components only.",
             "Cooling load sums positive heat-gain components only.",
-            "Internal and solar gains are not deducted from heating load in this design-point method."
+            "Internal and solar gains are not automatically deducted from heating load; only explicitly supplied useful heating gain offsets are applied."
         };
 
         if (input.ApplicationAssumptions is { Count: > 0 })
@@ -100,6 +100,15 @@ public sealed class RoomLoadCalculationEngine
 
         var heatingBreakdown = heating.ToResult();
         var coolingBreakdown = cooling.ToResult();
+
+        if (heatingBreakdown.TotalW < 0)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "RoomLoad.HeatingUsefulGainOffsetExceedsGrossLoss",
+                "Useful heating gain offsets exceed gross heating losses; heating load was clamped to zero.",
+                input.DiagnosticsContext));
+        }
 
         var heatingLoad = Round(Math.Max(0, heatingBreakdown.TotalW));
         var coolingLoad = Round(Math.Max(0, coolingBreakdown.TotalW));
@@ -404,6 +413,16 @@ public sealed class RoomLoadCalculationEngine
             nameof(fixedComponents.HeatingInfiltrationW),
             diagnostics);
 
+        heating.UsefulSolarGainOffsetW += Positive(
+            fixedComponents.HeatingUsefulSolarGainOffsetW,
+            nameof(fixedComponents.HeatingUsefulSolarGainOffsetW),
+            diagnostics);
+
+        heating.UsefulInternalGainOffsetW += Positive(
+            fixedComponents.HeatingUsefulInternalGainOffsetW,
+            nameof(fixedComponents.HeatingUsefulInternalGainOffsetW),
+            diagnostics);
+
         cooling.TransmissionW += Positive(
             fixedComponents.CoolingTransmissionW,
             nameof(fixedComponents.CoolingTransmissionW),
@@ -522,6 +541,10 @@ public sealed class RoomLoadCalculationEngine
 
         public double InfiltrationW { get; set; }
 
+        public double UsefulSolarGainOffsetW { get; set; }
+
+        public double UsefulInternalGainOffsetW { get; set; }
+
         public RoomHeatingLoadBreakdown ToResult() =>
             new(
                 Round(TransmissionW),
@@ -529,8 +552,8 @@ public sealed class RoomLoadCalculationEngine
                 Round(GroundW),
                 Round(VentilationW),
                 Round(InfiltrationW),
-                UsefulSolarGainOffsetW: 0,
-                UsefulInternalGainOffsetW: 0);
+                Round(UsefulSolarGainOffsetW),
+                Round(UsefulInternalGainOffsetW));
     }
 
     private sealed class MutableCoolingBreakdown
