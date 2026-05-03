@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 
 public sealed record EquipmentSizingInput(
     int TargetId,
@@ -10,4 +10,6 @@ public sealed record EquipmentSizingInput(
     string? EquipmentType = null,
     string? DiagnosticsContext = null,
     double? HeatingSafetyFactor = null,
-    double? CoolingSafetyFactor = null);
+    double? CoolingSafetyFactor = null,
+    double? MaximumOversizingPercent = null);
+
