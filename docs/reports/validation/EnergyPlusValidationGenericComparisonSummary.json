@@ -3,14 +3,14 @@
     "version":  "v1",
     "status":  "PlannedValidation",
     "runner":  "GenericEnergyPlusValidationFixtureRunner",
-    "generatedAtUtc":  "2026-05-03 05:41:45 UTC",
+    "generatedAtUtc":  "2026-05-03 05:51:34 UTC",
     "fixturesRoot":  "tests/fixtures/validation/energyplus",
     "outputDirectory":  "docs/reports/validation",
     "totals":  {
-                   "fixturesDiscovered":  1,
-                   "comparisonsGenerated":  1,
-                   "allPassingComparisons":  1,
-                   "placeholderComparisons":  1,
+                   "fixturesDiscovered":  3,
+                   "comparisonsGenerated":  3,
+                   "allPassingComparisons":  3,
+                   "placeholderComparisons":  3,
                    "realEnergyPlusComparisons":  0
                },
     "cases":  [
@@ -26,6 +26,32 @@
                       "metricsFailed":  0,
                       "resultJson":  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.json",
                       "resultMarkdown":  "docs/reports/validation/EP-SMOKE-001-ComparisonResult.md"
+                  },
+                  {
+                      "caseId":  "EP-SMOKE-002",
+                      "name":  "Single zone solar cooling smoke case",
+                      "stage":  "Smoke",
+                      "comparisonStatus":  "PlaceholderComparison",
+                      "referenceStatus":  "PlaceholderReferenceOutput",
+                      "allMetricsPassed":  true,
+                      "metricsTotal":  4,
+                      "metricsPassed":  4,
+                      "metricsFailed":  0,
+                      "resultJson":  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.json",
+                      "resultMarkdown":  "docs/reports/validation/EP-SMOKE-002-ComparisonResult.md"
+                  },
+                  {
+                      "caseId":  "EP-SMOKE-003",
+                      "name":  "Single zone internal gains cooling smoke case",
+                      "stage":  "Smoke",
+                      "comparisonStatus":  "PlaceholderComparison",
+                      "referenceStatus":  "PlaceholderReferenceOutput",
+                      "allMetricsPassed":  true,
+                      "metricsTotal":  4,
+                      "metricsPassed":  4,
+                      "metricsFailed":  0,
+                      "resultJson":  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.json",
+                      "resultMarkdown":  "docs/reports/validation/EP-SMOKE-003-ComparisonResult.md"
                   }
               ],
     "requiredNonClaims":  [

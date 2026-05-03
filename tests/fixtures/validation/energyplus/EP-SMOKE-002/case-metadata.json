@@ -1,0 +1,68 @@
+﻿{
+  "caseId": "EP-SMOKE-002",
+  "name": "Single zone solar cooling smoke case",
+  "stage": "Smoke",
+  "status": "ReferenceFixturePlaceholder",
+  "source": "Offline committed reference fixture placeholder; real EnergyPlus model/output to be added in a future validation milestone.",
+  "purpose": "Prepare comparative validation fixture structure for simplified solar cooling behavior; not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "notAClaim": [
+    "Does not claim exact EnergyPlus numerical parity.",
+    "Does not claim ASHRAE 140 validation coverage.",
+    "Does not claim full ISO 52016 node/matrix solver parity.",
+    "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+  ],
+  "weatherSource": "Synthetic summer weather with daytime solar profile.",
+  "geometry": {
+    "type": "single-zone-box",
+    "floorAreaM2": 40.0,
+    "heightM": 3.0,
+    "volumeM3": 120.0,
+    "description": "Single-zone rectangular box with one south-facing window."
+  },
+  "envelope": {
+    "description": "Simple U-value envelope with simplified SHGC window.",
+    "opaqueAreaM2": 150.0,
+    "opaqueUValueWPerM2K": 0.40,
+    "windowAreaM2": 8.0,
+    "windowUValueWPerM2K": 2.2,
+    "shgc": 0.55
+  },
+  "setpoints": {
+    "heatingSetpointC": null,
+    "coolingSetpointC": 24.0
+  },
+  "weather": {
+    "outdoorDryBulbC": 34.0,
+    "durationHours": 24,
+    "profile": "synthetic-summer-solar"
+  },
+  "internalGains": {
+    "sensibleW": 0.0,
+    "latentW": 0.0,
+    "description": "No internal gains."
+  },
+  "ventilation": {
+    "airflowM3PerS": 0.0,
+    "description": "No ventilation or infiltration."
+  },
+  "solar": {
+    "orientation": "South",
+    "surfaceTiltDeg": 90.0,
+    "peakIncidentSolarWPerM2": 650.0,
+    "description": "Simplified SHGC/shading solar model with ISO52010-inspired isotropic sky transposition."
+  },
+  "hvacControl": {
+    "type": "IdealLoadsCoolingOnly",
+    "description": "Ideal cooling load, fixed cooling setpoint, no heating."
+  },
+  "expectedEngineeringBehavior": [
+    "Cooling load is positive under summer solar exposure.",
+    "Window solar gain increases cooling demand.",
+    "Solar orientation response is directional, not exact EnergyPlus solar distribution parity."
+  ],
+  "knownDifferences": [
+    "AssistantEngineer does not model detailed EnergyPlus solar distribution.",
+    "AssistantEngineer does not model detailed glazing optics.",
+    "Exact hourly solar parity is not expected."
+  ]
+}

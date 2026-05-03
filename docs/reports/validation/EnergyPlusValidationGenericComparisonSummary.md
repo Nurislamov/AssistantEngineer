@@ -8,10 +8,10 @@
 | Status | PlannedValidation |
 | Fixtures root | tests/fixtures/validation/energyplus |
 | Output directory | docs/reports/validation |
-| Fixtures discovered | 1 |
-| Comparisons generated | 1 |
-| Passing comparisons | 1 |
-| Placeholder comparisons | 1 |
+| Fixtures discovered | 3 |
+| Comparisons generated | 3 |
+| Passing comparisons | 3 |
+| Placeholder comparisons | 3 |
 | Real EnergyPlus comparisons | 0 |
 
 ## Cases
@@ -19,6 +19,8 @@
 | CaseId | Stage | Comparison status | Reference status | Metrics passed | All passed |
 |---|---|---|---|---:|---|
 | EP-SMOKE-001 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 3/3 | True |
+| EP-SMOKE-002 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
+| EP-SMOKE-003 | Smoke | PlaceholderComparison | PlaceholderReferenceOutput | 4/4 | True |
 
 ## Required non-claims
 

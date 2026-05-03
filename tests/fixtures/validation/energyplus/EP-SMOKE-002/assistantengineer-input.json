@@ -1,0 +1,57 @@
+﻿{
+  "caseId": "EP-SMOKE-002",
+  "engine": "AssistantEngineer",
+  "inputKind": "EngineeringCoreV1SmokeFixture",
+  "calculationScope": "Solar cooling smoke case",
+  "building": {
+    "floorAreaM2": 40.0,
+    "heightM": 3.0,
+    "volumeM3": 120.0
+  },
+  "zone": {
+    "zoneId": "single-zone",
+    "name": "Single Zone",
+    "indoorCoolingSetpointC": 24.0
+  },
+  "envelope": {
+    "opaqueAreaM2": 150.0,
+    "opaqueUValueWPerM2K": 0.40,
+    "windowAreaM2": 8.0,
+    "windowUValueWPerM2K": 2.2,
+    "windowShgc": 0.55
+  },
+  "weather": {
+    "outdoorDryBulbC": 34.0,
+    "durationHours": 24,
+    "peakIncidentSolarWPerM2": 650.0,
+    "isSynthetic": true
+  },
+  "ventilation": {
+    "airflowM3PerS": 0.0
+  },
+  "internalGains": {
+    "sensibleW": 0.0
+  },
+  "solar": {
+    "orientation": "South",
+    "surfaceTiltDeg": 90.0,
+    "simplifiedSolarGainPeakW": 2860.0
+  },
+  "calculationFormula": {
+    "windowSolarGainPeakW": "A_window * SHGC * I_surface",
+    "expectedPeakWindowSolarGainW": 2860.0,
+    "expectedPeakCoolingLoadW": 3600.0,
+    "expectedDailyCoolingEnergyKwh": 18.0,
+    "solarOrientationResponseIndex": 1.0,
+    "expectedHeatingEnergyKwh": 0.0
+  },
+  "disclosure": {
+    "coreStatus": "ClosedV1",
+    "nonClaims": [
+      "Does not claim exact EnergyPlus numerical parity.",
+      "Does not claim ASHRAE 140 validation coverage.",
+      "Does not claim full ISO 52016 node/matrix solver parity.",
+      "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+    ]
+  }
+}

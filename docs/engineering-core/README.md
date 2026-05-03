@@ -173,3 +173,12 @@ Engineering Core V1 does not claim:
 - docs/validation/EnergyPlusValidationGenericRunner.md
 - docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json
 - docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md
+
+## Additional validation smoke fixtures
+
+- tests/fixtures/validation/energyplus/EP-SMOKE-002
+- tests/fixtures/validation/energyplus/EP-SMOKE-003
+- docs/validation/fixtures/EP-SMOKE-002/README.md
+- docs/validation/fixtures/EP-SMOKE-003/README.md
+- docs/reports/validation/EP-SMOKE-002-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-003-ComparisonResult.json

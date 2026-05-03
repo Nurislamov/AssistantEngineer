@@ -90,3 +90,18 @@ Generated outputs:
 
 - docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.json
 - docs/reports/validation/EnergyPlusValidationGenericComparisonSummary.md
+
+## Additional smoke fixtures
+
+Generated comparison outputs:
+
+- docs/reports/validation/EP-SMOKE-002-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-002-ComparisonResult.md
+- docs/reports/validation/EP-SMOKE-003-ComparisonResult.json
+- docs/reports/validation/EP-SMOKE-003-ComparisonResult.md
+
+Current status:
+
+    PlaceholderComparison
+
+These are not real EnergyPlus validation results.
