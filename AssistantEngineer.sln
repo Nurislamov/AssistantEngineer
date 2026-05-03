@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.Eng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.EnergyPlusValidation", "tools\AssistantEngineer.Tools.EnergyPlusValidation\AssistantEngineer.Tools.EnergyPlusValidation.csproj", "{8437F842-E7E6-43FF-8D22-1F5661F872FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.RepositoryBoundaries", "tools\AssistantEngineer.Tools.RepositoryBoundaries\AssistantEngineer.Tools.RepositoryBoundaries.csproj", "{7034A30F-1398-41CD-A5C9-231748D4B1CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -198,6 +200,18 @@ Global
 		{8437F842-E7E6-43FF-8D22-1F5661F872FD}.Release|x64.Build.0 = Release|Any CPU
 		{8437F842-E7E6-43FF-8D22-1F5661F872FD}.Release|x86.ActiveCfg = Release|Any CPU
 		{8437F842-E7E6-43FF-8D22-1F5661F872FD}.Release|x86.Build.0 = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|x64.Build.0 = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Debug|x86.Build.0 = Debug|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|x64.ActiveCfg = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|x64.Build.0 = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|x86.ActiveCfg = Release|Any CPU
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,5 +232,6 @@ Global
 		{4C5FD739-DE4F-45C7-B32B-A6932DF7B1AB} = {A8A3B7E4-2C33-4D16-9D58-1229A7D5F2E1}
 		{BF87BDF2-5812-4C20-869D-F8D0A0A6D50A} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{8437F842-E7E6-43FF-8D22-1F5661F872FD} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{7034A30F-1398-41CD-A5C9-231748D4B1CB} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 EndGlobal
