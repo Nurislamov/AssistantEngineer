@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 
@@ -16,8 +16,10 @@ public sealed record LoadAggregationResult(
     AggregationComponentBreakdown ComponentBreakdown,
     string AggregationMethod,
     IReadOnlyList<CalculationDiagnostic> Diagnostics,
-    DateTimeOffset CalculatedAtUtc)
+    DateTimeOffset CalculatedAtUtc,
+    int? HourlyRecordCountUsed = null)
 {
     public bool HasErrors =>
         Diagnostics.Any(diagnostic => diagnostic.Severity == CalculationDiagnosticSeverity.Error);
 }
+

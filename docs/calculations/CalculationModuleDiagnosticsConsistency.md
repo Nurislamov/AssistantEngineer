@@ -26,6 +26,7 @@ Warnings are required when a result is still produced, but the calculation used 
 Examples:
 
 - hourly aggregation requested but hourly profiles are unavailable;
+- hourly aggregation uses profiles with mismatched lengths;
 - AnnualEnergy.MonthlyBalanceAdapter warning must be emitted when monthly balance adapter data is used instead of true hourly 8760 simulation.
 - synthetic weather is used;
 - monthly balance adapter is used instead of true hourly 8760;
@@ -34,6 +35,8 @@ Examples:
 - contradictory system performance assumptions are supplied;
 
 - SystemEnergy.HeatingDualPerformanceAssumption and SystemEnergy.DhwDualPerformanceAssumption warnings must be emitted when both efficiency and COP are supplied for the same useful-energy end use.
+
+- Aggregation.HourlyProfileLengthMismatch warning must be emitted when hourly room profiles have different lengths and the shortest common profile length is used.
 
 ### Info diagnostics
 
@@ -70,5 +73,6 @@ Diagnostics consistency does not claim ASHRAE 140 validation coverage.
 Diagnostics consistency does not claim full ISO 52016 node/matrix solver parity.
 
 Diagnostics consistency only protects internal transparency of current calculation behavior.
+
 
 
