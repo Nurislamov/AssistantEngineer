@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Buildings.Domain.Climate;
+﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;
@@ -9,6 +9,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceD
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analysis;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.Iso52016;
@@ -69,7 +70,8 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         CalculationPreferences? preferences,
         CancellationToken cancellationToken,
         AnnualProfileOptionsDto? annualProfileOptions = null,
-        double? groundBoundaryTemperatureC = null)
+        double? groundBoundaryTemperatureC = null,
+        Iso52016HourlyWeatherSolarRecord? weatherSolarHour = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -129,7 +131,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 annualProfileOptions,
                 profileSnapshot);
 
-            var solarGains = GetHourlySolarGain(room, weather, dayOfYear, hourOfDay, preferences);
+            var solarGains = GetHourlySolarGain(room, weather, dayOfYear, hourOfDay, preferences, weatherSolarHour);
 
             var ventilationComponents = GetHourlyVentilationComponentsForRoom(
                 room,
@@ -315,10 +317,31 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         AnnualHourlyData weather,
         int dayOfYear,
         int hourOfDay,
-        CalculationPreferences? preferences)
+        CalculationPreferences? preferences,
+        Iso52016HourlyWeatherSolarRecord? weatherSolarHour)
     {
         return room.Windows.Sum(window =>
         {
+            if (weatherSolarHour is not null)
+            {
+                var surfaceCode = WeatherSolarSurfaceCodes.FromCardinalDirection(window.Orientation);
+                var surface = weatherSolarHour.GetSurface(surfaceCode);
+                var componentShadingReduction = GetWindowShadingReduction(window, dayOfYear, hourOfDay, preferences);
+
+                var componentSolar = _windowSolarGains.Calculate(
+                    WindowSolarGainInputFactory.CreateForWindow(
+                        window,
+                        surface,
+                        frameFactor: 1 - GetWindowFrameAreaFraction(preferences),
+                        externalShadingFactor: componentShadingReduction,
+                        fixedShadingFactor: GetSolarUtilizationFactor(preferences),
+                        hourIndex: weather.HourOfYear,
+                        isNight: weatherSolarHour.SolarAltitudeDegrees <= 0,
+                        diagnosticsContext: $"ISO 52016 hour {weather.HourOfYear} {surface.SurfaceCode} window {window.Id}"));
+
+                return componentSolar.Value.SolarGainW;
+            }
+
             var radiation = _solarRadiationService.CalculateVerticalSurfaceRadiation(
                 weather,
                 window.Orientation,
@@ -340,7 +363,6 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             return solar.Value.SolarGainW;
         });
     }
-
     private double GetWindowShadingReduction(
         Window window,
         int dayOfYear,
@@ -655,3 +677,5 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         return envelope;
     }
 }
+
+
