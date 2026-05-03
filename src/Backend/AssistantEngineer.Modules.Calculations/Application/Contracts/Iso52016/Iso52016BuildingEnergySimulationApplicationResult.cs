@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 
 public sealed record Iso52016BuildingEnergySimulationApplicationResult(
     int BuildingId,
@@ -10,7 +10,7 @@ public sealed record Iso52016BuildingEnergySimulationApplicationResult(
     TimeSpan TimeZoneOffset,
     Iso52016BuildingDomainSimulationFacadeResult Simulation)
 {
-    public int RoomCount => Simulation.RoomCount;
+public int RoomCount => Simulation.RoomCount;
 
     public int HourCount => Simulation.HourCount;
 

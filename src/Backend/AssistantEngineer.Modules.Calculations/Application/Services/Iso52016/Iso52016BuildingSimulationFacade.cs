@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -57,11 +57,13 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
             if (roomRequestResult.IsFailure)
                 return Result<Iso52016BuildingSimulationFacadeResult>.Failure(roomRequestResult);
 
+            var roomSimulationRequest = roomRequestResult.Value with
+            {
+                HeatBalanceOptions = request.HeatBalanceOptions
+            };
+
             var roomSimulationResult = _roomSimulationService.Simulate(
-                roomRequestResult.Value with
-                {
-                    HeatBalanceOptions = request.HeatBalanceOptions
-                });
+                roomSimulationRequest);
 
             if (roomSimulationResult.IsFailure)
                 return Result<Iso52016BuildingSimulationFacadeResult>.Failure(roomSimulationResult);
@@ -150,8 +152,7 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
     {
         if (string.IsNullOrWhiteSpace(request.BuildingCode))
             return Result.Validation("Building code is required.");
-
-        if (request.Rooms is null)
+if (request.Rooms is null)
             return Result.Validation("Building room list is required.");
 
         if (request.Rooms.Count == 0)

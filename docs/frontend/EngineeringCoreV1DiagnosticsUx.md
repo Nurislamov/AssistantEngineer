@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Diagnostics UX
+# Engineering Core V1 Diagnostics UX
 
 ## Purpose
 
@@ -77,10 +77,10 @@ Required visible diagnostic codes:
 - `Iso52016.WeatherSolarContextUsed` — the annual hourly run used the ISO 52016 weather-solar context.
 - `Iso52016.SolarGainComponentPathUsed` — window solar gains were fed from separated beam, diffuse sky and ground-reflected components.
 - `Iso52016.PerezAnisotropicModelVisibleInAnnualResult` — Perez/aniso surface irradiance diagnostics were propagated into the annual result.
-- `Iso52016.LegacySolarRadiationFallbackUsed` — the legacy radiation fallback was used because no ISO 52016 weather-solar context was available.
+- `Iso52016.MatrixSolarRadiationFallbackUsed` — the legacy radiation fallback was used because no ISO 52016 weather-solar context was available.
 
 UX rule:
 
-- `Iso52016.LegacySolarRadiationFallbackUsed` must be shown as a warning.
+- `Iso52016.MatrixSolarRadiationFallbackUsed` must be shown as a warning.
 - `Iso52016.WeatherSolarContextUsed` and `Iso52016.SolarGainComponentPathUsed` may be shown as info/success method metadata.
 - These diagnostics must not be hidden only in raw JSON, browser console or debug-only views.

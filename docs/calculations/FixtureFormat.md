@@ -90,7 +90,7 @@ Benchmark tolerances support:
 
 A benchmark field passes when either the absolute difference is within absolute tolerance or the relative difference percent is within relative tolerance. Expected zero is handled without division by zero; a nonzero actual value against expected zero must pass through absolute tolerance.
 
-Legacy deterministic fixtures still use their existing typed tolerance fields, such as `hourlyLoadW`, `monthlyDemandKWh`, `annualDemandKWh`, and `hourlyTemperatureC`.
+Matrix deterministic fixtures still use their existing typed tolerance fields, such as `hourlyLoadW`, `monthlyDemandKWh`, `annualDemandKWh`, and `hourlyTemperatureC`.
 
 ## Expected Value Paths
 

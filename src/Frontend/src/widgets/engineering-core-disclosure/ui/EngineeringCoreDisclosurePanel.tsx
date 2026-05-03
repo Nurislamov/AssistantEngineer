@@ -1,4 +1,4 @@
-﻿import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import {
@@ -165,7 +165,7 @@ function DiagnosticsSection({
           </Typography>
         </Box>
 
-        {solarPath ? <Chip label={solarPath} color={solarPath.includes("legacy") ? "warning" : "success"} size="small" /> : null}
+        {solarPath ? <Chip label={solarPath} color={solarPath.includes("fallback") ? "warning" : "success"} size="small" /> : null}
       </Stack>
 
       <List dense disablePadding sx={{ mt: 1 }}>
@@ -364,8 +364,8 @@ function getSolarPathLabel(diagnostics: CalculationDiagnosticApiResponse[]): str
     return "ISO 52016 component solar gains";
   }
 
-  if (diagnostics.some((diagnostic) => diagnostic.code === "Iso52016.LegacySolarRadiationFallbackUsed")) {
-    return "legacy solar radiation fallback";
+  if (diagnostics.some((diagnostic) => diagnostic.code === "Iso52016.MatrixSolarRadiationFallbackUsed")) {
+    return "matrix solar radiation fallback";
   }
 
   return null;

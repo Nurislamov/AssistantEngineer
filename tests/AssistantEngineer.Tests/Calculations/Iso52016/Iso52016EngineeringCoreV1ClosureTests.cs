@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
@@ -11,13 +11,11 @@ public class Iso52016EngineeringCoreV1ClosureTests
     [Fact]
     public void SimplifiedHourlyHeatBalance_EndToEnd8760ScenarioProducesConsistentHeatingCoolingAndMonthlySummaries()
     {
-        var solver = new Iso52016RoomHeatBalanceSolver();
-
-        var result = solver.Solve(new Iso52016RoomHeatBalanceRequest(
-            InputProfile: CreateSeasonal8760InputProfile(),
-            Options: new Iso52016RoomHeatBalanceOptions(
+        var result = Iso52016MatrixTestSolver.Solve(
+            CreateSeasonal8760InputProfile(),
+            new Iso52016RoomHeatBalanceOptions(
                 InitialIndoorTemperatureC: 22,
-                TimeStepSeconds: 3600)));
+                TimeStepSeconds: 3600));
 
         Assert.True(result.IsSuccess, result.Error);
 

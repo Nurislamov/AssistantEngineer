@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
@@ -11,10 +12,14 @@ namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 public sealed class BuildingEnergyAnalysisFacade : IBuildingEnergyAnalysisFacade
 {
     private readonly BuildingPerformanceService _performance;
+    private readonly IIso52016BuildingEnergySimulationApplicationService _iso52016Simulation;
 
-    public BuildingEnergyAnalysisFacade(BuildingPerformanceService performance)
+    public BuildingEnergyAnalysisFacade(
+        BuildingPerformanceService performance,
+        IIso52016BuildingEnergySimulationApplicationService iso52016Simulation)
     {
         _performance = performance;
+        _iso52016Simulation = iso52016Simulation;
     }
 
     public Task<Result<Iso52016EnergyBalanceBreakdown>> GetIso52016BreakdownAsync(
@@ -69,4 +74,32 @@ public sealed class BuildingEnergyAnalysisFacade : IBuildingEnergyAnalysisFacade
         BuildingEnergyPerformanceRequest request,
         CancellationToken cancellationToken) =>
         _performance.CalculateSummaryAsync(buildingId, year, request, cancellationToken);
-}
+
+    public Task<Result<Iso52016BuildingEnergySimulationApplicationResult>> SimulateIso52016Async(
+        int buildingId,
+        Iso52016BuildingEnergySimulationCommand request,
+        CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return Task.FromResult(
+                Result<Iso52016BuildingEnergySimulationApplicationResult>.Validation(
+                    "ISO 52016 simulation request is required."));
+        }
+
+        return _iso52016Simulation.SimulateAsync(
+            new Iso52016BuildingEnergySimulationApplicationRequest(
+                BuildingId: buildingId,
+                LatitudeDegrees: request.LatitudeDegrees,
+                LongitudeDegrees: request.LongitudeDegrees,
+                TimeZoneOffset: request.TimeZoneOffset,
+                WeatherYear: request.WeatherYear,
+                Surfaces: request.Surfaces,
+                GroundReflectance: request.GroundReflectance,
+                GroundBoundaryTemperature: request.GroundBoundaryTemperature,
+                Defaults: request.Defaults,
+                HeatingSetpointOverrideC: request.HeatingSetpointOverrideC,
+                CoolingSetpointOverrideC: request.CoolingSetpointOverrideC,
+                HeatBalanceOptions: request.HeatBalanceOptions),
+            cancellationToken);
+    }}

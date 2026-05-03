@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
@@ -12,7 +12,7 @@ namespace AssistantEngineer.Tests;
 public class GroundSimplifiedEngineeringCoreV1ClosureTests
 {
     [Fact]
-    public void LegacyGroundBoundaryWithoutMetadataUsesGroundWallsAndDefaultFloorUValue()
+    public void MatrixGroundBoundaryWithoutMetadataUsesGroundWallsAndDefaultFloorUValue()
     {
         var service = CreateService();
         var room = CreateRoom(areaM2: 40);

@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
@@ -26,7 +26,7 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
         {
             return new GroundBoundaryCondition
             {
-                HeatTransferCoefficientWPerK = GetLegacyGroundHeatTransferCoefficient(room, envelopeDefaults),
+                HeatTransferCoefficientWPerK = GetMatrixGroundHeatTransferCoefficient(room, envelopeDefaults),
                 GroundTemperatureWeight = 1.0,
                 OutdoorTemperatureWeight = 0.0,
                 IndoorTemperatureWeight = 0.0
@@ -103,7 +103,7 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
         };
     }
 
-    private static double GetLegacyGroundHeatTransferCoefficient(Room room, BuildingEnvelopeDefaults envelopeDefaults)
+    private static double GetMatrixGroundHeatTransferCoefficient(Room room, BuildingEnvelopeDefaults envelopeDefaults)
     {
         var envelope = room.Walls
             .Where(wall => wall.BoundaryType == WallBoundaryType.Ground)

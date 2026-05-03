@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 

@@ -40,7 +40,7 @@ public sealed class CoolingEquipmentSelectorTests
             candidate.CatalogItemId == 1 &&
             candidate.Reasons.Contains("Nominal cooling capacity is below required design capacity."));
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
-            diagnostic.Code == "EquipmentSelection.LegacyCoolingSelectorAdapter");
+            diagnostic.Code == "EquipmentSelection.MatrixCoolingSelectorAdapter");
     }
 
     [Fact]

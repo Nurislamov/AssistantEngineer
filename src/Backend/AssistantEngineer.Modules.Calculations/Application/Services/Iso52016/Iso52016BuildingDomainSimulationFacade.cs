@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -63,8 +63,7 @@ public sealed class Iso52016BuildingDomainSimulationFacade : IIso52016BuildingDo
     {
         if (request.Building is null)
             return Result.Validation("Building is required.");
-
-        if (request.AnnualClimateData is null)
+if (request.AnnualClimateData is null)
             return Result.Validation("Annual climate data is required.");
 
         if (request.LatitudeDegrees is < -90.0 or > 90.0)

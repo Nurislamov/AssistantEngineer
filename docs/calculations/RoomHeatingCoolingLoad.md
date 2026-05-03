@@ -54,7 +54,7 @@ Room load API routes use the Energy Calculation Parity application pipeline:
 
 The controller calls `ILoadCalculationsFacade`, which delegates to `EnergyCalculationPipelineService`. The pipeline loads the room graph through repositories, assembles pure `RoomLoadCalculationInput`, and calls `RoomLoadCalculationEngine`. The calculation engine remains independent from EF Core, ASP.NET Core, Infrastructure and API contracts.
 
-The assembler maps existing room, wall, window, ventilation, infiltration, ground-contact and internal-gain data into component inputs. It does not introduce a second formula path. Legacy calculation method query values are preserved in response metadata for backward compatibility.
+The assembler maps existing room, wall, window, ventilation, infiltration, ground-contact and internal-gain data into component inputs. It does not introduce a second formula path. Matrix calculation method query values are preserved in response metadata for backward compatibility.
 
 Method handling is explicit:
 

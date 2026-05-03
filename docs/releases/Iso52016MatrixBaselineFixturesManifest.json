@@ -1,0 +1,59 @@
+{
+    "stageId":  "ISO52016-MATRIX-BASELINE-FIXTURES",
+    "stageName":  "ISO 52016 Matrix baseline fixtures",
+    "status":  "Closed",
+    "explicitNonClaims":  [
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim."
+                          ],
+    "summaryExporterIntegrated":  true,
+    "applicationBaselinesIntegrated":  true,
+    "allInOneVerificationIntegrated":  true,
+    "releaseReadyGateIntegrated":  true,
+    "fixtures":  [
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/neutral-no-hvac.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/winter-heating-24h.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/summer-cooling-24h.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/mass-lag-heating-1h.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationBaselines/building-cold-two-room-heating.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationBaselines/building-hot-single-room-cooling.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidation/manual-steady-state-heating.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidation/manual-steady-state-heating-with-gains.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidation/manual-steady-state-cooling.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidation/manual-steady-state-cooling-with-gains.json"
+                 ],
+    "externalValidationIntegrated":  true,
+    "ciGateIntegrated":  true,
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016MatrixBaselineFixtures.md",
+                               "docs/releases/Iso52016MatrixBaselineFixturesManifest.json",
+                               "docs/calculations/Iso52016MatrixBaselineSummaryExporter.md",
+                               "docs/calculations/Iso52016MatrixApplicationBaselineFixtures.md",
+                               "docs/calculations/Iso52016MatrixVerificationRunbook.md",
+                               "docs/calculations/Iso52016MatrixReleaseReadyGate.md",
+                               "docs/calculations/Iso52016MatrixExternalValidationFixtures.md",
+                               "docs/ci/Iso52016MatrixCI.md",
+                               "docs/releases/Iso52016MatrixReleaseNotes.md",
+                               "docs/runbooks/Iso52016MatrixMergeRunbook.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/export-iso52016-matrix-baseline-summary.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-application-baselines.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-all.ps1",
+                                "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-external-validation.ps1",
+                                "scripts/iso52016/write-iso52016-matrix-merge-summary.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineSummaryExporterTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationBaselineFixtureTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixAllVerificationScriptTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixReleaseReadyGateTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationFixtureTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixCiWorkflowTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixMergeEvidenceTests.cs"
+                   ],
+    "mergeEvidenceIntegrated":  true
+}

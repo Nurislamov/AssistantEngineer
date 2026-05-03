@@ -1,0 +1,49 @@
+{
+  "matrixName": "ISO 52016 Matrix Solver Traceability Matrix",
+  "stageId": "ISO52016-MATRIX-SOLVER",
+  "sourceManifest": "docs/releases/Iso52016MatrixSolverStageManifest.json",
+  "items": [
+    {
+      "workItem": "AE-ISO52016-001",
+      "status": "Closed",
+      "description": "Node/matrix hourly solver for room/zone sensible heating and cooling need.",
+      "implementationGuards": [
+        "Iso52016MatrixHourlySolver",
+        "IIso52016MatrixHourlySolver",
+        "Iso52016MatrixReducedRoomModelBuilder",
+        "Iso52016MatrixRoomEnergySimulationService",
+        "Iso52016MatrixRoomEnergySimulationResultMapper",
+        "Iso52016CalculationPath"
+      ],
+      "testGuards": [
+        "Iso52016MatrixHourlySolver",
+        "Iso52016MatrixReducedRoomModelBuilderTests",
+        "Iso52016MatrixRoomEnergySimulationServiceTests",
+        "Iso52016RoomSimulationFacadeV2EngineTests",
+        "Iso52016BuildingSimulationFacadeV2EngineTests"
+      ]
+    },
+    {
+      "workItem": "AE-GAINS-001",
+      "status": "Closed",
+      "description": "Reference data for internal gains and sensible gain split.",
+      "implementationGuards": [
+        "Iso52016InternalGainReferenceDataProvider"
+      ],
+      "testGuards": [
+        "Iso52016InternalGainReferenceDataProviderTests"
+      ]
+    },
+    {
+      "workItem": "AE-ZONES-001",
+      "status": "Closed",
+      "description": "Adjacent unconditioned zone temperature model.",
+      "implementationGuards": [
+        "AdjacentUnconditioned"
+      ],
+      "testGuards": [
+        "AdjacentUnconditioned"
+      ]
+    }
+  ]
+}

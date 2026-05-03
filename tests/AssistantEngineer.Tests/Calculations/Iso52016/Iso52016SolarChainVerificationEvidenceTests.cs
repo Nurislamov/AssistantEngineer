@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -66,7 +66,7 @@ public class Iso52016SolarChainVerificationEvidenceTests
         Assert.Contains("Iso52016.WeatherSolarContextUsed", requiredCodes);
         Assert.Contains("Iso52016.SolarGainComponentPathUsed", requiredCodes);
         Assert.Contains("Iso52016.PerezAnisotropicModelVisibleInAnnualResult", requiredCodes);
-        Assert.Contains("Iso52016.LegacySolarRadiationFallbackUsed", requiredCodes);
+        Assert.Contains("Iso52016.MatrixSolarRadiationFallbackUsed", requiredCodes);
         Assert.Contains("SolarWeather.PerezAnisotropicModelUsed", requiredCodes);
         Assert.Contains("SolarWeather.PerezSkyState", requiredCodes);
     }

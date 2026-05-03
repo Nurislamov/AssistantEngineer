@@ -1,0 +1,29 @@
+{
+  "scenarioName": "neutral-no-hvac",
+  "description": "Outdoor, air node and mass node are all at 22 C. No gains and no HVAC load are expected.",
+  "hourCount": 24,
+  "outdoorTemperatureC": 22.0,
+  "airNodeHeatGainW": 0.0,
+  "massNodeHeatGainW": 0.0,
+  "initialAirTemperatureC": 22.0,
+  "initialMassTemperatureC": 22.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "annualHeatingEnergyKWh": 0.0,
+    "annualCoolingEnergyKWh": 0.0,
+    "peakHeatingLoadW": 0.0,
+    "peakCoolingLoadW": 0.0,
+    "annualTotalNodeHeatGainsKWh": 0.0,
+    "representativeHours": [
+      {
+        "hourOfYear": 0,
+        "airTemperatureBeforeHvacC": 22.0,
+        "airTemperatureAfterHvacC": 22.0,
+        "massTemperatureAfterHvacC": 22.0,
+        "heatingLoadW": 0.0,
+        "coolingLoadW": 0.0
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Analytics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
@@ -39,6 +39,21 @@ public class BuildingEnergyAnalysisController : ControllerBase
         return result.ToActionResult(this);
     }
 
+
+    [HttpPost("iso52016/simulate")]
+    [RequestTimeout(RequestPolicies.LongRunning)]
+    public async Task<ActionResult<Iso52016BuildingEnergySimulationApplicationResult>> SimulateIso52016(
+        int buildingId,
+        [FromBody] Iso52016BuildingEnergySimulationCommand request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _energyAnalysis.SimulateIso52016Async(
+            buildingId,
+            request,
+            cancellationToken);
+
+        return result.ToActionResult(this);
+    }
     [HttpGet("energy-signature")]
     [RequestTimeout(RequestPolicies.LongRunning)]
     public async Task<ActionResult<EnergySignatureResult>> GetEnergySignature(

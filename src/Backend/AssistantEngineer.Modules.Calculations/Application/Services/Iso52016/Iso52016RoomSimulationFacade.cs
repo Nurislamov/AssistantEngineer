@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -52,11 +52,13 @@ public sealed class Iso52016RoomSimulationFacade : IIso52016RoomSimulationFacade
         if (simulationRequestResult.IsFailure)
             return Result<Iso52016RoomSimulationFacadeResult>.Failure(simulationRequestResult);
 
+        var simulationRequest = simulationRequestResult.Value with
+        {
+            HeatBalanceOptions = request.HeatBalanceOptions
+        };
+
         var simulationResult = _simulationService.Simulate(
-            simulationRequestResult.Value with
-            {
-                HeatBalanceOptions = request.HeatBalanceOptions
-            });
+            simulationRequest);
 
         if (simulationResult.IsFailure)
             return Result<Iso52016RoomSimulationFacadeResult>.Failure(simulationResult);
@@ -65,7 +67,7 @@ public sealed class Iso52016RoomSimulationFacade : IIso52016RoomSimulationFacade
             new Iso52016RoomSimulationFacadeResult(
                 RoomCode: request.Room.Name.Trim(),
                 WeatherSolarContext: weatherSolarContextResult.Value,
-                SimulationRequest: simulationRequestResult.Value,
+                SimulationRequest: simulationRequest,
                 SimulationResult: simulationResult.Value));
     }
 
@@ -74,8 +76,7 @@ public sealed class Iso52016RoomSimulationFacade : IIso52016RoomSimulationFacade
     {
         if (request.Room is null)
             return Result.Validation("Room is required.");
-
-        if (request.AnnualClimateData is null)
+if (request.AnnualClimateData is null)
             return Result.Validation("Annual climate data is required.");
 
         if (request.LatitudeDegrees is < -90.0 or > 90.0)

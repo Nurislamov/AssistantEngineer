@@ -1,7 +1,8 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Enums;
+using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -13,7 +14,9 @@ public class Iso52016RoomEnergySimulationServiceTests
                 new Iso52016WindowSolarGainCalculator()),
             new Iso52016RoomInternalGainProfileBuilder(),
             new Iso52016RoomHourlyInputProfileBuilder(),
-            new Iso52016RoomHeatBalanceSolver());
+            new Iso52016MatrixReducedRoomModelBuilder(),
+                new Iso52016MatrixHourlySolver(),
+                new Iso52016MatrixRoomEnergySimulationResultMapper());
 
     [Fact]
     public void Simulate_BuildsCompleteRoomEnergySimulationResult()

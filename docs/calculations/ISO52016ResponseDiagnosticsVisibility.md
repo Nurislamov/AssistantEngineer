@@ -1,4 +1,4 @@
-﻿# ISO 52016 Response Diagnostics Visibility
+# ISO 52016 Response Diagnostics Visibility
 
 Stage 6 propagates annual ISO 52016 diagnostics to response-level contracts.
 
@@ -11,7 +11,7 @@ Stage 6 propagates annual ISO 52016 diagnostics to response-level contracts.
   - `Iso52016.WeatherSolarContextUsed`;
   - `Iso52016.SolarGainComponentPathUsed`;
   - `Iso52016.PerezAnisotropicModelVisibleInAnnualResult`;
-  - `Iso52016.LegacySolarRadiationFallbackUsed`.
+  - `Iso52016.MatrixSolarRadiationFallbackUsed`.
 
 ## Explicit non-claims
 

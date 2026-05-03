@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -13,6 +13,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -208,7 +209,9 @@ public class Iso52016BuildingEnergySimulationApplicationServiceTests
                             new Iso52016WindowSolarGainCalculator()),
                         new Iso52016RoomInternalGainProfileBuilder(),
                         new Iso52016RoomHourlyInputProfileBuilder(),
-                        new Iso52016RoomHeatBalanceSolver()))),
+                        new Iso52016MatrixReducedRoomModelBuilder(),
+                new Iso52016MatrixHourlySolver(),
+                new Iso52016MatrixRoomEnergySimulationResultMapper()))),
             Options.Create(new Iso52016EnergyNeedOptions
             {
                 DefaultWeatherYear = defaultWeatherYear

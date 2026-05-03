@@ -810,7 +810,7 @@ public class EnergyCalculationPipelineServiceTests
                     new MonthlyEnergyBalance { Month = 7, HeatingDemandKWh = 0, CoolingDemandKWh = 50 }
                 ],
                 HourlyRecordCount = _hourlyRecords?.Count ?? 0,
-                EnergyDataSource = _hourlyRecords is null ? "LegacyMonthlyEstimate" : "TrueHourlySimulation",
+                EnergyDataSource = _hourlyRecords is null ? "MatrixMonthlyEstimate" : "TrueHourlySimulation",
                 IsTrueHourly8760 = _hourlyRecords?.Count == 8760
             });
     }

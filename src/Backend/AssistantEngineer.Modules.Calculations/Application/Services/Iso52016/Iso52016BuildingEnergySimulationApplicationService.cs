@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
@@ -105,8 +105,7 @@ public sealed class Iso52016BuildingEnergySimulationApplicationService : IIso520
     {
         if (request.BuildingId <= 0)
             return Result.Validation("Building id must be greater than zero.");
-
-        if (request.LatitudeDegrees is < -90.0 or > 90.0)
+if (request.LatitudeDegrees is < -90.0 or > 90.0)
             return Result.Validation("Latitude must be between -90 and 90 degrees.");
 
         if (request.LongitudeDegrees is < -180.0 or > 180.0)

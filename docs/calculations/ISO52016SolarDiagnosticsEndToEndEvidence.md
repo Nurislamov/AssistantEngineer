@@ -1,4 +1,4 @@
-﻿# ISO 52016 Solar Diagnostics End-to-End Evidence
+# ISO 52016 Solar Diagnostics End-to-End Evidence
 
 This document records the closed chain for ISO 52016 solar-path diagnostics.
 
@@ -18,7 +18,7 @@ This document records the closed chain for ISO 52016 solar-path diagnostics.
 - `Iso52016.WeatherSolarContextUsed`
 - `Iso52016.SolarGainComponentPathUsed`
 - `Iso52016.PerezAnisotropicModelVisibleInAnnualResult`
-- `Iso52016.LegacySolarRadiationFallbackUsed`
+- `Iso52016.MatrixSolarRadiationFallbackUsed`
 
 ## Guard coverage
 

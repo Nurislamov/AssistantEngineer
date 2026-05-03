@@ -9,6 +9,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.SolarGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
+using AssistantEngineer.Tests.Calculations.Iso52016;
 
 namespace AssistantEngineer.Tests.Parity.EnergyCalculationParity;
 
@@ -180,13 +181,11 @@ public class EnergyCalculationDeterministicFixtureTests
             solar.ConstantSolarGainsW,
             internalGains.ConstantInternalGainsW);
 
-        var solver = new Iso52016RoomHeatBalanceSolver();
-        var result = solver.Solve(
-            new Iso52016RoomHeatBalanceRequest(
-                profile,
-                new Iso52016RoomHeatBalanceOptions(
-                    InitialIndoorTemperatureC: simulation.InitialIndoorTemperatureC,
-                    TimeStepSeconds: simulation.TimeStepSeconds)));
+        var result = Iso52016MatrixTestSolver.Solve(
+            profile,
+            new Iso52016RoomHeatBalanceOptions(
+                InitialIndoorTemperatureC: simulation.InitialIndoorTemperatureC,
+                TimeStepSeconds: simulation.TimeStepSeconds));
 
         Assert.True(result.IsSuccess, result.Error);
         Assert.Equal(fixture.ExpectedHourlyResults.HourCount, result.Value.Hours.Count);
