@@ -1,0 +1,26 @@
+{
+    "anchorId":  "MANUAL-ISO52016-ANCHOR-003",
+    "scenarioName":  "MANUAL-ISO52016-ANCHOR-003 steady cooling",
+    "description":  "Independent one-node steady cooling anchor. Manual expected cooling load is Q = H x deltaT + gains.",
+    "mode":  "Cooling",
+    "manualFormula":  "coolingLoadW = H * (outdoorTemperatureC - coolingSetpointC) + internalHeatGainW",
+    "sourceType":  "ManualEngineeringValidationAnchor",
+    "authoritativeReference":  "IndependentManualEngineeringFormula",
+    "methodologicalBackground":  "ISO 52016-style hourly heat balance; EnergyPlus-style naming is descriptive only and no EnergyPlus output is used.",
+    "validationClaim":  "Validation anchor only; not full parity.",
+    "timeStepSeconds":  3600.0,
+    "heatCapacityJPerK":  250000.0,
+    "initialAirTemperatureC":  25.0,
+    "outdoorTemperatureC":  35.0,
+    "heatTransferCoefficientWPerK":  80.0,
+    "internalHeatGainW":  300.0,
+    "heatingSetpointC":  5.0,
+    "coolingSetpointC":  25.0,
+    "expected":  {
+                     "heatingLoadW":  0.0,
+                     "coolingLoadW":  1100.0,
+                     "heatingEnergyKWh":  0.0,
+                     "coolingEnergyKWh":  1.1,
+                     "airTemperatureAfterHvacC":  25.0
+                 }
+}

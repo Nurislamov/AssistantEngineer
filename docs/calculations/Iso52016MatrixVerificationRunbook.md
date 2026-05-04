@@ -14,7 +14,8 @@ The command verifies:
 2. Low-level Matrix solver baseline fixtures.
 3. Application/building-facade Matrix baseline fixtures.
 4. Baseline summary exporter.
-5. C# guard tests for the verification chain.
+5. Independent manual external validation anchors.
+6. C# guard tests for the verification chain.
 
 ## Fast checks
 
@@ -35,6 +36,11 @@ Skip application-level baselines:
 ```powershell
 .\scripts\iso52016\verify-iso52016-matrix-all.ps1 -SkipApplicationBaselines
 ```
+Skip external validation anchors:
+
+```powershell
+.\scripts\iso52016\verify-iso52016-matrix-all.ps1 -SkipExternalValidationAnchors
+```
 
 ## Generated outputs
 
@@ -48,7 +54,7 @@ These files are generated outputs and should not be committed.
 
 ## Non-claim
 
-This verification chain is an internal regression and traceability gate. It does not claim exact pyBuildingEnergy, EnergyPlus, or ASHRAE 140 parity.
+This verification chain is an internal regression and traceability gate. It does not claim exact pyBuildingEnergy, EnergyPlus, or ASHRAE 140 parity. External validation anchors are independent manual engineering checks only; they are not full parity evidence.
 
 ## External validation anchors layer
 

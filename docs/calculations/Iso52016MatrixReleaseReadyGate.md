@@ -12,8 +12,9 @@ The command verifies:
 
 1. Required ISO 52016 Matrix verification scripts and docs exist.
 2. Full ISO 52016 Matrix verification chain passes.
-3. Full `AssistantEngineer.Tests` test project passes.
-4. Generated Matrix baseline summary artifacts are not tracked by git.
+3. Independent manual external validation anchor gate passes through the Matrix verification chain.
+4. Full `AssistantEngineer.Tests` test project passes.
+5. Generated Matrix baseline summary artifacts are not tracked by git.
 
 ## Optional strict mode
 
@@ -53,6 +54,9 @@ artifacts/iso52016/matrix-baselines/summary.md
 ```
 
 These files are generated outputs and must not be committed.
+## External validation anchor non-claim
+
+The release-ready gate includes independent manual ISO 52016 Matrix validation anchors. They are validation anchors only and do not claim pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 coverage, or full ISO 52016 validation coverage.
 
 ## External validation anchors release-ready coverage
 

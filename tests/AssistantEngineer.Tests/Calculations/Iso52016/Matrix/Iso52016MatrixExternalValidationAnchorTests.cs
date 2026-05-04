@@ -11,172 +11,25 @@ public class Iso52016MatrixExternalValidationAnchorTests
     private readonly Iso52016MatrixHourlySolver _solver = new();
 
     [Theory]
-    [MemberData(nameof(ExternalValidationAnchorFixtureFiles))]
-    public void MatrixSolver_MatchesIndependentExternalValidationAnchor(
+    [MemberData(nameof(ManualAnchorFixtureFiles))]
+    public void MatrixSolver_MatchesIndependentManualAnchorFormula(
         string fixturePath)
     {
         var fixture = LoadFixture(fixturePath);
+        var manual = CalculateManualExpectation(fixture);
 
-        Assert.Equal("ValidationAnchorOnly", fixture.ClaimScope);
-
-        Assert.Contains(
-            "No exact pyBuildingEnergy numerical parity claim.",
-            fixture.ExplicitNonClaims);
-
-        Assert.Contains(
-            "No exact EnergyPlus numerical parity claim.",
-            fixture.ExplicitNonClaims);
-
-        Assert.Contains(
-            "No ASHRAE 140 validation coverage claim.",
-            fixture.ExplicitNonClaims);
-
-        if (fixture.Kind.Equals(
-            "singleHourSteadyState",
-            StringComparison.OrdinalIgnoreCase))
-        {
-            AssertSingleHourFixture(fixture);
-            return;
-        }
-
-        if (fixture.Kind.Equals(
-            "annual8760ManualReference",
-            StringComparison.OrdinalIgnoreCase))
-        {
-            AssertAnnual8760Fixture(fixture);
-            return;
-        }
-
-        throw new InvalidOperationException(
-            $"Unsupported ISO52016 Matrix external validation anchor kind: {fixture.Kind}");
-    }
-
-    [Fact]
-    public void ExternalValidationAnchorSet_CoversManualPbeStyleEnergyPlusStyleAndAnnual8760()
-    {
-        var fixtures = ExternalValidationAnchorFixtureFiles()
-            .Select(data => LoadFixture((string)data[0]))
-            .ToArray();
-
-        Assert.Contains(fixtures, fixture => fixture.ScenarioName == "manual-independent-steady-heating");
-        Assert.Contains(fixtures, fixture => fixture.ScenarioName == "manual-independent-steady-heating-with-gains");
-        Assert.Contains(fixtures, fixture => fixture.ScenarioName == "manual-independent-steady-cooling");
-        Assert.Contains(fixtures, fixture => fixture.ReferenceStyle == "pyBuildingEnergy-style naming only");
-        Assert.Contains(fixtures, fixture => fixture.ReferenceStyle == "EnergyPlus-style naming only");
-        Assert.Contains(fixtures, fixture => fixture.Kind == "annual8760ManualReference" && fixture.HourCount == 8760);
-    }
-
-    [Fact]
-    public void ExternalValidationAnchorDocsAndManifest_DoNotClaimFullParity()
-    {
-        var repoRoot = FindRepositoryRoot();
-
-        var documentationPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "calculations",
-            "Iso52016MatrixExternalValidationAnchors.md");
-
-        var manifestPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "releases",
-            "Iso52016MatrixExternalValidationAnchorsManifest.json");
-
-        Assert.True(File.Exists(documentationPath), $"Documentation was not found: {documentationPath}");
-        Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
-
-        var documentation = File.ReadAllText(documentationPath);
-        var manifest = File.ReadAllText(manifestPath);
-
-        Assert.Contains("validation anchors only", documentation, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim", documentation);
-        Assert.Contains("No exact EnergyPlus numerical parity claim", documentation);
-        Assert.Contains("No ASHRAE 140 validation coverage claim", documentation);
-
-        using var document = JsonDocument.Parse(manifest);
-        var root = document.RootElement;
-
-        Assert.Equal(
-            "ValidationAnchorOnly",
-            root.GetProperty("claimScope").GetString());
-
-        var nonClaims = root
-            .GetProperty("explicitNonClaims")
-            .EnumerateArray()
-            .Select(item => item.GetString())
-            .ToArray();
-
-        Assert.Contains("No full pyBuildingEnergy parity claim.", nonClaims);
-        Assert.Contains("No full EnergyPlus parity claim.", nonClaims);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
-    }
-
-    [Fact]
-    public void ExternalValidationAnchorVerification_IsPartOfAllAndReleaseReadyScripts()
-    {
-        var repoRoot = FindRepositoryRoot();
-
-        var allScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        var releaseScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "assert-iso52016-matrix-release-ready.ps1");
-
-        Assert.True(File.Exists(allScriptPath), $"All verification script was not found: {allScriptPath}");
-        Assert.True(File.Exists(releaseScriptPath), $"Release-ready script was not found: {releaseScriptPath}");
-
-        var allScript = File.ReadAllText(allScriptPath);
-        var releaseScript = File.ReadAllText(releaseScriptPath);
-
-        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", allScript);
-        Assert.Contains("SkipExternalValidationAnchors", allScript);
-        Assert.Contains("Iso52016MatrixExternalValidationAnchor", allScript);
-
-        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", releaseScript);
-        Assert.Contains("Iso52016MatrixExternalValidationAnchorsManifest.json", releaseScript);
-        Assert.Contains("Iso52016MatrixExternalValidationAnchorTests.cs", releaseScript);
-    }
-
-    public static IEnumerable<object[]> ExternalValidationAnchorFixtureFiles()
-    {
-        var anchorDirectory = Path.Combine(
-            FindRepositoryRoot(),
-            "tests",
-            "AssistantEngineer.Tests",
-            "Calculations",
-            "Iso52016",
-            "Matrix",
-            "ExternalValidationAnchors");
-
-        Assert.True(
-            Directory.Exists(anchorDirectory),
-            $"ISO52016 Matrix external validation anchor directory was not found: {anchorDirectory}");
-
-        return Directory
-            .GetFiles(anchorDirectory, "*.json")
-            .Order(StringComparer.OrdinalIgnoreCase)
-            .Select(file => new object[] { file });
-    }
-
-    private void AssertSingleHourFixture(
-        ExternalValidationAnchorFixture fixture)
-    {
-        var manual = CalculateSingleHourManualExpectation(fixture);
+        Assert.Equal("ManualEngineeringValidationAnchor", fixture.SourceType);
+        Assert.Equal("IndependentManualEngineeringFormula", fixture.AuthoritativeReference);
+        Assert.Equal("Validation anchor only; not full parity.", fixture.ValidationClaim);
+        Assert.DoesNotContain("authoritative pyBuildingEnergy", fixture.MethodologicalBackground, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("authoritative EnergyPlus", fixture.MethodologicalBackground, StringComparison.OrdinalIgnoreCase);
 
         AssertClose(fixture.Expected.HeatingLoadW, manual.HeatingLoadW);
         AssertClose(fixture.Expected.CoolingLoadW, manual.CoolingLoadW);
         AssertClose(fixture.Expected.HeatingEnergyKWh, manual.HeatingEnergyKWh);
         AssertClose(fixture.Expected.CoolingEnergyKWh, manual.CoolingEnergyKWh);
 
-        var result = _solver.Solve(
-            CreateSingleHourRequest(fixture));
+        var result = _solver.Solve(CreateRequest(fixture));
 
         Assert.True(result.IsSuccess, result.Error);
 
@@ -198,37 +51,115 @@ public class Iso52016MatrixExternalValidationAnchorTests
         AssertClose(manual.CoolingLoadW, profile.PeakCoolingLoadW);
     }
 
-    private void AssertAnnual8760Fixture(
-        ExternalValidationAnchorFixture fixture)
+    [Fact]
+    public void ExternalValidationAnchorFixtureSet_CoversFirstManualAnchorsOnly()
     {
-        var manual = CalculateAnnualManualExpectation(fixture);
+        var anchors = ManualAnchorFixtureFiles()
+            .Select(data => LoadFixture((string)data[0]).AnchorId)
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
 
-        Assert.Equal(fixture.Expected.HourCount, manual.HourCount);
-        Assert.Equal(fixture.HourCount.GetValueOrDefault(), manual.HourCount);
-        AssertClose(fixture.Expected.AnnualHeatingEnergyKWh, manual.HeatingEnergyKWh);
-        AssertClose(fixture.Expected.AnnualCoolingEnergyKWh, manual.CoolingEnergyKWh);
-        AssertClose(fixture.Expected.PeakHeatingLoadW, manual.PeakHeatingLoadW);
-        AssertClose(fixture.Expected.PeakCoolingLoadW, manual.PeakCoolingLoadW);
-
-        var result = _solver.Solve(
-            CreateAnnualRequest(fixture));
-
-        Assert.True(result.IsSuccess, result.Error);
-
-        var profile = result.Value;
-
-        Assert.Equal(fixture.ScenarioName, profile.ZoneCode);
-        Assert.Equal(fixture.HourCount.GetValueOrDefault(), profile.HourCount);
-        Assert.Equal(12, profile.MonthlySummaries.Count);
-
-        AssertClose(manual.HeatingEnergyKWh, profile.AnnualHeatingEnergyKWh);
-        AssertClose(manual.CoolingEnergyKWh, profile.AnnualCoolingEnergyKWh);
-        AssertClose(manual.PeakHeatingLoadW, profile.PeakHeatingLoadW);
-        AssertClose(manual.PeakCoolingLoadW, profile.PeakCoolingLoadW);
+        Assert.Contains("MANUAL-ISO52016-ANCHOR-001", anchors);
+        Assert.Contains("MANUAL-ISO52016-ANCHOR-002", anchors);
+        Assert.Contains("MANUAL-ISO52016-ANCHOR-003", anchors);
+        Assert.DoesNotContain("MANUAL-ISO52016-ANCHOR-004", anchors);
+        Assert.DoesNotContain("MANUAL-ISO52016-ANNUAL-8760-001", anchors);
     }
 
-    private static Iso52016MatrixHourlySolverRequest CreateSingleHourRequest(
-        ExternalValidationAnchorFixture fixture) =>
+    [Fact]
+    public void ExternalValidationAnchors_DocumentExplicitNonClaimsAndIndependentAuthority()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var docPath = Path.Combine(
+            repoRoot,
+            "docs",
+            "calculations",
+            "Iso52016MatrixExternalValidationAnchors.md");
+        var manifestPath = Path.Combine(
+            repoRoot,
+            "docs",
+            "releases",
+            "Iso52016MatrixExternalValidationAnchorsManifest.json");
+
+        Assert.True(File.Exists(docPath), $"Anchor documentation was not found: {docPath}");
+        Assert.True(File.Exists(manifestPath), $"Anchor manifest was not found: {manifestPath}");
+
+        var doc = File.ReadAllText(docPath);
+        var manifest = File.ReadAllText(manifestPath);
+
+        Assert.Contains("validation anchors only", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not full parity", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("pyBuildingEnergy` remains methodological background only", doc);
+        Assert.Contains("Independent manual engineering formulas only", manifest);
+        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", manifest);
+        Assert.Contains("No exact EnergyPlus numerical parity claim.", manifest);
+        Assert.Contains("No full ISO 52016 validation coverage claim.", manifest);
+    }
+
+    [Fact]
+    public void VerificationScripts_IncludeExternalValidationAnchorsInAllAndReleaseReadyGates()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var anchorVerificationScript = Path.Combine(
+            repoRoot,
+            "scripts",
+            "iso52016",
+            "verify-iso52016-matrix-external-validation-anchors.ps1");
+        var allVerificationScript = Path.Combine(
+            repoRoot,
+            "scripts",
+            "iso52016",
+            "verify-iso52016-matrix-all.ps1");
+        var releaseReadyScript = Path.Combine(
+            repoRoot,
+            "scripts",
+            "iso52016",
+            "assert-iso52016-matrix-release-ready.ps1");
+
+        Assert.True(File.Exists(anchorVerificationScript), $"Anchor verification script was not found: {anchorVerificationScript}");
+
+        var anchorScript = File.ReadAllText(anchorVerificationScript);
+        var allScript = File.ReadAllText(allVerificationScript);
+        var releaseScript = File.ReadAllText(releaseReadyScript);
+
+        Assert.Contains("validation anchors only", anchorScript, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Expected at least 3 ISO52016 Matrix external validation anchor fixtures", anchorScript);
+        Assert.DoesNotContain("Expected at least 10 ISO52016 Matrix external validation anchor fixtures", anchorScript);
+        Assert.DoesNotContain("does not match files on disk", anchorScript);
+        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", allScript);
+        Assert.Contains("SkipExternalValidationAnchors", allScript);
+        Assert.Contains("Iso52016MatrixExternalValidationAnchor", allScript);
+        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", releaseScript);
+        Assert.Contains("Iso52016MatrixExternalValidationAnchorTests.cs", releaseScript);
+    }
+
+    public static IEnumerable<object[]> ManualAnchorFixtureFiles() =>
+        LoadManifestFixturePaths()
+            .Select(file => new object[] { file });
+
+    private static IEnumerable<string> LoadManifestFixturePaths()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var manifestPath = Path.Combine(
+            repoRoot,
+            "docs",
+            "releases",
+            "Iso52016MatrixExternalValidationAnchorsManifest.json");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+
+        return document.RootElement
+            .GetProperty("fixtures")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .Select(item => Path.Combine(item!.Split('/').Prepend(repoRoot).ToArray()))
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
+    private static Iso52016MatrixHourlySolverRequest CreateRequest(
+        ManualAnchorFixture fixture) =>
         new(
             ZoneCode: fixture.ScenarioName,
             Nodes:
@@ -271,80 +202,10 @@ public class Iso52016MatrixExternalValidationAnchorTests
                 DefaultHeatingSetpointC: fixture.HeatingSetpointC,
                 DefaultCoolingSetpointC: fixture.CoolingSetpointC));
 
-    private static Iso52016MatrixHourlySolverRequest CreateAnnualRequest(
-        ExternalValidationAnchorFixture fixture) =>
-        new(
-            ZoneCode: fixture.ScenarioName,
-            Nodes:
-            [
-                new Iso52016MatrixNodeDefinition(
-                    NodeId: "air",
-                    HeatCapacityJPerK: fixture.HeatCapacityJPerK,
-                    InitialTemperatureC: fixture.InitialAirTemperatureC,
-                    IsAirNode: true)
-            ],
-            InternalConductances: [],
-            BoundaryConductances:
-            [
-                new Iso52016MatrixBoundaryConductance(
-                    NodeId: "air",
-                    BoundaryId: "outdoor",
-                    ConductanceWPerK: fixture.HeatTransferCoefficientWPerK)
-            ],
-            Hours: BuildAnnualHours(fixture),
-            Options: new Iso52016MatrixHourlySolverOptions(
-                TimeStepSeconds: fixture.TimeStepSeconds,
-                AirNodeId: "air",
-                DefaultHeatingSetpointC: fixture.HeatingSetpointC,
-                DefaultCoolingSetpointC: fixture.CoolingSetpointC));
-
-    private static IReadOnlyList<Iso52016MatrixHourlyInputRecord> BuildAnnualHours(
-        ExternalValidationAnchorFixture fixture)
+    private static ManualExpectation CalculateManualExpectation(
+        ManualAnchorFixture fixture)
     {
-        var pattern = fixture.AnnualOutdoorTemperaturePattern ??
-            throw new InvalidOperationException("Annual fixture must include an outdoor temperature pattern.");
-
-        var hours = new List<Iso52016MatrixHourlyInputRecord>(
-            fixture.HourCount ?? 0);
-
-        var hourOfYear = 0;
-
-        for (var monthIndex = 0; monthIndex < pattern.MonthlyOutdoorTemperatureC.Count; monthIndex++)
-        {
-            var month = monthIndex + 1;
-            var outdoorTemperatureC = pattern.MonthlyOutdoorTemperatureC[monthIndex];
-
-            for (var blockHour = 0; blockHour < pattern.HoursPerMonthBlock; blockHour++)
-            {
-                hours.Add(
-                    new Iso52016MatrixHourlyInputRecord(
-                        HourOfYear: hourOfYear,
-                        Month: month,
-                        Day: blockHour / 24 + 1,
-                        Hour: blockHour % 24,
-                        BoundaryTemperaturesC: new Dictionary<string, double>
-                        {
-                            ["outdoor"] = outdoorTemperatureC
-                        },
-                        NodeHeatGainsW: new Dictionary<string, double>
-                        {
-                            ["air"] = fixture.InternalHeatGainW
-                        },
-                        HeatingSetpointC: fixture.HeatingSetpointC,
-                        CoolingSetpointC: fixture.CoolingSetpointC));
-
-                hourOfYear++;
-            }
-        }
-
-        Assert.Equal(fixture.HourCount.GetValueOrDefault(), hours.Count);
-        return hours;
-    }
-
-    private static ManualExpectation CalculateSingleHourManualExpectation(
-        ExternalValidationAnchorFixture fixture)
-    {
-        var secondsToHours = fixture.TimeStepSeconds / 3600.0;
+        var hours = fixture.TimeStepSeconds / 3600.0;
 
         var heatingLoadW = fixture.Mode.Equals(
             "Heating",
@@ -367,84 +228,13 @@ public class Iso52016MatrixExternalValidationAnchorTests
             : 0.0;
 
         return new ManualExpectation(
-            HourCount: 1,
             HeatingLoadW: heatingLoadW,
             CoolingLoadW: coolingLoadW,
-            HeatingEnergyKWh: heatingLoadW * secondsToHours / 1000.0,
-            CoolingEnergyKWh: coolingLoadW * secondsToHours / 1000.0,
-            PeakHeatingLoadW: heatingLoadW,
-            PeakCoolingLoadW: coolingLoadW);
+            HeatingEnergyKWh: heatingLoadW * hours / 1000.0,
+            CoolingEnergyKWh: coolingLoadW * hours / 1000.0);
     }
 
-    private static ManualExpectation CalculateAnnualManualExpectation(
-        ExternalValidationAnchorFixture fixture)
-    {
-        var pattern = fixture.AnnualOutdoorTemperaturePattern ??
-            throw new InvalidOperationException("Annual fixture must include an outdoor temperature pattern.");
-
-        var capacityTermWPerK = fixture.HeatCapacityJPerK / fixture.TimeStepSeconds;
-        var denominator = capacityTermWPerK + fixture.HeatTransferCoefficientWPerK;
-        var secondsToHours = fixture.TimeStepSeconds / 3600.0;
-
-        var previousAirTemperatureC = fixture.InitialAirTemperatureC;
-        var hourCount = 0;
-        var heatingEnergyKWh = 0.0;
-        var coolingEnergyKWh = 0.0;
-        var peakHeatingLoadW = 0.0;
-        var peakCoolingLoadW = 0.0;
-
-        foreach (var outdoorTemperatureC in pattern.MonthlyOutdoorTemperatureC)
-        {
-            for (var blockHour = 0; blockHour < pattern.HoursPerMonthBlock; blockHour++)
-            {
-                var freeFloatingAirTemperatureC =
-                    (capacityTermWPerK * previousAirTemperatureC +
-                     fixture.HeatTransferCoefficientWPerK * outdoorTemperatureC +
-                     fixture.InternalHeatGainW) /
-                    denominator;
-
-                var heatingLoadW = 0.0;
-                var coolingLoadW = 0.0;
-                var airTemperatureAfterHvacC = freeFloatingAirTemperatureC;
-
-                if (freeFloatingAirTemperatureC < fixture.HeatingSetpointC)
-                {
-                    heatingLoadW =
-                        (fixture.HeatingSetpointC - freeFloatingAirTemperatureC) *
-                        denominator;
-
-                    airTemperatureAfterHvacC = fixture.HeatingSetpointC;
-                }
-                else if (freeFloatingAirTemperatureC > fixture.CoolingSetpointC)
-                {
-                    coolingLoadW =
-                        (freeFloatingAirTemperatureC - fixture.CoolingSetpointC) *
-                        denominator;
-
-                    airTemperatureAfterHvacC = fixture.CoolingSetpointC;
-                }
-
-                heatingEnergyKWh += heatingLoadW * secondsToHours / 1000.0;
-                coolingEnergyKWh += coolingLoadW * secondsToHours / 1000.0;
-                peakHeatingLoadW = Math.Max(peakHeatingLoadW, heatingLoadW);
-                peakCoolingLoadW = Math.Max(peakCoolingLoadW, coolingLoadW);
-
-                previousAirTemperatureC = airTemperatureAfterHvacC;
-                hourCount++;
-            }
-        }
-
-        return new ManualExpectation(
-            HourCount: hourCount,
-            HeatingLoadW: 0.0,
-            CoolingLoadW: 0.0,
-            HeatingEnergyKWh: heatingEnergyKWh,
-            CoolingEnergyKWh: coolingEnergyKWh,
-            PeakHeatingLoadW: peakHeatingLoadW,
-            PeakCoolingLoadW: peakCoolingLoadW);
-    }
-
-    private static ExternalValidationAnchorFixture LoadFixture(
+    private static ManualAnchorFixture LoadFixture(
         string fixturePath)
     {
         var options = new JsonSerializerOptions
@@ -452,7 +242,7 @@ public class Iso52016MatrixExternalValidationAnchorTests
             PropertyNameCaseInsensitive = true
         };
 
-        var fixture = JsonSerializer.Deserialize<ExternalValidationAnchorFixture>(
+        var fixture = JsonSerializer.Deserialize<ManualAnchorFixture>(
             File.ReadAllText(fixturePath),
             options);
 
@@ -495,16 +285,16 @@ public class Iso52016MatrixExternalValidationAnchorTests
             "Could not locate AssistantEngineer repository root from test base directory.");
     }
 
-    private sealed record ExternalValidationAnchorFixture(
+    private sealed record ManualAnchorFixture(
         string AnchorId,
         string ScenarioName,
-        string ReferenceFamily,
-        string ReferenceStyle,
-        string ClaimScope,
-        IReadOnlyList<string> ExplicitNonClaims,
         string Description,
-        string Kind,
         string Mode,
+        string ManualFormula,
+        string SourceType,
+        string AuthoritativeReference,
+        string MethodologicalBackground,
+        string ValidationClaim,
         double TimeStepSeconds,
         double HeatCapacityJPerK,
         double InitialAirTemperatureC,
@@ -513,33 +303,18 @@ public class Iso52016MatrixExternalValidationAnchorTests
         double InternalHeatGainW,
         double HeatingSetpointC,
         double CoolingSetpointC,
-        int? HourCount,
-        AnnualOutdoorTemperaturePattern? AnnualOutdoorTemperaturePattern,
-        ExternalValidationAnchorExpected Expected);
+        ManualAnchorExpected Expected);
 
-    private sealed record AnnualOutdoorTemperaturePattern(
-        string Type,
-        int HoursPerMonthBlock,
-        IReadOnlyList<double> MonthlyOutdoorTemperatureC);
-
-    private sealed record ExternalValidationAnchorExpected(
+    private sealed record ManualAnchorExpected(
         double HeatingLoadW,
         double CoolingLoadW,
         double HeatingEnergyKWh,
         double CoolingEnergyKWh,
-        double AirTemperatureAfterHvacC,
-        int HourCount,
-        double AnnualHeatingEnergyKWh,
-        double AnnualCoolingEnergyKWh,
-        double PeakHeatingLoadW,
-        double PeakCoolingLoadW);
+        double AirTemperatureAfterHvacC);
 
     private sealed record ManualExpectation(
-        int HourCount,
         double HeatingLoadW,
         double CoolingLoadW,
         double HeatingEnergyKWh,
-        double CoolingEnergyKWh,
-        double PeakHeatingLoadW,
-        double PeakCoolingLoadW);
+        double CoolingEnergyKWh);
 }

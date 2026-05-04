@@ -1,0 +1,26 @@
+{
+    "anchorId":  "MANUAL-ISO52016-ANCHOR-001",
+    "scenarioName":  "MANUAL-ISO52016-ANCHOR-001 steady heating",
+    "description":  "Independent one-node steady heating anchor. Manual expected heating load is Q = H x deltaT.",
+    "mode":  "Heating",
+    "manualFormula":  "heatingLoadW = H * (heatingSetpointC - outdoorTemperatureC)",
+    "sourceType":  "ManualEngineeringValidationAnchor",
+    "authoritativeReference":  "IndependentManualEngineeringFormula",
+    "methodologicalBackground":  "ISO 52016-style hourly heat balance; pyBuildingEnergy is background only and no pyBuildingEnergy output is used.",
+    "validationClaim":  "Validation anchor only; not full parity.",
+    "timeStepSeconds":  3600.0,
+    "heatCapacityJPerK":  250000.0,
+    "initialAirTemperatureC":  20.0,
+    "outdoorTemperatureC":  0.0,
+    "heatTransferCoefficientWPerK":  100.0,
+    "internalHeatGainW":  0.0,
+    "heatingSetpointC":  20.0,
+    "coolingSetpointC":  40.0,
+    "expected":  {
+                     "heatingLoadW":  2000.0,
+                     "coolingLoadW":  0.0,
+                     "heatingEnergyKWh":  2.0,
+                     "coolingEnergyKWh":  0.0,
+                     "airTemperatureAfterHvacC":  20.0
+                 }
+}

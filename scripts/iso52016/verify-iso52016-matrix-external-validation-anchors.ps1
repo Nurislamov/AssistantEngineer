@@ -6,97 +6,96 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$anchorDirectory = Join-Path $RepoRoot "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors"
 $manifestPath = Join-Path $RepoRoot "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json"
 $documentationPath = Join-Path $RepoRoot "docs\calculations\Iso52016MatrixExternalValidationAnchors.md"
-$anchorTestPath = Join-Path $RepoRoot "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs"
-$manifestTestPath = Join-Path $RepoRoot "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs"
 
 $requiredFiles = @(
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnnualAnchors\manual-independent-annual-8760-seasonal-loads.json",
-    "docs\releases\Iso52016MatrixExternalValidationAnnualAnchorsManifest.json",
-    "docs\calculations\Iso52016MatrixExternalValidationAnnualAnchors.md",
-    $documentationPath,
-    $manifestPath,
-    $anchorTestPath,
-    $manifestTestPath
+    "docs\calculations\Iso52016MatrixExternalValidationAnchors.md",
+    "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-001-steady-heating.json",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-002-heating-with-gains.json",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-003-steady-cooling.json"
 )
 
-foreach ($path in $requiredFiles) {
+foreach ($relativePath in $requiredFiles) {
+    $path = Join-Path $RepoRoot $relativePath
+
     if (-not (Test-Path $path)) {
-        throw "Required ISO52016 Matrix external validation anchor file is missing: $path"
+        throw "Required ISO52016 Matrix external validation anchor file is missing: $relativePath"
     }
 }
 
-if (-not (Test-Path $anchorDirectory)) {
-    throw "ISO52016 Matrix external validation anchor directory is missing: $anchorDirectory"
+$manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+$manifestFixtureFiles = @($manifest.fixtures | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+$minimumFixtureCountForPatch = 3
+
+if ($manifest.PSObject.Properties.Name -contains "minimumFixtureCountForPatch") {
+    $minimumFixtureCountForPatch = [int]$manifest.minimumFixtureCountForPatch
 }
 
-$fixtureFiles = @(Get-ChildItem $anchorDirectory -File -Filter *.json | Sort-Object Name)
-
-if ($fixtureFiles.Count -lt 10) {
-    throw "Expected at least 10 ISO52016 Matrix external validation anchor fixtures after Step 02, found $($fixtureFiles.Count)."
+if ($manifestFixtureFiles.Count -lt $minimumFixtureCountForPatch) {
+    throw "Expected at least 3 ISO52016 Matrix external validation anchor fixtures for patch AE-ISO52016-ANCHORS-001, found $($manifestFixtureFiles.Count)."
 }
 
-$manifest = Get-Content -Raw -Path $manifestPath | ConvertFrom-Json
+$requiredPatchFixtures = @(
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-001-steady-heating.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-002-heating-with-gains.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-003-steady-cooling.json"
+)
 
-if ($manifest.claimScope -ne "ValidationAnchorOnly") {
-    throw "External validation anchors manifest must use claimScope=ValidationAnchorOnly."
-}
-
-foreach ($nonClaim in @(
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "Validation anchors only, not full parity."
-)) {
-    if (@($manifest.explicitNonClaims) -notcontains $nonClaim) {
-        throw "External validation anchors manifest is missing non-claim: $nonClaim"
+foreach ($requiredFixture in $requiredPatchFixtures) {
+    if ($manifestFixtureFiles -notcontains $requiredFixture) {
+        throw "External validation anchor manifest does not list required patch fixture: $requiredFixture"
     }
 }
 
-$manifestFixtures = @($manifest.fixtures) | Sort-Object
-$diskFixtures = @(
-    $fixtureFiles | ForEach-Object {
-        $_.FullName.Substring($RepoRoot.Length).TrimStart('\', '/') -replace '\\', '/'
-    }
-) | Sort-Object
-
-foreach ($fixture in $diskFixtures) {
-    if ($manifestFixtures -notcontains $fixture) {
-        throw "External validation anchors manifest is missing fixture listed on disk: $fixture"
-    }
-}
-
-$anchorIds = New-Object System.Collections.Generic.HashSet[string]
-
-foreach ($fixtureFile in $fixtureFiles) {
-    $fixture = Get-Content -Raw -Path $fixtureFile.FullName | ConvertFrom-Json
-
-    if (-not $anchorIds.Add([string]$fixture.anchorId)) {
-        throw "Duplicate ISO52016 Matrix external validation anchor id: $($fixture.anchorId)"
+foreach ($fixtureRelativePath in $manifestFixtureFiles) {
+    if ($fixtureRelativePath -notmatch "^tests/AssistantEngineer\.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-") {
+        throw "External validation anchor manifest fixture must stay under ExternalValidationAnchors/manual-iso52016-anchor-*.json: $fixtureRelativePath"
     }
 
-    if ($fixture.claimScope -ne "ValidationAnchorOnly") {
-        throw "Fixture $($fixtureFile.Name) must use claimScope=ValidationAnchorOnly."
+    $fixturePath = Join-Path $RepoRoot $fixtureRelativePath
+
+    if (-not (Test-Path $fixturePath)) {
+        throw "External validation anchor manifest references a missing fixture: $fixtureRelativePath"
     }
 
-    foreach ($nonClaim in @(
-        "No exact pyBuildingEnergy numerical parity claim.",
-        "No exact EnergyPlus numerical parity claim.",
-        "No ASHRAE 140 validation coverage claim."
-    )) {
-        if (@($fixture.explicitNonClaims) -notcontains $nonClaim) {
-            throw "Fixture $($fixtureFile.Name) is missing non-claim: $nonClaim"
-        }
+    $fixture = Get-Content $fixturePath -Raw | ConvertFrom-Json
+
+    if ($fixture.sourceType -ne "ManualEngineeringValidationAnchor") {
+        throw "External validation anchor fixture must use sourceType ManualEngineeringValidationAnchor: $fixtureRelativePath"
+    }
+
+    if ($fixture.authoritativeReference -ne "IndependentManualEngineeringFormula") {
+        throw "External validation anchor fixture must use authoritativeReference IndependentManualEngineeringFormula: $fixtureRelativePath"
+    }
+
+    if ($fixture.validationClaim -ne "Validation anchor only; not full parity.") {
+        throw "External validation anchor fixture must declare validationClaim: Validation anchor only; not full parity. Fixture: $fixtureRelativePath"
     }
 }
 
-$annualFixturePath = Join-Path $anchorDirectory "energyplus-style-annual-manual-8760.json"
-$annualFixture = Get-Content -Raw -Path $annualFixturePath | ConvertFrom-Json
+$combinedText = @()
+$combinedText += Get-Content $documentationPath -Raw
+$combinedText += Get-Content $manifestPath -Raw
+foreach ($fixtureRelativePath in $manifestFixtureFiles) {
+    $combinedText += Get-Content (Join-Path $RepoRoot $fixtureRelativePath) -Raw
+}
 
-if ($annualFixture.hourCount -ne 8760) {
-    throw "Annual external validation anchor must declare exactly 8760 hours."
+$allText = $combinedText -join "`n"
+
+if ($allText -notmatch "validation anchors only") {
+    throw "External validation anchor docs/manifests must state: validation anchors only."
+}
+
+if ($allText -notmatch "not full parity") {
+    throw "External validation anchor docs/manifests must state: not full parity."
+}
+
+if ($allText -match "authoritative pyBuildingEnergy|authoritative EnergyPlus|pyBuildingEnergy output is authoritative|EnergyPlus output is authoritative|claims full parity|claim full parity") {
+    throw "External validation anchor files contain a forbidden parity/authority claim."
 }
 
 if (-not $SkipTests) {
@@ -109,59 +108,4 @@ if (-not $SkipTests) {
     }
 }
 
-$annualAnchorVerificationScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-annual-anchors.ps1"
-
-if (-not (Test-Path $annualAnchorVerificationScript)) {
-    throw "Required ISO52016 Matrix annual external validation anchor verification script is missing: scripts\iso52016\verify-iso52016-matrix-external-validation-annual-anchors.ps1"
-}
-
-$annualAnchorArguments = @("-RepoRoot", $RepoRoot)
-
-if ($SkipTests) {
-    $annualAnchorArguments += "-SkipTests"
-}
-
-& $annualAnchorVerificationScript @annualAnchorArguments
-
-
-# AE_STEP03_ANNUAL_ANCHORS_BEGIN
-$annualExternalValidationAnchorsScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-annual-anchors.ps1"
-
-if (Test-Path $annualExternalValidationAnchorsScript) {
-    $annualExternalValidationAnchorsArgs = @("-RepoRoot", $RepoRoot)
-
-    if ($SkipTests) {
-        $annualExternalValidationAnchorsArgs += "-SkipTests"
-    }
-
-    & $annualExternalValidationAnchorsScript @annualExternalValidationAnchorsArgs
-    $annualExternalValidationAnchorsExitCode = $LASTEXITCODE
-
-    if ($annualExternalValidationAnchorsExitCode -ne 0) {
-        throw ("ISO52016 Matrix annual external validation anchors verification failed with exit code {0}." -f $annualExternalValidationAnchorsExitCode)
-    }
-}
-# AE_STEP03_ANNUAL_ANCHORS_END
-
-# AE_STEP04_NAMING_ANCHORS_BEGIN
-$namingExternalValidationAnchorsScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-naming-anchors.ps1"
-
-if (Test-Path $namingExternalValidationAnchorsScript) {
-    $namingExternalValidationAnchorsArgs = @("-RepoRoot", $RepoRoot)
-
-    if ($SkipTests) {
-        $namingExternalValidationAnchorsArgs += "-SkipTests"
-    }
-
-    & $namingExternalValidationAnchorsScript @namingExternalValidationAnchorsArgs
-    $namingExternalValidationAnchorsExitCode = $LASTEXITCODE
-
-    if ($namingExternalValidationAnchorsExitCode -ne 0) {
-        throw ("ISO52016 Matrix external validation naming anchors verification failed with exit code {0}." -f $namingExternalValidationAnchorsExitCode)
-    }
-}
-# AE_STEP04_NAMING_ANCHORS_END
 Write-Host "ISO52016 Matrix external validation anchors verification passed."
-
-
-

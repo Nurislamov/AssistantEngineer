@@ -1,78 +1,47 @@
 # ISO 52016 Matrix external validation anchors
 
-This document tracks the first external-validation-anchor layer for the ISO 52016 Matrix solver.
+This stage adds independent manual engineering validation anchors for the ISO 52016 Matrix-only hourly solver.
 
-## Scope
+Status: validation anchors only, not full parity.
 
-These cases are **validation anchors only**. They are intentionally small, independent, and manually auditable.
+## Scope for patch 2.1.1
+
+This patch creates the Stage 2.1 anchor structure and the first three single-hour manual fixtures:
+
+| Anchor | Manual expectation | Status |
+| --- | --- | --- |
+| `MANUAL-ISO52016-ANCHOR-001` | `Q_heat = H x (T_heat,set - T_out)` | Added |
+| `MANUAL-ISO52016-ANCHOR-002` | `Q_heat = H x (T_heat,set - T_out) - gains` | Added |
+| `MANUAL-ISO52016-ANCHOR-003` | `Q_cool = H x (T_out - T_cool,set) + gains` | Added |
+
+Each fixture uses one air node, one outdoor boundary and one hourly record. The air node initial temperature is set to the target setpoint so that the transient heat-capacity term cancels and the expected HVAC load is the independent steady engineering formula above.
+
+## Explicit non-claims
+
+These fixtures are validation anchors only.
 
 They do not claim:
 
+- full ISO 52016 validation coverage;
 - exact pyBuildingEnergy numerical parity;
 - exact EnergyPlus numerical parity;
-- ASHRAE 140 validation coverage;
-- full external engine parity.
+- ASHRAE 140 coverage;
+- annual/weather-file parity.
 
-## Fixture families
+`pyBuildingEnergy` remains methodological background only. Its outputs are not used as authoritative references for these anchors.
 
-| Fixture | Reference style | Claim scope | Purpose |
-| --- | --- | --- | --- |
-| `manual-independent-steady-heating.json` | Manual | ValidationAnchorOnly | One-hour heating anchor without gains. |
-| `manual-independent-steady-heating-with-gains.json` | Manual | ValidationAnchorOnly | One-hour heating anchor with sensible gains offsetting load. |
-| `manual-independent-steady-cooling.json` | Manual | ValidationAnchorOnly | One-hour cooling anchor without gains. |
-| `pbe-style-manual-steady-heating.json` | pyBuildingEnergy-style naming only | ValidationAnchorOnly | Naming convention anchor; numeric reference remains independent manual formula. |
-| `energyplus-style-annual-manual-8760.json` | EnergyPlus-style naming only | ValidationAnchorOnly | Compact annual 8760 anchor generated from twelve manual outdoor-temperature blocks. |
+## Next anchors not included in this patch
 
-## Manual formulas
+The following are intentionally left for follow-up patch scripts:
 
-Single-hour steady heating anchor:
-
-```text
-heatingLoadW = max(0, H * (T_heat_setpoint - T_outdoor) - gains)
-```
-
-Single-hour steady cooling anchor:
-
-```text
-coolingLoadW = max(0, H * (T_outdoor - T_cool_setpoint) + gains)
-```
-
-Annual 8760 anchor:
-
-```text
-T_free = ((C / dt) * T_previous + H * T_outdoor + gains) / ((C / dt) + H)
-```
-
-The annual anchor then applies the same heating/cooling setpoint control as the Matrix solver and compares annual energy, peak loads, and hour count.
+- `MANUAL-ISO52016-ANCHOR-004` free-floating no-HVAC temperature response;
+- `MANUAL-ISO52016-ANNUAL-8760-001` annual constant-weather reference;
+- final Stage 2.1 merge/release summary.
 
 ## Verification
-
-Run:
 
 ```powershell
 .\scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1
 ```
 
-This script checks the fixture set, manifest, documentation, guard tests, and the Matrix solver results for the first anchor batch.
-
-## Explicit non-claims
-
-- No exact pyBuildingEnergy numerical parity claim.
-- No exact EnergyPlus numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full annual dynamic simulation parity claim.
-- Validation anchors only, not full parity.
-
-## Step 02 expanded independent anchor set
-
-The anchor set now includes at least 10 source-controlled JSON fixtures:
-
-- independent steady heating/cooling anchors;
-- a neutral deadband anchor;
-- a zero-load heating/gains balance anchor;
-- a cooling-from-gains-only anchor;
-- pyBuildingEnergy-style naming anchors;
-- EnergyPlus-style naming anchors;
-- one compact annual 8760 manual reference anchor.
-
-These are still validation anchors only. The added names are compatibility-style naming anchors and do not create full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation claims.
+This command checks the fixture/docs/manifest structure and runs the C# guard tests for the manual anchors.
