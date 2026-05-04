@@ -66,6 +66,12 @@ if (-not $SkipIsoVerification) {
     }
 }
 
+
+if (-not $SkipIsoVerification) {
+    Invoke-RepoCommand {
+        .\scripts\iso52016\assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1 -SkipGeneratedSummary
+    }
+}
 if (-not $SkipFullTests) {
     Invoke-RepoCommand {
         dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj

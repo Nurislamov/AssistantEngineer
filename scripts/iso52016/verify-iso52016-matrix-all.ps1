@@ -133,6 +133,20 @@ if ($SkipTests) {
 Invoke-RepoScript `
     -RelativePath "scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1" `
     -Arguments $engineeringEdgeCaseArgs
+
+$skipEngineeringEdgeCasesValue = Get-Variable -Name SkipEngineeringEdgeCases -ValueOnly -ErrorAction SilentlyContinue
+
+if (-not $skipEngineeringEdgeCasesValue) {
+    $args = @()
+
+    if ($SkipTests) {
+        $args += "-SkipTests"
+    }
+
+    Invoke-RepoScript `
+        -RelativePath "scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1" `
+        -Arguments $args
+}
 if (-not $SkipSummaryExporter) {
     Invoke-RepoScript `
         -RelativePath "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1"

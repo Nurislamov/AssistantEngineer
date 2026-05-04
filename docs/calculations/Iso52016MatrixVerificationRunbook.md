@@ -94,3 +94,14 @@ No pyBuildingEnergy parity claim.
 No EnergyPlus parity claim.
 No ASHRAE 140 validation coverage claim.
 No full ISO 52016 parity claim.
+
+## Engineering edge-case hardening stage
+
+`powershell
+.\scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1
+.\scripts\iso52016\assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1
+`
+
+Engineering edge-case hardening only.
+
+Validation anchors only, not full parity.

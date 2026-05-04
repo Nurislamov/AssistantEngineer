@@ -26,3 +26,4 @@ artifacts/iso52016/external-validation-anchors/
 
 # Generated ISO52016 Matrix engineering edge-case artifacts
 artifacts/iso52016/matrix-engineering-edge-cases/
+artifacts/iso52016/engineering-edge-cases/
