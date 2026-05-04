@@ -4,119 +4,199 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 
 public class Iso52016MatrixExternalValidationAnchorManifestTests
 {
-    [Fact]
-    public void ExternalValidationAnchorManifest_ListsPatchScopeFixturesAndTheyExist()
-    {
-        var repoRoot = FindRepositoryRoot();
-        var manifestPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "releases",
-            "Iso52016MatrixExternalValidationAnchorsManifest.json");
+    private static readonly string[] RequiredAnchorIds =
+    [
+        "MANUAL-ISO52016-ANCHOR-001",
+        "MANUAL-ISO52016-ANCHOR-002",
+        "MANUAL-ISO52016-ANCHOR-003",
+        "MANUAL-ISO52016-ANCHOR-004",
+        "MANUAL-ISO52016-ANNUAL-8760-001"
+    ];
 
-        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+    [Fact]
+    public void ExternalValidationAnchorManifest_ListsEveryRequiredAnchorAndFixture()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(ManifestPath));
         var root = document.RootElement;
 
-        Assert.Equal("InProgress", root.GetProperty("status").GetString());
-        Assert.Equal("AE-ISO52016-ANCHORS-001", root.GetProperty("patchId").GetString());
-        Assert.True(root.GetProperty("plannedFinalFixtureCountIsNotRequiredInThisPatch").GetBoolean());
+        Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS", root.GetProperty("stageId").GetString());
+        Assert.Equal("ValidationAnchorsOnly", root.GetProperty("status").GetString());
+        Assert.True(root.GetProperty("stageComplete").GetBoolean());
 
-        var manifestFixtures = root
+        var requiredAnchorIds = root
+            .GetProperty("requiredAnchorIds")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .ToArray();
+
+        var fixtures = root
             .GetProperty("fixtures")
             .EnumerateArray()
             .Select(item => item.GetString())
-            .Where(item => item is not null)
-            .Cast<string>()
-            .Order(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        Assert.Equal(3, root.GetProperty("minimumFixtureCountForPatch").GetInt32());
-        Assert.Equal(10, root.GetProperty("plannedFinalFixtureCount").GetInt32());
-        Assert.True(manifestFixtures.Length >= root.GetProperty("minimumFixtureCountForPatch").GetInt32());
+        Assert.Equal(RequiredAnchorIds.Length, root.GetProperty("fixtureCount").GetInt32());
+        Assert.Equal(RequiredAnchorIds.Length, fixtures.Length);
 
-        foreach (var fixtureRelativePath in manifestFixtures)
+        foreach (var requiredAnchorId in RequiredAnchorIds)
         {
-            Assert.StartsWith(
-                "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-",
-                fixtureRelativePath,
-                StringComparison.OrdinalIgnoreCase);
-
-            Assert.True(
-                File.Exists(Path.Combine(fixtureRelativePath.Split('/').Prepend(repoRoot).ToArray())),
-                $"Manifest references missing anchor fixture: {fixtureRelativePath}");
+            Assert.Contains(requiredAnchorId, requiredAnchorIds);
         }
     }
 
     [Fact]
-    public void ExternalValidationAnchorFixtures_HaveUniqueIdsAndValidationAnchorOnlyScope()
+    public void ExternalValidationAnchorManifest_FixtureFilesExistAndUseIndependentManualScope()
     {
-        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var files = ManifestFixtureFiles().ToArray();
+        using var document = JsonDocument.Parse(File.ReadAllText(ManifestPath));
+        var fixtures = document.RootElement
+            .GetProperty("fixtures")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .ToArray();
 
-        Assert.True(files.Length >= 3, $"Expected at least 3 patch-scope manual anchor fixtures, found {files.Length}.");
+        var anchorIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var file in files)
+        foreach (var relativePath in fixtures)
         {
-            using var document = JsonDocument.Parse(File.ReadAllText(file));
-            var root = document.RootElement;
+            var fixturePath = Path.Combine(relativePath!.Split('/').Prepend(RepoRoot).ToArray());
 
-            var anchorId = root.GetProperty("anchorId").GetString();
-            Assert.False(string.IsNullOrWhiteSpace(anchorId));
-            Assert.True(ids.Add(anchorId), $"Duplicate external validation anchor id: {anchorId}");
+            Assert.True(File.Exists(fixturePath), $"External validation anchor fixture was not found: {fixturePath}");
 
-            Assert.Equal("ManualEngineeringValidationAnchor", root.GetProperty("sourceType").GetString());
-            Assert.Equal("IndependentManualEngineeringFormula", root.GetProperty("authoritativeReference").GetString());
-            Assert.Equal("Validation anchor only; not full parity.", root.GetProperty("validationClaim").GetString());
+            using var fixtureDocument = JsonDocument.Parse(File.ReadAllText(fixturePath));
+            var fixture = fixtureDocument.RootElement;
 
-            var serializedFixture = root.GetRawText();
-            Assert.DoesNotContain("pyBuildingEnergy output is authoritative", serializedFixture, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("EnergyPlus output is authoritative", serializedFixture, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("claims full parity", serializedFixture, StringComparison.OrdinalIgnoreCase);
+            Assert.True(anchorIds.Add(fixture.GetProperty("anchorId").GetString()!));
+            Assert.Equal("ManualEngineeringValidationAnchor", fixture.GetProperty("sourceType").GetString());
+            Assert.Equal("IndependentManualEngineeringFormula", fixture.GetProperty("authoritativeReference").GetString());
+            Assert.Equal("ValidationAnchorsOnly", fixture.GetProperty("scope").GetString());
+
+            var nonClaims = fixture
+                .GetProperty("explicitNonClaims")
+                .EnumerateArray()
+                .Select(item => item.GetString())
+                .ToArray();
+
+            Assert.Contains("No pyBuildingEnergy parity claim.", nonClaims);
+            Assert.Contains("No EnergyPlus parity claim.", nonClaims);
+            Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
+            Assert.Contains("No full ISO 52016 parity claim.", nonClaims);
+        }
+
+        foreach (var requiredAnchorId in RequiredAnchorIds)
+        {
+            Assert.Contains(requiredAnchorId, anchorIds);
         }
     }
 
     [Fact]
-    public void ExternalValidationAnchorVerificationScript_GuardsManifestCompletenessAndPatchFixtureCount()
+    public void Annual8760Fixture_IsExplicitConstantWeatherAnnualReference()
     {
-        var repoRoot = FindRepositoryRoot();
+        using var document = JsonDocument.Parse(File.ReadAllText(ManifestPath));
+        var annualFixturePath = document.RootElement
+            .GetProperty("fixtures")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .Single(path => path is not null && path.Contains("annual-8760", StringComparison.OrdinalIgnoreCase));
+
+        var fixturePath = Path.Combine(annualFixturePath!.Split('/').Prepend(RepoRoot).ToArray());
+        using var fixtureDocument = JsonDocument.Parse(File.ReadAllText(fixturePath));
+        var fixture = fixtureDocument.RootElement;
+
+        Assert.Equal("MANUAL-ISO52016-ANNUAL-8760-001", fixture.GetProperty("anchorId").GetString());
+        Assert.Equal(8760, fixture.GetProperty("hourCount").GetInt32());
+        Assert.Equal("AnnualConstantHeating", fixture.GetProperty("mode").GetString());
+
+        var expected = fixture.GetProperty("expected");
+
+        Assert.Equal(275.0, expected.GetProperty("heatingLoadW").GetDouble());
+        Assert.Equal(2409.0, expected.GetProperty("annualHeatingEnergyKWh").GetDouble());
+    }
+
+    [Fact]
+    public void ExternalValidationAnchorDocumentation_StatesNonClaimsAndSourcePolicy()
+    {
+        var docPath = Path.Combine(
+            RepoRoot,
+            "docs",
+            "calculations",
+            "Iso52016MatrixExternalValidationAnchors.md");
+
+        Assert.True(File.Exists(docPath), $"External validation anchors doc was not found: {docPath}");
+
+        var doc = File.ReadAllText(docPath);
+
+        Assert.Contains("validation anchors only, not full parity", doc);
+        Assert.Contains("IndependentManualEngineeringFormula", doc);
+        Assert.Contains("No pyBuildingEnergy parity claim.", doc);
+        Assert.Contains("No EnergyPlus parity claim.", doc);
+        Assert.Contains("No ASHRAE 140 validation coverage claim.", doc);
+        Assert.Contains("No full ISO 52016 parity claim.", doc);
+        Assert.Contains("MANUAL-ISO52016-ANNUAL-8760-001", doc);
+    }
+
+    [Fact]
+    public void ExternalValidationAnchorVerificationScript_GuardsManifestCompletenessAndNonClaims()
+    {
         var scriptPath = Path.Combine(
-            repoRoot,
+            RepoRoot,
             "scripts",
             "iso52016",
             "verify-iso52016-matrix-external-validation-anchors.ps1");
 
+        Assert.True(File.Exists(scriptPath), $"External validation anchors verification script was not found: {scriptPath}");
+
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("Iso52016MatrixExternalValidationAnchorsManifest.json", script);
-        Assert.Contains("$manifestFixtureFiles", script);
-        Assert.Contains("Expected at least 3 ISO52016 Matrix external validation anchor fixtures", script);
-        Assert.DoesNotContain("Expected at least 10 ISO52016 Matrix external validation anchor fixtures", script);
-        Assert.DoesNotContain("does not match files on disk", script);
+        foreach (var requiredAnchorId in RequiredAnchorIds)
+        {
+            Assert.Contains(requiredAnchorId, script);
+        }
+
         Assert.Contains("ManualEngineeringValidationAnchor", script);
         Assert.Contains("IndependentManualEngineeringFormula", script);
-        Assert.Contains("Validation anchor only; not full parity.", script);
+        Assert.Contains("ValidationAnchorsOnly", script);
+        Assert.Contains("No pyBuildingEnergy parity claim.", script);
+        Assert.Contains("No EnergyPlus parity claim.", script);
+        Assert.Contains("hourCount 8760", script);
     }
 
-    private static IEnumerable<string> ManifestFixtureFiles()
+    [Fact]
+    public void AllVerificationAndReleaseReadyScripts_ReferenceExternalValidationAnchorGate()
     {
-        var repoRoot = FindRepositoryRoot();
-        var manifestPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "releases",
-            "Iso52016MatrixExternalValidationAnchorsManifest.json");
+        var allVerificationScriptPath = Path.Combine(
+            RepoRoot,
+            "scripts",
+            "iso52016",
+            "verify-iso52016-matrix-all.ps1");
 
-        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var releaseReadyScriptPath = Path.Combine(
+            RepoRoot,
+            "scripts",
+            "iso52016",
+            "assert-iso52016-matrix-release-ready.ps1");
 
-        return document.RootElement
-            .GetProperty("fixtures")
-            .EnumerateArray()
-            .Select(item => item.GetString())
-            .Where(item => !string.IsNullOrWhiteSpace(item))
-            .Select(item => Path.Combine(item!.Split('/').Prepend(repoRoot).ToArray()))
-            .Order(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+        Assert.True(File.Exists(allVerificationScriptPath), $"All verification script was not found: {allVerificationScriptPath}");
+        Assert.True(File.Exists(releaseReadyScriptPath), $"Release-ready script was not found: {releaseReadyScriptPath}");
+
+        var allVerificationScript = File.ReadAllText(allVerificationScriptPath);
+        var releaseReadyScript = File.ReadAllText(releaseReadyScriptPath);
+
+        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", allVerificationScript);
+        Assert.Contains("SkipExternalValidationAnchors", allVerificationScript);
+        Assert.Contains("Iso52016MatrixExternalValidationAnchor", allVerificationScript);
+
+        Assert.Contains("verify-iso52016-matrix-external-validation-anchors.ps1", releaseReadyScript);
+        Assert.Contains("Iso52016MatrixExternalValidationAnchorsManifest.json", releaseReadyScript);
     }
+
+    private static string RepoRoot => FindRepositoryRoot();
+
+    private static string ManifestPath => Path.Combine(
+        RepoRoot,
+        "docs",
+        "releases",
+        "Iso52016MatrixExternalValidationAnchorsManifest.json");
 
     private static string FindRepositoryRoot()
     {

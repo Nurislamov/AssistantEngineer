@@ -1,26 +1,41 @@
 {
-    "anchorId":  "MANUAL-ISO52016-ANCHOR-002",
-    "scenarioName":  "MANUAL-ISO52016-ANCHOR-002 heating with gains",
-    "description":  "Independent one-node heating anchor where internal gains reduce the manual heating load.",
-    "mode":  "Heating",
-    "manualFormula":  "heatingLoadW = H * (heatingSetpointC - outdoorTemperatureC) - internalHeatGainW",
-    "sourceType":  "ManualEngineeringValidationAnchor",
-    "authoritativeReference":  "IndependentManualEngineeringFormula",
-    "methodologicalBackground":  "ISO 52016-style hourly heat balance; pyBuildingEnergy is background only and no pyBuildingEnergy output is used.",
-    "validationClaim":  "Validation anchor only; not full parity.",
-    "timeStepSeconds":  3600.0,
-    "heatCapacityJPerK":  250000.0,
-    "initialAirTemperatureC":  20.0,
-    "outdoorTemperatureC":  0.0,
-    "heatTransferCoefficientWPerK":  100.0,
-    "internalHeatGainW":  500.0,
-    "heatingSetpointC":  20.0,
-    "coolingSetpointC":  40.0,
-    "expected":  {
-                     "heatingLoadW":  1500.0,
-                     "coolingLoadW":  0.0,
-                     "heatingEnergyKWh":  1.5,
-                     "coolingEnergyKWh":  0.0,
-                     "airTemperatureAfterHvacC":  20.0
-                 }
+  "anchorId": "MANUAL-ISO52016-ANCHOR-002",
+  "scenarioName": "manual-iso52016-anchor-002-heating-with-gains",
+  "displayName": "Heating with gains manual anchor",
+  "description": "One-zone, one-air-node steady heating anchor with internal gains. Previous air temperature equals the heating setpoint, so the controlled load is Q = H * (T_heat_setpoint - T_outdoor) - gains.",
+  "sourceType": "ManualEngineeringValidationAnchor",
+  "authoritativeReference": "IndependentManualEngineeringFormula",
+  "scope": "ValidationAnchorsOnly",
+  "methodologyBackgroundOnly": [
+    "ISO 52016 matrix heat balance structure",
+    "pyBuildingEnergy-style naming only; no output parity claim",
+    "EnergyPlus-style naming only; no output parity claim"
+  ],
+  "explicitNonClaims": [
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim."
+  ],
+  "mode": "SteadyHeating",
+  "formula": "Q_heat = H * (T_heat_setpoint - T_outdoor) - gains",
+  "timeStepSeconds": 3600.0,
+  "hourCount": 1,
+  "heatCapacityJPerK": 360000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 0.0,
+  "heatTransferCoefficientWPerK": 50.0,
+  "internalHeatGainW": 300.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 700.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.7,
+    "coolingEnergyKWh": 0.0,
+    "annualHeatingEnergyKWh": 0.7,
+    "annualCoolingEnergyKWh": 0.0,
+    "airTemperatureBeforeHvacC": 15.333333333333334,
+    "airTemperatureAfterHvacC": 20.0
+  }
 }

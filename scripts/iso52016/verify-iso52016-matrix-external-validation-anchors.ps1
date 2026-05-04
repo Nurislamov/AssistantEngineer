@@ -7,95 +7,100 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $manifestPath = Join-Path $RepoRoot "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json"
-$documentationPath = Join-Path $RepoRoot "docs\calculations\Iso52016MatrixExternalValidationAnchors.md"
+$anchorDocPath = Join-Path $RepoRoot "docs\calculations\Iso52016MatrixExternalValidationAnchors.md"
 
-$requiredFiles = @(
-    "docs\calculations\Iso52016MatrixExternalValidationAnchors.md",
-    "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-001-steady-heating.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-002-heating-with-gains.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ExternalValidationAnchors\manual-iso52016-anchor-003-steady-cooling.json"
-)
+if (-not (Test-Path $manifestPath)) {
+    throw "Required ISO52016 Matrix external validation anchors manifest is missing: docs/releases/Iso52016MatrixExternalValidationAnchorsManifest.json"
+}
 
-foreach ($relativePath in $requiredFiles) {
-    $path = Join-Path $RepoRoot $relativePath
-
-    if (-not (Test-Path $path)) {
-        throw "Required ISO52016 Matrix external validation anchor file is missing: $relativePath"
-    }
+if (-not (Test-Path $anchorDocPath)) {
+    throw "Required ISO52016 Matrix external validation anchors doc is missing: docs/calculations/Iso52016MatrixExternalValidationAnchors.md"
 }
 
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
-$manifestFixtureFiles = @($manifest.fixtures | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-$minimumFixtureCountForPatch = 3
 
-if ($manifest.PSObject.Properties.Name -contains "minimumFixtureCountForPatch") {
-    $minimumFixtureCountForPatch = [int]$manifest.minimumFixtureCountForPatch
+if ($manifest.status -ne "ValidationAnchorsOnly") {
+    throw "External validation anchors status must be ValidationAnchorsOnly."
 }
 
-if ($manifestFixtureFiles.Count -lt $minimumFixtureCountForPatch) {
-    throw "Expected at least 3 ISO52016 Matrix external validation anchor fixtures for patch AE-ISO52016-ANCHORS-001, found $($manifestFixtureFiles.Count)."
-}
-
-$requiredPatchFixtures = @(
-    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-001-steady-heating.json",
-    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-002-heating-with-gains.json",
-    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-003-steady-cooling.json"
+$requiredAnchorIds = @(
+    "MANUAL-ISO52016-ANCHOR-001",
+    "MANUAL-ISO52016-ANCHOR-002",
+    "MANUAL-ISO52016-ANCHOR-003",
+    "MANUAL-ISO52016-ANCHOR-004",
+    "MANUAL-ISO52016-ANNUAL-8760-001"
 )
 
-foreach ($requiredFixture in $requiredPatchFixtures) {
-    if ($manifestFixtureFiles -notcontains $requiredFixture) {
-        throw "External validation anchor manifest does not list required patch fixture: $requiredFixture"
+foreach ($anchorId in $requiredAnchorIds) {
+    if ($manifest.requiredAnchorIds -notcontains $anchorId) {
+        throw "External validation anchors manifest does not list required anchor id: $anchorId"
     }
 }
 
-foreach ($fixtureRelativePath in $manifestFixtureFiles) {
-    if ($fixtureRelativePath -notmatch "^tests/AssistantEngineer\.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-") {
-        throw "External validation anchor manifest fixture must stay under ExternalValidationAnchors/manual-iso52016-anchor-*.json: $fixtureRelativePath"
+if ($manifest.fixtures.Count -lt $requiredAnchorIds.Count) {
+    throw "External validation anchors manifest must list at least $($requiredAnchorIds.Count) fixtures."
+}
+
+if ($manifest.fixtureCount -ne $manifest.fixtures.Count) {
+    throw "External validation anchors manifest fixtureCount ($($manifest.fixtureCount)) does not match manifest fixture list count ($($manifest.fixtures.Count))."
+}
+
+$fixtureAnchorIds = New-Object System.Collections.Generic.HashSet[string] ([System.StringComparer]::OrdinalIgnoreCase)
+
+foreach ($relativePath in $manifest.fixtures) {
+    $path = Join-Path $RepoRoot ($relativePath -replace '/', [System.IO.Path]::DirectorySeparatorChar)
+
+    if (-not (Test-Path $path)) {
+        throw "External validation anchor fixture is missing: $relativePath"
     }
 
-    $fixturePath = Join-Path $RepoRoot $fixtureRelativePath
-
-    if (-not (Test-Path $fixturePath)) {
-        throw "External validation anchor manifest references a missing fixture: $fixtureRelativePath"
-    }
-
-    $fixture = Get-Content $fixturePath -Raw | ConvertFrom-Json
+    $fixture = Get-Content $path -Raw | ConvertFrom-Json
 
     if ($fixture.sourceType -ne "ManualEngineeringValidationAnchor") {
-        throw "External validation anchor fixture must use sourceType ManualEngineeringValidationAnchor: $fixtureRelativePath"
+        throw "External validation anchor fixture must use sourceType ManualEngineeringValidationAnchor: $relativePath"
     }
 
     if ($fixture.authoritativeReference -ne "IndependentManualEngineeringFormula") {
-        throw "External validation anchor fixture must use authoritativeReference IndependentManualEngineeringFormula: $fixtureRelativePath"
+        throw "External validation anchor fixture must use authoritativeReference IndependentManualEngineeringFormula: $relativePath"
     }
 
-    if ($fixture.validationClaim -ne "Validation anchor only; not full parity.") {
-        throw "External validation anchor fixture must declare validationClaim: Validation anchor only; not full parity. Fixture: $fixtureRelativePath"
+    if ($fixture.scope -ne "ValidationAnchorsOnly") {
+        throw "External validation anchor fixture scope must be ValidationAnchorsOnly: $relativePath"
+    }
+
+    foreach ($nonClaim in @("No pyBuildingEnergy parity claim.", "No EnergyPlus parity claim.", "No ASHRAE 140 validation coverage claim.", "No full ISO 52016 parity claim.")) {
+        if ($fixture.explicitNonClaims -notcontains $nonClaim) {
+            throw "External validation anchor fixture is missing explicit non-claim '$nonClaim': $relativePath"
+        }
+    }
+
+    if (-not $fixtureAnchorIds.Add([string]$fixture.anchorId)) {
+        throw "External validation anchor id is duplicated: $($fixture.anchorId)"
+    }
+
+    if ($fixture.anchorId -eq "MANUAL-ISO52016-ANNUAL-8760-001" -and $fixture.hourCount -ne 8760) {
+        throw "Annual manual reference fixture must contain hourCount 8760."
     }
 }
 
-$combinedText = @()
-$combinedText += Get-Content $documentationPath -Raw
-$combinedText += Get-Content $manifestPath -Raw
-foreach ($fixtureRelativePath in $manifestFixtureFiles) {
-    $combinedText += Get-Content (Join-Path $RepoRoot $fixtureRelativePath) -Raw
+foreach ($anchorId in $requiredAnchorIds) {
+    if (-not $fixtureAnchorIds.Contains($anchorId)) {
+        throw "External validation anchors fixture set does not contain required anchor id: $anchorId"
+    }
 }
 
-$allText = $combinedText -join "`n"
+$doc = Get-Content $anchorDocPath -Raw
 
-if ($allText -notmatch "validation anchors only") {
-    throw "External validation anchor docs/manifests must state: validation anchors only."
-}
-
-if ($allText -notmatch "not full parity") {
-    throw "External validation anchor docs/manifests must state: not full parity."
-}
-
-if ($allText -match "authoritative pyBuildingEnergy|authoritative EnergyPlus|pyBuildingEnergy output is authoritative|EnergyPlus output is authoritative|claims full parity|claim full parity") {
-    throw "External validation anchor files contain a forbidden parity/authority claim."
+foreach ($requiredPhrase in @(
+    "validation anchors only, not full parity",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "IndependentManualEngineeringFormula",
+    "MANUAL-ISO52016-ANNUAL-8760-001"
+)) {
+    if (-not $doc.Contains($requiredPhrase)) {
+        throw "External validation anchors documentation is missing required phrase: $requiredPhrase"
+    }
 }
 
 if (-not $SkipTests) {

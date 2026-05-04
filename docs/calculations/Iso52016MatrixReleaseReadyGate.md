@@ -12,9 +12,28 @@ The command verifies:
 
 1. Required ISO 52016 Matrix verification scripts and docs exist.
 2. Full ISO 52016 Matrix verification chain passes.
-3. Independent manual external validation anchor gate passes through the Matrix verification chain.
+3. External validation anchors are present and guard-tested.
 4. Full `AssistantEngineer.Tests` test project passes.
 5. Generated Matrix baseline summary artifacts are not tracked by git.
+
+## External validation anchor status
+
+The release gate includes:
+
+```powershell
+.\scripts\iso52016\assert-iso52016-matrix-external-validation-anchors-release-ready.ps1
+```
+
+Status: validation anchors only, not full parity.
+
+Explicit non-claims:
+
+```text
+No pyBuildingEnergy parity claim.
+No EnergyPlus parity claim.
+No ASHRAE 140 validation coverage claim.
+No full ISO 52016 parity claim.
+```
 
 ## Optional strict mode
 
@@ -54,20 +73,3 @@ artifacts/iso52016/matrix-baselines/summary.md
 ```
 
 These files are generated outputs and must not be committed.
-## External validation anchor non-claim
-
-The release-ready gate includes independent manual ISO 52016 Matrix validation anchors. They are validation anchors only and do not claim pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 coverage, or full ISO 52016 validation coverage.
-
-## External validation anchors release-ready coverage
-
-The release-ready gate includes `verify-iso52016-matrix-external-validation-anchors.ps1`.
-
-This confirms the external validation anchor fixture set, docs, manifest, and guard tests are present before the Matrix solver stage is asserted release-ready.
-
-The anchors are validation anchors only and must not be described as full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation coverage.
-
-## External validation anchor manifest completeness
-
-The release-ready path includes the external validation anchor verification script. That script now guards the expanded fixture set, manifest completeness, unique anchor ids, and explicit non-claims.
-
-This must remain a validation-anchor gate only; it must not be described as full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation coverage.
