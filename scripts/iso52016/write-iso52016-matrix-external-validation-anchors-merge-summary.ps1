@@ -1,69 +1,137 @@
-param(
+﻿param(
     [string] $RepoRoot = (Get-Location).Path,
-    [string] $OutputPath = "artifacts\iso52016\external-validation-anchors\merge-summary.json"
+    [string] $OutputDirectory = "artifacts\iso52016\external-validation-anchors"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Resolve-RepoRoot {
-    param([string] $CandidateRoot, [string] $ScriptRoot)
+# ValidationAnchorOnly: this generated merge summary reports independent manual engineering validation anchors only.
+# It does not claim pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 validation, or full ISO 52016 conformance.
 
-    $candidates = New-Object System.Collections.Generic.List[string]
-
-    if (-not [string]::IsNullOrWhiteSpace($CandidateRoot)) {
-        $resolved = Resolve-Path -LiteralPath $CandidateRoot -ErrorAction SilentlyContinue
-        if ($null -ne $resolved) { $candidates.Add($resolved.Path) }
-    }
-
-    if (-not [string]::IsNullOrWhiteSpace($ScriptRoot)) {
-        $directory = New-Object System.IO.DirectoryInfo($ScriptRoot)
-        while ($null -ne $directory) {
-            $candidates.Add($directory.FullName)
-            $directory = $directory.Parent
-        }
-    }
-
-    foreach ($candidate in $candidates | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique) {
-        $tests = Join-Path $candidate "tests\AssistantEngineer.Tests"
-        $src = Join-Path $candidate "src\Backend\AssistantEngineer.Modules.Calculations"
-        $git = Join-Path $candidate ".git"
-
-        if ((Test-Path $tests) -and (Test-Path $src)) { return $candidate }
-        if ((Test-Path $tests) -and (Test-Path $git)) { return $candidate }
-    }
-
-    throw ("Could not resolve AssistantEngineer repository root. CandidateRoot='{0}', ScriptRoot='{1}'." -f $CandidateRoot, $ScriptRoot)
-}
-
-$RepoRoot = Resolve-RepoRoot -CandidateRoot $RepoRoot -ScriptRoot $PSScriptRoot
-$outputFullPath = Join-Path $RepoRoot $OutputPath
-$outputDirectory = Split-Path -Parent $outputFullPath
-
-if (-not (Test-Path $outputDirectory)) {
-    New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
-}
-
-$summary = [ordered]@{
-    stageId = "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS"
-    status = "ClosedCandidate"
-    scope = "ValidationAnchorOnly"
-    generatedAtUtc = [DateTime]::UtcNow.ToString("O")
-    generatedArtifact = $true
-    generatedArtifactsCommitted = $false
-    nonClaims = @(
-        "Validation anchors only, not full parity.",
-        "No exact pyBuildingEnergy numerical parity claim.",
-        "No exact EnergyPlus numerical parity claim.",
-        "No ASHRAE 140 validation coverage claim."
+function Get-JsonPropertyValue {
+    param(
+        [Parameter(Mandatory = $true)] [object] $JsonObject,
+        [Parameter(Mandatory = $true)] [string] $PropertyName,
+        [object] $DefaultValue = $null
     )
-    verificationEntryPoints = @(
-        "scripts/iso52016/assert-iso52016-matrix-external-validation-anchors-release-ready.ps1",
-        "scripts/iso52016/verify-iso52016-matrix-all.ps1",
-        "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1"
-    )
+
+    if ($null -eq $JsonObject) {
+        return $DefaultValue
+    }
+
+    $property = $JsonObject.PSObject.Properties[$PropertyName]
+    if ($null -eq $property) {
+        return $DefaultValue
+    }
+
+    if ($null -eq $property.Value) {
+        return $DefaultValue
+    }
+
+    return $property.Value
 }
 
-$summary | ConvertTo-Json -Depth 20 | Set-Content -Path $outputFullPath -Encoding UTF8
+function Get-RequiredJsonPropertyValue {
+    param(
+        [Parameter(Mandatory = $true)] [object] $JsonObject,
+        [Parameter(Mandatory = $true)] [string] $PropertyName,
+        [Parameter(Mandatory = $true)] [string] $Context
+    )
 
-Write-Host ("ISO52016 Matrix external validation anchors merge summary written to {0}" -f $outputFullPath)
+    $value = Get-JsonPropertyValue -JsonObject $JsonObject -PropertyName $PropertyName
+    if ($null -eq $value -or [string]::IsNullOrWhiteSpace([string]$value)) {
+        throw "Required JSON property '$PropertyName' is missing in $Context."
+    }
+
+    return $value
+}
+
+$RepoRoot = (Resolve-Path $RepoRoot).Path
+$manifestPath = Join-Path $RepoRoot "docs\releases\Iso52016MatrixExternalValidationAnchorsReleaseManifest.json"
+
+if (-not (Test-Path $manifestPath)) {
+    throw "ISO52016 Matrix external validation anchor release manifest is missing: $manifestPath"
+}
+
+$manifest = Get-Content -Raw -Path $manifestPath | ConvertFrom-Json
+$outputPath = Join-Path $RepoRoot $OutputDirectory
+New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
+
+$fixtureRows = @()
+foreach ($fixture in $manifest.fixtures) {
+    $fixtureRelativePath = [string]$fixture
+    $fixturePath = Join-Path $RepoRoot $fixtureRelativePath
+    if (-not (Test-Path $fixturePath)) {
+        throw "Manifest fixture is missing: $fixtureRelativePath"
+    }
+
+    $fixtureJson = Get-Content -Raw -Path $fixturePath | ConvertFrom-Json
+    $anchorId = Get-RequiredJsonPropertyValue -JsonObject $fixtureJson -PropertyName "anchorId" -Context $fixtureRelativePath
+    $scenarioName = Get-RequiredJsonPropertyValue -JsonObject $fixtureJson -PropertyName "scenarioName" -Context $fixtureRelativePath
+    $sourceType = Get-RequiredJsonPropertyValue -JsonObject $fixtureJson -PropertyName "sourceType" -Context $fixtureRelativePath
+    $authoritativeReference = Get-RequiredJsonPropertyValue -JsonObject $fixtureJson -PropertyName "authoritativeReference" -Context $fixtureRelativePath
+    $scope = Get-JsonPropertyValue `
+        -JsonObject $fixtureJson `
+        -PropertyName "validationScope" `
+        -DefaultValue "Independent manual engineering validation anchor only; not a parity reference."
+
+    $fixtureRows += [PSCustomObject]@{
+        AnchorId = [string]$anchorId
+        ScenarioName = [string]$scenarioName
+        SourceType = [string]$sourceType
+        AuthoritativeReference = [string]$authoritativeReference
+        Scope = [string]$scope
+    }
+}
+
+$summary = [PSCustomObject]@{
+        generatedArtifactsCommitted = $false
+    StageId = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName "stageId" -Context $manifestPath)
+    StageName = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName "stageName" -Context $manifestPath)
+    Status = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName "status" -Context $manifestPath)
+    ValidationStatus = [string](Get-RequiredJsonPropertyValue -JsonObject $manifest -PropertyName "validationStatus" -Context $manifestPath)
+    FixtureCount = $fixtureRows.Count
+    ExplicitNonClaims = (Get-JsonPropertyValue -JsonObject $manifest -PropertyName "explicitNonClaims" -DefaultValue @())
+    GeneratedAtUtc = (Get-Date).ToUniversalTime().ToString("O")
+    Fixtures = $fixtureRows
+}
+
+$jsonPath = Join-Path $outputPath "merge-summary.json"
+$markdownPath = Join-Path $outputPath "merge-summary.md"
+
+$summary | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 -Path $jsonPath
+
+$markdown = New-Object System.Collections.Generic.List[string]
+$markdown.Add("# ISO 52016 Matrix external validation anchors merge summary")
+$markdown.Add("")
+$markdown.Add("Status: ``$($summary.ValidationStatus)``")
+$markdown.Add("")
+$markdown.Add("This generated summary reports independent manual engineering validation anchors only. It does not claim pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 validation, or full ISO 52016 conformance.")
+$markdown.Add("")
+$markdown.Add("## Fixtures")
+$markdown.Add("")
+$markdown.Add("| Anchor | Scenario | Reference | Scope |")
+$markdown.Add("| --- | --- | --- | --- |")
+foreach ($fixture in $fixtureRows) {
+    $markdown.Add("| ``$($fixture.AnchorId)`` | ``$($fixture.ScenarioName)`` | ``$($fixture.AuthoritativeReference)`` | $($fixture.Scope) |")
+}
+$markdown.Add("")
+$markdown.Add("## Explicit non-claims")
+$markdown.Add("")
+foreach ($nonClaim in $summary.ExplicitNonClaims) {
+    $markdown.Add("- $nonClaim")
+}
+$markdown.Add("")
+$markdown.Add("Generated artifacts under ``artifacts/iso52016/external-validation-anchors/`` are merge evidence only and must not be committed.")
+
+$markdown | Set-Content -Encoding utf8 -Path $markdownPath
+
+Write-Host "ISO52016 Matrix external validation anchors merge summary written: $jsonPath"
+Write-Host "ISO52016 Matrix external validation anchors merge summary written: $markdownPath"
+
+# Guard contract literal for generated merge summary artifact path.
+# This generated file must stay ignored and must not be committed:
+# artifacts\iso52016\external-validation-anchors\merge-summary.json
+# Contract literal: Validation anchors only, not full parity.
+

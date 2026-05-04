@@ -29,11 +29,17 @@ function Invoke-RepoCommand {
 $requiredFiles = @(
     "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
     "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1",
+    "scripts\iso52016\write-iso52016-matrix-external-validation-anchors-merge-summary.ps1",
     "docs\calculations\Iso52016MatrixExternalValidationAnchors.md",
     "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json",
+    "docs\releases\Iso52016MatrixExternalValidationAnchorsReleaseManifest.json",
+    "docs\releases\Iso52016MatrixExternalValidationAnchorsReleaseNotes.md",
+    "docs\runbooks\Iso52016MatrixExternalValidationAnchorsMergeRunbook.md",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorStageGateTests.cs",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorsReleaseGateTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorsClosureTests.cs",
     "tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj"
 )
 

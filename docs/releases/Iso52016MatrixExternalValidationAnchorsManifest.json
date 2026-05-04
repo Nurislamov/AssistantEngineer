@@ -7,12 +7,6 @@
     "manualAnchorCount":  4,
     "annual8760ReferenceCount":  1,
     "sourcePolicy":  "Independent manual engineering validation anchors only. pyBuildingEnergy and EnergyPlus names may be used as naming style, but their outputs are not authoritative references.",
-    "explicitNonClaims":  [
-                              "No pyBuildingEnergy parity claim.",
-                              "No EnergyPlus parity claim.",
-                              "No ASHRAE 140 validation coverage claim.",
-                              "No full ISO 52016 parity claim."
-                          ],
     "requiredAnchorIds":  [
                               "MANUAL-ISO52016-ANCHOR-001",
                               "MANUAL-ISO52016-ANCHOR-002",
@@ -45,5 +39,16 @@
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorManifestTests.cs",
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorStageGateTests.cs",
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorsReleaseGateTests.cs"
-                   ]
+                   ],
+    "scope":  "ValidationAnchorOnly",
+    "closedByReleaseManifest":  "docs/releases/Iso52016MatrixExternalValidationAnchorsReleaseManifest.json",
+    "explicitNonClaims":  [
+                              "validation anchors only, not full parity",
+                              "No pyBuildingEnergy parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No ExternalParityCovered claim.",
+                              "No FullParityCovered claim."
+                          ]
 }
