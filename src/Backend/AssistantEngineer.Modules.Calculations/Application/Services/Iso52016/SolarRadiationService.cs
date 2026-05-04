@@ -10,6 +10,9 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
 public class SolarRadiationService : ISolarRadiationService
 {
+    private const int CompatibilityFallbackYear = 2026;
+    private const double CompatibilityFallbackLongitudeDegrees = 0.0;
+
     private readonly ISolarPositionCalculator _solarPositionCalculator;
     private readonly ISurfaceIrradianceCalculator _surfaceIrradianceCalculator;
 
@@ -26,23 +29,45 @@ public class SolarRadiationService : ISolarRadiationService
         CardinalDirection orientation,
         double latitude,
         int dayOfYear,
+        int hour) =>
+        CalculateVerticalSurfaceRadiation(
+            hourlyData,
+            orientation,
+            latitude,
+            CompatibilityFallbackLongitudeDegrees,
+            TimeSpan.Zero,
+            CompatibilityFallbackYear,
+            dayOfYear,
+            hour);
+
+    public double CalculateVerticalSurfaceRadiation(
+        AnnualHourlyData hourlyData,
+        CardinalDirection orientation,
+        double latitude,
+        double longitudeDegrees,
+        TimeSpan timeZoneOffset,
+        int year,
+        int dayOfYear,
         int hour)
     {
+        var normalizedYear = Math.Clamp(year, 1, 9999);
+        var dayCount = DateTime.IsLeapYear(normalizedYear) ? 366 : 365;
+
         var timestamp = new DateTimeOffset(
-                year: 2026,
+                year: normalizedYear,
                 month: 1,
                 day: 1,
                 hour: Math.Clamp(hour, 0, 23),
                 minute: 30,
                 second: 0,
-                offset: TimeSpan.Zero)
-            .AddDays(Math.Clamp(dayOfYear, 1, 366) - 1);
+                offset: timeZoneOffset)
+            .AddDays(Math.Clamp(dayOfYear, 1, dayCount) - 1);
 
         var solarPosition = _solarPositionCalculator.Calculate(
             new SolarPositionRequest(
                 Timestamp: timestamp,
                 LatitudeDegrees: latitude,
-                LongitudeDegrees: 0));
+                LongitudeDegrees: longitudeDegrees));
 
         var globalHorizontalIrradiance = CalculateGlobalHorizontalIrradiance(
             hourlyData,

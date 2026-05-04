@@ -346,6 +346,9 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                 weather,
                 window.Orientation,
                 _options.LatitudeDegrees,
+                _options.LongitudeDegrees,
+                TimeSpan.FromHours(_options.TimeZoneOffsetHours),
+                _options.DefaultWeatherYear,
                 dayOfYear,
                 hourOfDay);
 
@@ -677,5 +680,6 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         return envelope;
     }
 }
+
 
 
