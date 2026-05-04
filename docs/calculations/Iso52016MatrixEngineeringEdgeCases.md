@@ -1,0 +1,44 @@
+# ISO 52016 Matrix engineering edge cases
+
+This stage hardens the ISO 52016 Matrix solver with internal engineering edge-case anchors.
+
+## Scope
+
+These fixtures are **engineering hardening anchors**, not external parity fixtures.
+
+They cover:
+
+1. `ENGINEERING-ISO52016-MATRIX-EDGE-001` РІР‚вЂќ two-node free-floating implicit thermal response.
+2. `ENGINEERING-ISO52016-MATRIX-EDGE-002` РІР‚вЂќ adjacent unconditioned boundary heating load.
+3. `ENGINEERING-ISO52016-MATRIX-EDGE-003` РІР‚вЂќ timestep energy scaling for a steady controlled load.
+4. `ENGINEERING-ISO52016-MATRIX-EDGE-004` РІР‚вЂќ internal gain sign conventions.
+5. `ENGINEERING-ISO52016-MATRIX-EDGE-005` РІР‚вЂќ monthly and annual aggregation edge cases.
+
+## Engineering formulas guarded
+
+For steady controlled one-node cases where the air node starts at the active setpoint:
+
+```text
+heatingLoadW = max(0, H * (T_heat_setpoint - T_boundary) - gains)
+coolingLoadW = max(0, H * (T_boundary - T_cool_setpoint) + gains)
+energyKWh = loadW * timeStepSeconds / 3600 / 1000
+```
+
+For the two-node free-floating case, the expected response is calculated independently from the 2x2 implicit Euler system for one air node and one massive node.
+
+## Adjacent/unconditioned boundary policy
+
+The adjacent unconditioned boundary anchor is intentionally represented as a named boundary temperature input. It verifies the solver's conductance and sign behavior for adjacent-zone style boundaries without claiming a complete adjacent-zone model.
+
+## Non-claims
+
+Engineering edge-case hardening only.
+
+Validation anchors only, not full parity.
+
+No pyBuildingEnergy parity claim.
+No EnergyPlus parity claim.
+No ASHRAE 140 validation coverage claim.
+No full ISO 52016 parity claim.
+No adjacent-zone full model parity claim.
+No full annual building simulation parity claim.

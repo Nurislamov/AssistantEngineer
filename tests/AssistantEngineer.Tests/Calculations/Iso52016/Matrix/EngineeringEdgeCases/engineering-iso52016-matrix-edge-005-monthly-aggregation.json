@@ -1,0 +1,79 @@
+{
+  "id": "ENGINEERING-ISO52016-MATRIX-EDGE-005",
+  "title": "Monthly and annual aggregation with controlled steady heating hours",
+  "scope": "EngineeringEdgeCaseHardening",
+  "validationStatus": "InternalEngineeringAnchorOnly",
+  "caseType": "MonthlyAggregation",
+  "description": "Three steady controlled heating hours across two months verify annual sums, monthly sums and monthly peak load aggregation.",
+  "timeStepSeconds": 3600,
+  "airNodeId": "air",
+  "nodes": [
+    {
+      "nodeId": "air",
+      "heatCapacityJPerK": 50000.0,
+      "initialTemperatureC": 20.0,
+      "isAirNode": true
+    }
+  ],
+  "internalConductances": [],
+  "boundaryConductances": [
+    {
+      "nodeId": "air",
+      "boundaryId": "outdoor",
+      "conductanceWPerK": 10.0
+    }
+  ],
+  "hours": [
+    {
+      "hourOfYear": 0,
+      "month": 1,
+      "day": 1,
+      "hour": 0,
+      "boundaryTemperaturesC": {
+        "outdoor": 10.0
+      },
+      "nodeHeatGainsW": {
+        "air": 0.0
+      },
+      "heatingSetpointC": 20.0,
+      "coolingSetpointC": 30.0
+    },
+    {
+      "hourOfYear": 1,
+      "month": 1,
+      "day": 1,
+      "hour": 1,
+      "boundaryTemperaturesC": {
+        "outdoor": 5.0
+      },
+      "nodeHeatGainsW": {
+        "air": 0.0
+      },
+      "heatingSetpointC": 20.0,
+      "coolingSetpointC": 30.0
+    },
+    {
+      "hourOfYear": 744,
+      "month": 2,
+      "day": 1,
+      "hour": 0,
+      "boundaryTemperaturesC": {
+        "outdoor": 0.0
+      },
+      "nodeHeatGainsW": {
+        "air": 0.0
+      },
+      "heatingSetpointC": 20.0,
+      "coolingSetpointC": 30.0
+    }
+  ],
+  "expectedAnnualHeatingEnergyKWh": 0.45,
+  "expectedJanuaryHeatingEnergyKWh": 0.25,
+  "expectedFebruaryHeatingEnergyKWh": 0.20,
+  "expectedJanuaryPeakHeatingLoadW": 150.0,
+  "expectedFebruaryPeakHeatingLoadW": 200.0,
+  "explicitNonClaims": [
+    "Engineering aggregation guard only.",
+    "No full annual building simulation parity claim."
+  ]
+}

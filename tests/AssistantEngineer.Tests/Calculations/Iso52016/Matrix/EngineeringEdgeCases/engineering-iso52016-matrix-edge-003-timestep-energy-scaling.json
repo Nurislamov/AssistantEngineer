@@ -1,0 +1,23 @@
+{
+  "id": "ENGINEERING-ISO52016-MATRIX-EDGE-003",
+  "title": "Timestep energy scaling with steady controlled load",
+  "scope": "EngineeringEdgeCaseHardening",
+  "validationStatus": "InternalEngineeringAnchorOnly",
+  "caseType": "TimeStepEnergyScaling",
+  "description": "With the initial air temperature at the heating setpoint, steady heating load in W is timestep invariant while energy in kWh scales with timestep duration.",
+  "heatTransferCoefficientWPerK": 40.0,
+  "initialAirTemperatureC": 21.0,
+  "outdoorTemperatureC": 5.0,
+  "heatingSetpointC": 21.0,
+  "coolingSetpointC": 30.0,
+  "internalHeatGainW": 0.0,
+  "timeStepSecondsCases": [
+    1800,
+    3600
+  ],
+  "expectedHeatingLoadW": 640.0,
+  "explicitNonClaims": [
+    "Engineering timestep scaling guard only.",
+    "No full annual simulation parity claim."
+  ]
+}

@@ -73,3 +73,25 @@ artifacts/iso52016/matrix-baselines/summary.md
 ```
 
 These files are generated outputs and must not be committed.
+
+## ISO 52016 Matrix engineering edge-case hardening gate
+
+The release-ready gate includes:
+
+```powershell
+.\scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1
+```
+
+This is an internal engineering hardening gate. It does not claim pyBuildingEnergy, EnergyPlus, ASHRAE 140, or full ISO 52016 parity.
+
+## Engineering edge-case hardening release-ready gate
+
+The main Matrix release-ready gate includes:
+
+`powershell
+.\scripts\iso52016\assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1
+`
+
+Engineering edge-case hardening only.
+
+Validation anchors only, not full parity.
