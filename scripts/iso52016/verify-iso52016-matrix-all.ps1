@@ -123,6 +123,16 @@ if (-not $SkipExternalValidationAnchors) {
         -Arguments $args
 }
 
+
+$engineeringEdgeCaseArgs = @()
+
+if ($SkipTests) {
+    $engineeringEdgeCaseArgs += "-SkipTests"
+}
+
+Invoke-RepoScript `
+    -RelativePath "scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1" `
+    -Arguments $engineeringEdgeCaseArgs
 if (-not $SkipSummaryExporter) {
     Invoke-RepoScript `
         -RelativePath "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1"
@@ -131,7 +141,7 @@ if (-not $SkipSummaryExporter) {
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {
-        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture|FullyQualifiedName~Iso52016MatrixExternalValidationAnchor"
+        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture|FullyQualifiedName~Iso52016MatrixExternalValidationAnchor|FullyQualifiedName~Iso52016MatrixEngineeringEdgeCase"
     }
     finally {
         Pop-Location

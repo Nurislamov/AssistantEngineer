@@ -75,3 +75,22 @@ These files are generated outputs and should not be committed.
 ## Non-claim
 
 This verification chain is an internal regression and traceability gate. It does not claim exact pyBuildingEnergy, EnergyPlus, ASHRAE 140, or full ISO 52016 parity.
+
+## Engineering edge-case Matrix hardening anchors
+
+The all-in-one Matrix verification chain includes:
+
+```powershell
+.\scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1
+```
+
+This gate verifies internal engineering hardening anchors for multi-node response, adjacent/unconditioned boundary behavior, timestep energy scaling, sign conventions, and monthly/annual aggregation.
+
+These checks are engineering edge-case hardening only.
+
+Validation anchors only, not full parity.
+
+No pyBuildingEnergy parity claim.
+No EnergyPlus parity claim.
+No ASHRAE 140 validation coverage claim.
+No full ISO 52016 parity claim.

@@ -1,0 +1,62 @@
+{
+  "id": "ENGINEERING-ISO52016-MATRIX-EDGE-001",
+  "title": "Two-node free-floating implicit response",
+  "scope": "EngineeringEdgeCaseHardening",
+  "validationStatus": "InternalEngineeringAnchorOnly",
+  "caseType": "TwoNodeFreeFloatingImplicitEuler",
+  "description": "One air node coupled to one massive node with an outdoor boundary. HVAC is disabled by wide setpoints, so the test checks the independent 2x2 implicit Euler response.",
+  "timeStepSeconds": 3600,
+  "airNodeId": "air",
+  "nodes": [
+    {
+      "nodeId": "air",
+      "heatCapacityJPerK": 10000.0,
+      "initialTemperatureC": 20.0,
+      "isAirNode": true
+    },
+    {
+      "nodeId": "mass",
+      "heatCapacityJPerK": 100000.0,
+      "initialTemperatureC": 20.0,
+      "isAirNode": false
+    }
+  ],
+  "internalConductances": [
+    {
+      "fromNodeId": "air",
+      "toNodeId": "mass",
+      "conductanceWPerK": 20.0
+    }
+  ],
+  "boundaryConductances": [
+    {
+      "nodeId": "air",
+      "boundaryId": "outdoor",
+      "conductanceWPerK": 10.0
+    }
+  ],
+  "hours": [
+    {
+      "hourOfYear": 0,
+      "month": 1,
+      "day": 1,
+      "hour": 0,
+      "boundaryTemperaturesC": {
+        "outdoor": 0.0
+      },
+      "nodeHeatGainsW": {
+        "air": 0.0,
+        "mass": 0.0
+      },
+      "heatingSetpointC": -100.0,
+      "coolingSetpointC": 100.0
+    }
+  ],
+  "explicitNonClaims": [
+    "Engineering edge-case hardening only.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim."
+  ]
+}

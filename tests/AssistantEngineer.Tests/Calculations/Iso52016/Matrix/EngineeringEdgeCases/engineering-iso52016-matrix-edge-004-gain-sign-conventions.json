@@ -1,0 +1,31 @@
+{
+  "id": "ENGINEERING-ISO52016-MATRIX-EDGE-004",
+  "title": "Internal gain sign conventions for heating and cooling",
+  "scope": "EngineeringEdgeCaseHardening",
+  "validationStatus": "InternalEngineeringAnchorOnly",
+  "caseType": "GainSignConvention",
+  "description": "Positive internal gains reduce heating need and increase cooling need when the air node starts at the active setpoint.",
+  "heatTransferCoefficientWPerK": 50.0,
+  "internalHeatGainW": 300.0,
+  "heatingScenario": {
+    "initialAirTemperatureC": 20.0,
+    "outdoorTemperatureC": 0.0,
+    "heatingSetpointC": 20.0,
+    "coolingSetpointC": 40.0,
+    "expectedWithoutGainsW": 1000.0,
+    "expectedWithGainsW": 700.0
+  },
+  "coolingScenario": {
+    "initialAirTemperatureC": 25.0,
+    "outdoorTemperatureC": 35.0,
+    "heatingSetpointC": -20.0,
+    "coolingSetpointC": 25.0,
+    "expectedWithoutGainsW": 500.0,
+    "expectedWithGainsW": 800.0
+  },
+  "explicitNonClaims": [
+    "Engineering sign-convention guard only.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim."
+  ]
+}

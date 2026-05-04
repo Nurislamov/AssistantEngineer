@@ -44,6 +44,10 @@ $requiredFiles = @(
     "tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj"
 )
 
+    "scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1",
+    "docs\calculations\Iso52016MatrixEngineeringEdgeCases.md",
+    "docs\releases\Iso52016MatrixEngineeringEdgeCasesManifest.json",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixEngineeringEdgeCaseTests.cs",
 foreach ($relativePath in $requiredFiles) {
     $path = Join-Path $RepoRoot $relativePath
 

@@ -1,0 +1,48 @@
+{
+  "id": "ENGINEERING-ISO52016-MATRIX-EDGE-002",
+  "title": "Adjacent unconditioned boundary steady heating load",
+  "scope": "EngineeringEdgeCaseHardening",
+  "validationStatus": "InternalEngineeringAnchorOnly",
+  "caseType": "AdjacentUnconditionedBoundaryHeating",
+  "description": "The air node starts at the heating setpoint and is connected to an adjacent unconditioned boundary. The controlled heating load is H x (T_set - T_adjacent).",
+  "timeStepSeconds": 3600,
+  "airNodeId": "air",
+  "nodes": [
+    {
+      "nodeId": "air",
+      "heatCapacityJPerK": 50000.0,
+      "initialTemperatureC": 20.0,
+      "isAirNode": true
+    }
+  ],
+  "internalConductances": [],
+  "boundaryConductances": [
+    {
+      "nodeId": "air",
+      "boundaryId": "adjacent-unconditioned",
+      "conductanceWPerK": 30.0
+    }
+  ],
+  "hours": [
+    {
+      "hourOfYear": 0,
+      "month": 1,
+      "day": 1,
+      "hour": 0,
+      "boundaryTemperaturesC": {
+        "adjacent-unconditioned": 12.0
+      },
+      "nodeHeatGainsW": {
+        "air": 0.0
+      },
+      "heatingSetpointC": 20.0,
+      "coolingSetpointC": 28.0
+    }
+  ],
+  "expectedHeatingLoadW": 240.0,
+  "explicitNonClaims": [
+    "Engineering edge-case hardening only.",
+    "No adjacent-zone full model parity claim.",
+    "No EnergyPlus parity claim."
+  ]
+}
