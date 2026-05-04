@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-008",
+  "scenarioName": "manual-independent-cooling-gains-only",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "Manual",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "Outdoor boundary equals cooling setpoint and sensible gains alone create cooling demand. Manual anchor: gains = cooling load.",
+  "kind": "singleHourSteadyState",
+  "mode": "Cooling",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 26.0,
+  "outdoorTemperatureC": 26.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 500.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 500.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.5,
+    "airTemperatureAfterHvacC": 26.0
+  }
+}

@@ -53,3 +53,17 @@ artifacts/iso52016/matrix-baselines/summary.md
 ```
 
 These files are generated outputs and must not be committed.
+
+## External validation anchors release-ready coverage
+
+The release-ready gate includes `verify-iso52016-matrix-external-validation-anchors.ps1`.
+
+This confirms the external validation anchor fixture set, docs, manifest, and guard tests are present before the Matrix solver stage is asserted release-ready.
+
+The anchors are validation anchors only and must not be described as full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation coverage.
+
+## External validation anchor manifest completeness
+
+The release-ready path includes the external validation anchor verification script. That script now guards the expanded fixture set, manifest completeness, unique anchor ids, and explicit non-claims.
+
+This must remain a validation-anchor gate only; it must not be described as full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation coverage.

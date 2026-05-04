@@ -49,3 +49,21 @@ These files are generated outputs and should not be committed.
 ## Non-claim
 
 This verification chain is an internal regression and traceability gate. It does not claim exact pyBuildingEnergy, EnergyPlus, or ASHRAE 140 parity.
+
+## External validation anchors layer
+
+The all-in-one verification script now includes `verify-iso52016-matrix-external-validation-anchors.ps1`.
+
+This layer uses independent manual reference anchors only:
+
+- one-hour steady heating/cooling anchors;
+- pyBuildingEnergy-style and EnergyPlus-style naming anchors without numerical parity claims;
+- a compact annual 8760 manual reference anchor.
+
+These fixtures are source-controlled validation anchors, not generated artifacts.
+
+## External validation anchor Step 02 guard
+
+`verify-iso52016-matrix-external-validation-anchors.ps1` now checks that the anchor fixture set contains at least 10 JSON fixtures, that fixture ids are unique, and that every fixture on disk is listed in `Iso52016MatrixExternalValidationAnchorsManifest.json`.
+
+The guard preserves the same claim boundary: validation anchors only, not full parity.

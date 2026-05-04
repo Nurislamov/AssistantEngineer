@@ -20,3 +20,6 @@ artifacts/iso52016/matrix-baselines/
 
 # Generated ISO52016 Matrix merge summaries
 artifacts/iso52016/matrix-merge-summary/
+
+# ISO52016 Matrix external validation anchors generated outputs
+artifacts/iso52016/external-validation-anchors/

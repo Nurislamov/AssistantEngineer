@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-001",
+  "scenarioName": "manual-independent-steady-heating",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "Manual",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "One air node, one outdoor boundary, no gains. Manual anchor: H * (T_heat_setpoint - T_outdoor).",
+  "kind": "singleHourSteadyState",
+  "mode": "Heating",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 21.0,
+  "outdoorTemperatureC": -5.0,
+  "heatTransferCoefficientWPerK": 125.0,
+  "internalHeatGainW": 0.0,
+  "heatingSetpointC": 21.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 3250.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 3.25,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 21.0
+  }
+}

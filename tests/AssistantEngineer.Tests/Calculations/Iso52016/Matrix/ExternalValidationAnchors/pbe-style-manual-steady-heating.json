@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-004",
+  "scenarioName": "pbe-style-manual-steady-heating",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "pyBuildingEnergy-style naming only",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "pyBuildingEnergy-style naming anchor only. The numeric reference remains an independent one-node manual heating formula.",
+  "kind": "singleHourSteadyState",
+  "mode": "Heating",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 10.0,
+  "heatTransferCoefficientWPerK": 80.0,
+  "internalHeatGainW": 120.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 680.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.68,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 20.0
+  }
+}

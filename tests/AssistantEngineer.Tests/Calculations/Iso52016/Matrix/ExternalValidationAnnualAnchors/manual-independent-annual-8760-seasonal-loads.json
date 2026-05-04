@@ -1,0 +1,74 @@
+﻿{
+  "anchorId": "manual-independent-annual-8760-seasonal-loads",
+  "sourceStyle": "IndependentManual",
+  "scope": "ValidationAnchorOnly",
+  "description": "Independent 8760-hour one-zone manual reference anchor. The case uses a single air node, one outdoor boundary, fixed sensible gains, and a four-segment non-leap-year outdoor profile. It is a validation anchor only, not full pyBuildingEnergy or EnergyPlus parity.",
+  "hourCount": 8760,
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600.0,
+  "initialAirTemperatureC": 20.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 0.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "annualPattern": [
+    {
+      "name": "manual-winter-heating",
+      "startHourInclusive": 0,
+      "endHourExclusive": 2160,
+      "outdoorTemperatureC": 0.0
+    },
+    {
+      "name": "manual-spring-deadband",
+      "startHourInclusive": 2160,
+      "endHourExclusive": 4320,
+      "outdoorTemperatureC": 22.0
+    },
+    {
+      "name": "manual-summer-cooling",
+      "startHourInclusive": 4320,
+      "endHourExclusive": 6480,
+      "outdoorTemperatureC": 30.0
+    },
+    {
+      "name": "manual-autumn-deadband",
+      "startHourInclusive": 6480,
+      "endHourExclusive": 8760,
+      "outdoorTemperatureC": 22.0
+    }
+  ],
+  "expected": {
+    "hourCount": 8760,
+    "annualHeatingEnergyKWh": 4320.0,
+    "annualCoolingEnergyKWh": 863.996,
+    "annualTotalNodeHeatGainsKWh": 0.0,
+    "peakHeatingLoadW": 2000.0,
+    "peakCoolingLoadW": 400.0,
+    "monthlySummaries": [
+      { "month": 1, "heatingEnergyKWh": 1488.0, "coolingEnergyKWh": 0.0 },
+      { "month": 2, "heatingEnergyKWh": 1344.0, "coolingEnergyKWh": 0.0 },
+      { "month": 3, "heatingEnergyKWh": 1488.0, "coolingEnergyKWh": 0.0 },
+      { "month": 4, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 0.0 },
+      { "month": 5, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 0.0 },
+      { "month": 6, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 9.596 },
+      { "month": 7, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 297.6 },
+      { "month": 8, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 297.6 },
+      { "month": 9, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 259.2 },
+      { "month": 10, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 0.0 },
+      { "month": 11, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 0.0 },
+      { "month": 12, "heatingEnergyKWh": 0.0, "coolingEnergyKWh": 0.0 }
+    ]
+  },
+  "manualFormula": {
+    "freeFloatingAirTemperatureC": "(C/dt * T_previous + H * T_outdoor + Q_gain) / (C/dt + H)",
+    "heatingLoadW": "max(0, T_heat_setpoint * (C/dt + H) - C/dt * T_previous - H * T_outdoor - Q_gain)",
+    "coolingLoadW": "max(0, C/dt * T_previous + H * T_outdoor + Q_gain - T_cool_setpoint * (C/dt + H))"
+  },
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full annual building simulation parity claim.",
+    "Validation anchors only, not full parity."
+  ]
+}

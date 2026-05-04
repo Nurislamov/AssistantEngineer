@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-006",
+  "scenarioName": "manual-independent-neutral-deadband",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "Manual",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "One air node in the heating/cooling deadband. Manual anchor expects no HVAC load and no parity claim.",
+  "kind": "singleHourSteadyState",
+  "mode": "Neutral",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 23.0,
+  "outdoorTemperatureC": 23.0,
+  "heatTransferCoefficientWPerK": 80.0,
+  "internalHeatGainW": 0.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 23.0
+  }
+}

@@ -5,7 +5,8 @@ param(
     [switch] $SkipBaselines,
     [switch] $SkipApplicationBaselines,
     [switch] $SkipSummaryExporter,
-    [switch] $SkipExternalValidation
+    [switch] $SkipExternalValidation,
+    [switch] $SkipExternalValidationAnchors
 )
 
 Set-StrictMode -Version Latest
@@ -38,8 +39,11 @@ $requiredFiles = @(
     "scripts\iso52016\verify-iso52016-matrix-application-baselines.ps1",
     "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1",
     "scripts\iso52016\verify-iso52016-matrix-external-validation.ps1",
+    "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1",
     "docs\calculations\Iso52016MatrixVerificationRunbook.md",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs"
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs",
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -90,7 +94,6 @@ if (-not $SkipApplicationBaselines) {
         -Arguments $args
 }
 
-
 if (-not $SkipExternalValidation) {
     $args = @()
 
@@ -102,6 +105,19 @@ if (-not $SkipExternalValidation) {
         -RelativePath "scripts\iso52016\verify-iso52016-matrix-external-validation.ps1" `
         -Arguments $args
 }
+
+if (-not $SkipExternalValidationAnchors) {
+    $args = @()
+
+    if ($SkipTests) {
+        $args += "-SkipTests"
+    }
+
+    Invoke-RepoScript `
+        -RelativePath "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1" `
+        -Arguments $args
+}
+
 if (-not $SkipSummaryExporter) {
     Invoke-RepoScript `
         -RelativePath "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1"
@@ -110,11 +126,49 @@ if (-not $SkipSummaryExporter) {
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {
-        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture"
+        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture|FullyQualifiedName~Iso52016MatrixExternalValidationAnchor"
     }
     finally {
         Pop-Location
     }
 }
 
+
+# AE_STEP04_NAMING_ANCHORS_BEGIN
+$namingAnchorsScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-naming-anchors.ps1"
+
+if (Test-Path $namingAnchorsScript) {
+    $namingAnchorsArgs = @("-RepoRoot", $RepoRoot)
+
+    if ($SkipTests) {
+        $namingAnchorsArgs += "-SkipTests"
+    }
+
+    & $namingAnchorsScript @namingAnchorsArgs
+    $namingAnchorsExitCode = $LASTEXITCODE
+
+    if ($namingAnchorsExitCode -ne 0) {
+        throw ("ISO52016 Matrix naming anchors verification failed with exit code {0}." -f $namingAnchorsExitCode)
+    }
+}
+# AE_STEP04_NAMING_ANCHORS_END
+
+# AE_STEP05_EXTERNAL_VALIDATION_STAGE_GATE_BEGIN
+$externalValidationStageGateScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1"
+
+if (Test-Path $externalValidationStageGateScript) {
+    $externalValidationStageGateArgs = @("-RepoRoot", $RepoRoot)
+
+    if ($SkipTests) {
+        $externalValidationStageGateArgs += "-SkipTests"
+    }
+
+    & $externalValidationStageGateScript @externalValidationStageGateArgs
+    $externalValidationStageGateExitCode = $LASTEXITCODE
+
+    if ($externalValidationStageGateExitCode -ne 0) {
+        throw ("ISO52016 Matrix external validation anchors stage-gate verification failed with exit code {0}." -f $externalValidationStageGateExitCode)
+    }
+}
+# AE_STEP05_EXTERNAL_VALIDATION_STAGE_GATE_END
 Write-Host "ISO52016 Matrix all verification passed."

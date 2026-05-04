@@ -1,0 +1,39 @@
+{
+    "stageId":  "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS-STAGE-GATE",
+    "stageName":  "ISO 52016 Matrix external validation anchors stage gate",
+    "status":  "InProgress",
+    "scope":  "ValidationAnchorOnly",
+    "validationType":  "ExternalValidationAnchor",
+    "simpleIndependentManualAnchorsIntegrated":  true,
+    "annual8760ManualReferenceIntegrated":  true,
+    "pyBuildingEnergyStyleNamingIntegrated":  true,
+    "energyPlusStyleNamingIntegrated":  true,
+    "allInOneVerificationIntegrated":  true,
+    "releaseReadyGateIntegrated":  true,
+    "requiredManifests":  [
+                              "docs/releases/Iso52016MatrixExternalValidationAnchorsManifest.json",
+                              "docs/releases/Iso52016MatrixExternalValidationAnnualAnchorsManifest.json",
+                              "docs/releases/Iso52016MatrixExternalValidationNamingAnchorsManifest.json"
+                          ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016MatrixExternalValidationAnchorsStageGate.md",
+                               "docs/releases/Iso52016MatrixExternalValidationAnchorsStageGateManifest.json"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-all.ps1",
+                                "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorStageGateTests.cs"
+                   ],
+    "explicitNonClaims":  [
+                              "Validation anchors only, not full parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No ExternalParityCovered claim.",
+                              "No FullParityCovered claim.",
+                              "No full annual building simulation parity claim."
+                          ]
+}

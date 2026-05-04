@@ -1,0 +1,36 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-005",
+  "scenarioName": "energyplus-style-annual-manual-8760",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "EnergyPlus-style naming only",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "EnergyPlus-style annual naming anchor only. 8760 hours are generated from twelve 730-hour manual outdoor temperature blocks; this is not an EnergyPlus parity case.",
+  "kind": "annual8760ManualReference",
+  "mode": "AnnualHeatingCooling",
+  "hourCount": 8760,
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 20.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 0.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "annualOutdoorTemperaturePattern": {
+    "type": "TwelveMonthBlockMean",
+    "hoursPerMonthBlock": 730,
+    "monthlyOutdoorTemperatureC": [0.0, 2.0, 8.0, 14.0, 20.0, 27.0, 32.0, 31.0, 24.0, 16.0, 8.0, 2.0]
+  },
+  "expected": {
+    "hourCount": 8760,
+    "annualHeatingEnergyKWh": 6567.09473505376,
+    "annualCoolingEnergyKWh": 873.9594946038384,
+    "peakHeatingLoadW": 2000.0,
+    "peakCoolingLoadW": 600.0
+  }
+}

@@ -1,0 +1,29 @@
+{
+    "anchorId":  "energyplus-style-zone-ideal-loads-cooling-design-day-manual-anchor",
+    "scenarioName":  "energyplus-style-zone-ideal-loads-cooling-design-day-manual-anchor",
+    "description":  "External validation naming anchor with manual reference numbers. The style naming is used only for traceability; it is not a parity claim.",
+    "scope":  "ValidationAnchorOnly",
+    "sourceStyle":  "EnergyPlusStyleNamesOnly",
+    "externalToolFamily":  "EnergyPlus",
+    "namingPurpose":  "ExternalStyleNameTraceabilityOnly",
+    "mode":  "Cooling",
+    "timeStepSeconds":  3600,
+    "heatTransferCoefficientWPerK":  125,
+    "outdoorTemperatureC":  34,
+    "heatingSetpointC":  20,
+    "coolingSetpointC":  26,
+    "internalHeatGainW":  500,
+    "manualReferenceFormula":  "max(0, H * (T_outdoor - T_cool_setpoint) + internal_gains)",
+    "expected":  {
+                     "heatingLoadW":  0,
+                     "coolingLoadW":  1500,
+                     "heatingEnergyKWh":  0,
+                     "coolingEnergyKWh":  1.5
+                 },
+    "explicitNonClaims":  [
+                              "Validation anchors only, not full parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim."
+                          ]
+}

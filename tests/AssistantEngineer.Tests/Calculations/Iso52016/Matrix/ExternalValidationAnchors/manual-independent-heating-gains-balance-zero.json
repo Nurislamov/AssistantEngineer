@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-007",
+  "scenarioName": "manual-independent-heating-gains-balance-zero",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "Manual",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact pyBuildingEnergy numerical parity claim.",
+    "No exact EnergyPlus numerical parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full external engine parity claim."
+  ],
+  "description": "Cold boundary balanced by sensible gains. Manual anchor: max(0, H * (T_heat_setpoint - T_outdoor) - gains) = 0.",
+  "kind": "singleHourSteadyState",
+  "mode": "Heating",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 10.0,
+  "heatTransferCoefficientWPerK": 100.0,
+  "internalHeatGainW": 1000.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.0,
+    "airTemperatureAfterHvacC": 20.0
+  }
+}

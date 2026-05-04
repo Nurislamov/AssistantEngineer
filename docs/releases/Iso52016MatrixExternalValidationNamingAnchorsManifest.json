@@ -1,0 +1,33 @@
+{
+    "stageId":  "ISO52016-MATRIX-EXTERNAL-VALIDATION-NAMING-ANCHORS",
+    "stageName":  "ISO 52016 Matrix external validation naming anchors",
+    "status":  "InProgress",
+    "scope":  "ValidationAnchorOnly",
+    "namingAnchorsIntegrated":  true,
+    "pyBuildingEnergyStyleNamingIntegrated":  true,
+    "energyPlusStyleNamingIntegrated":  true,
+    "validationType":  "ExternalValidationAnchor",
+    "fixtureFiles":  [
+                         "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/pbe-style-hourly-heating-need-manual-anchor.json",
+                         "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/pbe-style-hourly-cooling-need-manual-anchor.json",
+                         "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/energyplus-style-zone-ideal-loads-heating-design-day-manual-anchor.json",
+                         "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/energyplus-style-zone-ideal-loads-cooling-design-day-manual-anchor.json"
+                     ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016MatrixExternalValidationNamingAnchors.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-matrix-external-validation-naming-anchors.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationNamingAnchorTests.cs"
+                   ],
+    "explicitNonClaims":  [
+                              "Validation anchors only, not full parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No ExternalParityCovered claim.",
+                              "No full annual building simulation parity claim."
+                          ]
+}

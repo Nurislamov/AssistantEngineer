@@ -1,0 +1,30 @@
+{
+    "stageId":  "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANNUAL-ANCHORS",
+    "stageName":  "ISO 52016 Matrix external validation annual anchors",
+    "status":  "InProgress",
+    "scope":  "ValidationAnchorOnly",
+    "annual8760ManualReferenceIntegrated":  true,
+    "annualHourCount":  8760,
+    "validationType":  "ExternalValidationAnchor",
+    "fixtureFiles":  [
+                         "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnnualAnchors/manual-independent-annual-8760-seasonal-loads.json"
+                     ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016MatrixExternalValidationAnnualAnchors.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-matrix-external-validation-annual-anchors.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnnualAnchorTests.cs"
+                   ],
+    "explicitNonClaims":  [
+                              "Validation anchors only, not full parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No full annual building simulation parity claim.",
+                              "No weather-file parity claim.",
+                              "No coupled multi-zone parity claim."
+                          ]
+}
