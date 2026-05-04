@@ -1,0 +1,41 @@
+{
+  "anchorId": "MANUAL-ISO52016-ANCHOR-004",
+  "scenarioName": "manual-iso52016-anchor-004-free-floating-no-hvac",
+  "displayName": "Free-floating no-HVAC manual anchor",
+  "description": "One-zone, one-air-node free-floating anchor. The manual implicit temperature response remains inside the heating/cooling deadband, so no HVAC load is applied.",
+  "sourceType": "ManualEngineeringValidationAnchor",
+  "authoritativeReference": "IndependentManualEngineeringFormula",
+  "scope": "ValidationAnchorsOnly",
+  "methodologyBackgroundOnly": [
+    "ISO 52016 matrix heat balance structure",
+    "pyBuildingEnergy-style naming only; no output parity claim",
+    "EnergyPlus-style naming only; no output parity claim"
+  ],
+  "explicitNonClaims": [
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim."
+  ],
+  "mode": "FreeFloatingNoHvac",
+  "formula": "T_next = ((C / dt) * T_initial + H * T_outdoor + gains) / ((C / dt) + H)",
+  "timeStepSeconds": 3600.0,
+  "hourCount": 1,
+  "heatCapacityJPerK": 360000.0,
+  "initialAirTemperatureC": 21.0,
+  "outdoorTemperatureC": 16.0,
+  "heatTransferCoefficientWPerK": 40.0,
+  "internalHeatGainW": 100.0,
+  "heatingSetpointC": 18.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.0,
+    "annualHeatingEnergyKWh": 0.0,
+    "annualCoolingEnergyKWh": 0.0,
+    "airTemperatureBeforeHvacC": 20.285714285714285,
+    "airTemperatureAfterHvacC": 20.285714285714285
+  }
+}

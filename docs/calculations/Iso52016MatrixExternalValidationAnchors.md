@@ -1,78 +1,67 @@
-# ISO 52016 Matrix external validation anchors
+﻿# ISO 52016 Matrix external validation anchors
 
-This document tracks the first external-validation-anchor layer for the ISO 52016 Matrix solver.
+This fixture set provides independent manual engineering validation anchors for the ISO 52016 Matrix solver path.
 
-## Scope
+## Validation status
 
-These cases are **validation anchors only**. They are intentionally small, independent, and manually auditable.
+`ValidationAnchorOnly`.
 
-They do not claim:
+These fixtures are not a pyBuildingEnergy parity suite, not an EnergyPlus parity suite, not an ASHRAE 140 validation suite, and not a full ISO 52016 conformance claim.
 
-- exact pyBuildingEnergy numerical parity;
-- exact EnergyPlus numerical parity;
-- ASHRAE 140 validation coverage;
-- full external engine parity.
+## Authoritative reference
 
-## Fixture families
+The authoritative references for this stage are manual engineering formulas encoded directly in the fixture JSON files and guard tests.
 
-| Fixture | Reference style | Claim scope | Purpose |
-| --- | --- | --- | --- |
-| `manual-independent-steady-heating.json` | Manual | ValidationAnchorOnly | One-hour heating anchor without gains. |
-| `manual-independent-steady-heating-with-gains.json` | Manual | ValidationAnchorOnly | One-hour heating anchor with sensible gains offsetting load. |
-| `manual-independent-steady-cooling.json` | Manual | ValidationAnchorOnly | One-hour cooling anchor without gains. |
-| `pbe-style-manual-steady-heating.json` | pyBuildingEnergy-style naming only | ValidationAnchorOnly | Naming convention anchor; numeric reference remains independent manual formula. |
-| `energyplus-style-annual-manual-8760.json` | EnergyPlus-style naming only | ValidationAnchorOnly | Compact annual 8760 anchor generated from twelve manual outdoor-temperature blocks. |
+pyBuildingEnergy remains methodological background only. EnergyPlus-style names may be used for readability only. Neither pyBuildingEnergy nor EnergyPlus outputs are authoritative references for this stage.
 
-## Manual formulas
+## Fixture set
 
-Single-hour steady heating anchor:
-
-```text
-heatingLoadW = max(0, H * (T_heat_setpoint - T_outdoor) - gains)
-```
-
-Single-hour steady cooling anchor:
-
-```text
-coolingLoadW = max(0, H * (T_outdoor - T_cool_setpoint) + gains)
-```
-
-Annual 8760 anchor:
-
-```text
-T_free = ((C / dt) * T_previous + H * T_outdoor + gains) / ((C / dt) + H)
-```
-
-The annual anchor then applies the same heating/cooling setpoint control as the Matrix solver and compares annual energy, peak loads, and hour count.
+| Fixture | Anchor | Manual reference |
+| --- | --- | --- |
+| `manual-iso52016-anchor-001-steady-heating.json` | `MANUAL-ISO52016-ANCHOR-001` | `Q = H * (T_heat_setpoint - T_outdoor)` |
+| `manual-iso52016-anchor-002-heating-with-gains.json` | `MANUAL-ISO52016-ANCHOR-002` | `Q = H * (T_heat_setpoint - T_outdoor) - gains` |
+| `manual-iso52016-anchor-003-steady-cooling.json` | `MANUAL-ISO52016-ANCHOR-003` | `Q = H * (T_outdoor - T_cool_setpoint) + gains` |
+| `manual-iso52016-anchor-004-free-floating-no-hvac.json` | `MANUAL-ISO52016-ANCHOR-004` | no HVAC, first-order single-node response |
+| `manual-iso52016-annual-8760-001-constant-weather-heating.json` | `MANUAL-ISO52016-ANNUAL-8760-001` | constant hourly heating reference integrated over 8760 hours |
 
 ## Verification
 
-Run:
-
 ```powershell
 .\scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1
+.\scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1
+.\scripts\iso52016\assert-iso52016-matrix-external-validation-anchors-release-ready.ps1
 ```
 
-This script checks the fixture set, manifest, documentation, guard tests, and the Matrix solver results for the first anchor batch.
+## Generated evidence
+
+The optional merge-summary writer creates generated files under:
+
+```text
+artifacts/iso52016/external-validation-anchors/
+```
+
+Those files are ignored and must not be committed.
+
+## Release contract phrases
+
+This stage is validation anchors only, not full parity.
+
+No pyBuildingEnergy parity is claimed or implied.
+
+## Source type contract
+
+The source policy string `IndependentManualEngineeringFormula` identifies independent manual engineering formulas as the reference source for these anchors.
+
+Validation anchors only, not full parity.
+
+## Source policy literal guard
+
+- No pyBuildingEnergy parity claim.
 
 ## Explicit non-claims
 
-- No exact pyBuildingEnergy numerical parity claim.
-- No exact EnergyPlus numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full annual dynamic simulation parity claim.
-- Validation anchors only, not full parity.
+- No EnergyPlus parity claim.
+No ASHRAE 140 validation coverage claim.
 
-## Step 02 expanded independent anchor set
+No full ISO 52016 parity claim.
 
-The anchor set now includes at least 10 source-controlled JSON fixtures:
-
-- independent steady heating/cooling anchors;
-- a neutral deadband anchor;
-- a zero-load heating/gains balance anchor;
-- a cooling-from-gains-only anchor;
-- pyBuildingEnergy-style naming anchors;
-- EnergyPlus-style naming anchors;
-- one compact annual 8760 manual reference anchor.
-
-These are still validation anchors only. The added names are compatibility-style naming anchors and do not create full pyBuildingEnergy parity, full EnergyPlus parity, or ASHRAE 140 validation claims.

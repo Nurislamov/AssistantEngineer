@@ -1,0 +1,41 @@
+{
+  "anchorId": "MANUAL-ISO52016-ANCHOR-003",
+  "scenarioName": "manual-iso52016-anchor-003-steady-cooling",
+  "displayName": "Steady cooling manual anchor",
+  "description": "One-zone, one-air-node steady cooling anchor with internal gains. Previous air temperature equals the cooling setpoint, so the controlled load is Q = H * (T_outdoor - T_cool_setpoint) + gains.",
+  "sourceType": "ManualEngineeringValidationAnchor",
+  "authoritativeReference": "IndependentManualEngineeringFormula",
+  "scope": "ValidationAnchorsOnly",
+  "methodologyBackgroundOnly": [
+    "ISO 52016 matrix heat balance structure",
+    "pyBuildingEnergy-style naming only; no output parity claim",
+    "EnergyPlus-style naming only; no output parity claim"
+  ],
+  "explicitNonClaims": [
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim."
+  ],
+  "mode": "SteadyCooling",
+  "formula": "Q_cool = H * (T_outdoor - T_cool_setpoint) + gains",
+  "timeStepSeconds": 3600.0,
+  "hourCount": 1,
+  "heatCapacityJPerK": 360000.0,
+  "initialAirTemperatureC": 25.0,
+  "outdoorTemperatureC": 35.0,
+  "heatTransferCoefficientWPerK": 40.0,
+  "internalHeatGainW": 200.0,
+  "heatingSetpointC": 18.0,
+  "coolingSetpointC": 25.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 600.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.6,
+    "annualHeatingEnergyKWh": 0.0,
+    "annualCoolingEnergyKWh": 0.6,
+    "airTemperatureBeforeHvacC": 29.285714285714285,
+    "airTemperatureAfterHvacC": 25.0
+  }
+}

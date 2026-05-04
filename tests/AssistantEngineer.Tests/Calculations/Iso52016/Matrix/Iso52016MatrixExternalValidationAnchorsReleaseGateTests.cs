@@ -23,6 +23,7 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
         var root = document.RootElement;
 
         Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS-RELEASE", root.GetProperty("stageId").GetString());
+        Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS", root.GetProperty("baseStageId").GetString());
         Assert.Equal("ValidationAnchorOnly", root.GetProperty("scope").GetString());
         Assert.True(root.GetProperty("simpleIndependentManualAnchorsIntegrated").GetBoolean());
         Assert.True(root.GetProperty("annual8760ManualReferenceIntegrated").GetBoolean());
@@ -101,6 +102,7 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
         var doc = File.ReadAllText(docPath);
 
         Assert.Contains("Validation anchors only, not full parity.", doc);
+        Assert.Contains("IndependentManualEngineeringFormula", doc);
         Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", doc);
         Assert.Contains("No exact EnergyPlus numerical parity claim.", doc);
         Assert.Contains("No ExternalParityCovered claim.", doc);

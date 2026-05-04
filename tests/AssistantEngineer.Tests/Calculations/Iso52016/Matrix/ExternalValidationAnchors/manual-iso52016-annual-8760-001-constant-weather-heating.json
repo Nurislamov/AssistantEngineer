@@ -1,0 +1,41 @@
+{
+  "anchorId": "MANUAL-ISO52016-ANNUAL-8760-001",
+  "scenarioName": "manual-iso52016-annual-8760-001-constant-weather-heating",
+  "displayName": "Annual 8760 constant-weather manual reference",
+  "description": "Annual 8760-hour constant-weather reference. Every hour uses the same one-zone heating balance, so annual heating energy is the independent hourly manual load multiplied by 8760 hours.",
+  "sourceType": "ManualEngineeringValidationAnchor",
+  "authoritativeReference": "IndependentManualEngineeringFormula",
+  "scope": "ValidationAnchorsOnly",
+  "methodologyBackgroundOnly": [
+    "ISO 52016 matrix heat balance structure",
+    "pyBuildingEnergy-style naming only; no output parity claim",
+    "EnergyPlus-style naming only; no output parity claim"
+  ],
+  "explicitNonClaims": [
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim."
+  ],
+  "mode": "AnnualConstantHeating",
+  "formula": "E_heat_annual = max(0, H * (T_heat_setpoint - T_outdoor) - gains) * 8760 h / 1000",
+  "timeStepSeconds": 3600.0,
+  "hourCount": 8760,
+  "heatCapacityJPerK": 360000.0,
+  "initialAirTemperatureC": 20.0,
+  "outdoorTemperatureC": 5.0,
+  "heatTransferCoefficientWPerK": 25.0,
+  "internalHeatGainW": 100.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 275.0,
+    "coolingLoadW": 0.0,
+    "heatingEnergyKWh": 0.275,
+    "coolingEnergyKWh": 0.0,
+    "annualHeatingEnergyKWh": 2409.0,
+    "annualCoolingEnergyKWh": 0.0,
+    "airTemperatureBeforeHvacC": 17.8,
+    "airTemperatureAfterHvacC": 20.0
+  }
+}

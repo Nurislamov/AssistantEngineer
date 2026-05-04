@@ -1,58 +1,54 @@
-﻿{
+{
     "stageId":  "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS",
     "stageName":  "ISO 52016 Matrix external validation anchors",
-    "status":  "InProgress",
-    "claimScope":  "ValidationAnchorOnly",
-    "externalValidationAnchorsIntegrated":  true,
-    "explicitNonClaims":  [
-                              "External validation anchors are independent manual reference cases only.",
-                              "No exact pyBuildingEnergy numerical parity claim.",
-                              "No exact EnergyPlus numerical parity claim.",
-                              "No full pyBuildingEnergy parity claim.",
-                              "No full EnergyPlus parity claim.",
-                              "No ASHRAE 140 validation coverage claim.",
-                              "No full external engine parity claim.",
-                              "No full annual dynamic simulation parity claim.",
-                              "Validation anchors only, not full parity."
+    "status":  "ValidationAnchorsOnly",
+    "stageComplete":  true,
+    "fixtureCount":  5,
+    "manualAnchorCount":  4,
+    "annual8760ReferenceCount":  1,
+    "sourcePolicy":  "Independent manual engineering validation anchors only. pyBuildingEnergy and EnergyPlus names may be used as naming style, but their outputs are not authoritative references.",
+    "requiredAnchorIds":  [
+                              "MANUAL-ISO52016-ANCHOR-001",
+                              "MANUAL-ISO52016-ANCHOR-002",
+                              "MANUAL-ISO52016-ANCHOR-003",
+                              "MANUAL-ISO52016-ANCHOR-004",
+                              "MANUAL-ISO52016-ANNUAL-8760-001"
                           ],
     "fixtures":  [
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-heating.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-heating-with-gains.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-cooling.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/pbe-style-manual-steady-heating.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/energyplus-style-annual-manual-8760.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-neutral-deadband.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-heating-gains-balance-zero.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-cooling-gains-only.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/pbe-style-manual-steady-cooling-with-gains.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/energyplus-style-design-day-manual-heating.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnnualAnchors/manual-independent-annual-8760-seasonal-loads.json"
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-001-steady-heating.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-002-heating-with-gains.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-003-steady-cooling.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-anchor-004-free-floating-no-hvac.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-iso52016-annual-8760-001-constant-weather-heating.json"
                  ],
     "documentationFiles":  [
                                "docs/calculations/Iso52016MatrixExternalValidationAnchors.md",
-                               "docs/releases/Iso52016MatrixExternalValidationAnchorsManifest.json",
-                               "docs/calculations/Iso52016MatrixExternalValidationAnnualAnchors.md",
-                               "docs/releases/Iso52016MatrixExternalValidationAnnualAnchorsManifest.json"
+                               "docs/calculations/Iso52016MatrixVerificationRunbook.md",
+                               "docs/calculations/Iso52016MatrixReleaseReadyGate.md",
+                               "docs/releases/Iso52016MatrixExternalValidationAnchorsManifest.json"
                            ],
     "verificationScripts":  [
                                 "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors.ps1",
+                                "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
+                                "scripts/iso52016/assert-iso52016-matrix-external-validation-anchors-release-ready.ps1",
                                 "scripts/iso52016/verify-iso52016-matrix-all.ps1",
-                                "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
-                                "scripts/iso52016/verify-iso52016-matrix-external-validation-annual-anchors.ps1"
+                                "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1"
                             ],
     "testGuards":  [
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorTests.cs",
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorManifestTests.cs",
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnnualAnchorTests.cs"
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorStageGateTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorsReleaseGateTests.cs"
                    ],
-    "notes":  [
-                  "pyBuildingEnergy-style and EnergyPlus-style names are naming anchors only.",
-                  "Annual 8760 fixture is a compact manual reference generated in tests; it is not an exported external-engine result.",
-                  "Step 02 expands the manual anchor set to at least 10 source-controlled fixtures.",
-                  "Manifest completeness is guarded by tests and by the verification script.",
-                  "pyBuildingEnergy-style and EnergyPlus-style names remain naming anchors only."
-              ],
-    "expandedIndependentAnchorSetIntegrated":  true,
-    "manifestCompletenessGuardIntegrated":  true,
-    "annual8760ManualReferenceIntegrated":  true
+    "scope":  "ValidationAnchorOnly",
+    "closedByReleaseManifest":  "docs/releases/Iso52016MatrixExternalValidationAnchorsReleaseManifest.json",
+    "explicitNonClaims":  [
+                              "validation anchors only, not full parity",
+                              "No pyBuildingEnergy parity.",
+                              "No exact pyBuildingEnergy numerical parity claim.",
+                              "No exact EnergyPlus numerical parity claim.",
+                              "No ASHRAE 140 validation coverage claim.",
+                              "No ExternalParityCovered claim.",
+                              "No FullParityCovered claim."
+                          ]
 }

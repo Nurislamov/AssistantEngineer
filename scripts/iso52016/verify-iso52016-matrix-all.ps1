@@ -12,6 +12,8 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+# ValidationAnchorOnly: ISO52016 Matrix external validation anchors are independent manual engineering validation anchors only, not pyBuildingEnergy/EnergyPlus parity.
+
 function Invoke-RepoScript {
     param(
         [Parameter(Mandatory = $true)] [string] $RelativePath,
@@ -40,7 +42,10 @@ $requiredFiles = @(
     "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1",
     "scripts\iso52016\verify-iso52016-matrix-external-validation.ps1",
     "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1",
+    "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
     "docs\calculations\Iso52016MatrixVerificationRunbook.md",
+    "docs\calculations\Iso52016MatrixExternalValidationAnchors.md",
+    "docs\releases\Iso52016MatrixExternalValidationAnchorsManifest.json",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorTests.cs",
     "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixExternalValidationAnchorManifestTests.cs"
@@ -114,7 +119,7 @@ if (-not $SkipExternalValidationAnchors) {
     }
 
     Invoke-RepoScript `
-        -RelativePath "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors.ps1" `
+        -RelativePath "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1" `
         -Arguments $args
 }
 
@@ -133,42 +138,4 @@ if (-not $SkipTests) {
     }
 }
 
-
-# AE_STEP04_NAMING_ANCHORS_BEGIN
-$namingAnchorsScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-naming-anchors.ps1"
-
-if (Test-Path $namingAnchorsScript) {
-    $namingAnchorsArgs = @("-RepoRoot", $RepoRoot)
-
-    if ($SkipTests) {
-        $namingAnchorsArgs += "-SkipTests"
-    }
-
-    & $namingAnchorsScript @namingAnchorsArgs
-    $namingAnchorsExitCode = $LASTEXITCODE
-
-    if ($namingAnchorsExitCode -ne 0) {
-        throw ("ISO52016 Matrix naming anchors verification failed with exit code {0}." -f $namingAnchorsExitCode)
-    }
-}
-# AE_STEP04_NAMING_ANCHORS_END
-
-# AE_STEP05_EXTERNAL_VALIDATION_STAGE_GATE_BEGIN
-$externalValidationStageGateScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1"
-
-if (Test-Path $externalValidationStageGateScript) {
-    $externalValidationStageGateArgs = @("-RepoRoot", $RepoRoot)
-
-    if ($SkipTests) {
-        $externalValidationStageGateArgs += "-SkipTests"
-    }
-
-    & $externalValidationStageGateScript @externalValidationStageGateArgs
-    $externalValidationStageGateExitCode = $LASTEXITCODE
-
-    if ($externalValidationStageGateExitCode -ne 0) {
-        throw ("ISO52016 Matrix external validation anchors stage-gate verification failed with exit code {0}." -f $externalValidationStageGateExitCode)
-    }
-}
-# AE_STEP05_EXTERNAL_VALIDATION_STAGE_GATE_END
 Write-Host "ISO52016 Matrix all verification passed."

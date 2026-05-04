@@ -53,6 +53,8 @@ public sealed class Iso52016MatrixExternalValidationAnchorsClosureTests
         using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
         var root = document.RootElement;
 
+        Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS-RELEASE", root.GetProperty("stageId").GetString());
+        Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS", root.GetProperty("baseStageId").GetString());
         Assert.Equal("ValidationAnchorOnly", root.GetProperty("scope").GetString());
         Assert.False(root.GetProperty("generatedArtifactsCommitted").GetBoolean());
         Assert.True(root.GetProperty("mergeEvidenceIntegrated").GetBoolean());
