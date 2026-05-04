@@ -1,6 +1,6 @@
-# ISO 52016 Solar Chain Verification
+﻿# ISO 52016 Solar Chain Verification
 
-Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez → ISO52016 solar chain.
+Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez в†’ ISO52016 solar chain.
 
 ## Run
 
@@ -35,7 +35,8 @@ The script runs the guard tests for:
 - frontend/report diagnostics rendering;
 - production DI Perez registration;
 - production DI runtime smoke;
-- API diagnostics contract evidence.
+- API diagnostics contract evidence;
+- legacy `SolarRadiationService` location/time cleanup.
 
 ## Evidence manifest
 
@@ -69,3 +70,25 @@ This verification does not claim:
 - No full ISO 52016 node/matrix solver parity claim;
 - No latent/moisture/humidity simulation claim.
 
+
+## Stage 12 legacy cleanup guard
+
+The focused verification script also includes:
+
+- `SolarRadiationServiceLegacyTimeLocationTests`
+
+This test class proves that the legacy compatibility/helper path no longer hides methodically weak solar-position inputs in configured ISO 52016 fallback calls.
+
+The old 5-parameter method remains only as a compatibility wrapper. Configured ISO 52016 fallback calls must pass:
+
+- `_options.LongitudeDegrees`;
+- `TimeSpan.FromHours(_options.TimeZoneOffsetHours)`;
+- `_options.DefaultWeatherYear`.
+## Closure status
+
+The ISO52010/Perez -> ISO52016 solar chain is considered `closed-guarded-100` when:
+
+- all critical verification tests pass;
+- `verify-iso52016-solar-chain.ps1` passes;
+- `ISO52016SolarChainManifest.json` lists Stage 1 through Stage 13;
+- the legacy `SolarRadiationService` cleanup guard is included in focused verification.

@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -53,7 +53,7 @@ public class Iso52016SolarChainVerificationEvidenceTests
         var root = document.RootElement;
 
         Assert.Equal("AE-ISO52016-SOLAR-CHAIN", root.GetProperty("id").GetString());
-        Assert.Equal("closed-guarded", root.GetProperty("status").GetString());
+        Assert.Equal("closed-guarded-100", root.GetProperty("status").GetString());
 
         var stages = root.GetProperty("closedStages");
         Assert.True(stages.GetArrayLength() >= 11);
@@ -115,3 +115,4 @@ public class Iso52016SolarChainVerificationEvidenceTests
         return File.ReadAllText(path);
     }
 }
+

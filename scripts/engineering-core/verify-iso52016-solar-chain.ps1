@@ -43,7 +43,9 @@ $criticalFilter = @(
     "FullyQualifiedName~EngineeringCoreDiagnosticsFrontendRenderingTests",
     "FullyQualifiedName~Iso52016ProductionSolarPathRegistrationTests",
     "FullyQualifiedName~Iso52016ProductionSolarRuntimeSmokeTests",
-    "FullyQualifiedName~Iso52016ApiDiagnosticsContractEvidenceTests"
+    "FullyQualifiedName~Iso52016ApiDiagnosticsContractEvidenceTests",
+    "FullyQualifiedName~SolarRadiationServiceLegacyTimeLocationTests",
+    "FullyQualifiedName~Iso52010SolarChainCompletenessEvidenceTests"
 ) -join "|"
 
 dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --no-build --filter $criticalFilter
@@ -53,3 +55,4 @@ if ($RunAllTests) {
 }
 
 Write-Host "ISO52016 solar chain verification completed."
+
