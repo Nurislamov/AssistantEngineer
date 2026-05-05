@@ -218,6 +218,7 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
             internalConductances,
             boundaryConductances,
             nodeIndex,
+            hour,
             timeStepSeconds);
 
         var rhs = BuildRightHandSide(
@@ -238,6 +239,7 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
         IReadOnlyList<Iso52016MatrixConductanceLink> internalConductances,
         IReadOnlyList<Iso52016MatrixBoundaryConductance> boundaryConductances,
         IReadOnlyDictionary<string, int> nodeIndex,
+        Iso52016MatrixHourlyInputRecord hour,
         double timeStepSeconds)
     {
         var size = nodes.Count;
@@ -262,7 +264,8 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
 
         foreach (var link in boundaryConductances)
         {
-            matrix[nodeIndex[link.NodeId], nodeIndex[link.NodeId]] += link.ConductanceWPerK;
+            matrix[nodeIndex[link.NodeId], nodeIndex[link.NodeId]] +=
+                ResolveBoundaryConductanceWPerK(link, hour);
         }
 
         return matrix;
@@ -294,11 +297,27 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
         foreach (var link in boundaryConductances)
         {
             rhs[nodeIndex[link.NodeId]] +=
-                link.ConductanceWPerK *
+                ResolveBoundaryConductanceWPerK(link, hour) *
                 hour.BoundaryTemperaturesC[link.BoundaryId];
         }
 
         return rhs;
+    }
+
+    private static double ResolveBoundaryConductanceWPerK(
+        Iso52016MatrixBoundaryConductance link,
+        Iso52016MatrixHourlyInputRecord hour)
+    {
+        foreach (var overrideRecord in hour.BoundaryConductanceOverrides ?? Array.Empty<Iso52016MatrixHourlyBoundaryConductanceOverride>())
+        {
+            if (string.Equals(overrideRecord.NodeId, link.NodeId, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(overrideRecord.BoundaryId, link.BoundaryId, StringComparison.OrdinalIgnoreCase))
+            {
+                return overrideRecord.ConductanceWPerK;
+            }
+        }
+
+        return link.ConductanceWPerK;
     }
 
     private static double[] SolveLinearSystem(
@@ -475,6 +494,8 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
                 return Result.Validation("ISO 52016 Matrix internal conductance must be greater than zero.");
         }
 
+        var boundaryLinkKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var link in request.BoundaryConductances ?? Array.Empty<Iso52016MatrixBoundaryConductance>())
         {
             if (!nodeIds.Contains(link.NodeId))
@@ -485,6 +506,11 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
 
             if (link.ConductanceWPerK <= 0)
                 return Result.Validation("ISO 52016 Matrix boundary conductance must be greater than zero.");
+
+            var key = CreateBoundaryConductanceKey(link.NodeId, link.BoundaryId);
+
+            if (!boundaryLinkKeys.Add(key))
+                return Result.Validation($"ISO 52016 Matrix boundary conductance link '{link.NodeId}|{link.BoundaryId}' is duplicated.");
         }
 
         foreach (var hour in request.Hours)
@@ -507,6 +533,14 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
                     return Result.Validation($"ISO 52016 Matrix node heat gain references unknown node '{nodeGain.Key}' at hour {hour.HourOfYear}.");
             }
 
+            var boundaryOverrideValidation = ValidateBoundaryConductanceOverrides(
+                hour,
+                nodeIds,
+                boundaryLinkKeys);
+
+            if (boundaryOverrideValidation.IsFailure)
+                return boundaryOverrideValidation;
+
             var heatingSetpointC = hour.HeatingSetpointC ?? options.DefaultHeatingSetpointC;
             var coolingSetpointC = hour.CoolingSetpointC ?? options.DefaultCoolingSetpointC;
 
@@ -516,4 +550,45 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
 
         return Result.Success();
     }
+
+    private static Result ValidateBoundaryConductanceOverrides(
+        Iso52016MatrixHourlyInputRecord hour,
+        IReadOnlySet<string> nodeIds,
+        IReadOnlySet<string> boundaryLinkKeys)
+    {
+        var uniqueOverrideKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var overrideRecord in hour.BoundaryConductanceOverrides ?? Array.Empty<Iso52016MatrixHourlyBoundaryConductanceOverride>())
+        {
+            if (overrideRecord is null)
+                return Result.Validation($"ISO 52016 Matrix boundary conductance overrides cannot contain null records at hour {hour.HourOfYear}.");
+
+            if (string.IsNullOrWhiteSpace(overrideRecord.NodeId))
+                return Result.Validation($"ISO 52016 Matrix boundary conductance override node id is required at hour {hour.HourOfYear}.");
+
+            if (!nodeIds.Contains(overrideRecord.NodeId.Trim()))
+                return Result.Validation($"ISO 52016 Matrix boundary conductance override node '{overrideRecord.NodeId}' was not found at hour {hour.HourOfYear}.");
+
+            if (string.IsNullOrWhiteSpace(overrideRecord.BoundaryId))
+                return Result.Validation($"ISO 52016 Matrix boundary conductance override boundary id is required at hour {hour.HourOfYear}.");
+
+            var key = CreateBoundaryConductanceKey(overrideRecord.NodeId, overrideRecord.BoundaryId);
+
+            if (!boundaryLinkKeys.Contains(key))
+                return Result.Validation($"ISO 52016 Matrix boundary conductance override '{overrideRecord.NodeId}|{overrideRecord.BoundaryId}' does not match a declared boundary conductance link at hour {hour.HourOfYear}.");
+
+            if (!uniqueOverrideKeys.Add(key))
+                return Result.Validation($"ISO 52016 Matrix duplicate boundary conductance override '{overrideRecord.NodeId}|{overrideRecord.BoundaryId}' at hour {hour.HourOfYear}.");
+
+            if (double.IsNaN(overrideRecord.ConductanceWPerK) || double.IsInfinity(overrideRecord.ConductanceWPerK) || overrideRecord.ConductanceWPerK < 0)
+                return Result.Validation($"ISO 52016 Matrix boundary conductance override '{overrideRecord.NodeId}|{overrideRecord.BoundaryId}' must be finite and non-negative at hour {hour.HourOfYear}.");
+        }
+
+        return Result.Success();
+    }
+
+    private static string CreateBoundaryConductanceKey(
+        string nodeId,
+        string boundaryId) =>
+        $"{nodeId.Trim()}|{boundaryId.Trim()}";
 }
