@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string] $RepoRoot = (Get-Location).Path,
     [switch] $SkipTests
 )
@@ -114,3 +114,15 @@ if (-not $SkipTests) {
 }
 
 Write-Host "ISO52016 Matrix external validation anchors verification passed."
+# Stage 2.1 annual 8760 anchor chain.
+# Contract literal: verify-iso52016-matrix-external-validation-annual-anchors.ps1
+$annualAnchorScript = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-matrix-external-validation-annual-anchors.ps1"
+if (Test-Path $annualAnchorScript) {
+    if ($SkipTests) {
+        & $annualAnchorScript -RepoRoot $RepoRoot -SkipTests
+    }
+    else {
+        & $annualAnchorScript -RepoRoot $RepoRoot
+    }
+}
+
