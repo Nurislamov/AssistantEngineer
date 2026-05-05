@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
@@ -9,7 +9,7 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
     private readonly Iso52016PhysicalRoomModelBuilder _builder = new();
 
     [Fact]
-    public void Build_WithPhysicalSurfaces_CreatesSurfaceMassNodesAndBoundaryLinks()
+    public void Build_WithExplicitSurfacesCreatesSurfaceAndMassNodePairs()
     {
         var result = _builder.Build(
             new Iso52016PhysicalRoomModelRequest(
@@ -21,9 +21,9 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
                     SurfaceNodeHeatCapacityFraction: 0.20,
                     DefaultSurfaceToAirConductanceWPerM2K: 3.0,
                     SurfaceToMassConductanceMultiplier: 2.0),
-                Surfaces: CreateOutdoorAndGroundSurfaces()));
+                Surfaces: CreateNorthWallAndGroundSlabSurfaces()));
 
-        Assert.True(result.IsSuccess);
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
 
         var request = result.Value;
 
@@ -38,50 +38,50 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
             Math.Abs(node.HeatCapacityJPerK - 100_000.0) < 1e-9);
 
         Assert.Contains(request.Nodes, node =>
-            node.NodeId == "surface:wall-north" &&
+            node.NodeId == "surface:north-wall" &&
             Math.Abs(node.HeatCapacityJPerK - 400_000.0) < 1e-9);
 
         Assert.Contains(request.Nodes, node =>
-            node.NodeId == "mass:wall-north" &&
+            node.NodeId == "mass:north-wall" &&
             Math.Abs(node.HeatCapacityJPerK - 1_600_000.0) < 1e-9);
 
         Assert.Contains(request.Nodes, node =>
-            node.NodeId == "surface:slab" &&
-            Math.Abs(node.HeatCapacityJPerK - 200_000.0) < 1e-9);
+            node.NodeId == "surface:ground-slab" &&
+            Math.Abs(node.HeatCapacityJPerK - 800_000.0) < 1e-9);
 
         Assert.Contains(request.Nodes, node =>
-            node.NodeId == "mass:slab" &&
-            Math.Abs(node.HeatCapacityJPerK - 800_000.0) < 1e-9);
+            node.NodeId == "mass:ground-slab" &&
+            Math.Abs(node.HeatCapacityJPerK - 3_200_000.0) < 1e-9);
 
         Assert.Contains(request.InternalConductances, link =>
             link.FromNodeId == "air" &&
-            link.ToNodeId == "surface:wall-north" &&
+            link.ToNodeId == "surface:north-wall" &&
             Math.Abs(link.ConductanceWPerK - 30.0) < 1e-9);
 
         Assert.Contains(request.InternalConductances, link =>
-            link.FromNodeId == "surface:wall-north" &&
-            link.ToNodeId == "mass:wall-north" &&
+            link.FromNodeId == "surface:north-wall" &&
+            link.ToNodeId == "mass:north-wall" &&
             Math.Abs(link.ConductanceWPerK - 100.0) < 1e-9);
 
         Assert.Contains(request.InternalConductances, link =>
             link.FromNodeId == "air" &&
-            link.ToNodeId == "surface:slab" &&
-            Math.Abs(link.ConductanceWPerK - 15.0) < 1e-9);
+            link.ToNodeId == "surface:ground-slab" &&
+            Math.Abs(link.ConductanceWPerK - 60.0) < 1e-9);
 
         Assert.Contains(request.InternalConductances, link =>
-            link.FromNodeId == "surface:slab" &&
-            link.ToNodeId == "mass:slab" &&
-            Math.Abs(link.ConductanceWPerK - 50.0) < 1e-9);
+            link.FromNodeId == "surface:ground-slab" &&
+            link.ToNodeId == "mass:ground-slab" &&
+            Math.Abs(link.ConductanceWPerK - 560.0) < 1e-9);
 
         Assert.Contains(request.BoundaryConductances, boundary =>
-            boundary.NodeId == "surface:wall-north" &&
+            boundary.NodeId == "surface:north-wall" &&
             boundary.BoundaryId == "outdoor" &&
             Math.Abs(boundary.ConductanceWPerK - 50.0) < 1e-9);
 
         Assert.Contains(request.BoundaryConductances, boundary =>
-            boundary.NodeId == "surface:slab" &&
+            boundary.NodeId == "surface:ground-slab" &&
             boundary.BoundaryId == "ground" &&
-            Math.Abs(boundary.ConductanceWPerK - 25.0) < 1e-9);
+            Math.Abs(boundary.ConductanceWPerK - 280.0) < 1e-9);
 
         Assert.Contains(request.BoundaryConductances, boundary =>
             boundary.NodeId == "air" &&
@@ -94,8 +94,8 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
         Assert.Equal(12.0, firstHour.BoundaryTemperaturesC["ground"], precision: 6);
         Assert.Equal(7.0, firstHour.BoundaryTemperaturesC["ventilation-air"], precision: 6);
         Assert.Equal(100.0, firstHour.NodeHeatGainsW["air"], precision: 6);
-        Assert.Equal(333.33333333333331, firstHour.NodeHeatGainsW["surface:wall-north"], precision: 6);
-        Assert.Equal(166.66666666666666, firstHour.NodeHeatGainsW["surface:slab"], precision: 6);
+        Assert.Equal(250.0, firstHour.NodeHeatGainsW["surface:north-wall"], precision: 6);
+        Assert.Equal(250.0, firstHour.NodeHeatGainsW["surface:ground-slab"], precision: 6);
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
                         radiativeFraction: 0.40)
                 }));
 
-        Assert.True(result.IsSuccess);
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
 
         var firstHour = result.Value.Hours[0];
 
@@ -151,7 +151,7 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
                         adjacentBoundaryTemperatureC: 15)
                 }));
 
-        Assert.True(result.IsSuccess);
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
 
         var request = result.Value;
         var firstHour = request.Hours[0];
@@ -178,7 +178,7 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
                     InitialIndoorTemperatureC: 21,
                     TimeStepSeconds: 3600)));
 
-        Assert.True(result.IsSuccess);
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
         Assert.Equal(3, result.Value.Nodes.Count);
         Assert.Contains(result.Value.Nodes, node => node.NodeId == "air");
         Assert.Contains(result.Value.Nodes, node => node.NodeId == "internal-surface");
@@ -264,25 +264,31 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
             Hours: hours);
     }
 
-    private static IReadOnlyList<Iso52016PhysicalSurface> CreateOutdoorAndGroundSurfaces() =>
+    private static IReadOnlyList<Iso52016PhysicalSurface> CreateNorthWallAndGroundSlabSurfaces() =>
         new[]
         {
             CreateSurface(
-                surfaceId: "wall-north",
+                surfaceId: "north-wall",
                 boundaryType: Iso52016PhysicalSurfaceBoundaryType.Outdoor,
                 areaM2: 10,
-                thicknessM: 0.20,
-                conductivityWPerMK: 1.0,
-                densityKgPerM3: 1000,
-                specificHeatJPerKgK: 1000),
+                boundaryConductanceWPerK: 50,
+                surfaceToAirConductanceWPerK: 30,
+                surfaceToMassConductanceWPerK: 100,
+                heatCapacityJPerK: 400_000,
+                massHeatCapacityJPerK: 1_600_000,
+                solarFraction: 0.50,
+                radiativeFraction: 0.50),
             CreateSurface(
-                surfaceId: "slab",
+                surfaceId: "ground-slab",
                 boundaryType: Iso52016PhysicalSurfaceBoundaryType.Ground,
-                areaM2: 5,
-                thicknessM: 0.10,
-                conductivityWPerMK: 0.5,
-                densityKgPerM3: 2000,
-                specificHeatJPerKgK: 1000)
+                areaM2: 20,
+                boundaryConductanceWPerK: 280,
+                surfaceToAirConductanceWPerK: 60,
+                surfaceToMassConductanceWPerK: 560,
+                heatCapacityJPerK: 800_000,
+                massHeatCapacityJPerK: 3_200_000,
+                solarFraction: 0.50,
+                radiativeFraction: 0.50)
         };
 
     private static Iso52016PhysicalSurface CreateSurface(
@@ -293,6 +299,11 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
         double conductivityWPerMK = 1.0,
         double densityKgPerM3 = 1000,
         double specificHeatJPerKgK = 1000,
+        double? boundaryConductanceWPerK = null,
+        double? surfaceToAirConductanceWPerK = null,
+        double? surfaceToMassConductanceWPerK = null,
+        double? heatCapacityJPerK = null,
+        double? massHeatCapacityJPerK = null,
         double? solarFraction = null,
         double? radiativeFraction = null,
         double? adjacentBoundaryTemperatureC = null) =>
@@ -309,6 +320,11 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
                     DensityKgPerM3: densityKgPerM3,
                     SpecificHeatCapacityJPerKgK: specificHeatJPerKgK)
             },
+            BoundaryConductanceWPerK: boundaryConductanceWPerK,
+            SurfaceToAirConductanceWPerK: surfaceToAirConductanceWPerK,
+            SurfaceToMassConductanceWPerK: surfaceToMassConductanceWPerK,
+            HeatCapacityJPerK: heatCapacityJPerK,
+            MassHeatCapacityJPerK: massHeatCapacityJPerK,
             SolarGainsDistributionFraction: solarFraction,
             InternalRadiativeGainsDistributionFraction: radiativeFraction,
             AdjacentBoundaryTemperatureC: adjacentBoundaryTemperatureC);

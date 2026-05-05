@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;

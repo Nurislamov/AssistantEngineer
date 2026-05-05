@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016.Physical;
@@ -95,6 +96,25 @@ public class Iso52016PhysicalRoomModelBuilderTests
         Assert.Equal("air", request.Options!.AirNodeId);
         Assert.Equal(20.0, request.Options.DefaultHeatingSetpointC, precision: 6);
         Assert.Equal(26.0, request.Options.DefaultCoolingSetpointC, precision: 6);
+    }
+
+    [Fact]
+    public void Build_OutputCanBeSolvedByExistingMatrixSolver()
+    {
+        var buildResult = _builder.Build(
+            new Iso52016PhysicalRoomModelRequest(
+                HourlyInputProfile: CreateInputProfile()));
+
+        Assert.True(buildResult.IsSuccess);
+
+        var solver = new Iso52016MatrixHourlySolver();
+        var solveResult = solver.Solve(buildResult.Value);
+
+        Assert.True(solveResult.IsSuccess);
+        Assert.Equal(24, solveResult.Value.HourCount);
+        Assert.All(
+            solveResult.Value.Hours,
+            hour => Assert.True(double.IsFinite(hour.AirTemperatureAfterHvacC)));
     }
 
     [Fact]

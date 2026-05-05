@@ -1,0 +1,43 @@
+﻿{
+  "stageId": "AE-ISO52016-002-STEP-11",
+  "title": "ISO52016-inspired physical model selection application guard",
+  "status": "internal-engineering-anchor",
+  "closedWorkItems": [
+    "AE-ISO52016-002"
+  ],
+  "dependsOn": [
+    "AE-ISO52016-002-STEP-10"
+  ],
+  "claimBoundary": [
+    "ISO52016-inspired physical model selection application guard.",
+    "Validation/internal engineering anchors only.",
+    "Not complete ISO 52016 numerical equivalence.",
+    "Not pyBuildingEnergy numerical equivalence.",
+    "Not EnergyPlus numerical equivalence.",
+    "Not ASHRAE Standard 140 benchmark-grade claim."
+  ],
+  "guardedApplicationBoundary": {
+    "defaultStrategy": "ReducedMatrix",
+    "physicalStrategy": "PhysicalNodeModel",
+    "physicalPathPolicy": "Explicit opt-in only",
+    "solverPolicy": "Uses the existing Matrix hourly solver; no new solver is introduced."
+  },
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionStrategy.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionRequest.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs"
+  ],
+  "documentationFiles": [
+    "docs/calculations/Iso52016PhysicalModelSelectionApplicationGuard.md",
+    "docs/releases/Iso52016PhysicalModelSelectionApplicationGuardManifest.json"
+  ],
+  "verificationScripts": [
+    "scripts/iso52016/verify-iso52016-physical-model-selection-application-guard.ps1"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionApplicationGuardTests.cs"
+  ],
+  "generatedArtifacts": []
+}

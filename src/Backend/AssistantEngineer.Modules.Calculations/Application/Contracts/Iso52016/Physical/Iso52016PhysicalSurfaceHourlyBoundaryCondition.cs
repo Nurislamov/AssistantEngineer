@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 
 /// <summary>
 /// Hourly driving boundary temperature override for one physical surface.

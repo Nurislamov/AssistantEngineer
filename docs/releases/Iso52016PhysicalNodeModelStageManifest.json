@@ -5,35 +5,42 @@
     "closedWorkItems":  [
                             "AE-ISO52016-002"
                         ],
-    "claimBoundary":  [
-                          "ISO52016-inspired physical node model builder stage.",
-                          "Validation/internal engineering anchors only.",
-                          "Not complete ISO 52016 numerical equivalence.",
-                          "Not pyBuildingEnergy numerical equivalence.",
-                          "Not EnergyPlus numerical equivalence.",
-                          "Not ASHRAE Standard 140 benchmark-grade claim.",
-                          "Not ASHRAE Standard 140 benchmark-grade claim."
-                      ],
-    "sourceFiles":  [
-                        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelBuilder.cs",
-                        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelRequest.cs",
-                        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalNodeModelOptions.cs",
-                        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs",
-                        "src/Backend/AssistantEngineer.Modules.Calculations/Composition/Iso52016Registration.cs"
-                    ],
-    "testGuards":  [
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelBuilderTests.cs",
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalIntegrationRegistrationTests.cs",
-                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalNodeModelStageTraceabilityTests.cs"
-                   ],
+    "dependsOn":  [
+                      "AE-ISO52016-001"
+                  ],
+    "implementationFiles":  [
+                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelBuilder.cs",
+                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelRequest.cs",
+                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalNodeModelOptions.cs",
+                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs"
+                            ],
     "documentationFiles":  [
-                               "docs/calculations/Iso52016PhysicalNodeModelStage.md",
-                               "docs/releases/Iso52016PhysicalNodeModelStageManifest.json"
+                               "docs/calculations/Iso52016PhysicalNodeModelStage.md"
                            ],
     "verificationScripts":  [
-                                "scripts/iso52016/verify-iso52016-physical-node-model-stage.ps1",
-                                "scripts/iso52016/verify-iso52016-matrix-all.ps1"
+                                "scripts/iso52016/verify-iso52016-physical-node-model-stage.ps1"
                             ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelBuilderTests.cs",
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalNodeModelStageTraceabilityTests.cs"
+                   ],
     "matrixAllVerificationIntegrated":  true,
-    "generatedArtifactsPolicy":  "No generated artifacts are introduced by this step."
+    "generatedArtifacts":  [
+
+                           ],
+    "claimBoundary":  [
+                          "ISO52016-inspired physical node model chain stage.",
+                          "Validation/internal engineering anchors only.",
+                          "Not full ISO 52016 parity.",
+                          "Not complete ISO 52016 numerical equivalence.",
+                          "Not complete ISO52016 numerical equivalence.",
+                          "Not pyBuildingEnergy parity.",
+                          "Not pyBuildingEnergy numerical equivalence.",
+                          "Not EnergyPlus parity.",
+                          "Not EnergyPlus numerical equivalence.",
+                          "Not ASHRAE 140 validation.",
+                          "Not ASHRAE Standard 140 validation.",
+                          "Not ASHRAE Standard 140 benchmark-grade claim.",
+                          "ISO52016-inspired physical node model builder stage."
+                      ]
 }

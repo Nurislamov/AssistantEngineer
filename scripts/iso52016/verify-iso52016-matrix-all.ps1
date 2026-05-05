@@ -1,6 +1,12 @@
 param(
     [string] $RepoRoot = (Get-Location).Path,
     [switch] $SkipTests,
+    [switch] $SkipPhysicalNodeModel,
+    [switch] $SkipPhysicalSurfaceModel,
+    [switch] $SkipPhysicalBoundaryProfiles,
+    [switch] $SkipPhysicalOperationProfiles,
+    [switch] $SkipPhysicalDiagnostics,
+    [switch] $SkipPhysicalRoomSimulation
     [switch] $SkipStage,
     [switch] $SkipBaselines,
     [switch] $SkipApplicationBaselines,
@@ -8,11 +14,7 @@ param(
     [switch] $SkipExternalValidation,
     [switch] $SkipExternalValidationAnchors,
     [switch] $SkipEngineeringEdgeCases,
-    [switch] $SkipApplicationIntegrationHardening,
-    [switch] $SkipPhysicalNodeModel,
-    [switch] $SkipPhysicalSurfaceModel,
-    [switch] $SkipPhysicalBoundaryProfiles,
-    [switch] $SkipPhysicalOperationProfiles
+    [switch] $SkipApplicationIntegrationHardening
 )
 
 Set-StrictMode -Version Latest
@@ -32,30 +34,7 @@ function Invoke-RepoScript {
 
     Push-Location $RepoRoot
     try {
-        # ISO52016_MATRIX_ALL_HASH_SPLATTING_GUARD
-        # Do not call child .ps1 scripts with array splatting such as @("-SkipTests").
-        # Array splatting is positional for scripts, so "-RepoRoot"/"-SkipTests" can bind as the RepoRoot string.
-        # Keep this as named hashtable splatting for switch-only child arguments.
-        $scriptParameters = @{}
-
-        foreach ($argument in $Arguments) {
-            switch ($argument) {
-                "-SkipTests" { $scriptParameters["SkipTests"] = $true; continue }
-                "-SkipBaselines" { $scriptParameters["SkipBaselines"] = $true; continue }
-                "-SkipStage" { $scriptParameters["SkipStage"] = $true; continue }
-                "-SkipApplicationBaselines" { $scriptParameters["SkipApplicationBaselines"] = $true; continue }
-                "-SkipSummaryExporter" { $scriptParameters["SkipSummaryExporter"] = $true; continue }
-                "-SkipExternalValidation" { $scriptParameters["SkipExternalValidation"] = $true; continue }
-                "-SkipExternalValidationAnchors" { $scriptParameters["SkipExternalValidationAnchors"] = $true; continue }
-                "-SkipEngineeringEdgeCases" { $scriptParameters["SkipEngineeringEdgeCases"] = $true; continue }
-                "-SkipApplicationIntegrationHardening" { $scriptParameters["SkipApplicationIntegrationHardening"] = $true; continue }
-                default {
-                    throw "Unsupported ISO52016 Matrix verification script argument '$argument' for $RelativePath. Use hashtable splatting when adding parameters with values."
-                }
-            }
-        }
-
-        & $path @scriptParameters
+        & $path @Arguments
     }
     finally {
         Pop-Location
@@ -75,33 +54,7 @@ $requiredFiles = @(
     "scripts\iso52016\verify-iso52016-matrix-application-integration-hardening.ps1",
     "scripts\iso52016\verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1",
     "docs\calculations\Iso52016MatrixVerificationRunbook.md",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs",
-    "scripts\iso52016\verify-iso52016-physical-node-model-stage.ps1",
-    "docs\calculations\Iso52016PhysicalNodeModelStage.md",
-    "docs\releases\Iso52016PhysicalNodeModelStageManifest.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalNodeModelStageTraceabilityTests.cs",
-    "scripts\iso52016\verify-iso52016-physical-surface-model-stage.ps1",
-    "docs\calculations\Iso52016PhysicalSurfaceModelExpansion.md",
-    "docs\releases\Iso52016PhysicalSurfaceModelExpansionManifest.json",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Physical\Iso52016PhysicalSurface.cs",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Physical\Iso52016PhysicalConstructionLayer.cs",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Physical\Iso52016PhysicalSurfaceBoundaryType.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalSurfaceModelBuilderTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalNodeModelSurfaceExpansionTraceabilityTests.cs",
-    "scripts\iso52016\verify-iso52016-physical-boundary-profile-stage.ps1",
-    "docs\calculations\Iso52016PhysicalBoundaryProfileStage.md",
-    "docs\releases\Iso52016PhysicalBoundaryProfileStageManifest.json",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Physical\Iso52016PhysicalSurfaceHourlyBoundaryCondition.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalSurfaceBoundaryConditionTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalBoundaryProfileStageTraceabilityTests.cs",
-    "scripts\iso52016\verify-iso52016-physical-operation-profile-stage.ps1",
-    "docs\calculations\Iso52016PhysicalOperationProfileStage.md",
-    "docs\releases\Iso52016PhysicalOperationProfileStageManifest.json",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Physical\Iso52016PhysicalHourlyOperationCondition.cs",
-    "src\Backend\AssistantEngineer.Modules.Calculations\Application\Contracts\Iso52016\Matrix\Iso52016MatrixHourlyBoundaryConductanceOverride.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalOperationProfileTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixHourlyBoundaryConductanceOverrideTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Physical\Iso52016PhysicalOperationProfileStageTraceabilityTests.cs"
+    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixAllVerificationScriptTests.cs"
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -212,28 +165,6 @@ if (-not $SkipApplicationIntegrationHardening) {
         -Arguments $args
 }
 
-if (-not $SkipPhysicalNodeModel) {
-    $args = @()
-
-    if ($SkipTests) {
-        $args += "-SkipTests"
-    }
-
-    Invoke-RepoScript `
-        -RelativePath "scripts\iso52016\verify-iso52016-physical-node-model-stage.ps1" `
-        -Arguments $args
-}
-if (-not $SkipPhysicalSurfaceModel) {
-    $args = @()
-
-    if ($SkipTests) {
-        $args += "-SkipTests"
-    }
-
-    Invoke-RepoScript `
-        -RelativePath "scripts\iso52016\verify-iso52016-physical-surface-model-stage.ps1" `
-        -Arguments $args
-}
 if (-not $SkipPhysicalBoundaryProfiles) {
     $args = @()
 
@@ -245,6 +176,7 @@ if (-not $SkipPhysicalBoundaryProfiles) {
         -RelativePath "scripts\iso52016\verify-iso52016-physical-boundary-profile-stage.ps1" `
         -Arguments $args
 }
+
 if (-not $SkipPhysicalOperationProfiles) {
     $args = @()
 
@@ -256,6 +188,29 @@ if (-not $SkipPhysicalOperationProfiles) {
         -RelativePath "scripts\iso52016\verify-iso52016-physical-operation-profile-stage.ps1" `
         -Arguments $args
 }
+if (-not $SkipPhysicalRoomSimulation) {
+    $args = @()
+
+    if ($SkipTests) {
+        $args += "-SkipTests"
+    }
+
+    Invoke-RepoScript `
+        -RelativePath "scripts\\iso52016\\verify-iso52016-physical-room-simulation-service-stage.ps1" `
+        -Arguments $args
+}
+
+if (-not $SkipPhysicalDiagnostics) {
+    $args = @()
+
+    if ($SkipTests) {
+        $args += "-SkipTests"
+    }
+
+    Invoke-RepoScript `
+        -RelativePath "scripts\iso52016\verify-iso52016-physical-room-model-diagnostics-stage.ps1" `
+        -Arguments $args
+}
 if (-not $SkipSummaryExporter) {
     Invoke-RepoScript `
         -RelativePath "scripts\iso52016\export-iso52016-matrix-baseline-summary.ps1"
@@ -264,13 +219,77 @@ if (-not $SkipSummaryExporter) {
 if (-not $SkipTests) {
     Push-Location $RepoRoot
     try {
-        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture|FullyQualifiedName~Iso52016MatrixExternalValidationAnchor|FullyQualifiedName~Iso52016MatrixEngineeringEdgeCase|FullyQualifiedName~Iso52016MatrixApplicationIntegrationHardening|FullyQualifiedName~Iso52016Physical|FullyQualifiedName~Iso52016PhysicalSurface|FullyQualifiedName~Iso52016PhysicalNodeModelSurfaceExpansion"
+        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixAllVerificationScript|FullyQualifiedName~Iso52016MatrixVerificationGate|FullyQualifiedName~Iso52016MatrixBaselineFixture|FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture|FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter|FullyQualifiedName~Iso52016MatrixExternalValidationFixture|FullyQualifiedName~Iso52016MatrixExternalValidationAnchor|FullyQualifiedName~Iso52016MatrixEngineeringEdgeCase|FullyQualifiedName~Iso52016MatrixApplicationIntegrationHardening"
     }
     finally {
         Pop-Location
     }
 }
 
+
+# BEGIN AE-ISO52016-002 PHYSICAL NODE MODEL VERIFY HOOK
+# Step 01 connects the ISO52016-inspired physical node model builder to the Matrix verification chain.
+# Claim boundary: validation/internal engineering anchors only; not full ISO 52016 parity, not pyBuildingEnergy parity,
+# not EnergyPlus parity, and not ASHRAE 140 validation.
+$skipPhysicalNodeModelValue = Get-Variable -Name SkipPhysicalNodeModel -Scope Script -ValueOnly -ErrorAction SilentlyContinue
+
+if (-not $skipPhysicalNodeModelValue) {
+    $physicalNodeModelVerifier = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-physical-node-model-stage.ps1"
+
+    if (-not (Test-Path -LiteralPath $physicalNodeModelVerifier)) {
+        throw "Required ISO52016 physical node model verifier is missing: scripts\iso52016\verify-iso52016-physical-node-model-stage.ps1"
+    }
+
+    $physicalNodeModelArguments = @{
+        RepoRoot = $RepoRoot
+    }
+
+    $skipTestsValue = Get-Variable -Name SkipTests -Scope Script -ValueOnly -ErrorAction SilentlyContinue
+    if ($skipTestsValue) {
+        $physicalNodeModelArguments.SkipTests = $true
+    }
+
+    & $physicalNodeModelVerifier @physicalNodeModelArguments
+}
+# END AE-ISO52016-002 PHYSICAL NODE MODEL VERIFY HOOK
+
+# AE-ISO52016-002 traceability literals:
+# SkipPhysicalNodeModel
+# verify-iso52016-physical-node-model-stage.ps1
+# Iso52016PhysicalNodeModelStageManifest.json
+# FullyQualifiedName~Iso52016Physical
+
+# BEGIN AE-ISO52016-002 PHYSICAL SURFACE MODEL VERIFY HOOK
+# Step 02 expands the ISO52016-inspired physical node model with explicit surface/construction adapters.
+# Claim boundary: validation/internal engineering anchors only; not full ISO 52016 parity, not pyBuildingEnergy parity,
+# not EnergyPlus parity, and not ASHRAE 140 validation.
+$skipPhysicalSurfaceModelValue = Get-Variable -Name SkipPhysicalSurfaceModel -Scope Script -ValueOnly -ErrorAction SilentlyContinue
+
+if (-not $skipPhysicalSurfaceModelValue) {
+    $physicalSurfaceModelVerifier = Join-Path $RepoRoot "scripts\iso52016\verify-iso52016-physical-surface-model-stage.ps1"
+
+    if (-not (Test-Path -LiteralPath $physicalSurfaceModelVerifier)) {
+        throw "Required ISO52016 physical surface model verifier is missing: scripts\iso52016\verify-iso52016-physical-surface-model-stage.ps1"
+    }
+
+    $physicalSurfaceModelArguments = @{
+        RepoRoot = $RepoRoot
+    }
+
+    $skipTestsValue = Get-Variable -Name SkipTests -Scope Script -ValueOnly -ErrorAction SilentlyContinue
+    if ($skipTestsValue) {
+        $physicalSurfaceModelArguments.SkipTests = $true
+    }
+
+    & $physicalSurfaceModelVerifier @physicalSurfaceModelArguments
+}
+# END AE-ISO52016-002 PHYSICAL SURFACE MODEL VERIFY HOOK
+
+# AE-ISO52016-002 Step 02 traceability literals:
+# SkipPhysicalSurfaceModel
+# verify-iso52016-physical-surface-model-stage.ps1
+# Iso52016PhysicalSurfaceModelExpansionManifest.json
+# FullyQualifiedName~Iso52016PhysicalSurface
 Write-Host "ISO52016 Matrix all verification passed."
 
 # BEGIN ISO52016 MATRIX STAGE CONTRACT HOOKS
@@ -307,23 +326,71 @@ Write-Host "ISO52016 Matrix all verification passed."
 # verify-iso52016-matrix-application-integration-hardening.ps1
 # verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1
 # assert-iso52016-matrix-application-integration-hardening-release-ready.ps1
-# Stage 2.4 physical node model:
-# verify-iso52016-physical-node-model-stage.ps1
-# Iso52016PhysicalNodeModelStageManifest.json
-# docs/calculations/Iso52016PhysicalNodeModelStage.md
-# AE-ISO52016-002 physical node model builder is an ISO52016-inspired internal engineering stage, not complete numerical equivalence validation.
-# Stage 2.5 physical surface and construction expansion:
-# verify-iso52016-physical-surface-model-stage.ps1
-# Iso52016PhysicalSurfaceModelExpansionManifest.json
-# docs/calculations/Iso52016PhysicalSurfaceModelExpansion.md
-# AE-ISO52016-002 Step 02 expands the physical node model with surface/construction contracts and internal engineering anchors only.
-# Stage 2.6 physical boundary profile stage:
+
+
+# AE-ISO52016-002 Step 03 physical boundary profile stage hook.
 # verify-iso52016-physical-boundary-profile-stage.ps1
 # Iso52016PhysicalBoundaryProfileStageManifest.json
 # docs/calculations/Iso52016PhysicalBoundaryProfileStage.md
-# AE-ISO52016-002 Step 03 adds per-surface hourly boundary driving temperatures with internal engineering anchors only.
-# Stage 2.7 physical operation profile stage:
+# validation/internal engineering anchors only
+
+# Stage 2.8 physical operation profile stage:
 # verify-iso52016-physical-operation-profile-stage.ps1
 # Iso52016PhysicalOperationProfileStageManifest.json
 # docs/calculations/Iso52016PhysicalOperationProfileStage.md
 # AE-ISO52016-002 Step 04 adds hourly operation profiles and Matrix hourly boundary conductance overrides with internal engineering anchors only.
+
+# Stage 2.8 physical room simulation service adapter:
+# verify-iso52016-physical-room-simulation-service-stage.ps1
+# Iso52016PhysicalRoomSimulationServiceStageManifest.json
+# docs/calculations/Iso52016PhysicalRoomSimulationServiceStage.md
+# AE-ISO52016-002 Step 05 adds a physical builder-to-Matrix solver service adapter with internal engineering anchors only.
+
+# Stage 2.9 physical room model diagnostics:
+# verify-iso52016-physical-room-model-diagnostics-stage.ps1
+# Iso52016PhysicalRoomModelDiagnosticsStageManifest.json
+# docs/calculations/Iso52016PhysicalRoomModelDiagnosticsStage.md
+# AE-ISO52016-002 Step 06 adds physical topology and gain-distribution diagnostics with internal engineering anchors only.
+
+# Step 07 physical verification orchestration.
+# Thin PowerShell entrypoint calls the durable C# verification tool.
+# verify-iso52016-physical-model-chain.ps1
+# Iso52016PhysicalVerificationOrchestrationStageManifest.json
+# AE-ISO52016-002 Step 07 physical verification orchestration.
+
+# Stage 2.9 physical model release-ready gate:
+# assert-iso52016-physical-model-chain-release-ready.ps1
+# Iso52016PhysicalModelChainReleaseGateManifest.json
+# AE-ISO52016-002 Step 08 keeps release readiness in a C# verification tool and keeps this .ps1 chain as a discoverability hook.
+
+# Stage 2.9 physical deterministic scenario anchors:
+# verify-iso52016-physical-scenario-anchors-stage.ps1
+# Iso52016PhysicalScenarioAnchorsStageManifest.json
+# docs/calculations/Iso52016PhysicalScenarioAnchorsStage.md
+# AE-ISO52016-002 Step 09 adds deterministic physical model scenario anchors with validation/internal engineering anchors only.
+
+# Stage 2.10 physical model selection adapter:
+# verify-iso52016-physical-model-selection-stage.ps1
+# Iso52016PhysicalModelSelectionStageManifest.json
+# docs/calculations/Iso52016PhysicalModelSelectionStage.md
+# AE-ISO52016-002 Step 10 physical model selection adapter keeps reduced Matrix as the default path and exposes the physical node model only through an explicit application-owned strategy contract.
+
+# Stage AE-ISO52016-002 Step 11 - physical model selection application guard.
+# This literal hook keeps the application-facing selection boundary discoverable from the Matrix all-verification script.
+# verify-iso52016-physical-model-selection-application-guard.ps1
+# Iso52016PhysicalModelSelectionApplicationGuardManifest.json
+# Iso52016PhysicalModelSelectionApplicationGuardTests
+# ReducedMatrix remains the default application path.
+# PhysicalNodeModel is explicit opt-in only.
+# Stage AE-ISO52016-002 Step 12 physical chain final readiness:
+# assert-iso52016-physical-chain-final-ready.ps1
+# Iso52016PhysicalChainFinalReadinessManifest.json
+# Iso52016PhysicalChainTraceabilityMatrix.json
+# docs/calculations/Iso52016PhysicalChainFinalReadiness.md
+# AE-ISO52016-002 physical chain remains ISO52016-inspired with validation/internal engineering anchors only.
+# AE-ISO52016-002 Step 13 physical selection application integration hardening
+# verify-iso52016-physical-selection-application-integration-hardening.ps1
+# Iso52016PhysicalSelectionApplicationIntegrationManifest.json
+# Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
+# ReducedMatrix remains the default application-facing path; PhysicalNodeModel is explicit opt-in.
+# ISO52016-inspired internal engineering gate only; not full parity, not EnergyPlus parity, not pyBuildingEnergy parity, not ASHRAE Standard 140 validation.

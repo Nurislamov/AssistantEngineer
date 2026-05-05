@@ -8,11 +8,7 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
     public void Manifest_DocumentsOperationProfileStageAndClaimBoundary()
     {
         var repoRoot = FindRepositoryRoot();
-        var manifestPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "releases",
-            "Iso52016PhysicalOperationProfileStageManifest.json");
+        var manifestPath = Path.Combine(repoRoot, "docs", "releases", "Iso52016PhysicalOperationProfileStageManifest.json");
 
         Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
 
@@ -22,11 +18,7 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
         Assert.Equal("AE-ISO52016-002-STEP-04", root.GetProperty("stageId").GetString());
         Assert.True(root.GetProperty("matrixAllVerificationIntegrated").GetBoolean());
 
-        var claimBoundary = root
-            .GetProperty("claimBoundary")
-            .EnumerateArray()
-            .Select(item => item.GetString())
-            .ToArray();
+        var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
 
         Assert.Contains("ISO52016-inspired physical operation profile stage.", claimBoundary);
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
@@ -40,11 +32,7 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
     public void VerificationScript_GuardsOperationProfileFilesAndTests()
     {
         var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-operation-profile-stage.ps1");
+        var scriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-physical-operation-profile-stage.ps1");
 
         Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
 
@@ -62,11 +50,7 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
     public void MatrixAllVerificationScript_ReferencesOperationProfileStage()
     {
         var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
+        var scriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-all.ps1");
 
         Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
 
@@ -81,11 +65,7 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
     public void StageDocument_StatesNoExternalParityClaims()
     {
         var repoRoot = FindRepositoryRoot();
-        var docPath = Path.Combine(
-            repoRoot,
-            "docs",
-            "calculations",
-            "Iso52016PhysicalOperationProfileStage.md");
+        var docPath = Path.Combine(repoRoot, "docs", "calculations", "Iso52016PhysicalOperationProfileStage.md");
 
         Assert.True(File.Exists(docPath), $"Stage document was not found: {docPath}");
 
@@ -104,16 +84,8 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
 
         while (directory is not null)
         {
-            var src = Path.Combine(
-                directory.FullName,
-                "src",
-                "Backend",
-                "AssistantEngineer.Modules.Calculations");
-
-            var tests = Path.Combine(
-                directory.FullName,
-                "tests",
-                "AssistantEngineer.Tests");
+            var src = Path.Combine(directory.FullName, "src", "Backend", "AssistantEngineer.Modules.Calculations");
+            var tests = Path.Combine(directory.FullName, "tests", "AssistantEngineer.Tests");
 
             if (Directory.Exists(src) && Directory.Exists(tests))
                 return directory.FullName;
@@ -121,7 +93,6 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException(
-            "Could not locate AssistantEngineer repository root from test base directory.");
+        throw new DirectoryNotFoundException("Could not locate AssistantEngineer repository root from test base directory.");
     }
 }

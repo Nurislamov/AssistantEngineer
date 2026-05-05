@@ -57,6 +57,12 @@ internal static class Iso52016Registration
         services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Matrix.IIso52016MatrixRoomEnergySimulationResultMapper, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix.Iso52016MatrixRoomEnergySimulationResultMapper>();
         services.AddScoped<IBuildingEnergyCalculator, Iso52016BuildingEnergyCalculator>();
 
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical.IIso52016PhysicalRoomModelBuilder, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical.Iso52016PhysicalRoomModelBuilder>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical.IIso52016PhysicalRoomEnergySimulationService, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical.Iso52016PhysicalRoomEnergySimulationService>();
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical.IIso52016PhysicalModelSelectionService, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical.Iso52016PhysicalModelSelectionService>();
+
+        services.AddScoped<AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical.IIso52016PhysicalRoomModelDiagnosticsBuilder, AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical.Iso52016PhysicalRoomModelDiagnosticsBuilder>();
+
         return services;
     }
 }

@@ -1,9 +1,10 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 
 /// <summary>
 /// Options for the ISO52016-inspired physical room node-model stage.
 /// The defaults intentionally preserve the Step 01 deterministic three-node fallback
-/// and add deterministic defaults for Step 02 explicit surface/construction expansion.
+/// and add deterministic defaults for explicit surface/construction, boundary profile,
+/// and operation profile stages.
 /// </summary>
 public sealed record Iso52016PhysicalNodeModelOptions(
     string AirNodeId = "air",

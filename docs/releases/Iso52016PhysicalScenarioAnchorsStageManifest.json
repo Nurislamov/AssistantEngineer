@@ -1,0 +1,40 @@
+{
+  "stageId": "AE-ISO52016-002-STEP-09",
+  "title": "ISO52016-inspired physical scenario anchors stage",
+  "status": "internal-engineering-anchor",
+  "closedWorkItems": [
+    "AE-ISO52016-002"
+  ],
+  "dependsOn": [
+    "AE-ISO52016-002-STEP-01",
+    "AE-ISO52016-002-STEP-02",
+    "AE-ISO52016-002-STEP-03",
+    "AE-ISO52016-002-STEP-04",
+    "AE-ISO52016-002-STEP-05",
+    "AE-ISO52016-002-STEP-06",
+    "AE-ISO52016-002-STEP-07",
+    "AE-ISO52016-002-STEP-08"
+  ],
+  "claimBoundary": [
+    "ISO52016-inspired physical scenario anchor stage.",
+    "Validation/internal engineering anchors only.",
+    "Not complete ISO 52016 numerical equivalence.",
+    "Not pyBuildingEnergy numerical equivalence.",
+    "Not EnergyPlus numerical equivalence.",
+    "Not ASHRAE Standard 140 benchmark-grade claim."
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalScenarioAnchorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalScenarioAnchorsStageTraceabilityTests.cs"
+  ],
+  "documentationFiles": [
+    "docs/calculations/Iso52016PhysicalScenarioAnchorsStage.md",
+    "docs/releases/Iso52016PhysicalScenarioAnchorsStageManifest.json"
+  ],
+  "verificationScripts": [
+    "scripts/iso52016/verify-iso52016-physical-scenario-anchors-stage.ps1",
+    "scripts/iso52016/verify-iso52016-matrix-all.ps1"
+  ],
+  "matrixAllVerificationDiscoverable": true,
+  "generatedArtifacts": []
+}

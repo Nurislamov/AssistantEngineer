@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 
 /// <summary>
 /// Optional hourly override for a declared Matrix boundary conductance link.

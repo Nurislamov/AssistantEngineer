@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 
 /// <summary>
 /// Optional hourly operation profile row for the physical room/zone model builder.

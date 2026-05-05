@@ -319,7 +319,6 @@ public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
 
         return link.ConductanceWPerK;
     }
-
     private static double[] SolveLinearSystem(
         double[,] matrix,
         double[] rhs)

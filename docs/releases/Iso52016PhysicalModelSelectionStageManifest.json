@@ -1,0 +1,51 @@
+{
+  "stageId": "AE-ISO52016-002-STEP-10",
+  "title": "ISO52016-inspired physical model selection adapter stage",
+  "status": "internal-engineering-anchor",
+  "closedWorkItems": [
+    "AE-ISO52016-002"
+  ],
+  "dependsOn": [
+    "AE-ISO52016-002-STEP-01",
+    "AE-ISO52016-002-STEP-02",
+    "AE-ISO52016-002-STEP-03",
+    "AE-ISO52016-002-STEP-04",
+    "AE-ISO52016-002-STEP-05",
+    "AE-ISO52016-002-STEP-06",
+    "AE-ISO52016-002-STEP-07",
+    "AE-ISO52016-002-STEP-08",
+    "AE-ISO52016-002-STEP-09"
+  ],
+  "claimBoundary": [
+    "ISO52016-inspired physical model selection adapter stage.",
+    "Validation/internal engineering anchors only.",
+    "Reduced Matrix remains the default application path.",
+    "Physical node model requires explicit strategy selection.",
+    "Not complete ISO 52016 numerical equivalence.",
+    "Not pyBuildingEnergy numerical equivalence.",
+    "Not EnergyPlus numerical equivalence.",
+    "Not ASHRAE Standard 140 benchmark-grade claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionStrategy.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionRequest.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/Iso52016Registration.cs"
+  ],
+  "documentationFiles": [
+    "docs/calculations/Iso52016PhysicalModelSelectionStage.md",
+    "docs/releases/Iso52016PhysicalModelSelectionStageManifest.json"
+  ],
+  "verificationScripts": [
+    "scripts/iso52016/verify-iso52016-physical-model-selection-stage.ps1",
+    "scripts/iso52016/verify-iso52016-matrix-all.ps1"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionServiceTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionStageTraceabilityTests.cs"
+  ],
+  "matrixAllVerificationIntegrated": true,
+  "generatedArtifacts": []
+}

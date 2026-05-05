@@ -1,0 +1,140 @@
+{
+  "traceabilityId": "AE-ISO52016-002-PHYSICAL-CHAIN",
+  "title": "ISO52016-inspired physical chain traceability matrix",
+  "claimBoundary": "validation/internal engineering anchors only",
+  "workItems": [
+    {
+      "id": "AE-ISO52016-002-STEP-01",
+      "name": "Physical node model builder",
+      "implementation": [
+        "IIso52016PhysicalRoomModelBuilder",
+        "Iso52016PhysicalRoomModelBuilder",
+        "Iso52016PhysicalNodeModelOptions",
+        "Iso52016PhysicalRoomModelRequest"
+      ],
+      "verification": [
+        "Iso52016PhysicalRoomModelBuilderTests",
+        "verify-iso52016-physical-node-model-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-02",
+      "name": "Physical surfaces and construction expansion",
+      "implementation": [
+        "Iso52016PhysicalSurface",
+        "Iso52016PhysicalConstructionLayer",
+        "Iso52016PhysicalSurfaceBoundaryType"
+      ],
+      "verification": [
+        "Iso52016PhysicalSurfaceModelBuilderTests",
+        "verify-iso52016-physical-surface-model-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-03",
+      "name": "Physical boundary profile stage",
+      "implementation": [
+        "Iso52016PhysicalSurfaceHourlyBoundaryCondition"
+      ],
+      "verification": [
+        "Iso52016PhysicalSurfaceBoundaryConditionTests",
+        "verify-iso52016-physical-boundary-profile-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-04",
+      "name": "Physical operation profile stage",
+      "implementation": [
+        "Iso52016PhysicalHourlyOperationCondition",
+        "Iso52016MatrixHourlyBoundaryConductanceOverride"
+      ],
+      "verification": [
+        "Iso52016PhysicalOperationProfileTests",
+        "Iso52016MatrixHourlyBoundaryConductanceOverrideTests",
+        "verify-iso52016-physical-operation-profile-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-05",
+      "name": "Physical room simulation service adapter",
+      "implementation": [
+        "IIso52016PhysicalRoomEnergySimulationService",
+        "Iso52016PhysicalRoomEnergySimulationService",
+        "Iso52016PhysicalRoomEnergySimulationResult"
+      ],
+      "verification": [
+        "Iso52016PhysicalRoomEnergySimulationServiceTests",
+        "verify-iso52016-physical-room-simulation-service-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-06",
+      "name": "Physical model diagnostics",
+      "implementation": [
+        "IIso52016PhysicalRoomModelDiagnosticsBuilder",
+        "Iso52016PhysicalRoomModelDiagnosticsBuilder",
+        "Iso52016PhysicalRoomModelDiagnosticsProfile"
+      ],
+      "verification": [
+        "Iso52016PhysicalRoomModelDiagnosticsBuilderTests",
+        "verify-iso52016-physical-room-model-diagnostics-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-07",
+      "name": "Physical verification orchestration",
+      "implementation": [
+        "AssistantEngineer.Tools.Iso52016PhysicalVerification"
+      ],
+      "verification": [
+        "Iso52016PhysicalVerificationOrchestrationTests",
+        "verify-iso52016-physical-model-chain.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-08",
+      "name": "Physical model chain release-ready gate",
+      "implementation": [
+        "assert-iso52016-physical-model-chain-release-ready.ps1"
+      ],
+      "verification": [
+        "Iso52016PhysicalModelChainReleaseReadyGateTests"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-09",
+      "name": "Physical scenario anchors",
+      "implementation": [
+        "Iso52016PhysicalScenarioAnchorTests"
+      ],
+      "verification": [
+        "verify-iso52016-physical-scenario-anchors-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-10",
+      "name": "Physical model selection adapter",
+      "implementation": [
+        "IIso52016PhysicalModelSelectionService",
+        "Iso52016PhysicalModelSelectionService",
+        "Iso52016PhysicalModelSelectionStrategy"
+      ],
+      "verification": [
+        "Iso52016PhysicalModelSelectionServiceTests",
+        "verify-iso52016-physical-model-selection-stage.ps1"
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-11",
+      "name": "Physical model selection application guard",
+      "implementation": [
+        "ReducedMatrix default path",
+        "PhysicalNodeModel explicit opt-in path"
+      ],
+      "verification": [
+        "Iso52016PhysicalModelSelectionApplicationGuardTests",
+        "verify-iso52016-physical-model-selection-application-guard.ps1"
+      ]
+    }
+  ]
+}

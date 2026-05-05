@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 
 /// <summary>
 /// Physical surface definition used to expand a room into multiple surface and mass nodes.

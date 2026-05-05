@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
+﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
@@ -53,12 +53,10 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
         var airNodeId = modelOptions.AirNodeId.Trim();
         var internalSurfaceNodeId = modelOptions.InternalSurfaceNodeId.Trim();
         var thermalMassNodeId = modelOptions.ThermalMassNodeId.Trim();
-
         var outdoorBoundaryId = modelOptions.OutdoorBoundaryId.Trim();
         var groundBoundaryId = modelOptions.GroundBoundaryId.Trim();
         var adjacentBoundaryId = modelOptions.AdjacentBoundaryId.Trim();
         var ventilationBoundaryId = modelOptions.VentilationBoundaryId.Trim();
-
         var initialTemperatureC = heatBalanceOptions.InitialIndoorTemperatureC;
         var totalCapacityJPerK = hourlyInputProfile.ThermalCapacityJPerK;
         var ventilationConductanceByHour = BuildVentilationConductanceByHour(
@@ -73,12 +71,10 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
                 HeatCapacityJPerK: totalCapacityJPerK * modelOptions.AirHeatCapacityFraction,
                 InitialTemperatureC: initialTemperatureC,
                 IsAirNode: true),
-
             new Iso52016MatrixNodeDefinition(
                 NodeId: internalSurfaceNodeId,
                 HeatCapacityJPerK: totalCapacityJPerK * modelOptions.InternalSurfaceHeatCapacityFraction,
                 InitialTemperatureC: initialTemperatureC),
-
             new Iso52016MatrixNodeDefinition(
                 NodeId: thermalMassNodeId,
                 HeatCapacityJPerK: totalCapacityJPerK * modelOptions.ThermalMassHeatCapacityFraction,
@@ -87,13 +83,11 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
 
         var airToSurfaceConductanceWPerK =
             modelOptions.AirToInternalSurfaceConductanceWPerK ??
-            hourlyInputProfile.TotalHeatTransferCoefficientWPerK *
-            modelOptions.AirToInternalSurfaceConductanceMultiplier;
+            hourlyInputProfile.TotalHeatTransferCoefficientWPerK * modelOptions.AirToInternalSurfaceConductanceMultiplier;
 
         var surfaceToMassConductanceWPerK =
             modelOptions.InternalSurfaceToThermalMassConductanceWPerK ??
-            hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK *
-            modelOptions.InternalSurfaceToThermalMassConductanceMultiplier;
+            hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK * modelOptions.InternalSurfaceToThermalMassConductanceMultiplier;
 
         var internalConductances = new[]
         {
@@ -101,7 +95,6 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
                 FromNodeId: airNodeId,
                 ToNodeId: internalSurfaceNodeId,
                 ConductanceWPerK: airToSurfaceConductanceWPerK),
-
             new Iso52016MatrixConductanceLink(
                 FromNodeId: internalSurfaceNodeId,
                 ToNodeId: thermalMassNodeId,
@@ -113,20 +106,15 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
             new(
                 NodeId: internalSurfaceNodeId,
                 BoundaryId: outdoorBoundaryId,
-                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK *
-                    modelOptions.OutdoorTransmissionConductanceFraction),
-
+                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK * modelOptions.OutdoorTransmissionConductanceFraction),
             new(
                 NodeId: internalSurfaceNodeId,
                 BoundaryId: groundBoundaryId,
-                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK *
-                    modelOptions.GroundTransmissionConductanceFraction),
-
+                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK * modelOptions.GroundTransmissionConductanceFraction),
             new(
                 NodeId: internalSurfaceNodeId,
                 BoundaryId: adjacentBoundaryId,
-                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK *
-                    modelOptions.AdjacentTransmissionConductanceFraction)
+                ConductanceWPerK: hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK * modelOptions.AdjacentTransmissionConductanceFraction)
         };
 
         if (hasVentilation)
@@ -155,14 +143,6 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
                 var solarAirGainsW = hour.SolarGainsW * solarToAirFraction;
                 var remainingSolarGainsW = hour.SolarGainsW - solarAirGainsW;
 
-                var internalSurfaceGainsW =
-                    remainingSolarGainsW * modelOptions.SolarGainsToInternalSurfaceFraction +
-                    internalRadiativeGainsW * modelOptions.InternalRadiativeGainsToInternalSurfaceFraction;
-
-                var thermalMassGainsW =
-                    remainingSolarGainsW * (1.0 - modelOptions.SolarGainsToInternalSurfaceFraction) +
-                    internalRadiativeGainsW * (1.0 - modelOptions.InternalRadiativeGainsToInternalSurfaceFraction);
-
                 var boundaryTemperatures = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
                 {
                     [outdoorBoundaryId] = hour.OutdoorTemperatureC,
@@ -186,8 +166,10 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
                     NodeHeatGainsW: new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
                     {
                         [airNodeId] = internalConvectiveGainsW + solarAirGainsW,
-                        [internalSurfaceNodeId] = internalSurfaceGainsW,
-                        [thermalMassNodeId] = thermalMassGainsW
+                        [internalSurfaceNodeId] = remainingSolarGainsW * modelOptions.SolarGainsToInternalSurfaceFraction +
+                            internalRadiativeGainsW * modelOptions.InternalRadiativeGainsToInternalSurfaceFraction,
+                        [thermalMassNodeId] = remainingSolarGainsW * (1.0 - modelOptions.SolarGainsToInternalSurfaceFraction) +
+                            internalRadiativeGainsW * (1.0 - modelOptions.InternalRadiativeGainsToInternalSurfaceFraction)
                     },
                     HeatingSetpointC: hour.HeatingSetpointC,
                     CoolingSetpointC: hour.CoolingSetpointC,
@@ -227,6 +209,10 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
             hourlyInputProfile,
             operationConditionsByHour);
         var hasVentilation = ventilationConductanceByHour.Values.Any(value => value > 0);
+        var boundaryConditionsBySurface = BuildBoundaryConditionLookup(surfaceBoundaryConditions);
+        var surfacesWithHourlyBoundaryConditions = new HashSet<string>(
+            boundaryConditionsBySurface.Keys,
+            StringComparer.OrdinalIgnoreCase);
 
         var nodes = new List<Iso52016MatrixNodeDefinition>
         {
@@ -239,10 +225,6 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
 
         var internalConductances = new List<Iso52016MatrixConductanceLink>();
         var boundaryConductances = new List<Iso52016MatrixBoundaryConductance>();
-        var boundaryConditionsBySurface = BuildBoundaryConditionLookup(surfaceBoundaryConditions);
-        var surfacesWithHourlyBoundaryConditions = new HashSet<string>(
-            boundaryConditionsBySurface.Keys,
-            StringComparer.OrdinalIgnoreCase);
 
         foreach (var surface in surfaces)
         {
@@ -317,14 +299,6 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
             {
                 var boundaryTemperatures = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
                 var ventilationConductanceWPerK = ventilationConductanceByHour[hour.HourOfYear];
-
-                if (hasVentilation)
-                {
-                    boundaryTemperatures[modelOptions.VentilationBoundaryId.Trim()] = ResolveVentilationBoundaryTemperatureC(
-                        hour,
-                        operationConditionsByHour);
-                }
-
                 var internalConvectiveFraction = ResolveInternalGainsConvectiveFraction(
                     modelOptions,
                     hour,
@@ -332,15 +306,21 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
                 var solarToAirFraction = ResolveSolarGainsToAirFraction(
                     hour,
                     operationConditionsByHour);
-                var internalRadiativeGainsW =
-                    hour.InternalGainsW * (1.0 - internalConvectiveFraction);
+                var internalConvectiveGainsW = hour.InternalGainsW * internalConvectiveFraction;
+                var internalRadiativeGainsW = hour.InternalGainsW - internalConvectiveGainsW;
                 var solarAirGainsW = hour.SolarGainsW * solarToAirFraction;
                 var remainingSolarGainsW = hour.SolarGainsW - solarAirGainsW;
-
                 var nodeHeatGains = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase)
                 {
-                    [airNodeId] = hour.InternalGainsW * internalConvectiveFraction + solarAirGainsW
+                    [airNodeId] = internalConvectiveGainsW + solarAirGainsW
                 };
+
+                if (hasVentilation)
+                {
+                    boundaryTemperatures[modelOptions.VentilationBoundaryId.Trim()] = ResolveVentilationBoundaryTemperatureC(
+                        hour,
+                        operationConditionsByHour);
+                }
 
                 foreach (var surface in surfaces)
                 {
@@ -450,7 +430,6 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
             return Result.Validation("ISO 52016 physical room model time step must be greater than zero.");
 
         var modelOptions = request.ModelOptions ?? new Iso52016PhysicalNodeModelOptions();
-
         var idValidation = ValidateIds(modelOptions);
 
         if (idValidation.IsFailure)
@@ -614,13 +593,11 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
 
         var airToSurfaceConductanceWPerK =
             modelOptions.AirToInternalSurfaceConductanceWPerK ??
-            hourlyInputProfile.TotalHeatTransferCoefficientWPerK *
-            modelOptions.AirToInternalSurfaceConductanceMultiplier;
+            hourlyInputProfile.TotalHeatTransferCoefficientWPerK * modelOptions.AirToInternalSurfaceConductanceMultiplier;
 
         var surfaceToMassConductanceWPerK =
             modelOptions.InternalSurfaceToThermalMassConductanceWPerK ??
-            hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK *
-            modelOptions.InternalSurfaceToThermalMassConductanceMultiplier;
+            hourlyInputProfile.TransmissionHeatTransferCoefficientWPerK * modelOptions.InternalSurfaceToThermalMassConductanceMultiplier;
 
         if (airToSurfaceConductanceWPerK <= 0)
             return Result.Validation("ISO 52016 physical room model air-to-surface conductance must be greater than zero.");
@@ -776,6 +753,7 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
         var hourIds = hourlyInputProfile.Hours
             .Select(hour => hour.HourOfYear)
             .ToHashSet();
+
         var uniqueHours = new HashSet<int>();
 
         foreach (var condition in operationConditions)
@@ -788,15 +766,15 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
 
             if (condition.VentilationHeatTransferCoefficientWPerK.HasValue &&
                 (double.IsNaN(condition.VentilationHeatTransferCoefficientWPerK.Value) ||
-                 double.IsInfinity(condition.VentilationHeatTransferCoefficientWPerK.Value) ||
-                 condition.VentilationHeatTransferCoefficientWPerK.Value < 0))
+                    double.IsInfinity(condition.VentilationHeatTransferCoefficientWPerK.Value) ||
+                    condition.VentilationHeatTransferCoefficientWPerK.Value < 0))
             {
                 return Result.Validation($"ISO 52016 physical room model operation condition ventilation heat transfer coefficient must be finite and non-negative at hour {condition.HourOfYear}.");
             }
 
             if (condition.VentilationBoundaryTemperatureC.HasValue &&
                 (double.IsNaN(condition.VentilationBoundaryTemperatureC.Value) ||
-                 double.IsInfinity(condition.VentilationBoundaryTemperatureC.Value)))
+                    double.IsInfinity(condition.VentilationBoundaryTemperatureC.Value)))
             {
                 return Result.Validation($"ISO 52016 physical room model operation condition ventilation boundary temperature must be finite at hour {condition.HourOfYear}.");
             }
@@ -822,128 +800,102 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
         Func<Iso52016PhysicalSurface, double?> selector,
         string label)
     {
-        var configured = surfaces
-            .Where(surface => selector(surface).HasValue)
+        var provided = surfaces
+            .Select(selector)
             .ToArray();
 
-        if (configured.Length == 0)
+        if (provided.All(value => !value.HasValue))
             return Result.Success();
 
-        if (configured.Length != surfaces.Count)
-            return Result.Validation($"ISO 52016 physical room model {label} must be specified for every surface when any configured fraction is used.");
+        if (provided.Any(value => !value.HasValue))
+            return Result.Validation($"ISO 52016 physical room model {label} must be provided for all surfaces when any surface specifies them.");
 
-        foreach (var surface in configured)
+        foreach (var value in provided.Select(value => value!.Value))
         {
-            var value = selector(surface)!.Value;
-
             if (value < 0 || value > 1)
-                return Result.Validation($"ISO 52016 physical room model surface '{surface.SurfaceId}' {label} must be between 0 and 1.");
+                return Result.Validation($"ISO 52016 physical room model {label} must be between 0 and 1.");
         }
 
-        var sum = configured.Sum(surface => selector(surface)!.Value);
-
-        if (Math.Abs(sum - 1.0) > FractionTolerance)
+        if (Math.Abs(provided.Sum(value => value!.Value) - 1.0) > FractionTolerance)
             return Result.Validation($"ISO 52016 physical room model {label} must sum to 1.0.");
 
         return Result.Success();
     }
 
-    private static Dictionary<string, Dictionary<int, double>> BuildBoundaryConditionLookup(
+    private static IReadOnlyDictionary<string, IReadOnlyDictionary<int, double>> BuildBoundaryConditionLookup(
         IReadOnlyList<Iso52016PhysicalSurfaceHourlyBoundaryCondition> surfaceBoundaryConditions)
     {
-        var lookup = new Dictionary<string, Dictionary<int, double>>(StringComparer.OrdinalIgnoreCase);
+        var result = new Dictionary<string, IReadOnlyDictionary<int, double>>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var condition in surfaceBoundaryConditions)
+        foreach (var group in surfaceBoundaryConditions.GroupBy(condition => condition.SurfaceId.Trim(), StringComparer.OrdinalIgnoreCase))
         {
-            var surfaceId = condition.SurfaceId.Trim();
-
-            if (!lookup.TryGetValue(surfaceId, out var hourlyConditions))
-            {
-                hourlyConditions = new Dictionary<int, double>();
-                lookup[surfaceId] = hourlyConditions;
-            }
-
-            hourlyConditions[condition.HourOfYear] = condition.BoundaryTemperatureC;
-        }
-
-        return lookup;
-    }
-
-    private static Dictionary<int, Iso52016PhysicalHourlyOperationCondition> BuildOperationConditionLookup(
-        IReadOnlyList<Iso52016PhysicalHourlyOperationCondition> operationConditions) =>
-        operationConditions.ToDictionary(
-            condition => condition.HourOfYear,
-            condition => condition);
-
-    private static Dictionary<int, double> BuildVentilationConductanceByHour(
-        Iso52016RoomHourlyInputProfile hourlyInputProfile,
-        IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> operationConditionsByHour)
-    {
-        var result = new Dictionary<int, double>();
-
-        foreach (var hour in hourlyInputProfile.Hours)
-        {
-            var conductance = operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
-                operationCondition.VentilationHeatTransferCoefficientWPerK.HasValue
-                    ? operationCondition.VentilationHeatTransferCoefficientWPerK.Value
-                    : hour.VentilationHeatTransferCoefficientWPerK;
-
-            result[hour.HourOfYear] = conductance;
+            result[group.Key] = group.ToDictionary(
+                condition => condition.HourOfYear,
+                condition => condition.BoundaryTemperatureC);
         }
 
         return result;
     }
 
-    private static double ResolveVentilationBoundaryTemperatureC(
-        Iso52016RoomHourlyInputRecord hour,
+    private static IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> BuildOperationConditionLookup(
+        IReadOnlyList<Iso52016PhysicalHourlyOperationCondition> operationConditions) =>
+        operationConditions.ToDictionary(
+            condition => condition.HourOfYear,
+            condition => condition);
+
+    private static IReadOnlyDictionary<int, double> BuildVentilationConductanceByHour(
+        Iso52016RoomHourlyInputProfile hourlyInputProfile,
         IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> operationConditionsByHour) =>
-        operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
-        operationCondition.VentilationBoundaryTemperatureC.HasValue
-            ? operationCondition.VentilationBoundaryTemperatureC.Value
-            : hour.OutdoorTemperatureC;
+        hourlyInputProfile.Hours.ToDictionary(
+            hour => hour.HourOfYear,
+            hour => operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
+                operationCondition.VentilationHeatTransferCoefficientWPerK.HasValue
+                    ? operationCondition.VentilationHeatTransferCoefficientWPerK.Value
+                    : hour.VentilationHeatTransferCoefficientWPerK);
 
     private static double ResolveInternalGainsConvectiveFraction(
         Iso52016PhysicalNodeModelOptions modelOptions,
         Iso52016RoomHourlyInputRecord hour,
         IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> operationConditionsByHour) =>
         operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
-        operationCondition.InternalGainsConvectiveFraction.HasValue
-            ? operationCondition.InternalGainsConvectiveFraction.Value
-            : modelOptions.InternalGainsConvectiveFraction;
+            operationCondition.InternalGainsConvectiveFraction.HasValue
+                ? operationCondition.InternalGainsConvectiveFraction.Value
+                : modelOptions.InternalGainsConvectiveFraction;
 
     private static double ResolveSolarGainsToAirFraction(
         Iso52016RoomHourlyInputRecord hour,
         IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> operationConditionsByHour) =>
         operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
-        operationCondition.SolarGainsToAirFraction.HasValue
-            ? operationCondition.SolarGainsToAirFraction.Value
-            : 0.0;
+            operationCondition.SolarGainsToAirFraction.HasValue
+                ? operationCondition.SolarGainsToAirFraction.Value
+                : 0.0;
 
-    private static Dictionary<string, double> BuildSurfaceDistribution(
+    private static double ResolveVentilationBoundaryTemperatureC(
+        Iso52016RoomHourlyInputRecord hour,
+        IReadOnlyDictionary<int, Iso52016PhysicalHourlyOperationCondition> operationConditionsByHour) =>
+        operationConditionsByHour.TryGetValue(hour.HourOfYear, out var operationCondition) &&
+            operationCondition.VentilationBoundaryTemperatureC.HasValue
+                ? operationCondition.VentilationBoundaryTemperatureC.Value
+                : hour.OutdoorTemperatureC;
+
+    private static IReadOnlyDictionary<string, double> BuildSurfaceDistribution(
         IReadOnlyList<Iso52016PhysicalSurface> surfaces,
         Func<Iso52016PhysicalSurface, double?> selector)
     {
-        var dictionary = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
-        var hasConfiguredFractions = surfaces.Any(surface => selector(surface).HasValue);
-
-        if (hasConfiguredFractions)
+        if (surfaces.All(surface => selector(surface).HasValue))
         {
-            foreach (var surface in surfaces)
-            {
-                dictionary[surface.SurfaceId.Trim()] = selector(surface)!.Value;
-            }
-
-            return dictionary;
+            return surfaces.ToDictionary(
+                surface => surface.SurfaceId.Trim(),
+                surface => selector(surface)!.Value,
+                StringComparer.OrdinalIgnoreCase);
         }
 
         var totalAreaM2 = surfaces.Sum(surface => surface.AreaM2);
 
-        foreach (var surface in surfaces)
-        {
-            dictionary[surface.SurfaceId.Trim()] = surface.AreaM2 / totalAreaM2;
-        }
-
-        return dictionary;
+        return surfaces.ToDictionary(
+            surface => surface.SurfaceId.Trim(),
+            surface => surface.AreaM2 / totalAreaM2,
+            StringComparer.OrdinalIgnoreCase);
     }
 
     private static string ResolveSurfaceNodeId(
@@ -961,36 +913,41 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
     private static string ResolveBoundaryId(
         Iso52016PhysicalSurface surface,
         Iso52016PhysicalNodeModelOptions modelOptions,
-        ISet<string>? surfacesWithHourlyBoundaryConditions = null)
+        IReadOnlySet<string> surfacesWithHourlyBoundaryConditions)
     {
         if (!string.IsNullOrWhiteSpace(surface.BoundaryId))
             return surface.BoundaryId.Trim();
 
-        var boundaryId = surface.BoundaryType switch
+        var baseBoundaryId = ResolveDefaultBoundaryId(surface, modelOptions);
+        var surfaceId = surface.SurfaceId.Trim();
+
+        return surfacesWithHourlyBoundaryConditions.Contains(surfaceId)
+            ? $"{baseBoundaryId}:{surfaceId}"
+            : baseBoundaryId;
+    }
+
+    private static string ResolveDefaultBoundaryId(
+        Iso52016PhysicalSurface surface,
+        Iso52016PhysicalNodeModelOptions modelOptions) =>
+        surface.BoundaryType switch
         {
             Iso52016PhysicalSurfaceBoundaryType.Outdoor => modelOptions.OutdoorBoundaryId.Trim(),
             Iso52016PhysicalSurfaceBoundaryType.Ground => modelOptions.GroundBoundaryId.Trim(),
             Iso52016PhysicalSurfaceBoundaryType.AdjacentConditioned => modelOptions.AdjacentConditionedBoundaryId.Trim(),
             Iso52016PhysicalSurfaceBoundaryType.AdjacentUnconditioned => modelOptions.AdjacentUnconditionedBoundaryId.Trim(),
-            _ => throw new InvalidOperationException("Unsupported ISO 52016 physical surface boundary type.")
+            _ => throw new ArgumentOutOfRangeException(nameof(surface), "Unsupported physical surface boundary type.")
         };
-
-        if (surfacesWithHourlyBoundaryConditions?.Contains(surface.SurfaceId.Trim()) == true)
-            return $"{boundaryId}:{surface.SurfaceId.Trim()}";
-
-        return boundaryId;
-    }
 
     private static double ResolveBoundaryTemperatureC(
         Iso52016PhysicalSurface surface,
         Iso52016PhysicalNodeModelOptions modelOptions,
         Iso52016RoomHourlyInputRecord hour,
-        IReadOnlyDictionary<string, Dictionary<int, double>> boundaryConditionsBySurface)
+        IReadOnlyDictionary<string, IReadOnlyDictionary<int, double>> boundaryConditionsBySurface)
     {
         var surfaceId = surface.SurfaceId.Trim();
 
-        if (boundaryConditionsBySurface.TryGetValue(surfaceId, out var hourlyConditions) &&
-            hourlyConditions.TryGetValue(hour.HourOfYear, out var boundaryTemperatureC))
+        if (boundaryConditionsBySurface.TryGetValue(surfaceId, out var byHour) &&
+            byHour.TryGetValue(hour.HourOfYear, out var boundaryTemperatureC))
         {
             return boundaryTemperatureC;
         }
@@ -1001,21 +958,26 @@ public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomMode
             Iso52016PhysicalSurfaceBoundaryType.Ground => hour.GroundBoundaryTemperatureC,
             Iso52016PhysicalSurfaceBoundaryType.AdjacentConditioned => surface.AdjacentBoundaryTemperatureC ?? modelOptions.AdjacentBoundaryTemperatureC,
             Iso52016PhysicalSurfaceBoundaryType.AdjacentUnconditioned => surface.AdjacentBoundaryTemperatureC ?? modelOptions.AdjacentBoundaryTemperatureC,
-            _ => throw new InvalidOperationException("Unsupported ISO 52016 physical surface boundary type.")
+            _ => throw new ArgumentOutOfRangeException(nameof(surface), "Unsupported physical surface boundary type.")
         };
     }
 
     private static double CalculateBoundaryConductanceWPerK(
         Iso52016PhysicalSurface surface)
     {
-        var totalResistanceM2KPerW = surface.ConstructionLayers.Sum(
-            layer => layer.ThermalResistanceM2KPerW);
+        var resistanceM2KPerW = surface.ConstructionLayers.Sum(layer => layer.ThicknessM / layer.ConductivityWPerMK);
 
-        return surface.AreaM2 / totalResistanceM2KPerW;
+        if (resistanceM2KPerW <= 0)
+            throw new InvalidOperationException($"ISO 52016 physical room model surface '{surface.SurfaceId}' construction resistance must be greater than zero.");
+
+        return surface.AreaM2 / resistanceM2KPerW;
     }
 
     private static double CalculateConstructionHeatCapacityJPerK(
         Iso52016PhysicalSurface surface) =>
-        surface.AreaM2 * surface.ConstructionLayers.Sum(
-            layer => layer.HeatCapacityJPerM2K);
+        surface.ConstructionLayers.Sum(layer =>
+            layer.ThicknessM *
+            surface.AreaM2 *
+            layer.DensityKgPerM3 *
+            layer.SpecificHeatCapacityJPerKgK);
 }

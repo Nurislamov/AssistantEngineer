@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
+﻿namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 
 /// <summary>
 /// One hourly ISO 52016 Matrix solver input row.
