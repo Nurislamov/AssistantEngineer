@@ -57,7 +57,7 @@ public class Wall
             if (adjacentRoom is null)
                 return Result<Wall>.Validation("Adjacent room is required for adjacent wall boundary types.");
 
-            if (adjacentRoom == room || adjacentRoom.Id == room.Id)
+            if (ReferenceEquals(adjacentRoom, room) || (room.Id != 0 && adjacentRoom.Id == room.Id))
                 return Result<Wall>.Validation("A wall cannot reference the same room as its adjacent room.");
         }
         else if (adjacentRoom is not null)
@@ -93,7 +93,7 @@ public class Wall
             if (adjacentRoom is null)
                 return Result.Validation("Adjacent room is required for adjacent wall boundary types.");
 
-            if (adjacentRoom == Room || adjacentRoom.Id == RoomId)
+            if (ReferenceEquals(adjacentRoom, Room) || (RoomId != 0 && adjacentRoom.Id == RoomId))
                 return Result.Validation("A wall cannot reference the same room as its adjacent room.");
         }
         else if (adjacentRoom is not null)

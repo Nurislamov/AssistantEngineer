@@ -1,0 +1,9 @@
+{
+  "id": "APPLICATION-ISO52016-MATRIX-INTEGRATION-001",
+  "scenarioName": "building-facade-room-aggregation",
+  "description": "Application facade aggregation invariant: building annual loads and gains equal the sum of room results and hourly records.",
+  "sourceType": "ManualEngineeringIntegrationAnchor",
+  "scope": "ApplicationIntegrationHardening",
+  "validationType": "ApplicationContractInvariant",
+  "expectedInvariant": "Building totals must equal room-result totals and hourly totals."
+}

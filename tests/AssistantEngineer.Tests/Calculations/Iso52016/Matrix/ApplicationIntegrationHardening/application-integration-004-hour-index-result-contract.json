@@ -1,0 +1,9 @@
+{
+  "id": "APPLICATION-ISO52016-MATRIX-INTEGRATION-004",
+  "scenarioName": "building-result-hour-index-contract",
+  "description": "Result contract invariant: GetHour uses hour-of-year indexing and rejects out-of-range access.",
+  "sourceType": "ManualEngineeringIntegrationAnchor",
+  "scope": "ApplicationIntegrationHardening",
+  "validationType": "ApplicationResultContractInvariant",
+  "expectedInvariant": "GetHour(0) returns hour 0 and GetHour(8760) throws."
+}

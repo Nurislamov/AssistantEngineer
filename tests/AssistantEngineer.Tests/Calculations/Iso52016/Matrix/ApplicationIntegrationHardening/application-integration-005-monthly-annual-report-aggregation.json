@@ -1,0 +1,9 @@
+{
+  "id": "APPLICATION-ISO52016-MATRIX-INTEGRATION-005",
+  "scenarioName": "monthly-annual-report-aggregation",
+  "description": "Report-path invariant: monthly summaries reconcile with annual hourly totals and preserve peak loads.",
+  "sourceType": "ManualEngineeringIntegrationAnchor",
+  "scope": "ApplicationIntegrationHardening",
+  "validationType": "ReportAggregationInvariant",
+  "expectedInvariant": "Monthly heating/cooling/gain sums reconcile with annual hourly totals and monthly peaks do not exceed annual peaks."
+}

@@ -105,3 +105,12 @@ No full ISO 52016 parity claim.
 Engineering edge-case hardening only.
 
 Validation anchors only, not full parity.
+## Application integration hardening
+
+The all-in-one verification chain includes:
+
+```powershell
+.\scripts\iso52016\verify-iso52016-matrix-application-integration-hardening.ps1
+```
+
+This layer verifies application integration hardening only. Validation anchors only, not full parity.

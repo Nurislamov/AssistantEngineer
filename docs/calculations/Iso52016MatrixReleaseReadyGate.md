@@ -95,3 +95,8 @@ The main Matrix release-ready gate includes:
 Engineering edge-case hardening only.
 
 Validation anchors only, not full parity.
+## Application integration hardening
+
+The release-ready Matrix chain includes the application integration hardening verification script.
+
+Status: Application integration hardening only. Validation anchors only, not full parity.

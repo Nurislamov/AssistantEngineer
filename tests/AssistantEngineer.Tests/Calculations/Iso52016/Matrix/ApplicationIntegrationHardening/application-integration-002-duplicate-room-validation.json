@@ -1,0 +1,9 @@
+{
+  "id": "APPLICATION-ISO52016-MATRIX-INTEGRATION-002",
+  "scenarioName": "duplicate-room-name-validation",
+  "description": "Application facade validation invariant: duplicate room names are rejected case-insensitively after trimming.",
+  "sourceType": "ManualEngineeringIntegrationAnchor",
+  "scope": "ApplicationIntegrationHardening",
+  "validationType": "ApplicationValidationInvariant",
+  "expectedInvariant": "Duplicate room names must fail before simulation starts."
+}
