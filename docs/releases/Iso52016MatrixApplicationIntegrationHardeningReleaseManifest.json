@@ -1,0 +1,51 @@
+{
+  "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING-RELEASE",
+  "baseStageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+  "stageName": "ISO 52016 Matrix application integration hardening release gate",
+  "status": "ClosedCandidate",
+  "scope": "ApplicationIntegrationHardeningOnly",
+  "validationType": "ApplicationIntegrationHardening",
+  "buildingFacadeIntegrationIntegrated": true,
+  "resultAggregationGuardsIntegrated": true,
+  "adjacentUnconditionedInputPathIntegrated": true,
+  "annualReportAggregationGuardsIntegrated": true,
+  "stageGateIntegrated": true,
+  "allInOneVerificationIntegrated": true,
+  "releaseReadyGateIntegrated": true,
+  "generatedArtifactsCommitted": false,
+  "requiredManifests": [
+    "docs/releases/Iso52016MatrixApplicationIntegrationHardeningManifest.json",
+    "docs/releases/Iso52016MatrixApplicationIntegrationHardeningReleaseManifest.json"
+  ],
+  "documentationFiles": [
+    "docs/calculations/Iso52016MatrixApplicationIntegrationHardening.md",
+    "docs/calculations/Iso52016MatrixApplicationIntegrationHardeningReleaseGate.md",
+    "docs/releases/Iso52016MatrixApplicationIntegrationHardeningReleaseNotes.md",
+    "docs/runbooks/Iso52016MatrixApplicationIntegrationHardeningMergeRunbook.md"
+  ],
+  "verificationScripts": [
+    "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening.ps1",
+    "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1",
+    "scripts/iso52016/assert-iso52016-matrix-application-integration-hardening-release-ready.ps1",
+    "scripts/iso52016/write-iso52016-matrix-application-integration-hardening-merge-summary.ps1",
+    "scripts/iso52016/verify-iso52016-matrix-all.ps1",
+    "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningManifestTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningReleaseGateTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningClosureTests.cs"
+  ],
+  "explicitNonClaims": [
+    "Application integration hardening only.",
+    "Validation anchors only, not full parity.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim.",
+    "No ExternalParityCovered claim.",
+    "No FullParityCovered claim."
+  ],
+  "mergeEvidenceIntegrated": true
+}

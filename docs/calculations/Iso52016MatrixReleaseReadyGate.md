@@ -95,3 +95,18 @@ The main Matrix release-ready gate includes:
 Engineering edge-case hardening only.
 
 Validation anchors only, not full parity.
+## Application integration hardening
+
+The release-ready Matrix chain includes the application integration hardening verification script.
+
+Status: Application integration hardening only. Validation anchors only, not full parity.
+
+## Application integration hardening release gate
+
+The Matrix release-ready chain includes:
+
+```powershell
+.\scripts\iso52016\assert-iso52016-matrix-application-integration-hardening-release-ready.ps1
+```
+
+Generated application integration hardening artifacts are written under `artifacts/iso52016/application-integration-hardening/` and must not be committed.

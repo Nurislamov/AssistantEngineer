@@ -79,7 +79,8 @@ Generated artifacts committed: $($summary.generatedArtifactsCommitted)
 
 ## Non-claims
 
-$($summary.explicitNonClaims -join "`n")
+$($summary.explicitNonClaims -join "
+")
 "@
 
 Set-Content -Path $markdownPath -Value $markdown -Encoding utf8

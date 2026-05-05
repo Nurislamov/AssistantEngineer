@@ -1,0 +1,9 @@
+{
+  "id": "APPLICATION-ISO52016-MATRIX-INTEGRATION-003",
+  "scenarioName": "adjacent-unconditioned-envelope-mapping",
+  "description": "Domain-to-calculation mapping invariant: AdjacentUnconditioned walls contribute to transmission, while AdjacentConditioned and Adiabatic walls do not.",
+  "sourceType": "ManualEngineeringIntegrationAnchor",
+  "scope": "ApplicationIntegrationHardening",
+  "validationType": "DomainMappingInvariant",
+  "expectedInvariant": "Transmission H includes External, Ground and AdjacentUnconditioned boundaries only."
+}

@@ -1,0 +1,42 @@
+{
+  "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+  "stageName": "ISO 52016 Matrix application integration hardening",
+  "status": "ClosedCandidate",
+  "scope": "ApplicationIntegrationHardening",
+  "claimScope": "ValidationAnchorOnly",
+  "fixtureCount": 5,
+  "facadeAggregationAnchorsIntegrated": true,
+  "domainMappingAnchorsIntegrated": true,
+  "resultContractAnchorsIntegrated": true,
+  "reportAggregationAnchorsIntegrated": true,
+  "verificationScriptIntegrated": true,
+  "allInOneVerificationIntegrated": true,
+  "fixtures": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationIntegrationHardening/application-integration-001-building-facade-aggregation.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationIntegrationHardening/application-integration-002-duplicate-room-validation.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationIntegrationHardening/application-integration-003-adjacent-unconditioned-envelope-mapping.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationIntegrationHardening/application-integration-004-hour-index-result-contract.json",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ApplicationIntegrationHardening/application-integration-005-monthly-annual-report-aggregation.json"
+  ],
+  "documentationFiles": [
+    "docs/calculations/Iso52016MatrixApplicationIntegrationHardening.md",
+    "docs/releases/Iso52016MatrixApplicationIntegrationHardeningManifest.json"
+  ],
+  "verificationScripts": [
+    "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening.ps1",
+    "scripts/iso52016/verify-iso52016-matrix-all.ps1"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningManifestTests.cs"
+  ],
+  "explicitNonClaims": [
+    "Application integration hardening only.",
+    "Validation anchors only, not full parity.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation coverage claim.",
+    "No full ISO 52016 parity claim.",
+    "No external application parity claim."
+  ]
+}
