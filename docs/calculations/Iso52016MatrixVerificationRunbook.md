@@ -114,3 +114,18 @@ The all-in-one verification chain includes:
 ```
 
 This layer verifies application integration hardening only. Validation anchors only, not full parity.
+
+## Application integration hardening
+
+The Matrix all-verification chain includes the Application integration hardening stage gate:
+
+```powershell
+.\scripts\iso52016\verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1
+```
+
+Application integration hardening only.
+Validation anchors only, not full parity.
+No pyBuildingEnergy parity claim.
+No EnergyPlus parity claim.
+No ASHRAE 140 validation coverage claim.
+No full ISO 52016 parity claim.
