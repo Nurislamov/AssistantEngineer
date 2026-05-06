@@ -1,0 +1,60 @@
+{
+  "id": "light-external-wall-insulation-massless-layer",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "assemblyId": "ext-wall-light-001",
+    "name": "Light external wall with massless insulation layer",
+    "boundaryKind": "ExternalWall",
+    "layers": [
+      {
+        "layerId": "gypsum-board",
+        "name": "Gypsum board",
+        "thicknessM": 0.012,
+        "conductivityWPerMK": 0.25,
+        "densityKgPerM3": 800.0,
+        "specificHeatJPerKgK": 1090.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "massless-insulation-r",
+        "name": "Massless insulation R layer",
+        "thicknessM": 0.01,
+        "conductivityWPerMK": 0.04,
+        "densityKgPerM3": 1.0,
+        "specificHeatJPerKgK": 1.0,
+        "thermalResistanceM2KPerW": 2.5,
+        "isMassless": true
+      },
+      {
+        "layerId": "light-brick",
+        "name": "Lightweight brick",
+        "thicknessM": 0.10,
+        "conductivityWPerMK": 0.40,
+        "densityKgPerM3": 900.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      }
+    ]
+  },
+  "expected": {
+    "totalResistanceM2KPerW": 2.968,
+    "uValueWPerM2K": 0.336927,
+    "arealHeatCapacityJPerM2K": 86064.0,
+    "effectiveInternalHeatCapacityJPerM2K": 10563.093981,
+    "massClass": "VeryLight",
+    "nodeCount": 5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.5
+  }
+}

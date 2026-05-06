@@ -1,6 +1,7 @@
 {
   "id": "rollup-stage-catalog",
   "expectedStageIds": [
+    "AE-ISO52016-CONSTRUCTION-001",
     "AE-VENT-001",
     "AE-VENT-002",
     "AE-GROUND-001",

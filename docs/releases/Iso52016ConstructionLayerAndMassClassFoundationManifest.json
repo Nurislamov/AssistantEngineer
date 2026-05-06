@@ -1,0 +1,43 @@
+{
+  "stageId": "AE-ISO52016-CONSTRUCTION-001",
+  "title": "ISO52016-inspired construction layer and mass class depth",
+  "status": "internal-engineering-anchor",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionAssembly.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionAssemblyResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionBoundaryKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionDiagnostics.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionLayerResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionMassClass.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionMaterialLayer.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionNode.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Construction/Iso52016ConstructionNodeDistribution.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Construction/Iso52016ConstructionReferenceDataProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Construction/Iso52016ConstructionAssemblyCalculator.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/iso52016/construction/light-external-wall-insulation-massless-layer.json",
+    "tests/fixtures/iso52016/construction/medium-masonry-wall.json",
+    "tests/fixtures/iso52016/construction/heavy-concrete-wall.json",
+    "tests/fixtures/iso52016/construction/roof-lightweight-assembly.json",
+    "tests/fixtures/iso52016/construction/ground-floor-slab-assembly.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionAssemblyCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionMassClassTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionNodeDistributionTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

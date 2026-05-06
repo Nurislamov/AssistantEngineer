@@ -61,6 +61,15 @@ public sealed class EngineeringCalculationModeCatalogProvider
                 optionFlagName: null,
                 stageIds: ["ISO52016-PHYSICAL-INTERNAL-GATE"]),
             CreateMode(
+                modeId: "ISO52016-CONSTRUCTION-LAYER-MASS-FOUNDATION",
+                domain: EngineeringCalculationModeDomain.Iso52016Physical,
+                kind: EngineeringCalculationModeKind.ValidationAnchor,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-ISO52016-CONSTRUCTION-001"]),
+            CreateMode(
                 modeId: "VENTILATION-COMPATIBILITY-DEFAULT",
                 domain: EngineeringCalculationModeDomain.Ventilation,
                 kind: EngineeringCalculationModeKind.CompatibilityDefault,

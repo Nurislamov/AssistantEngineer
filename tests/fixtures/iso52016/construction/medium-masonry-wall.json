@@ -1,0 +1,59 @@
+{
+  "id": "medium-masonry-wall",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "assemblyId": "masonry-wall-medium-001",
+    "name": "Medium masonry wall",
+    "boundaryKind": "ExternalWall",
+    "layers": [
+      {
+        "layerId": "plaster-inside",
+        "name": "Internal plaster",
+        "thicknessM": 0.015,
+        "conductivityWPerMK": 0.70,
+        "densityKgPerM3": 1400.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "masonry-core",
+        "name": "Masonry core",
+        "thicknessM": 0.20,
+        "conductivityWPerMK": 0.60,
+        "densityKgPerM3": 1600.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "plaster-outside",
+        "name": "External plaster",
+        "thicknessM": 0.015,
+        "conductivityWPerMK": 0.70,
+        "densityKgPerM3": 1400.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      }
+    ]
+  },
+  "expected": {
+    "totalResistanceM2KPerW": 0.54619,
+    "uValueWPerM2K": 1.830863,
+    "arealHeatCapacityJPerM2K": 304080.0,
+    "effectiveInternalHeatCapacityJPerM2K": 303316.978581,
+    "massClass": "VeryHeavy",
+    "nodeCount": 5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.5
+  }
+}

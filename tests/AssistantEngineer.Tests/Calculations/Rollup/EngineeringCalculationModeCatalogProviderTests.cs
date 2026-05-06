@@ -18,6 +18,7 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
 
         var expected = new[]
         {
+            "AE-ISO52016-CONSTRUCTION-001",
             "AE-VENT-001",
             "AE-VENT-002",
             "AE-GROUND-001",

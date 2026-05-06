@@ -14,6 +14,18 @@
   ],
   "modes": [
     {
+      "domain": "Iso52016Physical",
+      "modeId": "ISO52016-CONSTRUCTION-LAYER-MASS-FOUNDATION",
+      "status": "ClosedInternalGate",
+      "kind": "ValidationAnchor",
+      "isDefault": false,
+      "isOptIn": false,
+      "optionFlagName": null,
+      "stageIds": [
+        "AE-ISO52016-CONSTRUCTION-001"
+      ]
+    },
+    {
       "domain": "Ventilation",
       "modeId": "VENTILATION-COMPATIBILITY-DEFAULT",
       "status": "Default",

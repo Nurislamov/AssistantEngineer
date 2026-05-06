@@ -1,0 +1,59 @@
+{
+  "id": "heavy-concrete-wall",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "assemblyId": "heavy-concrete-wall-001",
+    "name": "Heavy concrete wall",
+    "boundaryKind": "ExternalWall",
+    "layers": [
+      {
+        "layerId": "plaster-inside",
+        "name": "Internal plaster",
+        "thicknessM": 0.02,
+        "conductivityWPerMK": 0.70,
+        "densityKgPerM3": 1400.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "concrete-core",
+        "name": "Concrete core",
+        "thicknessM": 0.25,
+        "conductivityWPerMK": 1.90,
+        "densityKgPerM3": 2400.0,
+        "specificHeatJPerKgK": 880.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "plaster-outside",
+        "name": "External plaster",
+        "thicknessM": 0.02,
+        "conductivityWPerMK": 0.70,
+        "densityKgPerM3": 1400.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      }
+    ]
+  },
+  "expected": {
+    "totalResistanceM2KPerW": 0.358722,
+    "uValueWPerM2K": 2.787676,
+    "arealHeatCapacityJPerM2K": 575040.0,
+    "effectiveInternalHeatCapacityJPerM2K": 575040.0,
+    "massClass": "VeryHeavy",
+    "nodeCount": 5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.5
+  }
+}

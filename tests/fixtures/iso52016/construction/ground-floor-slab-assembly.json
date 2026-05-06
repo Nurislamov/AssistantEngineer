@@ -1,0 +1,59 @@
+{
+  "id": "ground-floor-slab-assembly",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "assemblyId": "ground-floor-slab-001",
+    "name": "Ground floor slab assembly",
+    "boundaryKind": "GroundFloor",
+    "layers": [
+      {
+        "layerId": "screed",
+        "name": "Screed",
+        "thicknessM": 0.05,
+        "conductivityWPerMK": 1.40,
+        "densityKgPerM3": 2000.0,
+        "specificHeatJPerKgK": 840.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "concrete-slab",
+        "name": "Concrete slab",
+        "thicknessM": 0.20,
+        "conductivityWPerMK": 1.80,
+        "densityKgPerM3": 2400.0,
+        "specificHeatJPerKgK": 880.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "insulation",
+        "name": "Under-slab insulation",
+        "thicknessM": 0.08,
+        "conductivityWPerMK": 0.035,
+        "densityKgPerM3": 35.0,
+        "specificHeatJPerKgK": 1400.0,
+        "isMassless": false
+      }
+    ]
+  },
+  "expected": {
+    "totalResistanceM2KPerW": 2.60254,
+    "uValueWPerM2K": 0.38424,
+    "arealHeatCapacityJPerM2K": 510320.0,
+    "effectiveInternalHeatCapacityJPerM2K": 507006.610517,
+    "massClass": "VeryHeavy",
+    "nodeCount": 5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.5
+  }
+}

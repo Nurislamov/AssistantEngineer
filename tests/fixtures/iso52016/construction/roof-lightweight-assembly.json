@@ -1,0 +1,60 @@
+{
+  "id": "roof-lightweight-assembly",
+  "claimBoundary": [
+    "ISO52016-inspired construction layer and mass class engineering foundation.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "assemblyId": "roof-lightweight-001",
+    "name": "Lightweight roof assembly",
+    "boundaryKind": "Roof",
+    "layers": [
+      {
+        "layerId": "gypsum",
+        "name": "Gypsum board",
+        "thicknessM": 0.012,
+        "conductivityWPerMK": 0.25,
+        "densityKgPerM3": 800.0,
+        "specificHeatJPerKgK": 1090.0,
+        "isMassless": false
+      },
+      {
+        "layerId": "insulation-r",
+        "name": "Massless insulation R layer",
+        "thicknessM": 0.01,
+        "conductivityWPerMK": 0.04,
+        "densityKgPerM3": 1.0,
+        "specificHeatJPerKgK": 1.0,
+        "thermalResistanceM2KPerW": 3.20,
+        "isMassless": true
+      },
+      {
+        "layerId": "osb",
+        "name": "OSB board",
+        "thicknessM": 0.018,
+        "conductivityWPerMK": 0.13,
+        "densityKgPerM3": 600.0,
+        "specificHeatJPerKgK": 1600.0,
+        "isMassless": false
+      }
+    ]
+  },
+  "expected": {
+    "totalResistanceM2KPerW": 3.526462,
+    "uValueWPerM2K": 0.28357,
+    "arealHeatCapacityJPerM2K": 27744.0,
+    "effectiveInternalHeatCapacityJPerM2K": 10464.081137,
+    "massClass": "VeryLight",
+    "nodeCount": 5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.5
+  }
+}
