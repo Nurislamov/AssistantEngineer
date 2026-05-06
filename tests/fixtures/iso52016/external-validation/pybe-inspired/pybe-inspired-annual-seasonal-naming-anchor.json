@@ -1,0 +1,54 @@
+{
+  "id": "pybe-inspired-annual-seasonal-naming-anchor",
+  "sourceKind": "PyBuildingEnergyInspiredNaming",
+  "calculationPath": "PhysicalNodeModel",
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "pyBuildingEnergy-inspired methodology alignment lane only.",
+    "No pyBuildingEnergy parity claim.",
+    "No pyBuildingEnergy numerical equivalence claim.",
+    "No copied pyBuildingEnergy code.",
+    "No pyBuildingEnergy runtime dependency.",
+    "No full ISO 52016 parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "ExternalParityCovered is not allowed in this stage."
+  ],
+  "reference": {
+    "derivationDocument": "docs/calculations/validation/iso52016/pybe-inspired-annual-seasonal-naming-anchor.md",
+    "derivationKind": "PyBuildingEnergyInspiredMethodologyNote",
+    "sourceDescription": "Methodology/naming alignment only; not a parity claim.",
+    "methodologySourceName": "pyBuildingEnergy",
+    "methodologySourceUrl": "https://github.com/EURAC-EEBgroup/pyBuildingEnergy",
+    "methodologyNotes": [
+      "Source-note only.",
+      "No copied code.",
+      "No runtime dependency."
+    ]
+  },
+  "input": {
+    "description": "Naming anchor for annual aggregation lane with deterministic internal anchor values.",
+    "aggregationProfileKind": "SyntheticSeasonal8760",
+    "zoneArchetype": "SimpleRoom"
+  },
+  "expected": {
+    "annualHeatingKWh": 5100.0,
+    "annualCoolingKWh": 3200.0,
+    "peakHeatingW": 4100.0,
+    "peakCoolingW": 3600.0,
+    "meanOperativeTemperatureC": 23.2,
+    "maxOperativeTemperatureC": 27.8,
+    "minOperativeTemperatureC": 18.6,
+    "hourlyResultCount": 8760,
+    "monthlyHeatingKWh": [
+      650.0, 610.0, 560.0, 430.0, 300.0, 180.0, 110.0, 130.0, 280.0, 480.0, 620.0, 750.0
+    ],
+    "monthlyCoolingKWh": [
+      60.0, 90.0, 160.0, 260.0, 380.0, 470.0, 520.0, 500.0, 360.0, 220.0, 120.0, 60.0
+    ]
+  },
+  "tolerance": {
+    "absoluteTolerance": 2.0,
+    "relativeTolerancePercent": 2.5
+  }
+}

@@ -9,12 +9,24 @@ public sealed class Iso52016ExternalValidationFixtureLoader
     private static readonly string[] RequiredClaimBoundaryLines =
     {
         "Validation/internal engineering anchors only.",
-        "Manual independent reference fixtures only.",
         "No full ISO 52016 parity claim.",
         "No pyBuildingEnergy parity claim.",
         "No EnergyPlus parity claim.",
         "No ASHRAE 140 validation claim.",
         "ExternalParityCovered is not allowed in this stage."
+    };
+
+    private static readonly string[] RequiredManualIndependentClaimBoundaryLines =
+    {
+        "Manual independent reference fixtures only."
+    };
+
+    private static readonly string[] RequiredPyBuildingEnergyInspiredClaimBoundaryLines =
+    {
+        "pyBuildingEnergy-inspired methodology alignment lane only.",
+        "No pyBuildingEnergy numerical equivalence claim.",
+        "No copied pyBuildingEnergy code.",
+        "No pyBuildingEnergy runtime dependency."
     };
 
     private static readonly string[] ForbiddenPositiveClaims =
@@ -33,6 +45,14 @@ public sealed class Iso52016ExternalValidationFixtureLoader
     {
         "pybuildingenergy",
         "energyplus"
+    };
+
+    private static readonly string[] ForbiddenPyBuildingEnergyInspiredWording =
+    {
+        "validated against pybuildingenergy",
+        "matches pybuildingenergy",
+        "same as pybuildingenergy",
+        "copied from pybuildingenergy"
     };
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -98,11 +118,21 @@ public sealed class Iso52016ExternalValidationFixtureLoader
         }
 
         if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.ManualIndependent &&
-            !fixture.ClaimBoundary.Any(value =>
-                string.Equals(value, "Manual independent reference fixtures only.", StringComparison.OrdinalIgnoreCase)))
+            RequiredManualIndependentClaimBoundaryLines.Any(requiredLine =>
+                !fixture.ClaimBoundary.Any(value => string.Equals(value, requiredLine, StringComparison.OrdinalIgnoreCase))))
         {
             throw new InvalidOperationException(
                 $"ManualIndependent fixture must declare manual-only claim boundary line: {filePath}");
+        }
+
+        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.PyBuildingEnergyInspiredNaming)
+        {
+            foreach (var requiredLine in RequiredPyBuildingEnergyInspiredClaimBoundaryLines)
+            {
+                if (!fixture.ClaimBoundary.Any(value => string.Equals(value, requiredLine, StringComparison.OrdinalIgnoreCase)))
+                    throw new InvalidOperationException(
+                        $"PyBuildingEnergyInspiredNaming fixture claim boundary is missing line '{requiredLine}': {filePath}");
+            }
         }
 
         ValidateReference(fixture, filePath);
@@ -166,6 +196,48 @@ public sealed class Iso52016ExternalValidationFixtureLoader
                 }
             }
         }
+
+        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.PyBuildingEnergyInspiredNaming)
+        {
+            if (!string.Equals(
+                    fixture.Reference.DerivationKind,
+                    "PyBuildingEnergyInspiredMethodologyNote",
+                    StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(
+                    $"PyBuildingEnergyInspiredNaming fixture must use derivationKind=PyBuildingEnergyInspiredMethodologyNote: {filePath}");
+            }
+
+            if (!ContainsNonParityStatement(fixture.Reference.SourceDescription))
+            {
+                throw new InvalidOperationException(
+                    $"PyBuildingEnergyInspiredNaming fixture reference.sourceDescription must explicitly state non-parity scope: {filePath}");
+            }
+
+            var referenceText = $"{fixture.Reference.SourceDescription} {fixture.Reference.MethodologySourceName} {fixture.Reference.MethodologySourceUrl} {fixture.Reference.MethodologySourceCommit}";
+            foreach (var note in fixture.Reference.MethodologyNotes ?? Array.Empty<string>())
+                referenceText = $"{referenceText} {note}";
+
+            foreach (var forbidden in ForbiddenPyBuildingEnergyInspiredWording)
+            {
+                if (referenceText.Contains(forbidden, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        $"PyBuildingEnergyInspiredNaming fixture reference contains forbidden wording '{forbidden}': {filePath}");
+                }
+            }
+        }
+    }
+
+    private static bool ContainsNonParityStatement(string sourceDescription)
+    {
+        if (string.IsNullOrWhiteSpace(sourceDescription))
+            return false;
+
+        return sourceDescription.Contains("not a parity claim", StringComparison.OrdinalIgnoreCase) ||
+               sourceDescription.Contains("methodology/naming alignment only", StringComparison.OrdinalIgnoreCase) ||
+               sourceDescription.Contains("no numerical parity", StringComparison.OrdinalIgnoreCase) ||
+               sourceDescription.Contains("not external certification", StringComparison.OrdinalIgnoreCase);
     }
 
     private static void AssertNoForbiddenPositiveClaims(string filePath, IEnumerable<string> lines)

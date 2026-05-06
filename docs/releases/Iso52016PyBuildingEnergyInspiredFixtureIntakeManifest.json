@@ -1,0 +1,43 @@
+{
+  "stageId": "AE-VALIDATION-PYBE-001",
+  "title": "ISO52016 pyBuildingEnergy-inspired fixture intake",
+  "status": "methodology-alignment-fixture-intake",
+  "dependsOn": [
+    "AE-VALIDATION-ISO52016-001",
+    "AE-VALIDATION-ISO52016-002"
+  ],
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "pyBuildingEnergy-inspired methodology alignment lane only.",
+    "No pyBuildingEnergy parity claim.",
+    "No pyBuildingEnergy numerical equivalence claim.",
+    "No copied pyBuildingEnergy code.",
+    "No pyBuildingEnergy runtime dependency.",
+    "No full ISO 52016 parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "ExternalParityCovered is not allowed in this stage."
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-simple-heating-naming-anchor.json",
+    "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-simple-cooling-naming-anchor.json",
+    "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-annual-seasonal-naming-anchor.json"
+  ],
+  "methodologyDocs": [
+    "docs/calculations/validation/iso52016/pybuildingenergy-inspired-methodology-lane.md",
+    "docs/calculations/validation/iso52016/pybe-inspired-simple-heating-naming-anchor.md",
+    "docs/calculations/validation/iso52016/pybe-inspired-simple-cooling-naming-anchor.md",
+    "docs/calculations/validation/iso52016/pybe-inspired-annual-seasonal-naming-anchor.md",
+    "docs/calculations/Iso52016PyBuildingEnergyInspiredFixtureIntake.md"
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationReference.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationFixtureLoader.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredFixtureLoaderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredClaimBoundaryTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

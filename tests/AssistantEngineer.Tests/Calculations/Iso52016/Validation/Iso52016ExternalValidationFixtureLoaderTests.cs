@@ -45,13 +45,14 @@ public sealed class Iso52016ExternalValidationFixtureLoaderTests
             "No full ISO 52016 parity claim.",
             "No pyBuildingEnergy parity claim.",
             "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim."
+            "No ASHRAE 140 validation claim.",
+            "ExternalParityCovered is not allowed in this stage."
         };
 
         var file = WriteTempFixture(fixture);
         var exception = Assert.Throws<InvalidOperationException>(() => _loader.LoadFromFile(file));
 
-        Assert.Contains("Manual independent reference fixtures only.", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("manual-only claim boundary line", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FixtureDirectory() =>
