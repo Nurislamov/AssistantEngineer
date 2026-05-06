@@ -70,6 +70,75 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
         }
     }
 
+    [Fact]
+    public void ApplicationIntegrationManifestAndDisclosureFiles_ArePresentAndHonest()
+    {
+        var manifestPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "releases",
+            "Iso12831DomesticHotWaterApplicationIntegrationManifest.json");
+        var integrationDocPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "domestic-hot-water",
+            "Iso12831DomesticHotWaterApplicationIntegration.md");
+        var parityDocPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "EnergyCalculationParityVerification.md");
+        var scopeDocPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "EngineeringCoreV1Scope.md");
+        var statusPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "api",
+            "engineering-core-v1",
+            "status.sample.json");
+
+        Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
+        Assert.True(File.Exists(integrationDocPath), $"Integration doc was not found: {integrationDocPath}");
+        Assert.True(File.Exists(parityDocPath), $"Parity doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
+        Assert.True(File.Exists(statusPath), $"Status sample was not found: {statusPath}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var root = document.RootElement;
+
+        Assert.Equal("AE-DHW-002", root.GetProperty("stageId").GetString());
+        Assert.Equal("internal-application-integration-anchor", root.GetProperty("status").GetString());
+        Assert.Contains(
+            "AE-DHW-001",
+            root.GetProperty("dependsOn").EnumerateArray().Select(item => item.GetString()));
+
+        var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
+        Assert.Contains("Compatibility behavior preserved by default.", claimBoundary);
+        Assert.Contains("No full ISO 12831-3 compliance claim.", claimBoundary);
+        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+
+        var integrationDoc = File.ReadAllText(integrationDocPath);
+        Assert.Contains("Compatibility behavior preserved by default.", integrationDoc);
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "full ISO 12831-3 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "pyBuildingEnergy parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus parity");
+
+        var parityDoc = File.ReadAllText(parityDocPath);
+        Assert.Contains("compatibility path remains default", parityDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", parityDoc, StringComparison.OrdinalIgnoreCase);
+
+        var scopeDoc = File.ReadAllText(scopeDocPath);
+        Assert.Contains("compatibility path remains default", scopeDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", scopeDoc, StringComparison.OrdinalIgnoreCase);
+
+        var statusText = File.ReadAllText(statusPath);
+        Assert.Contains("ISO12831-3-inspired DHW path is opt-in", statusText, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)
     {
         var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);

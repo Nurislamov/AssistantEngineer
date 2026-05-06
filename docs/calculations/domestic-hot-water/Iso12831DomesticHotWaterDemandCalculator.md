@@ -70,5 +70,5 @@ Reference data defaults are internal deterministic table-inspired anchors and ar
 ## Migration strategy
 
 - existing `DomesticHotWaterDemandService` remains the compatibility production path;
-- this stage introduces a pure calculator only;
-- controlled application integration is deferred to `AE-DHW-002`.
+- this stage introduces the pure calculator foundation consumed by controlled integration;
+- controlled opt-in application integration is tracked in `AE-DHW-002`.

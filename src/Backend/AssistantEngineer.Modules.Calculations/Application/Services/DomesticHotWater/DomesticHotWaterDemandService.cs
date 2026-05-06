@@ -1,5 +1,8 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
+using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater.Iso12831;
 using AssistantEngineer.SharedKernel.Primitives;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
 
@@ -21,7 +24,45 @@ public sealed class DomesticHotWaterDemandService
         0.11, 0.115, 0.075, 0.045, 0.025, 0.015
     ];
 
+    private readonly DomesticHotWaterOptions _options;
+    private readonly Iso12831DomesticHotWaterDemandCalculator _isoCalculator;
+    private readonly Iso12831DomesticHotWaterApplicationAdapter _isoAdapter;
+
+    public DomesticHotWaterDemandService(
+        IOptions<DomesticHotWaterOptions> options,
+        Iso12831DomesticHotWaterDemandCalculator isoCalculator,
+        Iso12831DomesticHotWaterApplicationAdapter isoAdapter)
+    {
+        _options = options.Value;
+        _isoCalculator = isoCalculator;
+        _isoAdapter = isoAdapter;
+    }
+
+    public DomesticHotWaterDemandService()
+        : this(
+            Microsoft.Extensions.Options.Options.Create(new DomesticHotWaterOptions()),
+            new Iso12831DomesticHotWaterDemandCalculator(
+                new Iso12831DomesticHotWaterReferenceDataProvider(),
+                new Iso12831DomesticHotWaterDrawProfileProvider()),
+            new Iso12831DomesticHotWaterApplicationAdapter())
+    {
+    }
+
     public Result<DomesticHotWaterDemandResult> Calculate(DomesticHotWaterDemandRequest request)
+    {
+        if (!_options.UseIso12831InspiredCalculator)
+            return CalculateCompatibility(request);
+
+        var isoInput = _isoAdapter.MapToIsoInput(request, _options);
+        var isoResult = _isoCalculator.Calculate(isoInput);
+        if (isoResult.IsFailure)
+            return Result<DomesticHotWaterDemandResult>.Failure(isoResult);
+
+        return Result<DomesticHotWaterDemandResult>.Success(
+            _isoAdapter.MapToCompatibilityResult(isoResult.Value));
+    }
+
+    private static Result<DomesticHotWaterDemandResult> CalculateCompatibility(DomesticHotWaterDemandRequest request)
     {
         if (request.PeopleCount < 0)
             return Result<DomesticHotWaterDemandResult>.Validation("People count cannot be negative.");

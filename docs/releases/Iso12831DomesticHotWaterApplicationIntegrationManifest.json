@@ -1,0 +1,36 @@
+{
+  "stageId": "AE-DHW-002",
+  "title": "ISO12831-3-inspired domestic hot water controlled application integration",
+  "status": "internal-application-integration-anchor",
+  "dependsOn": [
+    "AE-DHW-001"
+  ],
+  "claimBoundary": [
+    "ISO12831-3-inspired domestic hot water application integration.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility behavior preserved by default.",
+    "No full ISO 12831-3 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/DomesticHotWaterOptions.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/DomesticHotWaterOptionsValidator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/CalculationOptionsRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/DomesticHotWater/Iso12831DomesticHotWaterApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/DomesticHotWater/DomesticHotWaterDemandService.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterApplicationIntegrationTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterTraceabilityTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json"
+  ],
+  "generatedArtifacts": []
+}

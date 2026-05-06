@@ -93,7 +93,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; compatibility DHW path remains default, ISO12831-3-inspired DHW path is opt-in, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
