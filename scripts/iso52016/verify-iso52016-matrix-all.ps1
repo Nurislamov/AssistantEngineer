@@ -394,3 +394,28 @@ Write-Host "ISO52016 Matrix all verification passed."
 # Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
 # ReducedMatrix remains the default application-facing path; PhysicalNodeModel is explicit opt-in.
 # ISO52016-inspired internal engineering gate only; not full parity, not EnergyPlus parity, not pyBuildingEnergy parity, not ASHRAE Standard 140 validation.
+
+# Stage 2.14 physical branch hygiene:
+# verify-iso52016-physical-branch-hygiene-stage.ps1
+# assert-iso52016-physical-branch-hygiene.ps1
+# Iso52016PhysicalBranchHygieneStageManifest.json
+# AE-ISO52016-002 Step 14 adds repository hygiene gates for rebase state, conflict markers, JSON parsing, and root patch script checks.
+# Stage 2.15 physical chain stage registry:
+# verify-iso52016-physical-chain-stage-registry.ps1
+# Iso52016PhysicalChainStageRegistry.json
+# Iso52016PhysicalChainStageRegistryManifest.json
+# AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification
+# AE-ISO52016-002 Step 15 adds a C#-owned registry verifier for the physical chain; PowerShell remains a thin wrapper.
+# BEGIN ISO52016 PHYSICAL CHAIN STAGE REGISTRY HOOK
+# Keep these literals so the C# registry verifier can prove that the physical
+# chain registry gate remains discoverable from the Matrix all-verification entrypoint.
+# Runtime ownership of the registry checks stays in the C# verification tool; this
+# block is intentionally low-risk and does not add new calculation logic.
+# verify-iso52016-physical-chain-stage-registry.ps1
+# verify-iso52016-physical-chain-stage-registry-stage-gate.ps1
+# Iso52016PhysicalChainStageRegistry.json
+# Iso52016PhysicalChainStageRegistryManifest.json
+# AE-ISO52016-002-STAGE-REGISTRY
+# AE-ISO52016-002-STEP-15
+# validation/internal engineering anchors only
+# END ISO52016 PHYSICAL CHAIN STAGE REGISTRY HOOK

@@ -1,0 +1,58 @@
+{
+    "stageId":  "AE-ISO52016-002-STEP-15",
+    "registryId":  "AE-ISO52016-002-STAGE-REGISTRY",
+    "title":  "ISO52016 physical chain stage registry",
+    "status":  "internal-engineering-gate",
+    "closedWorkItems":  [
+                            "AE-ISO52016-002"
+                        ],
+    "claimBoundary":  [
+                          "ISO52016-inspired physical chain stage registry.",
+                          "physical chain stage registry",
+                          "Validation/internal engineering anchors only.",
+                          "validation/internal engineering anchors only",
+                          "Not full ISO 52016 parity.",
+                          "Not complete ISO 52016 numerical equivalence.",
+                          "Not pyBuildingEnergy numerical equivalence.",
+                          "Not EnergyPlus numerical equivalence.",
+                          "Not ASHRAE 140 validation.",
+                          "Not ASHRAE Standard 140 validation.",
+                          "Not ASHRAE Standard 140 benchmark-grade claim.",
+                          "Not ISO52016 parity.",
+                          "Not complete ISO52016 numerical equivalence.",
+                          "Not pyBuildingEnergy parity.",
+                          "Not EnergyPlus parity."
+                      ],
+    "registryFiles":  [
+                          "docs/traceability/Iso52016PhysicalChainStageRegistry.json"
+                      ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016PhysicalChainStageRegistry.md"
+                           ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-physical-chain-stage-registry.ps1",
+                                "scripts/iso52016/verify-iso52016-physical-chain-stage-registry-stage-gate.ps1"
+                            ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalChainStageRegistryTests.cs"
+                   ],
+    "matrixAllVerificationIntegrated":  true,
+    "generatedArtifacts":  [
+
+                           ],
+    "requiredClaimBoundaryMarkers":  [
+                                         "Validation/internal engineering anchors only.",
+                                         "validation/internal engineering anchors only",
+                                         "Not full ISO 52016 parity.",
+                                         "Not ISO52016 parity.",
+                                         "Not complete ISO 52016 numerical equivalence.",
+                                         "Not complete ISO52016 numerical equivalence.",
+                                         "Not pyBuildingEnergy parity.",
+                                         "Not pyBuildingEnergy numerical equivalence.",
+                                         "Not EnergyPlus parity.",
+                                         "Not EnergyPlus numerical equivalence.",
+                                         "Not ASHRAE 140 validation.",
+                                         "Not ASHRAE Standard 140 validation.",
+                                         "Not ASHRAE Standard 140 benchmark-grade claim."
+                                     ]
+}

@@ -1,0 +1,270 @@
+{
+    "registryId":  "AE-ISO52016-002-STAGE-REGISTRY",
+    "stageId":  "AE-ISO52016-002-STAGE-REGISTRY",
+    "stageRegistryStageId":  "AE-ISO52016-002-STEP-15",
+    "title":  "ISO52016 physical chain stage registry",
+    "status":  "internal-engineering-gate",
+    "closedWorkItems":  [
+                            "AE-ISO52016-002"
+                        ],
+    "claimBoundary":  [
+                          "ISO52016-inspired physical node model builder stage.",
+                          "ISO52016-inspired physical surface/construction expansion stage.",
+                          "ISO52016-inspired physical boundary profile stage.",
+                          "ISO52016-inspired physical operation profile stage.",
+                          "ISO52016-inspired physical room simulation service stage.",
+                          "ISO52016-inspired physical room model diagnostics stage.",
+                          "ISO52016-inspired physical scenario anchors stage.",
+                          "ISO52016-inspired physical verification orchestration stage.",
+                          "ISO52016-inspired physical model chain release-ready gate.",
+                          "ISO52016-inspired physical model selection stage.",
+                          "ISO52016-inspired physical model selection application guard.",
+                          "ISO52016-inspired physical chain final readiness rollup.",
+                          "Physical model selection application integration hardening.",
+                          "Physical model selection application integration hardening",
+                          "ISO52016-inspired physical branch hygiene stage.",
+                          "ISO52016-inspired physical chain stage registry.",
+                          "physical model selection stage",
+                          "physical chain stage registry",
+                          "Validation/internal engineering anchors only.",
+                          "Validation/internal engineering anchors only",
+                          "validation/internal engineering anchors only",
+                          "Not full ISO 52016 parity.",
+                          "Not complete ISO 52016 numerical equivalence.",
+                          "Not complete ISO52016 numerical equivalence.",
+                          "Not pyBuildingEnergy numerical equivalence.",
+                          "Not EnergyPlus numerical equivalence.",
+                          "Not ASHRAE 140 validation.",
+                          "Not ASHRAE Standard 140 validation.",
+                          "Not ASHRAE Standard 140 benchmark-grade claim.",
+                          "Not ISO52016 parity.",
+                          "Not pyBuildingEnergy parity.",
+                          "Not EnergyPlus parity."
+                      ],
+    "stageIds":  [
+                     "AE-ISO52016-002-STEP-01",
+                     "AE-ISO52016-002-STEP-02",
+                     "AE-ISO52016-002-STEP-03",
+                     "AE-ISO52016-002-STEP-04",
+                     "AE-ISO52016-002-STEP-05",
+                     "AE-ISO52016-002-STEP-06",
+                     "AE-ISO52016-002-STEP-07",
+                     "AE-ISO52016-002-STEP-08",
+                     "AE-ISO52016-002-STEP-09",
+                     "AE-ISO52016-002-STEP-10",
+                     "AE-ISO52016-002-STEP-11",
+                     "AE-ISO52016-002-STEP-12",
+                     "AE-ISO52016-002-STEP-13",
+                     "AE-ISO52016-002-STEP-14",
+                     "AE-ISO52016-002-STEP-15"
+                 ],
+    "coveredStages":  [
+                          "AE-ISO52016-002-STEP-01",
+                          "AE-ISO52016-002-STEP-02",
+                          "AE-ISO52016-002-STEP-03",
+                          "AE-ISO52016-002-STEP-04",
+                          "AE-ISO52016-002-STEP-05",
+                          "AE-ISO52016-002-STEP-06",
+                          "AE-ISO52016-002-STEP-07",
+                          "AE-ISO52016-002-STEP-08",
+                          "AE-ISO52016-002-STEP-09",
+                          "AE-ISO52016-002-STEP-10",
+                          "AE-ISO52016-002-STEP-11",
+                          "AE-ISO52016-002-STEP-12",
+                          "AE-ISO52016-002-STEP-13",
+                          "AE-ISO52016-002-STEP-14",
+                          "AE-ISO52016-002-STEP-15"
+                      ],
+    "stages":  [
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-01",
+                       "title":  "Physical node model builder",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical node model builder stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-02",
+                       "title":  "Physical surface/construction expansion",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical surface/construction expansion stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-03",
+                       "title":  "Physical boundary profile",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical boundary profile stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-04",
+                       "title":  "Physical operation profile",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical operation profile stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-05",
+                       "title":  "Physical room simulation service",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical room simulation service stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-06",
+                       "title":  "Physical room model diagnostics",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical room model diagnostics stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-07",
+                       "title":  "Physical verification orchestration",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical verification orchestration stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-08",
+                       "title":  "Physical model chain release-ready gate",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical model chain release-ready gate.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-09",
+                       "title":  "Physical scenario anchors",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical scenario anchors stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-10",
+                       "title":  "Physical model selection",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical model selection stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-11",
+                       "title":  "Physical model selection application guard",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical model selection application guard.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-12",
+                       "title":  "Physical chain final readiness rollup",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical chain final readiness rollup.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-13",
+                       "title":  "Physical selection application integration hardening",
+                       "claimBoundary":  [
+                                             "Physical model selection application integration hardening.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-14",
+                       "title":  "Physical branch hygiene",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical branch hygiene stage.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   },
+                   {
+                       "stageId":  "AE-ISO52016-002-STEP-15",
+                       "title":  "Physical chain stage registry",
+                       "claimBoundary":  [
+                                             "ISO52016-inspired physical chain stage registry.",
+                                             "Validation/internal engineering anchors only."
+                                         ]
+                   }
+               ],
+    "documentationFiles":  [
+                               "docs/calculations/Iso52016PhysicalChainStageRegistry.md"
+                           ],
+    "manifestFiles":  [
+                          "docs/releases/Iso52016PhysicalChainStageRegistryManifest.json"
+                      ],
+    "traceabilityFiles":  [
+                              "docs/traceability/Iso52016PhysicalChainStageRegistry.json"
+                          ],
+    "verificationScripts":  [
+                                "scripts/iso52016/verify-iso52016-physical-chain-stage-registry.ps1",
+                                "scripts/iso52016/verify-iso52016-physical-chain-stage-registry-stage-gate.ps1"
+                            ],
+    "csharpTools":  [
+                        "tools/AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification"
+                    ],
+    "testGuards":  [
+                       "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalChainStageRegistryTests.cs"
+                   ],
+    "matrixAllVerificationIntegrated":  true,
+    "requiredClaimBoundaryMarkers":  [
+                                         "Validation/internal engineering anchors only.",
+                                         "validation/internal engineering anchors only",
+                                         "Not full ISO 52016 parity.",
+                                         "Not ISO52016 parity.",
+                                         "Not complete ISO 52016 numerical equivalence.",
+                                         "Not complete ISO52016 numerical equivalence.",
+                                         "Not pyBuildingEnergy parity.",
+                                         "Not pyBuildingEnergy numerical equivalence.",
+                                         "Not EnergyPlus parity.",
+                                         "Not EnergyPlus numerical equivalence.",
+                                         "Not ASHRAE 140 validation.",
+                                         "Not ASHRAE Standard 140 validation.",
+                                         "Not ASHRAE Standard 140 benchmark-grade claim."
+                                     ],
+    "stageClaimBoundarySnippets":  [
+                                       "physical node model builder stage",
+                                       "physical surface/construction expansion",
+                                       "physical boundary profile stage",
+                                       "physical operation profile stage",
+                                       "physical room simulation service stage",
+                                       "physical room model diagnostics stage",
+                                       "physical verification orchestration",
+                                       "physical model chain release-ready gate",
+                                       "physical scenario anchors stage",
+                                       "physical model selection stage",
+                                       "physical model selection application guard",
+                                       "physical chain final readiness",
+                                       "physical selection application integration hardening",
+                                       "physical branch hygiene stage",
+                                       "physical chain stage registry"
+                                   ],
+    "workItem":  "AE-ISO52016-002",
+    "stageSpecificClaimBoundarySnippets":  [
+                                               "physical node model builder stage",
+                                               "physical surface/construction expansion stage",
+                                               "physical boundary profile stage",
+                                               "physical operation profile stage",
+                                               "physical room simulation service stage",
+                                               "physical room model diagnostics stage",
+                                               "physical verification orchestration stage",
+                                               "physical model chain release-ready gate",
+                                               "physical scenario anchors stage",
+                                               "physical model selection stage",
+                                               "physical model selection application guard",
+                                               "physical chain final readiness rollup",
+                                               "physical selection application integration hardening",
+                                               "physical branch hygiene stage",
+                                               "physical chain stage registry"
+                                           ]
+}
