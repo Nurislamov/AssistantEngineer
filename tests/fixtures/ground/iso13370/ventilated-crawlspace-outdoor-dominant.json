@@ -1,0 +1,59 @@
+{
+  "id": "ventilated-crawlspace-outdoor-dominant",
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "areaM2": 45.0,
+    "exposedPerimeterM": 24.0,
+    "groundConductivityWPerMK": 2.0,
+    "floorUValueWPerM2K": 0.27,
+    "indoorAnnualMeanTemperatureC": 20.0,
+    "outdoorAnnualMeanTemperatureC": 11.0,
+    "outdoorMonthlyMeanTemperaturesC": [
+      4.0, 5.0, 8.0, 12.0, 16.0, 20.0, 23.0, 22.0, 18.0, 13.0, 8.0, 5.0
+    ],
+    "groundAnnualMeanTemperatureC": 12.0,
+    "groundTemperatureAmplitudeC": 4.0,
+    "groundTemperaturePhaseShiftMonths": 2.0,
+    "horizontalInsulationWidthM": 0.2,
+    "perimeterInsulationDepthM": 0.2,
+    "burialDepthM": 0.4,
+    "wallHeightBelowGradeM": 0.3,
+    "underfloorVentilationAirChangesPerHour": 6.0,
+    "contactKind": "VentilatedCrawlSpace"
+  },
+  "expected": {
+    "characteristicDimensionM": 3.75,
+    "equivalentGroundUValueWPerM2K": 0.422957,
+    "heatTransferCoefficientWPerK": 19.033089,
+    "groundWeight": 0.15,
+    "outdoorWeight": 0.85,
+    "indoorWeight": 0.0,
+    "monthlyBoundaryTemperaturesC": [
+      5.719615,
+      6.65,
+      9.119615,
+      12.3,
+      15.4,
+      18.5,
+      20.830385,
+      19.9,
+      16.580385,
+      12.55,
+      8.6,
+      6.35
+    ],
+    "annualMeanBoundaryTemperatureC": 12.708333
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.2
+  }
+}

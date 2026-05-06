@@ -1,0 +1,59 @@
+{
+  "id": "unconditioned-basement-outdoor-coupled",
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "areaM2": 60.0,
+    "exposedPerimeterM": 30.0,
+    "groundConductivityWPerMK": 2.1,
+    "floorUValueWPerM2K": 0.30,
+    "indoorAnnualMeanTemperatureC": 21.0,
+    "outdoorAnnualMeanTemperatureC": 8.0,
+    "outdoorMonthlyMeanTemperaturesC": [
+      2.0, 3.0, 6.0, 9.0, 13.0, 17.0, 20.0, 19.0, 15.0, 10.0, 6.0, 3.0
+    ],
+    "groundAnnualMeanTemperatureC": 10.0,
+    "groundTemperatureAmplitudeC": 5.0,
+    "groundTemperaturePhaseShiftMonths": 3.0,
+    "horizontalInsulationWidthM": 0.0,
+    "perimeterInsulationDepthM": 0.0,
+    "burialDepthM": 1.2,
+    "wallHeightBelowGradeM": 1.2,
+    "underfloorVentilationAirChangesPerHour": 0.0,
+    "contactKind": "UnconditionedBasement"
+  },
+  "expected": {
+    "characteristicDimensionM": 4.0,
+    "equivalentGroundUValueWPerM2K": 0.37347,
+    "heatTransferCoefficientWPerK": 22.408209,
+    "groundWeight": 0.5,
+    "outdoorWeight": 0.5,
+    "indoorWeight": 0.0,
+    "monthlyBoundaryTemperaturesC": [
+      7.25,
+      8.665064,
+      10.5,
+      11.665064,
+      12.75,
+      13.5,
+      13.75,
+      12.334936,
+      10.0,
+      7.834936,
+      6.75,
+      6.5
+    ],
+    "annualMeanBoundaryTemperatureC": 10.125
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.2
+  }
+}

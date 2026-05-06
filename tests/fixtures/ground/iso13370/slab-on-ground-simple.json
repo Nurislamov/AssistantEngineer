@@ -1,0 +1,57 @@
+{
+  "id": "slab-on-ground-simple",
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "areaM2": 40.0,
+    "exposedPerimeterM": 20.0,
+    "groundConductivityWPerMK": 2.0,
+    "floorUValueWPerM2K": 0.25,
+    "indoorAnnualMeanTemperatureC": 21.0,
+    "outdoorAnnualMeanTemperatureC": 10.0,
+    "outdoorMonthlyMeanTemperaturesC": null,
+    "groundAnnualMeanTemperatureC": 12.0,
+    "groundTemperatureAmplitudeC": 4.0,
+    "groundTemperaturePhaseShiftMonths": 1.0,
+    "horizontalInsulationWidthM": 0.0,
+    "perimeterInsulationDepthM": 0.0,
+    "burialDepthM": 0.0,
+    "wallHeightBelowGradeM": 0.0,
+    "underfloorVentilationAirChangesPerHour": 0.0,
+    "contactKind": "SlabOnGround"
+  },
+  "expected": {
+    "characteristicDimensionM": 4.0,
+    "equivalentGroundUValueWPerM2K": 0.339545,
+    "heatTransferCoefficientWPerK": 13.581818,
+    "groundWeight": 0.9,
+    "outdoorWeight": 0.1,
+    "indoorWeight": 0.0,
+    "monthlyBoundaryTemperaturesC": [
+      15.4,
+      14.917691,
+      13.6,
+      11.8,
+      10.0,
+      8.682309,
+      8.2,
+      8.682309,
+      10.0,
+      11.8,
+      13.6,
+      14.917691
+    ],
+    "annualMeanBoundaryTemperatureC": 11.8
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.2
+  }
+}

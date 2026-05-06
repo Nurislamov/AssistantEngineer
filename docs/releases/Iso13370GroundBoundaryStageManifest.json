@@ -1,0 +1,39 @@
+{
+  "stageId": "AE-GROUND-001",
+  "title": "ISO13370-inspired virtual ground temperature / ground boundary depth",
+  "status": "internal-engineering-anchor",
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundBoundaryInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundBoundaryResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundBoundaryDiagnostics.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundContactKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundBoundaryTemperatureProfile.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370MonthlyGroundBoundaryRecord.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370GroundBoundaryCalculator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370GroundTemperatureProfileCalculator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundBoundaryApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/GroundRegistration.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/ground/iso13370/slab-on-ground-simple.json",
+    "tests/fixtures/ground/iso13370/conditioned-basement-buried.json",
+    "tests/fixtures/ground/iso13370/unconditioned-basement-outdoor-coupled.json",
+    "tests/fixtures/ground/iso13370/ventilated-crawlspace-outdoor-dominant.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundTemperatureProfileTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

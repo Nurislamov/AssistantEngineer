@@ -1,0 +1,59 @@
+{
+  "id": "conditioned-basement-buried",
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "areaM2": 55.0,
+    "exposedPerimeterM": 26.0,
+    "groundConductivityWPerMK": 2.0,
+    "floorUValueWPerM2K": 0.28,
+    "indoorAnnualMeanTemperatureC": 21.0,
+    "outdoorAnnualMeanTemperatureC": 9.0,
+    "outdoorMonthlyMeanTemperaturesC": [
+      9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0
+    ],
+    "groundAnnualMeanTemperatureC": 11.0,
+    "groundTemperatureAmplitudeC": 3.0,
+    "groundTemperaturePhaseShiftMonths": 2.0,
+    "horizontalInsulationWidthM": 1.0,
+    "perimeterInsulationDepthM": 0.6,
+    "burialDepthM": 2.0,
+    "wallHeightBelowGradeM": 1.8,
+    "underfloorVentilationAirChangesPerHour": 0.0,
+    "contactKind": "ConditionedBasement"
+  },
+  "expected": {
+    "characteristicDimensionM": 4.230769,
+    "equivalentGroundUValueWPerM2K": 0.293283,
+    "heatTransferCoefficientWPerK": 16.130549,
+    "groundWeight": 0.35,
+    "outdoorWeight": 0.0,
+    "indoorWeight": 0.65,
+    "monthlyBoundaryTemperaturesC": [
+      18.409327,
+      18.55,
+      18.409327,
+      18.025,
+      17.5,
+      16.975,
+      16.590673,
+      16.45,
+      16.590673,
+      16.975,
+      17.5,
+      18.025
+    ],
+    "annualMeanBoundaryTemperatureC": 17.5
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.2
+  }
+}
