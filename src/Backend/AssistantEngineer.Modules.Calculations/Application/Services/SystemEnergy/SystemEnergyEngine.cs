@@ -1,16 +1,49 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.SharedKernel.Primitives;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
 
 public sealed class SystemEnergyEngine
 {
+    private readonly SystemEnergyOptions _options;
+    private readonly En15316SystemEnergyChainCalculator _en15316Calculator;
+    private readonly En15316SystemEnergyApplicationAdapter _en15316Adapter;
+
+    public SystemEnergyEngine(
+        IOptions<SystemEnergyOptions> options,
+        En15316SystemEnergyChainCalculator en15316Calculator,
+        En15316SystemEnergyApplicationAdapter en15316Adapter)
+    {
+        _options = options.Value;
+        _en15316Calculator = en15316Calculator;
+        _en15316Adapter = en15316Adapter;
+    }
+
+    public SystemEnergyEngine()
+        : this(
+            Microsoft.Extensions.Options.Options.Create(new SystemEnergyOptions()),
+            new En15316SystemEnergyChainCalculator(new En15316SystemEnergyReferenceDataProvider()),
+            new En15316SystemEnergyApplicationAdapter())
+    {
+    }
+
     public Result<SystemEnergyResult> Calculate(SystemEnergyInput input)
     {
         if (input is null)
             return Result<SystemEnergyResult>.Validation("System energy input is required.");
 
+        if (!_options.UseEn15316InspiredChain)
+            return CalculateCompatibility(input);
+
+        return CalculateEn15316Inspired(input);
+    }
+
+    private Result<SystemEnergyResult> CalculateEn15316Inspired(SystemEnergyInput input)
+    {
         var diagnostics = Validate(input);
 
         if (HasErrorDiagnostics(diagnostics))
@@ -21,6 +54,37 @@ public sealed class SystemEnergyEngine
                     diagnostics));
         }
 
+        var en15316Input = _en15316Adapter.MapToEn15316Input(input, _options);
+        if (en15316Input.EndUses.Count == 0)
+            return CalculateCompatibilityFromValidatedInput(input, diagnostics);
+
+        var en15316Result = _en15316Calculator.Calculate(en15316Input);
+        if (en15316Result.IsFailure)
+            return Result<SystemEnergyResult>.Failure(en15316Result);
+
+        return Result<SystemEnergyResult>.Success(
+            _en15316Adapter.MapToSystemEnergyResult(en15316Result.Value, input));
+    }
+
+    private static Result<SystemEnergyResult> CalculateCompatibility(SystemEnergyInput input)
+    {
+        var diagnostics = Validate(input);
+
+        if (HasErrorDiagnostics(diagnostics))
+        {
+            return Result<SystemEnergyResult>.Validation(
+                BuildValidationFailureMessage(
+                    "System energy validation failed",
+                    diagnostics));
+        }
+
+        return CalculateCompatibilityFromValidatedInput(input, diagnostics);
+    }
+
+    private static Result<SystemEnergyResult> CalculateCompatibilityFromValidatedInput(
+        SystemEnergyInput input,
+        List<CalculationDiagnostic> diagnostics)
+    {
         var assumptions = new List<string>
         {
             "System energy is a simplified engineering model.",

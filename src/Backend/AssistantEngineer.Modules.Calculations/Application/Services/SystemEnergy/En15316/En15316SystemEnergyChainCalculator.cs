@@ -114,17 +114,17 @@ public sealed class En15316SystemEnergyChainCalculator
             diagnostics: diagnostics);
 
         var defaults = _referenceDataProvider.ResolveGenerationDefaults(input.GenerationTechnology);
-        var resolvedGenerationEfficiency = input.GenerationEfficiency ?? defaults.GenerationEfficiency;
-        var resolvedGenerationCop = input.GenerationCop ?? defaults.GenerationCop;
-        var auxiliary = input.AuxiliaryEnergyKWh > 0
-            ? input.AuxiliaryEnergyKWh
-            : Math.Max(0, defaults.TypicalAuxiliaryFraction * storage.UpstreamEnergyKWh);
+        var resolvedGenerationEfficiency = input.GenerationEfficiency;
+        var resolvedGenerationCop = input.GenerationCop;
+        var auxiliary = Math.Max(0, input.AuxiliaryEnergyKWh);
 
-        if (input.AuxiliaryEnergyKWh <= 0 && defaults.TypicalAuxiliaryFraction > 0)
+        if (resolvedGenerationCop is not > 0 &&
+            resolvedGenerationEfficiency is not > 0 &&
+            (defaults.GenerationCop is > 0 || defaults.GenerationEfficiency is > 0))
         {
             diagnostics.Add(new En15316SystemEnergyDiagnostics(
-                "En15316.Auxiliary.Defaulted",
-                $"{FormatContext(context)}Auxiliary energy defaulted from generation technology fraction."));
+                "En15316.Generation.ReferenceDefaultNotApplied",
+                $"{FormatContext(context)}Generation performance defaults are available for the selected technology but are not auto-applied in this internal deterministic chain."));
         }
 
         var generationInput = storage.UpstreamEnergyKWh;

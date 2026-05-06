@@ -21,6 +21,7 @@ internal static class CalculationOptionsRegistration
         services.AddSingleton<IValidateOptions<En16798ProfileOptions>, En16798ProfileOptionsValidator>();
         services.AddSingleton<IValidateOptions<NaturalVentilationOptions>, NaturalVentilationOptionsValidator>();
         services.AddSingleton<IValidateOptions<DomesticHotWaterOptions>, DomesticHotWaterOptionsValidator>();
+        services.AddSingleton<IValidateOptions<SystemEnergyOptions>, SystemEnergyOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso13370GroundTemperatureOptions>, Iso13370GroundTemperatureOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso13370GroundHeatTransferOptions>, Iso13370GroundHeatTransferOptionsValidator>();
 
@@ -62,6 +63,11 @@ internal static class CalculationOptionsRegistration
         services
             .AddOptions<DomesticHotWaterOptions>()
             .Bind(configuration.GetSection("Calculations:DomesticHotWater"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<SystemEnergyOptions>()
+            .Bind(configuration.GetSection("Calculations:SystemEnergy"))
             .ValidateOnStart();
 
         services

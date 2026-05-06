@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Comfort;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater.Iso12831;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
@@ -33,6 +34,9 @@ internal static class EnergyAnalysisRegistration
 
         services.AddScoped<HeatingSystemEnergyService>();
         services.AddScoped<CoolingSystemEnergyService>();
+        services.AddSingleton<En15316SystemEnergyReferenceDataProvider>();
+        services.AddSingleton<En15316SystemEnergyChainCalculator>();
+        services.AddSingleton<En15316SystemEnergyApplicationAdapter>();
         services.AddSingleton<SystemEnergyEngine>();
 
         services.AddScoped<BuildingEnergyPerformanceSummaryService>();

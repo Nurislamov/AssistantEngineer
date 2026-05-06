@@ -70,7 +70,7 @@ public sealed class En15316SystemEnergyTraceabilityTests
     }
 
     [Fact]
-    public void DisclosureFiles_ReflectDefaultCompatibilityAndPureCalculatorStatus()
+    public void DisclosureFiles_ReflectDefaultCompatibilityAndOptInIntegrationStatus()
     {
         var parityDocPath = Path.Combine(
             TestPaths.RepoRoot,
@@ -91,10 +91,10 @@ public sealed class En15316SystemEnergyTraceabilityTests
 
         Assert.Contains("SystemEnergyEngine", parityDoc);
         Assert.Contains("remains default", parityDoc, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("pure calculator", parityDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", parityDoc, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("EN15316-inspired", scopeDoc, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("pure calculator", scopeDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", scopeDoc, StringComparison.OrdinalIgnoreCase);
 
         AssertTokenAppearsOnlyAsNegatedClaim(parityDoc, "full EN 15316 compliance");
         AssertTokenAppearsOnlyAsNegatedClaim(scopeDoc, "full EN 15316 compliance");
