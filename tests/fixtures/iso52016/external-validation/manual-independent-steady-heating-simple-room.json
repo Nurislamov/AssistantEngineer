@@ -1,0 +1,41 @@
+{
+  "id": "manual-independent-steady-heating-simple-room",
+  "sourceKind": "ManualIndependent",
+  "calculationPath": "MatrixReduced",
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "Manual independent reference fixtures only.",
+    "No full ISO 52016 parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim."
+  ],
+  "input": {
+    "description": "Steady heating with constant outdoor temperature below the setpoint.",
+    "outdoorTemperatureC": -5.0,
+    "heatingSetpointC": 21.0,
+    "coolingSetpointC": 26.0,
+    "internalGainW": 150.0,
+    "solarGainW": 0.0
+  },
+  "expected": {
+    "annualHeatingKWh": 1800.0,
+    "annualCoolingKWh": 0.0,
+    "peakHeatingW": 2100.0,
+    "peakCoolingW": 0.0,
+    "meanOperativeTemperatureC": 21.0,
+    "maxOperativeTemperatureC": 21.3,
+    "minOperativeTemperatureC": 20.7,
+    "hourlyResultCount": 24,
+    "monthlyHeatingKWh": [
+      150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0
+    ],
+    "monthlyCoolingKWh": [
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    ]
+  },
+  "tolerance": {
+    "absoluteTolerance": 0.5,
+    "relativeTolerancePercent": 1.0
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "manual-independent-steady-cooling-simple-room",
+  "sourceKind": "ManualIndependent",
+  "calculationPath": "MatrixReduced",
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "Manual independent reference fixtures only.",
+    "No full ISO 52016 parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim."
+  ],
+  "input": {
+    "description": "Steady cooling with constant outdoor temperature above the setpoint and internal/solar gains.",
+    "outdoorTemperatureC": 34.0,
+    "heatingSetpointC": 20.0,
+    "coolingSetpointC": 25.0,
+    "internalGainW": 450.0,
+    "solarGainW": 300.0
+  },
+  "expected": {
+    "annualHeatingKWh": 0.0,
+    "annualCoolingKWh": 2400.0,
+    "peakHeatingW": 0.0,
+    "peakCoolingW": 2800.0,
+    "meanOperativeTemperatureC": 25.0,
+    "maxOperativeTemperatureC": 25.4,
+    "minOperativeTemperatureC": 24.8,
+    "hourlyResultCount": 24,
+    "monthlyHeatingKWh": [
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    ],
+    "monthlyCoolingKWh": [
+      200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0
+    ]
+  },
+  "tolerance": {
+    "absoluteTolerance": 0.75,
+    "relativeTolerancePercent": 1.25
+  }
+}

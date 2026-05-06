@@ -1,0 +1,38 @@
+{
+  "stageId": "AE-VALIDATION-ISO52016-001",
+  "title": "ISO52016 external numerical validation framework",
+  "status": "internal-validation-framework",
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "Manual independent reference fixtures only.",
+    "No full ISO 52016 parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "ExternalParityCovered is not allowed in this stage."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixture.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixtureSourceKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationCalculationPath.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationExpectedResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationTolerance.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationComparisonResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationDelta.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationFixtureLoader.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationComparisonEngine.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/iso52016/external-validation/manual-independent-steady-heating-simple-room.json",
+    "tests/fixtures/iso52016/external-validation/manual-independent-steady-cooling-simple-room.json",
+    "tests/fixtures/iso52016/external-validation/manual-independent-annual-8760-seasonal-loads.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ExternalValidationFixtureLoaderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ExternalValidationComparisonEngineTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ExternalValidationClaimBoundaryTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ExternalValidationFrameworkTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}
