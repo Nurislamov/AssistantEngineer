@@ -115,32 +115,19 @@ public class Iso52016PhysicalModelSelectionApplicationGuardTests
     }
 
     [Fact]
-    public void VerificationScriptAndMatrixAllExposeApplicationGuardStage()
+    public void VerificationRegistryExposesApplicationGuardStage()
     {
-        var repoRoot = FindRepositoryRoot();
-
-        var verifierPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-model-selection-application-guard.ps1");
-
-        var matrixAllPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(verifierPath), $"Verifier was not found: {verifierPath}");
-        Assert.True(File.Exists(matrixAllPath), $"Matrix all-verification script was not found: {matrixAllPath}");
-
-        var verifier = File.ReadAllText(verifierPath);
-        var matrixAll = File.ReadAllText(matrixAllPath);
-
-        Assert.Contains("Iso52016PhysicalModelSelectionApplicationGuardTests", verifier);
-        Assert.Contains("validation/internal engineering anchors only", verifier);
-        Assert.Contains("verify-iso52016-physical-model-selection-application-guard.ps1", matrixAll);
-        Assert.Contains("Iso52016PhysicalModelSelectionApplicationGuardManifest.json", matrixAll);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-11",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionApplicationGuardTests.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-11",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalModelSelectionApplicationGuardManifest.json");
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-11",
+            "scripts/iso52016/verify-iso52016-physical-model-selection-application-guard.ps1");
     }
 
     [Fact]

@@ -37,43 +37,28 @@ public class Iso52016PhysicalRoomModelDiagnosticsStageTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsDiagnosticsFilesAndTests()
+    public void VerificationRegistry_GuardsDiagnosticsFilesAndTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-room-model-diagnostics-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsBuilder.cs", script);
-        Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsBuilderTests", script);
-        Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsStageTraceabilityTests", script);
-        Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsStageManifest.json", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-06",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-06",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilderTests.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-06",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalRoomModelDiagnosticsStageManifest.json");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesDiagnosticsStage()
+    public void VerificationRegistry_ReferencesDiagnosticsStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("SkipPhysicalDiagnostics", script);
-        Assert.Contains("verify-iso52016-physical-room-model-diagnostics-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsStageManifest.json", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-06",
+            "scripts/iso52016/verify-iso52016-physical-room-model-diagnostics-stage.ps1");
     }
 
     [Fact]

@@ -121,41 +121,27 @@ public class Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
     }
 
     [Fact]
-    public void VerificationScript_RunsApplicationIntegrationHardeningGuardTests()
+    public void VerificationRegistry_RunsApplicationIntegrationHardeningGuardTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-selection-application-integration-hardening.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalSelectionApplicationIntegrationHardeningTests", script);
-        Assert.Contains("Iso52016PhysicalSelectionApplicationIntegrationManifest.json", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-13",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalSelectionApplicationIntegrationHardeningTests.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-13",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalSelectionApplicationIntegrationManifest.json");
+        RegistryContainsTestFilter(
+            "AE-ISO52016-002-STEP-13",
+            "FullyQualifiedName~Iso52016PhysicalSelectionApplicationIntegrationHardening");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ContainsStep13DiscoverabilityHook()
+    public void VerificationRegistry_ContainsStep13DiscoverabilityAlias()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-selection-application-integration-hardening.ps1", script);
-        Assert.Contains("Iso52016PhysicalSelectionApplicationIntegrationManifest.json", script);
-        Assert.Contains("ReducedMatrix remains the default application-facing path", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-13",
+            "scripts/iso52016/verify-iso52016-physical-selection-application-integration-hardening.ps1");
     }
 
     private static string FindRepositoryRoot()

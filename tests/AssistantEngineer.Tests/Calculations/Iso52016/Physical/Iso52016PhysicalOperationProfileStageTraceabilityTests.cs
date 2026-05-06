@@ -29,36 +29,29 @@ public class Iso52016PhysicalOperationProfileStageTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsOperationProfileFilesAndTests()
+    public void VerificationRegistry_GuardsOperationProfileFilesAndTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-physical-operation-profile-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalHourlyOperationCondition.cs", script);
-        Assert.Contains("Iso52016MatrixHourlyBoundaryConductanceOverride.cs", script);
-        Assert.Contains("Iso52016PhysicalOperationProfileTests", script);
-        Assert.Contains("Iso52016MatrixHourlyBoundaryConductanceOverrideTests", script);
-        Assert.Contains("Iso52016PhysicalOperationProfileStageManifest.json", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-04",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalHourlyOperationCondition.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-04",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Matrix/Iso52016MatrixHourlyBoundaryConductanceOverride.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-04",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalOperationProfileStageManifest.json");
+        RegistryContainsTestFilter("AE-ISO52016-002-STEP-04", "FullyQualifiedName~Iso52016PhysicalOperationProfile");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesOperationProfileStage()
+    public void VerificationRegistry_ReferencesOperationProfileStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("SkipPhysicalOperationProfiles", script);
-        Assert.Contains("verify-iso52016-physical-operation-profile-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalOperationProfileStageManifest.json", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-04",
+            "scripts/iso52016/verify-iso52016-physical-operation-profile-stage.ps1");
     }
 
     [Fact]

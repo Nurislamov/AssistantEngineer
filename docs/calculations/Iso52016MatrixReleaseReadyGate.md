@@ -1,112 +1,62 @@
-# ISO 52016 Matrix release-ready gate
+﻿# ISO 52016 Matrix Release-Ready Gate
 
-This gate is the pre-merge/pre-release command for the ISO 52016 Matrix calculation path.
+This gate is the pre-merge/pre-release command for the ISO52016 Matrix and Physical-chain verification lane.
 
-## Main command
+Durable release-readiness orchestration is owned by:
+
+```text
+tools/AssistantEngineer.Tools.Iso52016Verification
+docs/verification/Iso52016VerificationRegistry.json
+```
+
+The PowerShell entrypoint is a thin wrapper only:
 
 ```powershell
 .\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1
 ```
 
-The command verifies:
-
-1. Required ISO 52016 Matrix verification scripts and docs exist.
-2. Full ISO 52016 Matrix verification chain passes.
-3. External validation anchors are present and guard-tested.
-4. Full `AssistantEngineer.Tests` test project passes.
-5. Generated Matrix baseline summary artifacts are not tracked by git.
-
-## External validation anchor status
-
-The release gate includes:
+Equivalent direct command:
 
 ```powershell
-.\scripts\iso52016\assert-iso52016-matrix-external-validation-anchors-release-ready.ps1
+dotnet run --project .\tools\AssistantEngineer.Tools.Iso52016Verification -- assert-release-ready
 ```
 
-Status: validation anchors only, not full parity.
+## Fast Local Check
 
-Explicit non-claims:
-
-```text
-No pyBuildingEnergy parity claim.
-No EnergyPlus parity claim.
-No ASHRAE 140 validation coverage claim.
-No full ISO 52016 parity claim.
+```powershell
+.\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -SkipTests
+dotnet run --project .\tools\AssistantEngineer.Tools.Iso52016Verification -- assert-release-ready --skip-tests
 ```
 
-## Optional strict mode
+## Optional Strict Mode
 
 Require a clean working tree:
 
 ```powershell
 .\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -RequireCleanGit
+dotnet run --project .\tools\AssistantEngineer.Tools.Iso52016Verification -- assert-release-ready --require-clean-git
 ```
 
-## Fast local modes
+## What The Gate Checks
 
-Skip full test project:
+- The ISO52016 verification registry parses.
+- Required docs, source files, test files, and manifests exist.
+- Release-ready manifests parse.
+- Claim boundaries and non-claims are present.
+- Forbidden positive parity claims are absent.
+- Generated artifact paths are not tracked by git.
+- PowerShell scripts listed in the registry remain thin wrappers.
+- Registry-owned test filters pass unless `--skip-tests` is used.
 
-```powershell
-.\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -SkipFullTests
-```
+## Generated Artifacts
 
-Skip Matrix verification chain:
+Generated artifact paths are listed in `docs/verification/Iso52016VerificationRegistry.json`.
 
-```powershell
-.\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -SkipIsoVerification
-```
+Generated artifacts must not be committed, including Matrix baseline summaries, external-validation anchor outputs, engineering edge-case outputs, application integration hardening outputs, and physical-chain generated outputs.
 
-Skip generated artifact check:
+## Claim Boundary
 
-```powershell
-.\scripts\iso52016\assert-iso52016-matrix-release-ready.ps1 -SkipGeneratedArtifactCheck
-```
+Validation/internal engineering anchors only.
 
-## Generated artifacts
+No full ISO 52016 parity claim, no pyBuildingEnergy parity claim, no EnergyPlus parity claim, no ASHRAE 140 validation claim, and no complete ISO52010/ISO52016 compliance claim is made by this gate.
 
-The exporter may create:
-
-```text
-artifacts/iso52016/matrix-baselines/summary.json
-artifacts/iso52016/matrix-baselines/summary.md
-```
-
-These files are generated outputs and must not be committed.
-
-## ISO 52016 Matrix engineering edge-case hardening gate
-
-The release-ready gate includes:
-
-```powershell
-.\scripts\iso52016\verify-iso52016-matrix-engineering-edge-cases.ps1
-```
-
-This is an internal engineering hardening gate. It does not claim pyBuildingEnergy, EnergyPlus, ASHRAE 140, or full ISO 52016 parity.
-
-## Engineering edge-case hardening release-ready gate
-
-The main Matrix release-ready gate includes:
-
-`powershell
-.\scripts\iso52016\assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1
-`
-
-Engineering edge-case hardening only.
-
-Validation anchors only, not full parity.
-## Application integration hardening
-
-The release-ready Matrix chain includes the application integration hardening verification script.
-
-Status: Application integration hardening only. Validation anchors only, not full parity.
-
-## Application integration hardening release gate
-
-The Matrix release-ready chain includes:
-
-```powershell
-.\scripts\iso52016\assert-iso52016-matrix-application-integration-hardening-release-ready.ps1
-```
-
-Generated application integration hardening artifacts are written under `artifacts/iso52016/application-integration-hardening/` and must not be committed.

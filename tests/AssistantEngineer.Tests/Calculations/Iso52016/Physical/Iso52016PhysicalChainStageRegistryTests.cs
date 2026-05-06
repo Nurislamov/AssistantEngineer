@@ -82,29 +82,24 @@ public class Iso52016PhysicalChainStageRegistryTests
 
         var wrapper = File.ReadAllText(wrapperPath);
 
-        Assert.Contains("dotnet run", wrapper);
-        Assert.Contains("AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification", wrapper);
+        Assert.Contains("dotnet", wrapper);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification", wrapper);
+        Assert.Contains("verify-stage", wrapper);
         Assert.DoesNotContain("<<<<<<<", wrapper);
         Assert.DoesNotContain(">>>>>>>", wrapper);
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesPhysicalStageRegistryGate()
+    public void VerificationRegistry_ReferencesPhysicalStageRegistryGate()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-chain-stage-registry.ps1", script);
-        Assert.Contains("Iso52016PhysicalChainStageRegistry.json", script);
-        Assert.Contains("AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-15",
+            "requiredDocs",
+            "docs/traceability/Iso52016PhysicalChainStageRegistry.json");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-15",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalChainStageRegistryManifest.json");
     }
 
     private static string FindRepositoryRoot()

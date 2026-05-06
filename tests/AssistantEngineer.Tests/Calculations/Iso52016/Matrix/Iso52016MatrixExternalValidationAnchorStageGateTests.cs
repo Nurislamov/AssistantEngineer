@@ -61,21 +61,18 @@ public sealed class Iso52016MatrixExternalValidationAnchorStageGateTests
     }
 
     [Fact]
-    public void StageGate_IsConnectedToAllInOneAndReleaseReadyScripts()
+    public void StageGate_IsConnectedThroughVerificationRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
         var stageGateScriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1");
-        var allScriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-all.ps1");
-        var releaseScriptPath = Path.Combine(repoRoot, "scripts", "iso52016", "assert-iso52016-matrix-release-ready.ps1");
-
         Assert.True(File.Exists(stageGateScriptPath), $"Stage-gate verification script was not found: {stageGateScriptPath}");
-        Assert.True(File.Exists(allScriptPath), $"All-in-one verification script was not found: {allScriptPath}");
-        Assert.True(File.Exists(releaseScriptPath), $"Release-ready script was not found: {releaseScriptPath}");
 
         Assert.Contains("ValidationAnchorOnly", File.ReadAllText(stageGateScriptPath));
-        Assert.Contains("verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1", File.ReadAllText(allScriptPath));
-        Assert.Contains("verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1", File.ReadAllText(releaseScriptPath));
+        RegistryContainsStageFile(
+            "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS",
+            "relatedManifests",
+            "docs/releases/Iso52016MatrixExternalValidationAnchorsStageGateManifest.json");
     }
 
     [Fact]

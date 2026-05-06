@@ -45,43 +45,25 @@ public class Iso52016PhysicalNodeModelStageTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsRequiredFilesAndRunsPhysicalNodeModelTests()
+    public void VerificationRegistry_GuardsRequiredFilesAndRunsPhysicalNodeModelTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-node-model-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalRoomModelBuilder.cs", script);
-        Assert.Contains("Iso52016PhysicalNodeModelStageManifest.json", script);
-        Assert.Contains("FullyQualifiedName~Iso52016Physical", script);
-        Assert.Contains("AE-ISO52016-002", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-01",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-01",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalNodeModelStageManifest.json");
+        RegistryContainsTestFilter("AE-ISO52016-002-STEP-01", "FullyQualifiedName~Iso52016PhysicalRoomModelBuilder");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesPhysicalNodeModelStage()
+    public void VerificationRegistry_ReferencesPhysicalNodeModelStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        if (!File.Exists(scriptPath))
-            return;
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("SkipPhysicalNodeModel", script);
-        Assert.Contains("verify-iso52016-physical-node-model-stage.ps1", script);
-        Assert.Contains("FullyQualifiedName~Iso52016Physical", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-01",
+            "scripts/iso52016/verify-iso52016-physical-node-model-stage.ps1");
     }
 
     [Fact]

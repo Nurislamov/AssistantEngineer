@@ -89,20 +89,13 @@ public sealed class Iso52016MatrixExternalValidationAnchorsClosureTests
         var repoRoot = FindRepositoryRoot();
 
         var gitIgnorePath = Path.Combine(repoRoot, ".gitignore");
-        var releaseReadyScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "assert-iso52016-matrix-external-validation-anchors-release-ready.ps1");
 
         Assert.True(File.Exists(gitIgnorePath), ".gitignore was not found.");
-        Assert.True(File.Exists(releaseReadyScriptPath), $"Release-ready script was not found: {releaseReadyScriptPath}");
 
         var gitIgnore = File.ReadAllText(gitIgnorePath);
-        var releaseReadyScript = File.ReadAllText(releaseReadyScriptPath);
 
         Assert.Contains("artifacts/iso52016/external-validation-anchors/", gitIgnore);
-        Assert.Contains("git ls-files artifacts/iso52016/external-validation-anchors", releaseReadyScript);
+        Assert.Contains("artifacts/iso52016/external-validation-anchors", ReadIso52016VerificationRegistry());
     }
 
     [Fact]

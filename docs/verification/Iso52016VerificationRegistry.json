@@ -1,0 +1,855 @@
+{
+  "registryId": "AE-ISO52016-VERIFICATION-REGISTRY",
+  "title": "ISO52016 Matrix and Physical verification registry",
+  "owner": "tools/AssistantEngineer.Tools.Iso52016Verification",
+  "requiredNonClaims": [
+    "Validation/internal engineering anchors only.",
+    "No full ISO 52016 parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim."
+  ],
+  "generatedArtifactPaths": [
+    "artifacts/iso52016/matrix-baselines",
+    "artifacts/iso52016/external-validation-anchors",
+    "artifacts/iso52016/engineering-edge-cases",
+    "artifacts/iso52016/application-integration-hardening",
+    "artifacts/iso52016/physical-chain",
+    "artifacts/iso52016/physical-scenario-anchors",
+    "artifacts/iso52016/physical-selection-application-integration-hardening"
+  ],
+  "releaseReadyManifests": [
+    "docs/releases/Iso52016MatrixExternalValidationAnchorsReleaseManifest.json",
+    "docs/releases/Iso52016MatrixEngineeringEdgeCasesReleaseManifest.json",
+    "docs/releases/Iso52016MatrixApplicationIntegrationHardeningReleaseManifest.json",
+    "docs/releases/Iso52016PhysicalModelChainReleaseGateManifest.json",
+    "docs/releases/Iso52016PhysicalChainFinalReadinessManifest.json"
+  ],
+  "entrypointWrapperScripts": [
+    "scripts/iso52016/verify-iso52016-matrix-all.ps1",
+    "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
+    "scripts/iso52016/verify-iso52016-physical-model-chain.ps1",
+    "scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1"
+  ],
+  "deprecatedWrapperAliases": [],
+  "stages": [
+    {
+      "id": "ISO52016-MATRIX-SOLVER",
+      "name": "Matrix solver stage",
+      "scope": "Reduced Matrix solver implementation and internal solver traceability.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixSolverStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixSolverStage.md",
+        "docs/calculations/Iso52016MatrixVerificationRunbook.md",
+        "docs/calculations/Iso52016MatrixReleaseReadyGate.md",
+        "docs/traceability/Iso52016MatrixSolverTraceabilityMatrix.json"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Matrix/Iso52016MatrixHourlySolverRequest.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Matrix/Iso52016MatrixHourlyResult.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixHourlySolverTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixSolverStageTraceabilityTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixAllVerificationScriptTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixHourlySolver",
+        "FullyQualifiedName~Iso52016MatrixSolverStageTraceability"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-BASELINES",
+      "name": "Matrix baseline fixtures",
+      "scope": "Internal Matrix baseline fixtures and summary artifact policy.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixBaselineFixturesManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixBaselineFixtures.md",
+        "docs/calculations/Iso52016MatrixBaselineSummaryExporter.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineSummaryExporterTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixBaselineFixture",
+        "FullyQualifiedName~Iso52016MatrixBaselineSummaryExporter"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/matrix-baselines"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-APPLICATION-BASELINES",
+      "name": "Matrix application baselines",
+      "scope": "Application-facing reduced Matrix baseline fixtures.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixBaselineFixturesManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixApplicationBaselineFixtures.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixReducedRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationResultMapper.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationBaselineFixtureTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-EXTERNAL-VALIDATION",
+      "name": "Matrix external-validation naming fixtures",
+      "scope": "Manual fixture lane with external-tool naming anchors and explicit non-claims.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixExternalValidationNamingAnchorsManifest.json",
+        "docs/releases/Iso52016MatrixExternalValidationAnnualAnchorsManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixExternalValidationFixtures.md",
+        "docs/calculations/Iso52016MatrixExternalValidationNamingAnchors.md",
+        "docs/calculations/Iso52016MatrixExternalValidationAnnualAnchors.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationFixtureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationNamingAnchorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnnualAnchorTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixExternalValidationFixture",
+        "FullyQualifiedName~Iso52016MatrixExternalValidationNamingAnchor",
+        "FullyQualifiedName~Iso52016MatrixExternalValidationAnnualAnchor"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS",
+      "name": "Matrix external-validation anchors",
+      "scope": "Independent manual external-validation anchors and stage/release gates.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixExternalValidationAnchorsManifest.json",
+        "docs/releases/Iso52016MatrixExternalValidationAnchorsStageGateManifest.json",
+        "docs/releases/Iso52016MatrixExternalValidationAnchorsReleaseManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixExternalValidationAnchors.md",
+        "docs/calculations/Iso52016MatrixExternalValidationAnchorsStageGate.md",
+        "docs/calculations/Iso52016MatrixExternalValidationAnchorsReleaseGate.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorManifestTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorStageGateTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorsReleaseGateTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixExternalValidationAnchor"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/external-validation-anchors"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES",
+      "name": "Matrix engineering edge cases",
+      "scope": "Internal engineering edge-case anchors for Matrix response behavior.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixEngineeringEdgeCasesManifest.json",
+        "docs/releases/Iso52016MatrixEngineeringEdgeCasesReleaseManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixEngineeringEdgeCases.md",
+        "docs/calculations/Iso52016MatrixEngineeringEdgeCasesReleaseGate.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixEngineeringEdgeCaseTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixEngineeringEdgeCasesReleaseGateTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixEngineeringEdgeCase"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/engineering-edge-cases"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+      "name": "Matrix application integration hardening",
+      "scope": "Application-facing Matrix integration guards and artifact policy.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MatrixApplicationIntegrationHardeningManifest.json",
+        "docs/releases/Iso52016MatrixApplicationIntegrationHardeningReleaseManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MatrixApplicationIntegrationHardening.md",
+        "docs/calculations/Iso52016MatrixApplicationIntegrationHardeningReleaseGate.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixApplicationIntegrationHardeningReleaseGateTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MatrixApplicationIntegrationHardening"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/application-integration-hardening"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-01",
+      "name": "Physical node model builder",
+      "scope": "ISO52016-inspired physical node model builder with internal engineering anchors.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalNodeModelStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalNodeModelStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelRequest.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalNodeModelStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalRoomModelBuilder",
+        "FullyQualifiedName~Iso52016PhysicalNodeModelStageTraceability"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-node-model-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-01"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-02",
+      "name": "Physical surface model expansion",
+      "scope": "Surface and construction expansion for physical node model inputs.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalSurfaceModelExpansionManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalSurfaceModelExpansion.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalSurface.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalConstructionLayer.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalSurfaceModelBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalNodeModelSurfaceExpansionTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalSurface"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-surface-model-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-02"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-03",
+      "name": "Physical boundary profile",
+      "scope": "Hourly physical boundary condition profiles for surfaces.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalBoundaryProfileStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalBoundaryProfileStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalSurfaceHourlyBoundaryCondition.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalSurfaceBoundaryType.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalSurfaceBoundaryConditionTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalBoundaryProfileStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalBoundaryProfile",
+        "FullyQualifiedName~Iso52016PhysicalSurfaceBoundaryCondition"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-boundary-profile-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-03"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-04",
+      "name": "Physical operation profile",
+      "scope": "Hourly operation profiles and boundary conductance overrides.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalOperationProfileStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalOperationProfileStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalHourlyOperationCondition.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Matrix/Iso52016MatrixHourlyBoundaryConductanceOverride.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalOperationProfileTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalOperationProfileStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalOperationProfile",
+        "FullyQualifiedName~Iso52016MatrixHourlyBoundaryConductanceOverride"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-operation-profile-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-04"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-05",
+      "name": "Physical room simulation service",
+      "scope": "Physical builder-to-Matrix room energy simulation service adapter.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalRoomSimulationServiceStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalRoomSimulationServiceStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationResult.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationServiceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalRoomEnergySimulationService",
+        "FullyQualifiedName~Iso52016PhysicalRoomSimulationServiceStageTraceability"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-room-simulation-service-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-05"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-06",
+      "name": "Physical room model diagnostics",
+      "scope": "Physical topology and gain-distribution diagnostics.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalRoomModelDiagnosticsStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalRoomModelDiagnosticsStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsProfile.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalRoomModelDiagnostics"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-room-model-diagnostics-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-06"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-07",
+      "name": "Physical verification orchestration",
+      "scope": "Physical-chain verification ownership in C# tooling.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalVerificationOrchestrationStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalVerificationOrchestration.md"
+      ],
+      "requiredSourceFiles": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs",
+        "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalVerificationOrchestrationTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalVerificationOrchestration"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/physical-chain"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-08",
+      "name": "Physical model chain release-ready gate",
+      "scope": "Release-ready gate for physical model chain evidence.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalModelChainReleaseGateManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalModelChainReleaseGate.md"
+      ],
+      "requiredSourceFiles": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelChainReleaseReadyGateTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalModelChainReleaseReadyGate"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/physical-chain"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-09",
+      "name": "Physical scenario anchors",
+      "scope": "Deterministic physical model scenario anchors.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalScenarioAnchorsStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalScenarioAnchorsStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationService.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalScenarioAnchorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalScenarioAnchorsStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalScenarioAnchor"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/physical-scenario-anchors"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-10",
+      "name": "Physical model selection",
+      "scope": "Application-owned strategy contract for reduced Matrix default and physical opt-in.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalModelSelectionStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalModelSelectionStage.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionRequest.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionServiceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionStageTraceabilityTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalModelSelection"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-model-selection-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-10"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-11",
+      "name": "Physical model selection application guard",
+      "scope": "Application-facing guard for reduced Matrix default and explicit physical opt-in.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalModelSelectionApplicationGuardManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalModelSelectionApplicationGuard.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionApplicationGuardTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalModelSelectionApplicationGuard"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-model-selection-application-guard.ps1",
+          "stageId": "AE-ISO52016-002-STEP-11"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-12",
+      "name": "Physical chain final readiness",
+      "scope": "Physical chain traceability and final readiness rollup.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalChainFinalReadinessManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalChainFinalReadiness.md",
+        "docs/traceability/Iso52016PhysicalChainTraceabilityMatrix.json"
+      ],
+      "requiredSourceFiles": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalChainFinalReadinessTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalChainFinalReadiness"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/physical-chain"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/assert-iso52016-physical-chain-final-ready.ps1",
+          "stageId": "AE-ISO52016-002-STEP-12"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-13",
+      "name": "Physical selection application integration hardening",
+      "scope": "Application integration hardening for physical selection boundaries.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalSelectionApplicationIntegrationManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalSelectionApplicationIntegration.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalSelectionApplicationIntegrationHardeningTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalSelectionApplicationIntegrationHardening"
+      ],
+      "generatedArtifactPaths": [
+        "artifacts/iso52016/physical-selection-application-integration-hardening"
+      ],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-selection-application-integration-hardening.ps1",
+          "stageId": "AE-ISO52016-002-STEP-13"
+        }
+      ]
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-14",
+      "name": "Physical branch hygiene",
+      "scope": "Repository hygiene gates for physical chain branch readiness.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalBranchHygieneStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalBranchHygieneStage.md"
+      ],
+      "requiredSourceFiles": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalBranchHygieneStageTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalBranchHygieneStage"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-ISO52016-002-STEP-15",
+      "name": "Physical chain stage registry",
+      "scope": "C#-owned physical chain registry verification and discoverability.",
+      "relatedManifests": [
+        "docs/releases/Iso52016PhysicalChainStageRegistryManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016PhysicalChainStageRegistry.md",
+        "docs/traceability/Iso52016PhysicalChainStageRegistry.json"
+      ],
+      "requiredSourceFiles": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalChainStageRegistryTests.cs"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016PhysicalChainStageRegistry"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-chain-stage-registry.ps1",
+          "stageId": "AE-ISO52016-002-STEP-15"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-chain-stage-registry-stage-gate.ps1",
+          "stageId": "AE-ISO52016-002-STEP-15"
+        }
+      ]
+    }
+  ]
+}

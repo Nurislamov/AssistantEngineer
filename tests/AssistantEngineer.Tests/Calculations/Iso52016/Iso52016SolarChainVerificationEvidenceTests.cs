@@ -53,7 +53,7 @@ public class Iso52016SolarChainVerificationEvidenceTests
         var root = document.RootElement;
 
         Assert.Equal("AE-ISO52016-SOLAR-CHAIN", root.GetProperty("id").GetString());
-        Assert.Equal("closed-guarded-100", root.GetProperty("status").GetString());
+        Assert.Equal("closed-internal-engineering-gate", root.GetProperty("status").GetString());
 
         var stages = root.GetProperty("closedStages");
         Assert.True(stages.GetArrayLength() >= 11);

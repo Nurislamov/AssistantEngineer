@@ -1,42 +1,41 @@
 ﻿param(
     [string] $RepoRoot = (Get-Location).Path,
-    [switch] $SkipTests
+    [switch] $SkipTests,
+    [switch] $RequireCleanGit
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
-$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016PhysicalVerification\AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj"
+$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj"
 
-if (-not (Test-Path -LiteralPath $toolProject)) {
-    throw "ISO52016 physical verification C# tool project was not found: $toolProject"
-}
-
-$arguments = @(
+$args = @(
     "run",
     "--project",
     $toolProject,
     "--",
+    "assert-release-ready",
     "--repo-root",
-    $RepoRoot,
-    "--assert-release-ready"
+    $RepoRoot
 )
 
 if ($SkipTests) {
-    $arguments += "--skip-tests"
+    $args += "--skip-tests"
 }
+
+if ($RequireCleanGit) {
+    $args += "--require-clean-git"
+}
+
 
 Push-Location $RepoRoot
 try {
-    & dotnet @arguments
-
+    & dotnet @args
     if ($LASTEXITCODE -ne 0) {
-        throw "ISO52016 physical model release-ready gate failed with exit code ${LASTEXITCODE}."
+        throw "ISO52016 physical model chain release-ready assertion failed with exit code $LASTEXITCODE."
     }
 }
 finally {
     Pop-Location
 }
 
-Write-Host "ISO52016 physical model release-ready gate passed - validation/internal engineering anchors only."

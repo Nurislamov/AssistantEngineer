@@ -5,7 +5,7 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 public class Iso52016MatrixAllVerificationScriptTests
 {
     [Fact]
-    public void AllVerificationScript_ReferencesEveryMatrixVerificationLayer()
+    public void AllVerificationScript_IsThinWrapperOverRegistryTool()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -19,11 +19,11 @@ public class Iso52016MatrixAllVerificationScriptTests
 
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("verify-iso52016-matrix-solver-stage.ps1", script);
-        Assert.Contains("verify-iso52016-matrix-baselines.ps1", script);
-        Assert.Contains("verify-iso52016-matrix-application-baselines.ps1", script);
-        Assert.Contains("export-iso52016-matrix-baseline-summary.ps1", script);
-        Assert.Contains("Iso52016MatrixAllVerificationScript", script);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+        Assert.Contains("verify-all", script);
+        Assert.Contains("--repo-root", script);
+        Assert.DoesNotContain("Invoke-RepoScript", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("dotnet test", script, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -42,8 +42,8 @@ public class Iso52016MatrixAllVerificationScriptTests
         var doc = File.ReadAllText(docPath);
 
         Assert.Contains("verify-iso52016-matrix-all.ps1", doc);
-        Assert.Contains("Low-level Matrix solver baseline fixtures", doc);
-        Assert.Contains("Application/building-facade Matrix baseline fixtures", doc);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification", doc);
+        Assert.Contains("Iso52016VerificationRegistry.json", doc);
         Assert.Contains("artifacts/iso52016/matrix-baselines", doc);
         Assert.Contains("should not be committed", doc);
     }

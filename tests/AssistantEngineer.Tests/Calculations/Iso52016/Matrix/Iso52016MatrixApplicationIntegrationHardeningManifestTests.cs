@@ -72,7 +72,7 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningManifestTests
     }
 
     [Fact]
-    public void ApplicationIntegrationHardeningVerification_IsConnectedToAllMatrixVerification()
+    public void ApplicationIntegrationHardeningVerification_IsConnectedThroughRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -82,22 +82,17 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningManifestTests
             "iso52016",
             "verify-iso52016-matrix-application-integration-hardening.ps1");
 
-        var allScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
         Assert.True(File.Exists(verifyScriptPath), $"Verification script was not found: {verifyScriptPath}");
-        Assert.True(File.Exists(allScriptPath), $"All verification script was not found: {allScriptPath}");
 
         var verifyScript = File.ReadAllText(verifyScriptPath);
-        var allScript = File.ReadAllText(allScriptPath);
 
         Assert.Contains("ApplicationIntegrationHardening", verifyScript);
         Assert.Contains("ManualEngineeringIntegrationAnchor", verifyScript);
         Assert.Contains("Iso52016MatrixApplicationIntegrationHardening", verifyScript);
-        Assert.Contains("verify-iso52016-matrix-application-integration-hardening.ps1", allScript);
+        RegistryContainsStageFile(
+            "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+            "relatedManifests",
+            "docs/releases/Iso52016MatrixApplicationIntegrationHardeningManifest.json");
     }
 
     private static void AssertExistingPaths(

@@ -60,7 +60,8 @@ public class Iso52016PhysicalVerificationOrchestrationTests
 
         var script = File.ReadAllText(wrapperPath);
 
-        Assert.Contains("AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj", script);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+        Assert.Contains("verify-all", script);
         Assert.Contains("dotnet", script);
         Assert.Contains("--repo-root", script);
         Assert.Contains("--skip-tests", script);
@@ -101,22 +102,16 @@ public class Iso52016PhysicalVerificationOrchestrationTests
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesPhysicalModelChainWrapper()
+    public void VerificationRegistry_ReferencesPhysicalModelChainStage()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-model-chain.ps1", script);
-        Assert.Contains("Iso52016PhysicalVerificationOrchestrationStageManifest.json", script);
-        Assert.Contains("Step 07 physical verification orchestration", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-07",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalVerificationOrchestrationStageManifest.json");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-07",
+            "requiredSourceFiles",
+            "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs");
     }
 
     [Fact]

@@ -8,11 +8,11 @@ These fixtures are **engineering hardening anchors**, not external parity fixtur
 
 They cover:
 
-1. `ENGINEERING-ISO52016-MATRIX-EDGE-001` РІР‚вЂќ two-node free-floating implicit thermal response.
-2. `ENGINEERING-ISO52016-MATRIX-EDGE-002` РІР‚вЂќ adjacent unconditioned boundary heating load.
-3. `ENGINEERING-ISO52016-MATRIX-EDGE-003` РІР‚вЂќ timestep energy scaling for a steady controlled load.
-4. `ENGINEERING-ISO52016-MATRIX-EDGE-004` РІР‚вЂќ internal gain sign conventions.
-5. `ENGINEERING-ISO52016-MATRIX-EDGE-005` РІР‚вЂќ monthly and annual aggregation edge cases.
+1. `ENGINEERING-ISO52016-MATRIX-EDGE-001` - two-node free-floating implicit thermal response.
+2. `ENGINEERING-ISO52016-MATRIX-EDGE-002` - adjacent unconditioned boundary heating load.
+3. `ENGINEERING-ISO52016-MATRIX-EDGE-003` - timestep energy scaling for a steady controlled load.
+4. `ENGINEERING-ISO52016-MATRIX-EDGE-004` - internal gain sign conventions.
+5. `ENGINEERING-ISO52016-MATRIX-EDGE-005` - monthly and annual aggregation edge cases.
 
 ## Engineering formulas guarded
 

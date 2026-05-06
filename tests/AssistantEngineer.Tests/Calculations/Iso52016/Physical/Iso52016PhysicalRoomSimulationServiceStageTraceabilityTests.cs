@@ -37,44 +37,29 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsPhysicalRoomSimulationServiceFilesAndTests()
+    public void VerificationRegistry_GuardsPhysicalRoomSimulationServiceFilesAndTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-room-simulation-service-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("IIso52016PhysicalRoomEnergySimulationService.cs", script);
-        Assert.Contains("Iso52016PhysicalRoomEnergySimulationService.cs", script);
-        Assert.Contains("Iso52016PhysicalRoomEnergySimulationResult.cs", script);
-        Assert.Contains("Iso52016PhysicalRoomEnergySimulationServiceTests", script);
-        Assert.Contains("Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-05",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomEnergySimulationService.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-05",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationService.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-05",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationServiceTests.cs");
+        RegistryContainsTestFilter("AE-ISO52016-002-STEP-05", "FullyQualifiedName~Iso52016PhysicalRoomEnergySimulationService");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesPhysicalRoomSimulationServiceStage()
+    public void VerificationRegistry_ReferencesPhysicalRoomSimulationServiceStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("SkipPhysicalRoomSimulation", script);
-        Assert.Contains("verify-iso52016-physical-room-simulation-service-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalRoomSimulationServiceStageManifest.json", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-05",
+            "scripts/iso52016/verify-iso52016-physical-room-simulation-service-stage.ps1");
     }
 
     [Fact]

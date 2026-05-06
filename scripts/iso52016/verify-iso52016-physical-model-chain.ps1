@@ -1,40 +1,34 @@
-param(
+﻿param(
     [string] $RepoRoot = (Get-Location).Path,
     [switch] $SkipTests
 )
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
-$toolProject = Join-Path $RepoRoot 'tools\AssistantEngineer.Tools.Iso52016PhysicalVerification\AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj'
+$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj"
 
-if (-not (Test-Path -LiteralPath $toolProject)) {
-    throw "ISO52016 physical verification C# tool project is missing: $toolProject"
-}
-
-$arguments = @(
-    'run',
-    '--project',
+$args = @(
+    "run",
+    "--project",
     $toolProject,
-    '--',
-    '--repo-root',
+    "--",
+    "verify-all",
+    "--repo-root",
     $RepoRoot
 )
 
 if ($SkipTests) {
-    $arguments += '--skip-tests'
+    $args += "--skip-tests"
 }
 
 Push-Location $RepoRoot
 try {
-    & dotnet $arguments
+    & dotnet @args
     if ($LASTEXITCODE -ne 0) {
-        throw "ISO52016 physical model C# verification failed with exit code ${LASTEXITCODE}."
+        throw "ISO52016 physical model chain verification failed with exit code $LASTEXITCODE."
     }
 }
 finally {
     Pop-Location
 }
-
-Write-Host 'ISO52016 physical model chain verification passed via C# tool - validation/internal engineering anchors only.'

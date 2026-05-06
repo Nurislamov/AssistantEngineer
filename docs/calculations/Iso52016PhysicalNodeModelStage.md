@@ -1,4 +1,4 @@
-# AE-ISO52016-002 Step 01 вЂ” ISO52016-inspired physical node model builder
+# AE-ISO52016-002 Step 01 - ISO52016-inspired physical node model builder
 
 ## Status
 
@@ -29,12 +29,12 @@ Step 01 creates a stable three-node room model:
 
 Initial links:
 
-- air в†” internal surface conductance;
-- internal surface в†” thermal mass conductance;
-- internal surface в†” outdoor boundary;
-- internal surface в†” ground boundary;
-- internal surface в†” adjacent-zone boundary;
-- air в†” ventilation-air boundary when ventilation conductance is positive.
+- air <-> internal surface conductance;
+- internal surface <-> thermal mass conductance;
+- internal surface <-> outdoor boundary;
+- internal surface <-> ground boundary;
+- internal surface <-> adjacent-zone boundary;
+- air <-> ventilation-air boundary when ventilation conductance is positive.
 
 ## Gains distribution
 

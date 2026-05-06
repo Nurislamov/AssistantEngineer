@@ -90,20 +90,13 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningClosureTests
         var repoRoot = FindRepositoryRoot();
 
         var gitIgnorePath = Path.Combine(repoRoot, ".gitignore");
-        var releaseReadyScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "assert-iso52016-matrix-application-integration-hardening-release-ready.ps1");
 
         Assert.True(File.Exists(gitIgnorePath), ".gitignore was not found.");
-        Assert.True(File.Exists(releaseReadyScriptPath), $"Release-ready script was not found: {releaseReadyScriptPath}");
 
         var gitIgnore = File.ReadAllText(gitIgnorePath);
-        var releaseReadyScript = File.ReadAllText(releaseReadyScriptPath);
 
         Assert.Contains("artifacts/iso52016/application-integration-hardening/", gitIgnore);
-        Assert.Contains("git ls-files artifacts/iso52016/application-integration-hardening", releaseReadyScript);
+        Assert.Contains("artifacts/iso52016/application-integration-hardening", ReadIso52016VerificationRegistry());
     }
 
     [Fact]

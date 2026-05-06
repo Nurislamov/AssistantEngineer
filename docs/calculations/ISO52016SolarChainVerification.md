@@ -1,6 +1,6 @@
 ﻿# ISO 52016 Solar Chain Verification
 
-Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez в†’ ISO52016 solar chain.
+Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez -> ISO52016 solar chain.
 
 ## Run
 
@@ -86,7 +86,7 @@ The old 5-parameter method remains only as a compatibility wrapper. Configured I
 - `_options.DefaultWeatherYear`.
 ## Closure status
 
-The ISO52010/Perez -> ISO52016 solar chain is considered `closed-guarded-100` when:
+The ISO52010/Perez -> ISO52016 solar chain is considered `closed-internal-engineering-gate` when:
 
 - all critical verification tests pass;
 - `verify-iso52016-solar-chain.ps1` passes;

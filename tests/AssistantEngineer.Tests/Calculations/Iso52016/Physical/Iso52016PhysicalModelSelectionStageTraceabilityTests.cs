@@ -39,43 +39,28 @@ public class Iso52016PhysicalModelSelectionStageTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsSelectionAdapterFilesAndTests()
+    public void VerificationRegistry_GuardsSelectionAdapterFilesAndTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-model-selection-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalModelSelectionServiceTests", script);
-        Assert.Contains("Iso52016PhysicalModelSelectionStageTraceabilityTests", script);
-        Assert.Contains("IIso52016PhysicalModelSelectionService.cs", script);
-        Assert.Contains("Iso52016PhysicalModelSelectionStageManifest.json", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-10",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-10",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalModelSelectionServiceTests.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-10",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalModelSelectionStageManifest.json");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesSelectionAdapterStage()
+    public void VerificationRegistry_ReferencesSelectionAdapterStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-model-selection-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalModelSelectionStageManifest.json", script);
-        Assert.Contains("AE-ISO52016-002 Step 10 physical model selection adapter", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-10",
+            "scripts/iso52016/verify-iso52016-physical-model-selection-stage.ps1");
     }
 
     [Fact]

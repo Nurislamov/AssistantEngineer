@@ -68,7 +68,7 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
     }
 
     [Fact]
-    public void ReleaseReadyScript_IsConnectedToMainMatrixReleaseReadyGate()
+    public void ReleaseReadyStage_IsConnectedThroughVerificationRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -78,25 +78,20 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
             "iso52016",
             "assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1");
 
-        var mainReleaseScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "assert-iso52016-matrix-release-ready.ps1");
-
         Assert.True(File.Exists(edgeReleaseScriptPath), $"Engineering edge-case release-ready script was not found: {edgeReleaseScriptPath}");
-        Assert.True(File.Exists(mainReleaseScriptPath), $"Main Matrix release-ready script was not found: {mainReleaseScriptPath}");
 
         var edgeReleaseScript = File.ReadAllText(edgeReleaseScriptPath);
-        var mainReleaseScript = File.ReadAllText(mainReleaseScriptPath);
 
         Assert.Contains("EngineeringHardeningOnly", edgeReleaseScript);
         Assert.Contains("verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1", edgeReleaseScript);
-        Assert.Contains("assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1", mainReleaseScript);
+        RegistryContainsStageFile(
+            "ISO52016-MATRIX-ENGINEERING-EDGE-CASES",
+            "relatedManifests",
+            "docs/releases/Iso52016MatrixEngineeringEdgeCasesReleaseManifest.json");
     }
 
     [Fact]
-    public void StageGate_IsConnectedToAllInOneVerification()
+    public void StageGate_IsConnectedThroughVerificationRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -106,21 +101,15 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
             "iso52016",
             "verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1");
 
-        var allScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
         Assert.True(File.Exists(stageGatePath), $"Engineering edge-case stage gate was not found: {stageGatePath}");
-        Assert.True(File.Exists(allScriptPath), $"Main Matrix all verification script was not found: {allScriptPath}");
 
         var stageGate = File.ReadAllText(stageGatePath);
-        var allScript = File.ReadAllText(allScriptPath);
 
         Assert.Contains("EngineeringHardeningOnly", stageGate);
         Assert.Contains("verify-iso52016-matrix-engineering-edge-cases.ps1", stageGate);
-        Assert.Contains("verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1", allScript);
+        RegistryContainsTestFilter(
+            "ISO52016-MATRIX-ENGINEERING-EDGE-CASES",
+            "FullyQualifiedName~Iso52016MatrixEngineeringEdgeCase");
     }
 
     [Fact]

@@ -108,22 +108,16 @@ public class Iso52016PhysicalBranchHygieneStageTests
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesBranchHygieneStage()
+    public void VerificationRegistry_ReferencesBranchHygieneStage()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-branch-hygiene-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalBranchHygieneStageManifest.json", script);
-        Assert.Contains("AE-ISO52016-002 Step 14", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-14",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalBranchHygieneStageManifest.json");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-14",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalBranchHygieneStageTests.cs");
     }
 
     private static string FindRepositoryRoot()

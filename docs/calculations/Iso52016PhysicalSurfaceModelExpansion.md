@@ -1,4 +1,4 @@
-# AE-ISO52016-002 Step 02 вЂ” ISO52016-inspired physical surface/construction expansion
+# AE-ISO52016-002 Step 02 - ISO52016-inspired physical surface/construction expansion
 
 ## Status
 

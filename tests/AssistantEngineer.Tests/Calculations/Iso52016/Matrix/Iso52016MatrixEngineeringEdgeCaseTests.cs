@@ -253,26 +253,22 @@ public sealed class Iso52016MatrixEngineeringEdgeCaseTests
     }
 
     [Fact]
-    public void EngineeringEdgeCaseVerificationScript_IsConnectedToMatrixAllVerification()
+    public void EngineeringEdgeCaseVerification_IsConnectedThroughRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
         var edgeVerificationPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-engineering-edge-cases.ps1");
-        var allVerificationPath = Path.Combine(repoRoot, "scripts", "iso52016", "verify-iso52016-matrix-all.ps1");
-        var releaseReadyPath = Path.Combine(repoRoot, "scripts", "iso52016", "assert-iso52016-matrix-release-ready.ps1");
 
         Assert.True(File.Exists(edgeVerificationPath), $"Engineering edge-case verification script was not found: {edgeVerificationPath}");
-        Assert.True(File.Exists(allVerificationPath), $"Matrix all-verification script was not found: {allVerificationPath}");
-        Assert.True(File.Exists(releaseReadyPath), $"Matrix release-ready script was not found: {releaseReadyPath}");
 
         var edgeVerification = File.ReadAllText(edgeVerificationPath);
-        var allVerification = File.ReadAllText(allVerificationPath);
-        var releaseReady = File.ReadAllText(releaseReadyPath);
 
         Assert.Contains("ISO52016-MATRIX-ENGINEERING-EDGE-CASES", edgeVerification);
         Assert.Contains("Iso52016MatrixEngineeringEdgeCase", edgeVerification);
-        Assert.Contains("verify-iso52016-matrix-engineering-edge-cases.ps1", allVerification);
-        Assert.Contains("verify-iso52016-matrix-engineering-edge-cases.ps1", releaseReady);
+        RegistryContainsStageFile(
+            "ISO52016-MATRIX-ENGINEERING-EDGE-CASES",
+            "relatedManifests",
+            "docs/releases/Iso52016MatrixEngineeringEdgeCasesManifest.json");
     }
 
     private Iso52016MatrixHourlyResult SolveSingleNodeSteadyCase(

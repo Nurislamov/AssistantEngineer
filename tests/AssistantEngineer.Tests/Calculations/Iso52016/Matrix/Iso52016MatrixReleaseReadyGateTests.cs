@@ -5,7 +5,7 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 public class Iso52016MatrixReleaseReadyGateTests
 {
     [Fact]
-    public void ReleaseReadyScript_RunsMatrixAllVerificationAndFullTestProject()
+    public void ReleaseReadyScript_IsThinWrapperOverRegistryTool()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -19,10 +19,12 @@ public class Iso52016MatrixReleaseReadyGateTests
 
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("verify-iso52016-matrix-all.ps1", script);
-        Assert.Contains("dotnet test .\\tests\\AssistantEngineer.Tests\\AssistantEngineer.Tests.csproj", script);
-        Assert.Contains("git ls-files artifacts/iso52016/matrix-baselines", script);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+        Assert.Contains("assert-release-ready", script);
+        Assert.Contains("--repo-root", script);
         Assert.Contains("RequireCleanGit", script);
+        Assert.DoesNotContain("dotnet test", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("git ls-files", script, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -41,8 +43,8 @@ public class Iso52016MatrixReleaseReadyGateTests
         var doc = File.ReadAllText(docPath);
 
         Assert.Contains("assert-iso52016-matrix-release-ready.ps1", doc);
-        Assert.Contains("Full ISO 52016 Matrix verification chain", doc);
-        Assert.Contains("Generated Matrix baseline summary artifacts are not tracked by git", doc);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification", doc);
+        Assert.Contains("Generated artifact paths", doc);
         Assert.Contains("must not be committed", doc);
     }
 

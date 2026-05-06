@@ -1,6 +1,6 @@
 ﻿{
   "id": "AE-ISO52016-SOLAR-CHAIN",
-  "status": "closed-guarded-100",
+  "status": "closed-internal-engineering-gate",
   "scope": "ISO52010/Perez solar foundation through ISO52016 annual results, response diagnostics, frontend/report rendering, production DI and legacy solar fallback cleanup",
   "closedStages": [
     {
@@ -58,7 +58,7 @@
     },
     {
       "stage": 13,
-      "name": "100-percent closure verification hardening"
+      "name": "internal engineering gate verification hardening"
     }
   ],
   "requiredDiagnosticCodes": [

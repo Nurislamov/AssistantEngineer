@@ -45,44 +45,29 @@ public class Iso52016PhysicalNodeModelSurfaceExpansionTraceabilityTests
     }
 
     [Fact]
-    public void VerificationScript_GuardsSurfaceExpansionFilesAndRunsTests()
+    public void VerificationRegistry_GuardsSurfaceExpansionFilesAndRunsTests()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-physical-surface-model-stage.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("Iso52016PhysicalSurface.cs", script);
-        Assert.Contains("Iso52016PhysicalConstructionLayer.cs", script);
-        Assert.Contains("Iso52016PhysicalSurfaceModelExpansionManifest.json", script);
-        Assert.Contains("FullyQualifiedName~Iso52016PhysicalSurface", script);
-        Assert.Contains("AE-ISO52016-002", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-02",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalSurface.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-02",
+            "requiredSourceFiles",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalConstructionLayer.cs");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-02",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalSurfaceModelExpansionManifest.json");
+        RegistryContainsTestFilter("AE-ISO52016-002-STEP-02", "FullyQualifiedName~Iso52016PhysicalSurface");
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesPhysicalSurfaceExpansionStage()
+    public void VerificationRegistry_ReferencesPhysicalSurfaceExpansionStageWrapper()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        if (!File.Exists(scriptPath))
-            return;
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("SkipPhysicalSurfaceModel", script);
-        Assert.Contains("verify-iso52016-physical-surface-model-stage.ps1", script);
-        Assert.Contains("FullyQualifiedName~Iso52016PhysicalSurface", script);
+        RegistryContainsAlias(
+            "AE-ISO52016-002-STEP-02",
+            "scripts/iso52016/verify-iso52016-physical-surface-model-stage.ps1");
     }
 
     [Fact]

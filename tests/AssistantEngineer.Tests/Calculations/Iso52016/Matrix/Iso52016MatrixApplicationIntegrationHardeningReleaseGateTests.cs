@@ -66,7 +66,7 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningReleaseGateTest
     }
 
     [Fact]
-    public void ReleaseReadyScript_IsConnectedToMainMatrixReleaseReadyGate()
+    public void ReleaseReadyStage_IsConnectedThroughVerificationRegistry()
     {
         var repoRoot = FindRepositoryRoot();
 
@@ -76,21 +76,16 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningReleaseGateTest
             "iso52016",
             "assert-iso52016-matrix-application-integration-hardening-release-ready.ps1");
 
-        var mainReleaseScriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "assert-iso52016-matrix-release-ready.ps1");
-
         Assert.True(File.Exists(applicationReleaseScriptPath), $"Application integration hardening release-ready script was not found: {applicationReleaseScriptPath}");
-        Assert.True(File.Exists(mainReleaseScriptPath), $"Main Matrix release-ready script was not found: {mainReleaseScriptPath}");
 
         var applicationReleaseScript = File.ReadAllText(applicationReleaseScriptPath);
-        var mainReleaseScript = File.ReadAllText(mainReleaseScriptPath);
 
         Assert.Contains("ApplicationIntegrationHardeningOnly", applicationReleaseScript);
         Assert.Contains("verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1", applicationReleaseScript);
-        Assert.Contains("assert-iso52016-matrix-application-integration-hardening-release-ready.ps1", mainReleaseScript);
+        RegistryContainsStageFile(
+            "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+            "relatedManifests",
+            "docs/releases/Iso52016MatrixApplicationIntegrationHardeningReleaseManifest.json");
     }
 
     [Fact]

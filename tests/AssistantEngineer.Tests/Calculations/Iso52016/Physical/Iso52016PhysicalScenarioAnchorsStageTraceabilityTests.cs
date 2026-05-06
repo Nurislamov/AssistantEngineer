@@ -56,22 +56,16 @@ public class Iso52016PhysicalScenarioAnchorsStageTraceabilityTests
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_ReferencesScenarioAnchorStageForDiscoverability()
+    public void VerificationRegistry_ReferencesScenarioAnchorStageForDiscoverability()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-scenario-anchors-stage.ps1", script);
-        Assert.Contains("Iso52016PhysicalScenarioAnchorsStageManifest.json", script);
-        Assert.Contains("AE-ISO52016-002 Step 09", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-09",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalScenarioAnchorsStageManifest.json");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-09",
+            "requiredTestFiles",
+            "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalScenarioAnchorTests.cs");
     }
 
     [Fact]

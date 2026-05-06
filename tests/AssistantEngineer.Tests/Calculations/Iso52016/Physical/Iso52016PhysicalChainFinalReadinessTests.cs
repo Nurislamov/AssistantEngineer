@@ -92,7 +92,7 @@ public class Iso52016PhysicalChainFinalReadinessTests
     }
 
     [Fact]
-    public void FinalVerifier_DelegatesToReleaseGateAndRunsFinalGuardTests()
+    public void FinalVerifier_DelegatesToUnifiedVerificationTool()
     {
         var repoRoot = FindRepositoryRoot();
         var scriptPath = Path.Combine(
@@ -105,30 +105,22 @@ public class Iso52016PhysicalChainFinalReadinessTests
 
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("assert-iso52016-physical-model-chain-release-ready.ps1", script);
-        Assert.Contains("Iso52016PhysicalChainFinalReadiness", script);
-        Assert.Contains("validation/internal engineering anchors only", script);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+        Assert.Contains("verify-stage", script);
         Assert.Contains("AE-ISO52016-002-STEP-12", script);
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_KeepsFinalReadinessDiscoverable()
+    public void VerificationRegistry_KeepsFinalReadinessDiscoverable()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix all-verification script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("assert-iso52016-physical-chain-final-ready.ps1", script);
-        Assert.Contains("Iso52016PhysicalChainFinalReadinessManifest.json", script);
-        Assert.Contains("Iso52016PhysicalChainTraceabilityMatrix.json", script);
-        Assert.Contains("AE-ISO52016-002 Step 12 physical chain final readiness", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-12",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalChainFinalReadinessManifest.json");
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-12",
+            "requiredDocs",
+            "docs/traceability/Iso52016PhysicalChainTraceabilityMatrix.json");
     }
 
     [Fact]

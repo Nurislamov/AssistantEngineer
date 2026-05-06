@@ -59,8 +59,8 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
 
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj", script);
-        Assert.Contains("--assert-release-ready", script);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+        Assert.Contains("assert-release-ready", script);
         Assert.Contains("--skip-tests", script);
         Assert.Contains("dotnet", script);
         Assert.DoesNotContain("Iso52016PhysicalRoomModelBuilder.cs", script);
@@ -89,22 +89,15 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
     }
 
     [Fact]
-    public void MatrixAllVerificationScript_KeepsReleaseReadyDiscoverabilityHook()
+    public void VerificationRegistry_KeepsReleaseReadyDiscoverability()
     {
-        var repoRoot = FindRepositoryRoot();
-        var scriptPath = Path.Combine(
-            repoRoot,
-            "scripts",
-            "iso52016",
-            "verify-iso52016-matrix-all.ps1");
-
-        Assert.True(File.Exists(scriptPath), $"Matrix-all script was not found: {scriptPath}");
-
-        var script = File.ReadAllText(scriptPath);
-
-        Assert.Contains("verify-iso52016-physical-model-chain.ps1", script);
-        Assert.Contains("assert-iso52016-physical-model-chain-release-ready.ps1", script);
-        Assert.Contains("Iso52016PhysicalModelChainReleaseGateManifest.json", script);
+        RegistryContainsStageFile(
+            "AE-ISO52016-002-STEP-08",
+            "relatedManifests",
+            "docs/releases/Iso52016PhysicalModelChainReleaseGateManifest.json");
+        Assert.Contains(
+            "docs/releases/Iso52016PhysicalModelChainReleaseGateManifest.json",
+            ReadIso52016VerificationRegistry());
     }
 
     [Fact]
