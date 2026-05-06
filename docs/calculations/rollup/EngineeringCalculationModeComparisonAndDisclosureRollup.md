@@ -39,6 +39,7 @@ The rollup catalog tracks, per domain:
 
 Current opt-in flags included in the catalog:
 
+- `Iso52016ConstructionOptions.UseConstructionLayerMassInput`
 - `NaturalVentilationOptions.UseIso16798InspiredCalculator`
 - `Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator`
 - `DomesticHotWaterOptions.UseIso12831InspiredCalculator`

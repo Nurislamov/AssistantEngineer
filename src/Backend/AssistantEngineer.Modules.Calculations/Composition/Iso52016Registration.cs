@@ -2,6 +2,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Construction;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,10 @@ internal static class Iso52016Registration
 
         services.AddScoped<IIso52016GroundBoundaryTemperatureProvider, PeriodicIso52016GroundBoundaryTemperatureProvider>();
         services.AddScoped<IIso52016WeatherSolarContextBuilder, Iso52016WeatherSolarContextBuilder>();
+
+        services.AddSingleton<Iso52016ConstructionReferenceDataProvider>();
+        services.AddSingleton<Iso52016ConstructionAssemblyCalculator>();
+        services.AddSingleton<Iso52016ConstructionAssemblyApplicationAdapter>();
 
         services.AddScoped<IIso52016WindowSolarGainCalculator, Iso52016WindowSolarGainCalculator>();
         services.AddScoped<IIso52016WindowSolarGainProfileBuilder, Iso52016WindowSolarGainProfileBuilder>();

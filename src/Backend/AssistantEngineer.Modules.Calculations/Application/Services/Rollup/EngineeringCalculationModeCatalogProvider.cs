@@ -70,6 +70,15 @@ public sealed class EngineeringCalculationModeCatalogProvider
                 optionFlagName: null,
                 stageIds: ["AE-ISO52016-CONSTRUCTION-001"]),
             CreateMode(
+                modeId: "ISO52016-CONSTRUCTION-LAYER-MASS-OPTIN",
+                domain: EngineeringCalculationModeDomain.Iso52016Physical,
+                kind: EngineeringCalculationModeKind.InspiredOptIn,
+                status: EngineeringCalculationModeStatus.AvailableOptIn,
+                isDefault: false,
+                isOptIn: true,
+                optionFlagName: "Iso52016ConstructionOptions.UseConstructionLayerMassInput",
+                stageIds: ["AE-ISO52016-CONSTRUCTION-001", "AE-ISO52016-CONSTRUCTION-002"]),
+            CreateMode(
                 modeId: "VENTILATION-COMPATIBILITY-DEFAULT",
                 domain: EngineeringCalculationModeDomain.Ventilation,
                 kind: EngineeringCalculationModeKind.CompatibilityDefault,

@@ -19,6 +19,7 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
         var expected = new[]
         {
             "AE-ISO52016-CONSTRUCTION-001",
+            "AE-ISO52016-CONSTRUCTION-002",
             "AE-VENT-001",
             "AE-VENT-002",
             "AE-GROUND-001",
@@ -76,5 +77,6 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
         Assert.Contains("Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator", optionFlags);
         Assert.Contains("DomesticHotWaterOptions.UseIso12831InspiredCalculator", optionFlags);
         Assert.Contains("SystemEnergyOptions.UseEn15316InspiredChain", optionFlags);
+        Assert.Contains("Iso52016ConstructionOptions.UseConstructionLayerMassInput", optionFlags);
     }
 }

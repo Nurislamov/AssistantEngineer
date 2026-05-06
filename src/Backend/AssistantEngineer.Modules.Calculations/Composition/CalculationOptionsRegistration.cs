@@ -24,6 +24,7 @@ internal static class CalculationOptionsRegistration
         services.AddSingleton<IValidateOptions<SystemEnergyOptions>, SystemEnergyOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso13370GroundTemperatureOptions>, Iso13370GroundTemperatureOptionsValidator>();
         services.AddSingleton<IValidateOptions<Iso13370GroundHeatTransferOptions>, Iso13370GroundHeatTransferOptionsValidator>();
+        services.AddSingleton<IValidateOptions<Iso52016ConstructionOptions>, Iso52016ConstructionOptionsValidator>();
 
         services
             .AddOptions<CoolingLoadCalculationOptions>()
@@ -78,6 +79,11 @@ internal static class CalculationOptionsRegistration
         services
             .AddOptions<Iso13370GroundHeatTransferOptions>()
             .Bind(configuration.GetSection("Calculations:Iso13370GroundHeatTransfer"))
+            .ValidateOnStart();
+
+        services
+            .AddOptions<Iso52016ConstructionOptions>()
+            .Bind(configuration.GetSection("Calculations:Iso52016Construction"))
             .ValidateOnStart();
 
         return services;

@@ -15,6 +15,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Construction;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
@@ -57,6 +58,9 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<Iso52016ConstructionReferenceDataProvider>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<Iso52016ConstructionAssemblyCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<Iso52016ConstructionAssemblyApplicationAdapter>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<EnergySignatureService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<BuildingEnergyPerformanceSummaryService>(services, ServiceLifetime.Scoped);
@@ -87,7 +91,9 @@ public class CalculationsDependencyInjectionTests
                 ["Calculations:CoolingLoad:DefaultCoolingSafetyFactor"] = "1.25",
                 ["Calculations:Iso52016Cooling:DefaultDesignMonth"] = "8",
                 ["Calculations:Iso52016EnergyNeed:DefaultWeatherYear"] = "2024",
-                ["Calculations:HeatingLoad:DefaultAirChangesPerHour"] = "0.7"
+                ["Calculations:HeatingLoad:DefaultAirChangesPerHour"] = "0.7",
+                ["Calculations:Iso52016Construction:UseConstructionLayerMassInput"] = "true",
+                ["Calculations:Iso52016Construction:DefaultInternalSurfaceResistanceM2KPerW"] = "0.12"
             })
             .Build();
 
@@ -110,6 +116,13 @@ public class CalculationsDependencyInjectionTests
         Assert.Equal(
             0.7,
             provider.GetRequiredService<IOptions<En12831HeatingLoadOptions>>().Value.DefaultAirChangesPerHour);
+
+        Assert.True(
+            provider.GetRequiredService<IOptions<Iso52016ConstructionOptions>>().Value.UseConstructionLayerMassInput);
+
+        Assert.Equal(
+            0.12,
+            provider.GetRequiredService<IOptions<Iso52016ConstructionOptions>>().Value.DefaultInternalSurfaceResistanceM2KPerW);
     }
 
     [Fact]
@@ -125,7 +138,8 @@ public class CalculationsDependencyInjectionTests
                 ["Calculations:Iso52016EnergyNeed:DefaultCoolingSetpointC"] = "27",
                 ["Calculations:Iso52016EnergyNeed:DefaultCoolingSetbackC"] = "25",
                 ["Calculations:NaturalVentilation:MinimumOutdoorTemperatureC"] = "30",
-                ["Calculations:NaturalVentilation:MaximumOutdoorTemperatureC"] = "20"
+                ["Calculations:NaturalVentilation:MaximumOutdoorTemperatureC"] = "20",
+                ["Calculations:Iso52016Construction:DefaultInternalSurfaceResistanceM2KPerW"] = "0"
             })
             .Build();
 
@@ -157,6 +171,13 @@ public class CalculationsDependencyInjectionTests
         Assert.Contains(
             ventilationOptionsException.Failures,
             failure => failure.Contains("MinimumOutdoorTemperatureC cannot exceed MaximumOutdoorTemperatureC", StringComparison.Ordinal));
+
+        var constructionOptionsException = Assert.IsType<OptionsValidationException>(Record.Exception(() =>
+            _ = provider.GetRequiredService<IOptions<Iso52016ConstructionOptions>>().Value));
+
+        Assert.Contains(
+            constructionOptionsException.Failures,
+            failure => failure.Contains("Calculations:Iso52016Construction:DefaultInternalSurfaceResistanceM2KPerW", StringComparison.Ordinal));
     }
 
     [Fact]

@@ -72,6 +72,56 @@ public sealed class Iso52016ConstructionTraceabilityTests
         }
     }
 
+    [Fact]
+    public void EnvelopeInputIntegrationManifestAndDoc_ExistAndDeclareOptInBoundary()
+    {
+        var manifestPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "releases",
+            "Iso52016ConstructionEnvelopeInputIntegrationManifest.json");
+        var docPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "iso52016",
+            "Iso52016ConstructionEnvelopeInputIntegration.md");
+
+        Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
+        Assert.True(File.Exists(docPath), $"Documentation file was not found: {docPath}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var root = document.RootElement;
+
+        Assert.Equal("AE-ISO52016-CONSTRUCTION-002", root.GetProperty("stageId").GetString());
+        Assert.Equal("internal-application-integration-anchor", root.GetProperty("status").GetString());
+        Assert.Contains(
+            "AE-ISO52016-CONSTRUCTION-001",
+            root.GetProperty("dependsOn").EnumerateArray().Select(item => item.GetString()));
+
+        var claimBoundary = root.GetProperty("claimBoundary")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .ToArray();
+        Assert.Contains("ISO52016-inspired construction/mass envelope input integration.", claimBoundary);
+        Assert.Contains("Compatibility envelope behavior preserved by default.", claimBoundary);
+        Assert.Contains("Construction/mass path remains opt-in.", claimBoundary);
+        Assert.Contains("No full ISO 52016 compliance claim.", claimBoundary);
+        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
+        Assert.Contains("No external certification claim.", claimBoundary);
+
+        var docText = File.ReadAllText(docPath);
+        Assert.Contains("UseConstructionLayerMassInput", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Compatibility envelope behavior preserved by default.", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Construction/mass path remains opt-in.", docText, StringComparison.OrdinalIgnoreCase);
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 52016 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "ASHRAE 140 validated");
+    }
+
     private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)
     {
         var lines = text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);

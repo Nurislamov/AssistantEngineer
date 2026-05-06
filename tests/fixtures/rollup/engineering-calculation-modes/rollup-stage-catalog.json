@@ -2,6 +2,7 @@
   "id": "rollup-stage-catalog",
   "expectedStageIds": [
     "AE-ISO52016-CONSTRUCTION-001",
+    "AE-ISO52016-CONSTRUCTION-002",
     "AE-VENT-001",
     "AE-VENT-002",
     "AE-GROUND-001",
@@ -15,6 +16,7 @@
     "AE-VALIDATION-PYBE-001"
   ],
   "expectedOptionFlags": [
+    "Iso52016ConstructionOptions.UseConstructionLayerMassInput",
     "NaturalVentilationOptions.UseIso16798InspiredCalculator",
     "Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator",
     "DomesticHotWaterOptions.UseIso12831InspiredCalculator",

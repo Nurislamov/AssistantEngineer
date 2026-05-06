@@ -26,6 +26,19 @@
       ]
     },
     {
+      "domain": "Iso52016Physical",
+      "modeId": "ISO52016-CONSTRUCTION-LAYER-MASS-OPTIN",
+      "status": "AvailableOptIn",
+      "kind": "InspiredOptIn",
+      "isDefault": false,
+      "isOptIn": true,
+      "optionFlagName": "Iso52016ConstructionOptions.UseConstructionLayerMassInput",
+      "stageIds": [
+        "AE-ISO52016-CONSTRUCTION-001",
+        "AE-ISO52016-CONSTRUCTION-002"
+      ]
+    },
+    {
       "domain": "Ventilation",
       "modeId": "VENTILATION-COMPATIBILITY-DEFAULT",
       "status": "Default",

@@ -1,0 +1,43 @@
+{
+  "stageId": "AE-ISO52016-CONSTRUCTION-002",
+  "title": "ISO52016-inspired construction/mass envelope input integration",
+  "status": "internal-application-integration-anchor",
+  "dependsOn": [
+    "AE-ISO52016-CONSTRUCTION-001"
+  ],
+  "claimBoundary": [
+    "ISO52016-inspired construction/mass envelope input integration.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility envelope behavior preserved by default.",
+    "Construction/mass path remains opt-in.",
+    "No full ISO 52016 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso52016ConstructionOptions.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso52016ConstructionOptionsValidator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Construction/Iso52016ConstructionAssemblyApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnvelopeInputCalculator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/CalculationOptionsRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/Iso52016Registration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeCatalogProvider.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionEnvelopeInputIntegrationTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016RoomEnvelopeInputCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeCatalogProviderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeFixtureTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/iso52016/Iso52016ConstructionEnvelopeInputIntegration.md",
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json",
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
+  ],
+  "generatedArtifacts": []
+}
