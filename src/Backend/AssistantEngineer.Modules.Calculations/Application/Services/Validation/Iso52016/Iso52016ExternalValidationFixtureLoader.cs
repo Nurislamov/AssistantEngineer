@@ -9,10 +9,12 @@ public sealed class Iso52016ExternalValidationFixtureLoader
     private static readonly string[] RequiredClaimBoundaryLines =
     {
         "Validation/internal engineering anchors only.",
+        "Manual independent reference fixtures only.",
         "No full ISO 52016 parity claim.",
         "No pyBuildingEnergy parity claim.",
         "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No ASHRAE 140 validation claim.",
+        "ExternalParityCovered is not allowed in this stage."
     };
 
     private static readonly string[] ForbiddenPositiveClaims =
@@ -25,6 +27,12 @@ public sealed class Iso52016ExternalValidationFixtureLoader
         "validated against pyBuildingEnergy",
         "validated against EnergyPlus",
         "ExternalParityCovered"
+    };
+
+    private static readonly string[] ForbiddenManualReferenceSources =
+    {
+        "pybuildingenergy",
+        "energyplus"
     };
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -97,6 +105,8 @@ public sealed class Iso52016ExternalValidationFixtureLoader
                 $"ManualIndependent fixture must declare manual-only claim boundary line: {filePath}");
         }
 
+        ValidateReference(fixture, filePath);
+
         if (fixture.Expected is null)
             throw new InvalidOperationException($"Fixture expected result is required: {filePath}");
 
@@ -110,6 +120,52 @@ public sealed class Iso52016ExternalValidationFixtureLoader
             throw new InvalidOperationException($"Fixture input payload is required: {filePath}");
 
         AssertNoForbiddenPositiveClaims(filePath, fixture.ClaimBoundary);
+    }
+
+    private static void ValidateReference(Iso52016ExternalValidationFixture fixture, string filePath)
+    {
+        if (fixture.Reference is null)
+            throw new InvalidOperationException($"Fixture reference metadata is required: {filePath}");
+
+        if (string.IsNullOrWhiteSpace(fixture.Reference.DerivationDocument))
+            throw new InvalidOperationException($"Fixture reference.derivationDocument is required: {filePath}");
+
+        if (string.IsNullOrWhiteSpace(fixture.Reference.DerivationKind))
+            throw new InvalidOperationException($"Fixture reference.derivationKind is required: {filePath}");
+
+        if (string.IsNullOrWhiteSpace(fixture.Reference.SourceDescription))
+            throw new InvalidOperationException($"Fixture reference.sourceDescription is required: {filePath}");
+
+        var repoRoot = ResolveRepositoryRoot(filePath);
+        var derivationPath = Path.Combine(
+            repoRoot,
+            fixture.Reference.DerivationDocument.Replace('/', Path.DirectorySeparatorChar));
+
+        if (!File.Exists(derivationPath))
+            throw new InvalidOperationException(
+                $"Fixture reference.derivationDocument does not exist: {fixture.Reference.DerivationDocument} ({filePath})");
+
+        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.ManualIndependent)
+        {
+            if (!string.Equals(
+                    fixture.Reference.DerivationKind,
+                    "ManualIndependentArithmetic",
+                    StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException(
+                    $"ManualIndependent fixture must use derivationKind=ManualIndependentArithmetic: {filePath}");
+            }
+
+            var referenceText = $"{fixture.Reference.DerivationDocument} {fixture.Reference.SourceDescription}";
+            foreach (var forbidden in ForbiddenManualReferenceSources)
+            {
+                if (referenceText.Contains(forbidden, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        $"ManualIndependent fixture reference must not use {forbidden} as a source: {filePath}");
+                }
+            }
+        }
     }
 
     private static void AssertNoForbiddenPositiveClaims(string filePath, IEnumerable<string> lines)
@@ -139,11 +195,45 @@ public sealed class Iso52016ExternalValidationFixtureLoader
             return false;
 
         var prefix = lineLower[..index];
+        var suffix = lineLower[(index + claimLower.Length)..];
         return prefix.Contains("not ", StringComparison.Ordinal) ||
                prefix.Contains("no ", StringComparison.Ordinal) ||
                prefix.Contains("without ", StringComparison.Ordinal) ||
                prefix.Contains("does not ", StringComparison.Ordinal) ||
                prefix.Contains("doesn't ", StringComparison.Ordinal) ||
-               prefix.Contains("must not ", StringComparison.Ordinal);
+               prefix.Contains("must not ", StringComparison.Ordinal) ||
+               suffix.Contains("not allowed", StringComparison.Ordinal) ||
+               suffix.Contains("not permitted", StringComparison.Ordinal);
+    }
+
+    private static string ResolveRepositoryRoot(string fixturePath)
+    {
+        var fixtureDirectory = Path.GetDirectoryName(Path.GetFullPath(fixturePath));
+        var fromFixture = TryResolveRepositoryRoot(fixtureDirectory);
+        if (fromFixture is not null)
+            return fromFixture;
+
+        var fromWorkingDirectory = TryResolveRepositoryRoot(Directory.GetCurrentDirectory());
+        if (fromWorkingDirectory is not null)
+            return fromWorkingDirectory;
+
+        throw new InvalidOperationException($"Could not resolve repository root for fixture: {fixturePath}");
+    }
+
+    private static string? TryResolveRepositoryRoot(string? startDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(startDirectory))
+            return null;
+
+        var current = new DirectoryInfo(startDirectory);
+        while (current is not null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "AssistantEngineer.sln")))
+                return current.FullName;
+
+            current = current.Parent;
+        }
+
+        return null;
     }
 }

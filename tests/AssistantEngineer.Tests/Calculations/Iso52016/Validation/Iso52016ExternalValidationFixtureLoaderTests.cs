@@ -51,7 +51,7 @@ public sealed class Iso52016ExternalValidationFixtureLoaderTests
         var file = WriteTempFixture(fixture);
         var exception = Assert.Throws<InvalidOperationException>(() => _loader.LoadFromFile(file));
 
-        Assert.Contains("manual-only claim boundary", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Manual independent reference fixtures only.", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FixtureDirectory() =>
@@ -70,7 +70,14 @@ public sealed class Iso52016ExternalValidationFixtureLoaderTests
                 "No full ISO 52016 parity claim.",
                 "No pyBuildingEnergy parity claim.",
                 "No EnergyPlus parity claim.",
-                "No ASHRAE 140 validation claim."
+                "No ASHRAE 140 validation claim.",
+                "ExternalParityCovered is not allowed in this stage."
+            },
+            ["reference"] = new Dictionary<string, object?>
+            {
+                ["derivationDocument"] = "docs/calculations/validation/iso52016/manual-independent-steady-heating-simple-room.md",
+                ["derivationKind"] = "ManualIndependentArithmetic",
+                ["sourceDescription"] = "Hand-calculated independent reference case for validation anchor only."
             },
             ["input"] = new Dictionary<string, object?>
             {

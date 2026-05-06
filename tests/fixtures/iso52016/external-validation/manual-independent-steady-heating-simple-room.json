@@ -8,15 +8,26 @@
     "No full ISO 52016 parity claim.",
     "No pyBuildingEnergy parity claim.",
     "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim."
+    "No ASHRAE 140 validation claim.",
+    "ExternalParityCovered is not allowed in this stage."
   ],
+  "reference": {
+    "derivationDocument": "docs/calculations/validation/iso52016/manual-independent-steady-heating-simple-room.md",
+    "derivationKind": "ManualIndependentArithmetic",
+    "sourceDescription": "Hand-calculated independent reference case for validation anchor only."
+  },
   "input": {
     "description": "Steady heating with constant outdoor temperature below the setpoint.",
     "outdoorTemperatureC": -5.0,
     "heatingSetpointC": 21.0,
     "coolingSetpointC": 26.0,
     "internalGainW": 150.0,
-    "solarGainW": 0.0
+    "solarGainW": 0.0,
+    "uaWPerK": 86.5384615,
+    "heatingHoursPerMonth": 71.4285714,
+    "meanOperativeOffsetC": 0.0,
+    "maxOperativeOffsetC": 0.3,
+    "minOperativeOffsetC": -0.3
   },
   "expected": {
     "annualHeatingKWh": 1800.0,

@@ -20,6 +20,7 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
             Assert.Contains("No pyBuildingEnergy parity claim.", fixture.ClaimBoundary);
             Assert.Contains("No EnergyPlus parity claim.", fixture.ClaimBoundary);
             Assert.Contains("No ASHRAE 140 validation claim.", fixture.ClaimBoundary);
+            Assert.Contains("ExternalParityCovered is not allowed in this stage.", fixture.ClaimBoundary);
         });
     }
 
@@ -35,6 +36,7 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
             "No pyBuildingEnergy parity claim.",
             "No EnergyPlus parity claim.",
             "No ASHRAE 140 validation claim.",
+            "ExternalParityCovered is not allowed in this stage.",
             "ExternalParityCovered"
         };
 
@@ -57,6 +59,7 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
             "No pyBuildingEnergy parity claim.",
             "No EnergyPlus parity claim.",
             "No ASHRAE 140 validation claim.",
+            "ExternalParityCovered is not allowed in this stage.",
             "This text must be rejected: " + positiveToken
         };
 
@@ -82,7 +85,14 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
                 "No full ISO 52016 parity claim.",
                 "No pyBuildingEnergy parity claim.",
                 "No EnergyPlus parity claim.",
-                "No ASHRAE 140 validation claim."
+                "No ASHRAE 140 validation claim.",
+                "ExternalParityCovered is not allowed in this stage."
+            },
+            ["reference"] = new Dictionary<string, object?>
+            {
+                ["derivationDocument"] = "docs/calculations/validation/iso52016/manual-independent-steady-heating-simple-room.md",
+                ["derivationKind"] = "ManualIndependentArithmetic",
+                ["sourceDescription"] = "Hand-calculated independent reference case for validation anchor only."
             },
             ["input"] = new Dictionary<string, object?>
             {

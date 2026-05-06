@@ -13,6 +13,7 @@
   ],
   "implementationFiles": [
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixture.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationReference.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixtureSourceKind.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationCalculationPath.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationExpectedResult.cs",

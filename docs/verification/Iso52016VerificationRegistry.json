@@ -961,6 +961,7 @@
       ],
       "requiredSourceFiles": [
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixture.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationReference.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixtureSourceKind.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationCalculationPath.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationExpectedResult.cs",
@@ -982,6 +983,55 @@
       ],
       "testFilters": [
         "FullyQualifiedName~Iso52016ExternalValidation"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [
+        "Manual independent reference fixtures only.",
+        "ExternalParityCovered is not allowed in this stage."
+      ],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "Manual independent reference fixtures only.",
+        "No full ISO 52016 parity claim.",
+        "No pyBuildingEnergy parity claim.",
+        "No EnergyPlus parity claim.",
+        "No ASHRAE 140 validation claim.",
+        "ExternalParityCovered is not allowed in this stage."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "AE-VALIDATION-ISO52016-002",
+      "name": "Real manual independent numerical fixtures",
+      "scope": "Documented manual independent reference cases with derivation metadata and deterministic comparison diagnostics.",
+      "relatedManifests": [
+        "docs/releases/Iso52016ManualIndependentNumericalFixturesManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016ManualIndependentNumericalFixtures.md",
+        "docs/calculations/validation/iso52016/manual-independent-steady-heating-simple-room.md",
+        "docs/calculations/validation/iso52016/manual-independent-steady-cooling-simple-room.md",
+        "docs/calculations/validation/iso52016/manual-independent-annual-8760-seasonal-loads.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixture.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationReference.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationFixtureLoader.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationComparisonEngine.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ManualIndependentReferenceCalculator.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ManualIndependentReferenceDocumentTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ManualIndependentFixtureReferenceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ManualIndependentFixtureComparisonTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016ManualIndependentNumericalFixturesTraceabilityTests.cs",
+        "tests/fixtures/iso52016/external-validation/manual-independent-steady-heating-simple-room.json",
+        "tests/fixtures/iso52016/external-validation/manual-independent-steady-cooling-simple-room.json",
+        "tests/fixtures/iso52016/external-validation/manual-independent-annual-8760-seasonal-loads.json"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016ManualIndependent"
       ],
       "generatedArtifactPaths": [],
       "requiredNonClaims": [
