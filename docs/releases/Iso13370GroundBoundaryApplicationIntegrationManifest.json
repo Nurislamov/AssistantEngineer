@@ -1,0 +1,29 @@
+{
+  "stageId": "AE-GROUND-002",
+  "title": "ISO13370-inspired ground boundary controlled application integration",
+  "status": "internal-application-integration-anchor",
+  "dependsOn": [
+    "AE-GROUND-001"
+  ],
+  "claimBoundary": [
+    "ISO13370-inspired ground boundary application integration.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility behavior preserved by default.",
+    "No full ISO 13370 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso13370GroundHeatTransferOptions.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso13370GroundHeatTransferOptionsValidator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundHeatTransferService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/GroundRegistration.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryApplicationIntegrationTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryApplicationIntegrationTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

@@ -14,6 +14,9 @@ public sealed class Iso13370GroundHeatTransferOptionsValidator : IValidateOption
         if (options.BaseCharacteristicDepthM <= 0)
             errors.Add("Calculations:Iso13370GroundHeatTransfer:BaseCharacteristicDepthM must be positive.");
 
+        if (options.GroundTemperatureAmplitudeC < 0)
+            errors.Add("Calculations:Iso13370GroundHeatTransfer:GroundTemperatureAmplitudeC must be non-negative.");
+
         return errors.Count == 0
             ? ValidateOptionsResult.Success
             : ValidateOptionsResult.Fail(errors);

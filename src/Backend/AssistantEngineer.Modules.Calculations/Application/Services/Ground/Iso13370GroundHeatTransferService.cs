@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Options;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ground.Iso13370;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.Options;
 
@@ -12,26 +13,50 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Ground;
 public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferService
 {
     private readonly Iso13370GroundHeatTransferOptions _options;
+    private readonly Iso13370GroundBoundaryCalculator _calculator;
+    private readonly Iso13370GroundBoundaryApplicationAdapter _adapter;
 
-    public Iso13370GroundHeatTransferService(IOptions<Iso13370GroundHeatTransferOptions> options)
+    public Iso13370GroundHeatTransferService(
+        IOptions<Iso13370GroundHeatTransferOptions> options,
+        Iso13370GroundBoundaryCalculator calculator,
+        Iso13370GroundBoundaryApplicationAdapter adapter)
     {
         _options = options.Value;
+        _calculator = calculator;
+        _adapter = adapter;
+    }
+
+    public Iso13370GroundHeatTransferService(
+        IOptions<Iso13370GroundHeatTransferOptions> options)
+        : this(
+            options,
+            new Iso13370GroundBoundaryCalculator(new Iso13370GroundTemperatureProfileCalculator()),
+            new Iso13370GroundBoundaryApplicationAdapter())
+    {
     }
 
     public GroundBoundaryCondition CalculateBoundaryCondition(
         Room room,
         BuildingEnvelopeDefaults envelopeDefaults)
     {
+        if (!_options.UseIso13370InspiredBoundaryCalculator)
+            return CalculateCompatibilityBoundaryCondition(room, envelopeDefaults);
+
         if (room.GroundContactMetadata is null)
         {
-            return new GroundBoundaryCondition
-            {
-                HeatTransferCoefficientWPerK = GetMatrixGroundHeatTransferCoefficient(room, envelopeDefaults),
-                GroundTemperatureWeight = 1.0,
-                OutdoorTemperatureWeight = 0.0,
-                IndoorTemperatureWeight = 0.0
-            };
+            return BuildMatrixFallbackBoundaryCondition(room, envelopeDefaults);
         }
+
+        return CalculateIso13370InspiredBoundaryCondition(room, envelopeDefaults);
+    }
+
+    private GroundBoundaryCondition CalculateCompatibilityBoundaryCondition(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        if (room.GroundContactMetadata is null)
+            return BuildMatrixFallbackBoundaryCondition(room, envelopeDefaults);
+
         var metadata = room.GroundContactMetadata;
         var area = Math.Max(room.Area.SquareMeters, 0.1);
         var perimeter = Math.Max(metadata.ExposedPerimeterM, 0.1);
@@ -62,6 +87,45 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
             GroundTemperatureWeight = groundWeight,
             OutdoorTemperatureWeight = outdoorWeight,
             IndoorTemperatureWeight = indoorWeight
+        };
+    }
+
+    private GroundBoundaryCondition CalculateIso13370InspiredBoundaryCondition(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        var input = _adapter.BuildInput(
+            room,
+            floorUValueWPerM2K: envelopeDefaults.FloorUValueWPerM2K,
+            indoorAnnualMeanTemperatureC: _options.IndoorAnnualMeanTemperatureC,
+            outdoorAnnualMeanTemperatureC: _options.OutdoorAnnualMeanTemperatureC,
+            outdoorMonthlyMeanTemperaturesC: null,
+            groundAnnualMeanTemperatureC: _options.GroundAnnualMeanTemperatureC,
+            groundTemperatureAmplitudeC: _options.GroundTemperatureAmplitudeC,
+            groundTemperaturePhaseShiftMonths: _options.GroundTemperaturePhaseShiftMonths,
+            groundConductivityWPerMK: _options.GroundConductivityWPerMK);
+
+        var result = _calculator.Calculate(input);
+
+        return new GroundBoundaryCondition
+        {
+            HeatTransferCoefficientWPerK = result.HeatTransferCoefficientWPerK,
+            GroundTemperatureWeight = result.GroundWeight,
+            OutdoorTemperatureWeight = result.OutdoorWeight,
+            IndoorTemperatureWeight = result.IndoorWeight
+        };
+    }
+
+    private static GroundBoundaryCondition BuildMatrixFallbackBoundaryCondition(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        return new GroundBoundaryCondition
+        {
+            HeatTransferCoefficientWPerK = GetMatrixGroundHeatTransferCoefficient(room, envelopeDefaults),
+            GroundTemperatureWeight = 1.0,
+            OutdoorTemperatureWeight = 0.0,
+            IndoorTemperatureWeight = 0.0
         };
     }
 

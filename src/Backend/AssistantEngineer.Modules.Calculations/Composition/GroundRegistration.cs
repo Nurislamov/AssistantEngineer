@@ -11,9 +11,9 @@ internal static class GroundRegistration
         this IServiceCollection services)
     {
         services.AddScoped<GroundTemperatureProfilePreviewService>();
-        services.AddScoped<Iso13370GroundTemperatureProfileCalculator>();
-        services.AddScoped<Iso13370GroundBoundaryCalculator>();
-        services.AddScoped<Iso13370GroundBoundaryApplicationAdapter>();
+        services.AddSingleton<Iso13370GroundTemperatureProfileCalculator>();
+        services.AddSingleton<Iso13370GroundBoundaryCalculator>();
+        services.AddSingleton<Iso13370GroundBoundaryApplicationAdapter>();
 
         services.AddSingleton<IGroundTemperatureService, Iso13370GroundTemperatureService>();
         services.AddSingleton<IGroundHeatTransferService, Iso13370GroundHeatTransferService>();
