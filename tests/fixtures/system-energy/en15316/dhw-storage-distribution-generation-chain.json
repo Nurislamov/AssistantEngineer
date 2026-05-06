@@ -1,0 +1,46 @@
+{
+  "id": "dhw-storage-distribution-generation-chain",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "endUses": [
+      {
+        "endUse": "DomesticHotWater",
+        "energyCarrier": "DistrictHeat",
+        "generationTechnology": "DistrictHeatingSubstation",
+        "usefulEnergyKWh": 5000.0,
+        "emission": { "lossFactor": 0.02 },
+        "distribution": { "lossFactor": 0.12 },
+        "storage": { "efficiency": 0.9 },
+        "generationEfficiency": 0.97,
+        "generationCop": null,
+        "auxiliaryEnergyKWh": 80.0,
+        "recoveredLossFraction": 0.15,
+        "primaryEnergyFactor": 1.05,
+        "renewablePrimaryEnergyFactor": null,
+        "nonRenewablePrimaryEnergyFactor": null
+      }
+    ]
+  },
+  "expected": {
+    "totalFinalEnergyKWh": 6391.512028,
+    "totalPrimaryEnergyKWh": 6711.087629,
+    "finalByCarrier": {
+      "DistrictHeat": 6391.512028
+    },
+    "primaryByCarrier": {
+      "DistrictHeat": 6711.087629
+    }
+  },
+  "tolerance": {
+    "absolute": 0.01,
+    "relativePercent": 0.1
+  }
+}

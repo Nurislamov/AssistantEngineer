@@ -1,0 +1,43 @@
+{
+  "stageId": "AE-EN15316-001",
+  "title": "EN15316-inspired modular system energy chain",
+  "status": "internal-engineering-anchor",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316EndUse.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316EnergyCarrier.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316GenerationTechnology.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyDiagnostics.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyModuleInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyModuleResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyEndUseInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/SystemEnergy/En15316/En15316SystemEnergyEndUseResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/En15316/En15316SystemEnergyReferenceDataProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/En15316/En15316SystemEnergyChainCalculator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/En15316/En15316SystemEnergyApplicationAdapter.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/system-energy/en15316/boiler-heating-emission-distribution-generation.json",
+    "tests/fixtures/system-energy/en15316/condensing-boiler-heating-with-recovered-losses.json",
+    "tests/fixtures/system-energy/en15316/heat-pump-heating-electricity-primary.json",
+    "tests/fixtures/system-energy/en15316/chiller-cooling-electricity-primary.json",
+    "tests/fixtures/system-energy/en15316/dhw-storage-distribution-generation-chain.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyChainCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyCarrierAggregationTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

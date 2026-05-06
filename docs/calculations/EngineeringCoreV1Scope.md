@@ -36,7 +36,7 @@ The following calculation areas are considered closed for engineering-core v1 wh
 | Ground heat transfer | ISO13370-inspired simplified ground heat-transfer model using equivalent U/H values and boundary weights. |
 | Adjacent zones | Simplified adjacent boundary model, not a coupled multi-zone solver. |
 | DHW | Simplified DHW demand by water volume, temperature lift and configured losses; compatibility path remains default and ISO12831-3-inspired path is opt-in. |
-| System energy | Simplified final/primary energy conversion using efficiency, COP and primary factor. |
+| System energy | Simplified final/primary energy conversion using efficiency, COP and primary factor. Compatibility `SystemEnergyEngine` path remains default; EN15316-inspired modular chain is currently pure calculator only. |
 | Equipment sizing | Capacity sizing by required load, safety factor and deterministic margin ranking. |
 
 ## Simplified / inspired scope
@@ -47,7 +47,7 @@ These modules are intentionally described as simplified or inspired models.
 |---|---|
 | ISO 52016 hourly heat balance | ISO52016-inspired simplified hourly RC / quasi-implicit heat-balance model. |
 | ISO 13370 ground heat transfer | ISO13370-inspired simplified ground heat-transfer model. |
-| EN 15316 system energy | EN15316-inspired simplified final/primary energy reporting model. |
+| EN 15316 system energy | EN15316-inspired simplified final/primary energy reporting model, with a modular chain pure-calculator anchor for internal deterministic evidence; compatibility SystemEnergyEngine path remains default until controlled integration. |
 | EN 12831-3 DHW | EN12831-3-inspired simplified DHW demand model with controlled opt-in integration; compatibility path remains default. |
 | Adjacent zones | Simplified adjacent boundary model, not a coupled multi-zone solver. |
 

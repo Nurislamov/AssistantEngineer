@@ -1,0 +1,46 @@
+{
+  "id": "chiller-cooling-electricity-primary",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "endUses": [
+      {
+        "endUse": "Cooling",
+        "energyCarrier": "Electricity",
+        "generationTechnology": "Chiller",
+        "usefulEnergyKWh": 9000.0,
+        "emission": { "efficiency": 1.0 },
+        "distribution": { "efficiency": 0.95 },
+        "storage": { "efficiency": 1.0 },
+        "generationEfficiency": null,
+        "generationCop": 3.0,
+        "auxiliaryEnergyKWh": 100.0,
+        "recoveredLossFraction": 0.05,
+        "primaryEnergyFactor": 2.3,
+        "renewablePrimaryEnergyFactor": null,
+        "nonRenewablePrimaryEnergyFactor": null
+      }
+    ]
+  },
+  "expected": {
+    "totalFinalEnergyKWh": 3234.210526,
+    "totalPrimaryEnergyKWh": 7438.684211,
+    "finalByCarrier": {
+      "Electricity": 3234.210526
+    },
+    "primaryByCarrier": {
+      "Electricity": 7438.684211
+    }
+  },
+  "tolerance": {
+    "absolute": 0.01,
+    "relativePercent": 0.1
+  }
+}

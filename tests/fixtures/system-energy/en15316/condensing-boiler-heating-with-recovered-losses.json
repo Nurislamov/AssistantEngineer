@@ -1,0 +1,46 @@
+{
+  "id": "condensing-boiler-heating-with-recovered-losses",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "endUses": [
+      {
+        "endUse": "Heating",
+        "energyCarrier": "NaturalGas",
+        "generationTechnology": "CondensingBoiler",
+        "usefulEnergyKWh": 8000.0,
+        "emission": { "lossFactor": 0.05 },
+        "distribution": { "efficiency": 0.92 },
+        "storage": { "efficiency": 0.96 },
+        "generationEfficiency": 0.94,
+        "generationCop": null,
+        "auxiliaryEnergyKWh": 120.0,
+        "recoveredLossFraction": 0.25,
+        "primaryEnergyFactor": 1.08,
+        "renewablePrimaryEnergyFactor": null,
+        "nonRenewablePrimaryEnergyFactor": null
+      }
+    ]
+  },
+  "expected": {
+    "totalFinalEnergyKWh": 9708.459759,
+    "totalPrimaryEnergyKWh": 10484.13654,
+    "finalByCarrier": {
+      "NaturalGas": 9708.459759
+    },
+    "primaryByCarrier": {
+      "NaturalGas": 10484.13654
+    }
+  },
+  "tolerance": {
+    "absolute": 0.01,
+    "relativePercent": 0.1
+  }
+}

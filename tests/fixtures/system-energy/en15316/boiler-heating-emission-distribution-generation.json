@@ -1,0 +1,46 @@
+{
+  "id": "boiler-heating-emission-distribution-generation",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "endUses": [
+      {
+        "endUse": "Heating",
+        "energyCarrier": "NaturalGas",
+        "generationTechnology": "Boiler",
+        "usefulEnergyKWh": 10000.0,
+        "emission": { "efficiency": 0.95 },
+        "distribution": { "efficiency": 0.9 },
+        "storage": { "lossFactor": 0.1 },
+        "generationEfficiency": 0.88,
+        "generationCop": null,
+        "auxiliaryEnergyKWh": 200.0,
+        "recoveredLossFraction": 0.0,
+        "primaryEnergyFactor": 1.1,
+        "renewablePrimaryEnergyFactor": null,
+        "nonRenewablePrimaryEnergyFactor": null
+      }
+    ]
+  },
+  "expected": {
+    "totalFinalEnergyKWh": 14819.88304,
+    "totalPrimaryEnergyKWh": 16301.871344,
+    "finalByCarrier": {
+      "NaturalGas": 14819.88304
+    },
+    "primaryByCarrier": {
+      "NaturalGas": 16301.871344
+    }
+  },
+  "tolerance": {
+    "absolute": 0.01,
+    "relativePercent": 0.1
+  }
+}

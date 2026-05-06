@@ -1,0 +1,46 @@
+{
+  "id": "heat-pump-heating-electricity-primary",
+  "claimBoundary": [
+    "EN15316-inspired modular system energy engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full EN 15316 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "endUses": [
+      {
+        "endUse": "Heating",
+        "energyCarrier": "Electricity",
+        "generationTechnology": "HeatPump",
+        "usefulEnergyKWh": 12000.0,
+        "emission": { "efficiency": 0.97 },
+        "distribution": { "lossFactor": 0.08 },
+        "storage": { "lossFactor": 0.05 },
+        "generationEfficiency": null,
+        "generationCop": 3.4,
+        "auxiliaryEnergyKWh": 150.0,
+        "recoveredLossFraction": 0.1,
+        "primaryEnergyFactor": 2.2,
+        "renewablePrimaryEnergyFactor": 0.5,
+        "nonRenewablePrimaryEnergyFactor": 1.7
+      }
+    ]
+  },
+  "expected": {
+    "totalFinalEnergyKWh": 4073.250455,
+    "totalPrimaryEnergyKWh": 8961.151001,
+    "finalByCarrier": {
+      "Electricity": 4073.250455
+    },
+    "primaryByCarrier": {
+      "Electricity": 8961.151001
+    }
+  },
+  "tolerance": {
+    "absolute": 0.01,
+    "relativePercent": 0.1
+  }
+}
