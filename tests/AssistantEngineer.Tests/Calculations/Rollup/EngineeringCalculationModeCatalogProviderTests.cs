@@ -20,6 +20,7 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
         {
             "AE-ISO52016-CONSTRUCTION-001",
             "AE-ISO52016-CONSTRUCTION-002",
+            "AE-BUI-VALIDATION-001",
             "AE-VENT-001",
             "AE-VENT-002",
             "AE-GROUND-001",
@@ -78,5 +79,19 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
         Assert.Contains("DomesticHotWaterOptions.UseIso12831InspiredCalculator", optionFlags);
         Assert.Contains("SystemEnergyOptions.UseEn15316InspiredChain", optionFlags);
         Assert.Contains("Iso52016ConstructionOptions.UseConstructionLayerMassInput", optionFlags);
+    }
+
+    [Fact]
+    public void Catalog_ContainsBuildingInputValidationGovernanceMode()
+    {
+        var catalog = _provider.GetCatalog();
+        var mode = Assert.Single(catalog, item => item.ModeId == "BUILDING-INPUT-VALIDATION-GOVERNANCE");
+
+        Assert.Equal(EngineeringCalculationModeDomain.BuildingInputValidation, mode.Domain);
+        Assert.Equal(EngineeringCalculationModeKind.ValidationAnchor, mode.Kind);
+        Assert.Equal(EngineeringCalculationModeStatus.ClosedInternalGate, mode.Status);
+        Assert.False(mode.IsDefault);
+        Assert.False(mode.IsOptIn);
+        Assert.Contains(mode.Stages, stage => stage.StageId == "AE-BUI-VALIDATION-001");
     }
 }

@@ -37,6 +37,10 @@ The rollup catalog tracks, per domain:
 - documentation and manifest references;
 - claim boundary and forbidden claims.
 
+Current internal governance validation anchors include:
+
+- `BUILDING-INPUT-VALIDATION-GOVERNANCE` (`AE-BUI-VALIDATION-001`)
+
 Current opt-in flags included in the catalog:
 
 - `Iso52016ConstructionOptions.UseConstructionLayerMassInput`

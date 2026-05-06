@@ -1,0 +1,11 @@
+{
+  "id": "valid-simple-room-ready",
+  "scenario": "valid-simple-room-ready",
+  "expectedReadinessStatus": "ReadyWithWarnings",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Ventilation.MechanicalAndNaturalVentilationMissing",
+    "BuildingInput.Iso52016Readiness.CompatibilityUValuesOnly",
+    "BuildingInput.Iso52016Readiness.OnlyFallbackInternalCapacityLikely"
+  ],
+  "expectedCorrectionIds": []
+}

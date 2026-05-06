@@ -1,0 +1,54 @@
+{
+  "stageId": "AE-BUI-VALIDATION-001",
+  "title": "Building input validation and correction framework",
+  "status": "internal-governance-anchor",
+  "claimBoundary": [
+    "Building input validation and correction framework.",
+    "Internal deterministic engineering governance only.",
+    "No automatic production data mutation.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationRequest.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationDiagnostic.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationSeverity.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationCategory.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationReadinessStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputSuggestedCorrection.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/BuildingInput/BuildingInputValidationScope.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/BuildingInput/BuildingInputValidationService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeCatalogProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDomain.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/building-input-validation/valid-simple-room-ready.json",
+    "tests/fixtures/building-input-validation/room-zero-area-blocked.json",
+    "tests/fixtures/building-input-validation/external-wall-missing-orientation-warning.json",
+    "tests/fixtures/building-input-validation/window-area-exceeds-wall-warning.json",
+    "tests/fixtures/building-input-validation/ground-contact-missing-metadata-warning.json",
+    "tests/fixtures/building-input-validation/construction-opt-in-missing-layers-warning.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Validation/BuildingInput/BuildingInputValidationServiceTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Validation/BuildingInput/BuildingInputValidationFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Validation/BuildingInput/BuildingInputValidationSuggestedCorrectionTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Validation/BuildingInput/BuildingInputValidationReadinessTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Validation/BuildingInput/BuildingInputValidationTraceabilityTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeCatalogProviderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeFixtureTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/validation/BuildingInputValidationAndCorrectionFramework.md",
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json",
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
+  ],
+  "generatedArtifacts": []
+}

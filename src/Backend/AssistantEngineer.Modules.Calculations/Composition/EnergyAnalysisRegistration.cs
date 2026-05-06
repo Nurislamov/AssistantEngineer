@@ -10,6 +10,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.Validation.BuildingInput;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Modules.Calculations.Composition;
@@ -42,6 +43,7 @@ internal static class EnergyAnalysisRegistration
         services.AddSingleton<EngineeringCalculationModeComparisonEngine>();
         services.AddSingleton<EngineeringCalculationMetricAdapter>();
         services.AddSingleton<SystemEnergyEngine>();
+        services.AddScoped<BuildingInputValidationService>();
 
         services.AddScoped<BuildingEnergyPerformanceSummaryService>();
         services.AddScoped<BuildingPerformanceService>();

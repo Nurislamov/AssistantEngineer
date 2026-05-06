@@ -1,0 +1,12 @@
+{
+  "id": "room-zero-area-blocked",
+  "scenario": "room-zero-area-blocked",
+  "expectedReadinessStatus": "BlockedByErrors",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Geometry.RoomAreaNonPositive",
+    "BuildingInput.Geometry.RoomVolumeNonPositive",
+    "BuildingInput.Envelope.NoHeatTransferPath",
+    "BuildingInput.Iso52016Readiness.RoomInsufficientEnvelopeOrVentilationData"
+  ],
+  "expectedCorrectionIds": []
+}

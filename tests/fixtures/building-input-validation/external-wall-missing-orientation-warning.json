@@ -1,0 +1,11 @@
+{
+  "id": "external-wall-missing-orientation-warning",
+  "scenario": "external-wall-missing-orientation-warning",
+  "expectedReadinessStatus": "ReadyWithWarnings",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Envelope.ExternalWallOrientationMissing"
+  ],
+  "expectedCorrectionIds": [
+    "BIV-CORR-WALL-ORIENTATION-REVIEW"
+  ]
+}

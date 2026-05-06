@@ -36,6 +36,7 @@ The following calculation areas are considered closed for engineering-core v1 wh
 | Single thermal zone | Single-zone engineering path with assigned-room-only aggregation and no double-counting. |
 | Ground heat transfer | ISO13370-inspired simplified ground heat-transfer model using equivalent U/H values and boundary weights. |
 | ISO52016 construction layer/mass foundation | ISO52016-inspired construction layer and mass-class engineering foundation for deterministic U-value/capacity anchors, with controlled opt-in construction/mass envelope input integration; compatibility envelope behavior remains default. |
+| Building input validation and correction governance | Deterministic pre-calculation input quality diagnostics and readiness status for geometry/envelope/openings/ventilation/ground/construction/system paths; no automatic production data mutation. |
 | Adjacent zones | Simplified adjacent boundary model, not a coupled multi-zone solver. |
 | DHW | Simplified DHW demand by water volume, temperature lift and configured losses; compatibility path remains default and ISO12831-3-inspired path is opt-in. |
 | System energy | Simplified final/primary energy conversion using efficiency, COP and primary factor. Compatibility `SystemEnergyEngine` path remains default; EN15316-inspired modular chain is available as controlled opt-in integration. |

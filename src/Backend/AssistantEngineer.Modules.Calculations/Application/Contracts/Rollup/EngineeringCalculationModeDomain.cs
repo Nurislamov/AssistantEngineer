@@ -9,5 +9,6 @@ public enum EngineeringCalculationModeDomain
     Ground = 5,
     DomesticHotWater = 6,
     SystemEnergy = 7,
-    ExternalValidation = 8
+    ExternalValidation = 8,
+    BuildingInputValidation = 9
 }

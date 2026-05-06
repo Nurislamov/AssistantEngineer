@@ -53,7 +53,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; building input validation governance exists as a separate internal deterministic gate with no automatic production data mutation, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.AGGREGATION.LOAD_SUMMARY",
@@ -169,6 +169,7 @@
   ],
   "documentationFiles": [
     "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/calculations/validation/BuildingInputValidationAndCorrectionFramework.md",
     "docs/calculations/iso52016/Iso52016ConstructionEnvelopeInputIntegration.md",
     "docs/calculations/rollup/EngineeringCalculationModeComparisonAndDisclosureRollup.md",
     "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
@@ -187,6 +188,7 @@
     "docs/releases/EngineeringCoreV1Manifest.json",
     "docs/releases/EngineeringCalculationModeComparisonRollupManifest.json",
     "docs/releases/Iso52016ConstructionEnvelopeInputIntegrationManifest.json",
+    "docs/releases/BuildingInputValidationFrameworkManifest.json",
     "docs/releases/EngineeringCoreV1ReleaseManifest.md",
     "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
     "docs/releases/EngineeringCoreV1OwnerHandoff.md",

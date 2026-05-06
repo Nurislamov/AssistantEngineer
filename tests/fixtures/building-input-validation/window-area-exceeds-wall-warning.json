@@ -1,0 +1,9 @@
+{
+  "id": "window-area-exceeds-wall-warning",
+  "scenario": "window-area-exceeds-wall-warning",
+  "expectedReadinessStatus": "ReadyWithWarnings",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Openings.WindowAreaExceedsRelatedExternalWallArea"
+  ],
+  "expectedCorrectionIds": []
+}

@@ -19,6 +19,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Const
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
+using AssistantEngineer.Modules.Calculations.Application.Services.Validation.BuildingInput;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation.Iso16798;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +62,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<Iso52016ConstructionReferenceDataProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyApplicationAdapter>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<BuildingInputValidationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EnergySignatureService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<BuildingEnergyPerformanceSummaryService>(services, ServiceLifetime.Scoped);

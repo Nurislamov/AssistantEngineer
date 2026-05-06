@@ -1,0 +1,11 @@
+{
+  "id": "ground-contact-missing-metadata-warning",
+  "scenario": "ground-contact-missing-metadata-warning",
+  "expectedReadinessStatus": "ReadyWithWarnings",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Ground.MetadataMissingForGroundBoundary"
+  ],
+  "expectedCorrectionIds": [
+    "BIV-CORR-GROUND-METADATA-ADD"
+  ]
+}

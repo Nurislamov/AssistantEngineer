@@ -1,0 +1,11 @@
+{
+  "id": "construction-opt-in-missing-layers-warning",
+  "scenario": "construction-opt-in-missing-layers-warning",
+  "expectedReadinessStatus": "ReadyWithWarnings",
+  "expectedDiagnosticCodes": [
+    "BuildingInput.Construction.OptInMissingLayersFallbackWillBeUsed"
+  ],
+  "expectedCorrectionIds": [
+    "BIV-CORR-CONSTRUCTION-LAYERS-ADD"
+  ]
+}

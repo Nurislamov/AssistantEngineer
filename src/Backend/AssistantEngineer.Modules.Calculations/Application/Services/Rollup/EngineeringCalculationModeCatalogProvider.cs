@@ -151,6 +151,15 @@ public sealed class EngineeringCalculationModeCatalogProvider
                 optionFlagName: "SystemEnergyOptions.UseEn15316InspiredChain",
                 stageIds: ["AE-EN15316-001", "AE-EN15316-002"]),
             CreateMode(
+                modeId: "BUILDING-INPUT-VALIDATION-GOVERNANCE",
+                domain: EngineeringCalculationModeDomain.BuildingInputValidation,
+                kind: EngineeringCalculationModeKind.ValidationAnchor,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-BUI-VALIDATION-001"]),
+            CreateMode(
                 modeId: "ISO52016-EXTERNAL-VALIDATION-FRAMEWORK",
                 domain: EngineeringCalculationModeDomain.ExternalValidation,
                 kind: EngineeringCalculationModeKind.ValidationAnchor,
