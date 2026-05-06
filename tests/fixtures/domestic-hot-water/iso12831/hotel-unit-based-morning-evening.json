@@ -1,0 +1,51 @@
+{
+  "id": "hotel-unit-based-morning-evening",
+  "claimBoundary": [
+    "ISO12831-3-inspired domestic hot water engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 12831-3 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "usageCategory": "Hotel",
+    "referenceMode": "UnitBased",
+    "peopleCount": 0,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 50,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 230.0,
+    "customDailyVolumeLiters": 0.0,
+    "hotWaterTemperatureC": 62.0,
+    "coldWaterTemperatureC": 12.0,
+    "distributionLossFactor": 0.15,
+    "storageLossKWhPerDay": 20.0,
+    "circulationLossKWhPerDay": 15.0,
+    "includeHourlyProfile": false,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "HotelMorningEvening",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null
+  },
+  "expected": {
+    "dailyVolumeLiters": 11500.0,
+    "dailyDrawEnergyKWh": 668.583,
+    "dailyTotalEnergyKWh": 803.87,
+    "annualVolumeLiters": 4197500.0,
+    "annualDrawEnergyKWh": 244032.795,
+    "annualTotalEnergyKWh": 293412.55,
+    "equivalentOccupantsUsed": 0.0,
+    "referenceDailyVolumeLiters": 11500.0,
+    "hourlyResultsCount": 0
+  },
+  "tolerance": {
+    "absolute": 25.0,
+    "relativePercent": 1.0
+  }
+}

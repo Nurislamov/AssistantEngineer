@@ -1,0 +1,41 @@
+{
+  "stageId": "AE-DHW-001",
+  "title": "ISO12831-3-inspired domestic hot water demand depth",
+  "status": "internal-engineering-anchor",
+  "claimBoundary": [
+    "ISO12831-3-inspired domestic hot water engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 12831-3 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDiagnostics.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterUsageCategory.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDrawProfileKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterReferenceMode.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterMonthlyResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterHourlyResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterReferenceDataProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDrawProfileProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDemandCalculator.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/domestic-hot-water/iso12831/residential-people-based-basic.json",
+    "tests/fixtures/domestic-hot-water/iso12831/office-area-based-daytime.json",
+    "tests/fixtures/domestic-hot-water/iso12831/hotel-unit-based-morning-evening.json",
+    "tests/fixtures/domestic-hot-water/iso12831/custom-volume-flat-profile.json",
+    "tests/fixtures/domestic-hot-water/iso12831/zero-occupants-zero-demand.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDemandCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDrawProfileTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

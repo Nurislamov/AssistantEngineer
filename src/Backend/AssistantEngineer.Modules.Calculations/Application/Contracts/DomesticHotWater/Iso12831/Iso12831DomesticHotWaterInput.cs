@@ -1,0 +1,25 @@
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater.Iso12831;
+
+public sealed record Iso12831DomesticHotWaterInput(
+    Iso12831DomesticHotWaterUsageCategory UsageCategory,
+    Iso12831DomesticHotWaterReferenceMode ReferenceMode,
+    int PeopleCount,
+    double EquivalentOccupants,
+    double AreaM2,
+    int UnitsCount,
+    double LitersPerPersonDay,
+    double LitersPerM2Day,
+    double LitersPerUnitDay,
+    double CustomDailyVolumeLiters,
+    double HotWaterTemperatureC,
+    double ColdWaterTemperatureC,
+    double DistributionLossFactor,
+    double StorageLossKWhPerDay,
+    double CirculationLossKWhPerDay,
+    bool IncludeHourlyProfile,
+    int Year,
+    IReadOnlySet<DateOnly>? HolidayDates,
+    Iso12831DomesticHotWaterDrawProfileKind DrawProfileKind,
+    IReadOnlyList<double>? WeekdayDrawProfile,
+    IReadOnlyList<double>? WeekendDrawProfile,
+    IReadOnlyList<double>? CustomDrawProfile);

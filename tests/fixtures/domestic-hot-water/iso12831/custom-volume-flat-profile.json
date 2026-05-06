@@ -1,0 +1,56 @@
+{
+  "id": "custom-volume-flat-profile",
+  "claimBoundary": [
+    "ISO12831-3-inspired domestic hot water engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 12831-3 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "usageCategory": "Custom",
+    "referenceMode": "CustomVolume",
+    "peopleCount": 0,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 0,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 300.0,
+    "hotWaterTemperatureC": 50.0,
+    "coldWaterTemperatureC": 15.0,
+    "distributionLossFactor": 0.0,
+    "storageLossKWhPerDay": 0.0,
+    "circulationLossKWhPerDay": 0.0,
+    "includeHourlyProfile": true,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "Custom",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": [
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+      1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+    ]
+  },
+  "expected": {
+    "dailyVolumeLiters": 300.0,
+    "dailyDrawEnergyKWh": 12.215,
+    "dailyTotalEnergyKWh": 12.215,
+    "annualVolumeLiters": 109500.0,
+    "annualDrawEnergyKWh": 4458.475,
+    "annualTotalEnergyKWh": 4458.475,
+    "equivalentOccupantsUsed": 0.0,
+    "referenceDailyVolumeLiters": 300.0,
+    "hourlyResultsCount": 8760
+  },
+  "tolerance": {
+    "absolute": 2.0,
+    "relativePercent": 1.0
+  }
+}

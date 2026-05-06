@@ -1,0 +1,51 @@
+{
+  "id": "zero-occupants-zero-demand",
+  "claimBoundary": [
+    "ISO12831-3-inspired domestic hot water engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 12831-3 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "usageCategory": "ResidentialApartment",
+    "referenceMode": "PeopleBased",
+    "peopleCount": 0,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 0,
+    "litersPerPersonDay": 45.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 0.0,
+    "hotWaterTemperatureC": 50.0,
+    "coldWaterTemperatureC": 10.0,
+    "distributionLossFactor": 0.0,
+    "storageLossKWhPerDay": 0.0,
+    "circulationLossKWhPerDay": 0.0,
+    "includeHourlyProfile": false,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "ResidentialWeekdayWeekend",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null
+  },
+  "expected": {
+    "dailyVolumeLiters": 0.0,
+    "dailyDrawEnergyKWh": 0.0,
+    "dailyTotalEnergyKWh": 0.0,
+    "annualVolumeLiters": 0.0,
+    "annualDrawEnergyKWh": 0.0,
+    "annualTotalEnergyKWh": 0.0,
+    "equivalentOccupantsUsed": 0.0,
+    "referenceDailyVolumeLiters": 0.0,
+    "hourlyResultsCount": 0
+  },
+  "tolerance": {
+    "absolute": 0.001,
+    "relativePercent": 0.1
+  }
+}
