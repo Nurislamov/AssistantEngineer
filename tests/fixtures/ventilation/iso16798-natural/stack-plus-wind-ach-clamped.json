@@ -1,0 +1,57 @@
+{
+  "id": "stack-plus-wind-ach-clamped",
+  "claimBoundary": [
+    "ISO16798-inspired natural ventilation engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 16798 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "roomVolumeM3": 90.0,
+    "indoorTemperatureC": 26.0,
+    "outdoorTemperatureC": 18.0,
+    "windSpeedMPerS": 6.0,
+    "airDensityKgPerM3": 1.2,
+    "airSpecificHeatJPerKgK": 1005.0,
+    "dischargeCoefficient": 0.62,
+    "maximumAirChangesPerHour": 12.0,
+    "openingHeightM": 2.0,
+    "usefulHeightDifferenceM": 3.0,
+    "windPressureCoefficient": 0.5,
+    "windExposureFactor": 1.4,
+    "stackCoefficient": 0.8,
+    "windCoefficient": 1.1,
+    "openings": [
+      {
+        "openingId": "north-window",
+        "openingAreaM2": 1.5,
+        "openingRatio": 0.6,
+        "isOpen": true
+      },
+      {
+        "openingId": "south-window",
+        "openingAreaM2": 1.0,
+        "openingRatio": 0.3,
+        "isOpen": true
+      }
+    ]
+  },
+  "expected": {
+    "calculationMode": "StackAndWind",
+    "effectiveOpeningAreaM2": 1.2,
+    "stackAirflowM3PerS": 0.75179,
+    "windAirflowM3PerS": 4.108335,
+    "totalAirflowM3PerS": 4.860126,
+    "totalAirflowM3PerH": 17496.452083,
+    "airChangesPerHour": 194.405023,
+    "clampedAirChangesPerHour": 12.0,
+    "heatTransferCoefficientWPerK": 361.8
+  },
+  "tolerance": {
+    "absolute": 0.00002,
+    "relativePercent": 0.001
+  }
+}

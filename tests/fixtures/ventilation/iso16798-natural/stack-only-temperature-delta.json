@@ -1,0 +1,51 @@
+{
+  "id": "stack-only-temperature-delta",
+  "claimBoundary": [
+    "ISO16798-inspired natural ventilation engineering calculator.",
+    "Internal deterministic engineering anchors only.",
+    "No full ISO 16798 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "input": {
+    "roomVolumeM3": 100.0,
+    "indoorTemperatureC": 24.0,
+    "outdoorTemperatureC": 20.0,
+    "windSpeedMPerS": 0.0,
+    "airDensityKgPerM3": 1.2,
+    "airSpecificHeatJPerKgK": 1005.0,
+    "dischargeCoefficient": 0.6,
+    "maximumAirChangesPerHour": 20.0,
+    "openingHeightM": 1.5,
+    "usefulHeightDifferenceM": 2.0,
+    "windPressureCoefficient": 0.7,
+    "windExposureFactor": 1.2,
+    "stackCoefficient": 1.0,
+    "windCoefficient": 0.0,
+    "openings": [
+      {
+        "openingId": "main-opening",
+        "openingAreaM2": 2.0,
+        "openingRatio": 0.5,
+        "isOpen": true
+      }
+    ]
+  },
+  "expected": {
+    "calculationMode": "StackOnly",
+    "effectiveOpeningAreaM2": 1.0,
+    "stackAirflowM3PerS": 0.437547,
+    "windAirflowM3PerS": 0.0,
+    "totalAirflowM3PerS": 0.437547,
+    "totalAirflowM3PerH": 1575.167898,
+    "airChangesPerHour": 15.751679,
+    "clampedAirChangesPerHour": 15.751679,
+    "heatTransferCoefficientWPerK": 527.681246
+  },
+  "tolerance": {
+    "absolute": 0.00001,
+    "relativePercent": 0.001
+  }
+}

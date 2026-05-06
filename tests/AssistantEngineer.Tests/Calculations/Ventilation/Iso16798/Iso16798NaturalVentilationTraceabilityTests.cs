@@ -1,0 +1,87 @@
+using System.Text.Json;
+
+namespace AssistantEngineer.Tests.Calculations.Ventilation.Iso16798;
+
+public sealed class Iso16798NaturalVentilationTraceabilityTests
+{
+    [Fact]
+    public void StageManifest_ExistsAndDeclaresStageStatusAndClaimBoundary()
+    {
+        var manifestPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "releases",
+            "Iso16798NaturalVentilationStageManifest.json");
+
+        Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+        var root = document.RootElement;
+
+        Assert.Equal("AE-VENT-001", root.GetProperty("stageId").GetString());
+        Assert.Equal("internal-engineering-anchor", root.GetProperty("status").GetString());
+
+        var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
+        Assert.Contains("ISO16798-inspired natural ventilation engineering calculator.", claimBoundary);
+        Assert.Contains("No full ISO 16798 compliance claim.", claimBoundary);
+        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
+        Assert.Contains("No external certification claim.", claimBoundary);
+    }
+
+    [Fact]
+    public void RequiredDocsAndFixtures_Exist()
+    {
+        var docPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "ventilation",
+            "Iso16798NaturalVentilationCalculator.md");
+
+        Assert.True(File.Exists(docPath), $"Documentation file was not found: {docPath}");
+        var docText = File.ReadAllText(docPath);
+        Assert.DoesNotContain("ISO 16798 validated", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ASHRAE 140 validated", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalParityCovered", docText, StringComparison.OrdinalIgnoreCase);
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 16798 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+
+        var fixturePaths = new[]
+        {
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "closed-openings-zero-flow.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "stack-only-temperature-delta.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "wind-only-open-window.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "stack-plus-wind-ach-clamped.json")
+        };
+
+        foreach (var path in fixturePaths)
+        {
+            Assert.True(File.Exists(path), $"Fixture file was not found: {path}");
+            var text = File.ReadAllText(path);
+            Assert.DoesNotContain("ExternalParityCovered", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("validated against pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("matches pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("same as pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("copied from pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)
+    {
+        var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
+        {
+            if (!line.Contains(token, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            Assert.True(
+                line.Contains("No ", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("not ", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("must not", StringComparison.OrdinalIgnoreCase),
+                $"Token '{token}' appears without negation in line: {line}");
+        }
+    }
+}
