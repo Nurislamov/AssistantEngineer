@@ -1,0 +1,12 @@
+{
+  "releaseReadinessId": "EngineeringCoreV2InternalReadiness",
+  "expectedStatus": "ReadyWithWarnings",
+  "requiredKnownLimitations": [
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "External numerical validation is still not complete.",
+    "Inspired paths remain opt-in.",
+    "Building input validation suggests corrections but does not mutate production data."
+  ]
+}

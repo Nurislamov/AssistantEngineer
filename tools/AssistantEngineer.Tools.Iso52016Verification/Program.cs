@@ -71,6 +71,7 @@ internal static class Program
         Console.WriteLine("  verify-stage --stage-id <id> [--skip-tests] [--repo-root <path>]");
         Console.WriteLine("  verify-all [--skip-tests] [--repo-root <path>]");
         Console.WriteLine("  assert-release-ready [--skip-tests] [--require-clean-git] [--repo-root <path>]");
+        Console.WriteLine("  thin wrapper reference: scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1");
         Console.WriteLine();
         Console.WriteLine("Claim boundary: validation/internal engineering anchors only.");
     }

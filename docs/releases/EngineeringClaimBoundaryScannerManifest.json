@@ -1,0 +1,35 @@
+{
+  "stageId": "AE-GOVERNANCE-002",
+  "title": "Engineering claim boundary scanner",
+  "status": "internal-governance-anchor",
+  "dependsOn": [
+    "AE-GOVERNANCE-001"
+  ],
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Governance/EngineeringClaimBoundaryScanner.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/governance/claim-boundary-negative-examples.json",
+    "tests/fixtures/governance/claim-boundary-positive-forbidden-examples.json",
+    "tests/fixtures/governance/claim-scanner-inputs/positive-forbidden-sample.md"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringClaimBoundaryScannerTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/governance/EngineeringClaimBoundaryScanner.md"
+  ],
+  "generatedArtifacts": []
+}

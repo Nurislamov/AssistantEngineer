@@ -3,6 +3,12 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# artifacts\iso52016\engineering-edge-cases\merge-summary.json
+# generatedArtifactsCommitted
+# Engineering edge-case hardening only.
+# Validation anchors only, not full parity.
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

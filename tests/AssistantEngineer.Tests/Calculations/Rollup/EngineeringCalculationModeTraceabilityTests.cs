@@ -54,6 +54,10 @@ public sealed class EngineeringCalculationModeTraceabilityTests
         Assert.Contains("AE-ISO52016-CONSTRUCTION-001", dependencies);
         Assert.Contains("AE-ISO52016-CONSTRUCTION-002", dependencies);
         Assert.Contains("AE-BUI-VALIDATION-001", dependencies);
+        Assert.Contains("AE-GOVERNANCE-001", dependencies);
+        Assert.Contains("AE-GOVERNANCE-002", dependencies);
+        Assert.Contains("AE-RELEASE-READINESS-002", dependencies);
+        Assert.Contains("AE-STATUS-001", dependencies);
         Assert.Contains("AE-GROUND-002", dependencies);
         Assert.Contains("AE-DHW-002", dependencies);
         Assert.Contains("AE-EN15316-002", dependencies);
@@ -83,6 +87,7 @@ public sealed class EngineeringCalculationModeTraceabilityTests
             AssertTokenAppearsOnlyAsNegatedClaim(text, "ASHRAE 140 validated");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "ExternalParityCovered");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "certified");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "external certification");
         }
     }
 

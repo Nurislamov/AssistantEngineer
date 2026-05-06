@@ -8,12 +8,27 @@ public sealed class EngineeringCalculationModeDisclosureTests
     [
         "full ISO compliance",
         "full EN compliance",
+        "full ISO 52016 compliance",
+        "full ISO 52010 compliance",
+        "full ISO 13370 compliance",
+        "full ISO 16798 compliance",
+        "full ISO 12831-3 compliance",
+        "full EN 15316 compliance",
+        "ISO 52016 validated",
+        "ISO 52010 validated",
+        "ISO 13370 validated",
+        "ISO 16798 validated",
+        "ISO 12831-3 validated",
+        "EN 15316 validated",
         "validated against pyBuildingEnergy",
+        "validated against EnergyPlus",
         "pyBuildingEnergy parity",
         "EnergyPlus parity",
         "ASHRAE 140 validated",
+        "ASHRAE 140 covered",
         "ExternalParityCovered",
-        "certified"
+        "certified",
+        "external certification"
     ];
 
     [Fact]

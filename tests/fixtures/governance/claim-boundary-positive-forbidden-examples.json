@@ -1,0 +1,7 @@
+{
+  "id": "claim-boundary-positive-forbidden-examples",
+  "description": "Controlled positive inputs are stored under claim-scanner-inputs and are excluded from production scans.",
+  "controlledInputFiles": [
+    "tests/fixtures/governance/claim-scanner-inputs/positive-forbidden-sample.md"
+  ]
+}

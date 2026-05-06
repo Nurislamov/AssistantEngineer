@@ -14,6 +14,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profile
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
+using AssistantEngineer.Modules.Calculations.Application.Services.Governance;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Construction;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
@@ -62,6 +63,10 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<Iso52016ConstructionReferenceDataProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyApplicationAdapter>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<EngineeringStageManifestRegistryProvider>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<EngineeringStageManifestRegistryValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<EngineeringClaimBoundaryScanner>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<EngineeringCoreV2ReleaseReadinessService>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<BuildingInputValidationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EnergySignatureService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);

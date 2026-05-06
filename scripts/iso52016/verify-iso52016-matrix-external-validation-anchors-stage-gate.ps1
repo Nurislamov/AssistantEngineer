@@ -3,6 +3,10 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# ValidationAnchorOnly
+# Chained script: verify-iso52016-matrix-external-validation-anchors.ps1
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

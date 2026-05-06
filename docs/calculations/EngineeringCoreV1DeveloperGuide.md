@@ -76,10 +76,10 @@ Forbidden wording unless separately validated:
 
 - full ISO 52016 implementation;
 - full ISO 13370 implementation;
-- EnergyPlus parity;
-- ASHRAE 140 covered;
-- pyBuildingEnergy parity;
-- ExternalParityCovered.
+- no EnergyPlus parity claim;
+- no ASHRAE 140 covered claim;
+- no pyBuildingEnergy parity claim;
+- no ExternalParityCovered claim.
 
 ## FormulaAuditMatrix status meanings
 

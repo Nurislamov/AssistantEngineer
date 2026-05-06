@@ -3,6 +3,12 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# artifacts\iso52016\application-integration-hardening\merge-summary.json
+# generatedArtifactsCommitted
+# ApplicationIntegrationHardeningOnly
+# Validation anchors only, not full parity.
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

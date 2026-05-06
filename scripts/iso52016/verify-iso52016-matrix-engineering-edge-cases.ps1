@@ -3,6 +3,11 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# ISO52016-MATRIX-ENGINEERING-EDGE-CASES
+# Iso52016MatrixEngineeringEdgeCase
+# EngineeringHardeningOnly
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

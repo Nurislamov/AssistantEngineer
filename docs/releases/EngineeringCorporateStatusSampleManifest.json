@@ -1,0 +1,38 @@
+{
+  "stageId": "AE-STATUS-001",
+  "title": "Engineering Core V2 corporate engineering status sample",
+  "status": "internal-status-disclosure-anchor",
+  "dependsOn": [
+    "AE-RELEASE-READINESS-002"
+  ],
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "implementationFiles": [
+    "docs/api/engineering-core-v2/engineering-release-readiness.sample.json",
+    "docs/api/engineering-core-v2/status.sample.json",
+    "tools/AssistantEngineer.Tools.EngineeringGovernance/Program.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/governance/engineering-release-readiness.sample.expected.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringCorporateStatusSampleTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringGovernanceToolTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json"
+  ],
+  "generatedArtifacts": []
+}

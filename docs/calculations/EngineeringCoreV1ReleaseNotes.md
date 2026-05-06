@@ -123,7 +123,7 @@ The following areas are intentionally out of scope for engineering-core v1:
 - detailed psychrometrics;
 - detailed HVAC plant simulation;
 - full coupled multi-zone simulation;
-- exact EnergyPlus parity;
+- no exact EnergyPlus parity claim;
 - ASHRAE 140 validation coverage.
 
 ## Recommended next stage

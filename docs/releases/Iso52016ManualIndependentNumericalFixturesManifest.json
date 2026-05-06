@@ -15,6 +15,7 @@
     "No pyBuildingEnergy parity claim.",
     "No EnergyPlus parity claim.",
     "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
     "ExternalParityCovered is not allowed in this stage."
   ],
   "fixtures": [

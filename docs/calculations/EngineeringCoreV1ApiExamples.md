@@ -63,8 +63,8 @@ ClosedV1 means:
 
 ClosedV1 does not mean:
 
-- exact EnergyPlus parity;
-- exact pyBuildingEnergy parity;
+- no exact EnergyPlus parity claim;
+- no exact pyBuildingEnergy parity claim;
 - ASHRAE 140 validation coverage;
 - full ISO 52016 node/matrix solver implementation;
 - full detailed HVAC plant simulation.

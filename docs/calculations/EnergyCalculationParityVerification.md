@@ -3,6 +3,7 @@
 Verification is based on internal deterministic fixtures, focused engine tests, and application pipeline tests where the real backend path has been integrated.
 
 The engineering calculation mode comparison and disclosure rollup is an internal governance layer for default versus opt-in transparency and deterministic delta reporting. It is not an external parity or certification signal.
+Engineering Core V2 governance and internal release readiness are additional internal deterministic governance gates; they do not provide external certification or parity claims.
 
 ## Current Status
 
@@ -23,6 +24,7 @@ The engineering calculation mode comparison and disclosure rollup is an internal
 | System Energy | InternalDeterministicTested | System energy tests, fixtures, heating/cooling system services call SystemEnergyEngine; compatibility path remains default and EN15316-inspired modular chain is opt-in |
 | ISO52016 Construction Layer and Mass Foundation | InternalDeterministicTested | Deterministic construction assembly tests, fixtures, mass-class/node-distribution anchors, and controlled opt-in construction/mass envelope input integration; compatibility envelope behavior remains default |
 | Building Input Validation Framework | InternalDeterministicTested | Deterministic building input validation diagnostics/readiness/correction guards for geometry, envelope, openings, ventilation, ground, construction, and ISO52016 readiness governance; no automatic production data mutation |
+| Engineering Core V2 Governance/Readiness | InternalDeterministicTested | Stage manifest registry, claim-boundary scanning, and release-readiness summary gates; compatibility defaults preserved and inspired paths remain opt-in |
 | Equipment Sizing Integration | InternalDeterministicTested | Equipment sizing tests, fixtures, room equipment application pipeline tests, endpoint/report integration, heating capacity diagnostics |
 
 No function is marked ExternalParityCovered in this pass.

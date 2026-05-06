@@ -3,6 +3,11 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# Iso52016PhysicalScenarioAnchorTests
+# Iso52016PhysicalScenarioAnchorsStageManifest.json
+# validation/internal engineering anchors only
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

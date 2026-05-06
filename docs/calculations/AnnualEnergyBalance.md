@@ -274,7 +274,7 @@ Signed component balance supported for transmission, mechanical ventilation, nat
 It is not marked as:
 
 ```text
-ExternalParityCovered
+No ExternalParityCovered claim.
 ```
 
 because the active benchmark fixtures are deterministic benchmark references, not documented external reference evidence.

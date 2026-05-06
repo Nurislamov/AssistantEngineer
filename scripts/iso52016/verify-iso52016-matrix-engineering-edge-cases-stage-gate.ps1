@@ -3,6 +3,10 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# EngineeringHardeningOnly
+# Chained script: verify-iso52016-matrix-engineering-edge-cases.ps1
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

@@ -1,0 +1,20 @@
+{
+  "id": "release-readiness-expected-summary",
+  "allowedStatuses": [
+    "Ready",
+    "ReadyWithWarnings"
+  ],
+  "mustIncludeStageIds": [
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001"
+  ],
+  "requiredOptInFlagsDefaultFalse": [
+    "NaturalVentilationOptions.UseIso16798InspiredCalculator",
+    "Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator",
+    "DomesticHotWaterOptions.UseIso12831InspiredCalculator",
+    "SystemEnergyOptions.UseEn15316InspiredChain",
+    "Iso52016ConstructionOptions.UseConstructionLayerMassInput"
+  ]
+}

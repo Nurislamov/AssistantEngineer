@@ -6,6 +6,10 @@
     "AE-ISO52016-CONSTRUCTION-001",
     "AE-ISO52016-CONSTRUCTION-002",
     "AE-BUI-VALIDATION-001",
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001",
     "AE-VENT-002",
     "AE-GROUND-002",
     "AE-DHW-002",
@@ -15,7 +19,7 @@
     "AE-VALIDATION-PYBE-001"
   ],
   "claimBoundary": [
-    "Engineering calculation mode comparison and disclosure rollup.",
+    "Engineering Core V2 governance and internal release readiness.",
     "Internal deterministic engineering governance only.",
     "Compatibility behavior preserved by default.",
     "Inspired calculation paths remain opt-in.",
@@ -23,7 +27,8 @@
     "No pyBuildingEnergy parity claim.",
     "No EnergyPlus parity claim.",
     "No ASHRAE 140 validation claim.",
-    "No external certification claim."
+    "No external certification claim.",
+    "No automatic production data mutation."
   ],
   "implementationFiles": [
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationMode.cs",
@@ -38,6 +43,7 @@
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeClaimBoundary.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDiagnostic.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDomain.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeKind.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeCatalogProvider.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeComparisonEngine.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationMetricAdapter.cs",

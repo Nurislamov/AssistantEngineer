@@ -31,7 +31,11 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
             "AE-EN15316-002",
             "AE-VALIDATION-ISO52016-001",
             "AE-VALIDATION-ISO52016-002",
-            "AE-VALIDATION-PYBE-001"
+            "AE-VALIDATION-PYBE-001",
+            "AE-GOVERNANCE-001",
+            "AE-GOVERNANCE-002",
+            "AE-RELEASE-READINESS-002",
+            "AE-STATUS-001"
         };
 
         foreach (var stageId in expected)
@@ -93,5 +97,24 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
         Assert.False(mode.IsDefault);
         Assert.False(mode.IsOptIn);
         Assert.Contains(mode.Stages, stage => stage.StageId == "AE-BUI-VALIDATION-001");
+    }
+
+    [Fact]
+    public void Catalog_ContainsEngineeringGovernanceModes()
+    {
+        var catalog = _provider.GetCatalog();
+
+        Assert.Contains(catalog, mode => mode.ModeId == "ENGINEERING-GOVERNANCE-STAGE-REGISTRY" &&
+            mode.Domain == EngineeringCalculationModeDomain.Governance &&
+            mode.Kind == EngineeringCalculationModeKind.GovernanceAnchor);
+        Assert.Contains(catalog, mode => mode.ModeId == "ENGINEERING-GOVERNANCE-CLAIM-SCANNER" &&
+            mode.Domain == EngineeringCalculationModeDomain.Governance &&
+            mode.Kind == EngineeringCalculationModeKind.GovernanceAnchor);
+        Assert.Contains(catalog, mode => mode.ModeId == "ENGINEERING-CORE-V2-RELEASE-READINESS" &&
+            mode.Domain == EngineeringCalculationModeDomain.Governance &&
+            mode.Kind == EngineeringCalculationModeKind.ReleaseReadinessGate);
+        Assert.Contains(catalog, mode => mode.ModeId == "ENGINEERING-CORPORATE-STATUS-SAMPLE" &&
+            mode.Domain == EngineeringCalculationModeDomain.Governance &&
+            mode.Kind == EngineeringCalculationModeKind.StatusDisclosure);
     }
 }

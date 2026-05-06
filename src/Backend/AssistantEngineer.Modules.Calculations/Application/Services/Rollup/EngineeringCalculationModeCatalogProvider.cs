@@ -6,7 +6,7 @@ public sealed class EngineeringCalculationModeCatalogProvider
 {
     private static readonly IReadOnlyList<string> RequiredClaimBoundary =
     [
-        "Engineering calculation mode comparison and disclosure rollup.",
+        "Engineering Core V2 governance and internal release readiness.",
         "Internal deterministic engineering governance only.",
         "Compatibility behavior preserved by default.",
         "Inspired calculation paths remain opt-in.",
@@ -14,19 +14,35 @@ public sealed class EngineeringCalculationModeCatalogProvider
         "No pyBuildingEnergy parity claim.",
         "No EnergyPlus parity claim.",
         "No ASHRAE 140 validation claim.",
-        "No external certification claim."
+        "No external certification claim.",
+        "No automatic production data mutation."
     ];
 
     private static readonly IReadOnlyList<string> ForbiddenClaims =
     [
         "full ISO compliance",
         "full EN compliance",
+        "full ISO 52016 compliance",
+        "full ISO 52010 compliance",
+        "full ISO 13370 compliance",
+        "full ISO 16798 compliance",
+        "full ISO 12831-3 compliance",
+        "full EN 15316 compliance",
+        "ISO 52016 validated",
+        "ISO 52010 validated",
+        "ISO 13370 validated",
+        "ISO 16798 validated",
+        "ISO 12831-3 validated",
+        "EN 15316 validated",
         "validated against pyBuildingEnergy",
+        "validated against EnergyPlus",
         "pyBuildingEnergy parity",
         "EnergyPlus parity",
         "ASHRAE 140 validated",
+        "ASHRAE 140 covered",
         "ExternalParityCovered",
-        "certified"
+        "certified",
+        "external certification"
     ];
 
     public IReadOnlyList<EngineeringCalculationMode> GetCatalog()
@@ -159,6 +175,42 @@ public sealed class EngineeringCalculationModeCatalogProvider
                 isOptIn: false,
                 optionFlagName: null,
                 stageIds: ["AE-BUI-VALIDATION-001"]),
+            CreateMode(
+                modeId: "ENGINEERING-GOVERNANCE-STAGE-REGISTRY",
+                domain: EngineeringCalculationModeDomain.Governance,
+                kind: EngineeringCalculationModeKind.GovernanceAnchor,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-GOVERNANCE-001"]),
+            CreateMode(
+                modeId: "ENGINEERING-GOVERNANCE-CLAIM-SCANNER",
+                domain: EngineeringCalculationModeDomain.Governance,
+                kind: EngineeringCalculationModeKind.GovernanceAnchor,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-GOVERNANCE-002"]),
+            CreateMode(
+                modeId: "ENGINEERING-CORE-V2-RELEASE-READINESS",
+                domain: EngineeringCalculationModeDomain.Governance,
+                kind: EngineeringCalculationModeKind.ReleaseReadinessGate,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-RELEASE-READINESS-002"]),
+            CreateMode(
+                modeId: "ENGINEERING-CORPORATE-STATUS-SAMPLE",
+                domain: EngineeringCalculationModeDomain.Governance,
+                kind: EngineeringCalculationModeKind.StatusDisclosure,
+                status: EngineeringCalculationModeStatus.ClosedInternalGate,
+                isDefault: false,
+                isOptIn: false,
+                optionFlagName: null,
+                stageIds: ["AE-STATUS-001"]),
             CreateMode(
                 modeId: "ISO52016-EXTERNAL-VALIDATION-FRAMEWORK",
                 domain: EngineeringCalculationModeDomain.ExternalValidation,

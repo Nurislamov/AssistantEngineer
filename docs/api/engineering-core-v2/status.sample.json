@@ -1,0 +1,30 @@
+{
+  "coreName": "AssistantEngineer Engineering Core",
+  "version": "v2-governance",
+  "status": "ReadyWithWarnings",
+  "scope": "Engineering Core V2 governance and internal release readiness.",
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "releaseReadinessSample": "docs/api/engineering-core-v2/engineering-release-readiness.sample.json",
+  "governanceStages": [
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001"
+  ],
+  "disclosures": [
+    "Not external certification.",
+    "External numerical validation remains incomplete.",
+    "Inspired paths remain opt-in by default."
+  ]
+}

@@ -3,6 +3,13 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# merge-summary.json
+# merge-summary.md
+# git log --oneline -20
+# assert-iso52016-matrix-release-ready.ps1
+# No exact pyBuildingEnergy numerical parity claim.
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

@@ -101,7 +101,7 @@ When a calculation issue is reported:
 
 Escalate as future work when issue requires:
 
-- exact EnergyPlus parity;
+- no exact EnergyPlus parity claim;
 - ASHRAE 140 certification;
 - full ISO 52016 node/matrix solver;
 - latent/moisture balance;

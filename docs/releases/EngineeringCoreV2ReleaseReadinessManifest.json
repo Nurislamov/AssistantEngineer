@@ -1,0 +1,45 @@
+{
+  "stageId": "AE-RELEASE-READINESS-002",
+  "title": "Engineering Core V2 internal release readiness gate",
+  "status": "internal-release-readiness-gate",
+  "dependsOn": [
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-CALC-ROLLUP-001",
+    "AE-BUI-VALIDATION-001",
+    "AE-ISO52016-CONSTRUCTION-002"
+  ],
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Governance/EngineeringCoreV2ReleaseReadinessService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeCatalogProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDomain.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeKind.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/governance/release-readiness-expected-summary.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringCoreV2ReleaseReadinessServiceTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringGovernanceTraceabilityTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeCatalogProviderTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/governance/EngineeringCoreV2ReleaseReadiness.md",
+    "docs/api/engineering-core-v2/engineering-release-readiness.sample.json",
+    "docs/api/engineering-core-v2/status.sample.json"
+  ],
+  "generatedArtifacts": []
+}

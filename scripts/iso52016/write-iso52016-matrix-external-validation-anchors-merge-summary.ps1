@@ -3,6 +3,11 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# artifacts\iso52016\external-validation-anchors\merge-summary.json
+# generatedArtifactsCommitted
+# Validation anchors only, not full parity.
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

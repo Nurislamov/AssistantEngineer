@@ -1,0 +1,24 @@
+{
+  "id": "stage-registry-required-stages",
+  "requiredStageIds": [
+    "AE-VALIDATION-ISO52016-001",
+    "AE-VALIDATION-ISO52016-002",
+    "AE-VALIDATION-PYBE-001",
+    "AE-VENT-001",
+    "AE-VENT-002",
+    "AE-GROUND-001",
+    "AE-GROUND-002",
+    "AE-DHW-001",
+    "AE-DHW-002",
+    "AE-EN15316-001",
+    "AE-EN15316-002",
+    "AE-CALC-ROLLUP-001",
+    "AE-ISO52016-CONSTRUCTION-001",
+    "AE-ISO52016-CONSTRUCTION-002",
+    "AE-BUI-VALIDATION-001",
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001"
+  ]
+}

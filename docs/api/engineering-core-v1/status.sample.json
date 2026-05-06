@@ -6,6 +6,13 @@
   "weather8760GatesClosed": true,
   "annualHourly8760GateClosed": true,
   "successfulResultsMustNotContainErrorDiagnostics": true,
+  "engineeringCoreV2Governance": {
+    "internalReleaseReadinessGate": "AE-RELEASE-READINESS-002",
+    "internalStatusDisclosureStage": "AE-STATUS-001",
+    "compatibilityBehaviorPreservedByDefault": true,
+    "inspiredPathsRemainOptIn": true,
+    "externalCertification": "Not external certification."
+  },
   "formulaGates": [
     {
       "calculationId": "HVAC.TRANSMISSION.SIMPLE_UA",
@@ -170,6 +177,9 @@
   "documentationFiles": [
     "docs/calculations/EngineeringCoreV1Scope.md",
     "docs/calculations/validation/BuildingInputValidationAndCorrectionFramework.md",
+    "docs/calculations/governance/EngineeringStageManifestRegistry.md",
+    "docs/calculations/governance/EngineeringClaimBoundaryScanner.md",
+    "docs/calculations/governance/EngineeringCoreV2ReleaseReadiness.md",
     "docs/calculations/iso52016/Iso52016ConstructionEnvelopeInputIntegration.md",
     "docs/calculations/rollup/EngineeringCalculationModeComparisonAndDisclosureRollup.md",
     "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
@@ -187,11 +197,17 @@
     "docs/releases/EngineeringCoreV1.md",
     "docs/releases/EngineeringCoreV1Manifest.json",
     "docs/releases/EngineeringCalculationModeComparisonRollupManifest.json",
+    "docs/releases/EngineeringGovernanceStageManifestRegistryManifest.json",
+    "docs/releases/EngineeringClaimBoundaryScannerManifest.json",
+    "docs/releases/EngineeringCoreV2ReleaseReadinessManifest.json",
+    "docs/releases/EngineeringCorporateStatusSampleManifest.json",
     "docs/releases/Iso52016ConstructionEnvelopeInputIntegrationManifest.json",
     "docs/releases/BuildingInputValidationFrameworkManifest.json",
     "docs/releases/EngineeringCoreV1ReleaseManifest.md",
     "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
     "docs/releases/EngineeringCoreV1OwnerHandoff.md",
-    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",
+    "docs/api/engineering-core-v2/status.sample.json",
+    "docs/api/engineering-core-v2/engineering-release-readiness.sample.json"
   ]
 }

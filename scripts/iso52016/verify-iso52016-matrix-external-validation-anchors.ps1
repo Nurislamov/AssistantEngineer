@@ -3,6 +3,20 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# MANUAL-ISO52016-ANCHOR-001
+# MANUAL-ISO52016-ANCHOR-002
+# MANUAL-ISO52016-ANCHOR-003
+# MANUAL-ISO52016-ANCHOR-004
+# MANUAL-ISO52016-ANNUAL-8760-001
+# ManualEngineeringValidationAnchor
+# IndependentManualEngineeringFormula
+# ValidationAnchorsOnly
+# No pyBuildingEnergy parity claim.
+# No EnergyPlus parity claim.
+# hourCount 8760
+# Chained script: verify-iso52016-matrix-external-validation-annual-anchors.ps1
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

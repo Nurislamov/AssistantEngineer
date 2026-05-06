@@ -3,6 +3,10 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# Chained script: export-iso52016-matrix-baseline-summary.ps1
+# Matrix baseline fixture guard: Iso52016MatrixBaselineFixtureTests.cs
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

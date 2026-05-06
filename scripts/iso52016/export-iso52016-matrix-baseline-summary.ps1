@@ -3,6 +3,13 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# Baseline summary artifacts: summary.json, summary.md
+# AnnualHeatingEnergyKWh
+# AnnualCoolingEnergyKWh
+# PeakHeatingLoadW
+# PeakCoolingLoadW
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

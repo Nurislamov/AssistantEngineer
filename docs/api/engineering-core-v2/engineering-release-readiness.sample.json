@@ -1,0 +1,122 @@
+{
+  "releaseReadinessId": "EngineeringCoreV2InternalReadiness",
+  "status": "ReadyWithWarnings",
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "defaultBehavior": {
+    "compatibilityBehaviorPreserved": true,
+    "inspiredPathsRemainOptIn": true
+  },
+  "optInFlags": [
+    {
+      "flag": "NaturalVentilationOptions.UseIso16798InspiredCalculator",
+      "defaultValue": false
+    },
+    {
+      "flag": "Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator",
+      "defaultValue": false
+    },
+    {
+      "flag": "DomesticHotWaterOptions.UseIso12831InspiredCalculator",
+      "defaultValue": false
+    },
+    {
+      "flag": "SystemEnergyOptions.UseEn15316InspiredChain",
+      "defaultValue": false
+    },
+    {
+      "flag": "Iso52016ConstructionOptions.UseConstructionLayerMassInput",
+      "defaultValue": false
+    }
+  ],
+  "closedStages": [
+    "AE-VALIDATION-ISO52016-001",
+    "AE-VALIDATION-ISO52016-002",
+    "AE-VALIDATION-PYBE-001",
+    "AE-VENT-001",
+    "AE-VENT-002",
+    "AE-GROUND-001",
+    "AE-GROUND-002",
+    "AE-DHW-001",
+    "AE-DHW-002",
+    "AE-EN15316-001",
+    "AE-EN15316-002",
+    "AE-CALC-ROLLUP-001",
+    "AE-ISO52016-CONSTRUCTION-001",
+    "AE-ISO52016-CONSTRUCTION-002",
+    "AE-BUI-VALIDATION-001",
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001"
+  ],
+  "internalOnlyStages": [
+    "AE-BUI-VALIDATION-001",
+    "AE-GOVERNANCE-001",
+    "AE-GOVERNANCE-002",
+    "AE-RELEASE-READINESS-002",
+    "AE-STATUS-001"
+  ],
+  "blockedStages": [],
+  "knownLimitations": [
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "External numerical validation is still not complete.",
+    "Inspired paths remain opt-in.",
+    "Building input validation suggests corrections but does not mutate production data."
+  ],
+  "forbiddenClaims": [
+    "No full ISO compliance claim.",
+    "No full EN compliance claim.",
+    "No full ISO 52016 compliance claim.",
+    "No full ISO 52010 compliance claim.",
+    "No full ISO 13370 compliance claim.",
+    "No full ISO 16798 compliance claim.",
+    "No full ISO 12831-3 compliance claim.",
+    "No full EN 15316 compliance claim.",
+    "No ISO 52016 validated claim.",
+    "No ISO 52010 validated claim.",
+    "No ISO 13370 validated claim.",
+    "No ISO 16798 validated claim.",
+    "No ISO 12831-3 validated claim.",
+    "No EN 15316 validated claim.",
+    "No validated against pyBuildingEnergy claim.",
+    "No validated against EnergyPlus claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validated claim.",
+    "No ASHRAE 140 covered claim.",
+    "No ExternalParityCovered claim.",
+    "No certified claim.",
+    "No external certification claim."
+  ],
+  "generatedArtifactsPolicy": {
+    "generatedArtifactsMustNotBeCommitted": true,
+    "allowedFolders": [
+      "artifacts/",
+      "generated/",
+      "TestResults/",
+      "bin/",
+      "obj/"
+    ]
+  },
+  "disclosureFiles": [
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json",
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",
+    "docs/api/engineering-core-v2/status.sample.json",
+    "docs/api/engineering-core-v2/engineering-release-readiness.sample.json"
+  ]
+}

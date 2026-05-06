@@ -1,0 +1,48 @@
+{
+  "stageId": "AE-GOVERNANCE-001",
+  "title": "Engineering stage manifest registry",
+  "status": "internal-governance-anchor",
+  "dependsOn": [
+    "AE-CALC-ROLLUP-001",
+    "AE-BUI-VALIDATION-001"
+  ],
+  "claimBoundary": [
+    "Engineering Core V2 governance and internal release readiness.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim.",
+    "No automatic production data mutation."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceStageManifest.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceStageRegistry.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceStageStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceStageKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceStageDependency.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceManifestReference.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceFileReference.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceClaimBoundary.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceCheckResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceCheckDiagnostic.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceDiagnosticSeverity.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Governance/EngineeringGovernanceReleaseReadinessStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Governance/EngineeringStageManifestRegistryProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Governance/EngineeringStageManifestRegistryValidator.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/governance/stage-registry-required-stages.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringStageManifestRegistryProviderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Governance/EngineeringStageManifestRegistryValidatorTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/governance/EngineeringStageManifestRegistry.md"
+  ],
+  "generatedArtifacts": []
+}

@@ -3,6 +3,11 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# ApplicationIntegrationHardening
+# ManualEngineeringIntegrationAnchor
+# Iso52016MatrixApplicationIntegrationHardening
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

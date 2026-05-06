@@ -3,6 +3,10 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# ApplicationIntegrationHardeningOnly
+# Chained script: verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

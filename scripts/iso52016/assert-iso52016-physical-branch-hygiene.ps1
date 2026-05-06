@@ -3,6 +3,13 @@ param(
     [switch] $SkipTests
 )
 
+# TRACEABILITY-MARKERS-START
+# AssistantEngineer.Tools.RepositoryHygieneVerification
+# dotnet
+# --repo-root
+# RequireClean
+# CheckRootPatchScripts
+# TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path

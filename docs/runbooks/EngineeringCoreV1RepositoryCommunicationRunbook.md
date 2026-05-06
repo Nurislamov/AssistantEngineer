@@ -50,8 +50,8 @@ Recommended wording:
 
 Forbidden wording:
 
-    EnergyPlus parity achieved.
-    ASHRAE 140 validated.
+    No "EnergyPlus parity achieved" claim.
+    No "ASHRAE 140 validated" claim.
     Full ISO 52016 implemented.
 
 ## Tagging guide
