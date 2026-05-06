@@ -1,0 +1,33 @@
+{
+  "stageId": "AE-VENT-002",
+  "title": "ISO16798-inspired natural ventilation application integration",
+  "status": "internal-application-integration-anchor",
+  "dependsOn": [
+    "AE-VENT-001"
+  ],
+  "claimBoundary": [
+    "ISO16798-inspired natural ventilation application integration.",
+    "Internal deterministic engineering anchors only.",
+    "Compatibility behavior preserved by default.",
+    "No full ISO 16798 compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/NaturalVentilationOptions.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/VentilationRegistration.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/NaturalVentilationAirflowService.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/Iso16798NaturalVentilationApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ventilation/Iso16798/Iso16798NaturalVentilationCalculator.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationApplicationIntegrationTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationDiagnosticsTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}

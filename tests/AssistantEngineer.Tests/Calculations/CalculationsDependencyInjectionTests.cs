@@ -19,6 +19,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation.Iso16798;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -53,6 +54,8 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<ISolarRadiationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IWindowShadingService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IVentilationHeatTransferCalculator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EnergySignatureService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);

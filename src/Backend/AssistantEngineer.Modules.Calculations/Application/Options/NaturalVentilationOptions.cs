@@ -3,6 +3,7 @@
 public sealed class NaturalVentilationOptions
 {
     public bool Enabled { get; init; } = true;
+    public bool UseIso16798InspiredCalculator { get; init; } = false;
 
     public double MinimumOutdoorTemperatureC { get; init; } = 16.0;
     public double MaximumOutdoorTemperatureC { get; init; } = 28.0;
