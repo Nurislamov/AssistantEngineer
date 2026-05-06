@@ -22,8 +22,8 @@
     "Not ASHRAE Standard 140 benchmark-grade claim."
   ],
   "implementationFiles": [
-    "tools/AssistantEngineer.Tools.Iso52016PhysicalVerification/AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj",
-    "tools/AssistantEngineer.Tools.Iso52016PhysicalVerification/Program.cs",
+    "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+    "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs",
     "scripts/iso52016/verify-iso52016-physical-model-chain.ps1"
   ],
   "documentationFiles": [

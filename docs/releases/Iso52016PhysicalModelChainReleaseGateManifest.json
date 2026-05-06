@@ -25,8 +25,8 @@
   "usesCSharpVerificationTool": true,
   "thinPowerShellWrapper": true,
   "implementationFiles": [
-    "tools/AssistantEngineer.Tools.Iso52016PhysicalVerification/AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj",
-    "tools/AssistantEngineer.Tools.Iso52016PhysicalVerification/Program.cs",
+    "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+    "tools/AssistantEngineer.Tools.Iso52016Verification/Program.cs",
     "scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1"
   ],
   "documentationFiles": [

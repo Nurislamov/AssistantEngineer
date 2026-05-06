@@ -15,7 +15,7 @@ The previous physical model stages added:
 
 Step 07 does not add new thermal equations and does not change the Matrix solver. It adds:
 
-- `AssistantEngineer.Tools.Iso52016PhysicalVerification`;
+- `AssistantEngineer.Tools.Iso52016Verification`;
 - a thin wrapper script `scripts/iso52016/verify-iso52016-physical-model-chain.ps1`;
 - stage documentation, manifest, and guard tests.
 

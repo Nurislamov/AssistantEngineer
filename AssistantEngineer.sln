@@ -68,8 +68,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.Eng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring", "tools\AssistantEngineer.Tools.EnergyPlusFixtureAuthoring\AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj", "{EB3E1E87-D497-4CF5-BB5C-6F9EE12328BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.Iso52016PhysicalVerification", "tools\AssistantEngineer.Tools.Iso52016PhysicalVerification\AssistantEngineer.Tools.Iso52016PhysicalVerification.csproj", "{8845D986-BE2C-499A-8905-CCD2F9C59201}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.RepositoryHygieneVerification", "tools\AssistantEngineer.Tools.RepositoryHygieneVerification\AssistantEngineer.Tools.RepositoryHygieneVerification.csproj", "{6E5ECF2C-72AB-4521-ACE7-8F9A8F02A163}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.Iso52016Verification", "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj", "{A315669F-99A2-4434-A263-B419E25D918B}"
@@ -288,18 +286,6 @@ Global
 		{EB3E1E87-D497-4CF5-BB5C-6F9EE12328BA}.Release|x64.Build.0 = Release|Any CPU
 		{EB3E1E87-D497-4CF5-BB5C-6F9EE12328BA}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB3E1E87-D497-4CF5-BB5C-6F9EE12328BA}.Release|x86.Build.0 = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|x64.Build.0 = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Debug|x86.Build.0 = Debug|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|x64.ActiveCfg = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|x64.Build.0 = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|x86.ActiveCfg = Release|Any CPU
-		{8845D986-BE2C-499A-8905-CCD2F9C59201}.Release|x86.Build.0 = Release|Any CPU
 		{6E5ECF2C-72AB-4521-ACE7-8F9A8F02A163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6E5ECF2C-72AB-4521-ACE7-8F9A8F02A163}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E5ECF2C-72AB-4521-ACE7-8F9A8F02A163}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -350,7 +336,6 @@ Global
 		{0B2B5091-33C1-42F4-8773-F5AC91315ECF} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{36B2FF95-D01F-402B-BA60-09DB8A933581} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{EB3E1E87-D497-4CF5-BB5C-6F9EE12328BA} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
-		{8845D986-BE2C-499A-8905-CCD2F9C59201} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{6E5ECF2C-72AB-4521-ACE7-8F9A8F02A163} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{A315669F-99A2-4434-A263-B419E25D918B} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection

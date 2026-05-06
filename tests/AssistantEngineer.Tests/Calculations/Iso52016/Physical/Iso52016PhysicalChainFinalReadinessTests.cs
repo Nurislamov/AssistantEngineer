@@ -86,7 +86,7 @@ public class Iso52016PhysicalChainFinalReadinessTests
 
         Assert.Contains("Iso52016PhysicalRoomModelBuilder", allText);
         Assert.Contains("Iso52016PhysicalRoomModelDiagnosticsBuilder", allText);
-        Assert.Contains("AssistantEngineer.Tools.Iso52016PhysicalVerification", allText);
+        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification", allText);
         Assert.Contains("ReducedMatrix default path", allText);
         Assert.Contains("PhysicalNodeModel explicit opt-in path", allText);
     }

@@ -20,7 +20,7 @@ It adds a guarded release gate around the physical model chain built in the prev
 
 The durable orchestration lives in:
 
-- `tools/AssistantEngineer.Tools.Iso52016PhysicalVerification`
+- `tools/AssistantEngineer.Tools.Iso52016Verification`
 
 The PowerShell release gate is intentionally thin:
 

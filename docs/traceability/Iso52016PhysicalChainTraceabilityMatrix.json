@@ -84,7 +84,7 @@
       "id": "AE-ISO52016-002-STEP-07",
       "name": "Physical verification orchestration",
       "implementation": [
-        "AssistantEngineer.Tools.Iso52016PhysicalVerification"
+        "AssistantEngineer.Tools.Iso52016Verification"
       ],
       "verification": [
         "Iso52016PhysicalVerificationOrchestrationTests",

@@ -74,17 +74,17 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
         var programPath = Path.Combine(
             repoRoot,
             "tools",
-            "AssistantEngineer.Tools.Iso52016PhysicalVerification",
+            "AssistantEngineer.Tools.Iso52016Verification",
             "Program.cs");
 
         Assert.True(File.Exists(programPath), $"Verification tool was not found: {programPath}");
 
         var program = File.ReadAllText(programPath);
 
-        Assert.Contains("AssertReleaseReady", program);
-        Assert.Contains("VerifyReleaseReadiness", program);
-        Assert.Contains("Iso52016PhysicalModelChainReleaseGateManifest.json", program);
-        Assert.Contains("validation/internal engineering anchors only", program);
+        Assert.Contains("assert-release-ready", program);
+        Assert.Contains("VerifyReleaseReadyManifests", program);
+        Assert.Contains("VerifyClaimBoundaries", program);
+        Assert.Contains("validation/internal engineering anchors only", program, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("assert-iso52016-physical-model-chain-release-ready.ps1", program);
     }
 
