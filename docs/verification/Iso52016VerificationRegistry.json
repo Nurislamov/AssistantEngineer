@@ -29,7 +29,8 @@
     "scripts/iso52016/verify-iso52016-matrix-all.ps1",
     "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
     "scripts/iso52016/verify-iso52016-physical-model-chain.ps1",
-    "scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1"
+    "scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1",
+    "scripts/iso52016/write-iso52016-matrix-merge-summary.ps1"
   ],
   "deprecatedWrapperAliases": [],
   "stages": [
@@ -70,7 +71,12 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-solver-stage.ps1",
+          "stageId": "ISO52016-MATRIX-SOLVER"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-BASELINES",
@@ -106,7 +112,16 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-baselines.ps1",
+          "stageId": "ISO52016-MATRIX-BASELINES"
+        },
+        {
+          "path": "scripts/iso52016/export-iso52016-matrix-baseline-summary.ps1",
+          "stageId": "ISO52016-MATRIX-BASELINES"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-APPLICATION-BASELINES",
@@ -138,7 +153,12 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-application-baselines.ps1",
+          "stageId": "ISO52016-MATRIX-APPLICATION-BASELINES"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-EXTERNAL-VALIDATION",
@@ -176,7 +196,20 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-external-validation.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-external-validation-annual-anchors.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-external-validation-naming-anchors.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS",
@@ -216,7 +249,24 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS"
+        },
+        {
+          "path": "scripts/iso52016/assert-iso52016-matrix-external-validation-anchors-release-ready.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS"
+        },
+        {
+          "path": "scripts/iso52016/write-iso52016-matrix-external-validation-anchors-merge-summary.ps1",
+          "stageId": "ISO52016-MATRIX-EXTERNAL-VALIDATION-ANCHORS"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES",
@@ -252,7 +302,24 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-engineering-edge-cases.ps1",
+          "stageId": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1",
+          "stageId": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES"
+        },
+        {
+          "path": "scripts/iso52016/assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1",
+          "stageId": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES"
+        },
+        {
+          "path": "scripts/iso52016/write-iso52016-matrix-engineering-edge-cases-merge-summary.ps1",
+          "stageId": "ISO52016-MATRIX-ENGINEERING-EDGE-CASES"
+        }
+      ]
     },
     {
       "id": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
@@ -288,7 +355,24 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening.ps1",
+          "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING"
+        },
+        {
+          "path": "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1",
+          "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING"
+        },
+        {
+          "path": "scripts/iso52016/assert-iso52016-matrix-application-integration-hardening-release-ready.ps1",
+          "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING"
+        },
+        {
+          "path": "scripts/iso52016/write-iso52016-matrix-application-integration-hardening-merge-summary.ps1",
+          "stageId": "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING"
+        }
+      ]
     },
     {
       "id": "AE-ISO52016-002-STEP-01",
@@ -558,7 +642,12 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-scenario-anchors-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-09"
+        }
+      ]
     },
     {
       "id": "AE-ISO52016-002-STEP-08",
@@ -591,7 +680,16 @@
         "No ASHRAE 140 validation claim."
       ],
       "entrypointWrapperScripts": [],
-      "deprecatedWrapperAliases": []
+      "deprecatedWrapperAliases": [
+        {
+          "path": "scripts/iso52016/verify-iso52016-physical-branch-hygiene-stage.ps1",
+          "stageId": "AE-ISO52016-002-STEP-14"
+        },
+        {
+          "path": "scripts/iso52016/assert-iso52016-physical-branch-hygiene.ps1",
+          "stageId": "AE-ISO52016-002-STEP-14"
+        }
+      ]
     },
     {
       "id": "AE-ISO52016-002-STEP-09",

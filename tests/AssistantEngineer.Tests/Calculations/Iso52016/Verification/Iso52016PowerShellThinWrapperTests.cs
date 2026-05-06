@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace AssistantEngineer.Tests.Calculations.Iso52016.Verification;
 
 public class Iso52016PowerShellThinWrapperTests
@@ -9,62 +11,72 @@ public class Iso52016PowerShellThinWrapperTests
         "dotnet test",
         "BEGIN ISO52016",
         "BEGIN AE-ISO52016",
+        "literal hook",
+        "literal contract",
+        "CONTRACT HOOK",
         "Invoke-RepoScript",
-        "Invoke-RepoCommand",
-        "SkipPhysical"
+        "Invoke-RepoCommand"
     };
 
-    [Theory]
-    [InlineData("verify-iso52016-matrix-all.ps1", "verify-all")]
-    [InlineData("assert-iso52016-matrix-release-ready.ps1", "assert-release-ready")]
-    public void MatrixEntrypoints_AreThinWrappers(string scriptName, string command)
+    private static readonly string[] AllowedCommands =
     {
-        var script = ReadIsoScript(scriptName);
+        "verify-all",
+        "verify-stage",
+        "assert-release-ready",
+        "list-stages"
+    };
 
-        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
-        Assert.Contains(command, script);
-        Assert.Contains("--repo-root", script);
-
-        foreach (var token in ForbiddenTokens)
+    [Fact]
+    public void EveryIso52016PowerShellScript_IsThinWrapper()
+    {
+        foreach (var path in Directory.GetFiles(IsoScriptDirectory(), "*.ps1", SearchOption.TopDirectoryOnly))
         {
-            Assert.DoesNotContain(token, script, StringComparison.OrdinalIgnoreCase);
+            var script = File.ReadAllText(path);
+
+            Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
+            Assert.Contains("--project", script);
+            Assert.Contains("--repo-root", script);
+            Assert.Contains("& dotnet", script, StringComparison.OrdinalIgnoreCase);
+            Assert.True(
+                AllowedCommands.Any(command => script.Contains(command, StringComparison.Ordinal)),
+                $"Script does not call supported ISO52016 tool command: {Path.GetFileName(path)}");
+
+            foreach (var token in ForbiddenTokens)
+            {
+                Assert.DoesNotContain(token, script, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 
-    [Theory]
-    [InlineData("verify-iso52016-physical-node-model-stage.ps1", "AE-ISO52016-002-STEP-01")]
-    [InlineData("verify-iso52016-physical-surface-model-stage.ps1", "AE-ISO52016-002-STEP-02")]
-    [InlineData("verify-iso52016-physical-boundary-profile-stage.ps1", "AE-ISO52016-002-STEP-03")]
-    [InlineData("verify-iso52016-physical-operation-profile-stage.ps1", "AE-ISO52016-002-STEP-04")]
-    [InlineData("verify-iso52016-physical-room-simulation-service-stage.ps1", "AE-ISO52016-002-STEP-05")]
-    [InlineData("verify-iso52016-physical-room-model-diagnostics-stage.ps1", "AE-ISO52016-002-STEP-06")]
-    [InlineData("verify-iso52016-physical-model-selection-stage.ps1", "AE-ISO52016-002-STEP-10")]
-    [InlineData("verify-iso52016-physical-model-selection-application-guard.ps1", "AE-ISO52016-002-STEP-11")]
-    [InlineData("verify-iso52016-physical-selection-application-integration-hardening.ps1", "AE-ISO52016-002-STEP-13")]
-    public void PhysicalStageCompatibilityScripts_CallVerifyStage(string scriptName, string stageId)
+    [Fact]
+    public void EveryIso52016PowerShellScript_IsRegistered()
     {
-        var script = ReadIsoScript(scriptName);
+        var listed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using var document = JsonDocument.Parse(ReadIso52016VerificationRegistry());
+        var root = document.RootElement;
 
-        Assert.Contains("AssistantEngineer.Tools.Iso52016Verification.csproj", script);
-        Assert.Contains("verify-stage", script);
-        Assert.Contains("--stage-id", script);
-        Assert.Contains(stageId, script);
+        foreach (var script in root.GetProperty("entrypointWrapperScripts").EnumerateArray())
+            listed.Add(script.GetString()!);
 
-        foreach (var token in ForbiddenTokens)
+        foreach (var alias in root.GetProperty("deprecatedWrapperAliases").EnumerateArray())
+            listed.Add(alias.GetProperty("path").GetString()!);
+
+        foreach (var stage in root.GetProperty("stages").EnumerateArray())
         {
-            Assert.DoesNotContain(token, script, StringComparison.OrdinalIgnoreCase);
+            foreach (var script in stage.GetProperty("entrypointWrapperScripts").EnumerateArray())
+                listed.Add(script.GetString()!);
+
+            foreach (var alias in stage.GetProperty("deprecatedWrapperAliases").EnumerateArray())
+                listed.Add(alias.GetProperty("path").GetString()!);
+        }
+
+        foreach (var path in Directory.GetFiles(IsoScriptDirectory(), "*.ps1", SearchOption.TopDirectoryOnly))
+        {
+            var relativePath = $"scripts/iso52016/{Path.GetFileName(path)}";
+            Assert.Contains(relativePath, listed);
         }
     }
 
-    private static string ReadIsoScript(string fileName)
-    {
-        var path = Path.Combine(
-            TestPaths.RepoRoot,
-            "scripts",
-            "iso52016",
-            fileName);
-
-        Assert.True(File.Exists(path), $"Expected wrapper does not exist: {path}");
-        return File.ReadAllText(path);
-    }
+    private static string IsoScriptDirectory() =>
+        Path.Combine(TestPaths.RepoRoot, "scripts", "iso52016");
 }

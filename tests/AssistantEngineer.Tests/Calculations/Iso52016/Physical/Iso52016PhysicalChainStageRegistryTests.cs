@@ -53,19 +53,20 @@ public class Iso52016PhysicalChainStageRegistryTests
         var toolPath = Path.Combine(
             repoRoot,
             "tools",
-            "AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification",
+            "AssistantEngineer.Tools.Iso52016Verification",
             "Program.cs");
 
         Assert.True(File.Exists(toolPath), $"Tool was not found: {toolPath}");
 
         var tool = File.ReadAllText(toolPath);
 
-        Assert.Contains("VerifyRegistry", tool);
+        Assert.Contains("Iso52016VerificationRegistry.json", tool);
         Assert.Contains("VerifyStageManifests", tool);
         Assert.Contains("VerifyStageFiles", tool);
-        Assert.Contains("VerifyMatrixAllHook", tool);
-        Assert.Contains("Validation/internal engineering anchors only.", tool);
-        Assert.Contains("Not ASHRAE Standard 140 validation.", tool);
+        Assert.Contains("VerifyWrapperScripts", tool);
+        Assert.Contains("VerifyClaimBoundaries", tool);
+        Assert.Contains("VerifyClaimBoundary", tool);
+        Assert.Contains("ForbiddenPositiveClaims", tool);
     }
 
     [Fact]

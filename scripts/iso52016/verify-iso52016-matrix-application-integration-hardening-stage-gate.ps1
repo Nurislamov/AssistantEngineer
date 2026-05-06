@@ -3,60 +3,34 @@ param(
     [switch] $SkipTests
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# Contract literal: ApplicationIntegrationHardeningOnly
-# Contract literal: Validation anchors only, not full parity.
-# Contract literal: No pyBuildingEnergy parity claim.
-# Contract literal: No EnergyPlus parity claim.
-# Contract literal: No ASHRAE 140 validation coverage claim.
-# Contract literal: No full ISO 52016 parity claim.
+$RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj"
 
-function Invoke-RepoScript {
-    param(
-        [Parameter(Mandatory = $true)] [string] $RelativePath,
-        [string[]] $Arguments = @()
-    )
-
-    $path = Join-Path $RepoRoot $RelativePath
-
-    if (-not (Test-Path $path)) {
-        throw "Required ISO52016 Matrix application integration hardening script is missing: $RelativePath"
-    }
-
-    Push-Location $RepoRoot
-    try {
-        & $path @Arguments
-    }
-    finally {
-        Pop-Location
-    }
-}
-
-$requiredFiles = @(
-    "scripts\iso52016\verify-iso52016-matrix-application-integration-hardening.ps1",
-    "docs\calculations\Iso52016MatrixApplicationIntegrationHardening.md",
-    "docs\releases\Iso52016MatrixApplicationIntegrationHardeningManifest.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixApplicationIntegrationHardeningTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixApplicationIntegrationHardeningManifestTests.cs"
+$args = @(
+    "run",
+    "--project",
+    $toolProject,
+    "--",
+    "verify-stage",
+    "--stage-id",
+    "ISO52016-MATRIX-APPLICATION-INTEGRATION-HARDENING",
+    "--repo-root",
+    $RepoRoot
 )
 
-foreach ($relativePath in $requiredFiles) {
-    $path = Join-Path $RepoRoot $relativePath
+if ($SkipTests) {
+    $args += "--skip-tests"
+}
 
-    if (-not (Test-Path $path)) {
-        throw "Required ISO52016 Matrix application integration hardening stage-gate file is missing: $relativePath"
+Push-Location $RepoRoot
+try {
+    & dotnet @args
+    if ($LASTEXITCODE -ne 0) {
+        throw "ISO52016 stage verification failed with exit code $LASTEXITCODE."
     }
 }
-
-$args = @()
-if ($SkipTests) {
-    $args += "-SkipTests"
+finally {
+    Pop-Location
 }
-
-Invoke-RepoScript `
-    -RelativePath "scripts\iso52016\verify-iso52016-matrix-application-integration-hardening.ps1" `
-    -Arguments $args
-
-Write-Host "ISO52016 Matrix application integration hardening stage gate passed."

@@ -3,38 +3,34 @@ param(
     [switch] $SkipTests
 )
 
-Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$requiredFiles = @(
-    "docs\calculations\Iso52016MatrixApplicationBaselineFixtures.md",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\Iso52016MatrixApplicationBaselineFixtureTests.cs",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ApplicationBaselines\building-cold-two-room-heating.json",
-    "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ApplicationBaselines\building-hot-single-room-cooling.json"
+$RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj"
+
+$args = @(
+    "run",
+    "--project",
+    $toolProject,
+    "--",
+    "verify-stage",
+    "--stage-id",
+    "ISO52016-MATRIX-APPLICATION-BASELINES",
+    "--repo-root",
+    $RepoRoot
 )
 
-foreach ($relativePath in $requiredFiles) {
-    $path = Join-Path $RepoRoot $relativePath
-    if (-not (Test-Path $path)) {
-        throw "Required ISO52016 Matrix application baseline file is missing: $relativePath"
-    }
+if ($SkipTests) {
+    $args += "--skip-tests"
 }
 
-$baselineDirectory = Join-Path $RepoRoot "tests\AssistantEngineer.Tests\Calculations\Iso52016\Matrix\ApplicationBaselines"
-$fixtureCount = (Get-ChildItem $baselineDirectory -File -Filter *.json).Count
-
-if ($fixtureCount -lt 2) {
-    throw "Expected at least 2 ISO52016 Matrix application baseline fixtures, found $fixtureCount."
-}
-
-if (-not $SkipTests) {
-    Push-Location $RepoRoot
-    try {
-        dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~Iso52016MatrixApplicationBaselineFixture"
-    }
-    finally {
-        Pop-Location
+Push-Location $RepoRoot
+try {
+    & dotnet @args
+    if ($LASTEXITCODE -ne 0) {
+        throw "ISO52016 stage verification failed with exit code $LASTEXITCODE."
     }
 }
-
-Write-Host "ISO52016 Matrix application baseline verification passed."
+finally {
+    Pop-Location
+}

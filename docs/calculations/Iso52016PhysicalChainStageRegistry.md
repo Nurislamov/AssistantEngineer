@@ -11,7 +11,7 @@ This stage adds a durable ISO52016 physical chain registry for Step 01 through S
 
 The registry documents all physical model stages, their docs, manifests, verification scripts, and stage-specific claim boundary snippets.
 
-It keeps durable verification in C# through `AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification`; PowerShell remains a thin developer/CI entrypoint.
+It keeps durable verification in C# through `AssistantEngineer.Tools.Iso52016Verification`; PowerShell remains a thin developer/CI entrypoint.
 
 ## Claim boundary
 

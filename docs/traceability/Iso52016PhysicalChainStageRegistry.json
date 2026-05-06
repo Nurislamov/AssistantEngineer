@@ -211,7 +211,7 @@
                                 "scripts/iso52016/verify-iso52016-physical-chain-stage-registry-stage-gate.ps1"
                             ],
     "csharpTools":  [
-                        "tools/AssistantEngineer.Tools.Iso52016PhysicalRegistryVerification"
+                        "tools/AssistantEngineer.Tools.Iso52016Verification"
                     ],
     "testGuards":  [
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalChainStageRegistryTests.cs"

@@ -1,37 +1,36 @@
 param(
     [string] $RepoRoot = (Get-Location).Path,
-    [switch] $RequireClean,
-    [switch] $CheckRootPatchScripts
+    [switch] $SkipTests
 )
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
+
 $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
+$toolProject = Join-Path $RepoRoot "tools\AssistantEngineer.Tools.Iso52016Verification\AssistantEngineer.Tools.Iso52016Verification.csproj"
 
-$toolProject = Join-Path $RepoRoot 'tools\AssistantEngineer.Tools.RepositoryHygieneVerification\AssistantEngineer.Tools.RepositoryHygieneVerification.csproj'
-if (-not (Test-Path -LiteralPath $toolProject)) {
-    throw "Repository hygiene verification tool project is missing: $toolProject"
-}
+$args = @(
+    "run",
+    "--project",
+    $toolProject,
+    "--",
+    "verify-stage",
+    "--stage-id",
+    "AE-ISO52016-002-STEP-14",
+    "--repo-root",
+    $RepoRoot
+)
 
-$arguments = @('run', '--project', $toolProject, '--', '--repo-root', $RepoRoot)
-
-if ($RequireClean) {
-    $arguments += '--require-clean'
-}
-
-if ($CheckRootPatchScripts) {
-    $arguments += '--check-root-patch-scripts'
+if ($SkipTests) {
+    $args += "--skip-tests"
 }
 
 Push-Location $RepoRoot
 try {
-    & dotnet @arguments
+    & dotnet @args
     if ($LASTEXITCODE -ne 0) {
-        throw "Repository hygiene C# verification failed with exit code ${LASTEXITCODE}."
+        throw "ISO52016 stage verification failed with exit code $LASTEXITCODE."
     }
 }
 finally {
     Pop-Location
 }
-
-Write-Host 'ISO52016 physical branch hygiene verification passed.'
