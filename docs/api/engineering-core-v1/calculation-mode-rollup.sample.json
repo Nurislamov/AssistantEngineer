@@ -1,0 +1,121 @@
+{
+  "stageId": "AE-CALC-ROLLUP-001",
+  "summary": "Engineering calculation mode comparison and disclosure rollup sample.",
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "modes": [
+    {
+      "domain": "Ventilation",
+      "modeId": "VENTILATION-COMPATIBILITY-DEFAULT",
+      "status": "Default",
+      "kind": "CompatibilityDefault",
+      "isDefault": true,
+      "isOptIn": false,
+      "optionFlagName": null,
+      "stageIds": [
+        "AE-VENT-002"
+      ]
+    },
+    {
+      "domain": "Ventilation",
+      "modeId": "VENTILATION-ISO16798-INSPIRED-OPTIN",
+      "status": "AvailableOptIn",
+      "kind": "InspiredOptIn",
+      "isDefault": false,
+      "isOptIn": true,
+      "optionFlagName": "NaturalVentilationOptions.UseIso16798InspiredCalculator",
+      "stageIds": [
+        "AE-VENT-001",
+        "AE-VENT-002"
+      ]
+    },
+    {
+      "domain": "Ground",
+      "modeId": "GROUND-ISO13370-INSPIRED-OPTIN",
+      "status": "AvailableOptIn",
+      "kind": "InspiredOptIn",
+      "isDefault": false,
+      "isOptIn": true,
+      "optionFlagName": "Iso13370GroundHeatTransferOptions.UseIso13370InspiredBoundaryCalculator",
+      "stageIds": [
+        "AE-GROUND-001",
+        "AE-GROUND-002"
+      ]
+    },
+    {
+      "domain": "DomesticHotWater",
+      "modeId": "DHW-ISO12831-INSPIRED-OPTIN",
+      "status": "AvailableOptIn",
+      "kind": "InspiredOptIn",
+      "isDefault": false,
+      "isOptIn": true,
+      "optionFlagName": "DomesticHotWaterOptions.UseIso12831InspiredCalculator",
+      "stageIds": [
+        "AE-DHW-001",
+        "AE-DHW-002"
+      ]
+    },
+    {
+      "domain": "SystemEnergy",
+      "modeId": "SYSTEM-ENERGY-EN15316-INSPIRED-OPTIN",
+      "status": "AvailableOptIn",
+      "kind": "InspiredOptIn",
+      "isDefault": false,
+      "isOptIn": true,
+      "optionFlagName": "SystemEnergyOptions.UseEn15316InspiredChain",
+      "stageIds": [
+        "AE-EN15316-001",
+        "AE-EN15316-002"
+      ]
+    },
+    {
+      "domain": "ExternalValidation",
+      "modeId": "ISO52016-PYBE-INSPIRED-METHODOLOGY-INTAKE",
+      "status": "ClosedInternalGate",
+      "kind": "MethodologyIntake",
+      "isDefault": false,
+      "isOptIn": false,
+      "optionFlagName": null,
+      "stageIds": [
+        "AE-VALIDATION-PYBE-001"
+      ]
+    }
+  ],
+  "sampleComparison": {
+    "domain": "SystemEnergy",
+    "compatibilityModeId": "SYSTEM-ENERGY-COMPATIBILITY-DEFAULT",
+    "inspiredModeId": "SYSTEM-ENERGY-EN15316-INSPIRED-OPTIN",
+    "metrics": [
+      {
+        "name": "SystemFinalEnergyKWh",
+        "compatibilityValue": 12000.0,
+        "inspiredValue": 11850.0,
+        "absoluteDelta": 150.0,
+        "relativeDeltaPercent": 1.25,
+        "absoluteTolerance": 200.0,
+        "relativeTolerancePercent": 2.0,
+        "status": "Pass"
+      }
+    ],
+    "interpretation": "Internal deterministic governance comparison example only; not external validation or certification."
+  },
+  "forbiddenClaims": [
+    "forbidden: full ISO compliance",
+    "forbidden: full EN compliance",
+    "forbidden: validated against pyBuildingEnergy",
+    "forbidden: pyBuildingEnergy parity",
+    "forbidden: EnergyPlus parity",
+    "forbidden: ASHRAE 140 validated",
+    "forbidden: ExternalParityCovered",
+    "forbidden: certified"
+  ]
+}

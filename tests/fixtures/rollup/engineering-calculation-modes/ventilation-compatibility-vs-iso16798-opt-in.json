@@ -1,0 +1,33 @@
+{
+  "id": "ventilation-compatibility-vs-iso16798-opt-in",
+  "domain": "Ventilation",
+  "compatibilityModeId": "VENTILATION-COMPATIBILITY-DEFAULT",
+  "inspiredModeId": "VENTILATION-ISO16798-INSPIRED-OPTIN",
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "compatibilityMetrics": [
+    { "name": "VentilationHeatTransferWPerK", "value": 850.0 }
+  ],
+  "inspiredMetrics": [
+    { "name": "VentilationHeatTransferWPerK", "value": 890.0 }
+  ],
+  "absoluteTolerances": {
+    "VentilationHeatTransferWPerK": 60.0
+  },
+  "relativeTolerancesPercent": {
+    "VentilationHeatTransferWPerK": 8.0
+  },
+  "expectedSummaryStatus": "Pass",
+  "expectedDeltas": [
+    { "metricName": "VentilationHeatTransferWPerK", "absoluteDelta": 40.0 }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ground-compatibility-vs-iso13370-opt-in",
+  "domain": "Ground",
+  "compatibilityModeId": "GROUND-COMPATIBILITY-DEFAULT",
+  "inspiredModeId": "GROUND-ISO13370-INSPIRED-OPTIN",
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "compatibilityMetrics": [
+    { "name": "GroundHeatTransferWPerK", "value": 19.2 },
+    { "name": "GroundWeight", "value": 1.0 }
+  ],
+  "inspiredMetrics": [
+    { "name": "GroundHeatTransferWPerK", "value": 18.6 },
+    { "name": "GroundWeight", "value": 0.92 }
+  ],
+  "absoluteTolerances": {
+    "GroundHeatTransferWPerK": 1.0,
+    "GroundWeight": 0.1
+  },
+  "relativeTolerancesPercent": {
+    "GroundHeatTransferWPerK": 6.0,
+    "GroundWeight": 10.0
+  },
+  "expectedSummaryStatus": "Pass",
+  "expectedDeltas": [
+    { "metricName": "GroundHeatTransferWPerK", "absoluteDelta": 0.6 },
+    { "metricName": "GroundWeight", "absoluteDelta": 0.08 }
+  ]
+}

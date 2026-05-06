@@ -1,0 +1,38 @@
+{
+  "id": "system-energy-compatibility-vs-en15316-opt-in",
+  "domain": "SystemEnergy",
+  "compatibilityModeId": "SYSTEM-ENERGY-COMPATIBILITY-DEFAULT",
+  "inspiredModeId": "SYSTEM-ENERGY-EN15316-INSPIRED-OPTIN",
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "compatibilityMetrics": [
+    { "name": "SystemFinalEnergyKWh", "value": 12000.0 },
+    { "name": "SystemPrimaryEnergyKWh", "value": 24000.0 }
+  ],
+  "inspiredMetrics": [
+    { "name": "SystemFinalEnergyKWh", "value": 11850.0 },
+    { "name": "SystemPrimaryEnergyKWh", "value": 23650.0 }
+  ],
+  "absoluteTolerances": {
+    "SystemFinalEnergyKWh": 200.0,
+    "SystemPrimaryEnergyKWh": 500.0
+  },
+  "relativeTolerancesPercent": {
+    "SystemFinalEnergyKWh": 2.0,
+    "SystemPrimaryEnergyKWh": 2.5
+  },
+  "expectedSummaryStatus": "Pass",
+  "expectedDeltas": [
+    { "metricName": "SystemFinalEnergyKWh", "absoluteDelta": 150.0 },
+    { "metricName": "SystemPrimaryEnergyKWh", "absoluteDelta": 350.0 }
+  ]
+}

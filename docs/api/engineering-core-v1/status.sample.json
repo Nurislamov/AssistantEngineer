@@ -169,6 +169,7 @@
   ],
   "documentationFiles": [
     "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/calculations/rollup/EngineeringCalculationModeComparisonAndDisclosureRollup.md",
     "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
     "docs/calculations/EngineeringCoreV1ApiExamples.md",
     "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
@@ -183,8 +184,10 @@
     "docs/contributing/EngineeringCoreV1ContributionGuide.md",
     "docs/releases/EngineeringCoreV1.md",
     "docs/releases/EngineeringCoreV1Manifest.json",
+    "docs/releases/EngineeringCalculationModeComparisonRollupManifest.json",
     "docs/releases/EngineeringCoreV1ReleaseManifest.md",
     "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
-    "docs/releases/EngineeringCoreV1OwnerHandoff.md"
+    "docs/releases/EngineeringCoreV1OwnerHandoff.md",
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
   ]
 }

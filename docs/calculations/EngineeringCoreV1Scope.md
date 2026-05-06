@@ -10,6 +10,7 @@ The goal is:
 - use ISO/pyBuildingEnergy as a source of calculation structure and formula principles;
 - expose clear diagnostics for assumptions, fallbacks and limitations;
 - provide deterministic unit/integration tests;
+- provide deterministic calculation-mode governance rollup for default versus opt-in disclosure;
 - support normalized 8760 hourly weather profiles through EPW and PVGIS;
 - keep future validation against EnergyPlus / ASHRAE 140 possible.
 

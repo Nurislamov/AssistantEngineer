@@ -2,6 +2,8 @@
 
 Verification is based on internal deterministic fixtures, focused engine tests, and application pipeline tests where the real backend path has been integrated.
 
+The engineering calculation mode comparison and disclosure rollup is an internal governance layer for default versus opt-in transparency and deterministic delta reporting. It is not an external parity or certification signal.
+
 ## Current Status
 
 | Function | Status | Evidence |

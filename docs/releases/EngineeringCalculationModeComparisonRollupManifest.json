@@ -1,0 +1,64 @@
+{
+  "stageId": "AE-CALC-ROLLUP-001",
+  "title": "Engineering calculation mode comparison and disclosure rollup",
+  "status": "internal-governance-anchor",
+  "dependsOn": [
+    "AE-VENT-002",
+    "AE-GROUND-002",
+    "AE-DHW-002",
+    "AE-EN15316-002",
+    "AE-VALIDATION-ISO52016-001",
+    "AE-VALIDATION-ISO52016-002",
+    "AE-VALIDATION-PYBE-001"
+  ],
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationMode.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeKind.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeComparisonRequest.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeComparisonResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDelta.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeMetric.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDisclosure.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeStageStatus.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeClaimBoundary.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDiagnostic.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Rollup/EngineeringCalculationModeDomain.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeCatalogProvider.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationModeComparisonEngine.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rollup/EngineeringCalculationMetricAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs"
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/rollup/engineering-calculation-modes/ground-compatibility-vs-iso13370-opt-in.json",
+    "tests/fixtures/rollup/engineering-calculation-modes/ventilation-compatibility-vs-iso16798-opt-in.json",
+    "tests/fixtures/rollup/engineering-calculation-modes/dhw-compatibility-vs-iso12831-opt-in.json",
+    "tests/fixtures/rollup/engineering-calculation-modes/system-energy-compatibility-vs-en15316-opt-in.json",
+    "tests/fixtures/rollup/engineering-calculation-modes/rollup-stage-catalog.json"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeCatalogProviderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeComparisonEngineTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeDisclosureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeTraceabilityTests.cs"
+  ],
+  "updatedDisclosureFiles": [
+    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/api/engineering-core-v1/status.sample.json",
+    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
+  ],
+  "generatedArtifacts": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "dhw-compatibility-vs-iso12831-opt-in",
+  "domain": "DomesticHotWater",
+  "compatibilityModeId": "DHW-COMPATIBILITY-DEFAULT",
+  "inspiredModeId": "DHW-ISO12831-INSPIRED-OPTIN",
+  "claimBoundary": [
+    "Engineering calculation mode comparison and disclosure rollup.",
+    "Internal deterministic engineering governance only.",
+    "Compatibility behavior preserved by default.",
+    "Inspired calculation paths remain opt-in.",
+    "No full ISO/EN compliance claim.",
+    "No pyBuildingEnergy parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No external certification claim."
+  ],
+  "compatibilityMetrics": [
+    { "name": "DhwEnergyKWh", "value": 3200.0 }
+  ],
+  "inspiredMetrics": [
+    { "name": "DhwEnergyKWh", "value": 3350.0 }
+  ],
+  "absoluteTolerances": {
+    "DhwEnergyKWh": 200.0
+  },
+  "relativeTolerancesPercent": {
+    "DhwEnergyKWh": 6.0
+  },
+  "expectedSummaryStatus": "Pass",
+  "expectedDeltas": [
+    { "metricName": "DhwEnergyKWh", "absoluteDelta": 150.0 }
+  ]
+}

@@ -8,6 +8,7 @@ using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWat
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,6 +38,9 @@ internal static class EnergyAnalysisRegistration
         services.AddSingleton<En15316SystemEnergyReferenceDataProvider>();
         services.AddSingleton<En15316SystemEnergyChainCalculator>();
         services.AddSingleton<En15316SystemEnergyApplicationAdapter>();
+        services.AddSingleton<EngineeringCalculationModeCatalogProvider>();
+        services.AddSingleton<EngineeringCalculationModeComparisonEngine>();
+        services.AddSingleton<EngineeringCalculationMetricAdapter>();
         services.AddSingleton<SystemEnergyEngine>();
 
         services.AddScoped<BuildingEnergyPerformanceSummaryService>();
