@@ -89,3 +89,8 @@ Production adapter mapping from building-domain entities to `ThermalTopologyBuil
 ### Integration note
 
 A direct mapper from boundary-calculation outputs to ISO52016 physical room-model inputs is intentionally deferred because current ISO52016 physical contracts require construction-layer and model-node details not provided by this topology-level deterministic integration stage.
+
+## Ground boundary preparation note
+
+- Ground boundary temperature inputs can now be prepared from the ground calculation lane (`AE-GROUND-ISO13370-001B`).
+- Current thermal-zone boundary calculation can consume representative ground temperature as a scalar input, while detailed per-surface ISO52016 coupling remains a separate/additive lane.

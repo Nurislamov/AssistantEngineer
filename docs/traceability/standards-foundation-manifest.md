@@ -213,3 +213,59 @@ This stage provides deterministic internal engineering ground-boundary integrati
 ## Next stage
 
 - `AE-GROUND-ISO13370-001B`
+
+---
+
+## Work item
+
+- `AE-GROUND-ISO13370-001B`
+
+## Touched contracts
+
+- `Application/Contracts/Ground/GroundSurfaceMetadata.cs`
+- `Application/Contracts/Ground/BuildingGroundBoundaryCalculationInput.cs`
+- `Application/Contracts/Ground/GroundSurfaceBoundaryCalculationResult.cs`
+- `Application/Contracts/Ground/BuildingGroundBoundaryCalculationResult.cs`
+- `Application/Contracts/Ground/GroundBoundaryTemperatureLookup.cs`
+- `Application/Contracts/Ground/ThermalZoneGroundBoundaryInputAdapterResult.cs`
+- `Application/Contracts/Ground/GroundBoundaryIso52016BoundaryProfileMappingResult.cs`
+- `Application/Abstractions/Ground/IGroundBoundaryTopologyMapper.cs`
+- `Application/Abstractions/Ground/IBuildingGroundBoundaryCalculator.cs`
+- `Application/Abstractions/Ground/IGroundBoundaryTemperatureLookupBuilder.cs`
+- `Application/Abstractions/Ground/IThermalZoneGroundBoundaryInputAdapter.cs`
+- `Application/Abstractions/Ground/IGroundBoundaryToIso52016BoundaryProfileMapper.cs`
+
+## Touched services
+
+- `Application/Services/Ground/GroundBoundaryTopologyMapper.cs`
+- `Application/Services/Ground/BuildingGroundBoundaryCalculator.cs`
+- `Application/Services/Ground/GroundBoundaryTemperatureLookupBuilder.cs`
+- `Application/Services/Ground/ThermalZoneBoundaryGroundTemperatureAdapter.cs`
+- `Application/Services/Ground/GroundBoundaryToIso52016BoundaryProfileMapper.cs`
+- `Composition/GroundCalculationRegistration.cs`
+- updated `Composition/GroundRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundBoundaryTopologyMapperTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/BuildingGroundBoundaryCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundBoundaryTemperatureLookupBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/ThermalZoneBoundaryGroundTemperatureAdapterTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundBoundaryToIso52016BoundaryProfileMapperTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundIntegrationArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Ground-topology integration non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired application integration only.
+
+## Next stage
+
+- `AE-VENT-EN16798-001A`

@@ -57,3 +57,43 @@ This stage provides reusable application-level contracts and services for ground
 ## Integration note
 
 An automatic production mapper from thermal-topology ground surfaces to full `GroundBoundaryCalculationInput` is deferred to `AE-GROUND-ISO13370-001B`, because project-specific soil/climate/contact metadata ownership still needs explicit integration boundaries.
+
+## AE-GROUND-ISO13370-001B - Thermal topology and ISO52016 boundary profile integration
+
+### Scope in this stage
+
+- Ground surfaces are identified from thermal topology by `ThermalBoundaryKind.Ground`.
+- `GroundSurfaceMetadata` enriches each ground topology surface with:
+  - contact kind
+  - geometry
+  - soil properties
+  - climate input
+  - source and diagnostics
+- `GroundBoundaryTopologyMapper` maps each ground topology surface into `GroundBoundaryCalculationInput`.
+- `BuildingGroundBoundaryCalculator` performs batch ground calculations for all mapped ground surfaces in a building topology.
+- Ground boundary outputs are produced per surface and aggregated at building level:
+  - per-surface equivalent U-value
+  - per-surface H (W/K)
+  - monthly and hourly ground boundary temperature profiles
+  - deterministic diagnostics and disclosure
+- `GroundBoundaryTemperatureLookupBuilder` exposes reusable lookup dictionaries for:
+  - per-surface hourly temperatures
+  - per-surface monthly temperatures
+  - per-surface representative ground temperatures
+- `ThermalZoneBoundaryGroundTemperatureAdapter` prepares representative ground temperature inputs for current thermal-zone boundary calculations where a single scalar ground temperature is accepted.
+- Additive optional mapper:
+  - `GroundBoundaryToIso52016BoundaryProfileMapper` maps per-surface 8760 hourly ground temperatures into ISO52016 physical surface hourly boundary-condition contracts without modifying the ISO52016 solver algorithm.
+
+### Intentionally not done in this stage
+
+- No full ISO13370 compliance claim.
+- No full ISO52016 dynamic ground coupling claim.
+- No external validation anchor claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+### Future work
+
+- Deeper ISO52016 per-surface hourly boundary profile coupling through end-to-end simulation orchestration.
+- Additional external validation anchors and comparison harnesses.
