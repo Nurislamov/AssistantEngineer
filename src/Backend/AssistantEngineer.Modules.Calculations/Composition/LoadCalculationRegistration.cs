@@ -28,7 +28,6 @@ internal static class LoadCalculationRegistration
         services.AddScoped<IAggregateLoadCalculator, AggregateCalculator>();
         services.TryAddSingleton<LoadAggregationEngine>();
 
-        services.AddScoped<BuildingCoolingLoadService>();
         services.AddScoped<RoomCalculationService>();
         services.AddScoped<EnergyCalculationPipelineService>();
 

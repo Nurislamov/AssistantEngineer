@@ -16,6 +16,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Models.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
@@ -482,6 +483,22 @@ public class EnergyCalculationPipelineServiceTests
         Assert.True(result.IsSuccess, result.Error);
         Assert.Null(result.Value.BestMatch);
         Assert.Contains(result.Value.Diagnostics, diagnostic => diagnostic.Code == "EquipmentSizing.NoEquipmentFound");
+    }
+
+    [Fact]
+    public async Task BuildingCoolingFacadeReturnsValidationWhenCriticalClimateInputsAreMissing()
+    {
+        var building = CreateDeterministicBuilding(hasClimateZone: false);
+        var facade = new LoadCalculationsFacade(CreateService(building));
+
+        var result = await facade.CalculateBuildingCoolingLoadAsync(
+            building.Id,
+            CoolingLoadCalculationMethodDto.Iso52016,
+            CancellationToken.None);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("climate zone", result.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

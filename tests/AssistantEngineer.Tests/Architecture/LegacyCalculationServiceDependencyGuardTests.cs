@@ -10,7 +10,6 @@ public class LegacyCalculationServiceDependencyGuardTests
 {
     private static readonly HashSet<Type> LegacyCalculationServiceTypes =
     [
-        typeof(BuildingCoolingLoadService),
         typeof(RoomCalculationService),
         typeof(BuildingHeatingLoadService)
     ];
@@ -72,7 +71,8 @@ public class LegacyCalculationServiceDependencyGuardTests
         var retiredServiceTypeNames = new[]
         {
             "BuildingEnergyBalanceService",
-            "FloorCalculationService"
+            "FloorCalculationService",
+            "BuildingCoolingLoadService"
         };
 
         var sourceFiles = Directory.GetFiles(
@@ -109,11 +109,6 @@ public class LegacyCalculationServiceDependencyGuardTests
     {
         var allowedPathsByTypeName = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
         {
-            ["BuildingCoolingLoadService"] =
-            [
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs"),
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
-            ],
             ["RoomCalculationService"] =
             [
                 NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rooms/RoomCalculationService.cs"),

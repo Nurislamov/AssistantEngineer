@@ -79,17 +79,41 @@ Services still blocked for retirement:
 - `RoomCalculationService`: direct compatibility behavior test dependency (`HeatingLoadValidationTests`) + DI compatibility registration.
 - `BuildingHeatingLoadService`: direct compatibility/report-lane dependencies (`HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests`) and high report-lane risk.
 
+## Phase 7 pilot execution
+
+Selected candidate by priority and risk gates: `BuildingCoolingLoadService`.
+
+Proof summary before removal:
+- No direct controller usage.
+- No direct facade usage.
+- No runtime usage in application services outside DI compatibility registration.
+- Compatibility behavior coverage migrated to active path:
+  - removed direct constructor dependency from `Iso52016ClimateDataValidationTests`,
+  - added active-path facade coverage in `EnergyCalculationPipelineServiceTests` for building-cooling validation behavior when critical climate inputs are missing.
+- Post-migration scan confirmed no remaining direct test dependency on `BuildingCoolingLoadService`.
+
+Retirement action completed:
+- Removed `BuildingCoolingLoadService` DI registration from `Composition/LoadCalculationRegistration.cs`.
+- Deleted `Application/Services/Buildings/BuildingCoolingLoadService.cs`.
+- Updated legacy architecture guard to:
+  - keep fencing for remaining active compatibility services,
+  - block reintroduction of retired `BuildingEnergyBalanceService`, `FloorCalculationService`, and `BuildingCoolingLoadService` in backend source.
+
+Services still blocked for retirement:
+- `RoomCalculationService`: direct compatibility behavior test dependency (`HeatingLoadValidationTests`) + DI compatibility registration.
+- `BuildingHeatingLoadService`: direct compatibility/report-lane dependencies (`HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests`) and high report-lane risk.
+
 ## BuildingCoolingLoadService
 
 ### Current allowed usages
 
-- Service definition: `Application/Services/Buildings/BuildingCoolingLoadService.cs`
-- DI registration: `Composition/LoadCalculationRegistration.cs`
+- Retired in Phase 7.
+- Runtime source usage: none in `src`.
 
 ### Tests depending on it
 
-- `tests/AssistantEngineer.Tests/Calculations/Iso52016ClimateDataValidationTests.cs`
-- `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+- None (direct constructor/DI lifetime dependency removed).
+- Reintroduction guard: `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs`.
 
 ### Replacement path
 
@@ -97,19 +121,18 @@ Services still blocked for retirement:
 
 ### Removal gates
 
-1. No references outside service definition and DI composition.
-2. Compatibility tests migrated to facade/pipeline behavior checks.
-3. DI registration removed and solution build/tests remain green.
+1. No references outside service definition and DI composition. Completed.
+2. Compatibility tests migrated to facade/pipeline behavior checks. Completed.
+3. DI registration removed and solution build/tests remain green. Completed.
 
 ### Risk level
 
-- Medium: compatibility tests still touch behavior/registration.
+- Closed in this phase (medium-risk candidate retired after behavior migration proof).
 
 ### Future PR sequence
 
-1. Migrate remaining tests to facade-first assertions.
-2. Remove DI registration.
-3. Remove service implementation and update inventory/report docs.
+1. Keep reintroduction guard active and evolve only with explicit architectural decision.
+2. Continue retirement queue with next candidate (`RoomCalculationService`) after equivalent compatibility test migration.
 
 ## FloorCalculationService
 
@@ -140,7 +163,7 @@ Services still blocked for retirement:
 ### Future PR sequence
 
 1. Keep reintroduction guard active and evolve only with explicit architectural decision.
-2. Continue retirement queue with next candidate (`BuildingCoolingLoadService`) after compatibility behavior tests are migrated to active path.
+2. Continue retirement queue with next candidate (`RoomCalculationService`) after compatibility behavior tests are migrated to active path.
 
 ## RoomCalculationService
 
@@ -204,7 +227,7 @@ Services still blocked for retirement:
 ### Future PR sequence
 
 1. Keep reintroduction guard active and evolve only with explicit architectural decision.
-2. Continue retirement queue with next candidate (`BuildingCoolingLoadService`) after compatibility behavior tests are migrated to active path.
+2. Continue retirement queue with next candidate (`RoomCalculationService`) after compatibility behavior tests are migrated to active path.
 
 ## BuildingHeatingLoadService
 
