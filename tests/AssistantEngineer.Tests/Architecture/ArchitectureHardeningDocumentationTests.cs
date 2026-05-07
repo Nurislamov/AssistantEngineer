@@ -43,12 +43,34 @@ public class ArchitectureHardeningDocumentationTests
             "Remaining risks",
             "No EnergyPlus parity claim.",
             "No pyBuildingEnergy parity claim.",
-            "No ASHRAE 140 validation claim."
+            "No ASHRAE 140 validation claim.",
+            "No full ISO/EN compliance claim.",
+            "Validation anchors remain validation anchors only.",
+            "infrastructure readiness"
         };
 
         foreach (var requiredPhrase in requiredPhrases)
         {
             Assert.Contains(requiredPhrase, content, StringComparison.Ordinal);
+        }
+
+        var requiredFinalAuditSections = new[]
+        {
+            "## Final hardening audit",
+            "### Checks performed",
+            "### Passed checks",
+            "### Manifest/governance verification",
+            "### Backend guard status",
+            "### Frontend guard status",
+            "### Tools guard status",
+            "### Legacy enforcement status",
+            "### Remaining risks",
+            "### Recommended next phase"
+        };
+
+        foreach (var requiredSection in requiredFinalAuditSections)
+        {
+            Assert.Contains(requiredSection, content, StringComparison.Ordinal);
         }
     }
 

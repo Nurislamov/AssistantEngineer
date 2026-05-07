@@ -88,7 +88,10 @@
     "No full ISO 13370 implementation claim.",
     "No full EN 15316 generation/distribution/storage/emission chain claim.",
     "No full coupled multi-zone heat-balance simulation claim.",
-    "No latent/moisture/humidity calculation claim."
+    "No latent/moisture/humidity calculation claim.",
+    "SystemEnergyEngine compatibility path remains default.",
+    "EN15316-inspired modular chain is opt-in.",
+    "ISO12831-3-inspired DHW path is opt-in."
   ],
   "releaseVerificationCommand": ".\\scripts\\engineering-core\\verify-engineering-core-v1.ps1",
   "fastVerificationCommand": ".\\scripts\\engineering-core\\verify-engineering-core-v1.ps1 -Fast",
