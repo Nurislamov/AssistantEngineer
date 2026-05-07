@@ -149,9 +149,9 @@ Audit date: 2026-05-07
   - `dotnet restore AssistantEngineer.sln`
   - `dotnet build AssistantEngineer.sln --no-restore`
   - `dotnet test AssistantEngineer.sln --no-build`
-  - `npm --prefix .\src\Frontend run build` (attempted)
-  - `scripts/engineering-core/verify-engineering-core-v1.ps1` (run with `-SkipFrontend`)
-  - `scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1` (run with `-SkipFrontend`)
+  - `npm --prefix .\src\Frontend run build`
+  - `scripts/engineering-core/verify-engineering-core-v1.ps1`
+  - `scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1`
 
 ### Passed checks
 
@@ -189,7 +189,8 @@ Audit date: 2026-05-07
   - line-count ceiling for `BuildingWorkspace.tsx`,
   - required decomposition file presence check,
   - no heavy state-manager import drift (`redux`/`zustand`/`mobx`) in workspace file.
-- Frontend build could not run in this environment because `npm` is not available on `PATH`.
+- Frontend build now runs in the default gate path (no `-SkipFrontend`).
+- `-SkipFrontend` is retained only as an explicit emergency override and is printed as a visible warning when used.
 
 ### Tools guard status
 
@@ -206,13 +207,74 @@ Audit date: 2026-05-07
 
 ### Remaining risks
 
-- `verify-engineering-core-v1.ps1` / release-ready flow regenerates `docs/api/engineering-core-v1/status.sample.json`; if governance non-claims drift, final full-suite step can fail.
 - `BuildingWorkspace.tsx` is still large despite phase-1 decomposition.
 - Legacy services are still DI-registered and compile-visible pending migration completion.
 
 ### Recommended next phase
 
-1. Keep governance artifacts idempotent in generation flows and add a dedicated check that regenerated snapshots preserve required opt-in disclosures.
-2. Continue incremental `EnergyCalculationPipelineService` extraction without formula/API changes.
-3. Execute the next safe `BuildingWorkspace` split (floors/rooms and envelope editor concerns) while preserving contracts.
-4. Start legacy retirement only after DI consumer removal is proven by tests and source scan.
+1. Continue incremental `EnergyCalculationPipelineService` extraction for diagnostics/equipment sizing orchestration without formula/API changes.
+2. Execute the next safe `BuildingWorkspace` split for envelope editor and ventilation/ground mutation flows while preserving UX/API contracts.
+3. Keep legacy services fenced to compatibility-only references until migration gates are fully met.
+4. Keep governance generation checks strict for non-claims and opt-in boundaries across manifest/sample artifacts.
+
+## Engineering Core Hardening Phase 2
+
+### Frontend gate status
+
+- `verify-engineering-core-v1.ps1` and `assert-engineering-core-v1-release-ready.ps1` run frontend checks by default.
+- `-SkipFrontend` remains available only as explicit manual override.
+- Script/tool output now visibly warns when `-SkipFrontend` is used.
+- Current frontend gate is build-first (`npm --prefix .\src\Frontend run build`); no separate `typecheck`/`test` scripts are currently declared in `src/Frontend/package.json`.
+
+### Governance generation idempotency
+
+- Status sample generation path is protected by tests that run the contracts generator and validate regenerated `status.sample.json` against `EngineeringCoreV1Manifest.json` governance boundaries.
+- Critical non-claims stay enforced:
+  - no EnergyPlus parity claim,
+  - no pyBuildingEnergy parity claim,
+  - no ASHRAE 140 validation claim,
+  - no full ISO/EN compliance claim.
+- Opt-in boundaries are validated as preserved:
+  - `SystemEnergyEngine compatibility path remains default.`,
+  - `EN15316-inspired modular chain is opt-in.`,
+  - `ISO12831-3-inspired DHW path is opt-in.`
+
+### Backend pipeline extraction phase 2
+
+- Extracted room context resolution into `EnergyCalculationPipelineRoomContextResolver` (ground/solar context + internal-gain schedule diagnostics policy helper).
+- Extracted aggregation room input assembly into `EnergyCalculationPipelineAggregationRoomAssembler`.
+- `EnergyCalculationPipelineService` remains orchestrator; formulas, validation anchors, and API contracts are unchanged.
+
+### Frontend workspace decomposition phase 2
+
+- Extracted floors/rooms mutations into `useFloorsRoomsMutations`.
+- Extracted floors/rooms UI panel into `FloorsRoomsPanel`.
+- `BuildingWorkspace.tsx` remains orchestration shell for tab routing and cross-panel composition.
+- No route/API contract changes and no global state manager introduction.
+
+### Legacy enforcement
+
+- Legacy services remain registered for compatibility.
+- Added stronger architecture guard that fences legacy service references to:
+  - compatibility service definitions, and
+  - composition registrations (`LoadCalculationRegistration`, `EnergyAnalysisRegistration`).
+- Production controller/facade direct dependencies on legacy services remain prohibited.
+
+### Verification results
+
+- Backend: `dotnet restore`, `dotnet build`, `dotnet test` in full solution gate.
+- Frontend: `npm --prefix .\src\Frontend run build` in default gate path.
+- Engineering scripts: both verify and release-ready scripts run without `-SkipFrontend`.
+
+### Remaining risks
+
+- `BuildingWorkspace.tsx` is reduced but still hosts multiple panel compositions.
+- `EnergyCalculationPipelineService` is reduced but still couples equipment sizing orchestration and error-propagation flow.
+- Legacy services remain compile-visible while compatibility paths exist.
+
+### Recommended next phase
+
+1. Extract envelope editor concerns (walls/windows) into dedicated components and mutation hooks.
+2. Extract ventilation/ground mutation flows into focused hooks/components.
+3. Continue pipeline extraction around equipment sizing orchestration/error mapping, keeping formulas and anchors unchanged.
+4. Define and execute compatibility retirement gates for each legacy service before DI removal.

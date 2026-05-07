@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Diagnostics;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Parity.EnergyCalculationParity.FormulaAudit;
@@ -261,6 +262,52 @@ public class EngineeringCoreV1ApiContractSnapshotTests
         Assert.Contains("diagnostics-catalog.sample.json", tool, StringComparison.Ordinal);
         Assert.Contains("engineering-core-v1.http", tool, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void RegeneratedStatusSample_PreservesManifestGovernanceNonClaimsAndOptInBoundaries()
+    {
+        var outputDirectory = Path.Combine(
+            TestPaths.RepoRoot,
+            "artifacts",
+            "generated",
+            "engineering-core-v1-governance-tests");
+
+        Directory.CreateDirectory(outputDirectory);
+
+        var result = RunContractsTool(
+            $"generate-api-contract-snapshots --output-directory \"{outputDirectory}\"");
+        Assert.Equal(0, result.ExitCode);
+
+        var regeneratedStatusPath = Path.Combine(outputDirectory, "status.sample.json");
+        Assert.True(File.Exists(regeneratedStatusPath), $"Regenerated status sample was not found: {regeneratedStatusPath}");
+
+        using var regeneratedStatus = ReadJson(regeneratedStatusPath);
+        using var manifest = ReadJson(ManifestPath);
+
+        var statusNonClaims = ReadStringArray(regeneratedStatus.RootElement, "explicitNonClaims");
+        var manifestNonClaims = ReadStringArray(manifest.RootElement, "explicitNonClaims");
+
+        var requiredBoundaries = new[]
+        {
+            "No exact pyBuildingEnergy numerical parity claim.",
+            "No exact EnergyPlus numerical parity claim.",
+            "No ASHRAE 140 validation coverage claim.",
+            "No full EN 15316 generation/distribution/storage/emission chain claim.",
+            "SystemEnergyEngine compatibility path remains default.",
+            "EN15316-inspired modular chain is opt-in.",
+            "ISO12831-3-inspired DHW path is opt-in."
+        };
+
+        foreach (var boundary in requiredBoundaries)
+        {
+            Assert.Contains(boundary, statusNonClaims);
+            Assert.Contains(boundary, manifestNonClaims);
+        }
+
+        var missingInStatus = manifestNonClaims.Except(statusNonClaims, StringComparer.Ordinal).ToArray();
+        Assert.Empty(missingInStatus);
+    }
+
 private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 
@@ -298,5 +345,32 @@ private static JsonDocument ReadJson(string path) =>
             "tools",
             "AssistantEngineer.Tools.EngineeringCoreContracts",
             "Program.cs");
+
+    private static string ContractsToolProjectPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreContracts",
+            "AssistantEngineer.Tools.EngineeringCoreContracts.csproj");
+
+    private static (int ExitCode, string Output) RunContractsTool(string arguments)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            Arguments = $"run --project \"{ContractsToolProjectPath}\" -- {arguments}",
+            WorkingDirectory = TestPaths.RepoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+
+        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start contracts tool process.");
+        var output = process.StandardOutput.ReadToEnd();
+        output += process.StandardError.ReadToEnd();
+        process.WaitForExit();
+
+        return (process.ExitCode, output);
+    }
 }
 

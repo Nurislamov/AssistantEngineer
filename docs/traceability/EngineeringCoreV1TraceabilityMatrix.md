@@ -79,6 +79,9 @@
 - No full EN 15316 generation/distribution/storage/emission chain claim.
 - No full coupled multi-zone heat-balance simulation claim.
 - No latent/moisture/humidity calculation claim.
+- SystemEnergyEngine compatibility path remains default.
+- EN15316-inspired modular chain is opt-in.
+- ISO12831-3-inspired DHW path is opt-in.
 
 ## Verification scripts
 

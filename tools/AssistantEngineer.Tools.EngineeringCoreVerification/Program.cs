@@ -21,6 +21,14 @@ internal static class Program
 
             Console.WriteLine("Engineering Core V1 verification");
             Console.WriteLine($"Repository: {repoRoot}");
+            if (options.SkipFrontend)
+            {
+                WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
+            }
+            else
+            {
+                Console.WriteLine("Frontend checks are enabled by default.");
+            }
 
             var steps = BuildSteps(options);
 
@@ -368,6 +376,13 @@ internal static class Program
     private static void WriteSuccess(string message)
     {
         Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(message);
+        Console.ResetColor();
+    }
+
+    private static void WriteWarning(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(message);
         Console.ResetColor();
     }
