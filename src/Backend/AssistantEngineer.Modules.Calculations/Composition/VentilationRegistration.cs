@@ -10,6 +10,8 @@ internal static class VentilationRegistration
     public static IServiceCollection AddVentilationCalculations(
         this IServiceCollection services)
     {
+        services.AddNaturalVentilationFoundation();
+
         services.AddSingleton<VentilationAndInfiltrationLoadEngine>();
         services.AddScoped<IVentilationHeatTransferCalculator, VentilationHeatTransferCalculator>();
 

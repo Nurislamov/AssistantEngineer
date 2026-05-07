@@ -269,3 +269,60 @@ This stage provides deterministic standard-inspired application integration only
 ## Next stage
 
 - `AE-VENT-EN16798-001A`
+
+---
+
+## Work item
+
+- `AE-VENT-EN16798-001A`
+
+## Touched contracts
+
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningType.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationFlowConfiguration.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningOperation.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningGeometry.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationEnvironment.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationCalculationInput.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationCalculationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationInputValidationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationPressureResult.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationOpeningGeometryNormalizer.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationInputValidator.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationPressureCalculator.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationAirflowCalculator.cs`
+
+## Touched services
+
+- `Application/Services/Ventilation/NaturalVentilationDiagnosticsFactory.cs`
+- `Application/Services/Ventilation/NaturalVentilationOpeningGeometryNormalizer.cs`
+- `Application/Services/Ventilation/NaturalVentilationInputValidator.cs`
+- `Application/Services/Ventilation/NaturalVentilationPressureCalculator.cs`
+- `Application/Services/Ventilation/NaturalVentilationAirflowCalculator.cs`
+- `Composition/NaturalVentilationRegistration.cs`
+- updated `Composition/VentilationRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationOpeningGeometryNormalizerTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationPressureCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationAirflowCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Natural ventilation foundation non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired engineering calculation only.
+
+## Next stage
+
+- `AE-VENT-EN16798-001B`

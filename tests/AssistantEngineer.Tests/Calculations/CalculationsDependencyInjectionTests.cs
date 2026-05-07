@@ -75,6 +75,10 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<ISolarRadiationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IWindowShadingService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IVentilationHeatTransferCalculator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<INaturalVentilationOpeningGeometryNormalizer>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationPressureCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationAirflowCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);
