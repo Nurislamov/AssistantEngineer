@@ -100,6 +100,11 @@ Phase 3 retirement preparation:
 - `docs/architecture/calculation-legacy-retirement-plan.md` provides per-service removal gates, risk levels, and proposed PR sequence.
 - No legacy services or DI registrations were removed in this phase.
 
+Phase 4 pilot analysis:
+- Re-scan confirmed each legacy service still has at least one open gate (direct compatibility test dependency and/or explicit DI compatibility registration).
+- No safe single-service retirement pilot met full proof conditions in this pass.
+- Runtime removals were intentionally deferred; blocker list is captured in `calculation-legacy-retirement-plan.md`.
+
 ## Risk notes
 
 Current risks:

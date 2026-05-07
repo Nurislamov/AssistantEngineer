@@ -19,8 +19,8 @@ public class BuildingWorkspaceArchitectureGuardTests
 
         var lines = File.ReadAllLines(workspacePath).Length;
         Assert.True(
-            lines <= 700,
-            $"BuildingWorkspace.tsx grew beyond guard threshold (actual: {lines}, allowed: 700).");
+            lines <= 620,
+            $"BuildingWorkspace.tsx grew beyond guard threshold (actual: {lines}, allowed: 620).");
 
         var content = File.ReadAllText(workspacePath);
         Assert.Contains("useBuildingWorkspaceData", content, StringComparison.Ordinal);
@@ -43,10 +43,12 @@ public class BuildingWorkspaceArchitectureGuardTests
             "src/Frontend/src/widgets/building-workspace/model/useFloorsRoomsMutations.ts",
             "src/Frontend/src/widgets/building-workspace/model/useEnvelopeMutations.ts",
             "src/Frontend/src/widgets/building-workspace/model/useVentilationMutations.ts",
+            "src/Frontend/src/widgets/building-workspace/model/useGroundContactMutations.ts",
             "src/Frontend/src/widgets/building-workspace/ui/BuildingWorkspaceTabs.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/CalculationsPanel.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/EnvelopePanel.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/FloorsRoomsPanel.tsx",
+            "src/Frontend/src/widgets/building-workspace/ui/GroundContactPanel.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/WallEditor.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/WindowEditor.tsx",
             "src/Frontend/src/widgets/building-workspace/ui/VentilationPanel.tsx",

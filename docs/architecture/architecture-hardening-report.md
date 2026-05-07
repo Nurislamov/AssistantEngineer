@@ -365,3 +365,63 @@ Audit date: 2026-05-07
 2. Continue pipeline extraction for any remaining application-level finalization coupling only where tests keep behavior stable.
 3. Execute legacy retirement PRs service-by-service using documented gates and sequence.
 4. Keep governance artifact generation checks strict and idempotent in CI/release paths.
+
+## Engineering Core Hardening Phase 4
+
+### Ground contact frontend extraction
+
+- Ground-contact concerns were extracted from `BuildingWorkspace.tsx` into:
+  - `ui/GroundContactPanel.tsx`,
+  - `model/useGroundContactMutations.ts`.
+- `BuildingWorkspace.tsx` now acts as composition shell for summary/tabs/panel routing.
+- UX, API contracts, and route behavior remain unchanged.
+
+### Backend finalization extraction status
+
+- Extracted building-heating room-result finalization into:
+  - `EnergyCalculationPipelineBuildingHeatingResultAssembler` (internal sealed).
+- `EnergyCalculationPipelineService` line count reduced further while preserving:
+  - existing diagnostics severity semantics,
+  - existing result mapping behavior,
+  - existing formulas and validation anchors.
+
+### Legacy retirement pilot status
+
+- Phase 4 performed a fresh usage scan for:
+  - `BuildingCoolingLoadService`,
+  - `FloorCalculationService`,
+  - `RoomCalculationService`,
+  - `BuildingEnergyBalanceService`,
+  - `BuildingHeatingLoadService`.
+- No candidate passed full removal gates without compatibility-test or DI-policy churn.
+- Decision: no runtime removal in Phase 4; blockers and exact PR sequence remain documented in `calculation-legacy-retirement-plan.md`.
+
+### CI/generated artifact stability
+
+- Default verification path remains frontend-on (`verify-engineering-core-v1.ps1` without `-SkipFrontend`).
+- `-SkipFrontend` remains emergency/manual override only.
+- CI workflow `engineering-core-v1.yml` remains aligned with mandatory frontend checks (`setup-node`, `npm ci`, verify script).
+- Release-ready/verify flows continue to regenerate canonical governance artifacts through thin wrappers and C# tools.
+
+### Verification results
+
+- Target full gate for this phase:
+  - `dotnet restore AssistantEngineer.sln`
+  - `dotnet build AssistantEngineer.sln --no-restore`
+  - `dotnet test AssistantEngineer.sln`
+  - `npm --prefix .\src\Frontend ci`
+  - `npm --prefix .\src\Frontend run build`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\verify-engineering-core-v1.ps1`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1`
+
+### Remaining risks
+
+- Legacy services remain compile-visible until per-service removal gates close.
+- `BuildingWorkspace.tsx` is now smaller, but remaining panel-level complexity can still grow if future mutations are inlined.
+- Infrastructure readiness and governance closure remain separate from external numerical validation completeness.
+
+### Recommended next phase
+
+1. Start legacy pilot retirement only after isolating one service with zero direct compatibility test dependency and proven DI independence.
+2. Continue incremental extraction of remaining UI mutation flows only when they preserve current UX/API behavior.
+3. Keep governance regeneration and non-claim boundaries enforced in CI and release-ready checks.

@@ -15,6 +15,22 @@ Boundary statements:
 - Allowed production references are fenced to compatibility definitions and DI composition roots.
 - DI registrations stay in place until all removal gates are satisfied.
 
+## Phase 4 pilot analysis
+
+Phase 4 re-scan result: no legacy service passed full removal gates without risky compatibility churn.
+
+Blockers identified from source/test scan:
+- `BuildingCoolingLoadService`: direct test instantiation in `Iso52016ClimateDataValidationTests` + DI lifetime guard.
+- `FloorCalculationService`: still DI-registered and covered by architecture allowlist/compatibility policy.
+- `RoomCalculationService`: direct test instantiation in `HeatingLoadValidationTests` + DI lifetime guard.
+- `BuildingEnergyBalanceService`: still DI-registered and explicitly guarded as compatibility service.
+- `BuildingHeatingLoadService`: direct test/report-lane dependencies in `HeatingLoadValidationTests` and `BuildingHeatingReportDataServiceTests`.
+
+Decision in Phase 4:
+- no runtime removal,
+- no DI unregistration,
+- no implementation file deletion.
+
 ## BuildingCoolingLoadService
 
 ### Current allowed usages
