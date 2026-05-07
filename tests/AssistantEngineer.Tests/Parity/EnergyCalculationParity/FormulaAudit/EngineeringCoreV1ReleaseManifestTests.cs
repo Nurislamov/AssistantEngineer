@@ -205,7 +205,10 @@ public class EngineeringCoreV1ReleaseManifestTests
             "No exact EnergyPlus numerical parity claim.",
             "No ASHRAE 140 validation coverage claim.",
             "No full ISO 52016 node/matrix solver parity claim.",
-            "No latent/moisture/humidity calculation claim."
+            "No latent/moisture/humidity calculation claim.",
+            "SystemEnergyEngine compatibility path remains default.",
+            "EN15316-inspired modular chain is opt-in.",
+            "ISO12831-3-inspired DHW path is opt-in."
         };
 
         foreach (var requiredNonClaim in requiredNonClaims)

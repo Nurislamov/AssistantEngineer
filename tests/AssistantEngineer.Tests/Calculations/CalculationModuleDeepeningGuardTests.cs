@@ -198,7 +198,33 @@ public class CalculationModuleDeepeningGuardTests
             Assert.True(File.Exists(fullPath), $"Expected extraction file to exist: {relativePath}");
         }
     }
-private static JsonDocument ReadJson(string path) =>
+
+    [Fact]
+    public void EnergyCalculationPipelineExtractionHelpers_RemainInternal()
+    {
+        var helperFiles = new[]
+        {
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineClimateContextBuilder.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAnnualInputAdapter.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineResultMapper.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineModelTypes.cs"
+        };
+
+        foreach (var relativePath in helperFiles)
+        {
+            var fullPath = Path.Combine(relativePath.Split('/').Prepend(TestPaths.RepoRoot).ToArray());
+            Assert.True(File.Exists(fullPath), $"Expected helper file to exist: {relativePath}");
+
+            var content = File.ReadAllText(fullPath);
+            Assert.Contains("internal ", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("public class", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("public static class", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("public sealed class", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("public record", content, StringComparison.Ordinal);
+        }
+    }
+
+    private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 
     private static string PlanPath =>
@@ -218,6 +244,7 @@ private static JsonDocument ReadJson(string path) =>
 
     private static string InventoryMarkdownPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "calculations", "CalculationModuleInventory.md");
+
     private static string ToolProgramPath =>
         Path.Combine(
             TestPaths.RepoRoot,

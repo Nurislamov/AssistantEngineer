@@ -19,6 +19,8 @@ public class RepositoryHygieneTrackedArtifactsGuardTests
             "obj/",
             "*.user",
             "*.suo",
+            "*.wsuo",
+            "coverage/",
             "artifacts/",
             "generated/",
             "TestResults/"

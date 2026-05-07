@@ -131,10 +131,88 @@ Must continue to avoid:
 - must not claim ASHRAE 140 validation.
 - must not claim full ISO/EN compliance.
 
-## Recommended next stage
+## Final hardening audit
 
-1. Introduce explicit soft-deprecation annotations and architecture tests for compatibility service consumers.
-2. Gradually extract `EnergyCalculationPipelineService` by orchestration slices without changing numerical behavior.
-3. Split `BuildingWorkspace.tsx` into feature-level panels/hooks with unchanged API behavior.
-4. Keep generated artifacts out of git and keep PowerShell as thin wrappers.
-5. Start legacy-service retirement by removing DI registrations only after compatibility tests are re-homed to facade/pipeline contracts.
+Audit date: 2026-05-07
+
+### Checks performed
+
+- Repository hygiene index scan and `.gitignore` coverage verification.
+- Architecture document boundary review:
+  - `docs/architecture/calculation-legacy-inventory.md`
+  - `docs/architecture/architecture-hardening-report.md`
+- `docs/releases/EngineeringCoreV1Manifest.json` governance review (non-claims, opt-in limits, required docs).
+- Backend architecture review for active production path (`ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`) and legacy dependencies.
+- Frontend architecture review for `BuildingWorkspace.tsx` decomposition boundaries.
+- Tooling review for thin `Program.cs` composition roots and thin PowerShell wrappers.
+- Verification runs:
+  - `dotnet restore AssistantEngineer.sln`
+  - `dotnet build AssistantEngineer.sln --no-restore`
+  - `dotnet test AssistantEngineer.sln --no-build`
+  - `npm --prefix .\src\Frontend run build` (attempted)
+  - `scripts/engineering-core/verify-engineering-core-v1.ps1` (run with `-SkipFrontend`)
+  - `scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1` (run with `-SkipFrontend`)
+
+### Passed checks
+
+- Repository hygiene guard conditions pass:
+  - no tracked `.vs/`, `bin/`, `obj/`, `TestResults/`, `coverage/`, `artifacts/`, `generated/`, `*.user`, `*.suo`, `*.wsuo`.
+- Architecture boundary statements stay explicit:
+  - no EnergyPlus parity claim,
+  - no pyBuildingEnergy parity claim,
+  - no ASHRAE 140 validation claim,
+  - no full ISO/EN compliance claim.
+- Validation anchors are treated as validation anchors only.
+- Infrastructure readiness is kept separate from external numerical validation completeness.
+- `dotnet restore`, `dotnet build`, and `dotnet test` pass.
+
+### Manifest/governance verification
+
+- `EngineeringCoreV1Manifest.json` keeps governance non-claims and planned-validation boundary.
+- Restored missing opt-in limitation entries:
+  - `SystemEnergyEngine compatibility path remains default.`
+  - `EN15316-inspired modular chain is opt-in.`
+  - `ISO12831-3-inspired DHW path is opt-in.`
+- `documentationFiles` still includes core governance/release documentation set.
+
+### Backend guard status
+
+- `EnergyCalculationPipelineService` guard exists and remains below threshold.
+- Extracted phase-1 helper files remain present and internal-scoped.
+- New guard added: first-party controllers/facades must not directly depend on legacy calculation services.
+- Active production path remains `ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`.
+
+### Frontend guard status
+
+- `BuildingWorkspace.tsx` remains decomposed with extracted hooks/components present.
+- New guard added:
+  - line-count ceiling for `BuildingWorkspace.tsx`,
+  - required decomposition file presence check,
+  - no heavy state-manager import drift (`redux`/`zustand`/`mobx`) in workspace file.
+- Frontend build could not run in this environment because `npm` is not available on `PATH`.
+
+### Tools guard status
+
+- `EnergyPlusValidation`, `Iso52016Verification`, and `EngineeringCoreEvidence` `Program.cs` files remain thin composition roots.
+- Wrapper scripts remain thin delegates to C# tools.
+- CLI options and command surfaces remain unchanged in this pass.
+
+### Legacy enforcement status
+
+- Legacy services were not removed.
+- Documentation-level deprecation markers remain in compatibility candidates.
+- New architecture guard prevents first-party controller/facade direct dependencies on legacy services.
+- `[Obsolete]` attributes were not introduced to avoid warnings-as-errors breakage.
+
+### Remaining risks
+
+- `verify-engineering-core-v1.ps1` / release-ready flow regenerates `docs/api/engineering-core-v1/status.sample.json`; if governance non-claims drift, final full-suite step can fail.
+- `BuildingWorkspace.tsx` is still large despite phase-1 decomposition.
+- Legacy services are still DI-registered and compile-visible pending migration completion.
+
+### Recommended next phase
+
+1. Keep governance artifacts idempotent in generation flows and add a dedicated check that regenerated snapshots preserve required opt-in disclosures.
+2. Continue incremental `EnergyCalculationPipelineService` extraction without formula/API changes.
+3. Execute the next safe `BuildingWorkspace` split (floors/rooms and envelope editor concerns) while preserving contracts.
+4. Start legacy retirement only after DI consumer removal is proven by tests and source scan.
