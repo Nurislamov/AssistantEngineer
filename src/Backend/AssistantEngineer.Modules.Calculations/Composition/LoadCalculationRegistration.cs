@@ -3,7 +3,6 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
-using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
@@ -30,7 +29,6 @@ internal static class LoadCalculationRegistration
         services.TryAddSingleton<LoadAggregationEngine>();
 
         services.AddScoped<BuildingCoolingLoadService>();
-        services.AddScoped<FloorCalculationService>();
         services.AddScoped<RoomCalculationService>();
         services.AddScoped<EnergyCalculationPipelineService>();
 

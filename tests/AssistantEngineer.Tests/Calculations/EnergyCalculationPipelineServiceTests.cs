@@ -123,10 +123,38 @@ public class EnergyCalculationPipelineServiceTests
         Assert.True(floorCooling.IsSuccess, floorCooling.Error);
         Assert.True(floorHeating.IsSuccess, floorHeating.Error);
         Assert.Contains("Load Aggregation", buildingCooling.Value.CalculationMethod);
+        Assert.Contains("Load Aggregation", floorCooling.Value.CalculationMethod);
+        Assert.Equal("Simplified", floorCooling.Value.RequestedMethod);
+        Assert.Equal("En12831", floorHeating.Value.RequestedMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", floorCooling.Value.ActualMethod);
+        Assert.Equal("EnergyCalculationParityDesignPoint", floorHeating.Value.ActualMethod);
+        Assert.Contains(
+            floorCooling.Value.Diagnostics,
+            diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
+        Assert.Contains(
+            floorHeating.Value.Diagnostics,
+            diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
         Assert.Equal(roomCooling.Sum(room => room.CoolingLoadW), buildingCooling.Value.CoolingLoadW, precision: 2);
         Assert.Equal(roomHeating.Sum(room => room.HeatingLoadW), buildingHeating.Value.HeatingLoadW, precision: 2);
         Assert.Equal(roomCooling.Sum(room => room.CoolingLoadW), floorCooling.Value.CoolingLoadW, precision: 2);
         Assert.Equal(roomHeating.Sum(room => room.HeatingLoadW), floorHeating.Value.HeatingLoadW, precision: 2);
+    }
+
+    [Fact]
+    public async Task FloorLoadReturnsNotFoundWhenFloorDoesNotExist()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var cooling = await service.CalculateFloorCoolingLoadAsync(floorId: -999);
+        var heating = await service.CalculateFloorHeatingLoadAsync(floorId: -999);
+
+        Assert.True(cooling.IsFailure);
+        Assert.True(heating.IsFailure);
+        Assert.Equal(ResultErrorType.NotFound, cooling.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, heating.ErrorType);
+        Assert.Contains("Floor with id -999 not found", cooling.Error, StringComparison.Ordinal);
+        Assert.Contains("Floor with id -999 not found", heating.Error, StringComparison.Ordinal);
     }
 
     [Fact]
