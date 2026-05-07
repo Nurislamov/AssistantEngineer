@@ -90,6 +90,61 @@ public class ArchitectureHardeningDocumentationTests
         {
             Assert.Contains(requiredSection, content, StringComparison.Ordinal);
         }
+
+        var requiredPhaseThreeSections = new[]
+        {
+            "## Engineering Core Hardening Phase 3",
+            "### Backend pipeline extraction phase 3",
+            "### Frontend envelope decomposition",
+            "### Frontend ventilation/ground decomposition status",
+            "### Legacy retirement preparation",
+            "### Frontend gate / CI readiness",
+            "### Governance/generated artifacts stability",
+            "### Verification results",
+            "### Remaining risks",
+            "### Recommended next phase"
+        };
+
+        foreach (var requiredSection in requiredPhaseThreeSections)
+        {
+            Assert.Contains(requiredSection, content, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void LegacyRetirementPlan_Exists_AndContainsPerServiceRequiredSections()
+    {
+        Assert.True(File.Exists(LegacyRetirementPlanPath), $"Legacy retirement plan document is missing: {LegacyRetirementPlanPath}");
+
+        var content = File.ReadAllText(LegacyRetirementPlanPath);
+        var services = new[]
+        {
+            "BuildingCoolingLoadService",
+            "FloorCalculationService",
+            "RoomCalculationService",
+            "BuildingEnergyBalanceService",
+            "BuildingHeatingLoadService"
+        };
+
+        foreach (var service in services)
+        {
+            Assert.Contains($"## {service}", content, StringComparison.Ordinal);
+        }
+
+        var requiredSections = new[]
+        {
+            "Current allowed usages",
+            "Tests depending on it",
+            "Replacement path",
+            "Removal gates",
+            "Risk level",
+            "Future PR sequence"
+        };
+
+        foreach (var requiredSection in requiredSections)
+        {
+            Assert.Contains(requiredSection, content, StringComparison.Ordinal);
+        }
     }
 
     private static string LegacyInventoryPath =>
@@ -97,4 +152,7 @@ public class ArchitectureHardeningDocumentationTests
 
     private static string HardeningReportPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "architecture-hardening-report.md");
+
+    private static string LegacyRetirementPlanPath =>
+        Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "calculation-legacy-retirement-plan.md");
 }

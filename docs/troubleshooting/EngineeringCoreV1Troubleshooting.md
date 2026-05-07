@@ -101,7 +101,7 @@ Check:
 
 Run:
 
-    .\scripts\engineering-core\verify-engineering-core-v1-manifest.ps1 -SkipFrontend
+    .\scripts\engineering-core\verify-engineering-core-v1-manifest.ps1
 
 ## CI fails but local fast verification passes
 

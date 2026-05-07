@@ -96,6 +96,10 @@ Tests covering old behavior (keep while migration is incomplete):
 - `tests/AssistantEngineer.Tests/Reporting/BuildingHeatingReportDataServiceTests.cs`
 - `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs` (fencing guard for legacy references and production constructor dependencies)
 
+Phase 3 retirement preparation:
+- `docs/architecture/calculation-legacy-retirement-plan.md` provides per-service removal gates, risk levels, and proposed PR sequence.
+- No legacy services or DI registrations were removed in this phase.
+
 ## Risk notes
 
 Current risks:

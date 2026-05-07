@@ -12,6 +12,16 @@ From the repository root:
 
     .\scripts\engineering-core\verify-engineering-core-v1.ps1
 
+Recommended full local gate before merge/release:
+
+    dotnet restore AssistantEngineer.sln
+    dotnet build AssistantEngineer.sln --no-restore
+    dotnet test AssistantEngineer.sln
+    npm --prefix .\src\Frontend ci
+    npm --prefix .\src\Frontend run build
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1
+    .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
 The command runs:
 
 - frontend TypeScript/Vite build;
@@ -37,13 +47,13 @@ For a faster local check:
 
 Fast mode skips the final full backend test suite, but still runs the engineering-core-focused filters.
 
-## Skip frontend build
+## Skip frontend build (emergency override only)
 
 When working on backend-only machines without frontend dependencies:
 
     .\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFrontend
 
-Use this only for backend-only work. Before merging frontend-visible changes, run the full command without this flag.
+Use this only as temporary local fallback. The normal engineering gate runs without this flag, and release readiness must be validated with frontend checks enabled.
 
 ## Skip full dotnet suite
 

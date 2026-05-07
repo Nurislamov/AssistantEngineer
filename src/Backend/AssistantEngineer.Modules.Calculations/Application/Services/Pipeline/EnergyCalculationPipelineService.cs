@@ -63,6 +63,8 @@ public sealed class EnergyCalculationPipelineService
     private readonly EnergyCalculationPipelineAnnualInputAdapter _annualInputAdapter;
     private readonly EnergyCalculationPipelineRoomContextResolver _roomContextResolver;
     private readonly EnergyCalculationPipelineAggregationRoomAssembler _aggregationRoomAssembler;
+    private readonly EnergyCalculationPipelineEquipmentSizingOrchestrator _equipmentSizingOrchestrator;
+    private readonly EnergyCalculationPipelineDiagnosticsPolicy _diagnosticsPolicy;
 
     public EnergyCalculationPipelineService(
         IRoomRepository rooms,
@@ -114,6 +116,8 @@ public sealed class EnergyCalculationPipelineService
             _solarRadiationService,
             _energyNeedOptions);
         _aggregationRoomAssembler = new EnergyCalculationPipelineAggregationRoomAssembler();
+        _equipmentSizingOrchestrator = new EnergyCalculationPipelineEquipmentSizingOrchestrator(_equipmentSizingEngine);
+        _diagnosticsPolicy = new EnergyCalculationPipelineDiagnosticsPolicy();
     }
 
     public async Task<Result<RoomLoadCalculationResult>> CalculateRoomLoadAsync(
@@ -145,11 +149,9 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             requestedMethod: method.ToString());
-        if (load.IsFailure)
-            return Result<RoomCalculationResult>.Failure(load);
-
-        if (load.Value.HasErrors)
-            return Result<RoomCalculationResult>.Validation(FormatErrorDiagnostics(load.Value.Diagnostics));
+        var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<RoomCalculationResult>(load);
+        if (roomFailure is not null)
+            return roomFailure;
 
         return Result<RoomCalculationResult>.Success(
             EnergyCalculationPipelineResultMapper.MapCoolingRoomResult(
@@ -177,11 +179,9 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             requestedMethod: method.ToString());
-        if (load.IsFailure)
-            return Result<RoomHeatingLoadResult>.Failure(load);
-
-        if (load.Value.HasErrors)
-            return Result<RoomHeatingLoadResult>.Validation(FormatErrorDiagnostics(load.Value.Diagnostics));
+        var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<RoomHeatingLoadResult>(load);
+        if (roomFailure is not null)
+            return roomFailure;
 
         return Result<RoomHeatingLoadResult>.Success(
             EnergyCalculationPipelineResultMapper.MapHeatingRoomResult(
@@ -209,11 +209,9 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             requestedMethod);
-        if (aggregation.IsFailure)
-            return Result<FloorCalculationResult>.Failure(aggregation);
-
-        if (aggregation.Value.HasErrors)
-            return Result<FloorCalculationResult>.Validation(FormatErrorDiagnostics(aggregation.Value.Diagnostics));
+        var aggregationFailure = _diagnosticsPolicy.TryMapAggregationFailureOrValidation<FloorCalculationResult>(aggregation);
+        if (aggregationFailure is not null)
+            return aggregationFailure;
 
         return Result<FloorCalculationResult>.Success(
             EnergyCalculationPipelineResultMapper.MapFloorResult(
@@ -253,11 +251,9 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             method.ToString());
-        if (aggregation.IsFailure)
-            return Result<BuildingCalculationResult>.Failure(aggregation);
-
-        if (aggregation.Value.HasErrors)
-            return Result<BuildingCalculationResult>.Validation(FormatErrorDiagnostics(aggregation.Value.Diagnostics));
+        var aggregationFailure = _diagnosticsPolicy.TryMapAggregationFailureOrValidation<BuildingCalculationResult>(aggregation);
+        if (aggregationFailure is not null)
+            return aggregationFailure;
 
         return Result<BuildingCalculationResult>.Success(
             EnergyCalculationPipelineResultMapper.MapBuildingCoolingResult(
@@ -285,11 +281,9 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             method.ToString());
-        if (aggregation.IsFailure)
-            return Result<BuildingHeatingLoadResult>.Failure(aggregation);
-
-        if (aggregation.Value.HasErrors)
-            return Result<BuildingHeatingLoadResult>.Validation(FormatErrorDiagnostics(aggregation.Value.Diagnostics));
+        var aggregationFailure = _diagnosticsPolicy.TryMapAggregationFailureOrValidation<BuildingHeatingLoadResult>(aggregation);
+        if (aggregationFailure is not null)
+            return aggregationFailure;
 
         var roomResults = new List<RoomHeatingLoadResult>();
         foreach (var room in building.Floors.SelectMany(floor => floor.Rooms).OrderBy(room => room.Id))
@@ -299,11 +293,9 @@ public sealed class EnergyCalculationPipelineService
                 preferences,
                 climateContext,
                 requestedMethod: method.ToString());
-            if (roomLoad.IsFailure)
-                return Result<BuildingHeatingLoadResult>.Failure(roomLoad);
-
-            if (roomLoad.Value.HasErrors)
-                return Result<BuildingHeatingLoadResult>.Validation(FormatErrorDiagnostics(roomLoad.Value.Diagnostics));
+            var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<BuildingHeatingLoadResult>(roomLoad);
+            if (roomFailure is not null)
+                return roomFailure;
 
             roomResults.Add(
                 EnergyCalculationPipelineResultMapper.MapHeatingRoomResult(
@@ -397,60 +389,18 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             climateContext,
             requestedMethod: method.ToString());
-        if (load.IsFailure)
-            return Result<EquipmentSizingResult>.Failure(load);
+        var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<EquipmentSizingResult>(load);
+        if (roomFailure is not null)
+            return roomFailure;
 
-        if (load.Value.HasErrors)
-            return Result<EquipmentSizingResult>.Validation(FormatErrorDiagnostics(load.Value.Diagnostics));
-
-        var catalog = await _equipmentCatalogSizingProvider.ListActiveCoolingCandidatesAsync(
+        return await _equipmentSizingOrchestrator.CalculateForRoomAsync(
+            room,
+            load.Value,
+            preferences,
             systemType,
             unitType,
+            _equipmentCatalogSizingProvider,
             cancellationToken);
-        var candidates = catalog
-            .Select(candidate => new EquipmentSizingCandidateInput(
-                candidate.CatalogItemId,
-                candidate.Manufacturer,
-                candidate.ModelName,
-                $"{candidate.SystemType}/{candidate.UnitType}",
-                HeatingCapacityW: candidate.NominalHeatingCapacityKw * 1000,
-                CoolingCapacityW: candidate.NominalCoolingCapacityKw * 1000,
-                IsActive: true))
-            .ToArray();
-        var canEvaluateHeating = load.Value.HeatingLoadW > 0 &&
-            catalog.Any(candidate => candidate.NominalHeatingCapacityKw.HasValue);
-        var evaluatedHeatingLoadW = canEvaluateHeating ? load.Value.HeatingLoadW : 0;
-
-        var sizing = _equipmentSizingEngine.Calculate(new EquipmentSizingInput(
-            TargetId: room.Id,
-            TargetType: EquipmentSizingTargetType.Room,
-            RequiredHeatingLoadW: evaluatedHeatingLoadW,
-            RequiredCoolingLoadW: load.Value.CoolingLoadW,
-            SafetyFactor: preferences.CoolingSafetyFactor,
-            Candidates: candidates,
-            DiagnosticsContext: $"Room {room.Id} equipment selection",
-            HeatingSafetyFactor: preferences.HeatingSafetyFactor,
-            CoolingSafetyFactor: preferences.CoolingSafetyFactor));
-
-        if (sizing.IsFailure)
-            return sizing;
-
-        var diagnostics = sizing.Value.Diagnostics.ToList();
-        if (load.Value.HeatingLoadW > 0 && !canEvaluateHeating)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Warning,
-                "EquipmentSizing.HeatingCapacityUnavailable",
-                "Heating sizing is skipped because catalog items do not expose heating capacity.",
-                $"Room {room.Id} equipment selection"));
-        }
-
-        return Result<EquipmentSizingResult>.Success(sizing.Value with
-        {
-            RequiredHeatingCapacityW = Round(load.Value.HeatingLoadW),
-            RequiredHeatingCapacityWithReserveW = Round(load.Value.HeatingLoadW * preferences.HeatingSafetyFactor),
-            Diagnostics = diagnostics
-        });
     }
 
     private Result<RoomLoadCalculationResult> CalculateRoomLoad(
@@ -706,11 +656,6 @@ public sealed class EnergyCalculationPipelineService
         CancellationToken cancellationToken) =>
         await _preferences.GetByProjectIdAsync(projectId, cancellationToken) ??
         CalculationPreferences.Default();
-
-    private static string FormatErrorDiagnostics(IEnumerable<CalculationDiagnostic> diagnostics) =>
-        string.Join("; ", diagnostics
-            .Where(diagnostic => diagnostic.Severity == CalculationDiagnosticSeverity.Error)
-            .Select(diagnostic => $"{diagnostic.Code}: {diagnostic.Message}"));
 
     private static double Round(double value) =>
         Math.Round(value, 2, MidpointRounding.AwayFromZero);

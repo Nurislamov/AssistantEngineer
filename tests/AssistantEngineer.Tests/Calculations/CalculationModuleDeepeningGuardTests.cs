@@ -181,8 +181,8 @@ public class CalculationModuleDeepeningGuardTests
 
         var lineCount = File.ReadAllLines(pipelinePath).Length;
         Assert.True(
-            lineCount <= 900,
-            $"EnergyCalculationPipelineService grew beyond guard threshold (actual: {lineCount}, allowed: 900).");
+            lineCount <= 760,
+            $"EnergyCalculationPipelineService grew beyond guard threshold (actual: {lineCount}, allowed: 760).");
 
         var extractedFiles = new[]
         {
@@ -191,7 +191,9 @@ public class CalculationModuleDeepeningGuardTests
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineResultMapper.cs",
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineModelTypes.cs",
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineRoomContextResolver.cs",
-            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAggregationRoomAssembler.cs"
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAggregationRoomAssembler.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineEquipmentSizingOrchestrator.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineDiagnosticsPolicy.cs"
         };
 
         foreach (var relativePath in extractedFiles)
@@ -211,7 +213,9 @@ public class CalculationModuleDeepeningGuardTests
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineResultMapper.cs",
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineModelTypes.cs",
             "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineRoomContextResolver.cs",
-            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAggregationRoomAssembler.cs"
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAggregationRoomAssembler.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineEquipmentSizingOrchestrator.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineDiagnosticsPolicy.cs"
         };
 
         foreach (var relativePath in helperFiles)

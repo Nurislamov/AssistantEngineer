@@ -278,3 +278,90 @@ Audit date: 2026-05-07
 2. Extract ventilation/ground mutation flows into focused hooks/components.
 3. Continue pipeline extraction around equipment sizing orchestration/error mapping, keeping formulas and anchors unchanged.
 4. Define and execute compatibility retirement gates for each legacy service before DI removal.
+
+## Engineering Core Hardening Phase 3
+
+### Backend pipeline extraction phase 3
+
+- `EnergyCalculationPipelineService` was further reduced by extracting:
+  - `EnergyCalculationPipelineEquipmentSizingOrchestrator` (equipment sizing input/candidate preparation, sizing execution, and compatibility diagnostics attachment),
+  - `EnergyCalculationPipelineDiagnosticsPolicy` (centralized failure/validation mapping from room and aggregation diagnostics).
+- Extraction remained refactor-only:
+  - no physical formula changes,
+  - no validation anchor value changes,
+  - no public API/controller contract changes.
+- Capacity margin behavior and `EquipmentSizing.HeatingCapacityUnavailable` warning semantics remain unchanged.
+
+### Frontend envelope decomposition
+
+- Envelope concerns were extracted from `BuildingWorkspace.tsx` into:
+  - `ui/EnvelopePanel.tsx`,
+  - `ui/WallEditor.tsx`,
+  - `ui/WindowEditor.tsx`,
+  - `model/useEnvelopeMutations.ts`.
+- API routes/contracts and user flows remain unchanged.
+- `BuildingWorkspace.tsx` now stays as orchestration shell for tabs/panels.
+
+### Frontend ventilation/ground decomposition status
+
+- Ventilation flow was extracted into:
+  - `ui/VentilationPanel.tsx`,
+  - `model/useVentilationMutations.ts`.
+- Ground panel remains inline for now and is the next safe candidate.
+- No route changes, no global state manager introduction, and no UX redesign were introduced.
+
+### Legacy retirement preparation
+
+- Added `docs/architecture/calculation-legacy-retirement-plan.md` with per-service retirement gates for:
+  - `BuildingCoolingLoadService`,
+  - `FloorCalculationService`,
+  - `RoomCalculationService`,
+  - `BuildingEnergyBalanceService`,
+  - `BuildingHeatingLoadService`.
+- Added documentation guard coverage to ensure retirement plan presence and required sections.
+- Legacy services and DI registrations remain intact in this phase by design.
+
+### Frontend gate / CI readiness
+
+- Full engineering gate remains frontend-on by default (no `-SkipFrontend` for normal flow).
+- `-SkipFrontend` remains emergency/manual override only.
+- CI workflow `engineering-core-v1.yml` includes Node setup and frontend dependency install/build path through the default verify gate.
+
+### Governance/generated artifacts stability
+
+- Governance non-claims remain explicit:
+  - No EnergyPlus parity claim.
+  - No pyBuildingEnergy parity claim.
+  - No ASHRAE 140 validation claim.
+  - No full ISO/EN compliance claim.
+- Opt-in boundaries remain explicit and unchanged:
+  - `SystemEnergyEngine compatibility path remains default.`,
+  - `EN15316-inspired modular chain is opt-in.`,
+  - `ISO12831-3-inspired DHW path is opt-in.`.
+- Canonical generated governance artifacts remain controlled through verify/release-ready flows and related tests.
+
+### Verification results
+
+- Backend verification target remains:
+  - `dotnet restore AssistantEngineer.sln`
+  - `dotnet build AssistantEngineer.sln --no-restore`
+  - `dotnet test AssistantEngineer.sln`
+- Frontend verification target remains:
+  - `npm --prefix .\src\Frontend ci`
+  - `npm --prefix .\src\Frontend run build`
+- Engineering scripts target remains:
+  - `.\scripts\engineering-core\verify-engineering-core-v1.ps1`
+  - `.\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1`
+
+### Remaining risks
+
+- `GroundContactPanel` is still inline in `BuildingWorkspace.tsx` and should be extracted next.
+- Legacy services are still compile-visible until retirement gates are closed per service.
+- Infrastructure readiness remains distinct from external numerical validation completeness.
+
+### Recommended next phase
+
+1. Extract ground-contact panel mutations/UI from `BuildingWorkspace.tsx`.
+2. Continue pipeline extraction for any remaining application-level finalization coupling only where tests keep behavior stable.
+3. Execute legacy retirement PRs service-by-service using documented gates and sequence.
+4. Keep governance artifact generation checks strict and idempotent in CI/release paths.

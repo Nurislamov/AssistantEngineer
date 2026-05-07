@@ -347,6 +347,16 @@ Main verification command:
 
     .\scripts\engineering-core\verify-engineering-core-v1.ps1
 
+Full local verification profile:
+
+    dotnet restore AssistantEngineer.sln
+    dotnet build AssistantEngineer.sln --no-restore
+    dotnet test AssistantEngineer.sln
+    npm --prefix .\src\Frontend ci
+    npm --prefix .\src\Frontend run build
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1
+    .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
 Fast local profile:
 
     .\scripts\engineering-core\verify-engineering-core-v1-smoke.ps1
@@ -359,7 +369,7 @@ Release readiness gate:
 
     .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
 
-Emergency frontend override (manual use only):
+Emergency frontend override (manual use only; not a normal gate path):
 
     .\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFrontend
 

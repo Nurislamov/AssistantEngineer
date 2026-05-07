@@ -375,6 +375,9 @@ public class EnergyCalculationPipelineServiceTests
             item.Reasons.Contains("insufficient cooling capacity"));
         Assert.Contains(result.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable" &&
+            diagnostic.Severity == CalculationDiagnosticSeverity.Warning);
     }
 
     [Fact]

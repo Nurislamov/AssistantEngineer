@@ -1,4 +1,3 @@
-import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -33,21 +32,12 @@ import type {
 } from "@/entities/equipment/types";
 import { roomsApi, thermalZonesApi } from "@/entities/room/api/roomsApi";
 import type {
-  CardinalDirectionDto,
   GroundContactTypeDto,
-  NaturalVentilationPreviewDto,
   RoomDto,
   RoomGroundContactDto,
-  RoomVentilationParametersDto,
   ThermalZoneDto,
   UpsertRoomGroundContactRequest,
-  UpsertRoomVentilationParametersRequest,
   UpsertThermalZoneRequest,
-  UpsertWallRequest,
-  UpsertWindowRequest,
-  WallBoundaryTypeDto,
-  WallDto,
-  WindowDto,
 } from "@/entities/room/types";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { formatNumber } from "@/shared/lib/format";
@@ -58,31 +48,14 @@ import { QueryState } from "@/shared/ui/QueryState";
 import { useBuildingWorkspaceData } from "../model/useBuildingWorkspaceData";
 import { BuildingWorkspaceTabs, type WorkspaceTab } from "./BuildingWorkspaceTabs";
 import { CalculationsPanel } from "./CalculationsPanel";
+import { EnvelopePanel } from "./EnvelopePanel";
 import { FloorsRoomsPanel } from "./FloorsRoomsPanel";
 import { JsonBlock } from "./JsonBlock";
 import { ReportsPanel } from "./ReportsPanel";
 import { RoomSelect } from "./RoomSelect";
+import { VentilationPanel } from "./VentilationPanel";
 
 export { ReportsPanel } from "./ReportsPanel";
-
-const directions: CardinalDirectionDto[] = [
-  "North",
-  "NorthEast",
-  "East",
-  "SouthEast",
-  "South",
-  "SouthWest",
-  "West",
-  "NorthWest",
-];
-
-const wallBoundaryTypes: WallBoundaryTypeDto[] = [
-  "External",
-  "Ground",
-  "Adiabatic",
-  "AdjacentConditioned",
-  "AdjacentUnconditioned",
-];
 
 const groundContactTypes: GroundContactTypeDto[] = [
   "SlabOnGround",
@@ -185,196 +158,6 @@ function SummaryPanel({ buildingId }: { buildingId: number }): JSX.Element {
   );
 }
 
-function EnvelopePanel({ rooms }: { rooms: RoomDto[] }): JSX.Element {
-  const [roomId, setRoomId] = useState(rooms[0]?.id ?? 0);
-  const selectedRoomId = roomId || rooms[0]?.id || 0;
-  const wallsQuery = useQuery({
-    queryKey: queryKeys.rooms.walls(selectedRoomId),
-    queryFn: () => roomsApi.getWalls(selectedRoomId),
-    enabled: selectedRoomId > 0,
-  });
-  const windowsQuery = useQuery({
-    queryKey: queryKeys.rooms.windows(selectedRoomId),
-    queryFn: () => roomsApi.getWindows(selectedRoomId),
-    enabled: selectedRoomId > 0,
-  });
-
-  return (
-    <Stack spacing={2}>
-      <RoomSelect rooms={rooms} roomId={selectedRoomId} onChange={setRoomId} />
-      <EnvelopeEditor
-        title="Walls"
-        type="wall"
-        roomId={selectedRoomId}
-        items={wallsQuery.data ?? []}
-        refetch={() => {
-          void wallsQuery.refetch();
-        }}
-        error={wallsQuery.error}
-      />
-      <EnvelopeEditor
-        title="Windows"
-        type="window"
-        roomId={selectedRoomId}
-        items={windowsQuery.data ?? []}
-        refetch={() => {
-          void windowsQuery.refetch();
-        }}
-        error={windowsQuery.error}
-      />
-    </Stack>
-  );
-}
-
-function EnvelopeEditor({
-  title,
-  type,
-  roomId,
-  items,
-  refetch,
-  error,
-}: {
-  title: string;
-  type: "wall" | "window";
-  roomId: number;
-  items: WallDto[] | WindowDto[];
-  refetch: () => void;
-  error: unknown;
-}): JSX.Element {
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [form, setForm] = useState<UpsertWallRequest & Partial<UpsertWindowRequest>>(defaultEnvelopeForm);
-  const save = useMutation<WallDto | WindowDto, Error, void>({
-    mutationFn: () => {
-      if (type === "wall") {
-        const request: UpsertWallRequest = {
-          areaM2: Number(form.areaM2),
-          uValue: Number(form.uValue),
-          orientation: form.orientation,
-          boundaryType: form.boundaryType,
-          adjacentRoomId: form.adjacentRoomId ?? null,
-        };
-        return editingId
-          ? roomsApi.updateWall(roomId, editingId, request)
-          : roomsApi.createWall(roomId, request);
-      }
-
-      const request: UpsertWindowRequest = {
-        areaM2: Number(form.areaM2),
-        uValue: Number(form.uValue),
-        shgc: Number(form.shgc ?? 0.6),
-        orientation: form.orientation,
-        shading: form.shading ?? defaultWindowShading(),
-      };
-      return editingId
-        ? roomsApi.updateWindow(roomId, editingId, request)
-        : roomsApi.createWindow(roomId, request);
-    },
-    onSuccess: () => {
-      setEditingId(null);
-      setForm(defaultEnvelopeForm());
-      refetch();
-    },
-  });
-  const remove = useMutation({
-    mutationFn: (id: number) =>
-      type === "wall" ? roomsApi.deleteWall(roomId, id) : roomsApi.deleteWindow(roomId, id),
-    onSuccess: refetch,
-  });
-
-  return (
-    <DataCard>
-      <Stack spacing={2}>
-        <Typography variant="h6">{title}</Typography>
-        {(error || save.isError || remove.isError) ? (
-          <Alert severity="error">{getErrorMessage(error ?? save.error ?? remove.error)}</Alert>
-        ) : null}
-        <Stack component="form" spacing={1.5} onSubmit={(event) => {
-          event.preventDefault();
-          save.mutate();
-        }}>
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
-            <TextField label="Area m2" type="number" size="small" value={form.areaM2} onChange={(event) => setForm((current) => ({ ...current, areaM2: Number(event.target.value) }))} />
-            <TextField label="U-value" type="number" size="small" value={form.uValue} onChange={(event) => setForm((current) => ({ ...current, uValue: Number(event.target.value) }))} />
-            {type === "window" ? (
-              <TextField label="SHGC" type="number" size="small" value={form.shgc ?? 0.6} onChange={(event) => setForm((current) => ({ ...current, shgc: Number(event.target.value) }))} />
-            ) : null}
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Orientation</InputLabel>
-              <Select label="Orientation" value={form.orientation} onChange={(event) => setForm((current) => ({ ...current, orientation: event.target.value as CardinalDirectionDto }))}>
-                {directions.map((direction) => <MenuItem key={direction} value={direction}>{direction}</MenuItem>)}
-              </Select>
-            </FormControl>
-            {type === "wall" ? (
-              <FormControl size="small" sx={{ minWidth: 190 }}>
-                <InputLabel>Boundary</InputLabel>
-                <Select label="Boundary" value={form.boundaryType} onChange={(event) => setForm((current) => ({ ...current, boundaryType: event.target.value as WallBoundaryTypeDto }))}>
-                  {wallBoundaryTypes.map((boundary) => <MenuItem key={boundary} value={boundary}>{boundary}</MenuItem>)}
-                </Select>
-              </FormControl>
-            ) : null}
-            <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={save.isPending || roomId <= 0}>
-              {editingId ? "Save" : "Add"}
-            </Button>
-          </Stack>
-        </Stack>
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Area</TableCell>
-                <TableCell>U-value</TableCell>
-                <TableCell>Orientation</TableCell>
-                <TableCell>{type === "wall" ? "Boundary" : "SHGC"}</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.id}</TableCell>
-                  <TableCell>{formatNumber(item.areaM2)}</TableCell>
-                  <TableCell>{formatNumber(item.uValue, 2)}</TableCell>
-                  <TableCell>{item.orientation}</TableCell>
-                  <TableCell>{"boundaryType" in item ? item.boundaryType : item.shgc}</TableCell>
-                  <TableCell align="right">
-                    <Button size="small" startIcon={<EditIcon />} onClick={() => {
-                      setEditingId(item.id);
-                      if ("boundaryType" in item) {
-                        setForm({
-                          areaM2: item.areaM2,
-                          uValue: item.uValue,
-                          orientation: item.orientation,
-                          boundaryType: item.boundaryType,
-                          adjacentRoomId: item.adjacentRoomId ?? null,
-                        });
-                      } else {
-                        setForm({
-                          ...defaultEnvelopeForm(),
-                          areaM2: item.areaM2,
-                          uValue: item.uValue,
-                          orientation: item.orientation,
-                          shgc: item.shgc,
-                          shading: item.shading,
-                        });
-                      }
-                    }}>
-                      Edit
-                    </Button>
-                    <Button size="small" color="error" startIcon={<DeleteOutlineIcon />} onClick={() => remove.mutate(item.id)}>
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
-    </DataCard>
-  );
-}
-
 function ThermalZonesPanel({ buildingId, rooms }: { buildingId: number; rooms: RoomDto[] }): JSX.Element {
   const query = useQuery({
     queryKey: queryKeys.thermalZones.byBuilding(buildingId),
@@ -463,103 +246,6 @@ function ThermalZonesPanel({ buildingId, rooms }: { buildingId: number; rooms: R
             </TableBody>
           </Table>
         </TableContainer>
-      </Stack>
-    </DataCard>
-  );
-}
-
-function VentilationPanel({ rooms }: { rooms: RoomDto[] }): JSX.Element {
-  const [roomId, setRoomId] = useState(rooms[0]?.id ?? 0);
-  const selectedRoomId = roomId || rooms[0]?.id || 0;
-  const [form, setForm] = useState<UpsertRoomVentilationParametersRequest>(defaultVentilation());
-  const [preview, setPreview] = useState<NaturalVentilationPreviewDto | RoomVentilationParametersDto | null>(null);
-  const [operationError, setOperationError] = useState<string | null>(null);
-  const query = useQuery({
-    queryKey: queryKeys.rooms.ventilation(selectedRoomId),
-    queryFn: () => roomsApi.getVentilation(selectedRoomId),
-    enabled: selectedRoomId > 0,
-    retry: false,
-  });
-  const save = useMutation({
-    mutationFn: () => roomsApi.upsertVentilation(selectedRoomId, form),
-    onSuccess: (data) => {
-      setForm(data);
-      setOperationError(null);
-      void query.refetch();
-    },
-  });
-  const remove = useMutation({
-    mutationFn: () => roomsApi.deleteVentilation(selectedRoomId),
-    onSuccess: () => {
-      setOperationError(null);
-      void query.refetch();
-    },
-  });
-
-  const runVentilationOperation = async (
-    operation: () => Promise<NaturalVentilationPreviewDto | RoomVentilationParametersDto>,
-    onSuccess: (result: NaturalVentilationPreviewDto | RoomVentilationParametersDto) => void,
-  ) => {
-    setOperationError(null);
-    try {
-      onSuccess(await operation());
-    } catch (error) {
-      setOperationError(getErrorMessage(error));
-    }
-  };
-
-  return (
-    <DataCard>
-      <Stack spacing={2}>
-        <Typography variant="h6">Ventilation</Typography>
-        <RoomSelect rooms={rooms} roomId={selectedRoomId} onChange={setRoomId} />
-        {(query.error || save.isError || remove.isError || operationError) ? (
-          <Alert severity="warning">{operationError ?? getErrorMessage(query.error ?? save.error ?? remove.error)}</Alert>
-        ) : null}
-        {query.data ? <JsonBlock title="Current parameters" value={query.data} /> : <EmptyState title="No ventilation parameters" description="Save parameters or apply defaults for the selected room." />}
-        <Stack component="form" spacing={1} onSubmit={(event) => {
-          event.preventDefault();
-          save.mutate();
-        }}>
-          <Stack direction={{ xs: "column", md: "row" }} spacing={1}>
-            {Object.keys(defaultVentilation()).map((key) => (
-              <TextField
-                key={key}
-                label={key}
-                type="number"
-                size="small"
-                value={form[key as keyof UpsertRoomVentilationParametersRequest]}
-                onChange={(event) => setForm((current) => ({ ...current, [key]: Number(event.target.value) }))}
-              />
-            ))}
-          </Stack>
-          <Stack direction="row" spacing={1}>
-            <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={save.isPending || selectedRoomId <= 0}>Save</Button>
-            <Button variant="outlined" disabled={selectedRoomId <= 0} onClick={() => void runVentilationOperation(
-              () => roomsApi.previewVentilationDefaults(selectedRoomId),
-              setPreview,
-            )}>Preview defaults</Button>
-            <Button variant="outlined" disabled={selectedRoomId <= 0} onClick={() => void runVentilationOperation(
-              () => roomsApi.applyVentilationDefaults(selectedRoomId, true),
-              (result) => {
-                setForm(result as RoomVentilationParametersDto);
-                void query.refetch();
-              },
-            )}>Apply defaults</Button>
-            <Button variant="outlined" disabled={selectedRoomId <= 0} onClick={() => void runVentilationOperation(
-              () => roomsApi.previewNaturalVentilation(selectedRoomId, {
-                indoorTemperatureC: 24,
-                outdoorTemperatureC: 18,
-                windSpeedMPerS: 2,
-                demandFactor: 0.8,
-                hourOfDay: 14,
-              }),
-              setPreview,
-            )}>Natural preview</Button>
-            <Button color="error" variant="outlined" disabled={remove.isPending || selectedRoomId <= 0} onClick={() => remove.mutate()}>Delete</Button>
-          </Stack>
-        </Stack>
-        {preview ? <JsonBlock title="Preview" value={preview} /> : null}
       </Stack>
     </DataCard>
   );
@@ -783,41 +469,6 @@ function EquipmentSelectionSummary({
       </TableContainer>
     </Stack>
   );
-}
-
-function defaultWindowShading() {
-  return {
-    overhangDepthM: 0,
-    sideFinDepthM: 0,
-    revealDepthM: 0,
-    windowHeightM: 0,
-    windowWidthM: 0,
-    minimumDirectSolarReductionFactor: 0.15,
-    diffuseSolarShareUnaffected: 0.3,
-  };
-}
-
-function defaultEnvelopeForm(): UpsertWallRequest & Partial<UpsertWindowRequest> {
-  return {
-    areaM2: 10,
-    uValue: 1.2,
-    orientation: "South",
-    boundaryType: "External",
-    adjacentRoomId: null,
-    shgc: 0.55,
-    shading: defaultWindowShading(),
-  };
-}
-
-function defaultVentilation(): UpsertRoomVentilationParametersRequest {
-  return {
-    airChangesPerHour: 1,
-    heatRecoveryEfficiency: 0,
-    infiltrationAirChangesPerHour: 0.2,
-    windExposureFactor: 1,
-    stackCoefficient: 0.04,
-    windCoefficient: 0.12,
-  };
 }
 
 function defaultGroundContact(): UpsertRoomGroundContactRequest {

@@ -4,6 +4,20 @@
 
 Run release readiness scripts.
 
+Default release gate (frontend checks enabled):
+
+    dotnet restore AssistantEngineer.sln
+    dotnet build AssistantEngineer.sln --no-restore
+    dotnet test AssistantEngineer.sln
+    npm --prefix .\src\Frontend ci
+    npm --prefix .\src\Frontend run build
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1
+    .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
+Emergency-only override (manual/local fallback, not release path):
+
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFrontend
+
 ## Core closure
 
 Closed formula gates are documented.
