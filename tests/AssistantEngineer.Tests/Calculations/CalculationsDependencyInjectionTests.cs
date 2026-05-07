@@ -55,6 +55,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IThermalTopologyBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalTopologyValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalBoundaryConditionResolver>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IThermalZoneBoundaryCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IIso16798ReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IBuildingEnvelopeReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<En12831HeatingLoadCalculator>(services, ServiceLifetime.Scoped);

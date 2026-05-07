@@ -12,6 +12,7 @@ internal static class ThermalTopologyRegistration
         services.AddSingleton<IThermalTopologyBuilder, ThermalTopologyBuilder>();
         services.AddSingleton<IThermalBoundaryConditionResolver, ThermalBoundaryConditionResolver>();
         services.AddSingleton<IThermalTopologyValidator, ThermalTopologyValidator>();
+        services.AddSingleton<IThermalZoneBoundaryCalculator, ThermalZoneBoundaryCalculator>();
 
         return services;
     }

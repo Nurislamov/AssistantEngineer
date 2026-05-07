@@ -114,3 +114,47 @@ This stage defines deterministic topology contracts and diagnostics only.
 ## Next stage
 
 - `AE-ZONES-STANDARDS-001B`
+
+---
+
+## Work item
+
+- `AE-ZONES-STANDARDS-001B`
+
+## Touched contracts
+
+- `Application/Abstractions/Topology/IThermalZoneBoundaryCalculator.cs`
+- `Application/Contracts/Topology/ThermalZoneBoundaryCalculationInput.cs`
+- `Application/Contracts/Topology/ThermalSurfaceBoundaryCalculationResult.cs`
+- `Application/Contracts/Topology/ThermalRoomBoundaryCalculationResult.cs`
+- `Application/Contracts/Topology/ThermalZoneBoundaryCalculationResult.cs`
+- `Application/Contracts/Topology/BuildingThermalBoundaryCalculationResult.cs`
+
+## Touched services
+
+- `Application/Services/Topology/ThermalZoneBoundaryCalculator.cs`
+- `Composition/ThermalTopologyRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalZoneBoundaryCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalZoneBoundaryAggregationTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalZoneBoundaryCalculatorArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Boundary-integration non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic internal engineering boundary integration only.
+
+## Next stages unlocked
+
+- `AE-GROUND-ISO13370-001A`
+- `AE-VENT-EN16798-001A`
+- future ISO52016 boundary coupling refinement
