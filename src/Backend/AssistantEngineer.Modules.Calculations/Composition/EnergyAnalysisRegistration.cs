@@ -1,6 +1,5 @@
 ﻿using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
 using AssistantEngineer.Modules.Calculations.Application.Services.AnnualEnergy;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.Comfort;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingSystems;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
@@ -21,7 +20,6 @@ internal static class EnergyAnalysisRegistration
     public static IServiceCollection AddEnergyAnalysisCalculations(
         this IServiceCollection services)
     {
-        services.AddScoped<BuildingEnergyBalanceService>();
         services.AddSingleton<AnnualEnergyBalanceEngine>();
 
         services.AddScoped<BuildingComfortMetricsService>();

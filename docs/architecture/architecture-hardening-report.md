@@ -65,16 +65,17 @@ Reference inventory:
 - `docs/architecture/calculation-legacy-inventory.md`
 
 Key findings:
-- `BuildingCoolingLoadService`, `FloorCalculationService`, `RoomCalculationService`, and `BuildingEnergyBalanceService` are compatibility-layer candidates.
-- They are present in DI and compatibility tests, while first-party load controllers use the pipeline/facade path.
+- `BuildingCoolingLoadService`, `FloorCalculationService`, and `RoomCalculationService` remain compatibility-layer candidates.
+- `BuildingEnergyBalanceService` has been retired in Phase 5 (DI registration removed, implementation deleted, reintroduction guard added).
+- Remaining compatibility services stay present in DI/tests where noted, while first-party load controllers use the pipeline/facade path.
 - `BuildingHeatingLoadService` is not on the first-party controller path, but is still used by compatibility/report test scaffolds and must not be removed yet.
-- Documentation-level deprecation markers were added in the four primary candidates; `[Obsolete]` was intentionally deferred because warnings-as-errors would break current references.
+- Documentation-level deprecation markers remain for active compatibility candidates where applicable; `[Obsolete]` remains intentionally deferred because warnings-as-errors can break existing compatibility references.
 
 Legacy migration status in this pass:
 - Usage mapping was re-validated from source and tests.
 - Replacement path is confirmed (`ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`).
 - Safe removal gates were documented in `calculation-legacy-inventory.md`.
-- No runtime removal or DI unregistration was performed.
+- Single-service pilot retirement was executed for `BuildingEnergyBalanceService` only (no multi-service removal).
 
 ## Guardrails added in this pass
 
@@ -200,15 +201,17 @@ Audit date: 2026-05-07
 
 ### Legacy enforcement status
 
-- Legacy services were not removed.
-- Documentation-level deprecation markers remain in compatibility candidates.
+- `BuildingEnergyBalanceService` was retired in this pass (single-service scope).
+- Remaining legacy compatibility services stay fenced by architecture guardrails.
+- Documentation-level deprecation markers remain in active compatibility candidates.
 - New architecture guard prevents first-party controller/facade direct dependencies on legacy services.
+- New architecture guard blocks backend source reintroduction of retired `BuildingEnergyBalanceService`.
 - `[Obsolete]` attributes were not introduced to avoid warnings-as-errors breakage.
 
 ### Remaining risks
 
 - `BuildingWorkspace.tsx` is still large despite phase-1 decomposition.
-- Legacy services are still DI-registered and compile-visible pending migration completion.
+- Four legacy compatibility services are still DI-registered/compile-visible pending migration completion.
 
 ### Recommended next phase
 
@@ -425,3 +428,74 @@ Audit date: 2026-05-07
 1. Start legacy pilot retirement only after isolating one service with zero direct compatibility test dependency and proven DI independence.
 2. Continue incremental extraction of remaining UI mutation flows only when they preserve current UX/API behavior.
 3. Keep governance regeneration and non-claim boundaries enforced in CI and release-ready checks.
+
+## Legacy Retirement Pilot Phase 5
+
+### Usage re-scan
+
+- Re-scan completed across `src` + `tests` for:
+  - `BuildingCoolingLoadService`,
+  - `FloorCalculationService`,
+  - `RoomCalculationService`,
+  - `BuildingEnergyBalanceService`,
+  - `BuildingHeatingLoadService`.
+- No direct first-party controller/facade constructor dependency on legacy service types was found.
+- `BuildingEnergyBalanceService` usage was limited to DI compatibility registration and guard/docs references before retirement.
+
+### Selected pilot candidate
+
+- Selected by priority and gate fit: `BuildingEnergyBalanceService`.
+- Selection rationale:
+  - no direct controller/facade usage,
+  - lowest churn footprint,
+  - replacement path already active through facade/pipeline flow.
+
+### Replacement coverage
+
+- Replacement behavior coverage exists through active path tests:
+  - `tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs`:
+    - `EnergyBalanceApplicationPathUsesAnnualEnergyEngineAdapterWithDiagnostics`,
+    - `EnergyBalanceApplicationPathUsesHourlyRecordsWhenSourceProvidesThem`,
+    - `EnergyBalanceApplicationPathReturnsValidationWhenSourceUnavailable`.
+- Coverage remains focused on externally relevant behavior and diagnostics, not private implementation details.
+- Formula outputs and validation-anchor expectations were not changed.
+
+### Retirement action
+
+- Retired exactly one service: `BuildingEnergyBalanceService`.
+- Changes:
+  - removed DI registration from `src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs`,
+  - deleted implementation file `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingEnergyBalanceService.cs`,
+  - updated architecture guard allowlist and added retired-service reintroduction guard in `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs`.
+- No public API/controller contracts were changed.
+- No frontend UX path was changed.
+
+### Remaining legacy services
+
+- `BuildingCoolingLoadService`
+- `FloorCalculationService`
+- `RoomCalculationService`
+- `BuildingHeatingLoadService`
+
+### Verification results
+
+- Full backend/frontend/engineering verification completed without `-SkipFrontend`:
+  - `dotnet restore AssistantEngineer.sln`
+  - `dotnet build AssistantEngineer.sln --no-restore`
+  - `dotnet test AssistantEngineer.sln`
+  - `npm --prefix .\src\Frontend ci`
+  - `npm --prefix .\src\Frontend run build`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\verify-engineering-core-v1.ps1`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1`
+
+### Remaining risks
+
+- Remaining compatibility services can still be consumed by new code if not continuously fenced.
+- `BuildingHeatingLoadService` remains high-risk due to report-lane compatibility coupling.
+- Infrastructure readiness remains separate from external numerical validation completeness.
+
+### Recommended next phase
+
+1. Target `FloorCalculationService` as the next candidate only after explicit facade-level floor-path regression guard evidence is in place.
+2. Keep single-service retirement scope with full proof gates and no formula/anchor/API/UX changes.
+3. Continue strict guard enforcement to prevent legacy backflow and retired-service reintroduction.

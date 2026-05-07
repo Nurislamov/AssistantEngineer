@@ -24,23 +24,26 @@ ISO52016 simulation path (separate API lane):
 
 ## Compatibility / legacy path
 
-Confirmed direct usages from repository scan (`rg` across `src` + `tests`):
+Confirmed direct usages from repository scan (`rg` across `src` + `tests`, 2026-05-07):
 
 | Service | Confirmed source usage | Confirmed test usage | Classification |
 |---|---|---|---|
 | `BuildingCoolingLoadService` | DI registration only (`LoadCalculationRegistration`) | `Iso52016ClimateDataValidationTests`, DI lifetime test | compatibility legacy service |
 | `FloorCalculationService` | DI registration only (`LoadCalculationRegistration`) | DI lifetime test | compatibility legacy service |
 | `RoomCalculationService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, DI lifetime test | compatibility legacy service |
-| `BuildingEnergyBalanceService` | DI registration only (`EnergyAnalysisRegistration`) | DI lifetime test | compatibility legacy service |
 | `BuildingHeatingLoadService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests` (stub usage), DI lifetime test | compatibility bridge (heating/report test lane) |
+
+Retired in Phase 5:
+- `BuildingEnergyBalanceService` (implementation deleted; DI registration removed; backend source reintroduction guard added).
 
 Important production-path confirmation:
 - First-party load controllers call `ILoadCalculationsFacade`.
 - `LoadCalculationsFacade` calls `EnergyCalculationPipelineService`.
 - No direct controller/facade dependency on the legacy services above was found.
-- Architecture guard enforces that legacy service references stay fenced to:
+- Architecture guard enforces that remaining legacy service references stay fenced to:
   - compatibility service definitions (`Application/Services/Buildings|Floors|Rooms/*CalculationService.cs`),
-  - composition registrations (`Composition/LoadCalculationRegistration.cs`, `Composition/EnergyAnalysisRegistration.cs`).
+  - composition registrations (`Composition/LoadCalculationRegistration.cs`).
+- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService` into backend source.
 
 Preview services (active, do not classify as removable legacy):
 - `NaturalVentilationPreviewService` is used by `RoomVentilationController` through `VentilationAnalysisFacade`.
@@ -52,7 +55,6 @@ Safe deprecation candidates (documentation-level in current pass):
 - `BuildingCoolingLoadService`
 - `FloorCalculationService`
 - `RoomCalculationService`
-- `BuildingEnergyBalanceService`
 
 Current deprecation marker strategy:
 - Documentation-level markers in service XML remarks.
@@ -81,6 +83,7 @@ Confirmed migration recommendation:
 
 Replacement path:
 - Building/Floor/Room/Balance calculations: `ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`.
+- Annual energy simulation/analysis lane: `IBuildingEnergyAnalysisFacade` + annual-energy adapters where applicable.
 - Reporting lane: `BuildingHeatingReportCalculationService` -> `ILoadCalculationsFacade` (already aligned).
 
 Safe removal conditions (must all be true):
@@ -101,9 +104,19 @@ Phase 3 retirement preparation:
 - No legacy services or DI registrations were removed in this phase.
 
 Phase 4 pilot analysis:
-- Re-scan confirmed each legacy service still has at least one open gate (direct compatibility test dependency and/or explicit DI compatibility registration).
-- No safe single-service retirement pilot met full proof conditions in this pass.
-- Runtime removals were intentionally deferred; blocker list is captured in `calculation-legacy-retirement-plan.md`.
+- Re-scan confirmed open gates before pilot retirement execution.
+
+Phase 5 pilot result:
+- Selected candidate: `BuildingEnergyBalanceService` (priority #1).
+- Retirement completed with single-service scope only.
+- Removed:
+  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingEnergyBalanceService.cs`,
+  - DI registration in `Composition/EnergyAnalysisRegistration.cs`.
+- Remaining compatibility legacy services:
+  - `BuildingCoolingLoadService`,
+  - `FloorCalculationService`,
+  - `RoomCalculationService`,
+  - `BuildingHeatingLoadService`.
 
 ## Risk notes
 

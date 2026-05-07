@@ -1,6 +1,6 @@
 # Calculation Legacy Retirement Plan
 
-Scope: retirement preparation only. No runtime removals are performed in this phase.
+Scope: service-by-service legacy retirement with proof-first gates.
 
 Boundary statements:
 - No EnergyPlus parity claim.
@@ -10,10 +10,11 @@ Boundary statements:
 
 ## Baseline policy
 
-- Legacy services remain available for compatibility while migration closes.
+- Legacy services remain available for compatibility while migration closes, except services that have completed full retirement gates.
 - Direct first-party controller/facade dependencies on legacy services are prohibited by architecture guards.
-- Allowed production references are fenced to compatibility definitions and DI composition roots.
-- DI registrations stay in place until all removal gates are satisfied.
+- Allowed production references are fenced to compatibility definitions and DI composition roots for active compatibility services.
+- Retired services are blocked from backend source reintroduction by architecture guard tests.
+- DI registrations stay in place until all removal gates are satisfied per service.
 
 ## Phase 4 pilot analysis
 
@@ -30,6 +31,29 @@ Decision in Phase 4:
 - no runtime removal,
 - no DI unregistration,
 - no implementation file deletion.
+
+## Phase 5 pilot execution
+
+Selected candidate by priority and risk gates: `BuildingEnergyBalanceService`.
+
+Proof summary before removal:
+- No direct controller usage.
+- No direct facade usage.
+- No active runtime usage outside DI compatibility registration.
+- Pipeline-level replacement coverage already present in `EnergyCalculationPipelineServiceTests` for `CalculateBuildingEnergyBalanceAsync` behavior and diagnostics.
+
+Retirement action completed:
+- Removed `BuildingEnergyBalanceService` DI registration from `Composition/EnergyAnalysisRegistration.cs`.
+- Deleted `Application/Services/Buildings/BuildingEnergyBalanceService.cs`.
+- Updated legacy architecture guard to:
+  - keep fencing for remaining active compatibility services,
+  - block reintroduction of retired `BuildingEnergyBalanceService` in backend source.
+
+Services still blocked for retirement:
+- `BuildingCoolingLoadService`: direct compatibility behavior test dependency (`Iso52016ClimateDataValidationTests`) + DI compatibility registration.
+- `FloorCalculationService`: DI compatibility registration remains and still requires explicit facade-level floor-path regression closure before removal.
+- `RoomCalculationService`: direct compatibility behavior test dependency (`HeatingLoadValidationTests`) + DI compatibility registration.
+- `BuildingHeatingLoadService`: direct compatibility/report-lane dependencies (`HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests`) and high report-lane risk.
 
 ## BuildingCoolingLoadService
 
@@ -130,32 +154,33 @@ Decision in Phase 4:
 
 ### Current allowed usages
 
-- Service definition: `Application/Services/Buildings/BuildingEnergyBalanceService.cs`
-- DI registration: `Composition/EnergyAnalysisRegistration.cs`
+- Retired in Phase 5.
+- Runtime source usage: none in `src`.
 
 ### Tests depending on it
 
-- `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+- None (direct DI lifetime dependency removed).
+- Reintroduction guard: `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs`.
 
 ### Replacement path
 
-- `IBuildingEnergyAnalysisFacade` and annual energy pipeline adapters.
+- `ILoadCalculationsFacade` -> `EnergyCalculationPipelineService.CalculateBuildingEnergyBalanceAsync` for load endpoint compatibility path.
+- `IBuildingEnergyAnalysisFacade` + annual energy adapters for analysis/simulation lane where applicable.
 
 ### Removal gates
 
-1. Confirm no API/facade direct dependency on the legacy service type.
-2. Verify evidence/traceability tests continue to pass via current facades.
-3. Remove DI registration and run full verification gate.
+1. Confirm no API/facade direct dependency on the legacy service type. Completed.
+2. Verify replacement coverage through active facade/pipeline path. Completed.
+3. Remove DI registration and implementation, then run full verification gate. Completed.
 
 ### Risk level
 
-- Low to medium: mostly registration-level coupling, but evidence paths must stay stable.
+- Closed in this phase (low-risk candidate retired).
 
 ### Future PR sequence
 
-1. Add explicit facade-level energy-balance guard assertions if needed.
-2. Remove registration.
-3. Remove implementation and refresh legacy inventory.
+1. Keep reintroduction guard active and evolve only with explicit architectural decision.
+2. Continue retirement queue with next candidate (`FloorCalculationService`) after additional facade-level floor-path guard evidence.
 
 ## BuildingHeatingLoadService
 
