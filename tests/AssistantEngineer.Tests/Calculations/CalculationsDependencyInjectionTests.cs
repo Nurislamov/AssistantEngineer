@@ -72,7 +72,6 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<BuildingEnergyPerformanceSummaryService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyCalculator>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<BuildingCoolingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
 

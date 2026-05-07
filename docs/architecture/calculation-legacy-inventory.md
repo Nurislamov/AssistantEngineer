@@ -28,7 +28,6 @@ Confirmed direct usages from repository scan (`rg` across `src` + `tests`, 2026-
 
 | Service | Confirmed source usage | Confirmed test usage | Classification |
 |---|---|---|---|
-| `BuildingCoolingLoadService` | DI registration only (`LoadCalculationRegistration`) | `Iso52016ClimateDataValidationTests`, DI lifetime test | compatibility legacy service |
 | `RoomCalculationService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, DI lifetime test | compatibility legacy service |
 | `BuildingHeatingLoadService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests` (stub usage), DI lifetime test | compatibility bridge (heating/report test lane) |
 
@@ -38,6 +37,9 @@ Retired in Phase 5:
 Retired in Phase 6:
 - `FloorCalculationService` (implementation deleted; DI registration removed; backend source reintroduction guard extended).
 
+Retired in Phase 7:
+- `BuildingCoolingLoadService` (compatibility test dependency migrated to active facade/pipeline path, DI registration removed, implementation deleted, backend source reintroduction guard extended).
+
 Important production-path confirmation:
 - First-party load controllers call `ILoadCalculationsFacade`.
 - `LoadCalculationsFacade` calls `EnergyCalculationPipelineService`.
@@ -45,7 +47,7 @@ Important production-path confirmation:
 - Architecture guard enforces that remaining legacy service references stay fenced to:
   - compatibility service definitions (`Application/Services/Buildings|Rooms/*CalculationService.cs`),
   - composition registrations (`Composition/LoadCalculationRegistration.cs`).
-- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService` and `FloorCalculationService` into backend source.
+- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService`, `FloorCalculationService`, and `BuildingCoolingLoadService` into backend source.
 
 Preview services (active, do not classify as removable legacy):
 - `NaturalVentilationPreviewService` is used by `RoomVentilationController` through `VentilationAnalysisFacade`.
@@ -54,7 +56,6 @@ Preview services (active, do not classify as removable legacy):
 ## Deprecated candidates
 
 Safe deprecation candidates (documentation-level in current pass):
-- `BuildingCoolingLoadService`
 - `RoomCalculationService`
 
 Current deprecation marker strategy:
@@ -94,9 +95,9 @@ Safe removal conditions (must all be true):
 - Full `dotnet build` and `dotnet test` pass after removal.
 
 Tests covering old behavior (keep while migration is incomplete):
-- `tests/AssistantEngineer.Tests/Calculations/Iso52016ClimateDataValidationTests.cs`
 - `tests/AssistantEngineer.Tests/Calculations/HeatingLoadValidationTests.cs`
 - `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs`
 - `tests/AssistantEngineer.Tests/Reporting/BuildingHeatingReportDataServiceTests.cs`
 - `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs` (fencing guard for legacy references and production constructor dependencies)
 
@@ -130,10 +131,22 @@ Phase 6 pilot result:
   - `RoomCalculationService`,
   - `BuildingHeatingLoadService`.
 
+Phase 7 pilot result:
+- Selected candidate: `BuildingCoolingLoadService`.
+- Replacement building-cooling behavior coverage migrated to active path (`ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`) in `EnergyCalculationPipelineServiceTests`.
+- Retirement completed with single-service scope only.
+- Removed:
+  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs`,
+  - DI registration in `Composition/LoadCalculationRegistration.cs`.
+- Remaining compatibility legacy services:
+  - `RoomCalculationService`,
+  - `BuildingHeatingLoadService`.
+
 ## Risk notes
 
 Current risks:
 - Hidden third-party/internal direct DI usage cannot be ruled out from first-party repository scan alone.
 - Removing compatibility services now can break compatibility tests even if production controllers are unaffected.
-- `BuildingCoolingLoadService` and `RoomCalculationService` still have direct compatibility test instantiation dependencies.
+- `RoomCalculationService` still has direct compatibility test instantiation dependency.
+- `BuildingHeatingLoadService` remains coupled to report-lane compatibility tests.
 - `EnergyCalculationPipelineService` remains a large orchestration component; migration should remain incremental.

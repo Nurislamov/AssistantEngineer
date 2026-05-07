@@ -65,7 +65,8 @@ Reference inventory:
 - `docs/architecture/calculation-legacy-inventory.md`
 
 Key findings:
-- `BuildingCoolingLoadService` and `RoomCalculationService` remain compatibility-layer candidates.
+- `BuildingCoolingLoadService` was retired in Phase 7 after active-path coverage migration and gate verification.
+- `RoomCalculationService` remains a compatibility-layer candidate.
 - `BuildingEnergyBalanceService` was retired in Phase 5 (DI registration removed, implementation deleted, reintroduction guard added).
 - `FloorCalculationService` was retired in Phase 6 (DI registration removed, implementation deleted, reintroduction guard extended).
 - Remaining compatibility services stay present in DI/tests where noted, while first-party load controllers use the pipeline/facade path.
@@ -76,7 +77,7 @@ Legacy migration status in this pass:
 - Usage mapping was re-validated from source and tests.
 - Replacement path is confirmed (`ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`).
 - Safe removal gates were documented in `calculation-legacy-inventory.md`.
-- Single-service pilot retirement remained enforced per pass (`BuildingEnergyBalanceService` in Phase 5, `FloorCalculationService` in Phase 6).
+- Single-service pilot retirement remained enforced per pass (`BuildingEnergyBalanceService` in Phase 5, `FloorCalculationService` in Phase 6, `BuildingCoolingLoadService` in Phase 7).
 
 ## Guardrails added in this pass
 
@@ -202,17 +203,17 @@ Audit date: 2026-05-07
 
 ### Legacy enforcement status
 
-- `BuildingEnergyBalanceService` and `FloorCalculationService` were retired service-by-service in Phase 5 and Phase 6.
+- `BuildingEnergyBalanceService`, `FloorCalculationService`, and `BuildingCoolingLoadService` were retired service-by-service in Phase 5, Phase 6, and Phase 7.
 - Remaining legacy compatibility services stay fenced by architecture guardrails.
 - Documentation-level deprecation markers remain in active compatibility candidates.
 - New architecture guard prevents first-party controller/facade direct dependencies on legacy services.
-- New architecture guard blocks backend source reintroduction of retired `BuildingEnergyBalanceService` and `FloorCalculationService`.
+- New architecture guard blocks backend source reintroduction of retired `BuildingEnergyBalanceService`, `FloorCalculationService`, and `BuildingCoolingLoadService`.
 - `[Obsolete]` attributes were not introduced to avoid warnings-as-errors breakage.
 
 ### Remaining risks
 
 - `BuildingWorkspace.tsx` is still large despite phase-1 decomposition.
-- Three legacy compatibility services are still DI-registered/compile-visible pending migration completion.
+- Two legacy compatibility services are still DI-registered/compile-visible pending migration completion.
 
 ### Recommended next phase
 
@@ -567,5 +568,72 @@ Audit date: 2026-05-07
 ### Recommended next phase
 
 1. Target `BuildingCoolingLoadService` next, only after migrating direct compatibility behavior tests to active facade/pipeline path.
+2. Keep strict single-service retirement scope and proof-first gates.
+3. Preserve non-claim boundaries (no EnergyPlus parity, no pyBuildingEnergy parity, no ASHRAE 140 validation, no full ISO/EN compliance).
+
+## Legacy Retirement Pilot Phase 7
+
+### Usage re-scan
+
+- Re-scan completed across `src` + `tests` for `BuildingCoolingLoadService`.
+- Confirmed pre-removal source usage was limited to:
+  - service definition,
+  - DI registration in `LoadCalculationRegistration`.
+- Confirmed no direct first-party controller/facade dependency.
+- Confirmed no direct runtime application-service usage outside compatibility DI registration.
+
+### Selected pilot candidate
+
+- Selected candidate: `BuildingCoolingLoadService`.
+- Selection rationale:
+  - no direct controller/facade usage,
+  - bounded DI-only runtime footprint,
+  - clear replacement path through active facade/pipeline flow.
+
+### Replacement building-cooling coverage
+
+- Legacy direct constructor dependency was removed from `Iso52016ClimateDataValidationTests`.
+- Active-path behavior coverage was added in `tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs`:
+  - `BuildingCoolingFacadeReturnsValidationWhenCriticalClimateInputsAreMissing`.
+- Coverage now validates building-cooling behavior through `ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`, not through legacy service internals.
+- No formulas were changed.
+- No validation anchor values were changed.
+
+### Retirement action
+
+- Retired exactly one service in this phase: `BuildingCoolingLoadService`.
+- Changes:
+  - removed DI registration from `src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs`,
+  - deleted implementation file `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs`,
+  - updated architecture guard in `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs`:
+    - removed `BuildingCoolingLoadService` from active legacy allowlist,
+    - added `BuildingCoolingLoadService` to retired-service reintroduction guard.
+- `RoomCalculationService` and `BuildingHeatingLoadService` were not modified in this phase.
+
+### Remaining legacy services
+
+- `RoomCalculationService`
+- `BuildingHeatingLoadService`
+
+### Verification results
+
+- Full backend/frontend/engineering verification completed without `-SkipFrontend`:
+  - `dotnet restore AssistantEngineer.sln`
+  - `dotnet build AssistantEngineer.sln --no-restore`
+  - `dotnet test AssistantEngineer.sln`
+  - `npm --prefix .\src\Frontend ci`
+  - `npm --prefix .\src\Frontend run build`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\verify-engineering-core-v1.ps1`
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1`
+
+### Remaining risks
+
+- `RoomCalculationService` still has compatibility test constructor dependencies.
+- `BuildingHeatingLoadService` remains high-risk due to report-lane compatibility coupling.
+- Infrastructure readiness remains separate from external numerical validation completeness.
+
+### Recommended next phase
+
+1. Target `RoomCalculationService` next, only after migrating direct compatibility behavior tests to active facade/pipeline path.
 2. Keep strict single-service retirement scope and proof-first gates.
 3. Preserve non-claim boundaries (no EnergyPlus parity, no pyBuildingEnergy parity, no ASHRAE 140 validation, no full ISO/EN compliance).
