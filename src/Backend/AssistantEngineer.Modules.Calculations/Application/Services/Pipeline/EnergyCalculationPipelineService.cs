@@ -65,6 +65,7 @@ public sealed class EnergyCalculationPipelineService
     private readonly EnergyCalculationPipelineAggregationRoomAssembler _aggregationRoomAssembler;
     private readonly EnergyCalculationPipelineEquipmentSizingOrchestrator _equipmentSizingOrchestrator;
     private readonly EnergyCalculationPipelineDiagnosticsPolicy _diagnosticsPolicy;
+    private readonly EnergyCalculationPipelineBuildingHeatingResultAssembler _buildingHeatingResultAssembler;
 
     public EnergyCalculationPipelineService(
         IRoomRepository rooms,
@@ -118,6 +119,7 @@ public sealed class EnergyCalculationPipelineService
         _aggregationRoomAssembler = new EnergyCalculationPipelineAggregationRoomAssembler();
         _equipmentSizingOrchestrator = new EnergyCalculationPipelineEquipmentSizingOrchestrator(_equipmentSizingEngine);
         _diagnosticsPolicy = new EnergyCalculationPipelineDiagnosticsPolicy();
+        _buildingHeatingResultAssembler = new EnergyCalculationPipelineBuildingHeatingResultAssembler(_diagnosticsPolicy);
     }
 
     public async Task<Result<RoomLoadCalculationResult>> CalculateRoomLoadAsync(
@@ -285,33 +287,25 @@ public sealed class EnergyCalculationPipelineService
         if (aggregationFailure is not null)
             return aggregationFailure;
 
-        var roomResults = new List<RoomHeatingLoadResult>();
-        foreach (var room in building.Floors.SelectMany(floor => floor.Rooms).OrderBy(room => room.Id))
-        {
-            var roomLoad = CalculateRoomLoad(
+        var roomResults = _buildingHeatingResultAssembler.BuildRoomHeatingResults(
+            building,
+            preferences,
+            method,
+            RoomPipelineMethod,
+            EnergyCalculationParityDesignPoint,
+            (room, requestedMethod) => CalculateRoomLoad(
                 room,
                 preferences,
                 climateContext,
-                requestedMethod: method.ToString());
-            var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<BuildingHeatingLoadResult>(roomLoad);
-            if (roomFailure is not null)
-                return roomFailure;
-
-            roomResults.Add(
-                EnergyCalculationPipelineResultMapper.MapHeatingRoomResult(
-                    room,
-                    roomLoad.Value,
-                    method,
-                    preferences,
-                    RoomPipelineMethod,
-                    EnergyCalculationParityDesignPoint));
-        }
+                requestedMethod));
+        if (roomResults.IsFailure)
+            return Result<BuildingHeatingLoadResult>.Failure(roomResults);
 
         return Result<BuildingHeatingLoadResult>.Success(
             EnergyCalculationPipelineResultMapper.MapBuildingHeatingResult(
                 building,
                 aggregation.Value,
-                roomResults,
+                roomResults.Value,
                 method,
                 AggregationPipelineMethod,
                 EnergyCalculationParityDesignPoint));

@@ -109,6 +109,23 @@ public class ArchitectureHardeningDocumentationTests
         {
             Assert.Contains(requiredSection, content, StringComparison.Ordinal);
         }
+
+        var requiredPhaseFourSections = new[]
+        {
+            "## Engineering Core Hardening Phase 4",
+            "### Ground contact frontend extraction",
+            "### Backend finalization extraction status",
+            "### Legacy retirement pilot status",
+            "### CI/generated artifact stability",
+            "### Verification results",
+            "### Remaining risks",
+            "### Recommended next phase"
+        };
+
+        foreach (var requiredSection in requiredPhaseFourSections)
+        {
+            Assert.Contains(requiredSection, content, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
