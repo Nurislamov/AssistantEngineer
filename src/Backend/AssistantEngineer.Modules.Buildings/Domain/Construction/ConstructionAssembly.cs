@@ -7,7 +7,7 @@ public class ConstructionAssembly
 {
     private const double Rsi = 0.13;
     private const double Rse = 0.04;
-    
+
     public int Id { get; private set; }
     public string Name { get; private set; } = string.Empty;
 
@@ -21,7 +21,7 @@ public class ConstructionAssembly
             return _layers.Sum(layer => layer.Material.VolumetricHeatCapacityKjPerM3K * layer.ThicknessM);
         }
     }
-    
+
     private ConstructionAssembly() { }
 
     private ConstructionAssembly(string name) => Name = name;

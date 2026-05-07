@@ -183,7 +183,7 @@ public class ApiIntegrationTests
             diagnostic.Code == "EquipmentSizing.HeatingCapacityUnavailable");
         Assert.True(result.DesignCapacityKw > 0);
     }
-    
+
     [Fact]
     public async Task PostEnergyPlusBenchmarkUsesRunnerStubWithoutFileSystemValidation()
     {

@@ -24,7 +24,7 @@ public sealed class BuildingModelAutocorrectionService
         _planner = planner;
         _validation = validation;
     }
-    
+
     public async Task<Result<BuildingAutocorrectionPreview>> PreviewAsync(
         int buildingId,
         int weatherYear,
@@ -55,7 +55,7 @@ public sealed class BuildingModelAutocorrectionService
 
         return Result<BuildingAutocorrectionPreview>.Success(response);
     }
-    
+
     public async Task<Result<BuildingAutocorrectionResult>> ApplyAsync(
         int buildingId,
         int weatherYear,

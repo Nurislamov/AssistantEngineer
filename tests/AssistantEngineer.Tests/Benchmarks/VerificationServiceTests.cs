@@ -23,42 +23,42 @@ public class VerificationServiceTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-        var artifacts = CreateArtifactStore(tempDirectory);
-        var building = CreateBuilding();
-        var repository = new BuildingRepositoryStub(building);
-        var loadCalculations = new LoadCalculationsFacadeStub(building);
-        var exporter = new ExporterStub();
-        var runner = new RunnerStub(artifacts);
-        var parser = new ParserStub();
-        var comparator = new ComparatorStub();
-        var service = new VerificationService(
-            repository,
-            loadCalculations,
-            exporter,
-            runner,
-            parser,
-            comparator,
-            artifacts);
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var building = CreateBuilding();
+            var repository = new BuildingRepositoryStub(building);
+            var loadCalculations = new LoadCalculationsFacadeStub(building);
+            var exporter = new ExporterStub();
+            var runner = new RunnerStub(artifacts);
+            var parser = new ParserStub();
+            var comparator = new ComparatorStub();
+            var service = new VerificationService(
+                repository,
+                loadCalculations,
+                exporter,
+                runner,
+                parser,
+                comparator,
+                artifacts);
 
-        var result = await service.VerifyBuildingAsync(
-            building.Id,
-            CoolingLoadCalculationMethod.Simplified,
-            new VerificationRequest
-            {
-                WeatherArtifactId = "weather.epw",
-                AdditionalArguments = ["--readvars"]
-            });
+            var result = await service.VerifyBuildingAsync(
+                building.Id,
+                CoolingLoadCalculationMethod.Simplified,
+                new VerificationRequest
+                {
+                    WeatherArtifactId = "weather.epw",
+                    AdditionalArguments = ["--readvars"]
+                });
 
-        Assert.True(result.IsSuccess, result.Error);
-        Assert.True(exporter.Called);
-        Assert.True(runner.Called);
-        Assert.True(parser.Called);
-        Assert.True(comparator.Called);
-        Assert.True(loadCalculations.Called);
-        Assert.Equal("weather.epw", runner.Request?.WeatherArtifactId);
-        Assert.Equal("exported-model.idf", runner.Request?.ModelArtifactId);
-        Assert.Contains("--readvars", runner.Request?.AdditionalArguments ?? []);
-        Assert.False(Directory.Exists(runner.WorkingDirectory));
+            Assert.True(result.IsSuccess, result.Error);
+            Assert.True(exporter.Called);
+            Assert.True(runner.Called);
+            Assert.True(parser.Called);
+            Assert.True(comparator.Called);
+            Assert.True(loadCalculations.Called);
+            Assert.Equal("weather.epw", runner.Request?.WeatherArtifactId);
+            Assert.Equal("exported-model.idf", runner.Request?.ModelArtifactId);
+            Assert.Contains("--readvars", runner.Request?.AdditionalArguments ?? []);
+            Assert.False(Directory.Exists(runner.WorkingDirectory));
         }
         finally
         {
@@ -72,29 +72,29 @@ public class VerificationServiceTests
         var tempDirectory = CreateTempDirectory();
         try
         {
-        var building = CreateBuilding();
-        var artifacts = CreateArtifactStore(tempDirectory);
-        var repository = new BuildingRepositoryStub(building);
-        var loadCalculations = new LoadCalculationsFacadeStub(building);
-        var runner = new RunnerStub(artifacts);
-        var service = new VerificationService(
-            repository,
-            loadCalculations,
-            new ExporterStub(),
-            runner,
-            new ParserStub(),
-            new ComparatorStub(),
-            artifacts);
+            var building = CreateBuilding();
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var repository = new BuildingRepositoryStub(building);
+            var loadCalculations = new LoadCalculationsFacadeStub(building);
+            var runner = new RunnerStub(artifacts);
+            var service = new VerificationService(
+                repository,
+                loadCalculations,
+                new ExporterStub(),
+                runner,
+                new ParserStub(),
+                new ComparatorStub(),
+                artifacts);
 
-        var result = await service.VerifyBuildingAsync(
-            999,
-            CoolingLoadCalculationMethod.Simplified,
-            new VerificationRequest { WeatherArtifactId = "weather.epw" });
+            var result = await service.VerifyBuildingAsync(
+                999,
+                CoolingLoadCalculationMethod.Simplified,
+                new VerificationRequest { WeatherArtifactId = "weather.epw" });
 
-        Assert.True(result.IsFailure);
-        Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
-        Assert.False(runner.Called);
-        Assert.False(loadCalculations.Called);
+            Assert.True(result.IsFailure);
+            Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
+            Assert.False(runner.Called);
+            Assert.False(loadCalculations.Called);
         }
         finally
         {

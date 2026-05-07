@@ -334,7 +334,7 @@ public sealed class BuildingsFacade : IBuildingsFacade
         AutocorrectBuildingModelRequest request,
         CancellationToken cancellationToken) =>
         _buildingAutocorrection.ApplyAsync(buildingId, weatherYear, request, cancellationToken);
-    
+
     public Task<Result<RoomGroundContactResponse>> GetRoomGroundContactAsync(
         int roomId,
         CancellationToken cancellationToken) =>

@@ -32,7 +32,7 @@ public class BuildingArchetypesController : ControllerBase
 
         return items.ToPagedOkResult(this, query);
     }
-    
+
     private static readonly IReadOnlyDictionary<string, Func<IEnumerable<BuildingArchetypeSummary>, bool, IOrderedEnumerable<BuildingArchetypeSummary>>> SortRules =
         new Dictionary<string, Func<IEnumerable<BuildingArchetypeSummary>, bool, IOrderedEnumerable<BuildingArchetypeSummary>>>(StringComparer.OrdinalIgnoreCase)
         {

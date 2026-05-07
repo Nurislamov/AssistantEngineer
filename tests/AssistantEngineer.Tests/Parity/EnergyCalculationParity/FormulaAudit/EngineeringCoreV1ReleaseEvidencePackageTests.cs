@@ -51,7 +51,7 @@ public class EngineeringCoreV1ReleaseEvidencePackageTests
         Assert.Contains("Closed formula gates", tool, StringComparison.Ordinal);
         Assert.Contains("Diagnostics by category", tool, StringComparison.Ordinal);
     }
-[Fact]
+    [Fact]
     public void GeneratedReleaseEvidenceReportExistsAndContainsSummary()
     {
         Assert.True(

@@ -184,7 +184,7 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
         Assert.Contains("compare-energyplus-validation-fixtures.ps1", tool, StringComparison.Ordinal);
         Assert.Contains("generate-energyplus-validation-fixture-catalog.ps1", tool, StringComparison.Ordinal);
     }
-[Fact]
+    [Fact]
     public void AuthoringGuideDocumentsTemplateFolderScaffoldCommandRegistryUpdateGenerationRealReferenceAndNonClaims()
     {
         var content = File.ReadAllText(AuthoringGuidePath);
@@ -223,8 +223,8 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
 
         Assert.Contains("EnergyPlusValidationFixtureAuthoringKitTests", tool, StringComparison.Ordinal);
     }
-private static string TemplateRoot =>
-        Path.Combine(TestPaths.RepoRoot, "docs", "validation", "fixtures", "_template");
+    private static string TemplateRoot =>
+            Path.Combine(TestPaths.RepoRoot, "docs", "validation", "fixtures", "_template");
 
     private static string CaseMetadataTemplatePath =>
         Path.Combine(TemplateRoot, "case-metadata.template.json");

@@ -100,7 +100,7 @@ public class ReportingInternalStructureTests
 
         Assert.Null(type);
     }
-    
+
     [Fact]
     public void ReportingContractsAreSplitByReportType()
     {

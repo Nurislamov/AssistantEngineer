@@ -125,11 +125,11 @@ public sealed class Iso13370GroundBoundaryCalculator
     private static double GetVentilationModifier(
         Iso13370GroundContactKind kind,
         double underfloorVentilationAch) => kind switch
-    {
-        Iso13370GroundContactKind.CrawlSpace => 1.0 + Math.Min(0.15, underfloorVentilationAch * 0.03),
-        Iso13370GroundContactKind.VentilatedCrawlSpace => 1.0 + Math.Min(0.35, underfloorVentilationAch * 0.05),
-        _ => 1.0
-    };
+        {
+            Iso13370GroundContactKind.CrawlSpace => 1.0 + Math.Min(0.15, underfloorVentilationAch * 0.03),
+            Iso13370GroundContactKind.VentilatedCrawlSpace => 1.0 + Math.Min(0.35, underfloorVentilationAch * 0.05),
+            _ => 1.0
+        };
 
     private static (double ground, double outdoor, double indoor) GetBoundaryWeights(
         Iso13370GroundContactKind kind,

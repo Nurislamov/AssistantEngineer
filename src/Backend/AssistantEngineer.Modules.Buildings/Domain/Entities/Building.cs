@@ -107,7 +107,7 @@ public class Building
         _thermalZones.Add(zoneResult.Value);
         return Result<ThermalZone>.Success(zoneResult.Value);
     }
-    
+
     public Result RemoveThermalZone(int thermalZoneId)
     {
         var thermalZone = _thermalZones.FirstOrDefault(x => x.Id == thermalZoneId);

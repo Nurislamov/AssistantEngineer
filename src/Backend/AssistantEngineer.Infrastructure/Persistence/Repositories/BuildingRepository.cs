@@ -109,14 +109,14 @@ internal sealed class BuildingRepository : IBuildingRepository
                         .ThenInclude(wall => wall.ConstructionAssembly)
                             .ThenInclude(assembly => assembly!.Layers)
                                 .ThenInclude(layer => layer.Material);
-    
+
     public async Task<Building?> GetForValidationAsync(
         int id,
         bool asTracking = false,
         CancellationToken cancellationToken = default) =>
         await WithValidationGraph(_context.Buildings, asTracking)
             .FirstOrDefaultAsync(building => building.Id == id, cancellationToken);
-    
+
     private static IQueryable<Building> WithValidationGraph(
         IQueryable<Building> query,
         bool asTracking)

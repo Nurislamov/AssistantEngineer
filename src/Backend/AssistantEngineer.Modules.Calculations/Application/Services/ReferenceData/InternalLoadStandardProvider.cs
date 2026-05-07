@@ -23,7 +23,7 @@ public sealed class InternalLoadStandardProvider : IInternalLoadStandardProvider
                 0.8,
                 10,
                 "Seed defaults. Replace with validated project standard table when available."),
-                
+
             [RoomType.MeetingRoom] = new(
                 Table,
                 "seed-v1",

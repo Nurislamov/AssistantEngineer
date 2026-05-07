@@ -28,17 +28,17 @@ public sealed class BuildingCalculationReadinessService
         var validation = validationResult.Value;
 
         var report = new BuildingCalculationReadinessReport
-            {
-                BuildingId = validation.BuildingId,
-                BuildingName = validation.BuildingName,
-                IsReady = validation.IsValid,
-                Issues = validation.Issues
+        {
+            BuildingId = validation.BuildingId,
+            BuildingName = validation.BuildingName,
+            IsReady = validation.IsValid,
+            Issues = validation.Issues
                     .Select(issue => new BuildingCalculationReadinessIssue(
                         issue.Severity,
                         issue.Location,
                         issue.Message))
                     .ToList()
-            };
+        };
 
         return Result<BuildingCalculationReadinessReport>.Success(report);
     }

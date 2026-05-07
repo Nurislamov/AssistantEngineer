@@ -275,8 +275,8 @@ public class CalculationModuleBalanceInvariantTests
         var tool = File.ReadAllText(ToolProgramPath);
         Assert.Contains("CalculationModuleBalanceInvariantTests", tool, StringComparison.Ordinal);
     }
-private static string BalanceInvariantDocumentPath =>
-        Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "CalculationModuleBalanceInvariants.md");
+    private static string BalanceInvariantDocumentPath =>
+            Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "CalculationModuleBalanceInvariants.md");
 
     private static string VerifyScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "verify-calculation-module-balance-invariants.ps1");

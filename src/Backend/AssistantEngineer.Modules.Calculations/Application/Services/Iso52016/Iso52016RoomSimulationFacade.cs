@@ -76,7 +76,7 @@ public sealed class Iso52016RoomSimulationFacade : IIso52016RoomSimulationFacade
     {
         if (request.Room is null)
             return Result.Validation("Room is required.");
-if (request.AnnualClimateData is null)
+        if (request.AnnualClimateData is null)
             return Result.Validation("Annual climate data is required.");
 
         if (request.LatitudeDegrees is < -90.0 or > 90.0)

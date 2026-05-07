@@ -19,9 +19,9 @@ public class Window
     private Window() { }
 
     private Window(
-        Area area, 
-        ThermalTransmittance uValue, 
-        SolarHeatGainCoefficient shgc, 
+        Area area,
+        ThermalTransmittance uValue,
+        SolarHeatGainCoefficient shgc,
         CardinalDirection orientation,
         WindowShadingParameters shading,
         Room room)
@@ -51,7 +51,7 @@ public class Window
             shading ?? WindowShadingParameters.None,
             room));
     }
-    
+
     public Result Resize(Area newArea)
     {
         Area = newArea;

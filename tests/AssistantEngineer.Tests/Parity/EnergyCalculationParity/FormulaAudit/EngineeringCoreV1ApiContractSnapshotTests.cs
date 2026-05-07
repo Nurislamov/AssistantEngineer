@@ -308,8 +308,8 @@ public class EngineeringCoreV1ApiContractSnapshotTests
         Assert.Empty(missingInStatus);
     }
 
-private static JsonDocument ReadJson(string path) =>
-        JsonDocument.Parse(File.ReadAllText(path));
+    private static JsonDocument ReadJson(string path) =>
+            JsonDocument.Parse(File.ReadAllText(path));
 
     private static string[] ReadStringArray(JsonElement root, string propertyName) =>
         root

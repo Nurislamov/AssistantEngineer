@@ -23,7 +23,7 @@ public sealed class DomesticHotWaterStandardProvider : IDomesticHotWaterStandard
                 0.0,
                 0.0,
                 "Seed office default with low sanitary hot-water intensity."),
-                
+
             [RoomType.MeetingRoom] = new(
                 Table,
                 "seed-v1",

@@ -291,11 +291,11 @@ public sealed class BuildingSyntheticDesignDayService
                     break;
 
                 case WallBoundaryType.AdjacentUnconditioned:
-                {
-                    var adjacentTemp = (indoorTemperatureC + outdoorTemperatureC) / 2.0;
-                    sum += ua * (adjacentTemp - indoorTemperatureC);
-                    break;
-                }
+                    {
+                        var adjacentTemp = (indoorTemperatureC + outdoorTemperatureC) / 2.0;
+                        sum += ua * (adjacentTemp - indoorTemperatureC);
+                        break;
+                    }
             }
         }
 

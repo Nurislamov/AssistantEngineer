@@ -222,7 +222,7 @@ public class EngineeringCoreV1ReportContractSnapshotTests
         Assert.Contains("EngineeringCoreV1.DesignPointCooling", tool, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1.TrueHourly8760", tool, StringComparison.Ordinal);
     }
-private static void AssertRequiredDisclosure(JsonElement disclosure)
+    private static void AssertRequiredDisclosure(JsonElement disclosure)
     {
         Assert.Equal("ClosedV1", disclosure.GetProperty("coreStatus").GetString());
 

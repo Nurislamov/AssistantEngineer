@@ -301,7 +301,7 @@ public class Room
 
         return total;
     }
-    
+
     public Result SetGroundContactMetadata(GroundContactMetadata metadata)
     {
         GroundContactMetadata = metadata;

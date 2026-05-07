@@ -110,7 +110,7 @@ public class Wall
         AdjacentRoomId = adjacentRoom?.Id;
         return Result.Success();
     }
-    
+
     public Result ClearUnexpectedAdjacentRoomReference()
     {
         if (BoundaryType is WallBoundaryType.AdjacentConditioned or WallBoundaryType.AdjacentUnconditioned)

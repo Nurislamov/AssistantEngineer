@@ -227,12 +227,12 @@ public class EngineeringCoreV1ReportExportDisclosureGuardTests
         Assert.Contains("calculationDisclosure", tool, StringComparison.Ordinal);
         Assert.Contains("No exact EnergyPlus numerical parity claim.", tool, StringComparison.Ordinal);
     }
-private static string[] SnapshotPaths =>
-    [
-        Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "heating-report.sample.json"),
+    private static string[] SnapshotPaths =>
+        [
+            Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "heating-report.sample.json"),
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "cooling-report.sample.json"),
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "annual-energy-disclosure.sample.json")
-    ];
+        ];
 
     private static string ExportPolicyPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "reports", "engineering-core-v1", "ExportDisclosurePolicy.md");

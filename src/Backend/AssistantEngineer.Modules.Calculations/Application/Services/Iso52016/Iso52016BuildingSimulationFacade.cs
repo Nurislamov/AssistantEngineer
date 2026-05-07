@@ -152,7 +152,7 @@ public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulati
     {
         if (string.IsNullOrWhiteSpace(request.BuildingCode))
             return Result.Validation("Building code is required.");
-if (request.Rooms is null)
+        if (request.Rooms is null)
             return Result.Validation("Building room list is required.");
 
         if (request.Rooms.Count == 0)

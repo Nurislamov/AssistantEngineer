@@ -184,7 +184,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         var groundBoundaryConditions = rooms
             .Select(room => _groundHeatTransferService.CalculateBoundaryCondition(room, envelopeDefaults))
             .ToArray();
-        var groundUa = groundBoundaryConditions.Sum(x => x.HeatTransferCoefficientWPerK);var hours = monthHours.Count;
+        var groundUa = groundBoundaryConditions.Sum(x => x.HeatTransferCoefficientWPerK); var hours = monthHours.Count;
 
         var internalGainsKWh = monthHours.Sum(hour =>
             rooms.Sum(room => GetHourlyInternalGain(room, hour.HourOfYear % 24))) / 1000.0;
@@ -201,7 +201,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
                 (x.IndoorTemperatureWeight * effectiveHeatingSetpoint +
                  x.OutdoorTemperatureWeight * averageOutdoorTemperature +
                  x.GroundTemperatureWeight * groundBoundaryTemperatureC)) / groundUa;
-        
+
         var heatingLossesKWh = Math.Max(
             0,
             ((outdoorUa * Math.Max(0, effectiveHeatingSetpoint - averageOutdoorTemperature)) +
@@ -227,7 +227,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
              (groundUa * Math.Max(0, equivalentCoolingGroundBoundaryTemperature - effectiveCoolingSetpoint)) +
              (averageVentilationHeatTransfer * Math.Max(0, averageOutdoorTemperature - effectiveCoolingSetpoint)))
             * hours / 1000.0);
-        
+
         var coolingDemandKWh = Math.Max(
             0,
             coolingTransmissionKWh + totalUsefulGainsKWh * _monthlyOptions.CoolingGainUtilizationFactor);
@@ -539,7 +539,7 @@ public sealed class Iso52016MonthlyQuasiSteadyStateCalculator
         double CoolingDemandKWh,
         double InternalGainsKWh,
         double SolarGainsKWh);
-    
+
     private static double GetOutdoorTransmissionHeatTransferCoefficient(
         Room room,
         BuildingEnvelopeDefaults envelopeDefaults)

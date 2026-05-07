@@ -216,7 +216,7 @@ public interface IBuildingsFacade
         int weatherYear,
         AutocorrectBuildingModelRequest request,
         CancellationToken cancellationToken);
-    
+
     Task<Result<RoomGroundContactResponse>> GetRoomGroundContactAsync(
         int roomId,
         CancellationToken cancellationToken);

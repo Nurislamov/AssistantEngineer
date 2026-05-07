@@ -57,4 +57,5 @@ public interface IBuildingEnergyAnalysisFacade
     Task<Result<Iso52016BuildingEnergySimulationApplicationResult>> SimulateIso52016Async(
         int buildingId,
         Iso52016BuildingEnergySimulationCommand request,
-        CancellationToken cancellationToken);}
+        CancellationToken cancellationToken);
+}

@@ -551,33 +551,33 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                     continue;
 
                 case WallBoundaryType.AdjacentConditioned:
-                {
-                    if (wall.AdjacentRoom is null)
-                        continue;
+                    {
+                        if (wall.AdjacentRoom is null)
+                            continue;
 
-                    if (IsAdiabaticAdjacentBoundary(room, wall.AdjacentRoom, roomZoneMap))
-                        continue;
+                        if (IsAdiabaticAdjacentBoundary(room, wall.AdjacentRoom, roomZoneMap))
+                            continue;
 
-                    var boundaryTemperature =
-                        previousRoomTemperatures.TryGetValue(wall.AdjacentRoom.Id, out var adjacentTemp)
-                            ? adjacentTemp
-                            : wall.AdjacentRoom.IndoorTemperature.Celsius;
+                        var boundaryTemperature =
+                            previousRoomTemperatures.TryGetValue(wall.AdjacentRoom.Id, out var adjacentTemp)
+                                ? adjacentTemp
+                                : wall.AdjacentRoom.IndoorTemperature.Celsius;
 
-                    totalHeatTransferCoefficient += heatTransferCoefficient;
-                    weightedBoundaryTemperature += heatTransferCoefficient * boundaryTemperature;
-                    break;
-                }
+                        totalHeatTransferCoefficient += heatTransferCoefficient;
+                        weightedBoundaryTemperature += heatTransferCoefficient * boundaryTemperature;
+                        break;
+                    }
 
                 case WallBoundaryType.AdjacentUnconditioned:
-                {
-                    var boundaryTemperature = outdoorTemperatureC +
-                                              (currentRoomReferenceTemperatureC - outdoorTemperatureC) *
-                                              Math.Clamp(_options.AdjacentUnconditionedTemperatureWeight, 0, 1);
+                    {
+                        var boundaryTemperature = outdoorTemperatureC +
+                                                  (currentRoomReferenceTemperatureC - outdoorTemperatureC) *
+                                                  Math.Clamp(_options.AdjacentUnconditionedTemperatureWeight, 0, 1);
 
-                    totalHeatTransferCoefficient += heatTransferCoefficient;
-                    weightedBoundaryTemperature += heatTransferCoefficient * boundaryTemperature;
-                    break;
-                }
+                        totalHeatTransferCoefficient += heatTransferCoefficient;
+                        weightedBoundaryTemperature += heatTransferCoefficient * boundaryTemperature;
+                        break;
+                    }
 
                 case WallBoundaryType.External:
                 case WallBoundaryType.Ground:

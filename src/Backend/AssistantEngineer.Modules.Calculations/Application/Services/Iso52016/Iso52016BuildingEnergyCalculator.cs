@@ -245,26 +245,26 @@ public sealed class Iso52016BuildingEnergyCalculator : IBuildingEnergyCalculator
         var estimates = new List<RoomEnergyEstimate>();
 
         foreach (var floor in building.Floors)
-        foreach (var room in floor.Rooms)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var room in floor.Rooms)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
 
-            var coolingResult = await _coolingCalculator.CalculateAsync(
-                room,
-                coolingMethod,
-                preferences,
-                cancellationToken);
+                var coolingResult = await _coolingCalculator.CalculateAsync(
+                    room,
+                    coolingMethod,
+                    preferences,
+                    cancellationToken);
 
-            var heatingResult = await _heatingCalculator.CalculateAsync(
-                room,
-                heatingMethod,
-                preferences,
-                cancellationToken);
+                var heatingResult = await _heatingCalculator.CalculateAsync(
+                    room,
+                    heatingMethod,
+                    preferences,
+                    cancellationToken);
 
-            estimates.Add(new RoomEnergyEstimate(
-                DesignDayCoolingDemandKWh: coolingResult.HourlyHeatLoadW.Sum() / 1000.0,
-                DesignMonthHeatingDemandKWh: heatingResult.TotalDesignHeatingLoadW * 24 * 30 / 1000.0));
-        }
+                estimates.Add(new RoomEnergyEstimate(
+                    DesignDayCoolingDemandKWh: coolingResult.HourlyHeatLoadW.Sum() / 1000.0,
+                    DesignMonthHeatingDemandKWh: heatingResult.TotalDesignHeatingLoadW * 24 * 30 / 1000.0));
+            }
 
         return estimates;
     }

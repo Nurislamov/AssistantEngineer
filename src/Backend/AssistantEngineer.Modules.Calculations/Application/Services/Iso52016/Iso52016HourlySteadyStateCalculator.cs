@@ -56,7 +56,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
                                                new Iso13370GroundTemperatureService(
                                                    Microsoft.Extensions.Options.Options.Create(
                                                        new Iso13370GroundTemperatureOptions()));
-        
+
         var resolvedGroundHeatTransferService = groundHeatTransferService ??
                                                 new Iso13370GroundHeatTransferService(
                                                     Microsoft.Extensions.Options.Options.Create(

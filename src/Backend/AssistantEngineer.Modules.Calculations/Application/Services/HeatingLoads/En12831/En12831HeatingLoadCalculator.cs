@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 
-public sealed class En12831HeatingLoadCalculator : 
+public sealed class En12831HeatingLoadCalculator :
     IRoomHeatingLoadCalculator, IBuildingHeatingLoadCalculator
 {
     private readonly En12831HeatingLoadOptions _options;

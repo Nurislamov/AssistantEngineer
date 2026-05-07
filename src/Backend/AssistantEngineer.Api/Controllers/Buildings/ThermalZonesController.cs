@@ -92,7 +92,7 @@ public class ThermalZonesController : ControllerBase
 
         return result.ToNoContentResult(this);
     }
-    
+
     private static readonly IReadOnlyDictionary<string, Func<IEnumerable<ThermalZoneResponse>, bool, IOrderedEnumerable<ThermalZoneResponse>>> SortRules =
         new Dictionary<string, Func<IEnumerable<ThermalZoneResponse>, bool, IOrderedEnumerable<ThermalZoneResponse>>>(StringComparer.OrdinalIgnoreCase)
         {

@@ -224,7 +224,7 @@ public sealed class EquipmentSizingEngine
                 input.DiagnosticsContext));
         }
 
-                if (input.MaximumOversizingPercent is <= 0)
+        if (input.MaximumOversizingPercent is <= 0)
         {
             diagnostics.Add(Error(
                 "EquipmentSizing.InvalidMaximumOversizingPercent",

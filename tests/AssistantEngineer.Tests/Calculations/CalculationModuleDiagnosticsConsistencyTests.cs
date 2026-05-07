@@ -274,8 +274,8 @@ public class CalculationModuleDiagnosticsConsistencyTests
         var tool = File.ReadAllText(ToolProgramPath);
         Assert.Contains("CalculationModuleDiagnosticsConsistencyTests", tool, StringComparison.Ordinal);
     }
-private static string DiagnosticsConsistencyDocumentPath =>
-        Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "CalculationModuleDiagnosticsConsistency.md");
+    private static string DiagnosticsConsistencyDocumentPath =>
+            Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "CalculationModuleDiagnosticsConsistency.md");
 
     private static string VerifyScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "verify-calculation-module-diagnostics-consistency.ps1");

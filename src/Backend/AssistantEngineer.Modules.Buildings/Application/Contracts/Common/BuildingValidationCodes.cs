@@ -20,7 +20,7 @@ public static class BuildingValidationCodes
 
     public const string ThermalZoneRoomAssignedMultipleTimes = "thermal-zone.room-assigned-multiple-times";
     public const string AnnualClimateDataHoursInvalid = "climate.annual-hours.invalid";
-    
+
     public const string RoomPeopleCountDefaultAvailable = "room.people-count.default-available";
     public const string RoomEquipmentLoadDefaultAvailable = "room.equipment-load.default-available";
     public const string RoomLightingLoadDefaultAvailable = "room.lighting-load.default-available";

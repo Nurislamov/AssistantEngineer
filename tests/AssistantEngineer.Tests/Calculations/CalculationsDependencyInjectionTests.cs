@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Standards;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Options;
@@ -48,6 +49,8 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IRoomCoolingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IAggregateLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IAnnualProfileGenerator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IAnnualProfileShapeValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IStandardCalculationDisclosureFactory>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IIso16798ReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IBuildingEnvelopeReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<En12831HeatingLoadCalculator>(services, ServiceLifetime.Scoped);

@@ -227,8 +227,8 @@ public class EngineeringCoreV1TraceabilityMatrixTests
         Assert.Contains("EngineeringCoreV1TraceabilityMatrix.json", tool, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1TraceabilityMatrix.md", tool, StringComparison.Ordinal);
     }
-private static JsonDocument ReadJson(string path) =>
-        JsonDocument.Parse(File.ReadAllText(path));
+    private static JsonDocument ReadJson(string path) =>
+            JsonDocument.Parse(File.ReadAllText(path));
 
     private static string[] ReadStringArray(
         JsonElement root,

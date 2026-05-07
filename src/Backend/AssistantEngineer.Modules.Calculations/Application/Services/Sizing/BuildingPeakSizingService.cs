@@ -237,7 +237,7 @@ public sealed class BuildingPeakSizingService
             if (heatingPeak is not null)
                 response.RoomHeatingPeaks.Add(heatingPeak);
         }
-        
+
         return Result<BuildingPeakSizingResponse>.Success(response);
     }
 
