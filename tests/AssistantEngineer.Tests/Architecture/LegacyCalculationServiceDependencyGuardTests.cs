@@ -14,7 +14,6 @@ public class LegacyCalculationServiceDependencyGuardTests
         typeof(BuildingCoolingLoadService),
         typeof(FloorCalculationService),
         typeof(RoomCalculationService),
-        typeof(BuildingEnergyBalanceService),
         typeof(BuildingHeatingLoadService)
     ];
 
@@ -70,6 +69,43 @@ public class LegacyCalculationServiceDependencyGuardTests
     }
 
     [Fact]
+    public void RetiredLegacyCalculationServices_DoNotReappearInBackendSource()
+    {
+        var retiredServiceTypeNames = new[]
+        {
+            "BuildingEnergyBalanceService"
+        };
+
+        var sourceFiles = Directory.GetFiles(
+                Path.Combine(TestPaths.RepoRoot, "src", "Backend"),
+                "*.cs",
+                SearchOption.AllDirectories)
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        var violations = new List<string>();
+
+        foreach (var sourceFile in sourceFiles)
+        {
+            var normalizedPath = Path.GetFullPath(sourceFile);
+            var content = File.ReadAllText(sourceFile);
+
+            foreach (var retiredServiceTypeName in retiredServiceTypeNames)
+            {
+                if (content.Contains(retiredServiceTypeName, StringComparison.Ordinal))
+                {
+                    violations.Add($"{normalizedPath} references retired service {retiredServiceTypeName}.");
+                }
+            }
+        }
+
+        Assert.True(
+            violations.Count == 0,
+            "Retired legacy services must not be reintroduced in backend source: " + string.Join("; ", violations));
+    }
+
+    [Fact]
     public void LegacyCalculationServices_AreReferencedOnlyInCompatibilityDefinitionsAndCompositionRoots()
     {
         var allowedPathsByTypeName = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
@@ -88,11 +124,6 @@ public class LegacyCalculationServiceDependencyGuardTests
             [
                 NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rooms/RoomCalculationService.cs"),
                 NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
-            ],
-            ["BuildingEnergyBalanceService"] =
-            [
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingEnergyBalanceService.cs"),
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs")
             ],
             ["BuildingHeatingLoadService"] =
             [
