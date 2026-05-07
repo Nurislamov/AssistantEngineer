@@ -110,6 +110,14 @@ internal static class Program
     private static int VerifySmoke(bool skipFrontend)
     {
         Console.WriteLine("Engineering Core V1 smoke verification");
+        if (skipFrontend)
+        {
+            WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
+        }
+        else
+        {
+            Console.WriteLine("Frontend checks are enabled by default.");
+        }
 
         if (!skipFrontend)
         {
@@ -143,6 +151,14 @@ internal static class Program
     private static int VerifyContracts(bool skipFrontend, bool skipRegenerate)
     {
         Console.WriteLine("Engineering Core V1 contracts verification");
+        if (skipFrontend)
+        {
+            WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
+        }
+        else
+        {
+            Console.WriteLine("Frontend checks are enabled by default.");
+        }
 
         if (!skipRegenerate)
         {
@@ -187,6 +203,14 @@ internal static class Program
     private static int VerifyManifest(bool skipFrontend)
     {
         Console.WriteLine("Engineering Core V1 manifest verification");
+        if (skipFrontend)
+        {
+            WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
+        }
+        else
+        {
+            Console.WriteLine("Frontend checks are enabled by default.");
+        }
 
         var steps = new List<CommandStep>
         {
@@ -217,6 +241,14 @@ internal static class Program
     private static int AssertReleaseReady(ReleaseReadyOptions options)
     {
         Console.WriteLine("Engineering Core V1 release readiness gate");
+        if (options.SkipFrontend)
+        {
+            WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
+        }
+        else
+        {
+            Console.WriteLine("Frontend checks are enabled by default.");
+        }
 
         var requiredFiles = new[]
         {

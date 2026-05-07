@@ -72,6 +72,24 @@ public class ArchitectureHardeningDocumentationTests
         {
             Assert.Contains(requiredSection, content, StringComparison.Ordinal);
         }
+
+        var requiredPhaseTwoSections = new[]
+        {
+            "## Engineering Core Hardening Phase 2",
+            "### Frontend gate status",
+            "### Governance generation idempotency",
+            "### Backend pipeline extraction phase 2",
+            "### Frontend workspace decomposition phase 2",
+            "### Legacy enforcement",
+            "### Verification results",
+            "### Remaining risks",
+            "### Recommended next phase"
+        };
+
+        foreach (var requiredSection in requiredPhaseTwoSections)
+        {
+            Assert.Contains(requiredSection, content, StringComparison.Ordinal);
+        }
     }
 
     private static string LegacyInventoryPath =>

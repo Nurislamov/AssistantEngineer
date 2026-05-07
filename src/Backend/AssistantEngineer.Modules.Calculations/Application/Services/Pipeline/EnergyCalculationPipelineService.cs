@@ -41,9 +41,6 @@ public sealed class EnergyCalculationPipelineService
     private const string AggregationPipelineMethod = "Energy Calculation Parity / Application Load Aggregation Pipeline";
     private const string EnergyCalculationParityDesignPoint = "EnergyCalculationParityDesignPoint";
     private const string EnergyCalculationParityAnnualAggregationAdapter = "EnergyCalculationParityAnnualAggregationAdapter";
-    private const string AnnualClimateDataSolarSource = "AnnualClimateData";
-    private const string ReferenceSolarFallbackSource = "ReferenceByOrientationFallback";
-
     private readonly IRoomRepository _rooms;
     private readonly IFloorRepository _floors;
     private readonly IBuildingRepository _buildings;
@@ -64,6 +61,8 @@ public sealed class EnergyCalculationPipelineService
     private readonly ILogger<EnergyCalculationPipelineService> _logger;
     private readonly EnergyCalculationPipelineClimateContextBuilder _climateContextBuilder;
     private readonly EnergyCalculationPipelineAnnualInputAdapter _annualInputAdapter;
+    private readonly EnergyCalculationPipelineRoomContextResolver _roomContextResolver;
+    private readonly EnergyCalculationPipelineAggregationRoomAssembler _aggregationRoomAssembler;
 
     public EnergyCalculationPipelineService(
         IRoomRepository rooms,
@@ -109,6 +108,12 @@ public sealed class EnergyCalculationPipelineService
             _energyNeedOptions,
             _logger);
         _annualInputAdapter = new EnergyCalculationPipelineAnnualInputAdapter(timeProvider);
+        _roomContextResolver = new EnergyCalculationPipelineRoomContextResolver(
+            _coolingReferenceData,
+            _groundTemperatureService,
+            _solarRadiationService,
+            _energyNeedOptions);
+        _aggregationRoomAssembler = new EnergyCalculationPipelineAggregationRoomAssembler();
     }
 
     public async Task<Result<RoomLoadCalculationResult>> CalculateRoomLoadAsync(
@@ -495,9 +500,9 @@ public sealed class EnergyCalculationPipelineService
             requestedMethod,
             $"Room {room.Id} application load pipeline",
             "Energy Calculation Parity design-point pipeline");
-        AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
+        EnergyCalculationPipelineRoomContextResolver.AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
 
-        var groundContext = ResolveGroundContext(room, climateContext);
+        var groundContext = _roomContextResolver.ResolveGroundContext(room, climateContext);
         diagnostics.AddRange(groundContext.Diagnostics);
         assumptions.AddRange(groundContext.Assumptions);
         var heatingTransmission = RoomTransmissionInputFactory.CreateForRoom(
@@ -511,7 +516,7 @@ public sealed class EnergyCalculationPipelineService
             coolingOutdoor,
             groundContext.CoolingGroundTemperatureC).Elements;
 
-        var solarContext = ResolveSolarContext(room, climateContext);
+        var solarContext = _roomContextResolver.ResolveSolarContext(room, climateContext);
         diagnostics.AddRange(solarContext.Diagnostics);
         assumptions.AddRange(solarContext.Assumptions);
 
@@ -644,192 +649,20 @@ public sealed class EnergyCalculationPipelineService
             LightingLoadW: room.LightingLoad.Watts,
             DiagnosticsContext: $"Room {room.Id} application internal gains");
 
-
-    private RoomGroundContext ResolveGroundContext(
-        Room room,
-        PipelineClimateContext climateContext)
-    {
-        if (!room.Walls.Any(wall => wall.BoundaryType == WallBoundaryType.Ground))
-            return RoomGroundContext.Empty;
-
-        var diagnostics = new List<CalculationDiagnostic>();
-        var assumptions = new List<string>();
-        var context = $"Room {room.Id} application ground boundary";
-
-        if (room.GroundContactMetadata is null)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Warning,
-                "GroundContact.MetadataMissing",
-                "Ground boundary exists, but ground contact metadata is missing.",
-                context));
-        }
-
-        if (_groundTemperatureService is not null &&
-            climateContext.AnnualClimateData is not null &&
-            climateContext.AnnualClimateData.HourlyData.Count > 0)
-        {
-            var monthly = Enumerable.Range(1, 12)
-                .Select(month => _groundTemperatureService.GetMonthlyAverageTemperature(
-                    climateContext.AnnualClimateData.HourlyData.ToArray(),
-                    month))
-                .ToArray();
-
-            var heatingGroundTemperature = monthly.Min();
-            var coolingGroundTemperature = monthly.Max();
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "GroundContact.GroundTemperatureProfileUsed",
-                "Ground boundary temperature was resolved from the existing ground temperature profile service.",
-                context));
-            assumptions.Add("Ground boundary uses existing ground temperature profile values for design-point transmission.");
-            return new RoomGroundContext(
-                heatingGroundTemperature,
-                coolingGroundTemperature,
-                diagnostics,
-                assumptions);
-        }
-
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Warning,
-            "GroundContact.DefaultBoundaryTemperatureUsed",
-            $"Ground boundary temperature profile was unavailable; default boundary temperature {_energyNeedOptions.DefaultGroundBoundaryTemperatureC} C was used.",
-            context));
-        assumptions.Add("Ground boundary uses the configured default boundary temperature when profile data is unavailable.");
-        return new RoomGroundContext(
-            _energyNeedOptions.DefaultGroundBoundaryTemperatureC,
-            _energyNeedOptions.DefaultGroundBoundaryTemperatureC,
-            diagnostics,
-            assumptions);
-    }
-
-    private RoomSolarContext ResolveSolarContext(
-        Room room,
-        PipelineClimateContext climateContext)
-    {
-        if (room.Windows.Count == 0)
-            return RoomSolarContext.Empty;
-
-        var diagnostics = new List<CalculationDiagnostic>();
-        var assumptions = new List<string>();
-        var irradianceByWindowId = new Dictionary<int, double>();
-        var context = $"Room {room.Id} application solar gains";
-
-        if (_solarRadiationService is not null &&
-            climateContext.AnnualClimateData is not null &&
-            climateContext.AnnualClimateData.HourlyData.Count > 0)
-        {
-            foreach (var window in room.Windows)
-            {
-                var irradiance = climateContext.AnnualClimateData.HourlyData
-                    .Select(hour =>
-                    {
-                        var timestamp = new DateTime(
-                                climateContext.AnnualClimateData.Year,
-                                1,
-                                1,
-                                0,
-                                0,
-                                0,
-                                DateTimeKind.Utc)
-                            .AddHours(hour.HourOfYear);
-                        return _solarRadiationService.CalculateVerticalSurfaceRadiation(
-                            hour,
-                            window.Orientation,
-                            _energyNeedOptions.LatitudeDegrees,
-                            timestamp.DayOfYear,
-                            timestamp.Hour);
-                    })
-                    .DefaultIfEmpty(0)
-                    .Max();
-
-                irradianceByWindowId[window.Id] = irradiance;
-            }
-
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "SolarGains.IrradianceSource",
-                $"Solar irradiance source: {AnnualClimateDataSolarSource}.",
-                context));
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "SolarWeather.AnnualClimateSolarDataUsed",
-                "Annual climate direct and diffuse solar data were used to resolve design-point window irradiance.",
-                context));
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "SolarWeather.SurfaceIrradianceCalculated",
-                "Window irradiance was calculated through the centralized solar position and surface irradiance path.",
-                context));
-            assumptions.Add("Window solar gains use available annual climate solar data for design-point irradiance.");
-            return new RoomSolarContext(irradianceByWindowId, diagnostics, assumptions);
-        }
-
-        foreach (var window in room.Windows)
-        {
-            irradianceByWindowId[window.Id] =
-                _coolingReferenceData.GetWindowSolarLoadWPerM2(window.Orientation);
-        }
-
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Warning,
-            "SolarGains.ReferenceByOrientationFallback",
-            "Window solar gain uses orientation reference irradiance because hourly weather/solar context was not available.",
-            context));
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Warning,
-            "SolarWeather.ReferenceByOrientationFallbackUsed",
-            "Reference irradiance by window orientation was used because hourly weather/solar context was not available.",
-            context));
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Warning,
-            "SolarWeather.MissingDirectDiffuseSolarData",
-            "Hourly direct and diffuse solar data were unavailable for this application path.",
-            context));
-        diagnostics.Add(new CalculationDiagnostic(
-            CalculationDiagnosticSeverity.Info,
-            "SolarGains.IrradianceSource",
-            $"Solar irradiance source: {ReferenceSolarFallbackSource}.",
-            context));
-        assumptions.Add("Window solar gains use orientation reference irradiance fallback when annual weather/solar data is unavailable.");
-        return new RoomSolarContext(irradianceByWindowId, diagnostics, assumptions);
-    }
-
-    private static void AddInternalGainScheduleDiagnostics(
-        Room room,
-        List<CalculationDiagnostic> diagnostics,
-        List<string> assumptions)
-    {
-        var context = $"Room {room.Id} application internal gains";
-        var hasSchedules =
-            room.OccupancySchedule is not null ||
-            room.EquipmentSchedule is not null ||
-            room.LightingSchedule is not null;
-
-        diagnostics.Add(new CalculationDiagnostic(
-            hasSchedules ? CalculationDiagnosticSeverity.Warning : CalculationDiagnosticSeverity.Info,
-            hasSchedules
-                ? "InternalGains.DesignPointFullScheduleFactorWithSchedules"
-                : "InternalGains.DesignPointFullScheduleFactor",
-            hasSchedules
-                ? "Design-point internal gains use full schedule factor 1.0; room schedules are reserved for hourly analysis paths."
-                : "Design-point internal gains use full schedule factor 1.0.",
-            context));
-        assumptions.Add("Design-point internal gains use full schedule factor 1.0.");
-    }
-
     private Result<LoadAggregationResult> AggregateFloor(
         Floor floor,
         CalculationPreferences preferences,
         PipelineClimateContext climateContext,
         string? requestedMethod)
     {
-        var rooms = BuildAggregationRooms(
+        var rooms = _aggregationRoomAssembler.BuildAggregationRooms(
             floor.Rooms,
             floor.Building,
-            preferences,
-            climateContext,
-            requestedMethod);
+            room => CalculateRoomLoad(
+                room,
+                preferences,
+                climateContext,
+                requestedMethod));
         if (rooms.IsFailure)
             return Result<LoadAggregationResult>.Failure(rooms);
 
@@ -848,12 +681,14 @@ public sealed class EnergyCalculationPipelineService
         PipelineClimateContext climateContext,
         string? requestedMethod)
     {
-        var rooms = BuildAggregationRooms(
+        var rooms = _aggregationRoomAssembler.BuildAggregationRooms(
             building.Floors.SelectMany(floor => floor.Rooms),
             building,
-            preferences,
-            climateContext,
-            requestedMethod);
+            room => CalculateRoomLoad(
+                room,
+                preferences,
+                climateContext,
+                requestedMethod));
         if (rooms.IsFailure)
             return Result<LoadAggregationResult>.Failure(rooms);
 
@@ -864,50 +699,6 @@ public sealed class EnergyCalculationPipelineService
             LoadAggregationMode.DesignPoint,
             building.Name,
             $"Building {building.Id} application aggregation"));
-    }
-
-    private Result<IReadOnlyList<AggregationRoomLoadInput>> BuildAggregationRooms(
-        IEnumerable<Room> sourceRooms,
-        Building building,
-        CalculationPreferences preferences,
-        PipelineClimateContext climateContext,
-        string? requestedMethod)
-    {
-        var roomToZone = building.ThermalZones
-            .SelectMany(zone => zone.AssignedRooms.Select(room => new { room.Id, ZoneId = (int?)zone.Id }))
-            .GroupBy(item => item.Id)
-            .ToDictionary(group => group.Key, group => group.First().ZoneId);
-        var rooms = new List<AggregationRoomLoadInput>();
-
-        foreach (var room in sourceRooms.OrderBy(room => room.Id))
-        {
-            var load = CalculateRoomLoad(
-                room,
-                preferences,
-                climateContext,
-                requestedMethod);
-            if (load.IsFailure)
-                return Result<IReadOnlyList<AggregationRoomLoadInput>>.Failure(load);
-
-            if (load.Value.HasErrors)
-                return Result<IReadOnlyList<AggregationRoomLoadInput>>.Validation(FormatErrorDiagnostics(load.Value.Diagnostics));
-
-            rooms.Add(new AggregationRoomLoadInput(
-                RoomId: room.Id,
-                RoomName: room.Name,
-                ThermalZoneId: roomToZone.GetValueOrDefault(room.Id),
-                FloorId: room.FloorId,
-                BuildingId: building.Id,
-                AreaM2: room.Area.SquareMeters,
-                HeatingLoadW: load.Value.HeatingLoadW,
-                CoolingLoadW: load.Value.CoolingLoadW,
-                HeatingBreakdown: load.Value.HeatingBreakdown,
-                CoolingBreakdown: load.Value.CoolingBreakdown,
-                HourlyHeatingLoadW: Enumerable.Repeat(load.Value.HeatingLoadW, 24).ToArray(),
-                HourlyCoolingLoadW: Enumerable.Repeat(load.Value.CoolingLoadW, 24).ToArray()));
-        }
-
-        return Result<IReadOnlyList<AggregationRoomLoadInput>>.Success(rooms);
     }
 
     private async Task<CalculationPreferences> GetPreferencesAsync(

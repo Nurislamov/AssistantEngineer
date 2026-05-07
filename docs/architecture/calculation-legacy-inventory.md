@@ -38,6 +38,9 @@ Important production-path confirmation:
 - First-party load controllers call `ILoadCalculationsFacade`.
 - `LoadCalculationsFacade` calls `EnergyCalculationPipelineService`.
 - No direct controller/facade dependency on the legacy services above was found.
+- Architecture guard enforces that legacy service references stay fenced to:
+  - compatibility service definitions (`Application/Services/Buildings|Floors|Rooms/*CalculationService.cs`),
+  - composition registrations (`Composition/LoadCalculationRegistration.cs`, `Composition/EnergyAnalysisRegistration.cs`).
 
 Preview services (active, do not classify as removable legacy):
 - `NaturalVentilationPreviewService` is used by `RoomVentilationController` through `VentilationAnalysisFacade`.
@@ -91,6 +94,7 @@ Tests covering old behavior (keep while migration is incomplete):
 - `tests/AssistantEngineer.Tests/Calculations/HeatingLoadValidationTests.cs`
 - `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
 - `tests/AssistantEngineer.Tests/Reporting/BuildingHeatingReportDataServiceTests.cs`
+- `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs` (fencing guard for legacy references and production constructor dependencies)
 
 ## Risk notes
 

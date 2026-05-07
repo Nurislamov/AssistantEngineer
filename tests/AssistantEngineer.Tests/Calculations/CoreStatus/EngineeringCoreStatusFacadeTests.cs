@@ -78,6 +78,10 @@ public class EngineeringCoreStatusFacadeTests
 
         Assert.Contains(result.Value.ExplicitNonClaims, claim =>
             claim.Contains("latent", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Contains("SystemEnergyEngine compatibility path remains default.", result.Value.ExplicitNonClaims);
+        Assert.Contains("EN15316-inspired modular chain is opt-in.", result.Value.ExplicitNonClaims);
+        Assert.Contains("ISO12831-3-inspired DHW path is opt-in.", result.Value.ExplicitNonClaims);
     }
 
     [Fact]

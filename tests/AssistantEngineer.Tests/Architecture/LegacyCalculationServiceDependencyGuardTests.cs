@@ -69,6 +69,70 @@ public class LegacyCalculationServiceDependencyGuardTests
         Assert.Equal(typeof(EnergyCalculationPipelineService), parameter.ParameterType);
     }
 
+    [Fact]
+    public void LegacyCalculationServices_AreReferencedOnlyInCompatibilityDefinitionsAndCompositionRoots()
+    {
+        var allowedPathsByTypeName = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
+        {
+            ["BuildingCoolingLoadService"] =
+            [
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs"),
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
+            ],
+            ["FloorCalculationService"] =
+            [
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Floors/FloorCalculationService.cs"),
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
+            ],
+            ["RoomCalculationService"] =
+            [
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rooms/RoomCalculationService.cs"),
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
+            ],
+            ["BuildingEnergyBalanceService"] =
+            [
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingEnergyBalanceService.cs"),
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs")
+            ],
+            ["BuildingHeatingLoadService"] =
+            [
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingHeatingLoadService.cs"),
+                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
+            ]
+        };
+
+        var sourceFiles = Directory.GetFiles(
+                Path.Combine(TestPaths.RepoRoot, "src", "Backend"),
+                "*.cs",
+                SearchOption.AllDirectories)
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        var violations = new List<string>();
+
+        foreach (var sourceFile in sourceFiles)
+        {
+            var normalizedPath = Path.GetFullPath(sourceFile);
+            var content = File.ReadAllText(sourceFile);
+
+            foreach (var serviceTypeName in allowedPathsByTypeName.Keys)
+            {
+                if (!content.Contains(serviceTypeName, StringComparison.Ordinal))
+                    continue;
+
+                if (!allowedPathsByTypeName[serviceTypeName].Contains(normalizedPath))
+                {
+                    violations.Add($"{normalizedPath} references {serviceTypeName} outside compatibility allowlist.");
+                }
+            }
+        }
+
+        Assert.True(
+            violations.Count == 0,
+            "Legacy calculation service references must stay fenced to compatibility definitions/DI roots: " + string.Join("; ", violations));
+    }
+
     private static string[] FindLegacyConstructorDependencies(IEnumerable<Type> ownerTypes) =>
         ownerTypes
             .SelectMany(ownerType => ownerType
@@ -79,4 +143,7 @@ public class LegacyCalculationServiceDependencyGuardTests
                     .Select(parameter => $"{ownerType.FullName} -> {parameter.ParameterType.FullName}")))
             .Order(StringComparer.Ordinal)
             .ToArray();
+
+    private static string NormalizePath(string relativePath) =>
+        Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, relativePath.Replace('/', Path.DirectorySeparatorChar)));
 }

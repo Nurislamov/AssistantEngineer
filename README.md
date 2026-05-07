@@ -349,15 +349,19 @@ Main verification command:
 
 Fast local profile:
 
-    .\scripts\engineering-core\verify-engineering-core-v1-smoke.ps1 -SkipFrontend
+    .\scripts\engineering-core\verify-engineering-core-v1-smoke.ps1
 
 Contracts profile:
 
-    .\scripts\engineering-core\verify-engineering-core-v1-contracts.ps1 -SkipFrontend
+    .\scripts\engineering-core\verify-engineering-core-v1-contracts.ps1
 
 Release readiness gate:
 
     .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+
+Emergency frontend override (manual use only):
+
+    .\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFrontend
 
 Key documentation:
 
