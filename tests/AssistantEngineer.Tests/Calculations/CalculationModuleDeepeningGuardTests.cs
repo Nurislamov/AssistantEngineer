@@ -163,6 +163,41 @@ public class CalculationModuleDeepeningGuardTests
         Assert.Contains("generate-calculation-module-inventory", tool, StringComparison.Ordinal);
         Assert.Contains("CalculationModuleDeepeningGuardTests", tool, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void EnergyCalculationPipelineService_SizeAndExtractionGuardsStayWithinBaseline()
+    {
+        var pipelinePath = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.Calculations",
+            "Application",
+            "Services",
+            "Pipeline",
+            "EnergyCalculationPipelineService.cs");
+
+        Assert.True(File.Exists(pipelinePath), $"Pipeline service was not found: {pipelinePath}");
+
+        var lineCount = File.ReadAllLines(pipelinePath).Length;
+        Assert.True(
+            lineCount <= 1000,
+            $"EnergyCalculationPipelineService grew beyond guard threshold (actual: {lineCount}, allowed: 1000).");
+
+        var extractedFiles = new[]
+        {
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineClimateContextBuilder.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAnnualInputAdapter.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineResultMapper.cs",
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineModelTypes.cs"
+        };
+
+        foreach (var relativePath in extractedFiles)
+        {
+            var fullPath = Path.Combine(relativePath.Split('/').Prepend(TestPaths.RepoRoot).ToArray());
+            Assert.True(File.Exists(fullPath), $"Expected extraction file to exist: {relativePath}");
+        }
+    }
 private static JsonDocument ReadJson(string path) =>
         JsonDocument.Parse(File.ReadAllText(path));
 

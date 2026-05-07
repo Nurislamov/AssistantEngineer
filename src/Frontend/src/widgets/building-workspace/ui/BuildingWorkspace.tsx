@@ -1,8 +1,6 @@
-﻿import AddIcon from "@mui/icons-material/Add";
+import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   Alert,
@@ -14,23 +12,19 @@ import {
   MenuItem,
   Select,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { buildingsApi } from "@/entities/building/api/buildingsApi";
 import { useBuilding } from "@/entities/building/model/useBuildingsQueries";
-import { calculationsApi } from "@/entities/calculation/api/calculationsApi";
-import { reportsApi } from "@/entities/calculation/api/reportsApi";
 import { equipmentCatalogApi, equipmentSelectionApi } from "@/entities/equipment/api/equipmentApi";
 import type {
   EquipmentCatalogItemDto,
@@ -39,7 +33,6 @@ import type {
 } from "@/entities/equipment/types";
 import { floorsApi } from "@/entities/floor/api/floorsApi";
 import type { FloorDto } from "@/entities/floor/types";
-import { useBuildingFloors } from "@/entities/floor/model/useFloorQueries";
 import { roomsApi, thermalZonesApi } from "@/entities/room/api/roomsApi";
 import type {
   CardinalDirectionDto,
@@ -59,16 +52,20 @@ import type {
   WallDto,
   WindowDto,
 } from "@/entities/room/types";
-import { useBuildingRooms } from "@/features/rooms/room-list/model/useBuildingRooms";
 import { queryKeys } from "@/shared/api/queryKeys";
-import { calculationMethods } from "@/shared/constants/calculationMethods";
-import { downloadBlob } from "@/shared/lib/downloadFile";
 import { formatNumber } from "@/shared/lib/format";
 import { getErrorMessage } from "@/shared/lib/getErrorMessage";
 import { DataCard } from "@/shared/ui/DataCard";
-import { EngineeringCoreDisclosurePanel } from "@/widgets/engineering-core-disclosure/ui/EngineeringCoreDisclosurePanel";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { QueryState } from "@/shared/ui/QueryState";
+import { useBuildingWorkspaceData } from "../model/useBuildingWorkspaceData";
+import { BuildingWorkspaceTabs, type WorkspaceTab } from "./BuildingWorkspaceTabs";
+import { CalculationsPanel } from "./CalculationsPanel";
+import { JsonBlock } from "./JsonBlock";
+import { ReportsPanel } from "./ReportsPanel";
+import { RoomSelect } from "./RoomSelect";
+
+export { ReportsPanel } from "./ReportsPanel";
 
 const directions: CardinalDirectionDto[] = [
   "North",
@@ -111,17 +108,6 @@ interface BuildingWorkspaceProps {
   buildingId: number;
 }
 
-type WorkspaceTab =
-  | "summary"
-  | "floors"
-  | "envelope"
-  | "zones"
-  | "ventilation"
-  | "ground"
-  | "calculations"
-  | "reports"
-  | "equipment";
-
 type RoomForm = {
   name: string;
   floorId: number;
@@ -135,24 +121,9 @@ type RoomForm = {
   type: RoomTypeDto;
 };
 
-const tabs: Array<{ value: WorkspaceTab; label: string }> = [
-  { value: "summary", label: "Summary" },
-  { value: "floors", label: "Floors & Rooms" },
-  { value: "envelope", label: "Envelope" },
-  { value: "zones", label: "Thermal zones" },
-  { value: "ventilation", label: "Ventilation" },
-  { value: "ground", label: "Ground contact" },
-  { value: "calculations", label: "Calculations" },
-  { value: "reports", label: "Reports" },
-  { value: "equipment", label: "Equipment" },
-];
-
 export function BuildingWorkspace({ buildingId }: BuildingWorkspaceProps): JSX.Element {
   const [tab, setTab] = useState<WorkspaceTab>("summary");
-  const buildingQuery = useBuilding(buildingId);
-  const floorsQuery = useBuildingFloors(buildingId);
-  const roomsQuery = useBuildingRooms(buildingId);
-  const queryError = buildingQuery.error ?? floorsQuery.error ?? roomsQuery.error;
+  const { buildingQuery, floorsQuery, roomsQuery, queryError } = useBuildingWorkspaceData(buildingId);
 
   return (
     <Stack spacing={2}>
@@ -168,18 +139,7 @@ export function BuildingWorkspace({ buildingId }: BuildingWorkspaceProps): JSX.E
 
       {buildingQuery.data ? (
         <>
-          <DataCard compact>
-            <Tabs
-              value={tab}
-              onChange={(_, next) => setTab(next)}
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              {tabs.map((item) => (
-                <Tab key={item.value} value={item.value} label={item.label} />
-              ))}
-            </Tabs>
-          </DataCard>
+          <BuildingWorkspaceTabs tab={tab} onChange={setTab} />
 
           {tab === "summary" ? <SummaryPanel buildingId={buildingId} /> : null}
           {tab === "floors" ? (
@@ -226,7 +186,7 @@ function SummaryPanel({ buildingId }: { buildingId: number }): JSX.Element {
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6">{buildingQuery.data?.name}</Typography>
             <Typography variant="body2" color="text.secondary">
-              Building #{buildingId} В· Project #{buildingQuery.data?.projectId}
+              Building #{buildingId} · Project #{buildingQuery.data?.projectId}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Climate zone: {buildingQuery.data?.climateZoneName ?? buildingQuery.data?.climateZoneId ?? "-"}
@@ -907,82 +867,6 @@ function GroundContactPanel({ rooms }: { rooms: RoomDto[] }): JSX.Element {
   );
 }
 
-function CalculationsPanel({ buildingId, rooms }: { buildingId: number; rooms: RoomDto[] }): JSX.Element {
-  const [roomId, setRoomId] = useState(rooms[0]?.id ?? 0);
-  const selectedRoomId = roomId || rooms[0]?.id || 0;
-  const [result, setResult] = useState<unknown>(null);
-  const run = useMutation({
-    mutationFn: async (target: "building-loads" | "building-balance" | "room-loads") => {
-      if (target === "building-loads") return calculationsApi.runBuildingHeatLoadCalculation(buildingId);
-      if (target === "building-balance") return calculationsApi.runBuildingEnergyBalance(buildingId);
-      return calculationsApi.runRoomHeatLoadCalculation(selectedRoomId);
-    },
-    onSuccess: setResult,
-  });
-
-  return (
-    <DataCard>
-      <Stack spacing={2}>
-        <Typography variant="h6">Calculations</Typography>
-        {run.isError ? <Alert severity="error">{getErrorMessage(run.error)}</Alert> : null}
-        <RoomSelect rooms={rooms} roomId={selectedRoomId} onChange={setRoomId} />
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-          <Button variant="contained" startIcon={<PlayArrowIcon />} disabled={run.isPending} onClick={() => run.mutate("building-loads")}>Building heating/cooling</Button>
-          <Button variant="outlined" startIcon={<PlayArrowIcon />} disabled={run.isPending} onClick={() => run.mutate("building-balance")}>Energy balance</Button>
-          <Button variant="outlined" startIcon={<PlayArrowIcon />} disabled={run.isPending || selectedRoomId <= 0} onClick={() => run.mutate("room-loads")}>Room heating/cooling</Button>
-        </Stack>
-        <Typography variant="body2" color="text.secondary">
-          Cooling method: {calculationMethods.cooling}; heating method: {calculationMethods.heating}.
-        </Typography>
-        {result ? <JsonBlock title="Latest calculation result" value={result} /> : <EmptyState title="No calculation result" description="Run a calculation. Results can be run again after refresh." />}
-      </Stack>
-    </DataCard>
-  );
-}
-
-export function ReportsPanel({ buildingId }: { buildingId: number }): JSX.Element {
-  const [report, setReport] = useState<unknown>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const runReport = async (kind: "cooling" | "heating") => {
-    setError(null);
-    try {
-      setReport(kind === "cooling" ? await reportsApi.getBuildingCoolingReport(buildingId) : await reportsApi.getBuildingHeatingReport(buildingId));
-    } catch (caught) {
-      setError(getErrorMessage(caught));
-    }
-  };
-
-  const download = async (kind: "cooling" | "energy") => {
-    setError(null);
-    try {
-      const blob = kind === "cooling"
-        ? await reportsApi.downloadBuildingCoolingExcel(buildingId)
-        : await reportsApi.downloadBuildingEnergyBalanceExcel(buildingId);
-      downloadBlob(blob, `building-${buildingId}-${kind}.xlsx`);
-    } catch (caught) {
-      setError(getErrorMessage(caught));
-    }
-  };
-
-  return (
-    <DataCard>
-      <Stack spacing={2}>
-        <Typography variant="h6">Reports</Typography>
-        {error ? <Alert severity="error">{error}</Alert> : null}
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-          <Button variant="outlined" onClick={() => void runReport("cooling")}>Show cooling JSON</Button>
-          <Button variant="outlined" onClick={() => void runReport("heating")}>Show heating JSON</Button>
-          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => void download("cooling")}>Cooling Excel</Button>
-          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => void download("energy")}>Energy balance Excel</Button>
-        </Stack>
-        {report ? <EngineeringCoreDisclosurePanel report={report} /> : null}
-        {report ? <JsonBlock title="Report" value={report} /> : null}
-      </Stack>
-    </DataCard>
-  );
-}
-
 export function EquipmentPanel({ rooms }: { rooms: RoomDto[] }): JSX.Element {
   const [roomId, setRoomId] = useState(rooms[0]?.id ?? 0);
   const selectedRoomId = roomId || rooms[0]?.id || 0;
@@ -1140,37 +1024,6 @@ function EquipmentSelectionSummary({
   );
 }
 
-function RoomSelect({
-  rooms,
-  roomId,
-  onChange,
-}: {
-  rooms: RoomDto[];
-  roomId: number;
-  onChange: (roomId: number) => void;
-}): JSX.Element {
-  return (
-    <FormControl size="small" sx={{ minWidth: 260, maxWidth: 360 }}>
-      <InputLabel>Room</InputLabel>
-      <Select label="Room" value={roomId || ""} onChange={(event) => onChange(Number(event.target.value))}>
-        {rooms.map((room) => <MenuItem key={room.id} value={room.id}>{room.name}</MenuItem>)}
-      </Select>
-    </FormControl>
-  );
-}
-
-function JsonBlock({ title, value }: { title: string; value: unknown }): JSX.Element {
-  const text = useMemo(() => JSON.stringify(value, null, 2), [value]);
-  return (
-    <Box>
-      <Typography variant="subtitle2" sx={{ mb: 1 }}>{title}</Typography>
-      <Box component="pre" sx={{ m: 0, p: 2, bgcolor: "grey.100", borderRadius: 1, overflow: "auto", fontSize: 12 }}>
-        {text}
-      </Box>
-    </Box>
-  );
-}
-
 function createRoomForm(floorId: number): RoomForm {
   return {
     name: "",
@@ -1243,4 +1096,6 @@ function defaultEquipment(): UpsertEquipmentCatalogItemRequest {
     isActive: true,
   };
 }
+
+
 

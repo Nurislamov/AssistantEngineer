@@ -219,7 +219,7 @@ public class EngineeringCoreV1TraceabilityMatrixTests
         Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
         Assert.DoesNotContain("ConvertTo-Json", script, StringComparison.Ordinal);
 
-        var tool = File.ReadAllText(ToolProgramPath);
+        var tool = ReadToolSourceBundle();
 
         Assert.Contains("EngineeringCoreV1Manifest.json", tool, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", tool, StringComparison.Ordinal);
@@ -266,5 +266,18 @@ private static JsonDocument ReadJson(string path) =>
             "tools",
             "AssistantEngineer.Tools.EngineeringCoreEvidence",
             "Program.cs");
+
+    private static string ToolRunnerPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "EngineeringCoreEvidenceToolRunner.cs");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolRunnerPath));
 }
 

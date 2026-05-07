@@ -30,6 +30,7 @@ internal static class Program
             AssertRequiredPhysicalChainFiles(repoRoot);
             AssertJsonFilesParse(repoRoot);
             AssertNoConflictMarkers(repoRoot);
+            AssertNoTrackedLocalOrGeneratedArtifacts(repoRoot);
 
             if (options.CheckRootPatchScripts)
                 AssertNoRootPatchScripts(repoRoot);
@@ -216,6 +217,45 @@ internal static class Program
         }
     }
 
+    private static void AssertNoTrackedLocalOrGeneratedArtifacts(string repoRoot)
+    {
+        var trackedFiles = RunGit(repoRoot, "ls-files")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(path => path.Replace('\\', '/'))
+            .ToArray();
+
+        var forbiddenPrefixes = new[]
+        {
+            ".vs/",
+            "artifacts/",
+            "generated/",
+            "TestResults/"
+        };
+
+        var forbiddenSuffixes = new[]
+        {
+            ".user",
+            ".suo",
+            ".wsuo"
+        };
+
+        var violations = trackedFiles
+            .Where(path =>
+                forbiddenPrefixes.Any(prefix => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ||
+                forbiddenSuffixes.Any(suffix => path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) ||
+                path.Split('/').Any(segment => segment.Equals("bin", StringComparison.OrdinalIgnoreCase) ||
+                                               segment.Equals("obj", StringComparison.OrdinalIgnoreCase)))
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (violations.Length > 0)
+        {
+            throw new InvalidOperationException(
+                "Tracked local/generated artifacts were found in git index:\n" +
+                string.Join("\n", violations.Select(item => " - " + item)));
+        }
+    }
+
     private static IEnumerable<FileInfo> EnumerateTextFiles(string repoRoot) =>
         EnumerateFilesByExtensions(
             repoRoot,
@@ -273,6 +313,29 @@ internal static class Program
         }
 
         return "git.exe";
+    }
+
+    private static string RunGit(string repoRoot, string arguments)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = ResolveGitExecutable(),
+            Arguments = arguments,
+            WorkingDirectory = repoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+
+        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException($"Could not start git {arguments}.");
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+        process.WaitForExit();
+
+        if (process.ExitCode != 0)
+            throw new InvalidOperationException($"git {arguments} failed with exit code {process.ExitCode}: {error}");
+
+        return output;
     }
 
     private static void WriteSuccess(string message)

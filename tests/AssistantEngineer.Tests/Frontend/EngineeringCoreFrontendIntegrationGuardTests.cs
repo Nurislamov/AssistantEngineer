@@ -245,7 +245,7 @@ public class EngineeringCoreFrontendIntegrationGuardTests
     [Fact]
     public void BuildingWorkspaceRendersEngineeringCoreDisclosurePanelBeforeRawReportJson()
     {
-        var content = ReadFrontendFile(
+        var workspaceContent = ReadFrontendFile(
             "src",
             "Frontend",
             "src",
@@ -253,6 +253,16 @@ public class EngineeringCoreFrontendIntegrationGuardTests
             "building-workspace",
             "ui",
             "BuildingWorkspace.tsx");
+        var reportsPanelContent = ReadFrontendFile(
+            "src",
+            "Frontend",
+            "src",
+            "widgets",
+            "building-workspace",
+            "ui",
+            "ReportsPanel.tsx");
+
+        var content = string.Join(Environment.NewLine, workspaceContent, reportsPanelContent);
 
         Assert.Contains(
             "EngineeringCoreDisclosurePanel",

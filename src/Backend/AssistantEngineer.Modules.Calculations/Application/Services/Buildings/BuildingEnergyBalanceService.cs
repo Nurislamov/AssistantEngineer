@@ -9,6 +9,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 
+/// <summary>
+/// Compatibility building energy-balance service kept for controlled transition.
+/// </summary>
+/// <remarks>
+/// Deprecation marker (documentation-level only): first-party API controllers and load facade use
+/// <c>EnergyCalculationPipelineService</c> for active building energy-balance execution.
+/// Keep this service until DI consumers and compatibility coverage are migrated.
+/// </remarks>
 public class BuildingEnergyBalanceService
 {
     private readonly IBuildingRepository _buildings;
@@ -71,5 +79,6 @@ public class BuildingEnergyBalanceService
         return Result<BuildingEnergyBalanceResult>.Success(result);
     }
 }
+
 
 

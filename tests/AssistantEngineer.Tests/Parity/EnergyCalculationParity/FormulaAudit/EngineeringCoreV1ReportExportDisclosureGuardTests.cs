@@ -218,7 +218,7 @@ public class EngineeringCoreV1ReportExportDisclosureGuardTests
         Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
         Assert.DoesNotContain("Set-Content", script, StringComparison.Ordinal);
 
-        var tool = File.ReadAllText(ToolProgramPath);
+        var tool = ReadToolSourceBundle();
 
         Assert.Contains("heating-report.sample.json", tool, StringComparison.Ordinal);
         Assert.Contains("cooling-report.sample.json", tool, StringComparison.Ordinal);
@@ -251,5 +251,18 @@ private static string[] SnapshotPaths =>
             "tools",
             "AssistantEngineer.Tools.EngineeringCoreEvidence",
             "Program.cs");
+
+    private static string ToolRunnerPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "EngineeringCoreEvidenceToolRunner.cs");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolRunnerPath));
 }
 

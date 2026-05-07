@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
@@ -11,6 +11,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 
+/// <summary>
+/// Compatibility room-load service kept for controlled transition.
+/// </summary>
+/// <remarks>
+/// Deprecation marker (documentation-level only): first-party API controllers and load facade use
+/// <c>EnergyCalculationPipelineService</c> as the active production path.
+/// Keep this service until all compatibility tests and DI consumers are migrated.
+/// </remarks>
 public class RoomCalculationService
 {
     private readonly IRoomRepository _rooms;
@@ -120,3 +128,4 @@ public class RoomCalculationService
         return Result.Success();
     }
 }
+

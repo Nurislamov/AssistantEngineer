@@ -11,6 +11,7 @@ public class EngineeringCoreEvidenceToolArchitectureTests
         {
             ToolProjectPath,
             ToolProgramPath,
+            ToolRunnerPath,
             ToolReadmePath,
             ArchitectureDocPath,
             ReleaseEvidenceWrapperPath,
@@ -27,7 +28,7 @@ public class EngineeringCoreEvidenceToolArchitectureTests
     [Fact]
     public void EngineeringCoreEvidenceToolOwnsEvidenceGenerationCommands()
     {
-        var content = File.ReadAllText(ToolProgramPath);
+        var content = ReadToolSourceBundle();
 
         var requiredPhrases = new[]
         {
@@ -47,6 +48,16 @@ public class EngineeringCoreEvidenceToolArchitectureTests
         {
             Assert.Contains(requiredPhrase, content, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void EngineeringCoreEvidenceProgram_RemainsThinCompositionRoot()
+    {
+        var programLines = File.ReadAllLines(ToolProgramPath);
+        Assert.True(programLines.Length <= 140, $"Program.cs should stay thin (actual lines: {programLines.Length}).");
+
+        var program = File.ReadAllText(ToolProgramPath);
+        Assert.Contains("EngineeringCoreEvidenceToolRunner", program, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -101,6 +112,9 @@ public class EngineeringCoreEvidenceToolArchitectureTests
     private static string ToolProgramPath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreEvidence", "Program.cs");
 
+    private static string ToolRunnerPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreEvidence", "EngineeringCoreEvidenceToolRunner.cs");
+
     private static string ToolReadmePath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreEvidence", "README.md");
 
@@ -115,4 +129,10 @@ public class EngineeringCoreEvidenceToolArchitectureTests
 
     private static string TraceabilityWrapperPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "generate-engineering-core-v1-traceability-matrix.ps1");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolRunnerPath));
 }

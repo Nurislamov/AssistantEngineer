@@ -9,6 +9,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 
+/// <summary>
+/// Compatibility cooling-load service kept for controlled transition.
+/// </summary>
+/// <remarks>
+/// Deprecation marker (documentation-level only): first-party API controllers and load facade use
+/// <c>EnergyCalculationPipelineService</c> as the active production path.
+/// Keep this service until DI consumers and compatibility tests are explicitly migrated.
+/// </remarks>
 public class BuildingCoolingLoadService
 {
     private readonly IBuildingRepository _buildings;
@@ -67,5 +75,6 @@ public class BuildingCoolingLoadService
         return Result<BuildingCalculationResult>.Success(result);
     }
 }
+
 
 

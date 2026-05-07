@@ -18,7 +18,7 @@ public class Iso52016VerificationToolTests
     [Fact]
     public void Program_SupportsRequiredCommands()
     {
-        var program = ReadProgram();
+        var program = ReadToolSources();
 
         Assert.Contains("verify-all", program);
         Assert.Contains("assert-release-ready", program);
@@ -29,7 +29,7 @@ public class Iso52016VerificationToolTests
     [Fact]
     public void Program_ReadsRegistryAndOwnsVerificationPolicies()
     {
-        var program = ReadProgram();
+        var program = ReadToolSources();
 
         Assert.Contains("Iso52016VerificationRegistry.json", program);
         Assert.Contains("VerifyGeneratedArtifactPolicy", program);
@@ -42,7 +42,7 @@ public class Iso52016VerificationToolTests
     [Fact]
     public void Program_ChecksGeneratedArtifactsAndClaimBoundariesInCSharp()
     {
-        var program = ReadProgram();
+        var program = ReadToolSources();
 
         Assert.Contains("git", program);
         Assert.Contains("ls-files", program);
@@ -51,11 +51,31 @@ public class Iso52016VerificationToolTests
         Assert.Contains("ForbiddenPositiveClaims", program);
     }
 
-    private static string ReadProgram() =>
-        ReadRepoFile(
+    [Fact]
+    public void Program_RemainsThinCompositionRoot()
+    {
+        var path = BuildPath("Program.cs");
+        var lines = File.ReadAllLines(path);
+        Assert.True(lines.Length <= 180, $"Program.cs should stay thin (actual lines: {lines.Length}).");
+
+        var program = File.ReadAllText(path);
+        Assert.Contains("Iso52016VerificationRunner", program, StringComparison.Ordinal);
+        Assert.Contains("Iso52016VerificationCommandOptions", program, StringComparison.Ordinal);
+    }
+
+    private static string ReadToolSources() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(BuildPath("Program.cs")),
+            File.ReadAllText(BuildPath("Iso52016VerificationRunner.cs")),
+            File.ReadAllText(BuildPath("Iso52016VerificationCommandOptions.cs")));
+
+    private static string BuildPath(string fileName) =>
+        Path.Combine(
+            TestPaths.RepoRoot,
             "tools",
             "AssistantEngineer.Tools.Iso52016Verification",
-            "Program.cs");
+            fileName);
 
     private static string ReadRepoFile(params string[] parts)
     {

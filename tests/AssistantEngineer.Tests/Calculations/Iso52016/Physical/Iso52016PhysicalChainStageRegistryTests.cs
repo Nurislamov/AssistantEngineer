@@ -50,15 +50,7 @@ public class Iso52016PhysicalChainStageRegistryTests
     public void RegistryVerifierTool_OwnsDurablePhysicalStageRegistryChecks()
     {
         var repoRoot = FindRepositoryRoot();
-        var toolPath = Path.Combine(
-            repoRoot,
-            "tools",
-            "AssistantEngineer.Tools.Iso52016Verification",
-            "Program.cs");
-
-        Assert.True(File.Exists(toolPath), $"Tool was not found: {toolPath}");
-
-        var tool = File.ReadAllText(toolPath);
+        var tool = ReadIsoToolSourceBundle(repoRoot);
 
         Assert.Contains("Iso52016VerificationRegistry.json", tool);
         Assert.Contains("VerifyStageManifests", tool);
@@ -128,5 +120,27 @@ public class Iso52016PhysicalChainStageRegistryTests
 
         throw new DirectoryNotFoundException(
             "Could not locate AssistantEngineer repository root from test base directory.");
+    }
+
+    private static string ReadIsoToolSourceBundle(string repoRoot)
+    {
+        var programPath = Path.Combine(
+            repoRoot,
+            "tools",
+            "AssistantEngineer.Tools.Iso52016Verification",
+            "Program.cs");
+        var runnerPath = Path.Combine(
+            repoRoot,
+            "tools",
+            "AssistantEngineer.Tools.Iso52016Verification",
+            "Iso52016VerificationRunner.cs");
+
+        Assert.True(File.Exists(programPath), $"Tool program was not found: {programPath}");
+        Assert.True(File.Exists(runnerPath), $"Tool runner was not found: {runnerPath}");
+
+        return string.Join(
+            Environment.NewLine,
+            File.ReadAllText(programPath),
+            File.ReadAllText(runnerPath));
     }
 }

@@ -9,6 +9,7 @@ public class EnergyPlusValidationCSharpToolArchitectureTests
     {
         Assert.True(File.Exists(ToolProjectPath), $"Tool project is missing: {ToolProjectPath}");
         Assert.True(File.Exists(ToolProgramPath), $"Tool program is missing: {ToolProgramPath}");
+        Assert.True(File.Exists(ToolRunnerPath), $"Tool runner is missing: {ToolRunnerPath}");
         Assert.True(File.Exists(ToolReadmePath), $"Tool README is missing: {ToolReadmePath}");
         Assert.True(File.Exists(ToolArchitectureDocPath), $"Tool architecture doc is missing: {ToolArchitectureDocPath}");
     }
@@ -16,7 +17,7 @@ public class EnergyPlusValidationCSharpToolArchitectureTests
     [Fact]
     public void EnergyPlusValidationToolOwnsValidationCommands()
     {
-        var content = File.ReadAllText(ToolProgramPath);
+        var content = ReadToolSourceBundle();
 
         var requiredPhrases = new[]
         {
@@ -38,6 +39,16 @@ public class EnergyPlusValidationCSharpToolArchitectureTests
         {
             Assert.Contains(requiredPhrase, content, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void EnergyPlusValidationProgram_RemainsThinCompositionRoot()
+    {
+        var programLines = File.ReadAllLines(ToolProgramPath);
+        Assert.True(programLines.Length <= 180, $"Program.cs should stay thin (actual lines: {programLines.Length}).");
+
+        var program = File.ReadAllText(ToolProgramPath);
+        Assert.Contains("EnergyPlusValidationToolRunner", program, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -96,9 +107,18 @@ public class EnergyPlusValidationCSharpToolArchitectureTests
     private static string ToolProgramPath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EnergyPlusValidation", "Program.cs");
 
+    private static string ToolRunnerPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EnergyPlusValidation", "EnergyPlusValidationToolRunner.cs");
+
     private static string ToolReadmePath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EnergyPlusValidation", "README.md");
 
     private static string ToolArchitectureDocPath =>
         Path.Combine(TestPaths.RepoRoot, "docs", "validation", "EnergyPlusValidationToolArchitecture.md");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolRunnerPath));
 }

@@ -6,13 +6,6 @@
   "weather8760GatesClosed": true,
   "annualHourly8760GateClosed": true,
   "successfulResultsMustNotContainErrorDiagnostics": true,
-  "engineeringCoreV2Governance": {
-    "internalReleaseReadinessGate": "AE-RELEASE-READINESS-002",
-    "internalStatusDisclosureStage": "AE-STATUS-001",
-    "compatibilityBehaviorPreservedByDefault": true,
-    "inspiredPathsRemainOptIn": true,
-    "externalCertification": "Not external certification."
-  },
   "formulaGates": [
     {
       "calculationId": "HVAC.TRANSMISSION.SIMPLE_UA",
@@ -60,7 +53,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; building input validation governance exists as a separate internal deterministic gate with no automatic production data mutation, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.AGGREGATION.LOAD_SUMMARY",
@@ -100,7 +93,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; compatibility DHW path remains default, ISO12831-3-inspired DHW path is opt-in, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
@@ -108,7 +101,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; SystemEnergyEngine compatibility path remains default, EN15316-inspired modular chain is opt-in, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN",
@@ -132,7 +125,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; compatibility envelope behavior remains default, ISO52016-inspired construction/mass envelope input path is opt-in, and no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
     },
     {
       "calculationId": "HVAC.THERMAL_ZONE.SINGLE_ZONE",
@@ -160,7 +153,10 @@
     "No full ISO 13370 implementation claim.",
     "No full EN 15316 generation/distribution/storage/emission chain claim.",
     "No full coupled multi-zone heat-balance simulation claim.",
-    "No latent/moisture/humidity calculation claim."
+    "No latent/moisture/humidity calculation claim.",
+    "SystemEnergyEngine compatibility path remains default.",
+    "EN15316-inspired modular chain is opt-in.",
+    "ISO12831-3-inspired DHW path is opt-in."
   ],
   "outOfScopeV1": [
     "HVAC.LATENT_LOAD",
@@ -176,12 +172,6 @@
   ],
   "documentationFiles": [
     "docs/calculations/EngineeringCoreV1Scope.md",
-    "docs/calculations/validation/BuildingInputValidationAndCorrectionFramework.md",
-    "docs/calculations/governance/EngineeringStageManifestRegistry.md",
-    "docs/calculations/governance/EngineeringClaimBoundaryScanner.md",
-    "docs/calculations/governance/EngineeringCoreV2ReleaseReadiness.md",
-    "docs/calculations/iso52016/Iso52016ConstructionEnvelopeInputIntegration.md",
-    "docs/calculations/rollup/EngineeringCalculationModeComparisonAndDisclosureRollup.md",
     "docs/calculations/EngineeringCoreV1ReleaseNotes.md",
     "docs/calculations/EngineeringCoreV1ApiExamples.md",
     "docs/calculations/EngineeringCoreV1DeveloperGuide.md",
@@ -196,18 +186,8 @@
     "docs/contributing/EngineeringCoreV1ContributionGuide.md",
     "docs/releases/EngineeringCoreV1.md",
     "docs/releases/EngineeringCoreV1Manifest.json",
-    "docs/releases/EngineeringCalculationModeComparisonRollupManifest.json",
-    "docs/releases/EngineeringGovernanceStageManifestRegistryManifest.json",
-    "docs/releases/EngineeringClaimBoundaryScannerManifest.json",
-    "docs/releases/EngineeringCoreV2ReleaseReadinessManifest.json",
-    "docs/releases/EngineeringCorporateStatusSampleManifest.json",
-    "docs/releases/Iso52016ConstructionEnvelopeInputIntegrationManifest.json",
-    "docs/releases/BuildingInputValidationFrameworkManifest.json",
     "docs/releases/EngineeringCoreV1ReleaseManifest.md",
     "docs/releases/EngineeringCoreV1ReleaseChecklist.md",
-    "docs/releases/EngineeringCoreV1OwnerHandoff.md",
-    "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",
-    "docs/api/engineering-core-v2/status.sample.json",
-    "docs/api/engineering-core-v2/engineering-release-readiness.sample.json"
+    "docs/releases/EngineeringCoreV1OwnerHandoff.md"
   ]
 }

@@ -43,7 +43,7 @@ public class EngineeringCoreV1ReleaseEvidencePackageTests
         Assert.DoesNotContain("ConvertFrom-Json", script, StringComparison.Ordinal);
         Assert.DoesNotContain("ForEach-Object", script, StringComparison.Ordinal);
 
-        var tool = File.ReadAllText(ToolProgramPath);
+        var tool = ReadToolSourceBundle();
 
         Assert.Contains("EngineeringCoreV1Manifest.json", tool, StringComparison.Ordinal);
         Assert.Contains("EngineeringCoreV1DiagnosticsCatalog.json", tool, StringComparison.Ordinal);
@@ -255,5 +255,18 @@ public class EngineeringCoreV1ReleaseEvidencePackageTests
             "tools",
             "AssistantEngineer.Tools.EngineeringCoreEvidence",
             "Program.cs");
+
+    private static string ToolRunnerPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreEvidence",
+            "EngineeringCoreEvidenceToolRunner.cs");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolRunnerPath));
 }
 

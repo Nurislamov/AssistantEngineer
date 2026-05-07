@@ -71,15 +71,7 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
     public void CSharpVerificationTool_ContainsReleaseReadyChecksAndClaimBoundary()
     {
         var repoRoot = FindRepositoryRoot();
-        var programPath = Path.Combine(
-            repoRoot,
-            "tools",
-            "AssistantEngineer.Tools.Iso52016Verification",
-            "Program.cs");
-
-        Assert.True(File.Exists(programPath), $"Verification tool was not found: {programPath}");
-
-        var program = File.ReadAllText(programPath);
+        var program = ReadIsoToolSourceBundle(repoRoot);
 
         Assert.Contains("assert-release-ready", program);
         Assert.Contains("VerifyReleaseReadyManifests", program);
@@ -144,5 +136,27 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
 
         throw new DirectoryNotFoundException(
             "Could not locate AssistantEngineer repository root from test base directory.");
+    }
+
+    private static string ReadIsoToolSourceBundle(string repoRoot)
+    {
+        var programPath = Path.Combine(
+            repoRoot,
+            "tools",
+            "AssistantEngineer.Tools.Iso52016Verification",
+            "Program.cs");
+        var runnerPath = Path.Combine(
+            repoRoot,
+            "tools",
+            "AssistantEngineer.Tools.Iso52016Verification",
+            "Iso52016VerificationRunner.cs");
+
+        Assert.True(File.Exists(programPath), $"Verification tool program was not found: {programPath}");
+        Assert.True(File.Exists(runnerPath), $"Verification tool runner was not found: {runnerPath}");
+
+        return string.Join(
+            Environment.NewLine,
+            File.ReadAllText(programPath),
+            File.ReadAllText(runnerPath));
     }
 }

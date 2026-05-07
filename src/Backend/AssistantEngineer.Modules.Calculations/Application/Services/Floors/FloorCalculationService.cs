@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
@@ -9,6 +9,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 
+/// <summary>
+/// Compatibility floor-load service kept for controlled transition.
+/// </summary>
+/// <remarks>
+/// Deprecation marker (documentation-level only): first-party API controllers and load facade use
+/// <c>EnergyCalculationPipelineService</c> as the active production path.
+/// Keep this service until DI consumers are fully enumerated and migrated.
+/// </remarks>
 public class FloorCalculationService
 {
     private readonly IFloorRepository _floors;
@@ -69,3 +77,4 @@ public class FloorCalculationService
         return Result<FloorCalculationResult>.Success(result);
     }
 }
+
