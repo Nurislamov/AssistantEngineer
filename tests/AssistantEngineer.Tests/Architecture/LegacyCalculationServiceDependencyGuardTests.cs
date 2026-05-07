@@ -1,7 +1,6 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.Floors;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
@@ -12,7 +11,6 @@ public class LegacyCalculationServiceDependencyGuardTests
     private static readonly HashSet<Type> LegacyCalculationServiceTypes =
     [
         typeof(BuildingCoolingLoadService),
-        typeof(FloorCalculationService),
         typeof(RoomCalculationService),
         typeof(BuildingHeatingLoadService)
     ];
@@ -73,7 +71,8 @@ public class LegacyCalculationServiceDependencyGuardTests
     {
         var retiredServiceTypeNames = new[]
         {
-            "BuildingEnergyBalanceService"
+            "BuildingEnergyBalanceService",
+            "FloorCalculationService"
         };
 
         var sourceFiles = Directory.GetFiles(
@@ -113,11 +112,6 @@ public class LegacyCalculationServiceDependencyGuardTests
             ["BuildingCoolingLoadService"] =
             [
                 NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs"),
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
-            ],
-            ["FloorCalculationService"] =
-            [
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Floors/FloorCalculationService.cs"),
                 NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
             ],
             ["RoomCalculationService"] =

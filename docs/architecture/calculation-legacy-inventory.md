@@ -29,21 +29,23 @@ Confirmed direct usages from repository scan (`rg` across `src` + `tests`, 2026-
 | Service | Confirmed source usage | Confirmed test usage | Classification |
 |---|---|---|---|
 | `BuildingCoolingLoadService` | DI registration only (`LoadCalculationRegistration`) | `Iso52016ClimateDataValidationTests`, DI lifetime test | compatibility legacy service |
-| `FloorCalculationService` | DI registration only (`LoadCalculationRegistration`) | DI lifetime test | compatibility legacy service |
 | `RoomCalculationService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, DI lifetime test | compatibility legacy service |
 | `BuildingHeatingLoadService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests` (stub usage), DI lifetime test | compatibility bridge (heating/report test lane) |
 
 Retired in Phase 5:
 - `BuildingEnergyBalanceService` (implementation deleted; DI registration removed; backend source reintroduction guard added).
 
+Retired in Phase 6:
+- `FloorCalculationService` (implementation deleted; DI registration removed; backend source reintroduction guard extended).
+
 Important production-path confirmation:
 - First-party load controllers call `ILoadCalculationsFacade`.
 - `LoadCalculationsFacade` calls `EnergyCalculationPipelineService`.
 - No direct controller/facade dependency on the legacy services above was found.
 - Architecture guard enforces that remaining legacy service references stay fenced to:
-  - compatibility service definitions (`Application/Services/Buildings|Floors|Rooms/*CalculationService.cs`),
+  - compatibility service definitions (`Application/Services/Buildings|Rooms/*CalculationService.cs`),
   - composition registrations (`Composition/LoadCalculationRegistration.cs`).
-- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService` into backend source.
+- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService` and `FloorCalculationService` into backend source.
 
 Preview services (active, do not classify as removable legacy):
 - `NaturalVentilationPreviewService` is used by `RoomVentilationController` through `VentilationAnalysisFacade`.
@@ -53,7 +55,6 @@ Preview services (active, do not classify as removable legacy):
 
 Safe deprecation candidates (documentation-level in current pass):
 - `BuildingCoolingLoadService`
-- `FloorCalculationService`
 - `RoomCalculationService`
 
 Current deprecation marker strategy:
@@ -114,7 +115,18 @@ Phase 5 pilot result:
   - DI registration in `Composition/EnergyAnalysisRegistration.cs`.
 - Remaining compatibility legacy services:
   - `BuildingCoolingLoadService`,
-  - `FloorCalculationService`,
+  - `RoomCalculationService`,
+  - `BuildingHeatingLoadService`.
+
+Phase 6 pilot result:
+- Selected candidate: `FloorCalculationService`.
+- Replacement floor-path coverage confirmed through active pipeline path (`EnergyCalculationPipelineServiceTests`) without legacy service dependency.
+- Retirement completed with single-service scope only.
+- Removed:
+  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Floors/FloorCalculationService.cs`,
+  - DI registration in `Composition/LoadCalculationRegistration.cs`.
+- Remaining compatibility legacy services:
+  - `BuildingCoolingLoadService`,
   - `RoomCalculationService`,
   - `BuildingHeatingLoadService`.
 
@@ -123,5 +135,5 @@ Phase 5 pilot result:
 Current risks:
 - Hidden third-party/internal direct DI usage cannot be ruled out from first-party repository scan alone.
 - Removing compatibility services now can break compatibility tests even if production controllers are unaffected.
-- `FloorCalculationService` has weak direct behavioral test coverage (mostly DI-level), so removal confidence is currently low.
+- `BuildingCoolingLoadService` and `RoomCalculationService` still have direct compatibility test instantiation dependencies.
 - `EnergyCalculationPipelineService` remains a large orchestration component; migration should remain incremental.
