@@ -158,3 +158,58 @@ This stage provides deterministic internal engineering boundary integration only
 - `AE-GROUND-ISO13370-001A`
 - `AE-VENT-EN16798-001A`
 - future ISO52016 boundary coupling refinement
+
+---
+
+## Work item
+
+- `AE-GROUND-ISO13370-001A`
+
+## Touched contracts
+
+- `Application/Contracts/Ground/GroundContactKind.cs`
+- `Application/Contracts/Ground/GroundInsulationPlacement.cs`
+- `Application/Contracts/Ground/GroundContactGeometry.cs`
+- `Application/Contracts/Ground/GroundSoilProperties.cs`
+- `Application/Contracts/Ground/GroundClimateInput.cs`
+- `Application/Contracts/Ground/GroundBoundaryCalculationInput.cs`
+- `Application/Contracts/Ground/GroundBoundaryCalculationResult.cs`
+- `Application/Contracts/Ground/GroundBoundaryInputValidationResult.cs`
+- `Application/Contracts/Ground/GroundTemperatureProfileResult.cs`
+- `Application/Abstractions/Ground/IGroundGeometryNormalizer.cs`
+- `Application/Abstractions/Ground/IGroundBoundaryInputValidator.cs`
+- `Application/Abstractions/Ground/IGroundTemperatureProfileProvider.cs`
+- `Application/Abstractions/Ground/IGroundBoundaryCalculator.cs`
+
+## Touched services
+
+- `Application/Services/Ground/GroundCalculationDiagnosticsFactory.cs`
+- `Application/Services/Ground/GroundGeometryNormalizer.cs`
+- `Application/Services/Ground/GroundBoundaryInputValidator.cs`
+- `Application/Services/Ground/GroundTemperatureProfileProvider.cs`
+- `Application/Services/Ground/GroundBoundaryCalculator.cs`
+- `Composition/GroundRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundGeometryNormalizerTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundBoundaryInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundTemperatureProfileProviderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundBoundaryCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ground/GroundCalculationArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Ground-lane non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic internal engineering ground-boundary integration only.
+
+## Next stage
+
+- `AE-GROUND-ISO13370-001B`

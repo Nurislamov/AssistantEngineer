@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
@@ -56,6 +57,10 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IThermalTopologyValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalBoundaryConditionResolver>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalZoneBoundaryCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundGeometryNormalizer>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundBoundaryInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundTemperatureProfileProvider>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundBoundaryCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IIso16798ReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IBuildingEnvelopeReferenceData>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<En12831HeatingLoadCalculator>(services, ServiceLifetime.Scoped);
