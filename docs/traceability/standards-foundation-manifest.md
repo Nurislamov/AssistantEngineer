@@ -61,3 +61,56 @@ This manifest describes internal deterministic engineering contract readiness on
 - `AE-VENT-EN16798-001`
 - `AE-DHW-ISO12831-001`
 - `AE-SYS-EN15316-001`
+
+---
+
+## Work item
+
+- `AE-ZONES-STANDARDS-001A`
+
+## Touched contracts
+
+- `Application/Abstractions/Topology/*`
+- `Application/Contracts/Topology/*`
+
+Key additions:
+- `IThermalTopologyBuilder`
+- `IThermalTopologyValidator`
+- `IThermalBoundaryConditionResolver`
+- `ThermalTopologyBuildInput`
+- `ThermalTopologyZoneInput`
+- `ThermalTopologyRoomInput`
+- `ThermalTopologySurfaceInput`
+- `ThermalTopologyValidationResult`
+- `ThermalBoundaryResolutionResult`
+
+## Touched services
+
+- `Application/Services/Topology/ThermalTopologyBuilder.cs`
+- `Application/Services/Topology/ThermalTopologyValidator.cs`
+- `Application/Services/Topology/ThermalBoundaryConditionResolver.cs`
+- `Application/Services/Topology/ThermalTopologyDiagnosticsFactory.cs`
+- `Composition/ThermalTopologyRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalTopologyBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalTopologyValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalBoundaryConditionResolverTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/ThermalZones/ThermalTopologyArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Topology-foundation non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage defines deterministic topology contracts and diagnostics only.
+
+## Next stage
+
+- `AE-ZONES-STANDARDS-001B`

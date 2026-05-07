@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddCalculationReferenceData();
         services.AddCalculationProfiles();
         services.AddStandardsFoundation();
+        services.AddThermalTopologyFoundation();
 
         services.AddCoolingLoadCalculations();
         services.AddHeatingLoadCalculations();
