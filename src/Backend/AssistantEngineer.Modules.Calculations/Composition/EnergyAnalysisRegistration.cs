@@ -22,6 +22,7 @@ internal static class EnergyAnalysisRegistration
     {
         services.AddSingleton<AnnualEnergyBalanceEngine>();
         services.AddDomesticHotWaterFoundation();
+        services.AddSystemEnergyFoundation();
 
         services.AddScoped<BuildingComfortMetricsService>();
         services.AddScoped<BuildingZoneComfortMetricsService>();

@@ -548,3 +548,75 @@ This stage provides deterministic standard-inspired DHW system-load preparation 
 ## Next stage
 
 - `AE-SYS-EN15316-001A`
+
+---
+
+## Work item
+
+- `AE-SYS-EN15316-001A`
+
+## Touched contracts
+
+- `Application/Contracts/SystemEnergy/SystemEnergyEndUse.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleKind.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyCarrier.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyRecoveryMode.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleCalculationMode.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyProfileShape.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyUsefulLoadInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyAuxiliaryLoadInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyUsefulLoadSet.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleChainInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEndUseChainResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleChainResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGenerationHandoff.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyUsefulLoadValidationResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyModuleChainValidationResult.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyUsefulLoadValidator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyModuleChainInputValidator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyModuleCalculator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyModuleChainCalculator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyGenerationHandoffBuilder.cs`
+- `Application/Abstractions/SystemEnergy/IDomesticHotWaterSystemEnergyHandoffAdapter.cs`
+
+## Touched services
+
+- `Application/Services/SystemEnergy/SystemEnergyDiagnosticsFactory.cs`
+- `Application/Services/SystemEnergy/SystemEnergyProfileHelper.cs`
+- `Application/Services/SystemEnergy/SystemEnergyUsefulLoadValidator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyModuleChainInputValidator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyModuleCalculator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyModuleChainCalculator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyGenerationHandoffBuilder.cs`
+- `Application/Services/SystemEnergy/DomesticHotWaterSystemEnergyHandoffAdapter.cs`
+- `Composition/SystemEnergyRegistration.cs`
+- updated `Composition/EnergyAnalysisRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyTestData.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyUsefulLoadValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyModuleChainInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyModuleCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyModuleChainCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyGenerationHandoffBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/DomesticHotWaterSystemEnergyHandoffAdapterTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+System-energy module-chain foundation non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic EN15316-style module-chain foundation only and defers generator/final/primary energy expansion.
+
+## Next stage
+
+- `AE-SYS-EN15316-001B`

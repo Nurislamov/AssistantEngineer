@@ -7,6 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performanc
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Standards;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.SystemEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Topology;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -97,6 +98,12 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IDomesticHotWaterCirculationLossCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterSystemLoadCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterEn15316HandoffBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyUsefulLoadValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyModuleChainInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyModuleCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyModuleChainCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyGenerationHandoffBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterSystemEnergyHandoffAdapter>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);

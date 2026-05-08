@@ -1,0 +1,21 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Standards;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
+
+internal static class SystemEnergyDiagnosticsFactory
+{
+    public static StandardCalculationDiagnostic Create(
+        CalculationDiagnosticSeverity severity,
+        string code,
+        string message,
+        string source) =>
+        new(
+            Severity: severity,
+            Code: code,
+            Message: message,
+            Context: source,
+            Source: source,
+            Family: StandardCalculationFamily.EN15316,
+            Stage: StandardCalculationStage.SystemEnergy);
+}

@@ -116,3 +116,7 @@ Existing ISO12831-inspired calculator and compatibility application service rema
 ## Next prompt
 
 `AE-SYS-EN15316-001A` - System energy module chain foundation.
+
+## System energy note
+
+DHW EN15316 handoff can now be adapted into `SystemEnergyUsefulLoadSet` for downstream system-energy module-chain calculations.
