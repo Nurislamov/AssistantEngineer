@@ -15,6 +15,11 @@ internal static class SystemEnergyRegistration
         services.AddSingleton<ISystemEnergyModuleChainCalculator, SystemEnergyModuleChainCalculator>();
         services.AddSingleton<ISystemEnergyGenerationHandoffBuilder, SystemEnergyGenerationHandoffBuilder>();
         services.AddSingleton<IDomesticHotWaterSystemEnergyHandoffAdapter, DomesticHotWaterSystemEnergyHandoffAdapter>();
+        services.AddSingleton<ISystemEnergyGeneratorInputValidator, SystemEnergyGeneratorInputValidator>();
+        services.AddSingleton<ISystemEnergyGeneratorLoadSplitter, SystemEnergyGeneratorLoadSplitter>();
+        services.AddSingleton<ISystemEnergyGeneratorFinalEnergyCalculator, SystemEnergyGeneratorFinalEnergyCalculator>();
+        services.AddSingleton<ISystemEnergyFinalEnergyAggregator, SystemEnergyFinalEnergyAggregator>();
+        services.AddSingleton<ISystemEnergyFinalEnergyCalculator, SystemEnergyFinalEnergyCalculator>();
 
         return services;
     }

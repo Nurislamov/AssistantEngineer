@@ -104,6 +104,11 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<ISystemEnergyModuleChainCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyGenerationHandoffBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterSystemEnergyHandoffAdapter>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyGeneratorInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyGeneratorLoadSplitter>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyGeneratorFinalEnergyCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyFinalEnergyAggregator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyFinalEnergyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);

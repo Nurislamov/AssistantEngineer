@@ -620,3 +620,67 @@ This stage provides deterministic EN15316-style module-chain foundation only and
 ## Next stage
 
 - `AE-SYS-EN15316-001B`
+
+---
+
+## Work item
+
+- `AE-SYS-EN15316-001B`
+
+## Touched contracts
+
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorKind.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorCalculationMode.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyLoadSplitMode.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorServiceMode.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyFinalEnergyStatus.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorSet.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorCalculationInput.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyHourlyGeneratorDispatchResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEndUseFinalEnergyResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyFinalEnergyResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorInputValidationResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorAssignedLoad.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyGeneratorLoadSplitResult.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyGeneratorInputValidator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyGeneratorLoadSplitter.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyGeneratorFinalEnergyCalculator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyFinalEnergyAggregator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyFinalEnergyCalculator.cs`
+
+## Touched services
+
+- `Application/Services/SystemEnergy/SystemEnergyGeneratorInputValidator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyGeneratorLoadSplitter.cs`
+- `Application/Services/SystemEnergy/SystemEnergyGeneratorFinalEnergyCalculator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyFinalEnergyAggregator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyFinalEnergyCalculator.cs`
+- updated `Application/Services/SystemEnergy/SystemEnergyProfileHelper.cs`
+- updated `Composition/SystemEnergyRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyGeneratorInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyGeneratorLoadSplitterTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyGeneratorFinalEnergyCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyFinalEnergyAggregatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyFinalEnergyCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyGeneratorFinalEnergyArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+System-energy generator/final-energy stage non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic EN15316-style generator/final-energy calculation only and defers primary-energy and reporting expansion.
+
+## Next stage
+
+- `AE-SYS-EN15316-001C`

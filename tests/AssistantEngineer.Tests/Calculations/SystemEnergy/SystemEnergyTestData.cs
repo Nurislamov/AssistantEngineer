@@ -50,4 +50,84 @@ internal static class SystemEnergyTestData
             HourlyRecoverableLossKWh8760: HourlyConstant(0.2),
             HourlyNonRecoverableLossKWh8760: HourlyConstant(0.3),
             Diagnostics: []);
+
+    public static SystemEnergyGenerationHandoff CreateGenerationHandoff(
+        double heatingHourlyLoad = 10.0,
+        SystemEnergyEndUse endUse = SystemEnergyEndUse.SpaceHeating) =>
+        new(
+            CalculationId: "GEN-H1",
+            HourlySystemLoadBeforeGenerationByEndUseKWh8760: new Dictionary<SystemEnergyEndUse, IReadOnlyList<double>>
+            {
+                [endUse] = HourlyConstant(heatingHourlyLoad)
+            },
+            AnnualSystemLoadBeforeGenerationByEndUseKWh: new Dictionary<SystemEnergyEndUse, double>
+            {
+                [endUse] = HourlyConstant(heatingHourlyLoad).Sum()
+            },
+            HourlyRecoverableLossByEndUseKWh8760: new Dictionary<SystemEnergyEndUse, IReadOnlyList<double>>
+            {
+                [endUse] = HourlyConstant(0.0)
+            },
+            HourlyNonRecoverableLossByEndUseKWh8760: new Dictionary<SystemEnergyEndUse, IReadOnlyList<double>>
+            {
+                [endUse] = HourlyConstant(0.0)
+            },
+            AuxiliaryLoads: [],
+            Diagnostics: []);
+
+    public static SystemEnergyGeneratorInput CreateGenerator(
+        string generatorId = "G1",
+        SystemEnergyGeneratorKind kind = SystemEnergyGeneratorKind.Boiler,
+        SystemEnergyGeneratorCalculationMode mode = SystemEnergyGeneratorCalculationMode.FixedEfficiency,
+        SystemEnergyCarrier carrier = SystemEnergyCarrier.NaturalGas,
+        double? efficiency = 0.9,
+        double? cop = null,
+        double? eer = null,
+        double? spf = null,
+        int priority = 0,
+        double? loadFraction = null,
+        double? capacity = null,
+        IReadOnlyList<SystemEnergyEndUse>? servedEndUses = null) =>
+        new(
+            GeneratorId: generatorId,
+            Name: generatorId,
+            GeneratorKind: kind,
+            CalculationMode: mode,
+            ServiceMode: SystemEnergyGeneratorServiceMode.Heating,
+            FinalEnergyCarrier: carrier,
+            ServedEndUses: servedEndUses ?? [SystemEnergyEndUse.SpaceHeating],
+            Priority: priority,
+            LoadFraction: loadFraction,
+            NominalCapacityKWhPerHour: capacity,
+            Efficiency: efficiency,
+            Cop: cop,
+            Eer: eer,
+            SeasonalPerformanceFactor: spf,
+            AuxiliaryElectricityFraction: null,
+            AuxiliaryElectricityKWhPerKWhOutput: null,
+            HourlyLoadFraction8760: null,
+            HourlyFinalEnergyProfileKWh8760: null,
+            Source: "test",
+            Diagnostics: []);
+
+    public static SystemEnergyGeneratorSet CreateGeneratorSet(
+        IReadOnlyList<SystemEnergyGeneratorInput> generators,
+        SystemEnergyLoadSplitMode splitMode = SystemEnergyLoadSplitMode.SingleGenerator) =>
+        new(
+            GeneratorSetId: "SET-1",
+            LoadSplitMode: splitMode,
+            Generators: generators,
+            DisclosureOverride: null,
+            Source: "test",
+            Diagnostics: []);
+
+    public static SystemEnergyGeneratorCalculationInput CreateGeneratorCalculationInput(
+        SystemEnergyGenerationHandoff? handoff = null,
+        SystemEnergyGeneratorSet? generatorSet = null) =>
+        new(
+            CalculationId: "GEN-CALC-1",
+            GenerationHandoff: handoff ?? CreateGenerationHandoff(),
+            GeneratorSet: generatorSet ?? CreateGeneratorSet([CreateGenerator()]),
+            DisclosureOverride: null,
+            Source: "test");
 }

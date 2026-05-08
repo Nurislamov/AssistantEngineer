@@ -86,4 +86,6 @@ internal static class SystemEnergyProfileHelper
 
         return result;
     }
+
+    public static double[] ZeroProfile() => new double[HoursPerYear];
 }
