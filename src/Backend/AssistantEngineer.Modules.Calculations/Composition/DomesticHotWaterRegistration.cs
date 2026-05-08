@@ -13,6 +13,12 @@ internal static class DomesticHotWaterRegistration
         services.AddSingleton<IDomesticHotWaterDemandBasisCalculator, DomesticHotWaterDemandBasisCalculator>();
         services.AddSingleton<IDomesticHotWaterDrawProfileBuilder, DomesticHotWaterDrawProfileBuilder>();
         services.AddSingleton<IDomesticHotWaterUsefulDemandCalculator, DomesticHotWaterUsefulDemandCalculator>();
+        services.AddSingleton<IDomesticHotWaterSystemLossInputValidator, DomesticHotWaterSystemLossInputValidator>();
+        services.AddSingleton<IDomesticHotWaterStorageLossCalculator, DomesticHotWaterStorageLossCalculator>();
+        services.AddSingleton<IDomesticHotWaterDistributionLossCalculator, DomesticHotWaterDistributionLossCalculator>();
+        services.AddSingleton<IDomesticHotWaterCirculationLossCalculator, DomesticHotWaterCirculationLossCalculator>();
+        services.AddSingleton<IDomesticHotWaterSystemLoadCalculator, DomesticHotWaterSystemLoadCalculator>();
+        services.AddSingleton<IDomesticHotWaterEn15316HandoffBuilder, DomesticHotWaterEn15316HandoffBuilder>();
 
         return services;
     }

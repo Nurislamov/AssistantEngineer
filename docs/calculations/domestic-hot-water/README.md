@@ -60,3 +60,59 @@ Existing ISO12831-inspired calculator and compatibility application service rema
 ## Next prompt
 
 `AE-DHW-ISO12831-001B` - DHW storage/distribution/circulation losses and EN15316 handoff.
+
+## AE-DHW-ISO12831-001B purpose
+
+`AE-DHW-ISO12831-001B` adds deterministic DHW system-load preparation above useful demand by modeling thermal losses and handoff data for future EN15316 system-energy chaining.
+
+### Storage losses
+
+- standing-loss method (`StandingLossWatts`)
+- coefficient method (`StorageLossCoefficientWPerKelvin * deltaT`)
+
+### Distribution losses
+
+- `PipeLengthMeters * PipeLinearLossCoefficientWPerMeterKelvin * deltaT`
+
+### Circulation losses
+
+- thermal loop loss:
+  - `LoopLengthMeters * LoopLinearLossCoefficientWPerMeterKelvin * deltaT`
+- optional pump auxiliary electricity profile from `PumpPowerWatts` and operation fractions
+
+### Recoverable and non-recoverable split
+
+- thermal losses are split by recoverable fraction:
+  - recoverable thermal loss
+  - non-recoverable thermal loss
+
+### Hourly 8760 system heat requirement
+
+- hourly system heat requirement includes:
+  - useful DHW energy
+  - storage thermal losses
+  - distribution thermal losses
+  - circulation thermal losses
+- auxiliary electricity remains separate and is not included in thermal heat requirement
+
+### EN15316 handoff content
+
+- hourly useful DHW energy profile
+- hourly DHW system heat requirement profile
+- hourly DHW auxiliary electricity profile
+- hourly recoverable loss profile
+- hourly non-recoverable loss profile
+
+### Scope boundaries in this stage
+
+- No full ISO12831-3 compliance claim.
+- No full EN15316 compliance claim.
+- No protected tables copied.
+- No generator efficiency/final energy/primary energy calculation in this prompt.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+## Next prompt
+
+`AE-SYS-EN15316-001A` - System energy module chain foundation.

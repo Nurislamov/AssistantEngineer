@@ -486,3 +486,65 @@ This stage provides deterministic standard-inspired DHW useful-demand calculatio
 ## Next stage
 
 - `AE-DHW-ISO12831-001B`
+
+---
+
+## Work item
+
+- `AE-DHW-ISO12831-001B`
+
+## Touched contracts
+
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterLossComponentKind.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterLossRecoveryMode.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterStorageLossInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDistributionLossInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterCirculationLossInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterSystemLossInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterLossComponentResult.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterSystemLoadResult.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterEn15316Handoff.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterSystemLossValidationResult.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterSystemLossInputValidator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterStorageLossCalculator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterDistributionLossCalculator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterCirculationLossCalculator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterSystemLoadCalculator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterEn15316HandoffBuilder.cs`
+
+## Touched services
+
+- `Application/Services/DomesticHotWater/DomesticHotWaterSystemLossInputValidator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterLossProfileHelper.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterStorageLossCalculator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterDistributionLossCalculator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterCirculationLossCalculator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterSystemLoadCalculator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterEn15316HandoffBuilder.cs`
+- updated `Composition/DomesticHotWaterRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterSystemLossInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterStorageLossCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterDistributionLossCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterCirculationLossCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterSystemLoadCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterEn15316HandoffBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterSystemLossArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Domestic hot water system-load non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired DHW system-load preparation only.
+
+## Next stage
+
+- `AE-SYS-EN15316-001A`
