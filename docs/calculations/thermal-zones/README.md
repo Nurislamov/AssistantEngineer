@@ -94,3 +94,7 @@ A direct mapper from boundary-calculation outputs to ISO52016 physical room-mode
 
 - Ground boundary temperature inputs can now be prepared from the ground calculation lane (`AE-GROUND-ISO13370-001B`).
 - Current thermal-zone boundary calculation can consume representative ground temperature as a scalar input, while detailed per-surface ISO52016 coupling remains a separate/additive lane.
+
+## Natural ventilation integration note
+
+- Natural ventilation can now provide zone-level `H_ve` and sensible ventilation load profiles for downstream calculation chains (`AE-VENT-EN16798-001C`).

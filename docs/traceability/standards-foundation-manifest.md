@@ -379,3 +379,52 @@ This stage provides deterministic standard-inspired engineering calculation only
 ## Next stage
 
 - `AE-VENT-EN16798-001C`
+
+---
+
+## Work item
+
+- `AE-VENT-EN16798-001C`
+
+## Touched contracts
+
+- `Application/Contracts/Ventilation/NaturalVentilationZoneIntegrationInput.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationHourlyZoneEnvironment.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationHourlyOpeningCalculationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationHourlyRoomResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationHourlyZoneResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationZoneIntegrationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationZoneIntegrationValidationResult.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationZoneIntegrationValidator.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationHourlyInputBuilder.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationZoneLoadCalculator.cs`
+
+## Touched services
+
+- `Application/Services/Ventilation/NaturalVentilationZoneIntegrationValidator.cs`
+- `Application/Services/Ventilation/NaturalVentilationHourlyInputBuilder.cs`
+- `Application/Services/Ventilation/NaturalVentilationZoneLoadCalculator.cs`
+- updated `Composition/NaturalVentilationRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationZoneIntegrationValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationHourlyInputBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationZoneLoadCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationZoneIntegrationArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Natural ventilation zone/hourly integration non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired application integration only.
+
+## Next stage
+
+- `AE-DHW-ISO12831-001A`

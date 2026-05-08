@@ -17,6 +17,9 @@ internal static class NaturalVentilationRegistration
         services.AddSingleton<INaturalVentilationOpeningControlEvaluator, NaturalVentilationOpeningControlEvaluator>();
         services.AddSingleton<INaturalVentilationOpeningFractionProfileBuilder, NaturalVentilationOpeningFractionProfileBuilder>();
         services.AddSingleton<INaturalVentilationControlledAirflowInputBuilder, NaturalVentilationControlledAirflowInputBuilder>();
+        services.AddSingleton<INaturalVentilationZoneIntegrationValidator, NaturalVentilationZoneIntegrationValidator>();
+        services.AddSingleton<INaturalVentilationHourlyInputBuilder, NaturalVentilationHourlyInputBuilder>();
+        services.AddSingleton<INaturalVentilationZoneLoadCalculator, NaturalVentilationZoneLoadCalculator>();
 
         return services;
     }

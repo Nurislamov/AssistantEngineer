@@ -103,3 +103,59 @@ This prompt adds canonical ventilation geometry/pressure/airflow foundation cont
 ### Next prompt
 
 - `AE-VENT-EN16798-001C`: thermal-zone and hourly load integration.
+
+## AE-VENT-EN16798-001C - Thermal-zone and hourly load integration
+
+### Room and zone matching
+
+- Openings are matched by `RoomId` first, then `ZoneId`, with untargeted openings treated as global where applicable.
+- Hourly environments are evaluated per hour and target (`RoomId`/`ZoneId`) and then converted into hourly airflow calculation inputs.
+
+### Hourly control and airflow chain
+
+- Opening controls are evaluated hourly from configured rules and hourly context.
+- Evaluated opening fractions are applied to matching openings for each hour.
+- Hourly airflow is then calculated through the deterministic natural ventilation airflow lane.
+
+### Heat-transfer and sensible load preparation
+
+- Ventilation heat transfer coefficient:
+  - `H_ve = m_dot_air * cp_air`
+- Sensible ventilation load:
+  - `Q_ve = H_ve * (T_indoor - T_outdoor)`
+- Sign convention:
+  - positive sensible load means indoor-to-outdoor heat loss when indoor air is warmer
+  - negative sensible load means outdoor-to-indoor heat gain when outdoor air is warmer
+
+### ACH calculation
+
+- `ACH = airflow_m3_h / volume_m3`
+- Room ACH uses room volume from topology.
+- Zone ACH uses sum of associated room volumes.
+- Missing or non-positive volume keeps ACH unavailable and emits diagnostics.
+
+### Zone profile outputs
+
+- zone airflow profile (`m3/h`)
+- zone `H_ve` profile (`W/K`)
+- zone sensible ventilation load profile (`W`)
+- zone ACH profile
+
+### Scope boundaries in this stage
+
+- No full EN16798 compliance claim.
+- No copied normative tables.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+- No full coupled multizone airflow network.
+- No forced ISO52016 solver modification in this stage.
+
+### ISO52016 coupling note
+
+- A direct ISO52016 ventilation profile mapper is not forced in this prompt.
+- Final ISO52016 ventilation coupling remains future work after targeted contract extension points are selected.
+
+### Next stage
+
+- `AE-DHW-ISO12831-001A`
