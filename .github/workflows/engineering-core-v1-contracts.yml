@@ -6,7 +6,7 @@ on:
       - main
       - master
       - develop
-      - Energy_Calculation_Parity
+      - Energy_Calculation_Validation
     paths:
       - "docs/**"
       - "scripts/engineering-core/**"
@@ -17,7 +17,7 @@ on:
       - main
       - master
       - develop
-      - Energy_Calculation_Parity
+      - Energy_Calculation_Validation
     paths:
       - "docs/**"
       - "scripts/engineering-core/**"

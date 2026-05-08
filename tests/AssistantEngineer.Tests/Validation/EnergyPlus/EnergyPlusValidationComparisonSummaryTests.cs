@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -125,8 +125,8 @@ public class EnergyPlusValidationComparisonSummaryTests
             "Cases with comparison",
             "Placeholder comparisons",
             "Planned-only cases",
-            "does not claim exact EnergyPlus numerical parity",
-            "does not claim ASHRAE 140 validation coverage",
+            "does not claim exact EnergyPlus numerical equivalence",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage",
             "Future real validation must use committed EnergyPlus/reference model files"
         };
 

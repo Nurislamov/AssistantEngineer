@@ -1,4 +1,4 @@
-﻿# Calculation Module Diagnostics Consistency
+# Calculation Module Diagnostics Consistency
 
 ## Purpose
 
@@ -70,11 +70,11 @@ Partial hourly simulation, synthetic weather and monthly adapters must stay visi
 
 ## Non-claims
 
-Diagnostics consistency does not claim exact EnergyPlus numerical parity.
+Diagnostics consistency does not claim exact EnergyPlus numerical equivalence.
 
-Diagnostics consistency does not claim ASHRAE 140 validation coverage.
+Diagnostics consistency does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
-Diagnostics consistency does not claim full ISO 52016 node/matrix solver parity.
+Diagnostics consistency does not claim full ISO 52016 node/matrix solver equivalence.
 
 Diagnostics consistency only protects internal transparency of current calculation behavior.
 

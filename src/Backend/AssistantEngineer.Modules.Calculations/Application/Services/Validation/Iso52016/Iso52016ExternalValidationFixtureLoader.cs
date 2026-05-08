@@ -9,11 +9,11 @@ public sealed class Iso52016ExternalValidationFixtureLoader
     private static readonly string[] RequiredClaimBoundaryLines =
     {
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
-        "ExternalParityCovered is not allowed in this stage."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+        "ExternalReferenceCovered is not allowed in this stage."
     };
 
     private static readonly string[] RequiredManualIndependentClaimBoundaryLines =
@@ -21,38 +21,38 @@ public sealed class Iso52016ExternalValidationFixtureLoader
         "Manual independent reference fixtures only."
     };
 
-    private static readonly string[] RequiredPyBuildingEnergyInspiredClaimBoundaryLines =
+    private static readonly string[] RequiredStandardReferenceInspiredClaimBoundaryLines =
     {
-        "pyBuildingEnergy-inspired methodology alignment lane only.",
-        "No pyBuildingEnergy numerical equivalence claim.",
-        "No copied pyBuildingEnergy code.",
-        "No pyBuildingEnergy runtime dependency."
+        "StandardReference-inspired methodology alignment lane only.",
+        "No StandardReference numerical equivalence claim.",
+        "No copied StandardReference code.",
+        "No StandardReference runtime dependency."
     };
 
     private static readonly string[] ForbiddenPositiveClaims =
     {
-        "full ISO52016 parity",
-        "full ISO 52016 parity",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validated",
-        "validated against pyBuildingEnergy",
+        "full ISO52016 equivalence",
+        "full ISO 52016 equivalence",
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validated",
+        "validated against StandardReference",
         "validated against EnergyPlus",
-        "ExternalParityCovered"
+        "ExternalReferenceCovered"
     };
 
     private static readonly string[] ForbiddenManualReferenceSources =
     {
-        "pybuildingenergy",
+        "StandardReference",
         "energyplus"
     };
 
-    private static readonly string[] ForbiddenPyBuildingEnergyInspiredWording =
+    private static readonly string[] ForbiddenStandardReferenceInspiredWording =
     {
-        "validated against pybuildingenergy",
-        "matches pybuildingenergy",
-        "same as pybuildingenergy",
-        "copied from pybuildingenergy"
+        "validated against StandardReference",
+        "matches StandardReference",
+        "same as StandardReference",
+        "copied from StandardReference"
     };
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -125,13 +125,13 @@ public sealed class Iso52016ExternalValidationFixtureLoader
                 $"ManualIndependent fixture must declare manual-only claim boundary line: {filePath}");
         }
 
-        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.PyBuildingEnergyInspiredNaming)
+        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.StandardReferenceInspiredNaming)
         {
-            foreach (var requiredLine in RequiredPyBuildingEnergyInspiredClaimBoundaryLines)
+            foreach (var requiredLine in RequiredStandardReferenceInspiredClaimBoundaryLines)
             {
                 if (!fixture.ClaimBoundary.Any(value => string.Equals(value, requiredLine, StringComparison.OrdinalIgnoreCase)))
                     throw new InvalidOperationException(
-                        $"PyBuildingEnergyInspiredNaming fixture claim boundary is missing line '{requiredLine}': {filePath}");
+                        $"StandardReferenceInspiredNaming fixture claim boundary is missing line '{requiredLine}': {filePath}");
             }
         }
 
@@ -197,33 +197,33 @@ public sealed class Iso52016ExternalValidationFixtureLoader
             }
         }
 
-        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.PyBuildingEnergyInspiredNaming)
+        if (fixture.SourceKind == Iso52016ExternalValidationFixtureSourceKind.StandardReferenceInspiredNaming)
         {
             if (!string.Equals(
                     fixture.Reference.DerivationKind,
-                    "PyBuildingEnergyInspiredMethodologyNote",
+                    "StandardReferenceInspiredMethodologyNote",
                     StringComparison.Ordinal))
             {
                 throw new InvalidOperationException(
-                    $"PyBuildingEnergyInspiredNaming fixture must use derivationKind=PyBuildingEnergyInspiredMethodologyNote: {filePath}");
+                    $"StandardReferenceInspiredNaming fixture must use derivationKind=StandardReferenceInspiredMethodologyNote: {filePath}");
             }
 
             if (!ContainsNonParityStatement(fixture.Reference.SourceDescription))
             {
                 throw new InvalidOperationException(
-                    $"PyBuildingEnergyInspiredNaming fixture reference.sourceDescription must explicitly state non-parity scope: {filePath}");
+                    $"StandardReferenceInspiredNaming fixture reference.sourceDescription must explicitly state non-equivalence scope: {filePath}");
             }
 
             var referenceText = $"{fixture.Reference.SourceDescription} {fixture.Reference.MethodologySourceName} {fixture.Reference.MethodologySourceUrl} {fixture.Reference.MethodologySourceCommit}";
             foreach (var note in fixture.Reference.MethodologyNotes ?? Array.Empty<string>())
                 referenceText = $"{referenceText} {note}";
 
-            foreach (var forbidden in ForbiddenPyBuildingEnergyInspiredWording)
+            foreach (var forbidden in ForbiddenStandardReferenceInspiredWording)
             {
                 if (referenceText.Contains(forbidden, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new InvalidOperationException(
-                        $"PyBuildingEnergyInspiredNaming fixture reference contains forbidden wording '{forbidden}': {filePath}");
+                        $"StandardReferenceInspiredNaming fixture reference contains forbidden wording '{forbidden}': {filePath}");
                 }
             }
         }
@@ -234,9 +234,9 @@ public sealed class Iso52016ExternalValidationFixtureLoader
         if (string.IsNullOrWhiteSpace(sourceDescription))
             return false;
 
-        return sourceDescription.Contains("not a parity claim", StringComparison.OrdinalIgnoreCase) ||
+        return sourceDescription.Contains("not a equivalence claim", StringComparison.OrdinalIgnoreCase) ||
                sourceDescription.Contains("methodology/naming alignment only", StringComparison.OrdinalIgnoreCase) ||
-               sourceDescription.Contains("no numerical parity", StringComparison.OrdinalIgnoreCase) ||
+               sourceDescription.Contains("no numerical equivalence", StringComparison.OrdinalIgnoreCase) ||
                sourceDescription.Contains("not external certification", StringComparison.OrdinalIgnoreCase);
     }
 

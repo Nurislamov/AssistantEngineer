@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Release Readiness Checklist
+# Engineering Core V1 Release Readiness Checklist
 
 ## Commands
 
@@ -40,8 +40,8 @@ EnergyPlus validation is planned.
 
 ## Required non-claims
 
-EnergyPlus parity achieved: no.
-ASHRAE 140 validated: no.
+EnergyPlus comparison workflow achieved: no.
+ASHRAE 140 / BESTEST-style validated: no.
 Full ISO 52016 implemented: no.
 
 ## Decision

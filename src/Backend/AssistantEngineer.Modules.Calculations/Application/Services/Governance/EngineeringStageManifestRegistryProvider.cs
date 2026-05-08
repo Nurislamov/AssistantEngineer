@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Governance;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Governance;
@@ -15,7 +15,7 @@ public sealed class EngineeringStageManifestRegistryProvider
 
         new("AE-VALIDATION-ISO52016-001", "docs/releases/Iso52016ExternalNumericalValidationFrameworkManifest.json", EngineeringGovernanceStageKind.InternalValidationFramework, true),
         new("AE-VALIDATION-ISO52016-002", "docs/releases/Iso52016ManualIndependentNumericalFixturesManifest.json", EngineeringGovernanceStageKind.ManualValidationAnchor, true),
-        new("AE-VALIDATION-PYBE-001", "docs/releases/Iso52016PyBuildingEnergyInspiredFixtureIntakeManifest.json", EngineeringGovernanceStageKind.MethodologyIntake, true),
+        new("AE-VALIDATION-standard-reference-001", "docs/releases/Iso52016StandardReferenceInspiredFixtureIntakeManifest.json", EngineeringGovernanceStageKind.MethodologyIntake, true),
 
         new("AE-VENT-001", "docs/releases/Iso16798NaturalVentilationStageManifest.json", EngineeringGovernanceStageKind.OptInCalculatorFoundation, true),
         new("AE-VENT-002", "docs/releases/Iso16798NaturalVentilationApplicationIntegrationManifest.json", EngineeringGovernanceStageKind.OptInApplicationIntegration, true),
@@ -232,7 +232,7 @@ public sealed class EngineeringStageManifestRegistryProvider
         {
             "AE-VALIDATION-ISO52016-001" => EngineeringGovernanceStageKind.InternalValidationFramework,
             "AE-VALIDATION-ISO52016-002" => EngineeringGovernanceStageKind.ManualValidationAnchor,
-            "AE-VALIDATION-PYBE-001" => EngineeringGovernanceStageKind.MethodologyIntake,
+            "AE-VALIDATION-standard-reference-001" => EngineeringGovernanceStageKind.MethodologyIntake,
 
             "AE-VENT-001" or "AE-GROUND-001" or "AE-DHW-001" or "AE-EN15316-001" or "AE-ISO52016-CONSTRUCTION-001"
                 => EngineeringGovernanceStageKind.OptInCalculatorFoundation,
@@ -351,3 +351,4 @@ public sealed class EngineeringStageManifestRegistryProvider
         EngineeringGovernanceStageKind StageKind,
         bool IsStrictRequired);
 }
+

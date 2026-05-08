@@ -1,15 +1,15 @@
 # Fixture Format
 
-Energy Calculation Parity fixtures are JSON files under:
+Energy Calculation equivalence fixtures are JSON files under:
 
 ```text
-tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/Fixtures
+tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/Fixtures
 ```
 
 Benchmark comparison fixtures are JSON files under:
 
 ```text
-tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures
+tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/BenchmarkFixtures/Fixtures
 ```
 
 ## Required Metadata
@@ -20,7 +20,7 @@ tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/F
   "description": "What the fixture verifies.",
   "category": "AnnualEnergyBalance",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation Parity / Function Name",
+  "method": "Energy Calculation equivalence / Function Name",
   "status": "Active",
   "input": {},
   "expected": {
@@ -45,10 +45,10 @@ tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/F
 ## Reference Types
 
 - `InternalDeterministic`: expected values are derived from AssistantEngineer deterministic assumptions and formula-level arithmetic.
-- `BenchmarkReference`: expected values are fixed benchmark/reference values used by comparison tests. This can be an internal benchmark fixture and does not automatically prove external parity.
+- `BenchmarkReference`: expected values are fixed benchmark/reference values used by comparison tests. This can be an internal benchmark fixture and does not automatically prove external equivalence.
 - `ExternalReference`: expected values come from a documented external benchmark/reference source.
 
-`ExternalParityCovered` must not be used without a documented benchmark, tolerance and passing comparison test.
+`ExternalReferenceCovered` must not be used without a documented benchmark, tolerance and passing comparison test.
 
 ## Fixture Status
 
@@ -115,11 +115,11 @@ Fixtures can list expected diagnostic codes. Diagnostics should identify missing
 
 ## Adding A Benchmark Fixture
 
-1. Add a JSON file under `tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures`.
+1. Add a JSON file under `tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/BenchmarkFixtures/Fixtures`.
 2. Set `referenceType` to `BenchmarkReference` for fixed benchmark/reference expected values, or `ExternalReference` only when the source is documented.
 3. Set `status` to `Active` only when the expected values and tolerances are ready to execute.
 4. Add compact input data and expected field paths.
 5. Add strict tolerances for deterministic arithmetic.
 6. Include assumptions and notes. For external references, include source/version details in the notes or source reference.
 
-`BenchmarkCompared` means AssistantEngineer was compared against fixed expected benchmark/reference values in a passing test. It does not automatically mean `ExternalParityCovered`.
+`BenchmarkCompared` means AssistantEngineer was compared against fixed expected benchmark/reference values in a passing test. It does not automatically mean `ExternalReferenceCovered`.

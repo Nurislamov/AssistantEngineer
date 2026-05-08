@@ -54,9 +54,9 @@ This stage prepares useful energy into pre-generation system loads and generatio
 - No protected EN15316 tables copied.
 - No generator/final energy calculation in this prompt.
 - No primary energy calculation in this prompt.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Next prompt
 
@@ -115,9 +115,9 @@ This stage consumes `SystemEnergyGenerationHandoff` from 5A and calculates deter
 - No primary energy calculation in this prompt.
 - No renewable/non-renewable primary energy factors in this prompt.
 - No CO2 calculation in this prompt.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Next prompt
 
@@ -169,6 +169,6 @@ The reporting/API summary includes:
 - No protected EN15316 tables copied.
 - No national annex compliance claim.
 - No certification-grade EPB report.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.

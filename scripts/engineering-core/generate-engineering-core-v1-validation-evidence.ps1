@@ -25,5 +25,5 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EnergyPlusValidation\Assist
 
 
 # BEGIN AE-VALIDATION-EVIDENCE-NONCLAIM-GUARD-MARKERS
-# Does not claim exact pyBuildingEnergy numerical parity.
+# Does not claim exact StandardReference numerical equivalence.
 # END AE-VALIDATION-EVIDENCE-NONCLAIM-GUARD-MARKERS

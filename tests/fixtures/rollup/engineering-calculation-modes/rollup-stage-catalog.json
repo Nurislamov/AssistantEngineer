@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "rollup-stage-catalog",
   "expectedStageIds": [
     "AE-ISO52016-CONSTRUCTION-001",
@@ -14,7 +14,7 @@
     "AE-EN15316-002",
     "AE-VALIDATION-ISO52016-001",
     "AE-VALIDATION-ISO52016-002",
-    "AE-VALIDATION-PYBE-001",
+    "AE-VALIDATION-standard-reference-001",
     "AE-GOVERNANCE-001",
     "AE-GOVERNANCE-002",
     "AE-RELEASE-READINESS-002",
@@ -33,10 +33,11 @@
     "Compatibility behavior preserved by default.",
     "Inspired calculation paths remain opt-in.",
     "No full ISO/EN compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim.",
     "No automatic production data mutation."
   ]
 }
+

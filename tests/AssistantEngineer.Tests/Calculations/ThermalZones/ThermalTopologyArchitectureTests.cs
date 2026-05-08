@@ -17,7 +17,7 @@ public sealed class ThermalTopologyArchitectureTests
             "Microsoft.AspNetCore",
             "ClosedXML",
             "using EnergyPlus",
-            "using pyBuildingEnergy"
+            "using StandardReference"
         };
 
         foreach (var filePath in serviceFiles)

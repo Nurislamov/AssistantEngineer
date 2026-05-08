@@ -1,4 +1,4 @@
-﻿# ADR 0001: Engineering Core V1 Closure Policy
+# ADR 0001: Engineering Core V1 Closure Policy
 
 ## Status
 
@@ -10,7 +10,7 @@ AssistantEngineer needs a clear definition of when Engineering Core V1 is closed
 
 The goal is to deliver a useful engineering calculation kernel for HVAC loads, weather-driven annual energy, domestic hot water, simplified system energy and equipment sizing.
 
-The project uses ISO/pyBuildingEnergy as source structure and formula inspiration, but does not attempt to be an exact clone of pyBuildingEnergy, EnergyPlus or ASHRAE 140.
+The project uses ISO/StandardReference as source structure and formula inspiration, but does not attempt to be an exact clone of StandardReference, EnergyPlus or ASHRAE 140.
 
 ## Decision
 
@@ -38,10 +38,10 @@ Allowed claims:
 
 Forbidden claims:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 implementation;
 - latent/moisture/humidity support in v1.

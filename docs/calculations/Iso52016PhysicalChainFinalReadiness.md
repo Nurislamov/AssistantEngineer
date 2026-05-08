@@ -1,4 +1,4 @@
-﻿# AE-ISO52016-002 Step 12 - physical chain final readiness rollup
+# AE-ISO52016-002 Step 12 - physical chain final readiness rollup
 
 This stage closes the ISO52016-inspired physical node model builder chain as an internal engineering gate.
 
@@ -28,34 +28,34 @@ The physical chain is an application-owned ISO52016-inspired modelling stage bui
 
 This stage is validation/internal engineering anchors only.
 
-It is not full ISO 52016 parity, not complete ISO 52016 numerical equivalence, not pyBuildingEnergy parity, not pyBuildingEnergy numerical equivalence, not EnergyPlus parity, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 validation.
+It is not full ISO 52016 equivalence, not complete ISO 52016 numerical equivalence, not StandardReference equivalence, not StandardReference numerical equivalence, not EnergyPlus comparison workflow, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 validation.
 
 No generated artifacts are introduced by this step.
 
 ## Claim boundary repair
 The AE-ISO52016-002 final readiness rollup is ISO52016-inspired and remains limited to validation/internal engineering anchors only.
-It is not full ISO 52016 parity, not ISO52016 parity, not complete ISO 52016 numerical equivalence, not complete ISO52016 numerical equivalence, not pyBuildingEnergy parity, not pyBuildingEnergy numerical equivalence, not EnergyPlus parity, not EnergyPlus numerical equivalence, not ASHRAE 140 validation, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not full ISO 52016 equivalence, not ISO52016 equivalence, not complete ISO 52016 numerical equivalence, not complete ISO52016 numerical equivalence, not StandardReference equivalence, not StandardReference numerical equivalence, not EnergyPlus comparison workflow, not EnergyPlus numerical equivalence, not ASHRAE 140 / BESTEST-style validation anchor, and not ASHRAE Standard 140 benchmark-grade claim.
 
 Stage id traceability marker: AE-ISO52016-002-STEP-12.
 ## Final readiness manifest schema repair
 
 The final readiness manifest keeps the `AE-ISO52016-002-STEP-12` stage id and explicitly lists `closedWorkItems`, `rollupStages`, `coveredStages`, `dependsOn`, documentation, release manifests, traceability files, verification scripts, C# verification tools and test guards.
 
-Claim boundary remains guarded: ISO52016-inspired physical chain, validation/internal engineering anchors only, not full ISO 52016 parity, not pyBuildingEnergy parity, not EnergyPlus parity, not ASHRAE 140 validation and not ASHRAE Standard 140 benchmark-grade claim.
+Claim boundary remains guarded: ISO52016-inspired physical chain, validation/internal engineering anchors only, not full ISO 52016 equivalence, not StandardReference equivalence, not EnergyPlus comparison workflow, not ASHRAE 140 / BESTEST-style validation anchor and not ASHRAE Standard 140 benchmark-grade claim.
 
 ## Step 12 status repair marker
 
 AE-ISO52016-002 Step 12 status repair marker: internal-engineering-gate.
 
-The final readiness rollup is an internal engineering gate. It is still validation/internal engineering anchors only and does not claim full ISO 52016 parity, pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 validation, or ASHRAE Standard 140 benchmark-grade status.
+The final readiness rollup is an internal engineering gate. It is still validation/internal engineering anchors only and does not claim full ISO 52016 equivalence, StandardReference equivalence, EnergyPlus comparison workflow, ASHRAE 140 / BESTEST-style validation anchor, or ASHRAE Standard 140 benchmark-grade status.
 
 ## Final manifest schema repair
 
 The final readiness manifest is intentionally normalized as an internal-engineering-gate manifest.
 It must keep stageId = AE-ISO52016-002-STEP-12, status = internal-engineering-gate,
 the physical chain rollup lists, and the negative claim-boundary statements:
-not full ISO 52016 parity, not pyBuildingEnergy parity, not EnergyPlus parity,
-not ASHRAE 140 validation, and not ASHRAE Standard 140 benchmark-grade claim.
+not full ISO 52016 equivalence, not StandardReference equivalence, not EnergyPlus comparison workflow,
+not ASHRAE 140 / BESTEST-style validation anchor, and not ASHRAE Standard 140 benchmark-grade claim.
 
 ## Final readiness schema repair markers
 - ISO52016-inspired physical chain final readiness rollup

@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 CI Profiles
+# Engineering Core V1 CI Profiles
 
 ## Purpose
 
@@ -99,10 +99,10 @@ Before release:
 
 CI success does not claim:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - latent/moisture/humidity support in V1.
 
 CI success means the Engineering Core V1 formula gate, diagnostics, disclosures, contracts, traceability and release-readiness guards passed.

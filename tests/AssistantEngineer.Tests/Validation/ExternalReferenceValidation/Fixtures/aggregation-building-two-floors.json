@@ -1,0 +1,23 @@
+{
+  "fixtureName": "BuildingAggregationTwoFloors",
+  "description": "Building aggregation across rooms located on two floors.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Load Aggregation",
+  "category": "Aggregation",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "load-aggregation",
+    "aggregation": {
+      "targetId": 100,
+      "targetType": "Building",
+      "rooms": [
+        { "roomId": 1, "roomName": "Floor 1 room", "floorId": 10, "buildingId": 100, "areaM2": 30, "heatingLoadW": 1500, "coolingLoadW": 0 },
+        { "roomId": 2, "roomName": "Floor 2 room", "floorId": 11, "buildingId": 100, "areaM2": 40, "heatingLoadW": 2500, "coolingLoadW": 0 }
+      ]
+    }
+  },
+  "expected": { "heatingLoadW": 4000 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Design-point building aggregation sums unique room loads." ],
+  "notes": [ "Floors are represented by room floor ids." ]
+}

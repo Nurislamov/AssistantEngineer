@@ -42,11 +42,11 @@ public sealed class Iso52016ExternalValidationFixtureLoaderTests
         fixture["claimBoundary"] = new[]
         {
             "Validation/internal engineering anchors only.",
-            "No full ISO 52016 parity claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim.",
-            "ExternalParityCovered is not allowed in this stage."
+            "No full ISO 52016 equivalence claim.",
+            "No StandardReference equivalence claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+            "ExternalReferenceCovered is not allowed in this stage."
         };
 
         var file = WriteTempFixture(fixture);
@@ -68,11 +68,11 @@ public sealed class Iso52016ExternalValidationFixtureLoaderTests
             {
                 "Validation/internal engineering anchors only.",
                 "Manual independent reference fixtures only.",
-                "No full ISO 52016 parity claim.",
-                "No pyBuildingEnergy parity claim.",
-                "No EnergyPlus parity claim.",
-                "No ASHRAE 140 validation claim.",
-                "ExternalParityCovered is not allowed in this stage."
+                "No full ISO 52016 equivalence claim.",
+                "No StandardReference equivalence claim.",
+                "No EnergyPlus comparison workflow claim.",
+                "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+                "ExternalReferenceCovered is not allowed in this stage."
             },
             ["reference"] = new Dictionary<string, object?>
             {

@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Announcement Draft
+# Engineering Core V1 Announcement Draft
 
 ## Short announcement
 
@@ -14,8 +14,8 @@ Use:
 
 Do not use:
 
-    No "EnergyPlus parity achieved" claim.
-    No "ASHRAE 140 validated" claim.
+    No "EnergyPlus comparison workflow achieved" claim.
+    No "ASHRAE 140 / BESTEST-style validated" claim.
     Full ISO 52016 implemented.
 
 ## What changed
@@ -43,10 +43,10 @@ Engineering Core V1 now includes:
 
 This release does not claim:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 implementation;
 - latent/moisture/humidity support in V1.

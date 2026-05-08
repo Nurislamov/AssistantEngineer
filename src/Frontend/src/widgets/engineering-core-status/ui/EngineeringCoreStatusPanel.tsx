@@ -1,4 +1,4 @@
-п»їimport CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import {
@@ -24,7 +24,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
     <QueryState
       isLoading={query.isLoading}
       error={query.error}
-      loadingLabel="Р—Р°РіСЂСѓР¶Р°РµРј СЃС‚Р°С‚СѓСЃ СЂР°СЃС‡РµС‚РЅРѕРіРѕ СЏРґСЂР°..."
+      loadingLabel="Загружаем статус расчетного ядра..."
       onRetry={() => query.refetch()}
     />
   );
@@ -38,7 +38,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
   if (!status) {
     return (
       <DataCard>
-        <Alert severity="warning">РЎС‚Р°С‚СѓСЃ Engineering Core V1 РЅРµРґРѕСЃС‚СѓРїРµРЅ.</Alert>
+        <Alert severity="warning">Статус Engineering Core V1 недоступен.</Alert>
       </DataCard>
     );
   }
@@ -55,7 +55,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
               Engineering Core {status.version}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Р’РёРґРёРјС‹Р№ СЃС‚Р°С‚СѓСЃ СЂР°СЃС‡РµС‚РЅРѕРіРѕ СЏРґСЂР°, С„РѕСЂРјСѓР»СЊРЅС‹С… gates Рё РѕРіСЂР°РЅРёС‡РµРЅРёР№ РјРѕРґРµР»Рё.
+              Видимый статус расчетного ядра, формульных gates и ограничений модели.
             </Typography>
           </Stack>
 
@@ -85,8 +85,8 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
         </Stack>
 
         <Alert severity="info" icon={<InfoOutlinedIcon />}>
-          ClosedV1 РѕР·РЅР°С‡Р°РµС‚ Р·Р°РєСЂС‹С‚РёРµ engineering formula gates СЃ documented limitations. Р­С‚Рѕ РЅРµ
-          Р·Р°СЏРІР»РµРЅРёРµ С‚РѕС‡РЅРѕРіРѕ EnergyPlus, pyBuildingEnergy РёР»Рё ASHRAE 140 parity.
+          ClosedV1 означает закрытие engineering formula gates с documented limitations. Это не
+          заявление точного EnergyPlus, StandardReference или ASHRAE 140 equivalence.
         </Alert>
 
         <Stack direction={{ xs: "column", md: "row" }} spacing={2}>

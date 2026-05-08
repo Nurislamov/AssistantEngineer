@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Facades;
+using AssistantEngineer.Modules.Calculations.Application.Facades;
 
 namespace AssistantEngineer.Tests.Calculations.CoreStatus;
 
@@ -65,7 +65,7 @@ public class EngineeringCoreStatusFacadeTests
         Assert.True(result.IsSuccess, result.Error);
 
         Assert.Contains(result.Value.ExplicitNonClaims, claim =>
-            claim.Contains("pyBuildingEnergy", StringComparison.OrdinalIgnoreCase));
+            claim.Contains("StandardReference", StringComparison.OrdinalIgnoreCase));
 
         Assert.Contains(result.Value.ExplicitNonClaims, claim =>
             claim.Contains("EnergyPlus", StringComparison.OrdinalIgnoreCase));

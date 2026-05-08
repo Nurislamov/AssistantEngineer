@@ -1,4 +1,4 @@
-﻿# AE-ISO52016-002 Step 03 - physical boundary profile stage
+# AE-ISO52016-002 Step 03 - physical boundary profile stage
 
 This stage extends the ISO52016-inspired physical room/zone model builder with optional hourly boundary driving temperature overrides per physical surface.
 
@@ -34,6 +34,6 @@ The stage rejects:
 
 This is an ISO52016-inspired physical boundary profile stage with validation/internal engineering anchors only.
 
-It is not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
 
 No generated artifacts are introduced by this step.

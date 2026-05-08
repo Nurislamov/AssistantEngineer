@@ -1,4 +1,4 @@
-﻿{
+{
   "inventoryName": "Calculation Module Deepening Inventory",
   "version": "v1",
   "status": "DeepeningBaseline",
@@ -10,7 +10,7 @@
     "contractFiles": 196,
     "abstractionFiles": 48,
     "calculationTests": 79,
-    "parityTests": 37,
+    "equivalenceTests": 37,
     "keyEngines": 12,
     "missingKeyEngines": 0
   },
@@ -120,9 +120,9 @@
     "No silent fallback: simplifications and adapters must be visible as diagnostics."
   ],
   "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity.",
+    "Does not claim exact EnergyPlus numerical equivalence.",
+    "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+    "Does not claim full ISO 52016 node/matrix solver equivalence.",
     "Does not claim full ISO 13370 implementation.",
     "Does not claim full EN 15316 system-chain implementation."
   ]

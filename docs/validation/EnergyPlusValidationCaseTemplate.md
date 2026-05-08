@@ -1,4 +1,4 @@
-﻿# EnergyPlus Validation Case Template
+# EnergyPlus Validation Case Template
 
 Use this template when adding a new validation case.
 
@@ -62,6 +62,6 @@ Use this template when adding a new validation case.
 
 ## Non-claims
 
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
+- Does not claim exact EnergyPlus numerical equivalence.
+- Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- Does not claim full ISO 52016 node/matrix solver equivalence.

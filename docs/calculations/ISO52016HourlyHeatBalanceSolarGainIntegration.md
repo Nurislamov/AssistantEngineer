@@ -1,4 +1,4 @@
-﻿# ISO 52016 Hourly Heat Balance Solar Gain Integration
+# ISO 52016 Hourly Heat Balance Solar Gain Integration
 
 Stage 3 closes the next integration seam after the ISO 52010/Perez solar foundation and ISO 52016 weather/solar context.
 
@@ -14,9 +14,9 @@ Stage 3 closes the next integration seam after the ISO 52010/Perez solar foundat
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
-- This does not claim full ISO 52016 node/matrix solver parity.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- This does not claim full ISO 52016 node/matrix solver equivalence.
 - This does not remove the legacy design-day radiation path yet.
 
 ## Guard tests

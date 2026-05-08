@@ -30,10 +30,10 @@ public class Iso52016PhysicalChainStageRegistryTests
             .ToArray();
 
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
-        Assert.Contains("Not full ISO 52016 parity.", claimBoundary);
+        Assert.Contains("Not full ISO 52016 equivalence.", claimBoundary);
         Assert.Contains("Not complete ISO 52016 numerical equivalence.", claimBoundary);
-        Assert.Contains("Not pyBuildingEnergy parity.", claimBoundary);
-        Assert.Contains("Not EnergyPlus parity.", claimBoundary);
+        Assert.Contains("Not StandardReference equivalence.", claimBoundary);
+        Assert.Contains("Not EnergyPlus comparison workflow.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 validation.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 benchmark-grade claim.", claimBoundary);
 

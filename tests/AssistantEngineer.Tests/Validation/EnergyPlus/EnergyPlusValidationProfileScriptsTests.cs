@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
@@ -120,8 +120,8 @@ public class EnergyPlusValidationProfileScriptsTests
             "EP-SMOKE-002",
             "EP-SMOKE-003",
             "PlaceholderComparison",
-            "exact EnergyPlus numerical parity",
-            "ASHRAE 140 validation coverage"
+            "exact EnergyPlus numerical equivalence",
+            "ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)
@@ -145,8 +145,8 @@ public class EnergyPlusValidationProfileScriptsTests
             "tests/fixtures/validation/**",
             "stale",
             "PlaceholderComparison",
-            "exact EnergyPlus numerical parity",
-            "ASHRAE 140 validation coverage"
+            "exact EnergyPlus numerical equivalence",
+            "ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

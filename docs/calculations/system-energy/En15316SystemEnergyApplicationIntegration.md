@@ -11,9 +11,9 @@
 - Internal deterministic engineering anchors only.
 - Compatibility SystemEnergyEngine behavior preserved by default.
 - No full EN 15316 compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 
 ## Integration model
@@ -52,4 +52,4 @@
 - internal integration anchor only;
 - not a full EN 15316 compliance implementation;
 - not external certification;
-- no parity claims with external tools.
+- no equivalence claims with external tools.

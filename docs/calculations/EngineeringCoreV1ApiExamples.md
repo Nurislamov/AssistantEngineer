@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 API Examples
+# Engineering Core V1 API Examples
 
 ## Engineering core status endpoint
 
@@ -23,13 +23,13 @@ Expected status response shape:
           "status": "ClosedV1",
           "priority": "P0",
           "scope": "Steady-state component heat transfer.",
-          "limitation": "Does not claim full dynamic ISO 52016 node/matrix heat-balance parity."
+          "limitation": "Does not claim full dynamic ISO 52016 node/matrix heat-balance equivalence."
         }
       ],
       "explicitNonClaims": [
-        "No exact pyBuildingEnergy numerical parity claim.",
-        "No exact EnergyPlus numerical parity claim.",
-        "No ASHRAE 140 validation coverage claim."
+        "No exact StandardReference numerical equivalence claim.",
+        "No exact EnergyPlus numerical equivalence claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor coverage claim."
       ],
       "outOfScopeV1": [
         "HVAC.LATENT_LOAD",
@@ -63,9 +63,9 @@ ClosedV1 means:
 
 ClosedV1 does not mean:
 
-- no exact EnergyPlus parity claim;
-- no exact pyBuildingEnergy parity claim;
-- ASHRAE 140 validation coverage;
+- no exact EnergyPlus comparison workflow claim;
+- no exact StandardReference equivalence claim;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
 - full ISO 52016 node/matrix solver implementation;
 - full detailed HVAC plant simulation.
 
@@ -86,8 +86,8 @@ Example:
         "actualMethod": "EngineeringCoreV1.DesignPointCooling",
         "warnings": [
           "Cooling report uses engineering design-point load calculation.",
-          "Report does not claim full ISO 52016 node/matrix solver parity.",
-          "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity.",
+          "Report does not claim full ISO 52016 node/matrix solver equivalence.",
+          "Report does not claim exact EnergyPlus, ASHRAE 140 or StandardReference numerical equivalence.",
           "Latent load, moisture balance and detailed psychrometrics are out of scope for engineering-core v1."
         ],
         "assumptions": [
@@ -96,9 +96,9 @@ Example:
           "Surface irradiance uses ISO52010-inspired solar geometry and isotropic sky transposition."
         ],
         "explicitNonClaims": [
-          "No exact EnergyPlus numerical parity claim.",
-          "No ASHRAE 140 validation coverage claim.",
-          "No full ISO 52016 node/matrix solver parity claim."
+          "No exact EnergyPlus numerical equivalence claim.",
+          "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+          "No full ISO 52016 node/matrix solver equivalence claim."
         ],
         "outOfScopeV1": [
           "HVAC.LATENT_LOAD",

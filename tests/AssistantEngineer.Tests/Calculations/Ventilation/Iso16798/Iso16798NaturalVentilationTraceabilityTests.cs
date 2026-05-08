@@ -24,9 +24,9 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("ISO16798-inspired natural ventilation engineering calculator.", claimBoundary);
         Assert.Contains("No full ISO 16798 compliance claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
         Assert.Contains("No external certification claim.", claimBoundary);
     }
 
@@ -43,11 +43,11 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         Assert.True(File.Exists(docPath), $"Documentation file was not found: {docPath}");
         var docText = File.ReadAllText(docPath);
         Assert.DoesNotContain("ISO 16798 validated", docText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ASHRAE 140 validated", docText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ExternalParityCovered", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ASHRAE 140 / BESTEST-style validated", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 16798 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
 
         var fixturePaths = new[]
         {
@@ -61,11 +61,11 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         {
             Assert.True(File.Exists(path), $"Fixture file was not found: {path}");
             var text = File.ReadAllText(path);
-            Assert.DoesNotContain("ExternalParityCovered", text, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("validated against pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("matches pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("same as pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("copied from pyBuildingEnergy", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("ExternalReferenceCovered", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("validated against StandardReference", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("matches StandardReference", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("same as StandardReference", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("copied from StandardReference", text, StringComparison.OrdinalIgnoreCase);
         }
     }
 
@@ -99,19 +99,19 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("Compatibility behavior preserved by default.", claimBoundary);
         Assert.Contains("No full ISO 16798 compliance claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
 
         var docText = File.ReadAllText(docPath);
         Assert.Contains("AE-VENT-002", docText);
         Assert.Contains("Compatibility behavior preserved by default.", docText);
         Assert.DoesNotContain("ISO 16798 validated", docText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ExternalParityCovered", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 16798 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
     }
 
     private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)

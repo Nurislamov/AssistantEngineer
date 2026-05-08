@@ -121,7 +121,7 @@ public sealed class CoolingEquipmentSelector : ICoolingEquipmentSelector
                 {
                     Severity = "Info",
                     Code = "EquipmentSelection.MatrixCoolingSelectorAdapter",
-                    Message = "Matrix cooling selector uses cooling catalog capacity only; the Energy Calculation Parity equipment sizing pipeline provides multi-criteria heating/cooling diagnostics."
+                    Message = "Matrix cooling selector uses cooling catalog capacity only; the Energy Calculation equivalence equipment sizing pipeline provides multi-criteria heating/cooling diagnostics."
                 },
                 new EquipmentSelectionDiagnostic
                 {

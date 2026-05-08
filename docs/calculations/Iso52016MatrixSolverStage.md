@@ -54,9 +54,9 @@ Example request body:
 
 ## Non-claims
 
-This stage does not claim exact numerical parity with pyBuildingEnergy, EnergyPlus, or ASHRAE 140. It closes an internal architecture and deterministic-test gate for the Matrix solver path.
+This stage does not claim exact numerical equivalence with StandardReference, EnergyPlus, or ASHRAE 140. It closes an internal architecture and deterministic-test gate for the Matrix solver path.
 
-The existing `EngineeringCoreV1` non-claim about "No full ISO 52016 node/matrix solver parity claim" remains valid unless a separate external parity/validation stage is completed.
+The existing `EngineeringCoreV1` non-claim about "No full ISO 52016 node/matrix solver equivalence claim" remains valid unless a separate external equivalence/validation stage is completed.
 
 ## Verification
 

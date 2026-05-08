@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Tools;
 
@@ -35,7 +35,7 @@ public class EngineeringCoreVerificationToolArchitectureTests
             "Engineering Core API contract snapshot guard tests",
             "EnergyPlus validation evidence package tests",
             "Engineering Core traceability matrix guard tests",
-            "EnergyPlus/ASHRAE 140 validation harness guard tests",
+            "EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests",
             "Full backend test suite",
             "skip-frontend",
             "skip-full-dotnet",

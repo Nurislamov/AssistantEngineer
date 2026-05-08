@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Rollup;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Rollup;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
 
 namespace AssistantEngineer.Tests.Calculations.Rollup;
@@ -31,7 +31,7 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
             "AE-EN15316-002",
             "AE-VALIDATION-ISO52016-001",
             "AE-VALIDATION-ISO52016-002",
-            "AE-VALIDATION-PYBE-001",
+            "AE-VALIDATION-standard-reference-001",
             "AE-GOVERNANCE-001",
             "AE-GOVERNANCE-002",
             "AE-RELEASE-READINESS-002",
@@ -118,3 +118,4 @@ public sealed class EngineeringCalculationModeCatalogProviderTests
             mode.Kind == EngineeringCalculationModeKind.StatusDisclosure);
     }
 }
+

@@ -1,0 +1,25 @@
+{
+  "fixtureName": "EquipmentCandidateRejected",
+  "description": "Candidate below required reserve is rejected.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Equipment Sizing Integration",
+  "category": "EquipmentSizing",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "equipment-sizing",
+    "equipmentSizing": {
+      "targetId": 1,
+      "targetType": "Room",
+      "requiredHeatingLoadW": 0,
+      "requiredCoolingLoadW": 5000,
+      "safetyFactor": 1.1,
+      "candidates": [
+        { "equipmentId": 1, "name": "Candidate", "model": "C-5000", "equipmentType": "DX", "coolingCapacityW": 5000, "isActive": true }
+      ]
+    }
+  },
+  "expected": { "hasRejectedCandidate": true, "expectedRejectReason": "insufficient cooling capacity" },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Reject reasons are explicit." ],
+  "notes": [ "No fake successful result is returned." ]
+}

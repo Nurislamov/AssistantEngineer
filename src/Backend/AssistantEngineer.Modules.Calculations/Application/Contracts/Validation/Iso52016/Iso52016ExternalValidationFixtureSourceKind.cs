@@ -3,6 +3,6 @@ namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Validatio
 public enum Iso52016ExternalValidationFixtureSourceKind
 {
     ManualIndependent = 0,
-    PyBuildingEnergyInspiredNaming = 1,
+    StandardReferenceInspiredNaming = 1,
     EnergyPlusStyleNaming = 2
 }

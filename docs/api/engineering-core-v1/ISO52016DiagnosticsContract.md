@@ -38,10 +38,10 @@ The source/method path must be read from `diagnostics`:
 
 ## Explicit non-claims
 
-- No exact EnergyPlus numerical parity claim.
-- No exact pyBuildingEnergy numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full ISO 52016 node/matrix solver parity claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No exact StandardReference numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full ISO 52016 node/matrix solver equivalence claim.
 
 ## Sample
 

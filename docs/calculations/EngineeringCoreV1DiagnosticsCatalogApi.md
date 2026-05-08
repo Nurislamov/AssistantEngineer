@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Diagnostics Catalog API
+# Engineering Core V1 Diagnostics Catalog API
 
 ## Endpoint
 
@@ -63,7 +63,7 @@ Frontend files:
 
 The diagnostics catalog does not claim:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity.
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence.

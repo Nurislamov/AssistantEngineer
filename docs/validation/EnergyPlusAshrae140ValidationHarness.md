@@ -1,4 +1,4 @@
-﻿# EnergyPlus / ASHRAE 140 Validation Harness
+# EnergyPlus / ASHRAE 140 / BESTEST-style validation anchor Harness
 
 ## Purpose
 
@@ -12,7 +12,7 @@ The goal is to make future validation repeatable while keeping Engineering Core 
 
 The current validation harness is a scaffold with smoke fixtures.
 
-It is not full EnergyPlus parity.
+It is not full EnergyPlus comparison workflow.
 
 It is not ASHRAE 140 certification.
 
@@ -80,9 +80,9 @@ These tolerances must be reviewed when real EnergyPlus fixtures are committed.
 
 Every validation case must keep these non-claims visible where applicable:
 
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
+- Does not claim exact EnergyPlus numerical equivalence.
+- Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- Does not claim full ISO 52016 node/matrix solver equivalence.
 
 ## Relationship to Engineering Core V1
 

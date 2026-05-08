@@ -41,9 +41,9 @@ public class ArchitectureHardeningDocumentationTests
             "Legacy services found",
             "Guardrails added in this pass",
             "Remaining risks",
-            "No EnergyPlus parity claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No ASHRAE 140 validation claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No StandardReference equivalence claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
             "No full ISO/EN compliance claim.",
             "Validation anchors remain validation anchors only.",
             "infrastructure readiness"

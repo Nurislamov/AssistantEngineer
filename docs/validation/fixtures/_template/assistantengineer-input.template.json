@@ -1,4 +1,4 @@
-﻿{
+{
   "caseId": "{{CASE_ID}}",
   "engine": "AssistantEngineer",
   "inputKind": "EngineeringCoreV1SmokeFixture",
@@ -43,9 +43,9 @@
   "disclosure": {
     "coreStatus": "ClosedV1",
     "nonClaims": [
-      "Does not claim exact EnergyPlus numerical parity.",
-      "Does not claim ASHRAE 140 validation coverage.",
-      "Does not claim full ISO 52016 node/matrix solver parity."
+      "Does not claim exact EnergyPlus numerical equivalence.",
+      "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+      "Does not claim full ISO 52016 node/matrix solver equivalence."
     ]
   }
 }

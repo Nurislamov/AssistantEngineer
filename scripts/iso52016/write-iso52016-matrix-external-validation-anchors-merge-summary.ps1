@@ -6,7 +6,7 @@ param(
 # TRACEABILITY-MARKERS-START
 # artifacts\iso52016\external-validation-anchors\merge-summary.json
 # generatedArtifactsCommitted
-# Validation anchors only, not full parity.
+# Validation anchors only, not full equivalence claim.
 # TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 

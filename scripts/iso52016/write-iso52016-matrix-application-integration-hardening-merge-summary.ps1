@@ -7,7 +7,7 @@ param(
 # artifacts\iso52016\application-integration-hardening\merge-summary.json
 # generatedArtifactsCommitted
 # ApplicationIntegrationHardeningOnly
-# Validation anchors only, not full parity.
+# Validation anchors only, not full equivalence claim.
 # TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 

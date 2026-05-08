@@ -18,6 +18,6 @@
   "expectedHeatingLoadW": 640.0,
   "explicitNonClaims": [
     "Engineering timestep scaling guard only.",
-    "No full annual simulation parity claim."
+    "No full annual simulation equivalence claim."
   ]
 }

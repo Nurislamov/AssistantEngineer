@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -51,9 +51,9 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
 
         var combined = string.Join(Environment.NewLine, TemplatePaths.Select(File.ReadAllText));
 
-        Assert.Contains("Does not claim exact EnergyPlus numerical parity.", combined, StringComparison.Ordinal);
-        Assert.Contains("Does not claim ASHRAE 140 validation coverage.", combined, StringComparison.Ordinal);
-        Assert.Contains("Does not claim full ISO 52016 node/matrix solver parity.", combined, StringComparison.Ordinal);
+        Assert.Contains("Does not claim exact EnergyPlus numerical equivalence.", combined, StringComparison.Ordinal);
+        Assert.Contains("Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.", combined, StringComparison.Ordinal);
+        Assert.Contains("Does not claim full ISO 52016 node/matrix solver equivalence.", combined, StringComparison.Ordinal);
     }
 
     [Fact]

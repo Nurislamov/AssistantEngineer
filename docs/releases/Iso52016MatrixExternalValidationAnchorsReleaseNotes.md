@@ -1,10 +1,10 @@
-﻿# ISO 52016 Matrix external validation anchors release notes
+# ISO 52016 Matrix external validation anchors release notes
 
 ## Status
 
 Closed as `ValidationAnchorOnly`.
 
-The stage provides independent manual engineering validation anchors for the ISO 52016 Matrix solver path. It does not provide, imply, or approximate full pyBuildingEnergy parity, EnergyPlus parity, ASHRAE 140 validation, or full ISO 52016 conformance certification.
+The stage provides independent manual engineering validation anchors for the ISO 52016 Matrix solver path. It does not provide, imply, or approximate full StandardReference equivalence, EnergyPlus comparison workflow, ASHRAE 140 / BESTEST-style validation anchor, or full ISO 52016 conformance certification.
 
 ## Closed anchors
 
@@ -36,19 +36,19 @@ They are generated evidence outputs and must not be committed.
 
 ## Explicit non-claims
 
-No pyBuildingEnergy parity is claimed or implied.
+No StandardReference equivalence is claimed or implied.
 
-This release is validation anchors only, not full parity.
+This release is validation anchors only, not full equivalence claim.
 
 ## Non-claims
 
-Validation anchors only, not full parity.
+Validation anchors only, not full equivalence claim.
 
-No exact pyBuildingEnergy numerical parity claim.
-No exact EnergyPlus numerical parity claim.
-No ExternalParityCovered claim.
-No FullParityCovered claim.
-No pyBuildingEnergy parity.
+No exact StandardReference numerical equivalence claim.
+No exact EnergyPlus numerical equivalence claim.
+No ExternalReferenceCovered claim.
+No FullReferenceCovered claim.
+No StandardReference equivalence.
 
-No full ISO 52016 parity claim.
+No full ISO 52016 equivalence claim.
 

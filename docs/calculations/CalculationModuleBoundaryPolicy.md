@@ -1,4 +1,4 @@
-﻿# Calculation Module Boundary Policy
+# Calculation Module Boundary Policy
 
 ## Purpose
 
@@ -49,7 +49,7 @@ An ISO-inspired method must not be labelled as full ISO implementation.
 
 A placeholder validation fixture must not be labelled as real EnergyPlus validation.
 
-A real EnergyPlus comparison must remain tolerance-based and must not claim exact numerical parity.
+A real EnergyPlus comparison must remain tolerance-based and must not claim exact numerical equivalence.
 
 ## Reporting boundary
 

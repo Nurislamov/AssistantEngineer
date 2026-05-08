@@ -1,0 +1,57 @@
+{
+  "fixtureName": "AdjacentConditionedZoneSameTemperature",
+  "description": "Adjacent conditioned zone at the same temperature produces zero net heat flow.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Transmission Heat Transfer",
+  "sourceReference": "AssistantEngineer deterministic fixture for adjacent conditioned boundary handling.",
+  "assumptions": [
+    "The adjacent conditioned zone temperature is supplied explicitly.",
+    "Equal temperatures produce zero delta-T."
+  ],
+  "notes": [
+    "The element remains included because it is a valid boundary path."
+  ],
+  "input": {
+    "calculationBasis": "transmission-heat-transfer",
+    "transmission": {
+      "elements": [
+        {
+          "elementId": 4,
+          "elementType": "Wall",
+          "roomId": 101,
+          "areaM2": 8,
+          "uValueWPerM2K": 0.7,
+          "indoorTemperatureC": 22,
+          "adjacentTemperatureC": 22,
+          "boundaryType": "AdjacentConditionedZone",
+          "diagnosticsContext": "AdjacentConditionedZoneSameTemperature wall"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalHeatFlowW": 0,
+    "totalHeatLossW": 0,
+    "totalHeatGainW": 0,
+    "elements": [
+      {
+        "elementId": 4,
+        "elementType": "Wall",
+        "boundaryType": "AdjacentConditionedZone",
+        "areaM2": 8,
+        "uValueWPerM2K": 0.7,
+        "deltaTC": 0,
+        "heatFlowW": 0,
+        "isIncludedInLoad": true,
+        "expectedDiagnosticCodes": []
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

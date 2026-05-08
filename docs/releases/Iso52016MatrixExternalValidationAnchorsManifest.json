@@ -6,7 +6,7 @@
     "fixtureCount":  5,
     "manualAnchorCount":  4,
     "annual8760ReferenceCount":  1,
-    "sourcePolicy":  "Independent manual engineering validation anchors only. pyBuildingEnergy and EnergyPlus names may be used as naming style, but their outputs are not authoritative references.",
+    "sourcePolicy":  "Independent manual engineering validation anchors only. StandardReference and EnergyPlus names may be used as naming style, but their outputs are not authoritative references.",
     "requiredAnchorIds":  [
                               "MANUAL-ISO52016-ANCHOR-001",
                               "MANUAL-ISO52016-ANCHOR-002",
@@ -43,12 +43,12 @@
     "scope":  "ValidationAnchorOnly",
     "closedByReleaseManifest":  "docs/releases/Iso52016MatrixExternalValidationAnchorsReleaseManifest.json",
     "explicitNonClaims":  [
-                              "validation anchors only, not full parity",
-                              "No pyBuildingEnergy parity.",
-                              "No exact pyBuildingEnergy numerical parity claim.",
-                              "No exact EnergyPlus numerical parity claim.",
-                              "No ASHRAE 140 validation coverage claim.",
-                              "No ExternalParityCovered claim.",
-                              "No FullParityCovered claim."
+                              "validation anchors only, not full equivalence claim",
+                              "No StandardReference equivalence.",
+                              "No exact StandardReference numerical equivalence claim.",
+                              "No exact EnergyPlus numerical equivalence claim.",
+                              "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+                              "No ExternalReferenceCovered claim.",
+                              "No FullReferenceCovered claim."
                           ]
 }

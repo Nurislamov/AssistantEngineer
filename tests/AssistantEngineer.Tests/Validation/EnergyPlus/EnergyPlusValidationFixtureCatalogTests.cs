@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -156,8 +156,8 @@ public class EnergyPlusValidationFixtureCatalogTests
             "Fixtures missing required files",
             "Fixtures missing comparison output",
             "PlaceholderComparison is not real EnergyPlus validation",
-            "does not claim exact EnergyPlus numerical parity",
-            "ASHRAE 140 validation coverage"
+            "does not claim exact EnergyPlus numerical equivalence",
+            "ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

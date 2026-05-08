@@ -1,0 +1,57 @@
+{
+  "fixtureName": "signed-component-balance-summer",
+  "description": "Benchmark reference fixture for summer signed component totals with positive heat-flow balance.",
+  "category": "SignedComponentBalance",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance Signed Components",
+  "status": "Active",
+  "sourceReference": "Internal benchmark reference values derived from constant signed hourly component loads; no external equivalence claim.",
+  "input": {
+    "calculationBasis": "signed-component-balance",
+    "buildingId": 4,
+    "buildingName": "Signed summer benchmark",
+    "buildingAreaM2": 100,
+    "year": 2026,
+    "hourlyPattern": "constant",
+    "hourlyRecordCount": 8760,
+    "energyDataSource": "TrueHourlySimulation",
+    "isTrueHourly8760": true,
+    "hourlyValues": {
+      "heatingLoadW": 0,
+      "coolingLoadW": 100,
+      "transmissionW": 100,
+      "transmissionBalanceW": 100,
+      "ventilationW": 50,
+      "ventilationBalanceW": 50,
+      "groundW": 30,
+      "groundBalanceW": 10,
+      "solarGainsW": 20,
+      "internalGainsW": 10,
+      "hourDurationH": 1
+    }
+  },
+  "expected": {
+    "annualCoolingDemandKWh": 876,
+    "componentBreakdown.transmissionKWh": 876,
+    "componentBreakdown.netTransmissionKWh": 876,
+    "componentBreakdown.ventilationKWh": 438,
+    "componentBreakdown.netVentilationKWh": 438,
+    "componentBreakdown.groundKWh": 262.8,
+    "componentBreakdown.netGroundKWh": 87.6,
+    "componentBreakdown.solarGainsKWh": 175.2,
+    "componentBreakdown.internalGainsKWh": 87.6
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "Magnitude component fields are aggregated as non-negative kWh.",
+    "Net component fields preserve the sign of hourly balance values.",
+    "Solar and internal gains are magnitude-only annual totals."
+  ],
+  "notes": [
+    "This fixture verifies signed transmission, ventilation and ground totals plus magnitude solar/internal gains.",
+    "It is not ExternalReferenceCovered evidence."
+  ]
+}

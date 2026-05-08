@@ -10,9 +10,9 @@
 - ISO16798-inspired natural ventilation engineering calculator.
 - Internal deterministic engineering anchors only.
 - No full ISO 16798 compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 
 ## Calculation structure
@@ -42,7 +42,7 @@
 
 - internal engineering anchor model, not a full standard-compliance engine;
 - no certification output;
-- no external-tool parity claims.
+- no external-tool equivalence claims.
 
 ## Migration strategy
 

@@ -11,9 +11,9 @@ public sealed class NaturalVentilationOpeningControlEvaluatorTests
     [
         "Full ISO compliance",
         "Full EN compliance",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validation"
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validation anchor"
     ];
 
     private readonly NaturalVentilationOpeningControlEvaluator _evaluator = new(

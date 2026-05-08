@@ -5,12 +5,12 @@
   "referenceStyle": "EnergyPlus-style naming only",
   "claimScope": "ValidationAnchorOnly",
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full external engine parity claim."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
   ],
-  "description": "EnergyPlus-style annual naming anchor only. 8760 hours are generated from twelve 730-hour manual outdoor temperature blocks; this is not an EnergyPlus parity case.",
+  "description": "EnergyPlus-style annual naming anchor only. 8760 hours are generated from twelve 730-hour manual outdoor temperature blocks; this is not an EnergyPlus comparison workflow case.",
   "kind": "annual8760ManualReference",
   "mode": "AnnualHeatingCooling",
   "hourCount": 8760,

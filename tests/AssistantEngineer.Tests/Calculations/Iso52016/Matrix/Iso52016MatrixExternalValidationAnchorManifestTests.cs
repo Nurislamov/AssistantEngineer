@@ -77,10 +77,10 @@ public class Iso52016MatrixExternalValidationAnchorManifestTests
                 .Select(item => item.GetString())
                 .ToArray();
 
-            Assert.Contains("No pyBuildingEnergy parity claim.", nonClaims);
-            Assert.Contains("No EnergyPlus parity claim.", nonClaims);
-            Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
-            Assert.Contains("No full ISO 52016 parity claim.", nonClaims);
+            Assert.Contains("No StandardReference equivalence claim.", nonClaims);
+            Assert.Contains("No EnergyPlus comparison workflow claim.", nonClaims);
+            Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
+            Assert.Contains("No full ISO 52016 equivalence claim.", nonClaims);
         }
 
         foreach (var requiredAnchorId in RequiredAnchorIds)
@@ -126,12 +126,12 @@ public class Iso52016MatrixExternalValidationAnchorManifestTests
 
         var doc = File.ReadAllText(docPath);
 
-        Assert.Contains("validation anchors only, not full parity", doc);
+        Assert.Contains("validation anchors only, not full equivalence claim", doc);
         Assert.Contains("IndependentManualEngineeringFormula", doc);
-        Assert.Contains("No pyBuildingEnergy parity claim.", doc);
-        Assert.Contains("No EnergyPlus parity claim.", doc);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", doc);
-        Assert.Contains("No full ISO 52016 parity claim.", doc);
+        Assert.Contains("No StandardReference equivalence claim.", doc);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", doc);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", doc);
+        Assert.Contains("No full ISO 52016 equivalence claim.", doc);
         Assert.Contains("MANUAL-ISO52016-ANNUAL-8760-001", doc);
     }
 
@@ -156,8 +156,8 @@ public class Iso52016MatrixExternalValidationAnchorManifestTests
         Assert.Contains("ManualEngineeringValidationAnchor", script);
         Assert.Contains("IndependentManualEngineeringFormula", script);
         Assert.Contains("ValidationAnchorsOnly", script);
-        Assert.Contains("No pyBuildingEnergy parity claim.", script);
-        Assert.Contains("No EnergyPlus parity claim.", script);
+        Assert.Contains("No StandardReference equivalence claim.", script);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", script);
         Assert.Contains("hourCount 8760", script);
     }
 

@@ -12,21 +12,21 @@ This stage does not change solver equations, physical model equations, or runtim
 
 - Validation/internal engineering anchors only.
 - Manual independent reference fixtures only.
-- No full ISO 52016 parity claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
-- ExternalParityCovered is not allowed in this stage.
+- No full ISO 52016 equivalence claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
+- ExternalReferenceCovered is not allowed in this stage.
 
-This stage is not a parity claim and not external certification.
+This stage is not a equivalence claim and not external certification.
 
 ## Fixture lanes
 
 - `ManualIndependent`: deterministic manual independent reference fixture lane.
-- `PyBuildingEnergyInspiredNaming`: pyBuildingEnergy-inspired methodology alignment lane; not a parity claim.
-- `EnergyPlusStyleNaming`: EnergyPlus-style naming lane; not a parity claim.
+- `StandardReferenceInspiredNaming`: StandardReference-inspired methodology alignment lane; not a equivalence claim.
+- `EnergyPlusStyleNaming`: EnergyPlus-style naming lane; not a equivalence claim.
 
-No pyBuildingEnergy code is copied and no EnergyPlus runtime dependency is added.
+No StandardReference code is copied and no EnergyPlus runtime dependency is added.
 
 ## Contracts and services
 

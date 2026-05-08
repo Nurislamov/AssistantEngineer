@@ -1,0 +1,45 @@
+﻿{
+  "stageId": "AE-VALIDATION-standard-reference-001",
+  "title": "ISO52016 StandardReference-inspired fixture intake",
+  "status": "methodology-alignment-fixture-intake",
+  "dependsOn": [
+    "AE-VALIDATION-ISO52016-001",
+    "AE-VALIDATION-ISO52016-002"
+  ],
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "StandardReference-inspired methodology alignment lane only.",
+    "No StandardReference equivalence claim.",
+    "No StandardReference numerical equivalence claim.",
+    "No copied StandardReference code.",
+    "No StandardReference runtime dependency.",
+    "No full ISO 52016 equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+    "No external certification claim.",
+    "ExternalReferenceCovered is not allowed in this stage."
+  ],
+  "fixtureFiles": [
+    "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-simple-heating-naming-anchor.json",
+    "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-simple-cooling-naming-anchor.json",
+    "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-annual-seasonal-naming-anchor.json"
+  ],
+  "methodologyDocs": [
+    "docs/calculations/validation/iso52016/StandardReference-inspired-methodology-lane.md",
+    "docs/calculations/validation/iso52016/standard-reference-inspired-simple-heating-naming-anchor.md",
+    "docs/calculations/validation/iso52016/standard-reference-inspired-simple-cooling-naming-anchor.md",
+    "docs/calculations/validation/iso52016/standard-reference-inspired-annual-seasonal-naming-anchor.md",
+    "docs/calculations/Iso52016StandardReferenceInspiredFixtureIntake.md"
+  ],
+  "implementationFiles": [
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationReference.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationFixtureLoader.cs"
+  ],
+  "testGuards": [
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredFixtureLoaderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredClaimBoundaryTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredTraceabilityTests.cs"
+  ],
+  "generatedArtifacts": []
+}
+

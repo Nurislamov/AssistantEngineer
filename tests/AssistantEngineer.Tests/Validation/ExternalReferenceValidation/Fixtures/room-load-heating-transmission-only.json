@@ -1,0 +1,27 @@
+{
+  "fixtureName": "RoomHeatingTransmissionOnly",
+  "description": "Room heating load with fixed transmission component only.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Room Heating Cooling Load",
+  "category": "RoomLoad",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "room-load",
+    "roomLoad": {
+      "roomId": 1,
+      "roomCode": "R-1",
+      "roomName": "Room",
+      "areaM2": 20,
+      "volumeM3": 60,
+      "heatingSetpointC": 21,
+      "coolingSetpointC": 24,
+      "outdoorDesignHeatingTemperatureC": -10,
+      "outdoorDesignCoolingTemperatureC": 35,
+      "fixedComponents": { "heatingTransmissionW": 1000 }
+    }
+  },
+  "expected": { "heatingLoadW": 1000, "heatingLoadWPerM2": 50 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Only fixed deterministic transmission component is supplied." ],
+  "notes": [ "Solar and internal gains are not heating offsets in this design-point method." ]
+}

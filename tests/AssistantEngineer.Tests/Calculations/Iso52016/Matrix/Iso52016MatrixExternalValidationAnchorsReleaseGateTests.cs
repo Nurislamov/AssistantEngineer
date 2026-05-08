@@ -14,10 +14,10 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
 
         var manifestText = File.ReadAllText(manifestPath);
 
-        Assert.DoesNotContain("\"ExternalParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"FullParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"pyBuildingEnergyParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"EnergyPlusParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"ExternalReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"FullReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"StandardReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"EnergyPlusComparisonCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
 
         using var document = JsonDocument.Parse(manifestText);
         var root = document.RootElement;
@@ -27,7 +27,7 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
         Assert.Equal("ValidationAnchorOnly", root.GetProperty("scope").GetString());
         Assert.True(root.GetProperty("simpleIndependentManualAnchorsIntegrated").GetBoolean());
         Assert.True(root.GetProperty("annual8760ManualReferenceIntegrated").GetBoolean());
-        Assert.True(root.GetProperty("pyBuildingEnergyStyleNamingIntegrated").GetBoolean());
+        Assert.True(root.GetProperty("StandardReferenceStyleNamingIntegrated").GetBoolean());
         Assert.True(root.GetProperty("energyPlusStyleNamingIntegrated").GetBoolean());
         Assert.True(root.GetProperty("stageGateIntegrated").GetBoolean());
         Assert.True(root.GetProperty("allInOneVerificationIntegrated").GetBoolean());
@@ -40,12 +40,12 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
             .Select(item => item.GetString())
             .ToArray();
 
-        Assert.Contains("Validation anchors only, not full parity.", nonClaims);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", nonClaims);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", nonClaims);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
-        Assert.Contains("No ExternalParityCovered claim.", nonClaims);
-        Assert.Contains("No FullParityCovered claim.", nonClaims);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", nonClaims);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", nonClaims);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", nonClaims);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
+        Assert.Contains("No ExternalReferenceCovered claim.", nonClaims);
+        Assert.Contains("No FullReferenceCovered claim.", nonClaims);
     }
 
     [Fact]
@@ -96,12 +96,12 @@ public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
 
         var doc = File.ReadAllText(docPath);
 
-        Assert.Contains("Validation anchors only, not full parity.", doc);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", doc);
         Assert.Contains("IndependentManualEngineeringFormula", doc);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", doc);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", doc);
-        Assert.Contains("No ExternalParityCovered claim.", doc);
-        Assert.Contains("No FullParityCovered claim.", doc);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", doc);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", doc);
+        Assert.Contains("No ExternalReferenceCovered claim.", doc);
+        Assert.Contains("No FullReferenceCovered claim.", doc);
         Assert.Contains("does not require generated validation artifacts to be committed", doc);
     }
 

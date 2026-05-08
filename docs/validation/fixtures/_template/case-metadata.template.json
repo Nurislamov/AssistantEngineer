@@ -1,14 +1,14 @@
-﻿{
+{
   "caseId": "{{CASE_ID}}",
   "name": "{{CASE_NAME}}",
   "stage": "{{STAGE}}",
   "status": "ReferenceFixturePlaceholder",
   "source": "Offline committed reference fixture placeholder; real EnergyPlus model/output to be added in a future validation milestone.",
-  "purpose": "{{PURPOSE}}; not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "purpose": "{{PURPOSE}}; not exact EnergyPlus comparison workflow and not ASHRAE 140 certification.",
   "notAClaim": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity."
+    "Does not claim exact EnergyPlus numerical equivalence.",
+    "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+    "Does not claim full ISO 52016 node/matrix solver equivalence."
   ],
   "weatherSource": "{{WEATHER_SOURCE}}",
   "geometry": {
@@ -54,6 +54,6 @@
   "knownDifferences": [
     "AssistantEngineer uses engineering component formulas and simplified hourly balance.",
     "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
-    "Exact watt-by-watt parity is not expected."
+    "Exact watt-by-watt equivalence is not expected."
   ]
 }

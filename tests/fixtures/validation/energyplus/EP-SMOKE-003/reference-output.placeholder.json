@@ -4,8 +4,8 @@
   "status": "PlaceholderReferenceOutput",
   "notAClaim": [
     "This placeholder does not claim EnergyPlus validation.",
-    "This placeholder does not claim exact EnergyPlus numerical parity.",
-    "This placeholder does not claim ASHRAE 140 validation coverage."
+    "This placeholder does not claim exact EnergyPlus numerical equivalence.",
+    "This placeholder does not claim ASHRAE 140 / BESTEST-style validation anchor coverage."
   ],
   "referenceOutputs": {
     "annualHeatingEnergyKwh": 0.0,

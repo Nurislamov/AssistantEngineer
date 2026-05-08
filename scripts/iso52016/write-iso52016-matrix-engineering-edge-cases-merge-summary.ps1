@@ -7,7 +7,7 @@ param(
 # artifacts\iso52016\engineering-edge-cases\merge-summary.json
 # generatedArtifactsCommitted
 # Engineering edge-case hardening only.
-# Validation anchors only, not full parity.
+# Validation anchors only, not full equivalence claim.
 # TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 

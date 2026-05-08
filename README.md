@@ -1,6 +1,6 @@
 # AssistantEngineer
 
-AssistantEngineer is a modular monolith for HVAC and building energy MVP workflows.
+AssistantEngineer is a standalone C# engineering calculation platform for HVAC and building-energy workflows.
 
 - Backend: .NET 10, ASP.NET Core, EF Core, PostgreSQL.
 - Frontend: React, Vite, TypeScript, MUI, React Query.
@@ -15,7 +15,7 @@ AssistantEngineer is a modular monolith for HVAC and building energy MVP workflo
 - Cooling JSON report, heating JSON report, cooling Excel report, and energy-balance Excel report.
 - Room equipment selection from the active catalog.
 - Development-only deterministic demo data seed.
-- Deterministic energy-calculation fixtures for the current parity foundation.
+- Deterministic standard-reference fixtures and analytical validation anchors for internal engineering workflows.
 
 ## Not Implemented Yet
 
@@ -23,7 +23,7 @@ AssistantEngineer is a modular monolith for HVAC and building energy MVP workflo
 - Telegram bot integration.
 - PDF reports.
 - Diagram editor.
-- Full external ISO 52016/ASHRAE parity proof. Existing parity fixtures are deterministic reference fixtures unless a test names a real external source.
+- Full external validation proof. Existing fixtures are deterministic reference fixtures unless a test names a documented external source and tolerance workflow.
 
 ## Architecture Overview
 
@@ -37,9 +37,13 @@ Important constraints:
 - ClosedXML belongs only in `AssistantEngineer.Infrastructure.Integrations.Reports`.
 - Equipment selection must not depend on Buildings or Calculations implementation internals.
 
+## Validation Position
+
+AssistantEngineer implements calculation logic directly in C# using standard-based engineering methods, including EN ISO 52010, EN ISO 52016, EN 16798, EN 12831-3, EN 15316, and ISO 13370. Validation is handled through analytical reference cases, internal engineering anchors, EnergyPlus comparison workflows, and ASHRAE 140 / BESTEST-style validation anchors where applicable.
+
 ## Real Application Pipeline
 
-The backend calculation endpoints use the Energy Calculation Parity application pipeline through public facades:
+The backend calculation endpoints use the Energy Calculation equivalence application pipeline through public facades:
 
 - Room heating/cooling routes assemble room component inputs and call `RoomLoadCalculationEngine`.
 - Floor and building heating/cooling routes aggregate room load results with `LoadAggregationEngine`.
@@ -338,10 +342,10 @@ Out of scope for V1:
 - moisture balance;
 - detailed psychrometrics;
 - detailed HVAC plant simulation;
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity.
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence.
 
 Main verification command:
 
@@ -388,6 +392,6 @@ Recommended release wording:
 
 Forbidden release wording:
 
-    EnergyPlus parity achieved.
-    ASHRAE 140 validated.
+    EnergyPlus comparison workflow achieved.
+    ASHRAE 140 / BESTEST-style validated.
     Full ISO 52016 implemented.

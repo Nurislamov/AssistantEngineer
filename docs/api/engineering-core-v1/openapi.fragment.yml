@@ -1,11 +1,11 @@
-﻿openapi: 3.0.3
+openapi: 3.0.3
 info:
   title: AssistantEngineer Engineering Core V1 API
   version: v1
   description: >
     API contract fragment for Engineering Core V1 status and diagnostics catalog.
     Engineering Core V1 is closed as an engineering formula gate and does not claim
-    exact EnergyPlus, pyBuildingEnergy or ASHRAE 140 parity.
+    exact EnergyPlus, StandardReference or ASHRAE 140 equivalence.
 
 paths:
   /api/v1/calculations/engineering-core/v1/status:
@@ -96,9 +96,9 @@ components:
           items:
             type: string
           example:
-            - No exact EnergyPlus numerical parity claim.
-            - No exact pyBuildingEnergy numerical parity claim.
-            - No ASHRAE 140 validation coverage claim.
+            - No exact EnergyPlus numerical equivalence claim.
+            - No exact StandardReference numerical equivalence claim.
+            - No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
         outOfScopeV1:
           type: array
           items:
@@ -241,8 +241,8 @@ x-engineering-core-v1:
     - IsTrueHourly8760 = true
     - HourlyRecordCount = 8760
   nonClaims:
-    - No exact EnergyPlus numerical parity claim.
-    - No exact pyBuildingEnergy numerical parity claim.
-    - No ASHRAE 140 validation coverage claim.
-    - No full ISO 52016 node/matrix solver parity claim.
+    - No exact EnergyPlus numerical equivalence claim.
+    - No exact StandardReference numerical equivalence claim.
+    - No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+    - No full ISO 52016 node/matrix solver equivalence claim.
     - No latent/moisture/humidity calculation claim.

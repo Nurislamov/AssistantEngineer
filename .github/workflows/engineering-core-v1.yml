@@ -6,13 +6,13 @@ on:
       - main
       - master
       - develop
-      - Energy_Calculation_Parity
+      - Energy_Calculation_Validation
   push:
     branches:
       - main
       - master
       - develop
-      - Energy_Calculation_Parity
+      - Energy_Calculation_Validation
   workflow_dispatch:
 
 jobs:

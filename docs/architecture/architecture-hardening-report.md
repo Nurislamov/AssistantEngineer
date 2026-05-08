@@ -4,9 +4,9 @@ Scope: architecture hardening only. No new engineering formulas were added in th
 
 Boundary statements:
 - Internal deterministic engineering governance only.
-- No EnergyPlus parity claim.
-- No pyBuildingEnergy parity claim.
-- No ASHRAE 140 validation claim.
+- No EnergyPlus comparison workflow claim.
+- No StandardReference equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No full ISO/EN compliance claim.
 - Validation anchors remain validation anchors only.
 
@@ -126,12 +126,12 @@ Planned next safe candidates (future work, not done here):
 - External numerical validation completeness is still separate from infrastructure readiness.
 - Remaining legacy calculation services are still compile-visible and require the same proof-first retirement gates.
 
-## Validation and parity claim constraints
+## Validation and equivalence claim constraints
 
 Must continue to avoid:
-- must not claim EnergyPlus parity.
-- must not claim pyBuildingEnergy parity.
-- must not claim ASHRAE 140 validation.
+- must not claim EnergyPlus comparison workflow.
+- must not claim StandardReference equivalence.
+- must not claim ASHRAE 140 / BESTEST-style validation anchor.
 - must not claim full ISO/EN compliance.
 
 ## Final hardening audit
@@ -161,9 +161,9 @@ Audit date: 2026-05-07
 - Repository hygiene guard conditions pass:
   - no tracked `.vs/`, `bin/`, `obj/`, `TestResults/`, `coverage/`, `artifacts/`, `generated/`, `*.user`, `*.suo`, `*.wsuo`.
 - Architecture boundary statements stay explicit:
-  - no EnergyPlus parity claim,
-  - no pyBuildingEnergy parity claim,
-  - no ASHRAE 140 validation claim,
+  - no EnergyPlus comparison workflow claim,
+  - no StandardReference equivalence claim,
+  - no ASHRAE 140 / BESTEST-style validation anchor claim,
   - no full ISO/EN compliance claim.
 - Validation anchors are treated as validation anchors only.
 - Infrastructure readiness is kept separate from external numerical validation completeness.
@@ -235,9 +235,9 @@ Audit date: 2026-05-07
 
 - Status sample generation path is protected by tests that run the contracts generator and validate regenerated `status.sample.json` against `EngineeringCoreV1Manifest.json` governance boundaries.
 - Critical non-claims stay enforced:
-  - no EnergyPlus parity claim,
-  - no pyBuildingEnergy parity claim,
-  - no ASHRAE 140 validation claim,
+  - no EnergyPlus comparison workflow claim,
+  - no StandardReference equivalence claim,
+  - no ASHRAE 140 / BESTEST-style validation anchor claim,
   - no full ISO/EN compliance claim.
 - Opt-in boundaries are validated as preserved:
   - `SystemEnergyEngine compatibility path remains default.`,
@@ -335,9 +335,9 @@ Audit date: 2026-05-07
 ### Governance/generated artifacts stability
 
 - Governance non-claims remain explicit:
-  - No EnergyPlus parity claim.
-  - No pyBuildingEnergy parity claim.
-  - No ASHRAE 140 validation claim.
+  - No EnergyPlus comparison workflow claim.
+  - No StandardReference equivalence claim.
+  - No ASHRAE 140 / BESTEST-style validation anchor claim.
   - No full ISO/EN compliance claim.
 - Opt-in boundaries remain explicit and unchanged:
   - `SystemEnergyEngine compatibility path remains default.`,
@@ -525,7 +525,7 @@ Audit date: 2026-05-07
 ### Replacement floor-path coverage
 
 - Active floor path coverage is enforced via `tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs`:
-  - floor cooling/heating aggregation parity against room sums,
+  - floor cooling/heating aggregation equivalence against room sums,
   - requested/actual method compatibility diagnostics on floor results,
   - floor not-found behavior (`ResultErrorType.NotFound`).
 - Coverage is behavior-level through active path and avoids private implementation detail assertions.
@@ -569,7 +569,7 @@ Audit date: 2026-05-07
 
 1. Target `BuildingCoolingLoadService` next, only after migrating direct compatibility behavior tests to active facade/pipeline path.
 2. Keep strict single-service retirement scope and proof-first gates.
-3. Preserve non-claim boundaries (no EnergyPlus parity, no pyBuildingEnergy parity, no ASHRAE 140 validation, no full ISO/EN compliance).
+3. Preserve non-claim boundaries (no EnergyPlus comparison workflow, no StandardReference equivalence, no ASHRAE 140 / BESTEST-style validation anchor, no full ISO/EN compliance).
 
 ## Legacy Retirement Pilot Phase 7
 
@@ -636,4 +636,4 @@ Audit date: 2026-05-07
 
 1. Target `RoomCalculationService` next, only after migrating direct compatibility behavior tests to active facade/pipeline path.
 2. Keep strict single-service retirement scope and proof-first gates.
-3. Preserve non-claim boundaries (no EnergyPlus parity, no pyBuildingEnergy parity, no ASHRAE 140 validation, no full ISO/EN compliance).
+3. Preserve non-claim boundaries (no EnergyPlus comparison workflow, no StandardReference equivalence, no ASHRAE 140 / BESTEST-style validation anchor, no full ISO/EN compliance).

@@ -1,6 +1,6 @@
 # Load Aggregation
 
-This Energy Calculation Parity step aggregates deterministic room load results to thermal zones, floors and buildings.
+This Energy Calculation equivalence step aggregates deterministic room load results to thermal zones, floors and buildings.
 
 ## Design-Point Mode
 
@@ -28,7 +28,7 @@ The aggregation result includes component sums for transmission, solar, ventilat
 
 ## Real Application Pipeline
 
-Floor and building load routes use room results from the same Energy Calculation Parity pipeline and aggregate them with `LoadAggregationEngine`.
+Floor and building load routes use room results from the same Energy Calculation equivalence pipeline and aggregate them with `LoadAggregationEngine`.
 
 - `GET /api/v1/floors/{floorId}/load-calculations/heating-load`
 - `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`
@@ -39,7 +39,7 @@ Floor and building load routes use room results from the same Energy Calculation
 
 The current API path uses design-point aggregation. If hourly profiles are not available, diagnostics identify design-point aggregation instead of silently claiming coincident hourly behavior.
 
-Public method query values are carried as `requestedMethod`; `actualMethod` is `EnergyCalculationParityDesignPoint` for the current floor/building load routes. Component breakdowns include ground when room load results contain ground components.
+Public method query values are carried as `requestedMethod`; `actualMethod` is `ExternalReferenceValidationDesignPoint` for the current floor/building load routes. Component breakdowns include ground when room load results contain ground components.
 
 ## Deterministic Fixtures
 

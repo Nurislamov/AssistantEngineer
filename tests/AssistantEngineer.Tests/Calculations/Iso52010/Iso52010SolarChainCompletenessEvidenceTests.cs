@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52010;
 
@@ -111,10 +111,10 @@ public class Iso52010SolarChainCompletenessEvidenceTests
             "calculations",
             "ISO52016SolarChainManifest.json");
 
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", manifest, StringComparison.Ordinal);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", manifest, StringComparison.Ordinal);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", manifest, StringComparison.Ordinal);
-        Assert.Contains("No full ISO 52016 node/matrix solver parity claim.", manifest, StringComparison.Ordinal);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", manifest, StringComparison.Ordinal);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", manifest, StringComparison.Ordinal);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", manifest, StringComparison.Ordinal);
+        Assert.Contains("No full ISO 52016 node/matrix solver equivalence claim.", manifest, StringComparison.Ordinal);
     }
 
     private static string ReadRepoFile(params string[] parts)

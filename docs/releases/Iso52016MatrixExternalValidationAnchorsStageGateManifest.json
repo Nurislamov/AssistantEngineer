@@ -6,7 +6,7 @@
     "validationType":  "ExternalValidationAnchor",
     "simpleIndependentManualAnchorsIntegrated":  true,
     "annual8760ManualReferenceIntegrated":  true,
-    "pyBuildingEnergyStyleNamingIntegrated":  true,
+    "StandardReferenceStyleNamingIntegrated":  true,
     "energyPlusStyleNamingIntegrated":  true,
     "allInOneVerificationIntegrated":  true,
     "releaseReadyGateIntegrated":  true,
@@ -28,12 +28,12 @@
                        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnchorStageGateTests.cs"
                    ],
     "explicitNonClaims":  [
-                              "Validation anchors only, not full parity.",
-                              "No exact pyBuildingEnergy numerical parity claim.",
-                              "No exact EnergyPlus numerical parity claim.",
-                              "No ASHRAE 140 validation coverage claim.",
-                              "No ExternalParityCovered claim.",
-                              "No FullParityCovered claim.",
-                              "No full annual building simulation parity claim."
+                              "Validation anchors only, not full equivalence claim.",
+                              "No exact StandardReference numerical equivalence claim.",
+                              "No exact EnergyPlus numerical equivalence claim.",
+                              "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+                              "No ExternalReferenceCovered claim.",
+                              "No FullReferenceCovered claim.",
+                              "No full annual building simulation equivalence claim."
                           ]
 }

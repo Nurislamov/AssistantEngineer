@@ -1,4 +1,4 @@
-﻿{
+{
     "stageId":  "AE-ISO52016-002-STEP-04",
     "title":  "ISO52016-inspired physical operation profile stage",
     "status":  "internal-engineering-anchor",
@@ -13,14 +13,14 @@
     "claimBoundary":  [
                           "ISO52016-inspired physical node model chain stage.",
                           "Validation/internal engineering anchors only.",
-                          "Not full ISO 52016 parity.",
+                          "Not full ISO 52016 equivalence.",
                           "Not complete ISO 52016 numerical equivalence.",
                           "Not complete ISO52016 numerical equivalence.",
-                          "Not pyBuildingEnergy parity.",
-                          "Not pyBuildingEnergy numerical equivalence.",
-                          "Not EnergyPlus parity.",
+                          "Not StandardReference equivalence.",
+                          "Not StandardReference numerical equivalence.",
+                          "Not EnergyPlus comparison workflow.",
                           "Not EnergyPlus numerical equivalence.",
-                          "Not ASHRAE 140 validation.",
+                          "Not ASHRAE 140 / BESTEST-style validation anchor.",
                           "Not ASHRAE Standard 140 validation.",
                           "Not ASHRAE Standard 140 benchmark-grade claim.",
                           "ISO52016-inspired physical operation profile stage."

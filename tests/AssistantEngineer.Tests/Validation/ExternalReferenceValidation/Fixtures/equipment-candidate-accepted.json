@@ -1,0 +1,25 @@
+{
+  "fixtureName": "EquipmentCandidateAccepted",
+  "description": "Candidate with capacity above required reserve is accepted.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Equipment Sizing Integration",
+  "category": "EquipmentSizing",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "equipment-sizing",
+    "equipmentSizing": {
+      "targetId": 1,
+      "targetType": "Room",
+      "requiredHeatingLoadW": 0,
+      "requiredCoolingLoadW": 5000,
+      "safetyFactor": 1.1,
+      "candidates": [
+        { "equipmentId": 1, "name": "Candidate", "model": "C-6000", "equipmentType": "DX", "coolingCapacityW": 6000, "isActive": true }
+      ]
+    }
+  },
+  "expected": { "hasAcceptedCandidate": true, "coolingMarginW": 500, "coolingMarginPercent": 9.090909 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Candidate passes if capacity is greater than or equal to required reserve." ],
+  "notes": [ "Margin percent is relative to required reserve." ]
+}

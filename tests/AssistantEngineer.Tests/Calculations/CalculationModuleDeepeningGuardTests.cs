@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Calculations;
@@ -90,8 +90,8 @@ public class CalculationModuleDeepeningGuardTests
             "Method strategy isolation",
             "room load components sum to total load",
             "monthly fallback is never presented as true hourly 8760 simulation",
-            "does not claim exact EnergyPlus numerical parity",
-            "does not claim ASHRAE 140 validation coverage",
+            "does not claim exact EnergyPlus numerical equivalence",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage",
             "does not claim full ISO 52016"
         };
 
@@ -141,7 +141,7 @@ public class CalculationModuleDeepeningGuardTests
             "EnergyCalculationPipelineService",
             "Deepening axes",
             "Required non-claims",
-            "does not claim exact EnergyPlus numerical parity"
+            "does not claim exact EnergyPlus numerical equivalence"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

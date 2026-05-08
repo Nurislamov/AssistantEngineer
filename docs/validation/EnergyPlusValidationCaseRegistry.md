@@ -1,8 +1,8 @@
-﻿# EnergyPlus Validation Case Registry
+# EnergyPlus Validation Case Registry
 
 Status: PlannedValidation.
 
-This registry is not exact EnergyPlus parity and not ASHRAE 140 certification.
+This registry is not exact EnergyPlus comparison workflow and not ASHRAE 140 certification.
 
 ## Required case metadata
 

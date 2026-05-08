@@ -1,4 +1,4 @@
-﻿# ISO 52016 Annual Weather/Solar Loop Integration
+# ISO 52016 Annual Weather/Solar Loop Integration
 
 Stage 4 wires the ISO 52016 weather/solar context into the annual hourly steady-state loop.
 
@@ -11,9 +11,9 @@ Stage 4 wires the ISO 52016 weather/solar context into the annual hourly steady-
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
-- This does not claim full ISO 52016 node/matrix solver parity.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- This does not claim full ISO 52016 node/matrix solver equivalence.
 - This does not remove the legacy design-day radiation path yet.
 
 ## Guard test

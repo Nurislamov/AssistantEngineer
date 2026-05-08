@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 API Contract Changelog
+# Engineering Core V1 API Contract Changelog
 
 ## v1
 
@@ -21,10 +21,10 @@ Added contract artifacts:
 Contract status:
 
 - ClosedV1 as engineering formula gate;
-- no exact EnergyPlus numerical parity claim;
-- no exact pyBuildingEnergy numerical parity claim;
-- no ASHRAE 140 validation coverage claim;
-- no full ISO 52016 node/matrix solver parity claim;
+- no exact EnergyPlus numerical equivalence claim;
+- no exact StandardReference numerical equivalence claim;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage claim;
+- no full ISO 52016 node/matrix solver equivalence claim;
 - no latent/moisture/humidity support in v1.
 
 Compatibility:

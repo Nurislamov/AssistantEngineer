@@ -24,10 +24,10 @@
 
 ## Required non-claims
 
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim exact pyBuildingEnergy numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
+- Does not claim exact EnergyPlus numerical equivalence.
+- Does not claim exact StandardReference numerical equivalence.
+- Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- Does not claim full ISO 52016 node/matrix solver equivalence.
 - PlaceholderComparison is not real EnergyPlus validation.
 - Future real validation must remain tolerance-based.
 
@@ -37,6 +37,6 @@ This generic runner compares committed validation fixtures by documented toleran
 
 Current placeholder comparisons are not real EnergyPlus validation.
 
-This does not claim exact EnergyPlus numerical parity.
+This does not claim exact EnergyPlus numerical equivalence.
 
-This does not claim ASHRAE 140 validation coverage.
+This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

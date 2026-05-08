@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Export Disclosure Template
+# Engineering Core V1 Export Disclosure Template
 
 Use this template for PDF, Excel, JSON and frontend report exports.
 
@@ -34,10 +34,10 @@ Use this template for PDF, Excel, JSON and frontend report exports.
 
 ## Explicit non-claims
 
-- No exact EnergyPlus numerical parity claim.
-- No exact pyBuildingEnergy numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full ISO 52016 node/matrix solver parity claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No exact StandardReference numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full ISO 52016 node/matrix solver equivalence claim.
 - No latent/moisture/humidity support in v1.
 
 ## Out-of-scope v1
@@ -70,6 +70,6 @@ True hourly annual energy can be claimed only when:
 - [ ] outOfScopeV1 is visible.
 - [ ] documentationFiles are visible.
 - [ ] annual 8760 requirements are visible when annual energy is exported.
-- [ ] no exact EnergyPlus parity claim is introduced.
-- [ ] no ASHRAE 140 validation coverage claim is introduced.
+- [ ] no exact EnergyPlus comparison workflow claim is introduced.
+- [ ] no ASHRAE 140 / BESTEST-style validation anchor coverage claim is introduced.
 - [ ] no latent/moisture/humidity support claim is introduced.

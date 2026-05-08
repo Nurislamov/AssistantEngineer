@@ -39,6 +39,6 @@ The stage rejects:
 
 This is an ISO52016-inspired physical model selection adapter stage with validation/internal engineering anchors only.
 
-It is not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
 
 No generated artifacts are introduced by this step.

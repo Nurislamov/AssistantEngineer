@@ -1,4 +1,4 @@
-﻿# Calculation Module Deepening Plan
+# Calculation Module Deepening Plan
 
 ## Purpose
 
@@ -67,15 +67,15 @@ Guard tests should verify:
 
 Simplified methods, ISO-inspired methods and future external validation paths must remain explicit.
 
-No code path should silently imply full ISO 52016, full ASHRAE 140 or exact EnergyPlus parity.
+No code path should silently imply full ISO 52016, full ASHRAE 140 or exact EnergyPlus comparison workflow.
 
 ## Non-claims
 
-This plan does not claim exact EnergyPlus numerical parity.
+This plan does not claim exact EnergyPlus numerical equivalence.
 
-This plan does not claim ASHRAE 140 validation coverage.
+This plan does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
-This plan does not claim full ISO 52016 node/matrix solver parity.
+This plan does not claim full ISO 52016 node/matrix solver equivalence.
 
 This plan does not claim full ISO 13370 implementation.
 

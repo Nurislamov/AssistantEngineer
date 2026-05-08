@@ -35,9 +35,9 @@ public sealed class EngineeringCorporateStatusSampleTests
             .Where(item => !string.IsNullOrWhiteSpace(item))
             .ToArray();
 
-        Assert.Contains("No EnergyPlus parity claim.", limitations);
-        Assert.Contains("No pyBuildingEnergy parity claim.", limitations);
-        Assert.Contains("No ASHRAE 140 validation claim.", limitations);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", limitations);
+        Assert.Contains("No StandardReference equivalence claim.", limitations);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", limitations);
 
         var optInFlags = readinessRoot.GetProperty("optInFlags").EnumerateArray().ToArray();
         Assert.NotEmpty(optInFlags);

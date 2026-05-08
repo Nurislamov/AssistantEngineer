@@ -17,9 +17,9 @@ public sealed class BuildingInputValidationService
         "Internal deterministic engineering governance only.",
         "No automatic production data mutation.",
         "No full ISO/EN compliance claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
         "No external certification claim."
     ];
 

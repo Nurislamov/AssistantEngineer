@@ -15,8 +15,8 @@ Stage 6 propagates annual ISO 52016 diagnostics to response-level contracts.
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 - This does not remove legacy fallback support.
 - This does not add frontend rendering yet.
 

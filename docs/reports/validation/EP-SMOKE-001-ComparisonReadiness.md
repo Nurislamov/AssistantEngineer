@@ -21,8 +21,8 @@ Generated at: 2026-01-01 00:00:00 UTC
 ## Required non-claims
 
 - This placeholder is not a real EnergyPlus comparison yet.
-- This placeholder must not claim exact EnergyPlus parity.
-- This placeholder must not claim ASHRAE 140 validation coverage.
+- This placeholder must not claim exact EnergyPlus comparison workflow.
+- This placeholder must not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
 ## Files
 
@@ -35,6 +35,6 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 PlaceholderComparison is not real EnergyPlus validation.
 
-This does not claim exact EnergyPlus numerical parity.
+This does not claim exact EnergyPlus numerical equivalence.
 
-This does not claim ASHRAE 140 validation coverage.
+This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

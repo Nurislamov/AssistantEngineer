@@ -1,4 +1,4 @@
-ï»¿# EnergyPlus / ASHRAE 140 Validation Plan
+# EnergyPlus / ASHRAE 140 / BESTEST-style validation anchor Plan
 
 ## Purpose
 
@@ -6,7 +6,7 @@ This document defines the future validation direction for AssistantEngineer engi
 
 EnergyPlus and ASHRAE 140 are future validation layers. They are not required gates for engineering-core v1 formula closure.
 
-The purpose of this validation layer is comparative engineering validation, not exact watt-by-watt parity.
+The purpose of this validation layer is comparative engineering validation, not exact watt-by-watt equivalence.
 
 ## Validation philosophy
 
@@ -22,14 +22,14 @@ Validation should answer:
 
 Validation should not claim:
 
-- exact EnergyPlus numerical parity;
+- exact EnergyPlus numerical equivalence;
 - full ASHRAE 140 compliance;
-- full ISO 52016 node/matrix solver parity;
-- full dynamic HVAC plant simulation parity.
+- full ISO 52016 node/matrix solver equivalence;
+- full dynamic HVAC plant simulation equivalence.
 
 ## Proposed validation stages
 
-### Stage 1 â€” smoke validation cases
+### Stage 1 — smoke validation cases
 
 Small deterministic cases:
 
@@ -49,7 +49,7 @@ Expected result:
 - stable monthly/annual aggregation;
 - diagnostics show assumptions.
 
-### Stage 2 â€” simplified EnergyPlus comparison
+### Stage 2 — simplified EnergyPlus comparison
 
 Build a small EnergyPlus model that intentionally matches the simplified assumptions as closely as practical:
 
@@ -69,7 +69,7 @@ Expected result:
 - monthly seasonal behavior matches directionally;
 - differences are documented.
 
-### Stage 3 â€” ASHRAE 140-style comparative cases
+### Stage 3 — ASHRAE 140-style comparative cases
 
 Use ASHRAE 140-style thinking:
 
@@ -95,11 +95,11 @@ Possible starting tolerances:
 
 | Metric | Initial tolerance |
 |---|---|
-| Annual heating energy | Â±20% |
-| Annual cooling energy | Â±20% |
+| Annual heating energy | ±20% |
+| Annual cooling energy | ±20% |
 | Monthly heating/cooling trend | same seasonal direction |
-| Peak heating load | Â±25% |
-| Peak cooling load | Â±25% |
+| Peak heating load | ±25% |
+| Peak cooling load | ±25% |
 | Solar orientation sensitivity | directionally correct |
 | Free-floating temperature trend | directionally correct |
 

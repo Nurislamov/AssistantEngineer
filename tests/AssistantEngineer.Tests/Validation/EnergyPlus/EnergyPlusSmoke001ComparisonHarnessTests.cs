@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -40,7 +40,7 @@ public class EnergyPlusSmoke001ComparisonHarnessTests
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "not an ASHRAE 140 validation claim",
+            "not an ASHRAE 140 / BESTEST-style validation anchor claim",
             root.GetProperty("interpretation").GetString(),
             StringComparison.OrdinalIgnoreCase);
     }
@@ -143,8 +143,8 @@ public class EnergyPlusSmoke001ComparisonHarnessTests
             "peak-heating-w",
             "annual-cooling-kwh",
             "not a real EnergyPlus validation",
-            "not ASHRAE 140 validation coverage",
-            "does not claim exact EnergyPlus numerical parity",
+            "not ASHRAE 140 / BESTEST-style validation anchor coverage",
+            "does not claim exact EnergyPlus numerical equivalence",
             "Future work must replace or supplement the placeholder reference"
         };
 

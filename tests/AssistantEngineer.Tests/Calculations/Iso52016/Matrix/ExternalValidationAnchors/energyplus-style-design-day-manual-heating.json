@@ -5,12 +5,12 @@
   "referenceStyle": "EnergyPlus-style naming only",
   "claimScope": "ValidationAnchorOnly",
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full external engine parity claim."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
   ],
-  "description": "EnergyPlus-style design-day name only. Numeric reference is a manual steady heating anchor, not EnergyPlus parity.",
+  "description": "EnergyPlus-style design-day name only. Numeric reference is a manual steady heating anchor, not EnergyPlus comparison workflow.",
   "kind": "singleHourSteadyState",
   "mode": "Heating",
   "timeStepSeconds": 3600.0,

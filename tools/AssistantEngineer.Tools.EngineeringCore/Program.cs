@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 
@@ -86,7 +86,7 @@ internal static class Program
         var contractFiles = EnumerateFiles(Path.Combine(sourceRoot, "Application", "Contracts"), "*.cs");
         var abstractionFiles = EnumerateFiles(Path.Combine(sourceRoot, "Application", "Abstractions"), "*.cs");
         var calculationTests = EnumerateFiles(Path.Combine(testsRoot, "Calculations"), "*.cs");
-        var parityTests = EnumerateFiles(Path.Combine(testsRoot, "Parity", "EnergyCalculationParity"), "*.cs");
+        var equivalenceTests = EnumerateFiles(Path.Combine(testsRoot, "equivalence", "ExternalReferenceValidation"), "*.cs");
 
         var keyEngines = new Dictionary<string, KeyEngine>(StringComparer.Ordinal)
         {
@@ -180,9 +180,9 @@ internal static class Program
 
         var requiredNonClaims = new[]
         {
-            "Does not claim exact EnergyPlus numerical parity.",
-            "Does not claim ASHRAE 140 validation coverage.",
-            "Does not claim full ISO 52016 node/matrix solver parity.",
+            "Does not claim exact EnergyPlus numerical equivalence.",
+            "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+            "Does not claim full ISO 52016 node/matrix solver equivalence.",
             "Does not claim full ISO 13370 implementation.",
             "Does not claim full EN 15316 system-chain implementation."
         };
@@ -201,7 +201,7 @@ internal static class Program
                 ["contractFiles"] = contractFiles.Length,
                 ["abstractionFiles"] = abstractionFiles.Length,
                 ["calculationTests"] = calculationTests.Length,
-                ["parityTests"] = parityTests.Length,
+                ["equivalenceTests"] = equivalenceTests.Length,
                 ["keyEngines"] = keyEngines.Count,
                 ["missingKeyEngines"] = missingKeyEngines.Length
             },
@@ -244,7 +244,7 @@ internal static class Program
             contractFiles.Length,
             abstractionFiles.Length,
             calculationTests.Length,
-            parityTests.Length,
+            equivalenceTests.Length,
             keyEngines,
             missingKeyEngines,
             deepeningAxes,
@@ -396,7 +396,7 @@ internal static class Program
         int contractFileCount,
         int abstractionFileCount,
         int calculationTestCount,
-        int parityTestCount,
+        int equivalenceTestCount,
         IReadOnlyDictionary<string, KeyEngine> keyEngines,
         IReadOnlyCollection<string> missingKeyEngines,
         IReadOnlyCollection<string> deepeningAxes,
@@ -421,7 +421,7 @@ internal static class Program
         builder.AppendLine($"| Contract files | {contractFileCount} |");
         builder.AppendLine($"| Abstraction files | {abstractionFileCount} |");
         builder.AppendLine($"| Calculation tests | {calculationTestCount} |");
-        builder.AppendLine($"| Parity tests | {parityTestCount} |");
+        builder.AppendLine($"| equivalence tests | {equivalenceTestCount} |");
         builder.AppendLine($"| Key engines | {keyEngines.Count} |");
         builder.AppendLine($"| Missing key engines | {missingKeyEngines.Count} |");
         builder.AppendLine();

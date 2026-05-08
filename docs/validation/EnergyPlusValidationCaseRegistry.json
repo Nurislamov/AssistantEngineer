@@ -1,8 +1,8 @@
-﻿{
+{
   "registryName": "Engineering Core V1 EnergyPlus / ASHRAE 140-style Validation Case Registry",
   "version": "v1",
   "status": "PlannedValidation",
-  "purpose": "Planned validation registry; not exact EnergyPlus parity and not ASHRAE 140 certification.",
+  "purpose": "Planned validation registry; not exact EnergyPlus comparison workflow and not ASHRAE 140 certification.",
   "defaultTolerances": {
     "percent": 5.0,
     "absolute": 0.001
@@ -27,7 +27,7 @@
       ],
       "assumptions": [ "Placeholder reference output mirrors deterministic formula fixture." ],
       "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
-      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical equivalence.", "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage." ]
     },
     {
       "caseId": "EP-SMOKE-002",
@@ -49,7 +49,7 @@
       ],
       "assumptions": [ "Placeholder reference output mirrors deterministic solar cooling fixture." ],
       "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
-      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical equivalence.", "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage." ]
     },
     {
       "caseId": "EP-SMOKE-003",
@@ -71,7 +71,7 @@
       ],
       "assumptions": [ "Placeholder reference output mirrors deterministic internal gains fixture." ],
       "knownDifferences": [ "No real EnergyPlus model is committed yet." ],
-      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical equivalence.", "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage." ]
     },
     {
       "caseId": "ASHRAE140-STYLE-001",
@@ -90,7 +90,7 @@
       ],
       "assumptions": [ "Future comparative fixture." ],
       "knownDifferences": [ "Not implemented in v1." ],
-      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical equivalence.", "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage." ]
     },
     {
       "caseId": "ASHRAE140-STYLE-002",
@@ -109,7 +109,7 @@
       ],
       "assumptions": [ "Future comparative fixture." ],
       "knownDifferences": [ "Not implemented in v1." ],
-      "nonClaims": [ "Does not claim exact EnergyPlus numerical parity.", "Does not claim ASHRAE 140 validation coverage." ]
+      "nonClaims": [ "Does not claim exact EnergyPlus numerical equivalence.", "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage." ]
     }
   ]
 }

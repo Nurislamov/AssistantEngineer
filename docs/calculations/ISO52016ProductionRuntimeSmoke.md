@@ -22,8 +22,8 @@ This smoke test closes that gap.
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 - This does not remove legacy fallback support.
 - This does not replace future external validation fixtures.
 

@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Governance;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Governance;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Rollup;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
@@ -11,7 +11,7 @@ public sealed class EngineeringCoreV2ReleaseReadinessService
     [
         "AE-VALIDATION-ISO52016-001",
         "AE-VALIDATION-ISO52016-002",
-        "AE-VALIDATION-PYBE-001",
+        "AE-VALIDATION-standard-reference-001",
         "AE-VENT-001",
         "AE-VENT-002",
         "AE-GROUND-001",
@@ -46,7 +46,7 @@ public sealed class EngineeringCoreV2ReleaseReadinessService
 
     private static readonly IReadOnlyList<string> RequiredDisclosureFiles =
     [
-        "docs/calculations/EnergyCalculationParityVerification.md",
+        "docs/calculations/ExternalReferenceValidationVerification.md",
         "docs/calculations/EngineeringCoreV1Scope.md",
         "docs/api/engineering-core-v1/status.sample.json",
         "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",
@@ -331,3 +331,4 @@ public sealed class EngineeringCoreV2ReleaseReadinessService
         return passed;
     }
 }
+

@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Validation Evidence Guide
+# Engineering Core V1 Validation Evidence Guide
 
 Generate with generate-engineering-core-v1-validation-evidence.ps1 or regenerate-engineering-core-v1-validation-artifacts.ps1.
 
@@ -14,7 +14,7 @@ The placeholder validation harness and fixture catalog are wired.
 
 ## What this evidence does not prove
 
-It does not prove EnergyPlus parity or ASHRAE 140 validation.
+It does not prove EnergyPlus comparison workflow or ASHRAE 140 / BESTEST-style validation anchor.
 
 ## Next milestone
 

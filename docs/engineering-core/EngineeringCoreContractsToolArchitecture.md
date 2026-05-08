@@ -1,4 +1,4 @@
-﻿# Engineering Core Contracts Tool Architecture
+# Engineering Core Contracts Tool Architecture
 
 ## Purpose
 
@@ -26,12 +26,12 @@ They must not contain JSON construction, manifest parsing or report sample const
 
 ## Non-claims
 
-This tool does not claim ASHRAE 140 validation coverage.
+This tool does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
-This tool does not claim exact EnergyPlus numerical parity.
+This tool does not claim exact EnergyPlus numerical equivalence.
 
-Generated contract snapshots do not claim exact EnergyPlus numerical parity.
+Generated contract snapshots do not claim exact EnergyPlus numerical equivalence.
 
-Generated contract snapshots do not claim ASHRAE 140 validation coverage.
+Generated contract snapshots do not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
 

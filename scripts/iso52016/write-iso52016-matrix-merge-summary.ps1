@@ -8,7 +8,7 @@ param(
 # merge-summary.md
 # git log --oneline -20
 # assert-iso52016-matrix-release-ready.ps1
-# No exact pyBuildingEnergy numerical parity claim.
+# No exact StandardReference numerical equivalence claim.
 # TRACEABILITY-MARKERS-END
 $ErrorActionPreference = "Stop"
 

@@ -28,12 +28,12 @@ The fixtures use `sourceType = ManualEngineeringIntegrationAnchor`.
 
 ## Non-claims
 
-Validation anchors only, not full parity.
+Validation anchors only, not full equivalence claim.
 
-No pyBuildingEnergy parity claim.
-No EnergyPlus parity claim.
-No ASHRAE 140 validation coverage claim.
-No full ISO 52016 parity claim.
-No external application parity claim.
+No StandardReference equivalence claim.
+No EnergyPlus comparison workflow claim.
+No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+No full ISO 52016 equivalence claim.
+No external application equivalence claim.
 
-These anchors are not pyBuildingEnergy outputs and are not EnergyPlus outputs. They are independent application integration contract checks.
+These anchors are not StandardReference outputs and are not EnergyPlus outputs. They are independent application integration contract checks.

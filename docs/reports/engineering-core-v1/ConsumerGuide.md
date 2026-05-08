@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Report Consumer Guide
+# Engineering Core V1 Report Consumer Guide
 
 ## Purpose
 
@@ -34,10 +34,10 @@ They may include:
 
 They do not claim:
 
-- full ISO 52016 node/matrix solver parity;
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
+- full ISO 52016 node/matrix solver equivalence;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
 - latent/moisture/humidity support.
 
 ## Cooling reports
@@ -56,9 +56,9 @@ They may include:
 
 They do not claim:
 
-- detailed EnergyPlus solar distribution parity;
-- full optical glazing model parity;
-- full ISO 52016 node/matrix solver parity;
+- detailed EnergyPlus solar distribution equivalence;
+- full optical glazing model equivalence;
+- full ISO 52016 node/matrix solver equivalence;
 - latent/moisture/humidity support.
 
 ## Annual energy reports

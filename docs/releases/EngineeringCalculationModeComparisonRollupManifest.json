@@ -1,4 +1,4 @@
-{
+﻿{
   "stageId": "AE-CALC-ROLLUP-001",
   "title": "Engineering calculation mode comparison and disclosure rollup",
   "status": "internal-governance-anchor",
@@ -16,7 +16,7 @@
     "AE-EN15316-002",
     "AE-VALIDATION-ISO52016-001",
     "AE-VALIDATION-ISO52016-002",
-    "AE-VALIDATION-PYBE-001"
+    "AE-VALIDATION-standard-reference-001"
   ],
   "claimBoundary": [
     "Engineering Core V2 governance and internal release readiness.",
@@ -24,9 +24,9 @@
     "Compatibility behavior preserved by default.",
     "Inspired calculation paths remain opt-in.",
     "No full ISO/EN compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim.",
     "No automatic production data mutation."
   ],
@@ -64,10 +64,11 @@
     "tests/AssistantEngineer.Tests/Calculations/Rollup/EngineeringCalculationModeTraceabilityTests.cs"
   ],
   "updatedDisclosureFiles": [
-    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/ExternalReferenceValidationVerification.md",
     "docs/calculations/EngineeringCoreV1Scope.md",
     "docs/api/engineering-core-v1/status.sample.json",
     "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"
   ],
   "generatedArtifacts": []
 }
+

@@ -9,7 +9,7 @@ Claim boundary:
 - ISO52016-inspired physical node model builder stage.
 - validation/internal engineering anchors only.
 - not complete ISO 52016 numerical equivalence.
-- not pyBuildingEnergy numerical equivalence.
+- not StandardReference numerical equivalence.
 - not EnergyPlus numerical equivalence.
 - not ASHRAE Standard 140 benchmark-grade claim.
 
@@ -55,7 +55,7 @@ Use:
 .\scripts\iso52016\verify-iso52016-physical-node-model-stage.ps1
 ```
 
-The script checks required source/docs/manifest/test files, guards forbidden positive parity claims, and runs the physical node model tests.
+The script checks required source/docs/manifest/test files, guards forbidden positive equivalence claims, and runs the physical node model tests.
 
 ## Next steps
 

@@ -34,4 +34,4 @@ tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselin
 
 ## Non-claim
 
-The summary does not claim external parity. It is an internal regression aid.
+The summary does not claim external equivalence. It is an internal regression aid.

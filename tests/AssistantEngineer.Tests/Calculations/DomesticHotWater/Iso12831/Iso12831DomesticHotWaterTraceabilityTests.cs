@@ -24,11 +24,11 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("ISO12831-3-inspired domestic hot water engineering calculator.", claimBoundary);
         Assert.Contains("No full ISO 12831-3 compliance claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
         Assert.Contains("No external certification claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -45,10 +45,10 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
 
         var docText = File.ReadAllText(docPath);
         Assert.DoesNotContain("ISO 12831-3 validated", docText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ExternalParityCovered", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 12831-3 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
 
         var fixturePaths = new[]
         {
@@ -63,9 +63,9 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
         {
             Assert.True(File.Exists(path), $"Fixture file was not found: {path}");
             var text = File.ReadAllText(path);
-            Assert.DoesNotContain("ExternalParityCovered", text, StringComparison.OrdinalIgnoreCase);
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "pyBuildingEnergy parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus parity");
+            Assert.DoesNotContain("ExternalReferenceCovered", text, StringComparison.OrdinalIgnoreCase);
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "StandardReference equivalence");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus comparison workflow");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full ISO 12831-3 compliance");
         }
     }
@@ -88,7 +88,7 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
             TestPaths.RepoRoot,
             "docs",
             "calculations",
-            "EnergyCalculationParityVerification.md");
+            "ExternalReferenceValidationVerification.md");
         var scopeDocPath = Path.Combine(
             TestPaths.RepoRoot,
             "docs",
@@ -103,7 +103,7 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
 
         Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
         Assert.True(File.Exists(integrationDocPath), $"Integration doc was not found: {integrationDocPath}");
-        Assert.True(File.Exists(parityDocPath), $"Parity doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(parityDocPath), $"equivalence doc was not found: {parityDocPath}");
         Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
         Assert.True(File.Exists(statusPath), $"Status sample was not found: {statusPath}");
 
@@ -119,13 +119,13 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("Compatibility behavior preserved by default.", claimBoundary);
         Assert.Contains("No full ISO 12831-3 compliance claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
 
         var integrationDoc = File.ReadAllText(integrationDocPath);
         Assert.Contains("Compatibility behavior preserved by default.", integrationDoc);
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "full ISO 12831-3 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus comparison workflow");
 
         var parityDoc = File.ReadAllText(parityDocPath);
         Assert.Contains("compatibility path remains default", parityDoc, StringComparison.OrdinalIgnoreCase);

@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Report Export Disclosure Policy
+# Engineering Core V1 Report Export Disclosure Policy
 
 ## Purpose
 
@@ -63,10 +63,10 @@ Warnings should be visible near the main report result.
 
 Exports must keep these non-claims visible where relevant:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in v1.
 
 ## Annual 8760 export rule
@@ -88,8 +88,8 @@ They should disclose:
 - transmission heat loss assumptions;
 - ventilation/infiltration sensible heat loss assumptions;
 - simplified ground or adjacent boundary assumptions when present;
-- no full ISO 52016 node/matrix solver parity;
-- no exact EnergyPlus or ASHRAE 140 parity.
+- no full ISO 52016 node/matrix solver equivalence;
+- no exact EnergyPlus or ASHRAE 140 equivalence.
 
 ## Cooling export rule
 
@@ -101,7 +101,7 @@ They should disclose:
 - simplified SHGC/shading solar assumptions;
 - ISO52010-inspired isotropic sky transposition;
 - internal sensible gains;
-- no detailed EnergyPlus solar distribution parity;
+- no detailed EnergyPlus solar distribution equivalence;
 - no latent/moisture/humidity support in v1.
 
 ## Excel-specific rule

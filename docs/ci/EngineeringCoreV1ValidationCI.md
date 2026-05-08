@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Validation CI
+# Engineering Core V1 Validation CI
 
 Workflow: .github/workflows/engineering-core-v1-validation.yml.
 
@@ -10,4 +10,4 @@ Fails on stale generated artifacts.
 
 Status: PlaceholderComparison.
 
-Does not claim exact EnergyPlus numerical parity or ASHRAE 140 validation coverage.
+Does not claim exact EnergyPlus numerical equivalence or ASHRAE 140 / BESTEST-style validation anchor coverage.

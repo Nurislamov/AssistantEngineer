@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Report Disclosure Panel
+# Engineering Core V1 Report Disclosure Panel
 
 ## Purpose
 
@@ -50,10 +50,10 @@ They must not be hidden only inside raw JSON or debug-only views.
 
 The panel must support showing:
 
-- no exact EnergyPlus numerical parity claim;
-- no exact pyBuildingEnergy numerical parity claim;
-- no ASHRAE 140 validation coverage claim;
-- no full ISO 52016 node/matrix solver parity claim;
+- no exact EnergyPlus numerical equivalence claim;
+- no exact StandardReference numerical equivalence claim;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage claim;
+- no full ISO 52016 node/matrix solver equivalence claim;
 - no latent/moisture/humidity calculation claim.
 
 ## Out-of-scope v1 visibility

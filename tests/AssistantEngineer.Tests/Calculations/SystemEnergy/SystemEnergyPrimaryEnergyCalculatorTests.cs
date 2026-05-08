@@ -142,14 +142,14 @@ public sealed class SystemEnergyPrimaryEnergyCalculatorTests
 
         Assert.Contains("Full ISO compliance", boundary.ForbiddenClaims);
         Assert.Contains("Full EN compliance", boundary.ForbiddenClaims);
-        Assert.Contains("pyBuildingEnergy parity", boundary.ForbiddenClaims);
-        Assert.Contains("EnergyPlus parity", boundary.ForbiddenClaims);
-        Assert.Contains("ASHRAE 140 validation", boundary.ForbiddenClaims);
+        Assert.Contains("StandardReference equivalence", boundary.ForbiddenClaims);
+        Assert.Contains("EnergyPlus comparison workflow", boundary.ForbiddenClaims);
+        Assert.Contains("ASHRAE 140 / BESTEST-style validation anchor", boundary.ForbiddenClaims);
         Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("Full ISO compliance", StringComparison.Ordinal));
         Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("Full EN compliance", StringComparison.Ordinal));
-        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("pyBuildingEnergy parity", StringComparison.Ordinal));
-        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("EnergyPlus parity", StringComparison.Ordinal));
-        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("ASHRAE 140 validation", StringComparison.Ordinal));
+        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("StandardReference equivalence", StringComparison.Ordinal));
+        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("EnergyPlus comparison workflow", StringComparison.Ordinal));
+        Assert.DoesNotContain(boundary.AllowedClaims, claim => claim.Contains("ASHRAE 140 / BESTEST-style validation anchor", StringComparison.Ordinal));
     }
 
     private static SystemEnergyPrimaryEnergyCalculator CreateCalculator() =>

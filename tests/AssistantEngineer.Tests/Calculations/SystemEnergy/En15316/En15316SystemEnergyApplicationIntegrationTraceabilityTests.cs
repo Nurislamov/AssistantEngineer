@@ -27,7 +27,7 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("Compatibility SystemEnergyEngine behavior preserved by default.", claimBoundary);
         Assert.Contains("No full EN 15316 compliance claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
             TestPaths.RepoRoot,
             "docs",
             "calculations",
-            "EnergyCalculationParityVerification.md");
+            "ExternalReferenceValidationVerification.md");
         var scopeDocPath = Path.Combine(
             TestPaths.RepoRoot,
             "docs",
@@ -57,7 +57,7 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
             "status.sample.json");
 
         Assert.True(File.Exists(integrationDocPath), $"Integration doc was not found: {integrationDocPath}");
-        Assert.True(File.Exists(parityDocPath), $"Parity doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(parityDocPath), $"equivalence doc was not found: {parityDocPath}");
         Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
         Assert.True(File.Exists(statusPath), $"Status sample was not found: {statusPath}");
 
@@ -65,8 +65,8 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
         Assert.Contains("Compatibility SystemEnergyEngine behavior preserved by default.", integrationDoc);
         Assert.Contains("opt-in", integrationDoc, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "full EN 15316 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus comparison workflow");
 
         var parityDoc = File.ReadAllText(parityDocPath);
         Assert.Contains("compatibility path remains default", parityDoc, StringComparison.OrdinalIgnoreCase);

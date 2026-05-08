@@ -30,6 +30,8 @@ internal static class Program
                 Console.WriteLine("Frontend checks are enabled by default.");
             }
 
+            AssertNoForbiddenTerminologyAndClaims(repoRoot);
+
             var steps = BuildSteps(options);
 
             foreach (var step in steps)
@@ -60,7 +62,7 @@ internal static class Program
             Console.WriteLine("- annual true hourly 8760 gate");
             Console.WriteLine("- hourly heat-balance and single-zone gates");
             Console.WriteLine("- ground and adjacent simplified gates");
-            Console.WriteLine("- EnergyPlus/ASHRAE 140 validation harness scaffold");
+            Console.WriteLine("- EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness scaffold");
             Console.WriteLine("- release/scope/developer documentation");
 
             return 0;
@@ -221,7 +223,7 @@ internal static class Program
                 "Iso52016EngineeringCoreV1ClosureTests|GroundSimplifiedEngineeringCoreV1ClosureTests|AdjacentZoneSimplifiedEngineeringCoreV1ClosureTests"),
 
             DotnetTest(
-                "EnergyPlus/ASHRAE 140 validation harness guard tests",
+                "EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests",
                 "EnergyPlusValidation")
         ]);
 
@@ -371,6 +373,92 @@ internal static class Program
         }
 
         throw new InvalidOperationException("Repository root with AssistantEngineer.sln was not found.");
+    }
+
+    private static void AssertNoForbiddenTerminologyAndClaims(string repoRoot)
+    {
+        var forbidden = BuildForbiddenTermsAndClaims();
+        var scanRoots = new[]
+        {
+            Path.Combine(repoRoot, "src"),
+            Path.Combine(repoRoot, "tests"),
+            Path.Combine(repoRoot, "docs"),
+            Path.Combine(repoRoot, "scripts")
+        };
+
+        var violations = new List<string>();
+        foreach (var root in scanRoots.Where(Directory.Exists))
+        {
+            foreach (var file in EnumerateTextFiles(root))
+            {
+                var text = File.ReadAllText(file);
+                foreach (var marker in forbidden)
+                {
+                    if (text.Contains(marker, StringComparison.OrdinalIgnoreCase))
+                    {
+                        violations.Add($"{Path.GetRelativePath(repoRoot, file)} => {marker}");
+                    }
+                }
+            }
+        }
+
+        if (violations.Count > 0)
+        {
+            throw new InvalidOperationException(
+                "Forbidden terminology/claim wording found:\n" +
+                string.Join('\n', violations.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(v => v, StringComparer.OrdinalIgnoreCase)));
+        }
+    }
+
+    private static IReadOnlyList<string> BuildForbiddenTermsAndClaims()
+    {
+        var py = "py";
+        var pe = "Building";
+        var energy = "Energy";
+        var be = "BE";
+
+        return new[]
+        {
+            py + pe + energy,
+            py + pe.ToLowerInvariant() + energy.ToLowerInvariant(),
+            py + be,
+            "donor" + " project",
+            "reference" + " donor",
+            "donor" + " methodology",
+            py + pe + energy + "-style",
+            "parity with " + py + pe + energy,
+            "full " + "parity",
+            "fully " + "validated",
+            "EnergyPlus " + "parity",
+            "ASHRAE 140 " + "validated",
+            py + pe + energy + " parity"
+        };
+    }
+
+    private static IEnumerable<string> EnumerateTextFiles(string root)
+    {
+        var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".git", "bin", "obj", "node_modules", "dist", "coverage", "TestResults"
+        };
+
+        var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".cs", ".md", ".json", ".yml", ".yaml", ".ps1", ".txt", ".tsx", ".ts", ".xml", ".csv"
+        };
+
+        foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(root, file);
+            var segments = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (segments.Any(segment => excluded.Contains(segment)))
+                continue;
+
+            if (!extensions.Contains(Path.GetExtension(file)))
+                continue;
+
+            yield return file;
+        }
     }
 
     private static void WriteSuccess(string message)

@@ -34,10 +34,10 @@ The ISO 52016 Matrix calculation path is release-ready as an internal engineerin
 
 This release does not claim:
 
-- No exact pyBuildingEnergy numerical parity claim.
-- No exact EnergyPlus numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full coupled multi-zone heat-balance parity claim.
+- No exact StandardReference numerical equivalence claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full coupled multi-zone heat-balance equivalence claim.
 - No latent, humidity or moisture balance calculation claim.
 
 ## Merge recommendation

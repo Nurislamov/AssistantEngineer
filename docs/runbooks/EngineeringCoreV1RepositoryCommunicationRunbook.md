@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Repository Communication Runbook
+# Engineering Core V1 Repository Communication Runbook
 
 ## Purpose
 
@@ -50,8 +50,8 @@ Recommended wording:
 
 Forbidden wording:
 
-    No "EnergyPlus parity achieved" claim.
-    No "ASHRAE 140 validated" claim.
+    No "EnergyPlus comparison workflow achieved" claim.
+    No "ASHRAE 140 / BESTEST-style validated" claim.
     Full ISO 52016 implemented.
 
 ## Tagging guide
@@ -76,8 +76,8 @@ Run:
 
 Repository-level communication must keep these visible:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in V1.

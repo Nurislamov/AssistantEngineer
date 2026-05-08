@@ -24,4 +24,4 @@ where `H` is the heat transfer coefficient in W/K.
 
 ## Non-claim
 
-These are manual engineering validation anchors. They do not claim full ISO 52016, pyBuildingEnergy, EnergyPlus or ASHRAE 140 parity.
+These are manual engineering validation anchors. They do not claim full ISO 52016, StandardReference, EnergyPlus or ASHRAE 140 equivalence.

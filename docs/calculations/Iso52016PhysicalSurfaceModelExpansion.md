@@ -9,7 +9,7 @@ Claim boundary:
 - ISO52016-inspired physical surface/construction expansion.
 - validation/internal engineering anchors only.
 - not complete ISO 52016 numerical equivalence.
-- not pyBuildingEnergy numerical equivalence.
+- not StandardReference numerical equivalence.
 - not EnergyPlus numerical equivalence.
 - not ASHRAE Standard 140 benchmark-grade claim.
 
@@ -75,4 +75,4 @@ This step does not add:
 - per-surface hourly boundary temperature profiles;
 - adjacent conditioned/unconditioned profile adapters;
 - hourly operation schedules or ventilation overrides;
-- external validation against EnergyPlus, ASHRAE 140, or pyBuildingEnergy outputs.
+- external validation against EnergyPlus, ASHRAE 140, or StandardReference outputs.

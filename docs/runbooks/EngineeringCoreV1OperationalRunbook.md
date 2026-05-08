@@ -1,10 +1,10 @@
-﻿# Engineering Core V1 Operational Runbook
+# Engineering Core V1 Operational Runbook
 
 ## Purpose
 
 This runbook describes how to operate, verify and support Engineering Core V1 after closure.
 
-Engineering Core V1 is closed as an engineering formula gate. It is not an exact external simulator parity release.
+Engineering Core V1 is closed as an engineering formula gate. It is not an exact external simulator equivalence release.
 
 ## Daily verification
 
@@ -47,7 +47,7 @@ Expected:
 - formulaGatesClosed = true;
 - weather8760GatesClosed = true;
 - annualHourly8760GateClosed = true;
-- explicitNonClaims includes EnergyPlus, pyBuildingEnergy and ASHRAE 140 non-claims.
+- explicitNonClaims includes EnergyPlus, StandardReference and ASHRAE 140 non-claims.
 
 ## Diagnostics catalog endpoint
 
@@ -101,7 +101,7 @@ When a calculation issue is reported:
 
 Escalate as future work when issue requires:
 
-- no exact EnergyPlus parity claim;
+- no exact EnergyPlus comparison workflow claim;
 - ASHRAE 140 certification;
 - full ISO 52016 node/matrix solver;
 - latent/moisture balance;

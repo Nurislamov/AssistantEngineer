@@ -5,10 +5,10 @@
   "referenceStyle": "Manual",
   "claimScope": "ValidationAnchorOnly",
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full external engine parity claim."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
   ],
   "description": "Outdoor boundary equals cooling setpoint and sensible gains alone create cooling demand. Manual anchor: gains = cooling load.",
   "kind": "singleHourSteadyState",

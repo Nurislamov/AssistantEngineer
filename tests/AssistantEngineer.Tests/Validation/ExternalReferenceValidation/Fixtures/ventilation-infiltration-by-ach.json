@@ -1,0 +1,58 @@
+{
+  "fixtureName": "InfiltrationByACH",
+  "description": "Infiltration heating load calculated from room volume and air changes per hour.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Ventilation and Infiltration Loads",
+  "sourceReference": "AssistantEngineer deterministic fixture for infiltration load.",
+  "assumptions": [
+    "Dry sensible outdoor air load only.",
+    "Air density is 1.2 kg/m3.",
+    "Air specific heat is 1005 J/(kg K).",
+    "No mechanical ventilation."
+  ],
+  "notes": [
+    "ACH airflow is volume multiplied by air changes per hour."
+  ],
+  "input": {
+    "calculationBasis": "ventilation-infiltration-loads",
+    "ventilationInfiltration": {
+      "roomId": 101,
+      "areaM2": 40,
+      "volumeM3": 100,
+      "occupancyPeople": 0,
+      "indoorTemperatureC": 20,
+      "outdoorTemperatureC": -5,
+      "infiltrationAirChangesPerHour": 0.5,
+      "heatRecoveryEfficiency": 0,
+      "airDensityKgPerM3": 1.2,
+      "airSpecificHeatJPerKgK": 1005,
+      "diagnosticsContext": "InfiltrationByACH"
+    }
+  },
+  "expected": {
+    "ventilationInfiltration": {
+      "deltaTC": 25,
+      "mechanicalAirflowM3PerHour": 0,
+      "mechanicalAirflowM3PerSecond": 0,
+      "rawMechanicalHeatingLoadW": 0,
+      "rawMechanicalCoolingLoadW": 0,
+      "effectiveMechanicalHeatingLoadW": 0,
+      "effectiveMechanicalCoolingLoadW": 0,
+      "infiltrationAirChangesPerHour": 0.5,
+      "infiltrationAirflowM3PerHour": 50,
+      "infiltrationAirflowM3PerSecond": 0.0138889,
+      "infiltrationHeatingLoadW": 418.75,
+      "infiltrationCoolingLoadW": 0,
+      "totalHeatingLoadW": 418.75,
+      "totalCoolingLoadW": 0,
+      "hasErrors": false
+    }
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.01,
+    "monthlyDemandKWh": 0.01,
+    "annualDemandKWh": 0.1,
+    "heatTransferCoefficientWPerK": 0.000001
+  }
+}

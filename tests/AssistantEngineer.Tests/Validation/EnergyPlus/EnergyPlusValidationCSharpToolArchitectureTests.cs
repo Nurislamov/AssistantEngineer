@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
@@ -91,8 +91,8 @@ public class EnergyPlusValidationCSharpToolArchitectureTests
             "thin wrappers only",
             "docs/reports/validation",
             "tests/fixtures/validation/energyplus",
-            "does not claim exact EnergyPlus numerical parity",
-            "does not claim ASHRAE 140 validation coverage"
+            "does not claim exact EnergyPlus numerical equivalence",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

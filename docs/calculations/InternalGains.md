@@ -1,6 +1,6 @@
 # Internal Gains
 
-This calculation step covers deterministic internal heat gains for the Energy Calculation Parity track.
+This calculation step covers deterministic internal heat gains for the Energy Calculation equivalence track.
 
 ## Scope
 

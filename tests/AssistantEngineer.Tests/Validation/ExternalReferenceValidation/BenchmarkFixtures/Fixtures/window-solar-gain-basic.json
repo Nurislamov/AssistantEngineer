@@ -1,0 +1,34 @@
+{
+  "fixtureName": "window-solar-gain-basic",
+  "description": "Basic window solar gain from incident surface irradiance.",
+  "category": "WindowSolarGains",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation equivalence / Window Solar Gain",
+  "status": "Active",
+  "input": {
+    "calculationBasis": "window-solar-gain",
+    "windowSolarGain": {
+      "areaM2": 2,
+      "incidentIrradianceWPerM2": 500,
+      "shgc": 0.6,
+      "frameFactor": 1,
+      "internalShadingFactor": 1,
+      "externalShadingFactor": 1,
+      "fixedShadingFactor": 1
+    }
+  },
+  "expected": {
+    "solarGainW": 600
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "SolarGainW = area x incident irradiance x SHGC x factors.",
+    "Expected value is deterministic arithmetic, not external equivalence evidence."
+  ],
+  "notes": [
+    "No ExternalReferenceCovered claim."
+  ]
+}

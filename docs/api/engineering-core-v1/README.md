@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 API Contract Snapshots
+# Engineering Core V1 API Contract Snapshots
 
 ## Purpose
 
@@ -84,10 +84,10 @@ Diagnostics catalog response must expose:
 
 Snapshots must keep these non-claims visible:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in v1.
 
 ## OpenAPI and REST client artifacts

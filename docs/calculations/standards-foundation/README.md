@@ -18,9 +18,9 @@ This stage is limited to calculation contracts, deterministic helpers, diagnosti
 Explicit non-claims:
 - No full ISO compliance claim.
 - No full EN compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 
 ## What this foundation provides
 

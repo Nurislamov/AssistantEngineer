@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Release Summary
+# Engineering Core V1 Release Summary
 
 ## Release status
 
@@ -27,14 +27,14 @@ This release closes the main HVAC calculation kernel for:
 
 ## Important limitation
 
-Closed formula gate does not mean exact parity with external simulation tools.
+Closed formula gate does not mean exact equivalence with external simulation tools.
 
 Engineering Core V1 does not claim:
 
-- exact pyBuildingEnergy numerical parity;
-- exact EnergyPlus numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact StandardReference numerical equivalence;
+- exact EnergyPlus numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 implementation;
 - latent/moisture/humidity calculation.
@@ -93,9 +93,9 @@ True hourly annual energy requires:
 
 ## Future validation
 
-EnergyPlus / ASHRAE 140 validation is planned as a future layer.
+EnergyPlus / ASHRAE 140 / BESTEST-style validation anchor is planned as a future layer.
 
-It will be comparative engineering validation with documented tolerances, not exact watt-by-watt parity.
+It will be comparative engineering validation with documented tolerances, not exact watt-by-watt equivalence.
 
 ## Recommended next work
 

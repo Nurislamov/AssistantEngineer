@@ -1,4 +1,4 @@
-﻿# ISO 52016 Production Solar Path Registration
+# ISO 52016 Production Solar Path Registration
 
 Stage 8 closes the production DI gap for the ISO 52010/Perez -> ISO 52016 weather-solar path.
 
@@ -18,8 +18,8 @@ Without this stage, tests could prove the component path works while production 
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 - This does not remove legacy fallback support.
 - This does not remove the old `ISolarRadiationService` design-day path.
 

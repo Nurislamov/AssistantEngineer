@@ -1,4 +1,4 @@
-﻿{
+{
   "stageId": "AE-ISO52016-002-STEP-06",
   "title": "ISO52016-inspired physical room model diagnostics stage",
   "status": "internal-engineering-anchor",
@@ -16,7 +16,7 @@
     "ISO52016-inspired physical room model diagnostics stage.",
     "Validation/internal engineering anchors only.",
     "Not complete ISO 52016 numerical equivalence.",
-    "Not pyBuildingEnergy numerical equivalence.",
+    "Not StandardReference numerical equivalence.",
     "Not EnergyPlus numerical equivalence.",
     "Not ASHRAE Standard 140 benchmark-grade claim."
   ],

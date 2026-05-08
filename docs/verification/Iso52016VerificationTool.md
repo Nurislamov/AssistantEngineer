@@ -40,10 +40,10 @@ The ISO52016 verification chain is limited to validation and internal engineerin
 
 Required non-claims:
 
-- No full ISO 52016 parity claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No full ISO 52016 equivalence claim.
+- No standard-reference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 
 The registry and C# tool may mention external tools only as naming or methodology context. They must not claim complete ISO52010 or ISO52016 compliance.
 
@@ -56,4 +56,5 @@ Generated artifacts must not be tracked by git, including:
 - `artifacts/iso52016/engineering-edge-cases`
 - `artifacts/iso52016/application-integration-hardening`
 - physical-chain artifact folders listed in the registry
+
 

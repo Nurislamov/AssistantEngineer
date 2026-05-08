@@ -14,7 +14,7 @@
     "Validation/internal engineering anchors only.",
     "Not a new solver.",
     "Not complete ISO 52016 numerical equivalence.",
-    "Not pyBuildingEnergy numerical equivalence.",
+    "Not StandardReference numerical equivalence.",
     "Not EnergyPlus numerical equivalence.",
     "Not ASHRAE Standard 140 validation.",
     "Not ASHRAE Standard 140 benchmark-grade claim."

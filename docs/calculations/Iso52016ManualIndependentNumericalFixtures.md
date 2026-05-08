@@ -10,12 +10,12 @@ This stage is limited to validation infrastructure and fixture quality. It does 
 
 - Validation/internal engineering anchors only.
 - Manual independent reference fixtures only.
-- Not a parity claim.
+- Not a equivalence claim.
 - Not external certification.
-- No full ISO 52016 parity claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No full ISO 52016 equivalence claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 
 ## What this stage adds
 

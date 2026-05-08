@@ -38,9 +38,9 @@ This stage prepares shared topology modeling and diagnostics for future standard
 
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Unlocked next work
 
@@ -76,9 +76,9 @@ Production adapter mapping from building-domain entities to `ThermalTopologyBuil
 
 - No full coupled multizone simulation.
 - No full ISO52016 compliance claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ### Unlocks
 

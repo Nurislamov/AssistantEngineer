@@ -340,9 +340,9 @@ public sealed class EngineeringStageManifestRegistryValidator
 
         var requiredSubjects = new[]
         {
-            "pyBuildingEnergy parity",
-            "EnergyPlus parity",
-            "ASHRAE 140 validation",
+            "StandardReference equivalence",
+            "EnergyPlus comparison workflow",
+            "ASHRAE 140 / BESTEST-style validation anchor",
             "external certification"
         };
 

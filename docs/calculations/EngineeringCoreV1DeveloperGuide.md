@@ -1,23 +1,23 @@
-﻿# Engineering Core V1 Developer Guide
+# Engineering Core V1 Developer Guide
 
 ## Purpose
 
-This guide explains how to maintain Engineering Core V1 without accidentally weakening the calculation guarantees or making false parity claims.
+This guide explains how to maintain Engineering Core V1 without accidentally weakening the calculation guarantees or making false equivalence claims.
 
-Engineering Core V1 is closed as an engineering formula gate, not as an exact external simulation parity gate.
+Engineering Core V1 is closed as an engineering formula gate, not as an exact external simulation equivalence gate.
 
 ## Main source of truth
 
 The main source of truth for formula readiness is:
 
-    tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/FormulaAudit/FormulaAuditMatrix.cs
+    tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/FormulaAuditMatrix.cs
 
 Supporting guards:
 
-    tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/FormulaAudit/FormulaAuditMatrixTests.cs
-    tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/FormulaAudit/EngineeringCoreV1ReadinessGuardTests.cs
-    tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/FormulaAudit/EngineeringCoreV1ScopeDocumentationTests.cs
-    tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/FormulaAudit/EngineeringCoreV1ReleaseDocumentationTests.cs
+    tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/FormulaAuditMatrixTests.cs
+    tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ReadinessGuardTests.cs
+    tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ScopeDocumentationTests.cs
+    tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ReleaseDocumentationTests.cs
 
 ## When adding a new calculation formula
 
@@ -76,10 +76,10 @@ Forbidden wording unless separately validated:
 
 - full ISO 52016 implementation;
 - full ISO 13370 implementation;
-- no EnergyPlus parity claim;
+- no EnergyPlus comparison workflow claim;
 - no ASHRAE 140 covered claim;
-- no pyBuildingEnergy parity claim;
-- no ExternalParityCovered claim.
+- no StandardReference equivalence claim;
+- no ExternalReferenceCovered claim.
 
 ## FormulaAuditMatrix status meanings
 
@@ -140,9 +140,9 @@ Current status endpoint:
 
 ## Future validation
 
-EnergyPlus / ASHRAE 140 validation is planned, but not required to close Engineering Core V1 formulas.
+EnergyPlus / ASHRAE 140 / BESTEST-style validation anchor is planned, but not required to close Engineering Core V1 formulas.
 
-Future validation must be comparative with documented tolerances, not exact watt-by-watt parity.
+Future validation must be comparative with documented tolerances, not exact watt-by-watt equivalence.
 
 See:
 

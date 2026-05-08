@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -89,7 +89,7 @@ internal static class Program
                 ["status"] = "ClosedV1",
                 ["priority"] = IsP1Gate(calculationId) ? "P1" : "P0",
                 ["scope"] = "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-                ["limitation"] = "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+                ["limitation"] = "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
             })
             .ToArray();
 
@@ -180,14 +180,14 @@ internal static class Program
             ["warnings"] = new[]
             {
                 "Heating report uses engineering design-point load calculation.",
-                "Report does not claim full ISO 52016 node/matrix solver parity.",
-                "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity.",
+                "Report does not claim full ISO 52016 node/matrix solver equivalence.",
+                "Report does not claim exact EnergyPlus, ASHRAE 140 or StandardReference numerical equivalence.",
                 "Latent load, moisture balance and detailed psychrometrics are out of scope for engineering-core v1."
             },
             ["assumptions"] = new[]
             {
                 "Heating load is assembled from transmission and ventilation/infiltration components.",
-                "Transmission uses steady-state U*A*ΔT component heat transfer.",
+                "Transmission uses steady-state U*A*?T component heat transfer.",
                 "Ventilation and infiltration use sensible-only airflow heat transfer.",
                 "Ground and adjacent boundaries are simplified engineering models when present."
             },
@@ -205,8 +205,8 @@ internal static class Program
             ["warnings"] = new[]
             {
                 "Cooling report uses engineering design-point load calculation.",
-                "Report does not claim full ISO 52016 node/matrix solver parity.",
-                "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity.",
+                "Report does not claim full ISO 52016 node/matrix solver equivalence.",
+                "Report does not claim exact EnergyPlus, ASHRAE 140 or StandardReference numerical equivalence.",
                 "Latent load, moisture balance and detailed psychrometrics are out of scope for engineering-core v1."
             },
             ["assumptions"] = new[]
@@ -231,7 +231,7 @@ internal static class Program
             {
                 "Annual energy is true hourly 8760 only when EnergyDataSource=TrueHourlySimulation, IsTrueHourly8760=true and HourlyRecordCount=8760.",
                 "Monthly adapter, synthetic weather and deterministic short fixtures must not be presented as true hourly 8760 annual simulation.",
-                "Report does not claim exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity."
+                "Report does not claim exact EnergyPlus, ASHRAE 140 or StandardReference numerical equivalence."
             },
             ["assumptions"] = new[]
             {
@@ -375,11 +375,11 @@ internal static class Program
 
     private static string[] ExplicitNonClaims() =>
     [
-        "No exact pyBuildingEnergy numerical parity claim.",
-        "No exact EnergyPlus numerical parity claim.",
-        "No ASHRAE 140 validation coverage claim.",
-        "No full ISO 52016 node/matrix solver parity claim.",
-        "No full ISO 52010 climate conversion parity claim.",
+        "No exact StandardReference numerical equivalence claim.",
+        "No exact EnergyPlus numerical equivalence claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+        "No full ISO 52016 node/matrix solver equivalence claim.",
+        "No full ISO 52010 climate conversion equivalence claim.",
         "No full ISO 13370 implementation claim.",
         "No full EN 15316 generation/distribution/storage/emission chain claim.",
         "No full coupled multi-zone heat-balance simulation claim.",

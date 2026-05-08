@@ -34,19 +34,19 @@ public sealed class Iso13370GroundBoundaryApplicationIntegrationTraceabilityTest
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("Compatibility behavior preserved by default.", claimBoundary);
         Assert.Contains("No full ISO 13370 compliance claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
 
         var docText = File.ReadAllText(docPath);
         Assert.Contains("AE-GROUND-002", docText);
         Assert.Contains("Compatibility behavior preserved by default.", docText);
         Assert.DoesNotContain("ISO 13370 validated", docText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ExternalParityCovered", docText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 13370 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
     }
 
     private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)

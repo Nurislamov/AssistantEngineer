@@ -1,8 +1,8 @@
-﻿{
+{
   "anchorId": "manual-independent-annual-8760-seasonal-loads",
   "sourceStyle": "IndependentManual",
   "scope": "ValidationAnchorOnly",
-  "description": "Independent 8760-hour one-zone manual reference anchor. The case uses a single air node, one outdoor boundary, fixed sensible gains, and a four-segment non-leap-year outdoor profile. It is a validation anchor only, not full pyBuildingEnergy or EnergyPlus parity.",
+  "description": "Independent 8760-hour one-zone manual reference anchor. The case uses a single air node, one outdoor boundary, fixed sensible gains, and a four-segment non-leap-year outdoor profile. It is a validation anchor only, not full StandardReference or EnergyPlus comparison workflow.",
   "hourCount": 8760,
   "timeStepSeconds": 3600.0,
   "heatCapacityJPerK": 3600.0,
@@ -65,10 +65,10 @@
     "coolingLoadW": "max(0, C/dt * T_previous + H * T_outdoor + Q_gain - T_cool_setpoint * (C/dt + H))"
   },
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full annual building simulation parity claim.",
-    "Validation anchors only, not full parity."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full annual building simulation equivalence claim.",
+    "Validation anchors only, not full equivalence claim."
   ]
 }

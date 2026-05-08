@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Troubleshooting Guide
+# Engineering Core V1 Troubleshooting Guide
 
 ## Purpose
 
@@ -123,8 +123,8 @@ Do not fix tests by removing non-claims or weakening disclosure.
 
 Required non-claims must remain visible:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in v1.

@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.CoreStatus;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.CoreStatus;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -28,11 +28,11 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             FormulaGates: formulaGates,
             ExplicitNonClaims:
             [
-                "No exact pyBuildingEnergy numerical parity claim.",
-                "No exact EnergyPlus numerical parity claim.",
-                "No ASHRAE 140 validation coverage claim.",
-                "No full ISO 52016 node/matrix solver parity claim.",
-                "No full ISO 52010 climate conversion parity claim.",
+                "No exact StandardReference numerical equivalence claim.",
+                "No exact EnergyPlus numerical equivalence claim.",
+                "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+                "No full ISO 52016 node/matrix solver equivalence claim.",
+                "No full ISO 52010 climate conversion equivalence claim.",
                 "No full ISO 13370 implementation claim.",
                 "No full EN 15316 generation/distribution/storage/emission chain claim.",
                 "No full coupled multi-zone heat-balance simulation claim.",
@@ -246,7 +246,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Steady-state component heat transfer.",
-            Limitation: "Does not claim full dynamic ISO 52016 node/matrix heat-balance parity."),
+            Limitation: "Does not claim full dynamic ISO 52016 node/matrix heat-balance equivalence."),
 
         new(
             CalculationId: "HVAC.VENTILATION.SENSIBLE_AIRFLOW",
@@ -270,7 +270,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Simplified SHGC/shading based window solar gain.",
-            Limitation: "Does not claim full optical glazing or EnergyPlus solar distribution parity."),
+            Limitation: "Does not claim full optical glazing or EnergyPlus solar distribution equivalence."),
 
         new(
             CalculationId: "HVAC.SOLAR.SURFACE_IRRADIANCE_ISOTROPIC",
@@ -278,7 +278,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "ISO52010-inspired solar geometry and isotropic sky transposition.",
-            Limitation: "Does not claim anisotropic/Perez sky or EnergyPlus solar transposition parity."),
+            Limitation: "Does not claim anisotropic/Perez sky or EnergyPlus solar transposition equivalence."),
 
         new(
             CalculationId: "HVAC.ROOM_LOAD.DESIGN_POINT",
@@ -286,7 +286,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Design-point heating/cooling component aggregation.",
-            Limitation: "Does not claim full ISO 52016 hourly dynamic zone solver parity."),
+            Limitation: "Does not claim full ISO 52016 hourly dynamic zone solver equivalence."),
 
         new(
             CalculationId: "HVAC.AGGREGATION.LOAD_SUMMARY",
@@ -294,7 +294,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Room to thermal zone/floor/building aggregation with optional coincident hourly peak.",
-            Limitation: "Does not claim coupled multi-zone heat-transfer solver parity."),
+            Limitation: "Does not claim coupled multi-zone heat-transfer solver equivalence."),
 
         new(
             CalculationId: "HVAC.ANNUAL_ENERGY.HOURLY_KWH",
@@ -302,7 +302,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Hourly-to-monthly and hourly-to-annual kWh integration from true hourly 8760 records.",
-            Limitation: "Does not claim full ISO 52016 node/matrix solver or EnergyPlus parity."),
+            Limitation: "Does not claim full ISO 52016 node/matrix solver or EnergyPlus comparison workflow."),
 
         new(
             CalculationId: "WEATHER.EPW_8760",
@@ -326,7 +326,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "ISO52016-inspired simplified hourly RC / quasi-implicit heat-balance model.",
-            Limitation: "Does not claim full ISO 52016 node/matrix solver parity."),
+            Limitation: "Does not claim full ISO 52016 node/matrix solver equivalence."),
 
         new(
             CalculationId: "HVAC.THERMAL_ZONE.SINGLE_ZONE",
@@ -334,7 +334,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P0",
             Scope: "Single-zone engineering path with assigned-room-only aggregation and no double-counting.",
-            Limitation: "Does not claim coupled multi-zone heat exchange parity."),
+            Limitation: "Does not claim coupled multi-zone heat exchange equivalence."),
 
         new(
             CalculationId: "HVAC.GROUND.SIMPLIFIED",
@@ -350,7 +350,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P1",
             Scope: "Simplified adjacent conditioned/unconditioned boundary heat transfer.",
-            Limitation: "Does not claim coupled multi-zone solver parity."),
+            Limitation: "Does not claim coupled multi-zone solver equivalence."),
 
         new(
             CalculationId: "HVAC.DHW.SIMPLIFIED",
@@ -358,7 +358,7 @@ public sealed class EngineeringCoreStatusFacade : IEngineeringCoreStatusFacade
             Status: ClosedV1,
             Priority: "P1",
             Scope: "DHW demand by water volume, temperature lift and configured losses.",
-            Limitation: "Does not claim full EN 12831-3 tapping profile or distribution system parity."),
+            Limitation: "Does not claim full EN 12831-3 tapping profile or distribution system equivalence."),
 
         new(
             CalculationId: "HVAC.SYSTEM_ENERGY.SIMPLIFIED",

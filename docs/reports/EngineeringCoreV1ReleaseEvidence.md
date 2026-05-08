@@ -92,11 +92,11 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Explicit non-claims
 
-- No exact pyBuildingEnergy numerical parity claim.
-- No exact EnergyPlus numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full ISO 52016 node/matrix solver parity claim.
-- No full ISO 52010 climate conversion parity claim.
+- No exact StandardReference numerical equivalence claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full ISO 52016 node/matrix solver equivalence claim.
+- No full ISO 52010 climate conversion equivalence claim.
 - No full ISO 13370 implementation claim.
 - No full EN 15316 generation/distribution/storage/emission chain claim.
 - No full coupled multi-zone heat-balance simulation claim.
@@ -205,4 +205,4 @@ Manifest verification:
 
 Engineering Core V1 is closed as an engineering formula gate.
 
-This release evidence does not claim exact EnergyPlus numerical parity, exact pyBuildingEnergy numerical parity, ASHRAE 140 validation coverage, full ISO 52016 node/matrix solver parity, full ISO 13370 implementation, full EN 15316 implementation or latent/moisture/humidity support in v1.
+This release evidence does not claim exact EnergyPlus numerical equivalence, exact StandardReference numerical equivalence, ASHRAE 140 / BESTEST-style validation anchor coverage, full ISO 52016 node/matrix solver equivalence, full ISO 13370 implementation, full EN 15316 implementation or latent/moisture/humidity support in v1.

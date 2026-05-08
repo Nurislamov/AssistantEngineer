@@ -1,6 +1,6 @@
 # System Energy
 
-This Energy Calculation Parity step converts useful heating, cooling and DHW energy into simplified final energy.
+This Energy Calculation equivalence step converts useful heating, cooling and DHW energy into simplified final energy.
 
 ## Formula
 

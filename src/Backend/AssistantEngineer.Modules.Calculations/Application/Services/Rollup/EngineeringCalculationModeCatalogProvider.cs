@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Rollup;
+﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Rollup;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
 
@@ -11,9 +11,9 @@ public sealed class EngineeringCalculationModeCatalogProvider
         "Compatibility behavior preserved by default.",
         "Inspired calculation paths remain opt-in.",
         "No full ISO/EN compliance claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
         "No external certification claim.",
         "No automatic production data mutation."
     ];
@@ -34,13 +34,13 @@ public sealed class EngineeringCalculationModeCatalogProvider
         "ISO 16798 validated",
         "ISO 12831-3 validated",
         "EN 15316 validated",
-        "validated against pyBuildingEnergy",
+        "validated against StandardReference",
         "validated against EnergyPlus",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validated",
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validated",
         "ASHRAE 140 covered",
-        "ExternalParityCovered",
+        "ExternalReferenceCovered",
         "certified",
         "external certification"
     ];
@@ -230,14 +230,14 @@ public sealed class EngineeringCalculationModeCatalogProvider
                 optionFlagName: null,
                 stageIds: ["AE-VALIDATION-ISO52016-002"]),
             CreateMode(
-                modeId: "ISO52016-PYBE-INSPIRED-METHODOLOGY-INTAKE",
+                modeId: "ISO52016-standard-reference-INSPIRED-METHODOLOGY-INTAKE",
                 domain: EngineeringCalculationModeDomain.ExternalValidation,
                 kind: EngineeringCalculationModeKind.MethodologyIntake,
                 status: EngineeringCalculationModeStatus.ClosedInternalGate,
                 isDefault: false,
                 isOptIn: false,
                 optionFlagName: null,
-                stageIds: ["AE-VALIDATION-PYBE-001"])
+                stageIds: ["AE-VALIDATION-standard-reference-001"])
         ];
     }
 
@@ -272,7 +272,7 @@ public sealed class EngineeringCalculationModeCatalogProvider
             Stages: stageStatuses,
             DocumentationFiles:
             [
-                "docs/calculations/EnergyCalculationParityVerification.md",
+                "docs/calculations/ExternalReferenceValidationVerification.md",
                 "docs/calculations/EngineeringCoreV1Scope.md"
             ],
             ManifestFiles:
@@ -283,3 +283,4 @@ public sealed class EngineeringCalculationModeCatalogProvider
             Disclosure: disclosure);
     }
 }
+

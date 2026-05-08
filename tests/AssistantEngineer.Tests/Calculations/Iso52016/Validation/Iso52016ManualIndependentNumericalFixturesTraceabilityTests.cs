@@ -40,9 +40,9 @@ public sealed class Iso52016ManualIndependentNumericalFixturesTraceabilityTests
         Assert.Contains("AE-VALIDATION-ISO52016-002", text);
         Assert.Contains("Validation/internal engineering anchors only.", text);
         Assert.Contains("Manual independent reference fixtures only.", text);
-        Assert.Contains("not a parity claim", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not a equivalence claim", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not external certification", text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("ExternalParityCovered", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

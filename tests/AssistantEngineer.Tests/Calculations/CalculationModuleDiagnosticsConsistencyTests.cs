@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
@@ -264,7 +264,7 @@ public class CalculationModuleDiagnosticsConsistencyTests
         Assert.Contains("Warning diagnostics", document, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("AnnualEnergy.MonthlyBalanceAdapter", document, StringComparison.Ordinal);
         Assert.Contains("EnergyDataSource = TrueHourlySimulation", document, StringComparison.Ordinal);
-        Assert.Contains("does not claim exact EnergyPlus numerical parity", document, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("does not claim exact EnergyPlus numerical equivalence", document, StringComparison.OrdinalIgnoreCase);
 
         var wrapper = File.ReadAllText(VerifyScriptPath);
         Assert.Contains("AssistantEngineer.Tools.EngineeringCore.csproj", wrapper, StringComparison.Ordinal);

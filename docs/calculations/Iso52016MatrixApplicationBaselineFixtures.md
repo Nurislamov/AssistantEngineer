@@ -25,7 +25,7 @@ Building rooms
 
 ## Why ranges, not exact snapshots
 
-These are application-level regression fixtures. They intentionally assert deterministic ranges and aggregation invariants rather than exact external parity values.
+These are application-level regression fixtures. They intentionally assert deterministic ranges and aggregation invariants rather than exact external equivalence values.
 
 Exact low-level Matrix solver snapshots live in:
 
@@ -35,4 +35,4 @@ tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/*.json
 
 ## Non-claim
 
-These fixtures do not claim pyBuildingEnergy, EnergyPlus, or ASHRAE 140 parity.
+These fixtures do not claim StandardReference, EnergyPlus, or ASHRAE 140 equivalence.

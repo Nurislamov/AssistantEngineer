@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Tools;
 
@@ -88,8 +88,8 @@ public class EngineeringCoreReleaseToolArchitectureTests
             "release readiness file list",
             "verification step list",
             "artifact regeneration sequence",
-            "does not claim exact EnergyPlus numerical parity",
-            "does not claim ASHRAE 140 validation coverage"
+            "does not claim exact EnergyPlus numerical equivalence",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

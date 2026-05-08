@@ -1,4 +1,4 @@
-﻿# ISO 52016 Matrix Verification Runbook
+# ISO 52016 Matrix Verification Runbook
 
 This runbook provides the developer entrypoint for the ISO52016 Matrix and Physical-chain verification lane.
 
@@ -63,9 +63,9 @@ This verification chain is an internal regression and traceability gate.
 
 It does not claim:
 
-- No full ISO 52016 parity claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No full ISO 52016 equivalence claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No complete ISO52010 or ISO52016 compliance claim.
 

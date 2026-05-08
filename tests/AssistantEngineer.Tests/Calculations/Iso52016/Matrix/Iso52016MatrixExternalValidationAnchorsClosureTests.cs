@@ -27,12 +27,12 @@ public sealed class Iso52016MatrixExternalValidationAnchorsClosureTests
         var releaseNotes = File.ReadAllText(releaseNotesPath);
         var mergeRunbook = File.ReadAllText(mergeRunbookPath);
 
-        Assert.Contains("Validation anchors only, not full parity.", releaseNotes);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", releaseNotes);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", releaseNotes);
-        Assert.Contains("No ExternalParityCovered claim.", releaseNotes);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", releaseNotes);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", releaseNotes);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", releaseNotes);
+        Assert.Contains("No ExternalReferenceCovered claim.", releaseNotes);
 
-        Assert.Contains("Validation anchors only, not full parity.", mergeRunbook);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", mergeRunbook);
         Assert.Contains("must not be committed", mergeRunbook);
         Assert.Contains("assert-iso52016-matrix-external-validation-anchors-release-ready.ps1", mergeRunbook);
     }
@@ -115,7 +115,7 @@ public sealed class Iso52016MatrixExternalValidationAnchorsClosureTests
 
         Assert.Contains("artifacts\\iso52016\\external-validation-anchors\\merge-summary.json", script);
         Assert.Contains("generatedArtifactsCommitted", script);
-        Assert.Contains("Validation anchors only, not full parity.", script);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", script);
     }
 
     private static string FindRepositoryRoot()

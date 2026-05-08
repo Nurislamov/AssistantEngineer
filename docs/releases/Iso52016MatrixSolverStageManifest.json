@@ -1,4 +1,4 @@
-﻿{
+{
     "stageId":  "ISO52016-MATRIX-SOLVER",
     "stageName":  "ISO 52016 Matrix Solver Stage",
     "status":  "Closed",
@@ -22,16 +22,16 @@
                                  "Iso52016BuildingEnergySimulationCommand"
                              ],
     "explicitNonClaims":  [
-                              "No exact pyBuildingEnergy numerical parity claim.",
-                              "No exact EnergyPlus numerical parity claim.",
-                              "No ASHRAE 140 validation coverage claim.",
+                              "No exact StandardReference numerical equivalence claim.",
+                              "No exact EnergyPlus numerical equivalence claim.",
+                              "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
                               "No full coupled multi-zone heat-balance simulation claim.",
                               "No latent/moisture/humidity calculation claim.",
                               "External validation anchors are independent manual reference cases only.",
-                              "No full pyBuildingEnergy parity claim.",
-                              "No full EnergyPlus parity claim.",
-                              "No full annual dynamic simulation parity claim.",
-                              "Validation anchors only, not full parity."
+                              "No full StandardReference equivalence claim.",
+                              "No full EnergyPlus comparison workflow claim.",
+                              "No full annual dynamic simulation equivalence claim.",
+                              "Validation anchors only, not full equivalence claim."
                           ],
     "allInOneVerificationIntegrated":  true,
     "releaseReadyGateIntegrated":  true,
@@ -43,12 +43,12 @@
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-heating.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-heating-with-gains.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-steady-cooling.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/pbe-style-manual-steady-heating.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/standard-reference-manual-steady-heating.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/energyplus-style-annual-manual-8760.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-neutral-deadband.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-heating-gains-balance-zero.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/manual-independent-cooling-gains-only.json",
-                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/pbe-style-manual-steady-cooling-with-gains.json",
+                     "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/standard-reference-manual-steady-cooling-with-gains.json",
                      "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/energyplus-style-design-day-manual-heating.json"
                  ],
     "externalValidationIntegrated":  true,

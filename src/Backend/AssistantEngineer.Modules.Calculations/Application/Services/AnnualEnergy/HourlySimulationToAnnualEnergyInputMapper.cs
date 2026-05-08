@@ -42,7 +42,7 @@ public sealed class HourlySimulationToAnnualEnergyInputMapper
                 DiagnosticsContext: diagnosticsContext,
                 EnergyDataSource: TrueHourlySimulationSource,
                 IsTrueHourly8760: isTrueHourly8760,
-                ActualMethod: "EnergyCalculationParityAnnualAggregationAdapter"),
+                ActualMethod: "ExternalReferenceValidationAnnualAggregationAdapter"),
             diagnostics,
             isTrueHourly8760,
             records.Length);

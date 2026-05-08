@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -136,7 +136,7 @@ public class EnergyPlusValidationEvidencePackageTests
             .ToArray();
 
         Assert.Contains(nonClaims, claim => claim.Contains("Does not claim exact EnergyPlus", StringComparison.OrdinalIgnoreCase));
-        Assert.Contains(nonClaims, claim => claim.Contains("Does not claim exact pyBuildingEnergy", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(nonClaims, claim => claim.Contains("Does not claim exact StandardReference", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(nonClaims, claim => claim.Contains("Does not claim ASHRAE 140", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(nonClaims, claim => claim.Contains("Does not claim full ISO 52016", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(nonClaims, claim => claim.Contains("PlaceholderComparison is not real EnergyPlus validation", StringComparison.OrdinalIgnoreCase));
@@ -170,8 +170,8 @@ public class EnergyPlusValidationEvidencePackageTests
             "Evidence files",
             "Required non-claims",
             "Next milestones",
-            "does not claim exact EnergyPlus parity",
-            "does not claim ASHRAE 140 validation coverage"
+            "does not claim exact EnergyPlus comparison workflow",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

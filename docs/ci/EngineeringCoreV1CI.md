@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 CI
+# Engineering Core V1 CI
 
 ## Purpose
 
@@ -28,7 +28,7 @@ The workflow verifies:
 - single thermal zone gate;
 - simplified ground gate;
 - simplified adjacent-zone gate;
-- EnergyPlus/ASHRAE 140 validation harness scaffold;
+- EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness scaffold;
 - scope/release/developer/frontend documentation guards;
 - full backend test suite.
 
@@ -37,7 +37,7 @@ The workflow verifies:
 The workflow runs on:
 
 - pull requests;
-- pushes to main/master/develop/Energy_Calculation_Parity;
+- pushes to main/master/develop/Energy_Calculation_Validation;
 - manual workflow_dispatch.
 
 ## Tooling
@@ -64,16 +64,16 @@ The CI workflow prevents accidental regression in:
 - 8760 weather/annual assumptions;
 - frontend visibility of warnings/non-claims;
 - report disclosure visibility;
-- future EnergyPlus/ASHRAE 140 validation non-claims.
+- future EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor non-claims.
 
 ## Non-claims
 
 Passing this CI workflow does not claim:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full detailed HVAC plant simulation.
 
 ## Local equivalent

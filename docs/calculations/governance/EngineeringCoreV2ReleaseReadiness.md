@@ -17,9 +17,9 @@ Claim boundary:
 - Compatibility behavior preserved by default.
 - Inspired calculation paths remain opt-in.
 - No full ISO/EN compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 - No automatic production data mutation.
 
@@ -39,8 +39,8 @@ Limitations:
 - this is internal deterministic governance only;
 - no external certification;
 - no full ISO/EN compliance claim;
-- no pyBuildingEnergy parity claim;
-- no EnergyPlus parity claim;
-- no ASHRAE 140 validation claim;
+- no StandardReference equivalence claim;
+- no EnergyPlus comparison workflow claim;
+- no ASHRAE 140 / BESTEST-style validation anchor claim;
 - inspired paths stay opt-in;
 - external numerical validation remains incomplete.

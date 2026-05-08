@@ -1,0 +1,55 @@
+﻿{
+  "id": "standard-reference-inspired-simple-heating-naming-anchor",
+  "sourceKind": "StandardReferenceInspiredNaming",
+  "calculationPath": "MatrixReduced",
+  "claimBoundary": [
+    "Validation/internal engineering anchors only.",
+    "StandardReference-inspired methodology alignment lane only.",
+    "No StandardReference equivalence claim.",
+    "No StandardReference numerical equivalence claim.",
+    "No copied StandardReference code.",
+    "No StandardReference runtime dependency.",
+    "No full ISO 52016 equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+    "ExternalReferenceCovered is not allowed in this stage."
+  ],
+  "reference": {
+    "derivationDocument": "docs/calculations/validation/iso52016/standard-reference-inspired-simple-heating-naming-anchor.md",
+    "derivationKind": "StandardReferenceInspiredMethodologyNote",
+    "sourceDescription": "Methodology/naming alignment only; not a equivalence claim.",
+    "methodologySourceName": "StandardReference",
+    "methodologySourceUrl": "https://github.com/EURAC-EEBgroup/StandardReference",
+    "methodologyNotes": [
+      "Source-note only.",
+      "No copied code.",
+      "No runtime dependency."
+    ]
+  },
+  "input": {
+    "description": "Naming anchor for steady heating lane with deterministic internal anchor values.",
+    "weatherProfileKind": "ConstantCold",
+    "zoneArchetype": "SimpleRoom"
+  },
+  "expected": {
+    "annualHeatingKWh": 1800.0,
+    "annualCoolingKWh": 0.0,
+    "peakHeatingW": 2100.0,
+    "peakCoolingW": 0.0,
+    "meanOperativeTemperatureC": 21.0,
+    "maxOperativeTemperatureC": 21.3,
+    "minOperativeTemperatureC": 20.7,
+    "hourlyResultCount": 24,
+    "monthlyHeatingKWh": [
+      150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0
+    ],
+    "monthlyCoolingKWh": [
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    ]
+  },
+  "tolerance": {
+    "absoluteTolerance": 0.75,
+    "relativeTolerancePercent": 1.5
+  }
+}
+

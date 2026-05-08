@@ -49,12 +49,12 @@ public class EnergyCalculationPipelineServiceTests
 
         Assert.True(heating.IsSuccess, heating.Error);
         Assert.True(cooling.IsSuccess, cooling.Error);
-        Assert.Contains("Energy Calculation Parity", heating.Value.CalculationMethod);
-        Assert.Contains("Energy Calculation Parity", cooling.Value.CalculationMethod);
+        Assert.Contains("Energy Calculation equivalence", heating.Value.CalculationMethod);
+        Assert.Contains("Energy Calculation equivalence", cooling.Value.CalculationMethod);
         Assert.Equal("En12831", heating.Value.RequestedMethod);
         Assert.Equal("Simplified", cooling.Value.RequestedMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", heating.Value.ActualMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", cooling.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", heating.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", cooling.Value.ActualMethod);
         Assert.Equal(1750, heating.Value.HeatingLoadW, precision: 2);
         Assert.Equal(87.5, heating.Value.HeatingLoadWPerM2, precision: 2);
         Assert.Equal(1000, heating.Value.Breakdown!.TransmissionW + heating.Value.Breakdown.WindowTransmissionW + heating.Value.Breakdown.GroundW, precision: 2);
@@ -89,14 +89,14 @@ public class EnergyCalculationPipelineServiceTests
         Assert.True(heating.IsSuccess, heating.Error);
         Assert.Equal("Iso52016", cooling.Value.RequestedMethod);
         Assert.Equal("En12831", heating.Value.RequestedMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", cooling.Value.ActualMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", heating.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", cooling.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", heating.Value.ActualMethod);
         Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Energy Calculation Parity design-point pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Energy Calculation equivalence design-point pipeline", StringComparison.Ordinal));
         Assert.Contains(heating.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Energy Calculation Parity design-point pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Energy Calculation equivalence design-point pipeline", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -127,8 +127,8 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Contains("Load Aggregation", floorCooling.Value.CalculationMethod);
         Assert.Equal("Simplified", floorCooling.Value.RequestedMethod);
         Assert.Equal("En12831", floorHeating.Value.RequestedMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", floorCooling.Value.ActualMethod);
-        Assert.Equal("EnergyCalculationParityDesignPoint", floorHeating.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", floorCooling.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationDesignPoint", floorHeating.Value.ActualMethod);
         Assert.Contains(
             floorCooling.Value.Diagnostics,
             diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
@@ -321,7 +321,7 @@ public class EnergyCalculationPipelineServiceTests
         var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
 
         Assert.True(result.IsSuccess, result.Error);
-        Assert.Equal("EnergyCalculationParityAnnualAggregationAdapter", result.Value.ActualMethod);
+        Assert.Equal("ExternalReferenceValidationAnnualAggregationAdapter", result.Value.ActualMethod);
         Assert.Equal("MonthlyBalanceAdapter", result.Value.EnergyDataSource);
         Assert.False(result.Value.IsTrueHourly8760);
         Assert.Equal(2, result.Value.HourlyRecordCount);

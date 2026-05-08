@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
+using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 
@@ -77,7 +77,7 @@ public class EngineeringCoreReportDisclosureTests
         var disclosure = EngineeringCoreReportDisclosures.CoolingDesignPoint();
 
         Assert.Contains(disclosure.ExplicitNonClaims, item =>
-            item.Contains("pyBuildingEnergy", StringComparison.OrdinalIgnoreCase));
+            item.Contains("StandardReference", StringComparison.OrdinalIgnoreCase));
 
         Assert.Contains(disclosure.ExplicitNonClaims, item =>
             item.Contains("EnergyPlus", StringComparison.OrdinalIgnoreCase));

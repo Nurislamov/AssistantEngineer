@@ -33,7 +33,7 @@ public class Iso52016PhysicalModelSelectionStageTraceabilityTests
         Assert.Contains("Reduced Matrix remains the default application path.", claimBoundary);
         Assert.Contains("Physical node model requires explicit strategy selection.", claimBoundary);
         Assert.Contains("Not complete ISO 52016 numerical equivalence.", claimBoundary);
-        Assert.Contains("Not pyBuildingEnergy numerical equivalence.", claimBoundary);
+        Assert.Contains("Not StandardReference numerical equivalence.", claimBoundary);
         Assert.Contains("Not EnergyPlus numerical equivalence.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 benchmark-grade claim.", claimBoundary);
     }
@@ -81,7 +81,7 @@ public class Iso52016PhysicalModelSelectionStageTraceabilityTests
         Assert.Contains("physical node model requires explicit strategy selection", doc);
         Assert.Contains("internal engineering anchors only", doc);
         Assert.Contains("not complete ISO 52016 numerical equivalence", doc);
-        Assert.Contains("not pyBuildingEnergy numerical equivalence", doc);
+        Assert.Contains("not StandardReference numerical equivalence", doc);
         Assert.Contains("not EnergyPlus numerical equivalence", doc);
         Assert.Contains("not ASHRAE Standard 140 benchmark-grade claim", doc);
     }

@@ -45,10 +45,10 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Required non-claims
 
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim exact pyBuildingEnergy numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
+- Does not claim exact EnergyPlus numerical equivalence.
+- Does not claim exact StandardReference numerical equivalence.
+- Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- Does not claim full ISO 52016 node/matrix solver equivalence.
 - PlaceholderComparison is not real EnergyPlus validation.
 - Future real validation must remain tolerance-based.
 
@@ -57,9 +57,9 @@ Generated at: 2026-01-01 00:00:00 UTC
 - Add first real EnergyPlus model and output for EP-SMOKE-001.
 - Add provenance.json for real EnergyPlus fixture.
 - Switch EP-SMOKE-001 from PlaceholderComparison to RealEnergyPlusComparison.
-- Keep comparison tolerance-based and non-parity.
+- Keep comparison tolerance-based and non-equivalence.
 - Add additional real fixtures only through fixture authoring kit and intake gate.
 
-This evidence does not claim exact EnergyPlus parity.
+This evidence does not claim exact EnergyPlus comparison workflow.
 
-This evidence does not claim ASHRAE 140 validation coverage.
+This evidence does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

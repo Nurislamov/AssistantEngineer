@@ -12,8 +12,8 @@ param(
 # ManualEngineeringValidationAnchor
 # IndependentManualEngineeringFormula
 # ValidationAnchorsOnly
-# No pyBuildingEnergy parity claim.
-# No EnergyPlus parity claim.
+# No StandardReference equivalence claim.
+# No EnergyPlus comparison workflow claim.
 # hourCount 8760
 # Chained script: verify-iso52016-matrix-external-validation-annual-anchors.ps1
 # TRACEABILITY-MARKERS-END

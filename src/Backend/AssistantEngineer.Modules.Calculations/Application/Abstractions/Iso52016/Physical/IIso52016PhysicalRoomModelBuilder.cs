@@ -6,7 +6,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso520
 
 /// <summary>
 /// Builds an ISO 52016-inspired physical room node model on top of the existing Matrix hourly solver.
-/// This is an internal engineering builder stage, not an external parity/validation claim.
+/// This is an internal engineering builder stage, not an external equivalence/validation claim.
 /// </summary>
 public interface IIso52016PhysicalRoomModelBuilder
 {

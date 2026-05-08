@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
@@ -40,8 +40,8 @@ public class EnergyPlusRealFixtureIntakeGateTests
             "NumericWithinTolerance",
             "DirectionalTrend",
             "SameSign",
-            "does not claim exact EnergyPlus numerical parity",
-            "does not claim ASHRAE 140 validation coverage",
+            "does not claim exact EnergyPlus numerical equivalence",
+            "does not claim ASHRAE 140 / BESTEST-style validation anchor coverage",
             "assert-ep-smoke-001-real-fixture-ready.ps1 -RequireRealFixture"
         };
 
@@ -71,8 +71,8 @@ public class EnergyPlusRealFixtureIntakeGateTests
             "referenceStatus = RealEnergyPlusOutput",
             "comparison script reads real reference output when available",
             "assert-ep-smoke-001-real-fixture-ready.ps1 -RequireRealFixture",
-            "exact EnergyPlus numerical parity",
-            "ASHRAE 140 validation coverage"
+            "exact EnergyPlus numerical equivalence",
+            "ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)

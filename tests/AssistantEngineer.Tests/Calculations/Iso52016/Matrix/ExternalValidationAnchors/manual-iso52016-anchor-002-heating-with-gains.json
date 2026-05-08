@@ -8,14 +8,14 @@
   "scope": "ValidationAnchorsOnly",
   "methodologyBackgroundOnly": [
     "ISO 52016 matrix heat balance structure",
-    "pyBuildingEnergy-style naming only; no output parity claim",
-    "EnergyPlus-style naming only; no output parity claim"
+    "StandardReference-style naming only; no output equivalence claim",
+    "EnergyPlus-style naming only; no output equivalence claim"
   ],
   "explicitNonClaims": [
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full ISO 52016 parity claim."
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full ISO 52016 equivalence claim."
   ],
   "mode": "SteadyHeating",
   "formula": "Q_heat = H * (T_heat_setpoint - T_outdoor) - gains",

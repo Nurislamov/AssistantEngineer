@@ -29,4 +29,4 @@ This document records the closed chain for ISO 52016 solar-path diagnostics.
 
 ## Non-claims
 
-This evidence does not claim EnergyPlus parity, pyBuildingEnergy parity, ASHRAE 140 coverage or full ISO 52016 node/matrix solver parity.
+This evidence does not claim EnergyPlus comparison workflow, StandardReference equivalence, ASHRAE 140 coverage or full ISO 52016 node/matrix solver equivalence.

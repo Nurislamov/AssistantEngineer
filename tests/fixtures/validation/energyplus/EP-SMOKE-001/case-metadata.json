@@ -1,10 +1,10 @@
-﻿{
+{
   "caseId": "EP-SMOKE-001",
   "stage": "Smoke",
   "status": "ReferenceFixturePlaceholder",
-  "purpose": "transmission-only heating smoke fixture; not exact EnergyPlus parity.",
+  "purpose": "transmission-only heating smoke fixture; not exact EnergyPlus comparison workflow.",
   "notAClaim": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage."
+    "Does not claim exact EnergyPlus numerical equivalence.",
+    "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage."
   ]
 }

@@ -11,7 +11,7 @@ public sealed class EngineeringClaimBoundaryScannerTests
     {
         var file = WriteTempFile(
             "negated.md",
-            "No pyBuildingEnergy parity claim.\nNo EnergyPlus parity claim.\nNo external certification claim.");
+            "No StandardReference equivalence claim.\nNo EnergyPlus comparison workflow claim.\nNo external certification claim.");
 
         var result = _scanner.ScanRepository(
             repositoryRoot: TestPaths.RepoRoot,
@@ -43,13 +43,13 @@ public sealed class EngineeringClaimBoundaryScannerTests
     {
         var file = WriteTempFile(
             "line-check.md",
-            "No pyBuildingEnergy parity claim.\npyBuildingEnergy parity\n");
+            "No StandardReference equivalence claim.\nStandardReference equivalence\n");
 
         var result = _scanner.ScanRepository(
             repositoryRoot: TestPaths.RepoRoot,
             explicitFiles: [file]);
 
-        var diagnostic = Assert.Single(result.Diagnostics, item => item.Token == "pyBuildingEnergy parity");
+        var diagnostic = Assert.Single(result.Diagnostics, item => item.Token == "StandardReference equivalence");
         Assert.Equal(2, diagnostic.LineNumber);
     }
 
@@ -62,14 +62,14 @@ public sealed class EngineeringClaimBoundaryScannerTests
     }
 
     [Fact]
-    public void ExternalParityCovered_IsAllowedOnlyInNegativeContext()
+    public void ExternalReferenceCovered_IsAllowedOnlyInNegativeContext()
     {
         var negativeFile = WriteTempFile(
-            "external-parity-negative.md",
-            "No ExternalParityCovered claim.");
+            "external-equivalence-negative.md",
+            "No ExternalReferenceCovered claim.");
         var positiveFile = WriteTempFile(
-            "external-parity-positive.md",
-            "ExternalParityCovered");
+            "external-equivalence-positive.md",
+            "ExternalReferenceCovered");
 
         var negativeResult = _scanner.ScanRepository(
             repositoryRoot: TestPaths.RepoRoot,

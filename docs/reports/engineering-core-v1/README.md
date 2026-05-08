@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Report Contract Snapshots
+# Engineering Core V1 Report Contract Snapshots
 
 ## Purpose
 
@@ -38,8 +38,8 @@ Heating report disclosure must state:
 
 - Engineering-core v1 heating design-point report;
 - transmission and ventilation/infiltration assumptions;
-- no full ISO 52016 node/matrix solver parity;
-- no exact EnergyPlus, ASHRAE 140 or pyBuildingEnergy numerical parity;
+- no full ISO 52016 node/matrix solver equivalence;
+- no exact EnergyPlus, ASHRAE 140 or StandardReference numerical equivalence;
 - latent/moisture/detailed psychrometrics out of scope.
 
 Cooling report disclosure must state:
@@ -48,7 +48,7 @@ Cooling report disclosure must state:
 - transmission, ventilation, infiltration, solar and internal gain assumptions;
 - simplified SHGC/shading solar model;
 - isotropic sky transposition;
-- no detailed EnergyPlus solar distribution parity.
+- no detailed EnergyPlus solar distribution equivalence.
 
 Annual energy disclosure must state:
 
@@ -65,8 +65,8 @@ Run:
 
 Report consumers must keep these visible:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in v1.

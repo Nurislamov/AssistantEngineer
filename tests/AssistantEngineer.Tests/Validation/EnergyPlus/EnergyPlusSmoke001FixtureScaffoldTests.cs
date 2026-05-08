@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -38,17 +38,17 @@ public class EnergyPlusSmoke001FixtureScaffoldTests
         Assert.Equal("ReferenceFixturePlaceholder", root.GetProperty("status").GetString());
 
         Assert.Contains(
-            "not exact EnergyPlus parity",
+            "not exact EnergyPlus comparison workflow",
             root.GetProperty("purpose").GetString(),
             StringComparison.OrdinalIgnoreCase);
 
         AssertContainsArrayItem(
             root.GetProperty("notAClaim"),
-            "Does not claim exact EnergyPlus numerical parity.");
+            "Does not claim exact EnergyPlus numerical equivalence.");
 
         AssertContainsArrayItem(
             root.GetProperty("notAClaim"),
-            "Does not claim ASHRAE 140 validation coverage.");
+            "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class EnergyPlusSmoke001FixtureScaffoldTests
 
         AssertContainsArrayItem(
             root.GetProperty("notAClaim"),
-            "This placeholder does not claim ASHRAE 140 validation coverage.");
+            "This placeholder does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         Assert.Equal(
             37.8,
@@ -140,7 +140,7 @@ public class EnergyPlusSmoke001FixtureScaffoldTests
 
         AssertContainsArrayItem(
             root.GetProperty("requiredNonClaims"),
-            "Does not claim exact EnergyPlus numerical parity.");
+            "Does not claim exact EnergyPlus numerical equivalence.");
     }
 
     [Fact]
@@ -152,12 +152,12 @@ public class EnergyPlusSmoke001FixtureScaffoldTests
         {
             "ReferenceFixturePlaceholder",
             "not a real EnergyPlus validation result yet",
-            "Q = U * A * ΔT",
+            "Q = U * A * ?T",
             "Expected transmission heat loss = 1575 W",
             "Expected daily heating energy = 37.8 kWh",
             "Future real EnergyPlus fixture",
-            "exact EnergyPlus numerical parity",
-            "ASHRAE 140 validation coverage"
+            "exact EnergyPlus numerical equivalence",
+            "ASHRAE 140 / BESTEST-style validation anchor coverage"
         };
 
         foreach (var requiredPhrase in requiredPhrases)
@@ -180,7 +180,7 @@ public class EnergyPlusSmoke001FixtureScaffoldTests
         Assert.Contains("annual-heating-kwh", content, StringComparison.Ordinal);
         Assert.Contains("peak-heating-w", content, StringComparison.Ordinal);
         Assert.Contains("not a real EnergyPlus comparison yet", content, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("must not claim exact EnergyPlus parity", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("must not claim exact EnergyPlus comparison workflow", content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

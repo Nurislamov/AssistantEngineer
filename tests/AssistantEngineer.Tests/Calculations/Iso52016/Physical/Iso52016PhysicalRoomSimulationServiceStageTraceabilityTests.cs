@@ -31,7 +31,7 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
         Assert.Contains("ISO52016-inspired physical room simulation service adapter stage.", claimBoundary);
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
         Assert.Contains("Not complete ISO 52016 numerical equivalence.", claimBoundary);
-        Assert.Contains("Not pyBuildingEnergy numerical equivalence.", claimBoundary);
+        Assert.Contains("Not StandardReference numerical equivalence.", claimBoundary);
         Assert.Contains("Not EnergyPlus numerical equivalence.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 benchmark-grade claim.", claimBoundary);
     }
@@ -78,12 +78,12 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
 
         Assert.Contains("internal engineering anchors only", doc);
         Assert.Contains("not complete ISO 52016 numerical equivalence", doc);
-        Assert.Contains("not pyBuildingEnergy numerical equivalence", doc);
+        Assert.Contains("not StandardReference numerical equivalence", doc);
         Assert.Contains("not EnergyPlus numerical equivalence", doc);
         Assert.Contains("not ASHRAE Standard 140 benchmark-grade claim", doc);
         Assert.DoesNotContain("complete numerical equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("EnergyPlus numerical equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("pyBuildingEnergy numerical equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("StandardReference numerical equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ASHRAE Standard 140 benchmark-grade claim passed", doc, StringComparison.OrdinalIgnoreCase);
     }
 

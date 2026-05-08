@@ -1,0 +1,31 @@
+{
+  "fixtureName": "RoomHeatingTransmissionVentilationInfiltration",
+  "description": "Room heating load with transmission, ventilation and infiltration components.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Room Heating Cooling Load",
+  "category": "RoomLoad",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "room-load",
+    "roomLoad": {
+      "roomId": 1,
+      "roomCode": "R-1",
+      "roomName": "Room",
+      "areaM2": 20,
+      "volumeM3": 60,
+      "heatingSetpointC": 21,
+      "coolingSetpointC": 24,
+      "outdoorDesignHeatingTemperatureC": -10,
+      "outdoorDesignCoolingTemperatureC": 35,
+      "fixedComponents": {
+        "heatingTransmissionW": 1000,
+        "heatingVentilationW": 500,
+        "heatingInfiltrationW": 250
+      }
+    }
+  },
+  "expected": { "heatingLoadW": 1750, "heatingLoadWPerM2": 87.5 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Heating load is the sum of positive heat-loss components." ],
+  "notes": [ "No useful internal or solar gain offset is applied." ]
+}

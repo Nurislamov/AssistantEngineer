@@ -1,4 +1,4 @@
-﻿name: Engineering Core formula change
+name: Engineering Core formula change
 description: Propose or track a new/changed Engineering Core calculation formula.
 title: "[Engineering Core] "
 labels:
@@ -24,7 +24,7 @@ body:
     attributes:
       label: Formula / algorithm
       description: Provide the formula, algorithm or calculation steps.
-      placeholder: Q = U * A * ΔT
+      placeholder: Q = U * A * ?T
     validations:
       required: true
 
@@ -33,7 +33,7 @@ body:
     attributes:
       label: Units
       description: Document input and output units.
-      placeholder: W = W/(m²·K) * m² * K
+      placeholder: W = W/(m?�K) * m? * K
     validations:
       required: true
 
@@ -41,7 +41,7 @@ body:
     id: source-principle
     attributes:
       label: Source principle
-      description: ISO/pyBuildingEnergy/engineering principle this is based on.
+      description: ISO/StandardReference/engineering principle this is based on.
       placeholder: ISO-inspired engineering heat transfer principle.
     validations:
       required: true
@@ -61,9 +61,9 @@ body:
     attributes:
       label: Non-claims
       options:
-        - label: Does not claim exact EnergyPlus numerical parity.
-        - label: Does not claim exact pyBuildingEnergy numerical parity.
-        - label: Does not claim ASHRAE 140 validation coverage.
+        - label: Does not claim exact EnergyPlus numerical equivalence.
+        - label: Does not claim exact StandardReference numerical equivalence.
+        - label: Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
         - label: Does not claim full ISO/EN implementation unless separately validated.
 
   - type: textarea

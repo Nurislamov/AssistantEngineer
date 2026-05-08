@@ -10,7 +10,7 @@ internal sealed class EnergyCalculationPipelineAnnualInputAdapter
 {
     private const string TrueHourlySimulationSource = HourlySimulationToAnnualEnergyInputMapper.TrueHourlySimulationSource;
     private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";
-    private const string EnergyCalculationParityAnnualAggregationAdapter = "EnergyCalculationParityAnnualAggregationAdapter";
+    private const string ExternalReferenceValidationAnnualAggregationAdapter = "ExternalReferenceValidationAnnualAggregationAdapter";
 
     private readonly TimeProvider _timeProvider;
 
@@ -75,7 +75,7 @@ internal sealed class EnergyCalculationPipelineAnnualInputAdapter
                 DiagnosticsContext: $"Building {building.Id} application energy balance",
                 EnergyDataSource: MonthlyBalanceAdapterSource,
                 IsTrueHourly8760: false,
-                ActualMethod: EnergyCalculationParityAnnualAggregationAdapter),
+                ActualMethod: ExternalReferenceValidationAnnualAggregationAdapter),
             MonthlyBalanceAdapterSource,
             IsTrueHourly8760: false,
             HourlyRecordCount: hours.Count,

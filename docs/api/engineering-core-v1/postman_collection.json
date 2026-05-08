@@ -1,8 +1,8 @@
-﻿{
+{
   "info": {
     "name": "AssistantEngineer Engineering Core V1",
     "_postman_id": "engineering-core-v1-contract",
-    "description": "Engineering Core V1 status and diagnostics catalog endpoints. ClosedV1 means engineering formula gates are closed with documented limitations; it does not claim exact EnergyPlus, pyBuildingEnergy or ASHRAE 140 parity.",
+    "description": "Engineering Core V1 status and diagnostics catalog endpoints. ClosedV1 means engineering formula gates are closed with documented limitations; it does not claim exact EnergyPlus, StandardReference or ASHRAE 140 equivalence.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

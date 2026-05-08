@@ -1,4 +1,4 @@
-﻿{
+{
   "caseId": "{{CASE_ID}}",
   "referenceEngine": "EnergyPlus",
   "referenceStatus": "RealEnergyPlusOutput",
@@ -20,8 +20,8 @@
     "{{UNIT_CONVERSION_1}}"
   ],
   "notAClaim": [
-    "This real fixture does not claim exact EnergyPlus numerical parity.",
-    "This real fixture does not claim ASHRAE 140 validation coverage.",
-    "This real fixture does not claim full ISO 52016 node/matrix solver parity."
+    "This real fixture does not claim exact EnergyPlus numerical equivalence.",
+    "This real fixture does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+    "This real fixture does not claim full ISO 52016 node/matrix solver equivalence."
   ]
 }

@@ -24,11 +24,11 @@ public sealed class En15316SystemEnergyTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("EN15316-inspired modular system energy engineering calculator.", claimBoundary);
         Assert.Contains("No full EN 15316 compliance claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
         Assert.Contains("No external certification claim.", claimBoundary);
-        Assert.DoesNotContain("ExternalParityCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public sealed class En15316SystemEnergyTraceabilityTests
 
         var docText = File.ReadAllText(docPath);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full EN 15316 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus parity");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
         Assert.DoesNotContain("EN 15316 validated", docText, StringComparison.OrdinalIgnoreCase);
 
         var fixturePaths = new[]
@@ -63,9 +63,9 @@ public sealed class En15316SystemEnergyTraceabilityTests
             Assert.True(File.Exists(path), $"Fixture file was not found: {path}");
             var text = File.ReadAllText(path);
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full EN 15316 compliance");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "pyBuildingEnergy parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus parity");
-            Assert.DoesNotContain("ExternalParityCovered", text, StringComparison.OrdinalIgnoreCase);
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "StandardReference equivalence");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus comparison workflow");
+            Assert.DoesNotContain("ExternalReferenceCovered", text, StringComparison.OrdinalIgnoreCase);
         }
     }
 
@@ -76,14 +76,14 @@ public sealed class En15316SystemEnergyTraceabilityTests
             TestPaths.RepoRoot,
             "docs",
             "calculations",
-            "EnergyCalculationParityVerification.md");
+            "ExternalReferenceValidationVerification.md");
         var scopeDocPath = Path.Combine(
             TestPaths.RepoRoot,
             "docs",
             "calculations",
             "EngineeringCoreV1Scope.md");
 
-        Assert.True(File.Exists(parityDocPath), $"Parity doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(parityDocPath), $"equivalence doc was not found: {parityDocPath}");
         Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
 
         var parityDoc = File.ReadAllText(parityDocPath);

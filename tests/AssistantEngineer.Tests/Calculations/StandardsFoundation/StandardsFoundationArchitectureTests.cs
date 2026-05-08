@@ -41,7 +41,7 @@ public sealed class StandardsFoundationArchitectureTests
             "Microsoft.AspNetCore",
             "ClosedXML",
             "using EnergyPlus",
-            "using pyBuildingEnergy",
+            "using StandardReference",
             "AssistantEngineer.Infrastructure"
         };
 

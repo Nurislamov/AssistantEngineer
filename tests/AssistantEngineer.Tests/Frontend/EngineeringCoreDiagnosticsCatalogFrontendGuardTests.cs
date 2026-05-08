@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Frontend;
 
@@ -91,8 +91,8 @@ public class EngineeringCoreDiagnosticsCatalogFrontendGuardTests
         Assert.Contains("severity rules", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("AnnualEnergy.Not8760", content, StringComparison.Ordinal);
         Assert.Contains("MonthlyBalanceAdapter", content, StringComparison.Ordinal);
-        Assert.Contains("exact EnergyPlus numerical parity", content, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ASHRAE 140 validation coverage", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("exact EnergyPlus numerical equivalence", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ASHRAE 140 / BESTEST-style validation anchor coverage", content, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadRepoFile(params string[] parts)

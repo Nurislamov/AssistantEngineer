@@ -1,0 +1,56 @@
+{
+  "fixtureName": "InvalidShgcFailsDiagnostics",
+  "description": "Invalid SHGC is reported as a calculation diagnostic and excluded from solar gains.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "sourceReference": "AssistantEngineer deterministic fixture for SHGC validation diagnostics.",
+  "assumptions": [
+    "Invalid solar factor inputs are not silently clamped into a successful solar gain."
+  ],
+  "notes": [
+    "This fixture verifies diagnostics, not external equivalence."
+  ],
+  "input": {
+    "calculationBasis": "window-solar-gains",
+    "windowSolarGains": {
+      "roomId": 101,
+      "windows": [
+        {
+          "windowId": 4,
+          "roomId": 101,
+          "areaM2": 2,
+          "orientationAzimuthDeg": 180,
+          "tiltDeg": 90,
+          "shgc": 1.25,
+          "frameFactor": 1,
+          "internalShadingFactor": 1,
+          "externalShadingFactor": 1,
+          "fixedShadingFactor": 1,
+          "incidentIrradianceWPerM2": 500,
+          "diagnosticsContext": "InvalidShgcFailsDiagnostics window"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalRoomSolarGainW": 0,
+    "windowSolarGains": [
+      {
+        "windowId": 4,
+        "effectiveSolarFactor": 0,
+        "solarGainW": 0,
+        "isIncludedInLoad": false,
+        "expectedDiagnosticCodes": [
+          "SolarGains.InvalidShgc"
+        ]
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

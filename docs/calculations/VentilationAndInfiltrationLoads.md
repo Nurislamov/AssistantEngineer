@@ -1,6 +1,6 @@
 # Ventilation and infiltration loads
 
-This document describes the current AssistantEngineer implementation for sensible outdoor air loads in the Energy Calculation Parity track.
+This document describes the current AssistantEngineer implementation for sensible outdoor air loads in the Energy Calculation equivalence track.
 
 ## Scope
 
@@ -11,7 +11,7 @@ This stage covers:
 - natural ventilation load when an airflow is already supplied;
 - heat recovery efficiency for mechanical ventilation;
 - room-level result with separate mechanical, infiltration, and natural ventilation breakdown;
-- integration into the Energy Calculation Parity room load application pipeline as separate components.
+- integration into the Energy Calculation equivalence room load application pipeline as separate components.
 
 This stage does not cover:
 
@@ -184,7 +184,7 @@ The following deterministic fixtures were added:
 - `ventilation-zero-airflow.json`;
 - `ventilation-invalid-heat-recovery-efficiency.json`.
 
-These fixtures verify the formula, unit conversion, heat recovery, ACH infiltration, zero airflow, and validation diagnostics. They are deterministic fixtures, not external parity proof.
+These fixtures verify the formula, unit conversion, heat recovery, ACH infiltration, zero airflow, and validation diagnostics. They are deterministic fixtures, not external equivalence proof.
 
 ## Limitations
 
@@ -193,4 +193,4 @@ These fixtures verify the formula, unit conversion, heat recovery, ACH infiltrat
 - Wind and stack terms remain in existing services where already present; the load engine consumes normalized airflow or ACH.
 - Building-level aggregation relies on existing aggregation of room heating/cooling results.
 - Default ACH fallback exists only at the application assembler layer and is always diagnosed.
-- This does not claim full ISO compliance or external benchmark parity.
+- This does not claim full ISO compliance or external benchmark equivalence.

@@ -12,9 +12,9 @@ Stage 5 makes the annual ISO 52016 result disclose which solar path was used.
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
-- This does not claim full ISO 52016 node/matrix solver parity.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- This does not claim full ISO 52016 node/matrix solver equivalence.
 - This does not remove legacy fallback support.
 
 ## Guard tests

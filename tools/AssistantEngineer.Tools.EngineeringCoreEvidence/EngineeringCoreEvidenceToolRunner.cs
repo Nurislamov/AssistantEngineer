@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -176,7 +176,7 @@ internal static class EngineeringCoreEvidenceToolRunner
         builder.AppendLine();
         builder.AppendLine("Engineering Core V1 is closed as an engineering formula gate.");
         builder.AppendLine();
-        builder.AppendLine("This release evidence does not claim exact EnergyPlus numerical parity, exact pyBuildingEnergy numerical parity, ASHRAE 140 validation coverage, full ISO 52016 node/matrix solver parity, full ISO 13370 implementation, full EN 15316 implementation or latent/moisture/humidity support in v1.");
+        builder.AppendLine("This release evidence does not claim exact EnergyPlus numerical equivalence, exact StandardReference numerical equivalence, ASHRAE 140 / BESTEST-style validation anchor coverage, full ISO 52016 node/matrix solver equivalence, full ISO 13370 implementation, full EN 15316 implementation or latent/moisture/humidity support in v1.");
 
         WriteText(outputPath, builder.ToString());
 
@@ -291,10 +291,10 @@ internal static class EngineeringCoreEvidenceToolRunner
         builder.AppendLine();
         builder.AppendLine("## Required non-claims");
         builder.AppendLine();
-        builder.AppendLine("- No exact EnergyPlus numerical parity claim.");
-        builder.AppendLine("- No exact pyBuildingEnergy numerical parity claim.");
-        builder.AppendLine("- No ASHRAE 140 validation coverage claim.");
-        builder.AppendLine("- No full ISO 52016 node/matrix solver parity claim.");
+        builder.AppendLine("- No exact EnergyPlus numerical equivalence claim.");
+        builder.AppendLine("- No exact StandardReference numerical equivalence claim.");
+        builder.AppendLine("- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.");
+        builder.AppendLine("- No full ISO 52016 node/matrix solver equivalence claim.");
         builder.AppendLine("- No latent/moisture/humidity support in v1.");
         builder.AppendLine();
         builder.AppendLine("## Export approval checklist");
@@ -304,7 +304,7 @@ internal static class EngineeringCoreEvidenceToolRunner
         builder.AppendLine("- [ ] JSON exports preserve structured calculationDisclosure.");
         builder.AppendLine("- [ ] Frontend report UI shows disclosure before raw JSON.");
         builder.AppendLine("- [ ] Annual energy exports do not misuse true hourly 8760 wording.");
-        builder.AppendLine("- [ ] No external-simulator parity claim is introduced.");
+        builder.AppendLine("- [ ] No external-simulator equivalence claim is introduced.");
 
         WriteText(outputPath, builder.ToString());
         WriteSuccess($"Engineering Core V1 export disclosure checklist generated: {outputPath}");
@@ -482,7 +482,7 @@ internal static class EngineeringCoreEvidenceToolRunner
         builder.AppendLine();
         builder.AppendLine("This matrix proves traceability between the closed Engineering Core V1 formula gates, diagnostics catalog, validation registry, API visibility, report/frontend visibility, documentation, verification scripts and CI workflow.");
         builder.AppendLine();
-        builder.AppendLine("It does not claim exact EnergyPlus numerical parity, exact pyBuildingEnergy numerical parity, ASHRAE 140 validation coverage, full ISO 52016 node/matrix solver parity or latent/moisture/humidity support in v1.");
+        builder.AppendLine("It does not claim exact EnergyPlus numerical equivalence, exact StandardReference numerical equivalence, ASHRAE 140 / BESTEST-style validation anchor coverage, full ISO 52016 node/matrix solver equivalence or latent/moisture/humidity support in v1.");
 
         return builder.ToString();
     }

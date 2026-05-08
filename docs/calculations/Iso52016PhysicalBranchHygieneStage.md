@@ -38,6 +38,6 @@ The wrappers are intentionally thin. Durable checks live in C#.
 
 This is a repository hygiene and verification orchestration stage with validation/internal engineering anchors only.
 
-It is not a new solver, not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 validation.
+It is not a new solver, not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 validation.
 
 No generated artifacts are introduced by this step.

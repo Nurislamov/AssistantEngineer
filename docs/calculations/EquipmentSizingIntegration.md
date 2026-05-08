@@ -1,6 +1,6 @@
 # Equipment Sizing Integration
 
-This Energy Calculation Parity step links calculated loads to HVAC equipment sizing.
+This Energy Calculation equivalence step links calculated loads to HVAC equipment sizing.
 
 ## Scope
 
@@ -30,7 +30,7 @@ The best match is the accepted candidate with the smallest positive reserve.
 
 ## Real Application Pipeline
 
-Room equipment selection uses the Energy Calculation Parity load and sizing path:
+Room equipment selection uses the Energy Calculation equivalence load and sizing path:
 
 - `POST /api/v1/rooms/{roomId}/equipment-selection`
 - cooling report equipment rows, when a system type and unit type are requested
@@ -66,4 +66,4 @@ Diagnostics include `EquipmentSizing.HeatingSafetyFactorApplied` and `EquipmentS
 ## Limits
 
 The deterministic engine does not duplicate catalog persistence or catalog query logic. Heating selection quality depends on catalog heating capacity data being present.
-This remains an Energy Calculation Parity deterministic sizing pipeline; it does not claim external parity coverage.
+This remains an Energy Calculation equivalence deterministic sizing pipeline; it does not claim external equivalence coverage.

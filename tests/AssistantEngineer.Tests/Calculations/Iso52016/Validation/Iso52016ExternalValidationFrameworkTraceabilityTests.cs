@@ -29,11 +29,11 @@ public sealed class Iso52016ExternalValidationFrameworkTraceabilityTests
 
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
         Assert.Contains("Manual independent reference fixtures only.", claimBoundary);
-        Assert.Contains("No full ISO 52016 parity claim.", claimBoundary);
-        Assert.Contains("No pyBuildingEnergy parity claim.", claimBoundary);
-        Assert.Contains("No EnergyPlus parity claim.", claimBoundary);
-        Assert.Contains("No ASHRAE 140 validation claim.", claimBoundary);
-        Assert.Contains("ExternalParityCovered is not allowed in this stage.", claimBoundary);
+        Assert.Contains("No full ISO 52016 equivalence claim.", claimBoundary);
+        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
+        Assert.Contains("ExternalReferenceCovered is not allowed in this stage.", claimBoundary);
     }
 
     [Fact]
@@ -87,12 +87,12 @@ public sealed class Iso52016ExternalValidationFrameworkTraceabilityTests
         Assert.Contains("AE-VALIDATION-ISO52016-001", doc);
         Assert.Contains("Validation/internal engineering anchors only.", doc);
         Assert.Contains("Manual independent reference fixtures only.", doc);
-        Assert.Contains("No full ISO 52016 parity claim.", doc);
-        Assert.Contains("No pyBuildingEnergy parity claim.", doc);
-        Assert.Contains("No EnergyPlus parity claim.", doc);
-        Assert.Contains("No ASHRAE 140 validation claim.", doc);
-        Assert.Contains("pyBuildingEnergy-inspired methodology alignment lane", doc);
-        Assert.Contains("not a parity claim", doc);
+        Assert.Contains("No full ISO 52016 equivalence claim.", doc);
+        Assert.Contains("No StandardReference equivalence claim.", doc);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", doc);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", doc);
+        Assert.Contains("StandardReference-inspired methodology alignment lane", doc);
+        Assert.Contains("not a equivalence claim", doc);
         Assert.Contains("not external certification", doc);
     }
 }

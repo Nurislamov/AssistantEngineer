@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Verification Runbook
+# Engineering Core V1 Verification Runbook
 
 ## Purpose
 
@@ -36,7 +36,7 @@ The command runs:
 - single thermal zone tests;
 - simplified ground tests;
 - simplified adjacent-zone tests;
-- EnergyPlus/ASHRAE 140 validation harness guard tests;
+- EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests;
 - full backend test suite.
 
 ## Fast mode
@@ -77,8 +77,8 @@ The script verifies that:
 - status endpoint/facade exposes ClosedV1 and non-claims;
 - heating/cooling reports expose calculationDisclosure;
 - frontend displays Engineering Core V1 status and report disclosures;
-- docs keep ISO, EnergyPlus, ASHRAE 140 and pyBuildingEnergy non-claims visible;
-- EnergyPlus/ASHRAE 140 validation remains a future comparative harness, not a v1 parity claim.
+- docs keep ISO, EnergyPlus, ASHRAE 140 and StandardReference non-claims visible;
+- EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor remains a future comparative harness, not a v1 equivalence claim.
 
 ## Required before merge
 

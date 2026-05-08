@@ -1,4 +1,4 @@
-﻿{
+{
   "caseId": "{{CASE_ID}}",
   "referenceEngine": "EnergyPlus",
   "referenceStatus": "RealEnergyPlusOutput",
@@ -19,12 +19,12 @@
   "knownDifferences": [
     "AssistantEngineer uses engineering formulas and simplified balance models.",
     "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
-    "Exact watt-by-watt parity is not expected."
+    "Exact watt-by-watt equivalence is not expected."
   ],
-  "tolerancePolicy": "Tolerance-based comparison; no exact EnergyPlus parity claim.",
+  "tolerancePolicy": "Tolerance-based comparison; no exact EnergyPlus comparison workflow claim.",
   "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity."
+    "Does not claim exact EnergyPlus numerical equivalence.",
+    "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+    "Does not claim full ISO 52016 node/matrix solver equivalence."
   ]
 }

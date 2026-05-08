@@ -1,0 +1,16 @@
+{
+  "fixtureName": "HeatingSystemEfficiency",
+  "description": "Useful heating energy divided by heating efficiency.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / System Energy",
+  "category": "SystemEnergy",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "system-energy",
+    "systemEnergy": { "usefulHeatingEnergyKWh": 10000, "heatingEfficiency": 0.9 }
+  },
+  "expected": { "finalHeatingEnergyKWh": 11111.111111 },
+  "tolerances": { "annualDemandKWh": 0.000001 },
+  "assumptions": [ "Simplified final energy conversion." ],
+  "notes": [ "No cooling or DHW input is supplied." ]
+}

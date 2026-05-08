@@ -62,10 +62,10 @@
 
 - Validation/internal engineering anchors only.
 - Manual independent reference fixtures only.
-- No full ISO 52016 parity claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
-- ExternalParityCovered is not allowed in this stage.
-- This is not a parity claim.
+- No full ISO 52016 equivalence claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
+- ExternalReferenceCovered is not allowed in this stage.
+- This is not a equivalence claim.
 - This is not external certification.

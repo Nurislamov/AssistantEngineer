@@ -21,10 +21,10 @@ The command verifies:
 ApplicationIntegrationHardeningOnly.
 
 Application integration hardening only.
-Validation anchors only, not full parity.
-No pyBuildingEnergy parity claim.
-No EnergyPlus parity claim.
-No ASHRAE 140 validation coverage claim.
-No full ISO 52016 parity claim.
+Validation anchors only, not full equivalence claim.
+No StandardReference equivalence claim.
+No EnergyPlus comparison workflow claim.
+No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+No full ISO 52016 equivalence claim.
 
 This release gate does not require generated validation artifacts to be committed.

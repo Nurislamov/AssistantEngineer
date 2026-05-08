@@ -62,13 +62,13 @@ public sealed class Iso52016MatrixExternalValidationNamingAnchorTests
                 .Select(item => item.GetString())
                 .ToArray();
 
-            Assert.Contains("Validation anchors only, not full parity.", nonClaims);
-            Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", nonClaims);
-            Assert.Contains("No exact EnergyPlus numerical parity claim.", nonClaims);
-            Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
+            Assert.Contains("Validation anchors only, not full equivalence claim.", nonClaims);
+            Assert.Contains("No exact StandardReference numerical equivalence claim.", nonClaims);
+            Assert.Contains("No exact EnergyPlus numerical equivalence claim.", nonClaims);
+            Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
         }
 
-        Assert.Contains("PyBuildingEnergyStyleNamesOnly", styleFamilies);
+        Assert.Contains("StandardReferenceStyleNamesOnly", styleFamilies);
         Assert.Contains("EnergyPlusStyleNamesOnly", styleFamilies);
     }
 
@@ -103,16 +103,16 @@ public sealed class Iso52016MatrixExternalValidationNamingAnchorTests
         var manifestText = File.ReadAllText(manifestPath);
         var script = File.ReadAllText(scriptPath);
 
-        Assert.Contains("Validation anchors only, not full parity.", doc);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", doc);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", doc);
-        Assert.Contains("No ExternalParityCovered claim.", doc);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", doc);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", doc);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", doc);
+        Assert.Contains("No ExternalReferenceCovered claim.", doc);
 
         Assert.Contains("verify-iso52016-matrix-external-validation-naming-anchors.ps1", script);
         Assert.Contains("ValidationAnchorOnly", script);
 
-        Assert.DoesNotContain("\"ExternalParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"FullParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"ExternalReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"FullReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
 
         using var manifest = JsonDocument.Parse(manifestText);
         var root = manifest.RootElement;
@@ -120,7 +120,7 @@ public sealed class Iso52016MatrixExternalValidationNamingAnchorTests
         Assert.Equal("ISO52016-MATRIX-EXTERNAL-VALIDATION-NAMING-ANCHORS", root.GetProperty("stageId").GetString());
         Assert.Equal("ValidationAnchorOnly", root.GetProperty("scope").GetString());
         Assert.True(root.GetProperty("namingAnchorsIntegrated").GetBoolean());
-        Assert.True(root.GetProperty("pyBuildingEnergyStyleNamingIntegrated").GetBoolean());
+        Assert.True(root.GetProperty("StandardReferenceStyleNamingIntegrated").GetBoolean());
         Assert.True(root.GetProperty("energyPlusStyleNamingIntegrated").GetBoolean());
 
         var nonClaims = root
@@ -129,10 +129,10 @@ public sealed class Iso52016MatrixExternalValidationNamingAnchorTests
             .Select(item => item.GetString())
             .ToArray();
 
-        Assert.Contains("Validation anchors only, not full parity.", nonClaims);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", nonClaims);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", nonClaims);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", nonClaims);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", nonClaims);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", nonClaims);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
     }
 
     [Fact]

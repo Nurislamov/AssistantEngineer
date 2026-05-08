@@ -46,9 +46,9 @@ public class Iso52016MatrixSolverStageTraceabilityTests
             .Select(item => item.GetString())
             .ToArray();
 
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", nonClaims);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", nonClaims);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", nonClaims);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", nonClaims);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class Iso52016MatrixSolverStageTraceabilityTests
         Assert.Contains("AE-ISO52016-001", text);
         Assert.Contains("AE-GAINS-001", text);
         Assert.Contains("AE-ZONES-001", text);
-        Assert.Contains("does not claim exact numerical parity", text);
+        Assert.Contains("does not claim exact numerical equivalence", text);
     }
 
     private static string FindRepositoryRoot()

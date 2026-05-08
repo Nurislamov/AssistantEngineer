@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Release Notes
+# Engineering Core V1 Release Notes
 
 ## Status
 
@@ -17,7 +17,7 @@ The closed status is based on:
 - simplified ISO-inspired scope documentation;
 - readiness guard tests.
 
-Engineering-core v1 does not claim exact numeric parity with pyBuildingEnergy, EnergyPlus or ASHRAE 140.
+Engineering-core v1 does not claim exact numeric equivalence with StandardReference, EnergyPlus or ASHRAE 140.
 
 ## Closed formula gates
 
@@ -55,7 +55,7 @@ The following gates are closed as `ClosedV1` in `FormulaAuditMatrix`.
 - deterministic tests cover the calculation path;
 - known limitations are explicitly documented.
 
-`ClosedV1` does not mean full ISO, EnergyPlus or pyBuildingEnergy numerical parity.
+`ClosedV1` does not mean full ISO, EnergyPlus or StandardReference numerical equivalence.
 
 ## Validation flow rule
 
@@ -99,13 +99,13 @@ The following modules are intentionally simplified/inspired, not full standard i
 
 Engineering-core v1 does not claim:
 
-- full ISO 52016 node/matrix solver parity;
-- full ISO 52010 climate conversion parity;
+- full ISO 52016 node/matrix solver equivalence;
+- full ISO 52010 climate conversion equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 generation/distribution/storage/emission chain;
-- exact pyBuildingEnergy numerical parity;
-- exact EnergyPlus numerical parity;
-- ASHRAE 140 validation coverage;
+- exact StandardReference numerical equivalence;
+- exact EnergyPlus numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
 - full coupled multi-zone heat-balance simulation;
 - detailed HVAC plant simulation;
 - latent load calculation;
@@ -123,8 +123,8 @@ The following areas are intentionally out of scope for engineering-core v1:
 - detailed psychrometrics;
 - detailed HVAC plant simulation;
 - full coupled multi-zone simulation;
-- no exact EnergyPlus parity claim;
-- ASHRAE 140 validation coverage.
+- no exact EnergyPlus comparison workflow claim;
+- ASHRAE 140 / BESTEST-style validation anchor coverage.
 
 ## Recommended next stage
 

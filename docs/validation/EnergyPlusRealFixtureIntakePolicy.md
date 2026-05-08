@@ -1,4 +1,4 @@
-﻿# EnergyPlus Real Fixture Intake Policy
+# EnergyPlus Real Fixture Intake Policy
 
 Required files include source EnergyPlus model file, weather file, raw EnergyPlus output file, normalized reference output JSON and provenance metadata.
 
@@ -6,8 +6,8 @@ Required files include source EnergyPlus model file, weather file, raw EnergyPlu
 
 NumericWithinTolerance, DirectionalTrend and SameSign.
 
-This does not claim exact EnergyPlus numerical parity.
+This does not claim exact EnergyPlus numerical equivalence.
 
-This does not claim ASHRAE 140 validation coverage.
+This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
 Use assert-ep-smoke-001-real-fixture-ready.ps1 -RequireRealFixture.

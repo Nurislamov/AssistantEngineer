@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Documentation Index
+# Engineering Core V1 Documentation Index
 
 ## Status
 
@@ -62,10 +62,10 @@ Generate it with:
 
 Engineering Core V1 does not claim:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 implementation;
 - latent/moisture/humidity support in v1.

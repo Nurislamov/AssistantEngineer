@@ -1,4 +1,4 @@
-﻿# AE-ISO52016-002 Step 06 - physical room model diagnostics stage
+# AE-ISO52016-002 Step 06 - physical room model diagnostics stage
 
 This stage adds deterministic diagnostics for the ISO52016-inspired physical room/zone model after it has been translated into the existing Matrix solver request.
 
@@ -42,6 +42,6 @@ The deterministic tests cover:
 
 This is an ISO52016-inspired physical room model diagnostics stage with validation/internal engineering anchors only.
 
-It is not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
 
 No generated artifacts are introduced by this step.

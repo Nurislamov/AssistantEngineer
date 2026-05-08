@@ -1,4 +1,4 @@
-﻿# ISO 52010 Legacy SolarRadiationService Cleanup
+# ISO 52010 Legacy SolarRadiationService Cleanup
 
 Stage 12 cleans up the legacy `SolarRadiationService.CalculateVerticalSurfaceRadiation(...)` compatibility path.
 
@@ -25,8 +25,8 @@ That made the legacy path methodically weaker even though it no longer drives th
 
 - This does not make the legacy path the preferred annual ISO52016 path.
 - The preferred annual path remains `AnnualWeatherSolarProfileBuilder -> Iso52016WeatherSolarContext`.
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
 ## Guard tests
 

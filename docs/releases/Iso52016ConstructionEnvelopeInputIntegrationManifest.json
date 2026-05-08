@@ -11,9 +11,9 @@
     "Compatibility envelope behavior preserved by default.",
     "Construction/mass path remains opt-in.",
     "No full ISO 52016 compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim."
   ],
   "implementationFiles": [
@@ -34,7 +34,7 @@
   ],
   "updatedDisclosureFiles": [
     "docs/calculations/iso52016/Iso52016ConstructionEnvelopeInputIntegration.md",
-    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/ExternalReferenceValidationVerification.md",
     "docs/calculations/EngineeringCoreV1Scope.md",
     "docs/api/engineering-core-v1/status.sample.json",
     "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json"

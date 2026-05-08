@@ -1,4 +1,4 @@
-﻿# AssistantEngineer.Tools.EnergyPlusFixtureAuthoring
+# AssistantEngineer.Tools.EnergyPlusFixtureAuthoring
 
 C# tool for EnergyPlus validation fixture scaffold authoring.
 
@@ -28,6 +28,6 @@ PlaceholderComparison is not real EnergyPlus validation.
 
 Future real validation must remain tolerance-based and provenance-backed.
 
-This tool does not claim exact EnergyPlus numerical parity.
+This tool does not claim exact EnergyPlus numerical equivalence.
 
-This tool does not claim ASHRAE 140 validation coverage.
+This tool does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

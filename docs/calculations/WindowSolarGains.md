@@ -1,6 +1,6 @@
 # Window Solar Gains
 
-This document describes the current Energy Calculation Parity scope for solar gains through windows.
+This document describes the current Energy Calculation equivalence scope for solar gains through windows.
 
 ## Scope
 
@@ -140,7 +140,7 @@ Active benchmark comparison fixtures also cover deterministic window and surface
 - `window-solar-gain-with-shading.json`;
 - `surface-irradiance-night-zero.json`.
 
-These are deterministic benchmark references. They do not mark the feature `ExternalParityCovered`.
+These are deterministic benchmark references. They do not mark the feature `ExternalReferenceCovered`.
 
 ## Limitations
 

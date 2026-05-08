@@ -37,10 +37,10 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
 public sealed class EnergyCalculationPipelineService
 {
-    private const string RoomPipelineMethod = "Energy Calculation Parity / Application Room Load Pipeline";
-    private const string AggregationPipelineMethod = "Energy Calculation Parity / Application Load Aggregation Pipeline";
-    private const string EnergyCalculationParityDesignPoint = "EnergyCalculationParityDesignPoint";
-    private const string EnergyCalculationParityAnnualAggregationAdapter = "EnergyCalculationParityAnnualAggregationAdapter";
+    private const string RoomPipelineMethod = "Energy Calculation equivalence / Application Room Load Pipeline";
+    private const string AggregationPipelineMethod = "Energy Calculation equivalence / Application Load Aggregation Pipeline";
+    private const string ExternalReferenceValidationDesignPoint = "ExternalReferenceValidationDesignPoint";
+    private const string ExternalReferenceValidationAnnualAggregationAdapter = "ExternalReferenceValidationAnnualAggregationAdapter";
     private readonly IRoomRepository _rooms;
     private readonly IFloorRepository _floors;
     private readonly IBuildingRepository _buildings;
@@ -162,7 +162,7 @@ public sealed class EnergyCalculationPipelineService
                 preferences,
                 method,
                 RoomPipelineMethod,
-                EnergyCalculationParityDesignPoint));
+                ExternalReferenceValidationDesignPoint));
     }
 
     public async Task<Result<RoomHeatingLoadResult>> CalculateRoomHeatingLoadAsync(
@@ -192,7 +192,7 @@ public sealed class EnergyCalculationPipelineService
                 method,
                 preferences,
                 RoomPipelineMethod,
-                EnergyCalculationParityDesignPoint));
+                ExternalReferenceValidationDesignPoint));
     }
 
     public async Task<Result<FloorCalculationResult>> CalculateFloorLoadAsync(
@@ -222,7 +222,7 @@ public sealed class EnergyCalculationPipelineService
                 preferences,
                 requestedMethod,
                 AggregationPipelineMethod,
-                EnergyCalculationParityDesignPoint));
+                ExternalReferenceValidationDesignPoint));
     }
 
     public Task<Result<FloorCalculationResult>> CalculateFloorCoolingLoadAsync(
@@ -264,7 +264,7 @@ public sealed class EnergyCalculationPipelineService
                 preferences,
                 method,
                 AggregationPipelineMethod,
-                EnergyCalculationParityDesignPoint));
+                ExternalReferenceValidationDesignPoint));
     }
 
     public async Task<Result<BuildingHeatingLoadResult>> CalculateBuildingHeatingLoadAsync(
@@ -292,7 +292,7 @@ public sealed class EnergyCalculationPipelineService
             preferences,
             method,
             RoomPipelineMethod,
-            EnergyCalculationParityDesignPoint,
+            ExternalReferenceValidationDesignPoint,
             (room, requestedMethod) => CalculateRoomLoad(
                 room,
                 preferences,
@@ -308,7 +308,7 @@ public sealed class EnergyCalculationPipelineService
                 roomResults.Value,
                 method,
                 AggregationPipelineMethod,
-                EnergyCalculationParityDesignPoint));
+                ExternalReferenceValidationDesignPoint));
     }
 
     public async Task<Result<BuildingEnergyBalanceResult>> CalculateBuildingEnergyBalanceAsync(
@@ -322,7 +322,7 @@ public sealed class EnergyCalculationPipelineService
             return Result<BuildingEnergyBalanceResult>.NotFound($"Building with id {buildingId} not found.");
 
         if (building.ClimateZone is null)
-            return Result<BuildingEnergyBalanceResult>.Validation("Building climate zone is required for Energy Calculation Parity energy balance.");
+            return Result<BuildingEnergyBalanceResult>.Validation("Building climate zone is required for Energy Calculation equivalence energy balance.");
 
         var preferences = await GetPreferencesAsync(building.ProjectId, cancellationToken);
         var source = await _legacyEnergyCalculator.CalculateAsync(
@@ -351,7 +351,7 @@ public sealed class EnergyCalculationPipelineService
             annualInput.IsTrueHourly8760,
             annualInput.HourlyRecordCount,
             annualInput.Diagnostics,
-            EnergyCalculationParityAnnualAggregationAdapter);
+            ExternalReferenceValidationAnnualAggregationAdapter);
 
         return Result<BuildingEnergyBalanceResult>.Success(result);
     }
@@ -404,7 +404,7 @@ public sealed class EnergyCalculationPipelineService
         string? requestedMethod = null)
     {
         if (room.Floor.Building.ClimateZone is null)
-            return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Energy Calculation Parity room load calculation.");
+            return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Energy Calculation equivalence room load calculation.");
 
         var input = BuildRoomLoadInput(
             room,
@@ -416,7 +416,7 @@ public sealed class EnergyCalculationPipelineService
             return result;
 
         _logger.LogDebug(
-            "Energy Calculation Parity room load calculated for room {RoomId}: heating {HeatingLoadW} W, cooling {CoolingLoadW} W.",
+            "Energy Calculation equivalence room load calculated for room {RoomId}: heating {HeatingLoadW} W, cooling {CoolingLoadW} W.",
             room.Id,
             result.Value.HeatingLoadW,
             result.Value.CoolingLoadW);
@@ -443,7 +443,7 @@ public sealed class EnergyCalculationPipelineService
             diagnostics,
             requestedMethod,
             $"Room {room.Id} application load pipeline",
-            "Energy Calculation Parity design-point pipeline");
+            "Energy Calculation equivalence design-point pipeline");
         EnergyCalculationPipelineRoomContextResolver.AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
 
         var groundContext = _roomContextResolver.ResolveGroundContext(room, climateContext);

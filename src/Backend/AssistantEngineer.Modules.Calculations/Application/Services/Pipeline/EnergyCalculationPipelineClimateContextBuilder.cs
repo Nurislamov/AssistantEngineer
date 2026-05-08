@@ -51,7 +51,7 @@ internal sealed class EnergyCalculationPipelineClimateContextBuilder
         {
             _logger.LogWarning(
                 exception,
-                "Annual climate data was unavailable for building {BuildingId}; Energy Calculation Parity pipeline will use documented design-point fallbacks.",
+                "Annual climate data was unavailable for building {BuildingId}; Energy Calculation equivalence pipeline will use documented design-point fallbacks.",
                 building.Id);
             return new PipelineClimateContext(null, IsCompleteAnnualClimateData: false);
         }

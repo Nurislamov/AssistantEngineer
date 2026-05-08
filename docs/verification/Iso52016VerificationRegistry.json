@@ -1,13 +1,13 @@
-{
+﻿{
   "registryId": "AE-ISO52016-VERIFICATION-REGISTRY",
   "title": "ISO52016 Matrix and Physical verification registry",
   "owner": "tools/AssistantEngineer.Tools.Iso52016Verification",
   "requiredNonClaims": [
     "Validation/internal engineering anchors only.",
-    "No full ISO 52016 parity claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim."
+    "No full ISO 52016 equivalence claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim."
   ],
   "generatedArtifactPaths": [
     "artifacts/iso52016/matrix-baselines",
@@ -65,10 +65,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -106,10 +106,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -147,10 +147,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -190,10 +190,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -243,10 +243,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -296,10 +296,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -349,10 +349,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -401,10 +401,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -440,10 +440,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -479,10 +479,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -518,10 +518,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -558,10 +558,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -597,10 +597,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -636,10 +636,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -674,10 +674,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -717,10 +717,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
@@ -751,10 +751,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -787,10 +787,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -826,10 +826,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -864,10 +864,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -900,10 +900,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
@@ -932,10 +932,10 @@
       "requiredNonClaims": [],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": [
@@ -987,16 +987,16 @@
       "generatedArtifactPaths": [],
       "requiredNonClaims": [
         "Manual independent reference fixtures only.",
-        "ExternalParityCovered is not allowed in this stage."
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
         "Manual independent reference fixtures only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
-        "ExternalParityCovered is not allowed in this stage."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
@@ -1036,33 +1036,33 @@
       "generatedArtifactPaths": [],
       "requiredNonClaims": [
         "Manual independent reference fixtures only.",
-        "ExternalParityCovered is not allowed in this stage."
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
         "Manual independent reference fixtures only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
-        "ExternalParityCovered is not allowed in this stage."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
     },
     {
-      "id": "AE-VALIDATION-PYBE-001",
-      "name": "pyBuildingEnergy-inspired fixture intake",
-      "scope": "Methodology and naming alignment fixture intake with explicit non-parity claim boundary.",
+      "id": "AE-VALIDATION-standard-reference-001",
+      "name": "StandardReference-inspired fixture intake",
+      "scope": "Methodology and naming alignment fixture intake with explicit non-equivalence claim boundary.",
       "relatedManifests": [
-        "docs/releases/Iso52016PyBuildingEnergyInspiredFixtureIntakeManifest.json"
+        "docs/releases/Iso52016StandardReferenceInspiredFixtureIntakeManifest.json"
       ],
       "requiredDocs": [
-        "docs/calculations/Iso52016PyBuildingEnergyInspiredFixtureIntake.md",
-        "docs/calculations/validation/iso52016/pybuildingenergy-inspired-methodology-lane.md",
-        "docs/calculations/validation/iso52016/pybe-inspired-simple-heating-naming-anchor.md",
-        "docs/calculations/validation/iso52016/pybe-inspired-simple-cooling-naming-anchor.md",
-        "docs/calculations/validation/iso52016/pybe-inspired-annual-seasonal-naming-anchor.md"
+        "docs/calculations/Iso52016StandardReferenceInspiredFixtureIntake.md",
+        "docs/calculations/validation/iso52016/StandardReference-inspired-methodology-lane.md",
+        "docs/calculations/validation/iso52016/standard-reference-inspired-simple-heating-naming-anchor.md",
+        "docs/calculations/validation/iso52016/standard-reference-inspired-simple-cooling-naming-anchor.md",
+        "docs/calculations/validation/iso52016/standard-reference-inspired-annual-seasonal-naming-anchor.md"
       ],
       "requiredSourceFiles": [
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Validation/Iso52016/Iso52016ExternalValidationFixtureSourceKind.cs",
@@ -1070,38 +1070,39 @@
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Validation/Iso52016/Iso52016ExternalValidationFixtureLoader.cs"
       ],
       "requiredTestFiles": [
-        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredFixtureLoaderTests.cs",
-        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredClaimBoundaryTests.cs",
-        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016PyBuildingEnergyInspiredTraceabilityTests.cs",
-        "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-simple-heating-naming-anchor.json",
-        "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-simple-cooling-naming-anchor.json",
-        "tests/fixtures/iso52016/external-validation/pybe-inspired/pybe-inspired-annual-seasonal-naming-anchor.json"
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredFixtureLoaderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredClaimBoundaryTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Validation/Iso52016StandardReferenceInspiredTraceabilityTests.cs",
+        "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-simple-heating-naming-anchor.json",
+        "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-simple-cooling-naming-anchor.json",
+        "tests/fixtures/iso52016/external-validation/standard-reference-inspired/standard-reference-inspired-annual-seasonal-naming-anchor.json"
       ],
       "testFilters": [
-        "FullyQualifiedName~Iso52016PyBuildingEnergyInspired"
+        "FullyQualifiedName~Iso52016StandardReferenceInspired"
       ],
       "generatedArtifactPaths": [],
       "requiredNonClaims": [
-        "pyBuildingEnergy-inspired methodology alignment lane only.",
-        "No pyBuildingEnergy numerical equivalence claim.",
-        "No copied pyBuildingEnergy code.",
-        "No pyBuildingEnergy runtime dependency.",
-        "ExternalParityCovered is not allowed in this stage."
+        "StandardReference-inspired methodology alignment lane only.",
+        "No StandardReference numerical equivalence claim.",
+        "No copied StandardReference code.",
+        "No StandardReference runtime dependency.",
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "claimBoundary": [
         "Validation/internal engineering anchors only.",
-        "pyBuildingEnergy-inspired methodology alignment lane only.",
-        "No pyBuildingEnergy parity claim.",
-        "No pyBuildingEnergy numerical equivalence claim.",
-        "No copied pyBuildingEnergy code.",
-        "No pyBuildingEnergy runtime dependency.",
-        "No full ISO 52016 parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim.",
-        "ExternalParityCovered is not allowed in this stage."
+        "StandardReference-inspired methodology alignment lane only.",
+        "No StandardReference equivalence claim.",
+        "No StandardReference numerical equivalence claim.",
+        "No copied StandardReference code.",
+        "No StandardReference runtime dependency.",
+        "No full ISO 52016 equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+        "ExternalReferenceCovered is not allowed in this stage."
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
     }
   ]
 }
+

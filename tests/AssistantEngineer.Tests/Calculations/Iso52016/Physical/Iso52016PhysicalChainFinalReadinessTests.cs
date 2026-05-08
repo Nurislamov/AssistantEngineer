@@ -41,10 +41,10 @@ public class Iso52016PhysicalChainFinalReadinessTests
             .ToArray();
 
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
-        Assert.Contains("Not full ISO 52016 parity.", claimBoundary);
+        Assert.Contains("Not full ISO 52016 equivalence.", claimBoundary);
         Assert.Contains("Not complete ISO 52016 numerical equivalence.", claimBoundary);
-        Assert.Contains("Not pyBuildingEnergy parity.", claimBoundary);
-        Assert.Contains("Not EnergyPlus parity.", claimBoundary);
+        Assert.Contains("Not StandardReference equivalence.", claimBoundary);
+        Assert.Contains("Not EnergyPlus comparison workflow.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 validation.", claimBoundary);
     }
 
@@ -140,10 +140,10 @@ public class Iso52016PhysicalChainFinalReadinessTests
         Assert.Contains("AE-ISO52016-002", doc);
         Assert.Contains("ISO52016-inspired", doc);
         Assert.Contains("validation/internal engineering anchors only", doc);
-        Assert.Contains("not full ISO 52016 parity", doc);
+        Assert.Contains("not full ISO 52016 equivalence", doc);
         Assert.Contains("not complete ISO 52016 numerical equivalence", doc);
-        Assert.Contains("not pyBuildingEnergy parity", doc);
-        Assert.Contains("not EnergyPlus parity", doc);
+        Assert.Contains("not StandardReference equivalence", doc);
+        Assert.Contains("not EnergyPlus comparison workflow", doc);
         Assert.Contains("not ASHRAE Standard 140 validation", doc);
     }
 

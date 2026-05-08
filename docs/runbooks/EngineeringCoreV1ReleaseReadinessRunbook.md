@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Release Readiness Runbook
+# Engineering Core V1 Release Readiness Runbook
 
 ## Release-ready means
 
@@ -9,6 +9,6 @@ Validation registry exists as future planned validation.
 
 ## Release-ready does not mean
 
-Exact EnergyPlus numerical parity.
-ASHRAE 140 validation coverage.
+Exact EnergyPlus numerical equivalence.
+ASHRAE 140 / BESTEST-style validation anchor coverage.
 Latent/moisture/humidity support in v1.

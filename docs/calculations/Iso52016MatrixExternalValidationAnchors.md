@@ -1,4 +1,4 @@
-﻿# ISO 52016 Matrix external validation anchors
+# ISO 52016 Matrix external validation anchors
 
 This fixture set provides independent manual engineering validation anchors for the ISO 52016 Matrix solver path.
 
@@ -6,13 +6,13 @@ This fixture set provides independent manual engineering validation anchors for 
 
 `ValidationAnchorOnly`.
 
-These fixtures are not a pyBuildingEnergy parity suite, not an EnergyPlus parity suite, not an ASHRAE 140 validation suite, and not a full ISO 52016 conformance claim.
+These fixtures are not a StandardReference equivalence suite, not an EnergyPlus comparison workflow suite, not an ASHRAE 140 / BESTEST-style validation anchor suite, and not a full ISO 52016 conformance claim.
 
 ## Authoritative reference
 
 The authoritative references for this stage are manual engineering formulas encoded directly in the fixture JSON files and guard tests.
 
-pyBuildingEnergy remains methodological background only. EnergyPlus-style names may be used for readability only. Neither pyBuildingEnergy nor EnergyPlus outputs are authoritative references for this stage.
+StandardReference remains methodological background only. EnergyPlus-style names may be used for readability only. Neither StandardReference nor EnergyPlus outputs are authoritative references for this stage.
 
 ## Fixture set
 
@@ -44,24 +44,24 @@ Those files are ignored and must not be committed.
 
 ## Release contract phrases
 
-This stage is validation anchors only, not full parity.
+This stage is validation anchors only, not full equivalence claim.
 
-No pyBuildingEnergy parity is claimed or implied.
+No StandardReference equivalence is claimed or implied.
 
 ## Source type contract
 
 The source policy string `IndependentManualEngineeringFormula` identifies independent manual engineering formulas as the reference source for these anchors.
 
-Validation anchors only, not full parity.
+Validation anchors only, not full equivalence claim.
 
 ## Source policy literal guard
 
-- No pyBuildingEnergy parity claim.
+- No StandardReference equivalence claim.
 
 ## Explicit non-claims
 
-- No EnergyPlus parity claim.
-No ASHRAE 140 validation coverage claim.
+- No EnergyPlus comparison workflow claim.
+No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
 
-No full ISO 52016 parity claim.
+No full ISO 52016 equivalence claim.
 

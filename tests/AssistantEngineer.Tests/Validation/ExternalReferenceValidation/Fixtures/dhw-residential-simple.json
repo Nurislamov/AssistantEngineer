@@ -1,0 +1,16 @@
+{
+  "fixtureName": "DhwResidentialSimple",
+  "description": "Simple people-based DHW demand.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / DHW Demand",
+  "category": "Dhw",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "dhw-demand",
+    "dhw": { "peopleCount": 4, "litersPerPersonDay": 50, "coldWaterTemperatureC": 10, "hotWaterTemperatureC": 55, "distributionLossFactor": 0 }
+  },
+  "expected": { "dailyVolumeLiters": 200, "dailyEnergyKWh": 10.465 },
+  "tolerances": { "annualDemandKWh": 0.001 },
+  "assumptions": [ "Water density is 1.0 kg/liter and cp is 4.186 kJ/(kg K)." ],
+  "notes": [ "Distribution losses are zero in this deterministic fixture." ]
+}

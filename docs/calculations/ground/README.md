@@ -50,9 +50,9 @@ This stage provides reusable application-level contracts and services for ground
 - No full ISO13370 transient compliance claim.
 - No full ISO52016 dynamic ground coupling claim.
 - No external validation claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Integration note
 
@@ -89,9 +89,9 @@ An automatic production mapper from thermal-topology ground surfaces to full `Gr
 - No full ISO13370 compliance claim.
 - No full ISO52016 dynamic ground coupling claim.
 - No external validation anchor claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ### Future work
 

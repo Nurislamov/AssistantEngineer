@@ -23,8 +23,8 @@ public class Iso52016MatrixMergeEvidenceTests
         Assert.Contains("Removed the old simplified `Legacy` solver path", releaseNotes);
         Assert.Contains("Removed the temporary `simulationEngine` selector", releaseNotes);
         Assert.Contains("assert-iso52016-matrix-release-ready.ps1", releaseNotes);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity", releaseNotes);
-        Assert.Contains("No exact EnergyPlus numerical parity", releaseNotes);
+        Assert.Contains("No exact StandardReference numerical equivalence", releaseNotes);
+        Assert.Contains("No exact EnergyPlus numerical equivalence", releaseNotes);
         Assert.Contains("ASHRAE 140", releaseNotes);
     }
 
@@ -69,7 +69,7 @@ public class Iso52016MatrixMergeEvidenceTests
         Assert.Contains("merge-summary.md", script);
         Assert.Contains("git log --oneline -20", script);
         Assert.Contains("assert-iso52016-matrix-release-ready.ps1", script);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", script);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", script);
     }
 
     [Fact]

@@ -372,7 +372,7 @@ internal static class Program
         Console.WriteLine("Release-ready interpretation:");
         Console.WriteLine("- Engineering Core V1 is closed as an engineering formula gate.");
         Console.WriteLine("- FormulaAuditMatrix, manifest, diagnostics, API contracts, report disclosures, frontend visibility, validation registry and traceability are verified.");
-        Console.WriteLine("- This does not claim exact EnergyPlus numerical parity, exact pyBuildingEnergy numerical parity or ASHRAE 140 validation coverage.");
+        Console.WriteLine("- This does not claim exact EnergyPlus numerical equivalence, exact StandardReference numerical equivalence or ASHRAE 140 / BESTEST-style validation anchor coverage.");
         Console.WriteLine("- Future validation remains comparative and tolerance-based.");
 
         return 0;

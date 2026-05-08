@@ -10,9 +10,9 @@
     "Internal deterministic engineering anchors only.",
     "Compatibility behavior preserved by default.",
     "No full ISO 12831-3 compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim."
   ],
   "implementationFiles": [
@@ -28,7 +28,7 @@
     "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterTraceabilityTests.cs"
   ],
   "updatedDisclosureFiles": [
-    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/ExternalReferenceValidationVerification.md",
     "docs/calculations/EngineeringCoreV1Scope.md",
     "docs/api/engineering-core-v1/status.sample.json"
   ],

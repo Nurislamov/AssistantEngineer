@@ -16,28 +16,28 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
         {
             Assert.Contains("Validation/internal engineering anchors only.", fixture.ClaimBoundary);
             Assert.Contains("Manual independent reference fixtures only.", fixture.ClaimBoundary);
-            Assert.Contains("No full ISO 52016 parity claim.", fixture.ClaimBoundary);
-            Assert.Contains("No pyBuildingEnergy parity claim.", fixture.ClaimBoundary);
-            Assert.Contains("No EnergyPlus parity claim.", fixture.ClaimBoundary);
-            Assert.Contains("No ASHRAE 140 validation claim.", fixture.ClaimBoundary);
-            Assert.Contains("ExternalParityCovered is not allowed in this stage.", fixture.ClaimBoundary);
+            Assert.Contains("No full ISO 52016 equivalence claim.", fixture.ClaimBoundary);
+            Assert.Contains("No StandardReference equivalence claim.", fixture.ClaimBoundary);
+            Assert.Contains("No EnergyPlus comparison workflow claim.", fixture.ClaimBoundary);
+            Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", fixture.ClaimBoundary);
+            Assert.Contains("ExternalReferenceCovered is not allowed in this stage.", fixture.ClaimBoundary);
         });
     }
 
     [Fact]
-    public void Loader_RejectsExternalParityCoveredMarker()
+    public void Loader_RejectsExternalReferenceCoveredMarker()
     {
         var fixture = CreateValidFixtureObject();
         fixture["claimBoundary"] = new[]
         {
             "Validation/internal engineering anchors only.",
             "Manual independent reference fixtures only.",
-            "No full ISO 52016 parity claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim.",
-            "ExternalParityCovered is not allowed in this stage.",
-            "ExternalParityCovered"
+            "No full ISO 52016 equivalence claim.",
+            "No StandardReference equivalence claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+            "ExternalReferenceCovered is not allowed in this stage.",
+            "ExternalReferenceCovered"
         };
 
         var file = WriteTempFixture(fixture);
@@ -49,17 +49,17 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
     [Fact]
     public void Loader_RejectsPositiveParityClaims()
     {
-        var positiveToken = "pyBuildingEnergy" + " parity";
+        var positiveToken = "StandardReference" + " equivalence";
         var fixture = CreateValidFixtureObject();
         fixture["claimBoundary"] = new[]
         {
             "Validation/internal engineering anchors only.",
             "Manual independent reference fixtures only.",
-            "No full ISO 52016 parity claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim.",
-            "ExternalParityCovered is not allowed in this stage.",
+            "No full ISO 52016 equivalence claim.",
+            "No StandardReference equivalence claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+            "ExternalReferenceCovered is not allowed in this stage.",
             "This text must be rejected: " + positiveToken
         };
 
@@ -82,11 +82,11 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
             {
                 "Validation/internal engineering anchors only.",
                 "Manual independent reference fixtures only.",
-                "No full ISO 52016 parity claim.",
-                "No pyBuildingEnergy parity claim.",
-                "No EnergyPlus parity claim.",
-                "No ASHRAE 140 validation claim.",
-                "ExternalParityCovered is not allowed in this stage."
+                "No full ISO 52016 equivalence claim.",
+                "No StandardReference equivalence claim.",
+                "No EnergyPlus comparison workflow claim.",
+                "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+                "ExternalReferenceCovered is not allowed in this stage."
             },
             ["reference"] = new Dictionary<string, object?>
             {

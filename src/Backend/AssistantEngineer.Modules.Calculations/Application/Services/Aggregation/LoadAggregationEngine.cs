@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -6,8 +6,8 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Aggregatio
 
 public sealed class LoadAggregationEngine
 {
-    private const string DesignPointMethod = "Energy Calculation Parity / Design Point Load Aggregation";
-    private const string HourlyMethod = "Energy Calculation Parity / Hourly Coincident Load Aggregation";
+    private const string DesignPointMethod = "Energy Calculation equivalence / Design Point Load Aggregation";
+    private const string HourlyMethod = "Energy Calculation equivalence / Hourly Coincident Load Aggregation";
 
     private readonly TimeProvider _timeProvider;
 

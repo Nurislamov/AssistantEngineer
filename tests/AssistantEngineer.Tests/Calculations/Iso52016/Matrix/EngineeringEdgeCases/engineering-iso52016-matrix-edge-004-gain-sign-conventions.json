@@ -25,7 +25,7 @@
   },
   "explicitNonClaims": [
     "Engineering sign-convention guard only.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim."
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim."
   ]
 }

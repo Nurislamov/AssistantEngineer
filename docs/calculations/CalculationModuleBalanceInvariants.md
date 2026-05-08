@@ -1,4 +1,4 @@
-﻿# Calculation Module Balance Invariants
+# Calculation Module Balance Invariants
 
 ## Purpose
 
@@ -12,8 +12,8 @@ For design-point room loads:
 
 - room load must equal the positive heating breakdown total for heating;
 - room load must equal the positive cooling breakdown total for cooling;
-- heating W/m² must equal heating load divided by room area;
-- cooling W/m² must equal cooling load divided by room area;
+- heating W/m? must equal heating load divided by room area;
+- cooling W/m? must equal cooling load divided by room area;
 - successful room results must not contain error diagnostics;
 - negative fixed components must be clamped and reported as diagnostics.
 
@@ -24,7 +24,7 @@ For design-point aggregation:
 - building/floor/thermal-zone heating load must equal the sum of selected child room heating loads;
 - building/floor/thermal-zone cooling load must equal the sum of selected child room cooling loads;
 - total area must equal the sum of selected child room areas;
-- W/m² values must be calculated from aggregate load and aggregate area;
+- W/m? values must be calculated from aggregate load and aggregate area;
 - component breakdown must preserve transmission, solar, ventilation, infiltration, internal gain and ground buckets.
 
 ## Hourly fallback invariant
@@ -37,13 +37,13 @@ When hourly aggregation is requested but complete hourly room profiles are unava
 
 ## Non-claims
 
-These invariants do not claim exact EnergyPlus numerical parity.
+These invariants do not claim exact EnergyPlus numerical equivalence.
 
-This document does not claim exact EnergyPlus numerical parity.
+This document does not claim exact EnergyPlus numerical equivalence.
 
-These invariants do not claim ASHRAE 140 validation coverage.
+These invariants do not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 
-These invariants do not claim full ISO 52016 node/matrix solver parity.
+These invariants do not claim full ISO 52016 node/matrix solver equivalence.
 
 They only protect internal consistency of the current Engineering Core V1 calculation path.
 

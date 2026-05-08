@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.RoomLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
@@ -265,7 +265,7 @@ public class CalculationModuleBalanceInvariantTests
         Assert.Contains("Calculation Module Balance Invariants", document, StringComparison.Ordinal);
         Assert.Contains("room load must equal the positive heating breakdown total", document, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Aggregation.HourlyUnavailable", document, StringComparison.Ordinal);
-        Assert.Contains("does not claim exact EnergyPlus numerical parity", document, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("does not claim exact EnergyPlus numerical equivalence", document, StringComparison.OrdinalIgnoreCase);
 
         var wrapper = File.ReadAllText(VerifyScriptPath);
         Assert.Contains("AssistantEngineer.Tools.EngineeringCore.csproj", wrapper, StringComparison.Ordinal);

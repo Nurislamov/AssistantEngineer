@@ -63,11 +63,11 @@ public sealed class Iso52016MatrixApplicationIntegrationHardeningManifestTests
         var doc = File.ReadAllText(docPath);
 
         Assert.Contains("Application integration hardening only.", doc);
-        Assert.Contains("Validation anchors only, not full parity.", doc);
-        Assert.Contains("No pyBuildingEnergy parity claim.", doc);
-        Assert.Contains("No EnergyPlus parity claim.", doc);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", doc);
-        Assert.Contains("No full ISO 52016 parity claim.", doc);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", doc);
+        Assert.Contains("No StandardReference equivalence claim.", doc);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", doc);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", doc);
+        Assert.Contains("No full ISO 52016 equivalence claim.", doc);
         Assert.Contains("ManualEngineeringIntegrationAnchor", doc);
     }
 

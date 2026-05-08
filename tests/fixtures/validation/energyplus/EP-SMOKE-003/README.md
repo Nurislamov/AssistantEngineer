@@ -18,7 +18,7 @@ and produce comparison JSON/Markdown outputs.
 ## Non-claims
 
 - This is not a real EnergyPlus validation result yet.
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim exact pyBuildingEnergy numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim exact StandardReference numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 - Future real validation must replace or supplement the placeholder reference with provenance-backed EnergyPlus output.

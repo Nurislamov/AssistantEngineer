@@ -38,9 +38,9 @@ Non-claims for this lane:
 - no full EN compliance claim
 - no national annex compliance claim
 - no certification-grade EPB reporting claim
-- no `pyBuildingEnergy parity` claim
-- no `EnergyPlus parity` claim
-- no `ASHRAE 140 validation` claim
+- no `StandardReference equivalence` claim
+- no `EnergyPlus comparison workflow` claim
+- no `ASHRAE 140 / BESTEST-style validation anchor` claim
 
 ## Next work
 

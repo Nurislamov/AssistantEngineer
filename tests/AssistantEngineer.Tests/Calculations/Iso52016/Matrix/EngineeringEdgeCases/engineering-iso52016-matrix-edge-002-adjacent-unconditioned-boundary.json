@@ -42,7 +42,7 @@
   "expectedHeatingLoadW": 240.0,
   "explicitNonClaims": [
     "Engineering edge-case hardening only.",
-    "No adjacent-zone full model parity claim.",
-    "No EnergyPlus parity claim."
+    "No adjacent-zone full model equivalence claim.",
+    "No EnergyPlus comparison workflow claim."
   ]
 }

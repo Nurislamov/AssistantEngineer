@@ -1,4 +1,4 @@
-﻿# Engineering Core Evidence Tool Architecture
+# Engineering Core Evidence Tool Architecture
 
 ## Purpose
 
@@ -27,8 +27,8 @@ They must not contain Markdown generation, JSON parsing, JSON construction, trac
 
 ## Non-claims
 
-This tool does not claim exact EnergyPlus numerical parity.
+This tool does not claim exact EnergyPlus numerical equivalence.
 
-This tool does not claim exact pyBuildingEnergy numerical parity.
+This tool does not claim exact StandardReference numerical equivalence.
 
-This tool does not claim ASHRAE 140 validation coverage.
+This tool does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

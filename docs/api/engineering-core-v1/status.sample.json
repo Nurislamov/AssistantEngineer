@@ -13,7 +13,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.VENTILATION.SENSIBLE_AIRFLOW",
@@ -21,7 +21,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.INTERNAL_GAINS.SENSIBLE",
@@ -29,7 +29,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.WINDOW_SOLAR.SIMPLE_SHGC",
@@ -37,7 +37,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.SOLAR.SURFACE_IRRADIANCE_ISOTROPIC",
@@ -45,7 +45,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.ROOM_LOAD.DESIGN_POINT",
@@ -53,7 +53,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.AGGREGATION.LOAD_SUMMARY",
@@ -61,7 +61,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.ANNUAL_ENERGY.HOURLY_KWH",
@@ -69,7 +69,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "WEATHER.EPW_8760",
@@ -77,7 +77,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "WEATHER.PVGIS_8760",
@@ -85,7 +85,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.DHW.SIMPLIFIED",
@@ -93,7 +93,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.SYSTEM_ENERGY.SIMPLIFIED",
@@ -101,7 +101,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.EQUIPMENT_SIZING.CAPACITY_MARGIN",
@@ -109,7 +109,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.GROUND.SIMPLIFIED",
@@ -117,7 +117,7 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.HOURLY_HEAT_BALANCE.SIMPLIFIED_RC",
@@ -125,7 +125,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.THERMAL_ZONE.SINGLE_ZONE",
@@ -133,7 +133,7 @@
       "status": "ClosedV1",
       "priority": "P0",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     },
     {
       "calculationId": "HVAC.ADJACENT_ZONE.SIMPLIFIED",
@@ -141,15 +141,15 @@
       "status": "ClosedV1",
       "priority": "P1",
       "scope": "See docs/releases/EngineeringCoreV1Manifest.json and FormulaAuditMatrix for authoritative scope.",
-      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/pyBuildingEnergy/ASHRAE 140 parity claim."
+      "limitation": "ClosedV1 engineering formula gate with documented limitations; no exact EnergyPlus/StandardReference/ASHRAE 140 equivalence claim."
     }
   ],
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full ISO 52016 node/matrix solver parity claim.",
-    "No full ISO 52010 climate conversion parity claim.",
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full ISO 52016 node/matrix solver equivalence claim.",
+    "No full ISO 52010 climate conversion equivalence claim.",
     "No full ISO 13370 implementation claim.",
     "No full EN 15316 generation/distribution/storage/emission chain claim.",
     "No full coupled multi-zone heat-balance simulation claim.",

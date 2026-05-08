@@ -1,4 +1,4 @@
-﻿# ISO 52016 Solar Chain Verification
+# ISO 52016 Solar Chain Verification
 
 Stage 11 adds a focused verification script and evidence manifest for the completed ISO52010/Perez -> ISO52016 solar chain.
 
@@ -64,10 +64,10 @@ The manifest lists:
 
 This verification does not claim:
 
-- No exact EnergyPlus numerical parity claim;
-- No exact pyBuildingEnergy numerical parity claim;
-- No ASHRAE 140 validation coverage claim;
-- No full ISO 52016 node/matrix solver parity claim;
+- No exact EnergyPlus numerical equivalence claim;
+- No exact StandardReference numerical equivalence claim;
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim;
+- No full ISO 52016 node/matrix solver equivalence claim;
 - No latent/moisture/humidity simulation claim.
 
 

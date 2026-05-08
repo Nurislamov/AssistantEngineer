@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -38,7 +38,7 @@ public class EnergyPlusValidationCaseRegistryTests
         Assert.Equal("PlannedValidation", root.GetProperty("status").GetString());
 
         Assert.Contains(
-            "not exact EnergyPlus parity",
+            "not exact EnergyPlus comparison workflow",
             root.GetProperty("purpose").GetString(),
             StringComparison.OrdinalIgnoreCase);
 
@@ -177,7 +177,7 @@ public class EnergyPlusValidationCaseRegistryTests
         Assert.Contains("EP-SMOKE-001", content, StringComparison.Ordinal);
         Assert.Contains("ASHRAE140-STYLE-001", content, StringComparison.Ordinal);
         Assert.Contains("Required non-claims", content, StringComparison.Ordinal);
-        Assert.Contains("not exact EnergyPlus numerical parity", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not exact EnergyPlus numerical equivalence", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not ASHRAE 140 certification", content, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -189,7 +189,7 @@ public class EnergyPlusValidationCaseRegistryTests
         var requiredPhrases = new[]
         {
             "PlannedValidation",
-            "not exact EnergyPlus parity",
+            "not exact EnergyPlus comparison workflow",
             "not ASHRAE 140 certification",
             "Required case metadata",
             "Required metric metadata",

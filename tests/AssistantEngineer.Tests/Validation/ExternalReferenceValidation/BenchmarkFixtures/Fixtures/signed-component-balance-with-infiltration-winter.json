@@ -1,0 +1,52 @@
+{
+  "fixtureName": "signed-component-balance-with-infiltration-winter",
+  "description": "Benchmark reference fixture for winter signed component totals with a separate infiltration split.",
+  "category": "SignedComponentBalance",
+  "referenceType": "BenchmarkReference",
+  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance Signed Components",
+  "status": "Active",
+  "sourceReference": "Internal benchmark reference values derived from constant signed hourly component loads with separate infiltration; no external equivalence claim.",
+  "input": {
+    "calculationBasis": "signed-component-balance",
+    "buildingId": 5,
+    "buildingName": "Signed winter infiltration benchmark",
+    "buildingAreaM2": 100,
+    "year": 2026,
+    "hourlyPattern": "constant",
+    "hourlyRecordCount": 8760,
+    "energyDataSource": "TrueHourlySimulation",
+    "isTrueHourly8760": true,
+    "hourlyValues": {
+      "heatingLoadW": 100,
+      "coolingLoadW": 0,
+      "transmissionW": 100,
+      "transmissionBalanceW": -100,
+      "ventilationW": 50,
+      "ventilationBalanceW": -50,
+      "infiltrationW": 20,
+      "infiltrationBalanceW": -20,
+      "groundW": 30,
+      "groundBalanceW": -30,
+      "hourDurationH": 1
+    }
+  },
+  "expected": {
+    "componentBreakdown.ventilationKWh": 438,
+    "componentBreakdown.netVentilationKWh": -438,
+    "componentBreakdown.infiltrationKWh": 175.2,
+    "componentBreakdown.netInfiltrationKWh": -175.2
+  },
+  "tolerances": {
+    "defaultAbsolute": 0.000001,
+    "defaultRelativePercent": 0.000001
+  },
+  "assumptions": [
+    "Magnitude component fields are aggregated as non-negative kWh.",
+    "Net component fields preserve the sign of hourly balance values.",
+    "Infiltration is provided as a separate hourly component and is not included in VentilationW."
+  ],
+  "notes": [
+    "This fixture verifies deterministic signed infiltration component benchmark comparison.",
+    "It is not ExternalReferenceCovered evidence."
+  ]
+}

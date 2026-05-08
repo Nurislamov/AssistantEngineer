@@ -3,9 +3,9 @@
 Scope: service-by-service legacy retirement with proof-first gates.
 
 Boundary statements:
-- No EnergyPlus parity claim.
-- No pyBuildingEnergy parity claim.
-- No ASHRAE 140 validation claim.
+- No EnergyPlus comparison workflow claim.
+- No StandardReference equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No full ISO/EN compliance claim.
 
 ## Baseline policy
@@ -63,7 +63,7 @@ Proof summary before removal:
 - No direct facade usage.
 - No runtime usage in application services outside DI compatibility registration.
 - Active replacement path coverage confirmed through `EnergyCalculationPipelineService` floor methods:
-  - floor cooling/heating aggregation parity and method diagnostics,
+  - floor cooling/heating aggregation equivalence and method diagnostics,
   - floor not-found behavior,
   - no legacy service constructor dependency.
 

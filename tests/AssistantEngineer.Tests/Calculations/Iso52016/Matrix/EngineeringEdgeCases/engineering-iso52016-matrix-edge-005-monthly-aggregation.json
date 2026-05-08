@@ -74,6 +74,6 @@
   "expectedFebruaryPeakHeatingLoadW": 200.0,
   "explicitNonClaims": [
     "Engineering aggregation guard only.",
-    "No full annual building simulation parity claim."
+    "No full annual building simulation equivalence claim."
   ]
 }

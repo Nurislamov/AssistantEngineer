@@ -1,4 +1,4 @@
-﻿# AE-ISO52016-002 Step 11 - physical model selection application guard
+# AE-ISO52016-002 Step 11 - physical model selection application guard
 
 This stage locks down the application-facing selection boundary for the ISO52016-inspired physical model chain.
 
@@ -33,6 +33,6 @@ The physical chain is now usable by an application-facing adapter. That creates 
 
 This is an ISO52016-inspired physical model selection application guard with validation/internal engineering anchors only.
 
-It is not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
 
 No generated artifacts are introduced by this step.

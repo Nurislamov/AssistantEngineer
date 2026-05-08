@@ -1,4 +1,4 @@
-﻿# ISO 52016 Weather/Solar Integration
+# ISO 52016 Weather/Solar Integration
 
 Stage 2 closes the integration seam between the ISO 52010-style solar foundation and the ISO 52016 weather-solar context.
 
@@ -14,9 +14,9 @@ Stage 2 closes the integration seam between the ISO 52010-style solar foundation
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
-- This does not claim full ISO 52016 node/matrix solver parity.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- This does not claim full ISO 52016 node/matrix solver equivalence.
 - This does not replace future tolerance-based external validation.
 
 ## Guard tests

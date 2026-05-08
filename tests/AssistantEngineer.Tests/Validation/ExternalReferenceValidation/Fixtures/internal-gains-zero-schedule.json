@@ -1,0 +1,16 @@
+{
+  "fixtureName": "ZeroScheduleGivesZeroGain",
+  "description": "Zero occupancy schedule factor gives zero occupancy gain.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Internal Gains",
+  "category": "InternalGains",
+  "sourceReference": "Internal deterministic fixture",
+  "input": {
+    "calculationBasis": "internal-gains",
+    "internalGainCalculation": { "roomId": 1, "occupancyPeople": 4, "sensibleGainPerPersonW": 75, "occupancyScheduleFactor": 0 }
+  },
+  "expected": { "occupancySensibleGainW": 0, "totalSensibleGainW": 0 },
+  "tolerances": { "hourlyLoadW": 0.000001 },
+  "assumptions": [ "Schedule factor zero disables the associated gain." ],
+  "notes": [ "No fallback schedule is applied." ]
+}

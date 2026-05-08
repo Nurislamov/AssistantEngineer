@@ -62,8 +62,8 @@ public class EnergyPlusSmoke002And003PlaceholderReferenceAlignmentTests
         var text = document.RootElement.ToString();
 
         Assert.Contains("does not claim EnergyPlus validation", text);
-        Assert.Contains("does not claim exact EnergyPlus numerical parity", text);
-        Assert.Contains("does not claim ASHRAE 140 validation coverage", text);
+        Assert.Contains("does not claim exact EnergyPlus numerical equivalence", text);
+        Assert.Contains("does not claim ASHRAE 140 / BESTEST-style validation anchor coverage", text);
     }
 
     private static string FindRepositoryRoot()

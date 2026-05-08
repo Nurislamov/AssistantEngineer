@@ -1,4 +1,4 @@
-{
+﻿{
   "stageId": "AE-CALC-ROLLUP-001",
   "summary": "Engineering Core V2 governance and internal release readiness rollup sample.",
   "claimBoundary": [
@@ -7,9 +7,9 @@
     "Compatibility behavior preserved by default.",
     "Inspired calculation paths remain opt-in.",
     "No full ISO/EN compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim.",
     "No automatic production data mutation."
   ],
@@ -165,14 +165,14 @@
     },
     {
       "domain": "ExternalValidation",
-      "modeId": "ISO52016-PYBE-INSPIRED-METHODOLOGY-INTAKE",
+      "modeId": "ISO52016-standard-reference-INSPIRED-METHODOLOGY-INTAKE",
       "status": "ClosedInternalGate",
       "kind": "MethodologyIntake",
       "isDefault": false,
       "isOptIn": false,
       "optionFlagName": null,
       "stageIds": [
-        "AE-VALIDATION-PYBE-001"
+        "AE-VALIDATION-standard-reference-001"
       ]
     }
   ],
@@ -197,11 +197,12 @@
   "forbiddenClaims": [
     "No full ISO compliance claim.",
     "No full EN compliance claim.",
-    "No validated against pyBuildingEnergy claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validated claim.",
-    "No ExternalParityCovered claim.",
+    "No validated against StandardReference claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validated claim.",
+    "No ExternalReferenceCovered claim.",
     "No certified or external certification claim."
   ]
 }
+

@@ -43,9 +43,9 @@ public sealed class SystemEnergyCalculationSummaryBuilderTests
 
         Assert.Contains("Full ISO compliance", summary.DisclosureSummary.ForbiddenClaims);
         Assert.Contains("Full EN compliance", summary.DisclosureSummary.ForbiddenClaims);
-        Assert.Contains("pyBuildingEnergy parity", summary.DisclosureSummary.ForbiddenClaims);
-        Assert.Contains("EnergyPlus parity", summary.DisclosureSummary.ForbiddenClaims);
-        Assert.Contains("ASHRAE 140 validation", summary.DisclosureSummary.ForbiddenClaims);
+        Assert.Contains("StandardReference equivalence", summary.DisclosureSummary.ForbiddenClaims);
+        Assert.Contains("EnergyPlus comparison workflow", summary.DisclosureSummary.ForbiddenClaims);
+        Assert.Contains("ASHRAE 140 / BESTEST-style validation anchor", summary.DisclosureSummary.ForbiddenClaims);
         Assert.Contains(
             summary.Diagnostics,
             diagnostic => diagnostic.Code == "AE-SYS-SUMMARY-NOT-FOR-COMPLIANCE");

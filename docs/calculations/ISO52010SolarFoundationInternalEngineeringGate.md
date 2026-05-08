@@ -41,13 +41,13 @@ powershell -ExecutionPolicy Bypass -File .\scripts\engineering-core\verify-iso52
 
 ## Explicit Non-Claims
 
-- No exact EnergyPlus numerical parity claim.
-- No exact pyBuildingEnergy numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full ISO 52016 node/matrix solver parity claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No exact StandardReference numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full ISO 52016 node/matrix solver equivalence claim.
 - No latent/moisture/humidity simulation claim.
 
 ## Compatibility Diagnostic Code Retained
 
 - Iso52016.MatrixSolarRadiationFallbackUsed remains listed as a guarded compatibility diagnostic code for existing matrix/legacy fallback evidence.
-- Its presence in the manifest is not a parity claim and does not make the fallback the preferred annual solar path.
+- Its presence in the manifest is not a equivalence claim and does not make the fallback the preferred annual solar path.

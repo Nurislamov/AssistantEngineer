@@ -1,4 +1,4 @@
-﻿# ISO 52016 Matrix Release-Ready Gate
+# ISO 52016 Matrix Release-Ready Gate
 
 This gate is the pre-merge/pre-release command for the ISO52016 Matrix and Physical-chain verification lane.
 
@@ -43,7 +43,7 @@ dotnet run --project .\tools\AssistantEngineer.Tools.Iso52016Verification -- ass
 - Required docs, source files, test files, and manifests exist.
 - Release-ready manifests parse.
 - Claim boundaries and non-claims are present.
-- Forbidden positive parity claims are absent.
+- Forbidden positive equivalence claims are absent.
 - Generated artifact paths are not tracked by git.
 - PowerShell scripts listed in the registry remain thin wrappers.
 - Registry-owned test filters pass unless `--skip-tests` is used.
@@ -58,5 +58,5 @@ Generated artifacts must not be committed, including Matrix baseline summaries, 
 
 Validation/internal engineering anchors only.
 
-No full ISO 52016 parity claim, no pyBuildingEnergy parity claim, no EnergyPlus parity claim, no ASHRAE 140 validation claim, and no complete ISO52010/ISO52016 compliance claim is made by this gate.
+No full ISO 52016 equivalence claim, no StandardReference equivalence claim, no EnergyPlus comparison workflow claim, no ASHRAE 140 / BESTEST-style validation anchor claim, and no complete ISO52010/ISO52016 compliance claim is made by this gate.
 

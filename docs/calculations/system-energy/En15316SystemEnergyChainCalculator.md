@@ -10,9 +10,9 @@
 - EN15316-inspired modular system energy engineering calculator.
 - Internal deterministic engineering anchors only.
 - No full EN 15316 compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 
 ## Formula chain
@@ -89,7 +89,7 @@ Each module returns deterministic per-module upstream/downstream/loss values wit
 - internal engineering anchor model only;
 - no full standard compliance output;
 - no external certification output;
-- no parity claims with pyBuildingEnergy or EnergyPlus.
+- no equivalence claims with StandardReference or EnergyPlus.
 
 ## Migration strategy
 

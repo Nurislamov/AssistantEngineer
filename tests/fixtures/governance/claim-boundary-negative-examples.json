@@ -2,10 +2,10 @@
   "id": "claim-boundary-negative-examples",
   "lines": [
     "No full ISO/EN compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim.",
-    "ExternalParityCovered is not allowed in this stage."
+    "ExternalReferenceCovered is not allowed in this stage."
   ]
 }

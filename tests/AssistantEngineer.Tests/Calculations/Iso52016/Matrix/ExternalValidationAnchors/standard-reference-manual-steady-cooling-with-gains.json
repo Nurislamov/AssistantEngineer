@@ -1,0 +1,31 @@
+{
+  "anchorId": "ISO52016-MATRIX-EXT-ANCHOR-009",
+  "scenarioName": "standard-reference-manual-steady-cooling-with-gains",
+  "referenceFamily": "IndependentManual",
+  "referenceStyle": "StandardReference-style naming only",
+  "claimScope": "ValidationAnchorOnly",
+  "explicitNonClaims": [
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
+  ],
+  "description": "StandardReference-style name only. The numeric reference is still a manual one-node cooling anchor, not StandardReference equivalence.",
+  "kind": "singleHourSteadyState",
+  "mode": "Cooling",
+  "timeStepSeconds": 3600.0,
+  "heatCapacityJPerK": 3600000.0,
+  "initialAirTemperatureC": 26.0,
+  "outdoorTemperatureC": 32.0,
+  "heatTransferCoefficientWPerK": 90.0,
+  "internalHeatGainW": 180.0,
+  "heatingSetpointC": 20.0,
+  "coolingSetpointC": 26.0,
+  "expected": {
+    "heatingLoadW": 0.0,
+    "coolingLoadW": 720.0,
+    "heatingEnergyKWh": 0.0,
+    "coolingEnergyKWh": 0.72,
+    "airTemperatureAfterHvacC": 26.0
+  }
+}

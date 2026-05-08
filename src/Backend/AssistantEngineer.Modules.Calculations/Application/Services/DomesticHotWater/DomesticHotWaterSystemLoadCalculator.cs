@@ -12,9 +12,9 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
     [
         "Full ISO compliance",
         "Full EN compliance",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validation"
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validation anchor"
     ];
 
     private static readonly int[] DaysPerMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];

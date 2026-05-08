@@ -4,7 +4,7 @@ This stage hardens the ISO 52016 Matrix solver with internal engineering edge-ca
 
 ## Scope
 
-These fixtures are **engineering hardening anchors**, not external parity fixtures.
+These fixtures are **engineering hardening anchors**, not external equivalence fixtures.
 
 They cover:
 
@@ -34,11 +34,11 @@ The adjacent unconditioned boundary anchor is intentionally represented as a nam
 
 Engineering edge-case hardening only.
 
-Validation anchors only, not full parity.
+Validation anchors only, not full equivalence claim.
 
-No pyBuildingEnergy parity claim.
-No EnergyPlus parity claim.
-No ASHRAE 140 validation coverage claim.
-No full ISO 52016 parity claim.
-No adjacent-zone full model parity claim.
-No full annual building simulation parity claim.
+No StandardReference equivalence claim.
+No EnergyPlus comparison workflow claim.
+No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+No full ISO 52016 equivalence claim.
+No adjacent-zone full model equivalence claim.
+No full annual building simulation equivalence claim.

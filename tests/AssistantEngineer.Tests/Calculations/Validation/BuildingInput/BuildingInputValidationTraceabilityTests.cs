@@ -53,9 +53,9 @@ public sealed class BuildingInputValidationTraceabilityTests
         Assert.Contains("Building input validation and correction framework.", claimBoundary);
         Assert.Contains("No automatic production data mutation.", claimBoundary);
         AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "full ISO/EN compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "pyBuildingEnergy parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "EnergyPlus parity");
-        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "ASHRAE 140 validation");
+        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "EnergyPlus comparison workflow");
+        AssertTokenAppearsOnlyAsNegatedClaim(string.Join('\n', claimBoundary), "ASHRAE 140 / BESTEST-style validation anchor");
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public sealed class BuildingInputValidationTraceabilityTests
         {
             Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "validation", "BuildingInputValidationAndCorrectionFramework.md"),
             Path.Combine(TestPaths.RepoRoot, "docs", "releases", "BuildingInputValidationFrameworkManifest.json"),
-            Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "EnergyCalculationParityVerification.md"),
+            Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "ExternalReferenceValidationVerification.md"),
             Path.Combine(TestPaths.RepoRoot, "docs", "calculations", "EngineeringCoreV1Scope.md"),
             Path.Combine(TestPaths.RepoRoot, "docs", "api", "engineering-core-v1", "status.sample.json")
         };
@@ -75,10 +75,10 @@ public sealed class BuildingInputValidationTraceabilityTests
             var text = File.ReadAllText(path);
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full ISO compliance");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full EN compliance");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "pyBuildingEnergy parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "ASHRAE 140 validated");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "ExternalParityCovered");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "StandardReference equivalence");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus comparison workflow");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "ASHRAE 140 / BESTEST-style validated");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "ExternalReferenceCovered");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "certified");
         }
     }

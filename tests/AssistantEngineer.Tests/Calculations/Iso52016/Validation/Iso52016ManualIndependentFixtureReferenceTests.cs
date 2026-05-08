@@ -30,14 +30,14 @@ public sealed class Iso52016ManualIndependentFixtureReferenceTests
     public void ManualIndependentReferences_DoNotDeclareParityClaims()
     {
         var fixtures = _loader.LoadFromDirectory(FixtureDirectory());
-        var forbidden = new[] { "ASHRAE 140 validated", "validated against pyBuildingEnergy", "validated against EnergyPlus" };
+        var forbidden = new[] { "ASHRAE 140 / BESTEST-style validated", "validated against StandardReference", "validated against EnergyPlus" };
         var boundaryTokens = new[]
         {
-            "full ISO52016" + " parity",
-            "full ISO 52016" + " parity",
-            "pyBuildingEnergy" + " parity",
-            "EnergyPlus" + " parity",
-            "ExternalParityCovered"
+            "full ISO52016" + " equivalence",
+            "full ISO 52016" + " equivalence",
+            "StandardReference" + " equivalence",
+            "EnergyPlus" + " equivalence",
+            "ExternalReferenceCovered"
         };
 
         foreach (var fixture in fixtures)

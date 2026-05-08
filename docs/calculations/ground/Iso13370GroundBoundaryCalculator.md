@@ -10,9 +10,9 @@
 - ISO13370-inspired ground boundary engineering calculator.
 - Internal deterministic engineering anchors only.
 - No full ISO 13370 compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 
 ## Formula structure
@@ -57,7 +57,7 @@ Fixtures for this stage live in:
 - internal engineering anchor model;
 - not a full ISO 13370 compliance engine;
 - not a certification artifact;
-- no external parity claims.
+- no external equivalence claims.
 
 ## Migration strategy
 

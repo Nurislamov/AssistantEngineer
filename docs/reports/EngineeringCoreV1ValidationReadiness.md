@@ -36,12 +36,12 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Required non-claims
 
-- This readiness report is not exact EnergyPlus numerical parity.
+- This readiness report is not exact EnergyPlus numerical equivalence.
 - This readiness report is not ASHRAE 140 certification.
-- This readiness report is not full ISO 52016 node/matrix solver parity.
+- This readiness report is not full ISO 52016 node/matrix solver equivalence.
 
 This registry is ready as a future validation backlog and smoke-fixture scaffold.
 
-It is not exact EnergyPlus numerical parity.
+It is not exact EnergyPlus numerical equivalence.
 
 It is not ASHRAE 140 certification.

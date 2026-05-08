@@ -20,13 +20,13 @@ public sealed class EngineeringCalculationModeDisclosureTests
         "ISO 16798 validated",
         "ISO 12831-3 validated",
         "EN 15316 validated",
-        "validated against pyBuildingEnergy",
+        "validated against StandardReference",
         "validated against EnergyPlus",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validated",
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validated",
         "ASHRAE 140 covered",
-        "ExternalParityCovered",
+        "ExternalReferenceCovered",
         "certified",
         "external certification"
     ];

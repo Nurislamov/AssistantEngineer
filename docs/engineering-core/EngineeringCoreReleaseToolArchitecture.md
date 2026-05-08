@@ -1,4 +1,4 @@
-﻿# Engineering Core Release Tool Architecture
+# Engineering Core Release Tool Architecture
 
 ## Purpose
 
@@ -32,8 +32,8 @@ They must not contain the release readiness file list, verification step list or
 
 ## Non-claims
 
-The release gate does not claim exact EnergyPlus numerical parity.
+The release gate does not claim exact EnergyPlus numerical equivalence.
 
-The release gate does not claim exact pyBuildingEnergy numerical parity.
+The release gate does not claim exact StandardReference numerical equivalence.
 
-The release gate does not claim ASHRAE 140 validation coverage.
+The release gate does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.

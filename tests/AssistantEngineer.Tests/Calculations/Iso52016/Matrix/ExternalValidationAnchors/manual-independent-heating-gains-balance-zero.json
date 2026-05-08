@@ -5,10 +5,10 @@
   "referenceStyle": "Manual",
   "claimScope": "ValidationAnchorOnly",
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full external engine parity claim."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
   ],
   "description": "Cold boundary balanced by sensible gains. Manual anchor: max(0, H * (T_heat_setpoint - T_outdoor) - gains) = 0.",
   "kind": "singleHourSteadyState",

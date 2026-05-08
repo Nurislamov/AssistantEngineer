@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Frontend;
 
@@ -232,7 +232,7 @@ public class EngineeringCoreFrontendIntegrationGuardTests
             StringComparison.Ordinal);
 
         Assert.Contains(
-            "pyBuildingEnergy",
+            "StandardReference",
             content,
             StringComparison.Ordinal);
 
@@ -399,12 +399,12 @@ public class EngineeringCoreFrontendIntegrationGuardTests
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "no exact EnergyPlus numerical parity claim",
+            "no exact EnergyPlus numerical equivalence claim",
             disclosurePanelDocs,
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "no ASHRAE 140 validation coverage claim",
+            "no ASHRAE 140 / BESTEST-style validation anchor coverage claim",
             disclosurePanelDocs,
             StringComparison.OrdinalIgnoreCase);
     }

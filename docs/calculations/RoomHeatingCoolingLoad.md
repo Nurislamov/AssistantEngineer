@@ -1,6 +1,6 @@
 # Room Heating / Cooling Load
 
-This Energy Calculation Parity step combines completed room-level components into a deterministic room load result.
+This Energy Calculation equivalence step combines completed room-level components into a deterministic room load result.
 
 ## Scope
 
@@ -47,7 +47,7 @@ Missing component inputs are reported as zero-component diagnostics. Invalid roo
 
 ## Real Application Pipeline
 
-Room load API routes use the Energy Calculation Parity application pipeline:
+Room load API routes use the Energy Calculation equivalence application pipeline:
 
 - `GET /api/v1/rooms/{roomId}/load-calculations/heating-load`
 - `GET /api/v1/rooms/{roomId}/load-calculations/cooling-load`
@@ -59,7 +59,7 @@ The assembler maps existing room, wall, window, ventilation, infiltration, groun
 Method handling is explicit:
 
 - `requestedMethod` records the public API query value.
-- `actualMethod` is `EnergyCalculationParityDesignPoint` for the room load endpoint.
+- `actualMethod` is `ExternalReferenceValidationDesignPoint` for the room load endpoint.
 - diagnostics warn when a requested compatibility method is accepted but the design-point pipeline is used.
 
 Ground contact, solar, ventilation and schedules are assembled with documented fallbacks:
@@ -70,7 +70,7 @@ Ground contact, solar, ventilation and schedules are assembled with documented f
 - room heating/cooling responses expose effective ventilation assumptions: `EffectiveAirChangesPerHour`, `EffectiveMechanicalAirflowM3PerHour`, `EffectiveInfiltrationAirChangesPerHour`, `EffectiveInfiltrationAirflowM3PerHour`, and `VentilationAssumptionSource`;
 - design-point internal gains use schedule factor `1.0`, and diagnostics state this even when room schedules exist.
 
-Response DTOs keep existing public fields and add mapped parity fields where supported:
+Response DTOs keep existing public fields and add mapped equivalence fields where supported:
 
 - heating: `HeatingLoadW`, `HeatingLoadWPerM2`, effective ventilation values, transmission, ventilation, infiltration and ground breakdown, diagnostics and assumptions;
 - cooling: `CoolingLoadW`, `CoolingLoadWPerM2`, effective ventilation values, transmission, solar, ventilation, infiltration, internal gains and ground breakdown, diagnostics and assumptions.

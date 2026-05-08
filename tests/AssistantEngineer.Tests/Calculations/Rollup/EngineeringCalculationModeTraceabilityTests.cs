@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Rollup;
 
@@ -63,7 +63,7 @@ public sealed class EngineeringCalculationModeTraceabilityTests
         Assert.Contains("AE-EN15316-002", dependencies);
         Assert.Contains("AE-VALIDATION-ISO52016-001", dependencies);
         Assert.Contains("AE-VALIDATION-ISO52016-002", dependencies);
-        Assert.Contains("AE-VALIDATION-PYBE-001", dependencies);
+        Assert.Contains("AE-VALIDATION-standard-reference-001", dependencies);
     }
 
     [Fact]
@@ -81,11 +81,11 @@ public sealed class EngineeringCalculationModeTraceabilityTests
             var text = File.ReadAllText(path);
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full ISO compliance");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full EN compliance");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "validated against pyBuildingEnergy");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "pyBuildingEnergy parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus parity");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "ASHRAE 140 validated");
-            AssertTokenAppearsOnlyAsNegatedClaim(text, "ExternalParityCovered");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "validated against StandardReference");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "StandardReference equivalence");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus comparison workflow");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "ASHRAE 140 / BESTEST-style validated");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "ExternalReferenceCovered");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "certified");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "external certification");
         }
@@ -107,3 +107,4 @@ public sealed class EngineeringCalculationModeTraceabilityTests
         }
     }
 }
+

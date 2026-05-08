@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Tests;
+using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
@@ -36,7 +36,7 @@ public class EnergyPlusValidationDocumentationTests
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "not full EnergyPlus parity",
+            "not full EnergyPlus comparison workflow",
             content,
             StringComparison.OrdinalIgnoreCase);
 
@@ -118,17 +118,17 @@ public class EnergyPlusValidationDocumentationTests
         var content = ReadCaseTemplate();
 
         Assert.Contains(
-            "Does not claim exact EnergyPlus numerical parity",
+            "Does not claim exact EnergyPlus numerical equivalence",
             content,
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "Does not claim ASHRAE 140 validation coverage",
+            "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage",
             content,
             StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains(
-            "Does not claim full ISO 52016 node/matrix solver parity",
+            "Does not claim full ISO 52016 node/matrix solver equivalence",
             content,
             StringComparison.OrdinalIgnoreCase);
     }

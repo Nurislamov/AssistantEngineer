@@ -39,10 +39,10 @@ public class Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
 
         Assert.Contains("Physical model selection application integration hardening stage.", claimBoundary);
         Assert.Contains("Validation/internal engineering anchors only.", claimBoundary);
-        Assert.Contains("Not full ISO 52016 parity.", claimBoundary);
+        Assert.Contains("Not full ISO 52016 equivalence.", claimBoundary);
         Assert.Contains("Not complete ISO 52016 numerical equivalence.", claimBoundary);
-        Assert.Contains("Not pyBuildingEnergy parity.", claimBoundary);
-        Assert.Contains("Not EnergyPlus parity.", claimBoundary);
+        Assert.Contains("Not StandardReference equivalence.", claimBoundary);
+        Assert.Contains("Not EnergyPlus comparison workflow.", claimBoundary);
         Assert.Contains("Not ASHRAE Standard 140 validation.", claimBoundary);
     }
 
@@ -108,15 +108,15 @@ public class Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
         Assert.Contains("ReducedMatrix remains the default", doc);
         Assert.Contains("PhysicalNodeModel is explicit opt-in", doc);
         Assert.Contains("validation/internal engineering anchors only", doc);
-        Assert.Contains("not full ISO 52016 parity", doc);
+        Assert.Contains("not full ISO 52016 equivalence", doc);
         Assert.Contains("not complete ISO 52016 numerical equivalence", doc);
-        Assert.Contains("not pyBuildingEnergy parity", doc);
-        Assert.Contains("not EnergyPlus parity", doc);
+        Assert.Contains("not StandardReference equivalence", doc);
+        Assert.Contains("not EnergyPlus comparison workflow", doc);
         Assert.Contains("not ASHRAE Standard 140 validation", doc);
 
-        Assert.DoesNotContain("full ISO 52016 parity achieved", doc, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("EnergyPlus parity achieved", doc, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("pyBuildingEnergy parity achieved", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("full ISO 52016 equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EnergyPlus comparison workflow achieved", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("StandardReference equivalence achieved", doc, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ASHRAE Standard 140 validation passed", doc, StringComparison.OrdinalIgnoreCase);
     }
 

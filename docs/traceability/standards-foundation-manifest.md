@@ -48,9 +48,9 @@ Key additions:
 Foundation-level forbidden claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This manifest describes internal deterministic engineering contract readiness only. It is not a standards certification statement.
 
@@ -105,9 +105,9 @@ Key additions:
 Topology-foundation non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage defines deterministic topology contracts and diagnostics only.
 
@@ -147,9 +147,9 @@ This stage defines deterministic topology contracts and diagnostics only.
 Boundary-integration non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic internal engineering boundary integration only.
 
@@ -204,9 +204,9 @@ This stage provides deterministic internal engineering boundary integration only
 Ground-lane non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic internal engineering ground-boundary integration only.
 
@@ -260,9 +260,9 @@ This stage provides deterministic internal engineering ground-boundary integrati
 Ground-topology integration non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired application integration only.
 
@@ -317,9 +317,9 @@ This stage provides deterministic standard-inspired application integration only
 Natural ventilation foundation non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired engineering calculation only.
 
@@ -370,9 +370,9 @@ This stage provides deterministic standard-inspired engineering calculation only
 Natural ventilation controls non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired engineering calculation only.
 
@@ -419,9 +419,9 @@ This stage provides deterministic standard-inspired engineering calculation only
 Natural ventilation zone/hourly integration non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired application integration only.
 
@@ -477,9 +477,9 @@ This stage provides deterministic standard-inspired application integration only
 Domestic hot water useful-demand non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired DHW useful-demand calculation only.
 
@@ -539,9 +539,9 @@ This stage provides deterministic standard-inspired DHW useful-demand calculatio
 Domestic hot water system-load non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic standard-inspired DHW system-load preparation only.
 
@@ -611,9 +611,9 @@ This stage provides deterministic standard-inspired DHW system-load preparation 
 System-energy module-chain foundation non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic EN15316-style module-chain foundation only and defers generator/final/primary energy expansion.
 
@@ -675,9 +675,9 @@ This stage provides deterministic EN15316-style module-chain foundation only and
 System-energy generator/final-energy stage non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 This stage provides deterministic EN15316-style generator/final-energy calculation only and defers primary-energy and reporting expansion.
 
@@ -742,9 +742,9 @@ This stage provides deterministic EN15316-style generator/final-energy calculati
 System-energy primary/reporting stage non-claims:
 - No `Full ISO compliance` claim.
 - No `Full EN compliance` claim.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 - No national annex compliance claim.
 - No certification-grade EPB reporting claim.
 

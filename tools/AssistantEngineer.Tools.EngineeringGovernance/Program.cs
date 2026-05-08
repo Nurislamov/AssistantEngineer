@@ -137,9 +137,9 @@ internal static class Program
             "Compatibility behavior preserved by default.",
             "Inspired calculation paths remain opt-in.",
             "No full ISO/EN compliance claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim.",
+            "No StandardReference equivalence claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
             "No external certification claim.",
             "No automatic production data mutation."
         };
@@ -155,9 +155,9 @@ internal static class Program
 
         var knownLimitations = new[]
         {
-            "No EnergyPlus parity claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No ASHRAE 140 validation claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No StandardReference equivalence claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
             "External numerical validation is still not complete.",
             "Inspired calculation paths remain opt-in.",
             "Building input validation suggests corrections but does not mutate production data."
@@ -196,7 +196,7 @@ internal static class Program
             },
             disclosureFiles = new[]
             {
-                "docs/calculations/EnergyCalculationParityVerification.md",
+                "docs/calculations/ExternalReferenceValidationVerification.md",
                 "docs/calculations/EngineeringCoreV1Scope.md",
                 "docs/api/engineering-core-v1/status.sample.json",
                 "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",

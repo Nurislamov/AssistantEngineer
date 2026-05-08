@@ -25,5 +25,5 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EnergyPlusValidation\Assist
 # annual-heating-kwh
 # peak-heating-w
 # not a real EnergyPlus comparison yet
-# must not claim exact EnergyPlus parity
+# must not claim exact EnergyPlus comparison workflow
 # END AE-EP-SMOKE-001-COMPARISON-READINESS-GUARD-MARKERS

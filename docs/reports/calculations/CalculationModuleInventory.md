@@ -1,4 +1,4 @@
-﻿# Calculation Module Deepening Inventory
+# Calculation Module Deepening Inventory
 
 Generated at: 2026-01-01 00:00:00 UTC
 
@@ -15,7 +15,7 @@ Generated at: 2026-01-01 00:00:00 UTC
 | Contract files | 196 |
 | Abstraction files | 48 |
 | Calculation tests | 79 |
-| Parity tests | 37 |
+| equivalence tests | 37 |
 | Key engines | 12 |
 | Missing key engines | 0 |
 
@@ -51,9 +51,9 @@ Generated at: 2026-01-01 00:00:00 UTC
 
 ## Required non-claims
 
-- Does not claim exact EnergyPlus numerical parity.
-- Does not claim ASHRAE 140 validation coverage.
-- Does not claim full ISO 52016 node/matrix solver parity.
+- Does not claim exact EnergyPlus numerical equivalence.
+- Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
+- Does not claim full ISO 52016 node/matrix solver equivalence.
 - Does not claim full ISO 13370 implementation.
 - Does not claim full EN 15316 system-chain implementation.
 

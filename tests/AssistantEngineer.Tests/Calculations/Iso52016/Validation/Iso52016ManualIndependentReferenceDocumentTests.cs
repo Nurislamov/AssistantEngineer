@@ -26,10 +26,10 @@ public sealed class Iso52016ManualIndependentReferenceDocumentTests
         Assert.Contains("Tolerance rationale", text);
         Assert.Contains("Validation/internal engineering anchors only.", text);
         Assert.Contains("Manual independent reference fixtures only.", text);
-        Assert.Contains("No full ISO 52016 parity claim.", text);
-        Assert.Contains("No pyBuildingEnergy parity claim.", text);
-        Assert.Contains("No EnergyPlus parity claim.", text);
-        Assert.Contains("No ASHRAE 140 validation claim.", text);
-        Assert.Contains("ExternalParityCovered is not allowed in this stage.", text);
+        Assert.Contains("No full ISO 52016 equivalence claim.", text);
+        Assert.Contains("No StandardReference equivalence claim.", text);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", text);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", text);
+        Assert.Contains("ExternalReferenceCovered is not allowed in this stage.", text);
     }
 }

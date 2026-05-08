@@ -34,7 +34,7 @@ public class Iso52016VerificationToolTests
         Assert.Contains("Iso52016VerificationRegistry.json", program);
         Assert.Contains("VerifyGeneratedArtifactPolicy", program);
         Assert.Contains("VerifyClaimBoundaries", program);
-        Assert.Contains("VerifyNoPositiveParityClaims", program);
+        Assert.Contains("VerifyNoPositiveEquivalenceClaims", program);
         Assert.Contains("VerifyWrapperScripts", program);
         Assert.Contains("RunStageTests", program);
     }

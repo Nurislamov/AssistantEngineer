@@ -25,9 +25,9 @@ public sealed class Iso52016ConstructionAssemblyCalculator
             "ISO52016-inspired construction layer and mass class engineering foundation.",
             "Internal deterministic engineering anchors only.",
             "No full ISO 52016 compliance claim.",
-            "No pyBuildingEnergy parity claim.",
-            "No EnergyPlus parity claim.",
-            "No ASHRAE 140 validation claim.",
+            "No StandardReference equivalence claim.",
+            "No EnergyPlus comparison workflow claim.",
+            "No ASHRAE 140 / BESTEST-style validation anchor claim.",
             "No external certification claim.",
             "Five-node distribution descriptor is a deterministic anchor, not a full transient conduction solver."
         };

@@ -49,9 +49,9 @@ This stage covers useful DHW demand only and does not model DHW system losses.
 - No protected tables copied.
 - No DHW system losses in this prompt.
 - No EN15316 integration in this prompt.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Compatibility note
 
@@ -109,9 +109,9 @@ Existing ISO12831-inspired calculator and compatibility application service rema
 - No full EN15316 compliance claim.
 - No protected tables copied.
 - No generator efficiency/final energy/primary energy calculation in this prompt.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Next prompt
 

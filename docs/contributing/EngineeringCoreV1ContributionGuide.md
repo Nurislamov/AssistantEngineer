@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Contribution Guide
+# Engineering Core V1 Contribution Guide
 
 ## Purpose
 
@@ -47,10 +47,10 @@ Use:
 
 Do not introduce claims of:
 
-- exact EnergyPlus numerical parity;
-- exact pyBuildingEnergy numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity;
+- exact EnergyPlus numerical equivalence;
+- exact StandardReference numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence;
 - full ISO 13370 implementation;
 - full EN 15316 system chain;
 - detailed HVAC plant simulation;
@@ -80,7 +80,7 @@ Relevant report/API contract:
 
     AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Common.CalculationDisclosure
 
-## EnergyPlus / ASHRAE 140 validation
+## EnergyPlus / ASHRAE 140 / BESTEST-style validation anchor
 
 Validation cases must be comparative with documented tolerances.
 
@@ -90,7 +90,7 @@ Use:
     docs/validation/EnergyPlusValidationCaseTemplate.md
     docs/validation/EnergyPlusAshrae140ValidationHarness.md
 
-Validation must not be described as exact watt-by-watt parity.
+Validation must not be described as exact watt-by-watt equivalence.
 
 ## Issue templates
 

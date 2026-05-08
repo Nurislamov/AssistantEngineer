@@ -5,12 +5,12 @@
   "referenceStyle": "Manual",
   "claimScope": "ValidationAnchorOnly",
   "explicitNonClaims": [
-    "No exact pyBuildingEnergy numerical parity claim.",
-    "No exact EnergyPlus numerical parity claim.",
-    "No ASHRAE 140 validation coverage claim.",
-    "No full external engine parity claim."
+    "No exact StandardReference numerical equivalence claim.",
+    "No exact EnergyPlus numerical equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor coverage claim.",
+    "No full external engine equivalence claim."
   ],
-  "description": "One air node in the heating/cooling deadband. Manual anchor expects no HVAC load and no parity claim.",
+  "description": "One air node in the heating/cooling deadband. Manual anchor expects no HVAC load and no equivalence claim.",
   "kind": "singleHourSteadyState",
   "mode": "Neutral",
   "timeStepSeconds": 3600.0,

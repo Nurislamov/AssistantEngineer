@@ -11,9 +11,9 @@
 - Internal deterministic engineering anchors only.
 - Compatibility behavior preserved by default.
 - No full ISO 13370 compliance claim.
-- No pyBuildingEnergy parity claim.
-- No EnergyPlus parity claim.
-- No ASHRAE 140 validation claim.
+- No StandardReference equivalence claim.
+- No EnergyPlus comparison workflow claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No external certification claim.
 
 ## Integration strategy
@@ -48,4 +48,4 @@
 - internal integration anchor only;
 - not a full ISO 13370 compliance claim;
 - not external certification;
-- no parity claims with external tools.
+- no equivalence claims with external tools.

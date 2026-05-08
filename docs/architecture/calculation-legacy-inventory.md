@@ -3,9 +3,9 @@
 This inventory is limited to architecture hardening and usage mapping.
 
 Boundary statements:
-- No EnergyPlus parity claim.
-- No pyBuildingEnergy parity claim.
-- No ASHRAE 140 validation claim.
+- No EnergyPlus comparison workflow claim.
+- No StandardReference equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor claim.
 - No full ISO/EN compliance claim.
 
 ## Active calculation path

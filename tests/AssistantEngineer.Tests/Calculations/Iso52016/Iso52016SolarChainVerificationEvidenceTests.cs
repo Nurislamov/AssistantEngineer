@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016;
 
@@ -79,10 +79,10 @@ public class Iso52016SolarChainVerificationEvidenceTests
             "calculations",
             "ISO52016SolarChainVerification.md");
 
-        Assert.Contains("No exact EnergyPlus numerical parity", documentation, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity", documentation, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No ASHRAE 140 validation coverage", documentation, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No full ISO 52016 node/matrix solver parity", documentation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No exact EnergyPlus numerical equivalence", documentation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No exact StandardReference numerical equivalence", documentation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage", documentation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("No full ISO 52016 node/matrix solver equivalence", documentation, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("verify-iso52016-solar-chain.ps1", documentation, StringComparison.Ordinal);
     }
 

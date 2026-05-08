@@ -29,4 +29,4 @@ It loads each JSON fixture, rebuilds the same Matrix solver request, runs the so
 
 ## Non-claim
 
-These fixtures do not claim exact pyBuildingEnergy, EnergyPlus, or ASHRAE 140 parity.
+These fixtures do not claim exact StandardReference, EnergyPlus, or ASHRAE 140 equivalence.

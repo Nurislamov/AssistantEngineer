@@ -1,6 +1,6 @@
-﻿{
+{
   "caseId": "{{CASE_ID}}",
-  "tolerancePolicy": "Smoke fixture tolerance policy. Future real EnergyPlus comparison remains tolerance-based and non-parity.",
+  "tolerancePolicy": "Smoke fixture tolerance policy. Future real EnergyPlus comparison remains tolerance-based and non-equivalence.",
   "metrics": [
     {
       "metricId": "annual-heating-kwh",
@@ -34,8 +34,8 @@
     }
   ],
   "requiredNonClaims": [
-    "Does not claim exact EnergyPlus numerical parity.",
-    "Does not claim ASHRAE 140 validation coverage.",
-    "Does not claim full ISO 52016 node/matrix solver parity."
+    "Does not claim exact EnergyPlus numerical equivalence.",
+    "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+    "Does not claim full ISO 52016 node/matrix solver equivalence."
   ]
 }

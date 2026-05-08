@@ -45,17 +45,17 @@ internal sealed class Iso52016VerificationRunner
 
         private static readonly string[] ForbiddenPositiveClaims =
         {
-            "full ISO 52016 parity",
-            "ISO52016 parity",
+            "full ISO 52016 equivalence",
+            "ISO52016 equivalence",
             "complete ISO 52016 numerical equivalence",
             "complete ISO52016 numerical equivalence",
-            "full pyBuildingEnergy parity",
-            "pyBuildingEnergy parity",
-            "pyBuildingEnergy numerical equivalence",
-            "full EnergyPlus parity",
-            "EnergyPlus parity",
+            "full StandardReference equivalence",
+            "StandardReference equivalence",
+            "StandardReference numerical equivalence",
+            "full EnergyPlus comparison workflow",
+            "EnergyPlus comparison workflow",
             "EnergyPlus numerical equivalence",
-            "ASHRAE 140 validation",
+            "ASHRAE 140 / BESTEST-style validation anchor",
             "ASHRAE Standard 140 validation",
             "ASHRAE Standard 140 benchmark-grade claim",
             "complete ISO52010 compliance",
@@ -90,7 +90,7 @@ internal sealed class Iso52016VerificationRunner
             VerifyStageFiles(stage);
             VerifyStageManifests(stage);
             VerifyClaimBoundaries(new[] { stage });
-            VerifyNoPositiveParityClaims(new[] { stage });
+            VerifyNoPositiveEquivalenceClaims(new[] { stage });
             VerifyGeneratedArtifactPolicy(new[] { stage }, requireGitCleanlinessForArtifacts: true);
             VerifyWrapperScripts(new[] { stage });
 
@@ -113,7 +113,7 @@ internal sealed class Iso52016VerificationRunner
             VerifyRequiredFiles();
             VerifyAllManifestsParse();
             VerifyClaimBoundaries(registry.Stages);
-            VerifyNoPositiveParityClaims(registry.Stages);
+            VerifyNoPositiveEquivalenceClaims(registry.Stages);
             VerifyGeneratedArtifactPolicy(registry.Stages, requireGitCleanlinessForArtifacts: true);
             VerifyWrapperScripts(registry.Stages);
 
@@ -216,7 +216,7 @@ internal sealed class Iso52016VerificationRunner
             }
         }
 
-        private void VerifyNoPositiveParityClaims(IReadOnlyCollection<Iso52016VerificationStage> stages)
+        private void VerifyNoPositiveEquivalenceClaims(IReadOnlyCollection<Iso52016VerificationStage> stages)
         {
             var files = stages
                 .SelectMany(stage => stage.RelatedManifests

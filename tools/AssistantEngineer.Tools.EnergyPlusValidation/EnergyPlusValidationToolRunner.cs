@@ -199,8 +199,8 @@ internal static class EnergyPlusValidationToolRunner
             ["metrics"] = metricResults,
             ["requiredNonClaims"] = JsonArrayToStringArray(tolerances["requiredNonClaims"]),
             ["interpretation"] = isRealReference
-                ? "Fixture compared against real EnergyPlus reference output within documented tolerances. This is tolerance-based comparison and does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage."
-                : "Fixture compared against placeholder reference output only. This is not a real EnergyPlus validation and not an ASHRAE 140 validation claim."
+                ? "Fixture compared against real EnergyPlus reference output within documented tolerances. This is tolerance-based comparison and does not claim exact EnergyPlus comparison workflow or ASHRAE 140 / BESTEST-style validation anchor coverage."
+                : "Fixture compared against placeholder reference output only. This is not a real EnergyPlus validation and not an ASHRAE 140 / BESTEST-style validation anchor claim."
         };
 
         var jsonPath = Path.Combine(ReportsDirectory, $"{caseId}-ComparisonResult.json");
@@ -331,8 +331,8 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine("## Required non-claims");
         builder.AppendLine();
         builder.AppendLine("- This placeholder is not a real EnergyPlus comparison yet.");
-        builder.AppendLine("- This placeholder must not claim exact EnergyPlus parity.");
-        builder.AppendLine("- This placeholder must not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("- This placeholder must not claim exact EnergyPlus comparison workflow.");
+        builder.AppendLine("- This placeholder must not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
         builder.AppendLine();
         builder.AppendLine("## Files");
         builder.AppendLine();
@@ -343,9 +343,9 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine();
         builder.AppendLine("PlaceholderComparison is not real EnergyPlus validation.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim exact EnergyPlus numerical parity.");
+        builder.AppendLine("This does not claim exact EnergyPlus numerical equivalence.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         WriteText(Path.Combine(ReportsDirectory, "EP-SMOKE-001-ComparisonReadiness.md"), builder.ToString());
         return 0;
@@ -583,13 +583,13 @@ internal static class EnergyPlusValidationToolRunner
         markdown.AppendLine();
         markdown.AppendLine("## Required non-claims");
         markdown.AppendLine();
-        markdown.AppendLine("- This readiness report is not exact EnergyPlus numerical parity.");
+        markdown.AppendLine("- This readiness report is not exact EnergyPlus numerical equivalence.");
         markdown.AppendLine("- This readiness report is not ASHRAE 140 certification.");
-        markdown.AppendLine("- This readiness report is not full ISO 52016 node/matrix solver parity.");
+        markdown.AppendLine("- This readiness report is not full ISO 52016 node/matrix solver equivalence.");
         markdown.AppendLine();
         markdown.AppendLine("This registry is ready as a future validation backlog and smoke-fixture scaffold.");
         markdown.AppendLine();
-        markdown.AppendLine("It is not exact EnergyPlus numerical parity.");
+        markdown.AppendLine("It is not exact EnergyPlus numerical equivalence.");
         markdown.AppendLine();
         markdown.AppendLine("It is not ASHRAE 140 certification.");
 
@@ -678,7 +678,7 @@ internal static class EnergyPlusValidationToolRunner
             ["version"] = "v1",
             ["status"] = "PlannedValidation",
             ["generatedAtUtc"] = StableGeneratedAtUtc,
-            ["interpretation"] = "Validation evidence package proves validation infrastructure readiness, placeholder comparison coverage and fixture synchronization. It does not claim exact EnergyPlus parity or ASHRAE 140 validation coverage.",
+            ["interpretation"] = "Validation evidence package proves validation infrastructure readiness, placeholder comparison coverage and fixture synchronization. It does not claim exact EnergyPlus comparison workflow or ASHRAE 140 / BESTEST-style validation anchor coverage.",
             ["sources"] = new Dictionary<string, object?>
             {
                 ["registry"] = RegistryPath,
@@ -712,7 +712,7 @@ internal static class EnergyPlusValidationToolRunner
                 "Add first real EnergyPlus model and output for EP-SMOKE-001.",
                 "Add provenance.json for real EnergyPlus fixture.",
                 "Switch EP-SMOKE-001 from PlaceholderComparison to RealEnergyPlusComparison.",
-                "Keep comparison tolerance-based and non-parity.",
+                "Keep comparison tolerance-based and non-equivalence.",
                 "Add additional real fixtures only through fixture authoring kit and intake gate."
             }
         };
@@ -766,9 +766,9 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine();
         builder.AppendLine("PlaceholderComparison is not real EnergyPlus validation.");
         builder.AppendLine();
-        builder.AppendLine("This is not ASHRAE 140 validation coverage.");
+        builder.AppendLine("This is not ASHRAE 140 / BESTEST-style validation anchor coverage.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim exact EnergyPlus numerical parity.");
+        builder.AppendLine("This does not claim exact EnergyPlus numerical equivalence.");
         builder.AppendLine();
         builder.AppendLine("Future work must replace or supplement the placeholder reference with real EnergyPlus model/output files and provenance metadata.");
 
@@ -820,9 +820,9 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine();
         builder.AppendLine("Current placeholder comparisons are not real EnergyPlus validation.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim exact EnergyPlus numerical parity.");
+        builder.AppendLine("This does not claim exact EnergyPlus numerical equivalence.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         return builder.ToString();
     }
@@ -886,9 +886,9 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine();
         builder.AppendLine("PlaceholderComparison is not real EnergyPlus validation.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim exact EnergyPlus numerical parity.");
+        builder.AppendLine("This does not claim exact EnergyPlus numerical equivalence.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         return builder.ToString();
     }
@@ -933,9 +933,9 @@ internal static class EnergyPlusValidationToolRunner
         builder.AppendLine();
         builder.AppendLine("Future real validation must use committed EnergyPlus/reference model files.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim exact EnergyPlus numerical parity.");
+        builder.AppendLine("This does not claim exact EnergyPlus numerical equivalence.");
         builder.AppendLine();
-        builder.AppendLine("This does not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         return builder.ToString();
     }
@@ -994,9 +994,9 @@ internal static class EnergyPlusValidationToolRunner
             builder.AppendLine($"- {item}");
 
         builder.AppendLine();
-        builder.AppendLine("This evidence does not claim exact EnergyPlus parity.");
+        builder.AppendLine("This evidence does not claim exact EnergyPlus comparison workflow.");
         builder.AppendLine();
-        builder.AppendLine("This evidence does not claim ASHRAE 140 validation coverage.");
+        builder.AppendLine("This evidence does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.");
 
         return builder.ToString();
     }
@@ -1071,10 +1071,10 @@ internal static class EnergyPlusValidationToolRunner
 
     private static string[] RequiredValidationNonClaims() =>
     [
-        "Does not claim exact EnergyPlus numerical parity.",
-            "Does not claim exact pyBuildingEnergy numerical parity.",
-        "Does not claim ASHRAE 140 validation coverage.",
-        "Does not claim full ISO 52016 node/matrix solver parity.",
+        "Does not claim exact EnergyPlus numerical equivalence.",
+            "Does not claim exact StandardReference numerical equivalence.",
+        "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+        "Does not claim full ISO 52016 node/matrix solver equivalence.",
         "PlaceholderComparison is not real EnergyPlus validation.",
         "Future real validation must remain tolerance-based."
     ];

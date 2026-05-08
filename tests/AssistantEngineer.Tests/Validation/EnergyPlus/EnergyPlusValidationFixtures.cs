@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Tests.Validation.EnergyPlus;
+namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
 public static class EnergyPlusValidationFixtures
 {
@@ -60,13 +60,13 @@ public static class EnergyPlusValidationFixtures
             [
                 "AssistantEngineer uses engineering component formulas and simplified hourly balance.",
                 "EnergyPlus uses its own zone heat-balance algorithms and timestep handling.",
-                "Exact watt-by-watt parity is not expected."
+                "Exact watt-by-watt equivalence is not expected."
             ],
             NonClaims:
             [
-                "Does not claim exact EnergyPlus numerical parity.",
-                "Does not claim ASHRAE 140 validation coverage.",
-                "Does not claim full ISO 52016 node/matrix solver parity."
+                "Does not claim exact EnergyPlus numerical equivalence.",
+                "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+                "Does not claim full ISO 52016 node/matrix solver equivalence."
             ]),
 
         new(
@@ -124,13 +124,13 @@ public static class EnergyPlusValidationFixtures
             [
                 "AssistantEngineer does not model detailed EnergyPlus solar distribution.",
                 "AssistantEngineer does not model detailed glazing optics.",
-                "Exact hourly solar parity is not expected."
+                "Exact hourly solar equivalence is not expected."
             ],
             NonClaims:
             [
-                "Does not claim exact EnergyPlus numerical parity.",
-                "Does not claim ASHRAE 140 validation coverage.",
-                "Does not claim full optical glazing or EnergyPlus solar distribution parity."
+                "Does not claim exact EnergyPlus numerical equivalence.",
+                "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
+                "Does not claim full optical glazing or EnergyPlus solar distribution equivalence."
             ]),
 
         new(
@@ -192,8 +192,8 @@ public static class EnergyPlusValidationFixtures
             ],
             NonClaims:
             [
-                "Does not claim exact EnergyPlus numerical parity.",
-                "Does not claim ASHRAE 140 validation coverage.",
+                "Does not claim exact EnergyPlus numerical equivalence.",
+                "Does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.",
                 "Does not claim latent or moisture validation coverage."
             ])
     ];

@@ -1,4 +1,4 @@
-{
+﻿{
   "releaseReadinessId": "EngineeringCoreV2InternalReadiness",
   "status": "ReadyWithWarnings",
   "claimBoundary": [
@@ -7,9 +7,9 @@
     "Compatibility behavior preserved by default.",
     "Inspired calculation paths remain opt-in.",
     "No full ISO/EN compliance claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "No external certification claim.",
     "No automatic production data mutation."
   ],
@@ -42,7 +42,7 @@
   "closedStages": [
     "AE-VALIDATION-ISO52016-001",
     "AE-VALIDATION-ISO52016-002",
-    "AE-VALIDATION-PYBE-001",
+    "AE-VALIDATION-standard-reference-001",
     "AE-VENT-001",
     "AE-VENT-002",
     "AE-GROUND-001",
@@ -69,9 +69,9 @@
   ],
   "blockedStages": [],
   "knownLimitations": [
-    "No EnergyPlus parity claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No ASHRAE 140 validation claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No StandardReference equivalence claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
     "External numerical validation is still not complete.",
     "Inspired paths remain opt-in.",
     "Building input validation suggests corrections but does not mutate production data."
@@ -91,13 +91,13 @@
     "No ISO 16798 validated claim.",
     "No ISO 12831-3 validated claim.",
     "No EN 15316 validated claim.",
-    "No validated against pyBuildingEnergy claim.",
+    "No validated against StandardReference claim.",
     "No validated against EnergyPlus claim.",
-    "No pyBuildingEnergy parity claim.",
-    "No EnergyPlus parity claim.",
-    "No ASHRAE 140 validated claim.",
+    "No StandardReference equivalence claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validated claim.",
     "No ASHRAE 140 covered claim.",
-    "No ExternalParityCovered claim.",
+    "No ExternalReferenceCovered claim.",
     "No certified claim.",
     "No external certification claim."
   ],
@@ -112,7 +112,7 @@
     ]
   },
   "disclosureFiles": [
-    "docs/calculations/EnergyCalculationParityVerification.md",
+    "docs/calculations/ExternalReferenceValidationVerification.md",
     "docs/calculations/EngineeringCoreV1Scope.md",
     "docs/api/engineering-core-v1/status.sample.json",
     "docs/api/engineering-core-v1/calculation-mode-rollup.sample.json",
@@ -120,3 +120,4 @@
     "docs/api/engineering-core-v2/engineering-release-readiness.sample.json"
   ]
 }
+

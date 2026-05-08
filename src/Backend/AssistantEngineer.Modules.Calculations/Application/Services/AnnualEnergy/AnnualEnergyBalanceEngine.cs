@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -6,7 +6,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.AnnualEner
 
 public sealed class AnnualEnergyBalanceEngine
 {
-    private const string Method = "Energy Calculation Parity / Annual 8760 Energy Balance";
+    private const string Method = "Energy Calculation equivalence / Annual 8760 Energy Balance";
     private const string Version = "2026.04-internal-deterministic";
     private const string TrueHourlySimulationSource = "TrueHourlySimulation";
     private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";

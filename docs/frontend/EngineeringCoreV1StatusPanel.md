@@ -1,4 +1,4 @@
-﻿# Engineering Core V1 Frontend Status Panel
+# Engineering Core V1 Frontend Status Panel
 
 ## Purpose
 
@@ -36,14 +36,14 @@ The panel displays:
 
 The panel must keep these limitations visible:
 
-- no exact EnergyPlus numerical parity claim;
-- no exact pyBuildingEnergy numerical parity claim;
-- no ASHRAE 140 validation coverage claim;
-- no full ISO 52016 node/matrix solver parity claim;
+- no exact EnergyPlus numerical equivalence claim;
+- no exact StandardReference numerical equivalence claim;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage claim;
+- no full ISO 52016 node/matrix solver equivalence claim;
 - no latent/moisture/humidity calculation claim.
 
 ## UX rule
 
 Warnings, assumptions and non-claims must not be hidden behind debug-only UI.
 
-The dashboard panel should remain visible in normal application use so that calculation results are not interpreted as full external-simulator parity.
+The dashboard panel should remain visible in normal application use so that calculation results are not interpreted as full external-simulator equivalence.

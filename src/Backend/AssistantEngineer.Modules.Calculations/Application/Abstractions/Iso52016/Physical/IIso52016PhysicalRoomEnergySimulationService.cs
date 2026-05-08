@@ -6,7 +6,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso520
 
 /// <summary>
 /// Simulates an ISO 52016-inspired physical room model by building a Matrix request and running the existing Matrix hourly solver.
-/// This is an adapter/service stage over the existing solver, not a new solver and not an external parity claim.
+/// This is an adapter/service stage over the existing solver, not a new solver and not an external equivalence claim.
 /// </summary>
 public interface IIso52016PhysicalRoomEnergySimulationService
 {

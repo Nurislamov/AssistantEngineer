@@ -20,13 +20,13 @@ public sealed class EngineeringClaimBoundaryScanner
         "ISO 16798 validated",
         "ISO 12831-3 validated",
         "EN 15316 validated",
-        "validated against pyBuildingEnergy",
+        "validated against StandardReference",
         "validated against EnergyPlus",
-        "pyBuildingEnergy parity",
-        "EnergyPlus parity",
-        "ASHRAE 140 validated",
+        "StandardReference equivalence",
+        "EnergyPlus comparison workflow",
+        "ASHRAE 140 / BESTEST-style validated",
         "ASHRAE 140 covered",
-        "ExternalParityCovered",
+        "ExternalReferenceCovered",
         "certified",
         "external certification"
     ];
@@ -141,7 +141,7 @@ public sealed class EngineeringClaimBoundaryScanner
             string.Equals(token, "external certification", StringComparison.OrdinalIgnoreCase))
             return HasAnyNegation(normalized, allowedNegationTokens);
 
-        if (string.Equals(token, "ExternalParityCovered", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(token, "ExternalReferenceCovered", StringComparison.OrdinalIgnoreCase))
         {
             return normalized.Contains("no ", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("not ", StringComparison.OrdinalIgnoreCase) ||

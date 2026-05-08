@@ -14,8 +14,8 @@ Stage 7 makes ISO 52016 solar-path diagnostics visible in frontend/report UI.
 
 ## Explicit non-claims
 
-- This does not claim exact EnergyPlus numerical parity.
-- This does not claim ASHRAE 140 validation coverage.
+- This does not claim exact EnergyPlus numerical equivalence.
+- This does not claim ASHRAE 140 / BESTEST-style validation anchor coverage.
 - This does not remove matrix fallback support.
 - This does not add new calculation formulas.
 

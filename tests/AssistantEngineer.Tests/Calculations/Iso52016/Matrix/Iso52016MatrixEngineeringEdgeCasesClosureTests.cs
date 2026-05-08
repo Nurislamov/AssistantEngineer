@@ -26,14 +26,14 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesClosureTests
         var mergeRunbook = File.ReadAllText(mergeRunbookPath);
 
         Assert.Contains("Engineering edge-case hardening only.", releaseNotes);
-        Assert.Contains("Validation anchors only, not full parity.", releaseNotes);
-        Assert.Contains("No pyBuildingEnergy parity claim.", releaseNotes);
-        Assert.Contains("No EnergyPlus parity claim.", releaseNotes);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", releaseNotes);
-        Assert.Contains("No full ISO 52016 parity claim.", releaseNotes);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", releaseNotes);
+        Assert.Contains("No StandardReference equivalence claim.", releaseNotes);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", releaseNotes);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", releaseNotes);
+        Assert.Contains("No full ISO 52016 equivalence claim.", releaseNotes);
 
         Assert.Contains("Engineering edge-case hardening only.", mergeRunbook);
-        Assert.Contains("Validation anchors only, not full parity.", mergeRunbook);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", mergeRunbook);
         Assert.Contains("must not be committed", mergeRunbook);
         Assert.Contains("assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1", mergeRunbook);
     }
@@ -71,7 +71,7 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesClosureTests
         Assert.Contains(@"artifacts\iso52016\engineering-edge-cases\merge-summary.json", script);
         Assert.Contains("generatedArtifactsCommitted", script);
         Assert.Contains("Engineering edge-case hardening only.", script);
-        Assert.Contains("Validation anchors only, not full parity.", script);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", script);
     }
 
     private static string FindRepositoryRoot()

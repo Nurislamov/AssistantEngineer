@@ -1,10 +1,10 @@
-﻿# Engineering Core V1 API Consumer Guide
+# Engineering Core V1 API Consumer Guide
 
 ## Purpose
 
 This guide explains how external or frontend consumers should use the Engineering Core V1 API contract.
 
-Engineering Core V1 is closed as an engineering formula gate. It is not an exact external-simulator parity contract.
+Engineering Core V1 is closed as an engineering formula gate. It is not an exact external-simulator equivalence contract.
 
 ## Endpoints
 
@@ -36,7 +36,7 @@ Use the status endpoint to show:
 - planned validation;
 - documentation links.
 
-Consumers must not interpret ClosedV1 as exact EnergyPlus, pyBuildingEnergy or ASHRAE 140 parity.
+Consumers must not interpret ClosedV1 as exact EnergyPlus, StandardReference or ASHRAE 140 equivalence.
 
 ## Diagnostics catalog usage
 
@@ -73,10 +73,10 @@ If diagnostics include AnnualEnergy.Not8760, AnnualEnergy.MonthlyBalanceAdapter,
 
 Consumers must keep these visible where relevant:
 
-- no exact EnergyPlus numerical parity;
-- no exact pyBuildingEnergy numerical parity;
-- no ASHRAE 140 validation coverage;
-- no full ISO 52016 node/matrix solver parity;
+- no exact EnergyPlus numerical equivalence;
+- no exact StandardReference numerical equivalence;
+- no ASHRAE 140 / BESTEST-style validation anchor coverage;
+- no full ISO 52016 node/matrix solver equivalence;
 - no latent/moisture/humidity support in v1.
 
 ## Compatibility rule

@@ -43,9 +43,9 @@ This implementation uses explicit user-provided coefficients and deterministic d
 - No full EN16798 compliance claim.
 - No full ISO52016 ventilation load coupling.
 - No copied normative tables.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
 ## Integration note
 
@@ -95,9 +95,9 @@ This prompt adds canonical ventilation geometry/pressure/airflow foundation cont
 
 - No full EN16798 compliance claim.
 - No copied normative tables.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 - No full ISO52016 annual ventilation-load coupling in this prompt.
 
 ### Next prompt
@@ -145,9 +145,9 @@ This prompt adds canonical ventilation geometry/pressure/airflow foundation cont
 
 - No full EN16798 compliance claim.
 - No copied normative tables.
-- No `pyBuildingEnergy parity` claim.
-- No `EnergyPlus parity` claim.
-- No `ASHRAE 140 validation` claim.
+- No `StandardReference equivalence` claim.
+- No `EnergyPlus comparison workflow` claim.
+- No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 - No full coupled multizone airflow network.
 - No forced ISO52016 solver modification in this stage.
 

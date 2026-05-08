@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Tests;
 
 namespace AssistantEngineer.Tests.Validation.EnergyPlus;
@@ -41,7 +41,7 @@ public class EnergyPlusSmoke002And003FixtureScaffoldTests
         Assert.Equal("ReferenceFixturePlaceholder", metadata.RootElement.GetProperty("status").GetString());
 
         Assert.Contains(
-            "not exact EnergyPlus parity",
+            "not exact EnergyPlus comparison workflow",
             metadata.RootElement.GetProperty("purpose").GetString(),
             StringComparison.OrdinalIgnoreCase);
 
@@ -77,7 +77,7 @@ public class EnergyPlusSmoke002And003FixtureScaffoldTests
         Assert.Equal("ReferenceFixturePlaceholder", metadata.RootElement.GetProperty("status").GetString());
 
         Assert.Contains(
-            "not exact EnergyPlus parity",
+            "not exact EnergyPlus comparison workflow",
             metadata.RootElement.GetProperty("purpose").GetString(),
             StringComparison.OrdinalIgnoreCase);
 
@@ -181,8 +181,8 @@ public class EnergyPlusSmoke002And003FixtureScaffoldTests
         Assert.Contains(expectedScope, content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ReferenceFixturePlaceholder", content, StringComparison.Ordinal);
         Assert.Contains("PlaceholderComparison", content, StringComparison.Ordinal);
-        Assert.Contains("exact EnergyPlus numerical parity", content, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ASHRAE 140 validation coverage", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("exact EnergyPlus numerical equivalence", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ASHRAE 140 / BESTEST-style validation anchor coverage", content, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FixtureDirectory(string caseId) =>

@@ -1,4 +1,4 @@
-﻿# {{CASE_ID}} Fixture
+# {{CASE_ID}} Fixture
 
 ## Purpose
 
@@ -37,6 +37,6 @@ Future real fixture may add:
 
 This fixture does not claim:
 
-- exact EnergyPlus numerical parity;
-- ASHRAE 140 validation coverage;
-- full ISO 52016 node/matrix solver parity.
+- exact EnergyPlus numerical equivalence;
+- ASHRAE 140 / BESTEST-style validation anchor coverage;
+- full ISO 52016 node/matrix solver equivalence.

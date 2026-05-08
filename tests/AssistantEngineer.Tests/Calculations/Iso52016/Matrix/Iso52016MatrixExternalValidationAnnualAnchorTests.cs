@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
@@ -85,9 +85,9 @@ public class Iso52016MatrixExternalValidationAnnualAnchorTests
         var verifyScript = File.ReadAllText(verifyScriptPath);
 
         Assert.Contains("8760", doc);
-        Assert.Contains("Validation anchors only, not full parity.", doc);
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", doc);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", doc);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", doc);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", doc);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", doc);
         Assert.Contains("verify-iso52016-matrix-external-validation-annual-anchors.ps1", verifyScript);
 
         using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
@@ -104,9 +104,9 @@ public class Iso52016MatrixExternalValidationAnnualAnchorTests
             .Select(item => item.GetString())
             .ToArray();
 
-        Assert.Contains("No exact pyBuildingEnergy numerical parity claim.", nonClaims);
-        Assert.Contains("No exact EnergyPlus numerical parity claim.", nonClaims);
-        Assert.Contains("Validation anchors only, not full parity.", nonClaims);
+        Assert.Contains("No exact StandardReference numerical equivalence claim.", nonClaims);
+        Assert.Contains("No exact EnergyPlus numerical equivalence claim.", nonClaims);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", nonClaims);
     }
 
     [Fact]

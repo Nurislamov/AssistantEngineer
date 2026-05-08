@@ -1,0 +1,82 @@
+{
+  "fixtureName": "RoomSolarGainAggregation",
+  "description": "Room-level solar gain aggregation across two windows.",
+  "referenceType": "InternalDeterministic",
+  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "sourceReference": "AssistantEngineer deterministic fixture for room window solar gain aggregation.",
+  "assumptions": [
+    "Incident irradiance is already mapped to each window plane.",
+    "Solar gains are summed at room level without window transmission."
+  ],
+  "notes": [
+    "Window 1 expected gain is 600 W and window 2 expected gain is 300 W."
+  ],
+  "input": {
+    "calculationBasis": "window-solar-gains",
+    "windowSolarGains": {
+      "roomId": 101,
+      "windows": [
+        {
+          "windowId": 5,
+          "roomId": 101,
+          "areaM2": 2,
+          "orientationAzimuthDeg": 180,
+          "tiltDeg": 90,
+          "shgc": 0.6,
+          "frameFactor": 1,
+          "internalShadingFactor": 1,
+          "externalShadingFactor": 1,
+          "fixedShadingFactor": 1,
+          "incidentIrradianceWPerM2": 500,
+          "diagnosticsContext": "RoomSolarGainAggregation window 1"
+        },
+        {
+          "windowId": 6,
+          "roomId": 101,
+          "areaM2": 1.5,
+          "orientationAzimuthDeg": 180,
+          "tiltDeg": 90,
+          "shgc": 0.5,
+          "frameFactor": 1,
+          "internalShadingFactor": 1,
+          "externalShadingFactor": 1,
+          "fixedShadingFactor": 1,
+          "incidentIrradianceWPerM2": 400,
+          "diagnosticsContext": "RoomSolarGainAggregation window 2"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "totalRoomSolarGainW": 900,
+    "windowSolarGains": [
+      {
+        "windowId": 5,
+        "effectiveSolarFactor": 0.6,
+        "solarGainW": 600,
+        "isIncludedInLoad": true,
+        "expectedDiagnosticCodes": [
+          "SolarGains.IncidentIrradianceProvided",
+          "SolarGains.EffectiveSolarFactor"
+        ]
+      },
+      {
+        "windowId": 6,
+        "effectiveSolarFactor": 0.5,
+        "solarGainW": 300,
+        "isIncludedInLoad": true,
+        "expectedDiagnosticCodes": [
+          "SolarGains.IncidentIrradianceProvided",
+          "SolarGains.EffectiveSolarFactor"
+        ]
+      }
+    ]
+  },
+  "tolerances": {
+    "hourlyTemperatureC": 0.001,
+    "hourlyLoadW": 0.001,
+    "monthlyDemandKWh": 0.001,
+    "annualDemandKWh": 0.001,
+    "heatTransferCoefficientWPerK": 0.001
+  }
+}

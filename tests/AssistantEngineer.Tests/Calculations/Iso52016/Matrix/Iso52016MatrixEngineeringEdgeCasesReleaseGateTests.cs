@@ -14,10 +14,10 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
 
         var manifestText = File.ReadAllText(manifestPath);
 
-        Assert.DoesNotContain("\"ExternalParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"FullParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"pyBuildingEnergyParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("\"EnergyPlusParityCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"ExternalReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"FullReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"StandardReferenceCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("\"EnergyPlusComparisonCovered\": true", manifestText, StringComparison.OrdinalIgnoreCase);
 
         using var document = JsonDocument.Parse(manifestText);
         var root = document.RootElement;
@@ -43,13 +43,13 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
             .ToArray();
 
         Assert.Contains("Engineering edge-case hardening only.", nonClaims);
-        Assert.Contains("Validation anchors only, not full parity.", nonClaims);
-        Assert.Contains("No pyBuildingEnergy parity claim.", nonClaims);
-        Assert.Contains("No EnergyPlus parity claim.", nonClaims);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", nonClaims);
-        Assert.Contains("No full ISO 52016 parity claim.", nonClaims);
-        Assert.Contains("No ExternalParityCovered claim.", nonClaims);
-        Assert.Contains("No FullParityCovered claim.", nonClaims);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", nonClaims);
+        Assert.Contains("No StandardReference equivalence claim.", nonClaims);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", nonClaims);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", nonClaims);
+        Assert.Contains("No full ISO 52016 equivalence claim.", nonClaims);
+        Assert.Contains("No ExternalReferenceCovered claim.", nonClaims);
+        Assert.Contains("No FullReferenceCovered claim.", nonClaims);
     }
 
     [Fact]
@@ -123,11 +123,11 @@ public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
         var doc = File.ReadAllText(docPath);
 
         Assert.Contains("Engineering edge-case hardening only.", doc);
-        Assert.Contains("Validation anchors only, not full parity.", doc);
-        Assert.Contains("No pyBuildingEnergy parity claim.", doc);
-        Assert.Contains("No EnergyPlus parity claim.", doc);
-        Assert.Contains("No ASHRAE 140 validation coverage claim.", doc);
-        Assert.Contains("No full ISO 52016 parity claim.", doc);
+        Assert.Contains("Validation anchors only, not full equivalence claim.", doc);
+        Assert.Contains("No StandardReference equivalence claim.", doc);
+        Assert.Contains("No EnergyPlus comparison workflow claim.", doc);
+        Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor coverage claim.", doc);
+        Assert.Contains("No full ISO 52016 equivalence claim.", doc);
         Assert.Contains("must not be committed", doc);
     }
 

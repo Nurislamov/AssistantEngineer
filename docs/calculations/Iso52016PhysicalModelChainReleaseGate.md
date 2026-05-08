@@ -1,4 +1,4 @@
-﻿# AE-ISO52016-002 Step 08 - physical model chain release-ready gate
+# AE-ISO52016-002 Step 08 - physical model chain release-ready gate
 
 This stage adds a release-ready gate for the ISO52016-inspired physical room/zone model chain.
 
@@ -36,7 +36,7 @@ The C# tool verifies:
 - stage documents and manifests exist;
 - release-ready gate files exist;
 - claim boundaries are explicit;
-- positive full parity/equivalence claims are absent;
+- positive full equivalence claim/equivalence claims are absent;
 - Matrix-all chain keeps discoverability hooks;
 - physical C# tests pass unless explicitly skipped.
 
@@ -44,6 +44,6 @@ The C# tool verifies:
 
 This is an ISO52016-inspired physical model release gate with validation/internal engineering anchors only.
 
-It is not complete ISO 52016 numerical equivalence, not pyBuildingEnergy numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
+It is not complete ISO 52016 numerical equivalence, not StandardReference numerical equivalence, not EnergyPlus numerical equivalence, and not ASHRAE Standard 140 benchmark-grade claim.
 
 No generated artifacts are introduced by this step.

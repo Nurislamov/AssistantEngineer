@@ -5,7 +5,7 @@ Benchmark fixtures are test-only JSON files for comparing AssistantEngineer calc
 Current location:
 
 ```text
-tests/AssistantEngineer.Tests/Parity/EnergyCalculationParity/BenchmarkFixtures/Fixtures
+tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/BenchmarkFixtures/Fixtures
 ```
 
 The infrastructure is not production code and does not call external tools, web services or reference projects during normal `dotnet test`.
@@ -16,7 +16,7 @@ The infrastructure is not production code and does not call external tools, web 
 - `BenchmarkReference`: expected values are fixed benchmark/reference values used by comparison tests. They may be internal benchmark references.
 - `ExternalReference`: expected values come from a documented external benchmark/reference source.
 
-`BenchmarkReference` and `ExternalReference` both use the same comparison mechanism. Only `ExternalReference` with source/version evidence can support an `ExternalParityCovered` claim.
+`BenchmarkReference` and `ExternalReference` both use the same comparison mechanism. Only `ExternalReference` with source/version evidence can support an `ExternalReferenceCovered` claim.
 
 ## Status
 
@@ -65,7 +65,7 @@ Expected zero is handled without division by zero. A nonzero actual value agains
 - `window-solar-gain-with-shading.json`: WindowSolarGains, deterministic frame and shading factor multiplication.
 - `surface-irradiance-night-zero.json`: SurfaceIrradiance, all surface irradiance components zero below the horizon.
 
-These fixtures are deterministic benchmark references. They are not `ExternalParityCovered`.
+These fixtures are deterministic benchmark references. They are not `ExternalReferenceCovered`.
 
 ## Adding A Fixture
 
@@ -80,9 +80,9 @@ These fixtures are deterministic benchmark references. They are not `ExternalPar
 
 `BenchmarkCompared` means a passing test compared AssistantEngineer results against fixed expected benchmark/reference values.
 
-It does not automatically mean external parity.
+It does not automatically mean external equivalence.
 
-`ExternalParityCovered` additionally requires:
+`ExternalReferenceCovered` additionally requires:
 
 - documented external source
 - fixed input

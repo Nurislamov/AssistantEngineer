@@ -7,10 +7,10 @@ public class Iso52016VerificationRegistryTests
     private static readonly string[] RequiredNonClaims =
     {
         "Validation/internal engineering anchors only.",
-        "No full ISO 52016 parity claim.",
-        "No pyBuildingEnergy parity claim.",
-        "No EnergyPlus parity claim.",
-        "No ASHRAE 140 validation claim."
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim."
     };
 
     [Fact]
@@ -93,10 +93,10 @@ public class Iso52016VerificationRegistryTests
     {
         var registry = File.ReadAllLines(RegistryPath());
 
-        AssertNoPositiveClaim(registry, "full ISO 52016 parity");
-        AssertNoPositiveClaim(registry, "pyBuildingEnergy parity");
-        AssertNoPositiveClaim(registry, "EnergyPlus parity");
-        AssertNoPositiveClaim(registry, "ASHRAE 140 validation");
+        AssertNoPositiveClaim(registry, "full ISO 52016 equivalence");
+        AssertNoPositiveClaim(registry, "StandardReference equivalence");
+        AssertNoPositiveClaim(registry, "EnergyPlus comparison workflow");
+        AssertNoPositiveClaim(registry, "ASHRAE 140 / BESTEST-style validation anchor");
     }
 
     private static JsonDocument OpenRegistry() =>
@@ -129,7 +129,7 @@ public class Iso52016VerificationRegistryTests
             Assert.True(
                 line.Contains("No ", StringComparison.OrdinalIgnoreCase) ||
                 line.Contains("not ", StringComparison.OrdinalIgnoreCase),
-                $"Positive parity claim found: {line}");
+                $"Positive equivalence claim found: {line}");
         }
     }
 }

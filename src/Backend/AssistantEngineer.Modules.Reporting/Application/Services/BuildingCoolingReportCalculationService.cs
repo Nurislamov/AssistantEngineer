@@ -127,7 +127,7 @@ internal sealed class BuildingCoolingReportCalculationService
         {
             RoomId = roomId,
             EquipmentSelected = best is not null,
-            CalculationMethod = "EnergyCalculationParityEquipmentSizing",
+            CalculationMethod = "ExternalReferenceValidationEquipmentSizing",
             CoolingLoadKw = RoundKw(sizing.RequiredCoolingCapacityW),
             DesignCapacityKw = RoundKw(capacityWithReserveW),
             RequiredCoolingCapacityW = sizing.RequiredCoolingCapacityW,

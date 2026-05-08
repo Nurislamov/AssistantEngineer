@@ -49,10 +49,10 @@ Generated from report contract snapshots.
 
 ## Required non-claims
 
-- No exact EnergyPlus numerical parity claim.
-- No exact pyBuildingEnergy numerical parity claim.
-- No ASHRAE 140 validation coverage claim.
-- No full ISO 52016 node/matrix solver parity claim.
+- No exact EnergyPlus numerical equivalence claim.
+- No exact StandardReference numerical equivalence claim.
+- No ASHRAE 140 / BESTEST-style validation anchor coverage claim.
+- No full ISO 52016 node/matrix solver equivalence claim.
 - No latent/moisture/humidity support in v1.
 
 ## Export approval checklist
@@ -62,4 +62,4 @@ Generated from report contract snapshots.
 - [ ] JSON exports preserve structured calculationDisclosure.
 - [ ] Frontend report UI shows disclosure before raw JSON.
 - [ ] Annual energy exports do not misuse true hourly 8760 wording.
-- [ ] No external-simulator parity claim is introduced.
+- [ ] No external-simulator equivalence claim is introduced.
