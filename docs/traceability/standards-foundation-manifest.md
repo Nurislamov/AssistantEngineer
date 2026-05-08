@@ -326,3 +326,56 @@ This stage provides deterministic standard-inspired engineering calculation only
 ## Next stage
 
 - `AE-VENT-EN16798-001B`
+
+---
+
+## Work item
+
+- `AE-VENT-EN16798-001B`
+
+## Touched contracts
+
+- `Application/Contracts/Ventilation/NaturalVentilationControlMode.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationNightVentilationMode.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningControlRule.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationHourlyControlContext.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationOpeningOperationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationControlEvaluationInput.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationControlEvaluationResult.cs`
+- `Application/Contracts/Ventilation/NaturalVentilationControlRuleValidationResult.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationControlRuleValidator.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationOpeningControlEvaluator.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationOpeningFractionProfileBuilder.cs`
+- `Application/Abstractions/Ventilation/INaturalVentilationControlledAirflowInputBuilder.cs`
+
+## Touched services
+
+- `Application/Services/Ventilation/NaturalVentilationControlRuleValidator.cs`
+- `Application/Services/Ventilation/NaturalVentilationOpeningControlEvaluator.cs`
+- `Application/Services/Ventilation/NaturalVentilationOpeningFractionProfileBuilder.cs`
+- `Application/Services/Ventilation/NaturalVentilationControlledAirflowInputBuilder.cs`
+- updated `Composition/NaturalVentilationRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationControlRuleValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationOpeningControlEvaluatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationOpeningFractionProfileBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationControlledAirflowInputBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/Ventilation/NaturalVentilationControlArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Natural ventilation controls non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired engineering calculation only.
+
+## Next stage
+
+- `AE-VENT-EN16798-001C`

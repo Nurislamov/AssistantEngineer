@@ -13,6 +13,10 @@ internal static class NaturalVentilationRegistration
         services.AddSingleton<INaturalVentilationInputValidator, NaturalVentilationInputValidator>();
         services.AddSingleton<INaturalVentilationPressureCalculator, NaturalVentilationPressureCalculator>();
         services.AddSingleton<INaturalVentilationAirflowCalculator, NaturalVentilationAirflowCalculator>();
+        services.AddSingleton<INaturalVentilationControlRuleValidator, NaturalVentilationControlRuleValidator>();
+        services.AddSingleton<INaturalVentilationOpeningControlEvaluator, NaturalVentilationOpeningControlEvaluator>();
+        services.AddSingleton<INaturalVentilationOpeningFractionProfileBuilder, NaturalVentilationOpeningFractionProfileBuilder>();
+        services.AddSingleton<INaturalVentilationControlledAirflowInputBuilder, NaturalVentilationControlledAirflowInputBuilder>();
 
         return services;
     }

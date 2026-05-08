@@ -28,13 +28,13 @@ This stage is intended to provide reusable contracts/services and diagnostics, n
 ## General engineering equations used
 
 - Wind pressure:
-  - `ΔP_wind = 0.5 * rho * v² * ΔCp`
+  - `dP_wind = 0.5 * rho * v^2 * dCp`
 - Stack pressure:
-  - `ΔP_stack = rho * g * H * abs((T_indoor - T_outdoor) / T_reference_K)`
+  - `dP_stack = rho * g * H * abs((T_indoor - T_outdoor) / T_reference_K)`
 - Combined pressure:
-  - root-sum-square: `ΔP_combined = sqrt(ΔP_wind² + ΔP_stack²)`
+  - root-sum-square: `dP_combined = sqrt(dP_wind^2 + dP_stack^2)`
 - Orifice airflow:
-  - `Qv = Cd * A_eff * sqrt(2 * abs(ΔP) / rho)`
+  - `Qv = Cd * A_eff * sqrt(2 * abs(dP) / rho)`
 
 This implementation uses explicit user-provided coefficients and deterministic defaults with diagnostics when values are missing.
 
@@ -55,4 +55,51 @@ This prompt adds canonical ventilation geometry/pressure/airflow foundation cont
 ## Next prompts
 
 - `AE-VENT-EN16798-001B`: opening controls and schedules.
+- `AE-VENT-EN16798-001C`: thermal-zone and hourly load integration.
+
+## AE-VENT-EN16798-001B - Opening controls schedules and operation logic
+
+### Supported control modes
+
+- always closed
+- always open
+- fixed fraction
+- schedule
+- occupancy
+- temperature
+- occupancy and temperature
+- night ventilation
+- manual
+
+### Supported thresholds and context inputs
+
+- indoor open temperature threshold
+- indoor close temperature threshold
+- outdoor minimum and maximum temperature thresholds
+- indoor-outdoor temperature difference threshold
+- occupancy fraction
+- schedule fraction
+- night-hour flag
+
+### Profile outputs
+
+- opening fraction profile by opening id
+- room-level opening fraction profile by room id
+- zone-level opening fraction profile by zone id
+
+### Multiple-rule behavior
+
+- when multiple rules apply to the same target/hour, maximum opening fraction is used deterministically
+
+### Scope boundaries in this stage
+
+- No full EN16798 compliance claim.
+- No copied normative tables.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+- No full ISO52016 annual ventilation-load coupling in this prompt.
+
+### Next prompt
+
 - `AE-VENT-EN16798-001C`: thermal-zone and hourly load integration.

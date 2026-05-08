@@ -79,6 +79,10 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<INaturalVentilationInputValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationPressureCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationAirflowCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationControlRuleValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationOpeningControlEvaluator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationOpeningFractionProfileBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationControlledAirflowInputBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);
