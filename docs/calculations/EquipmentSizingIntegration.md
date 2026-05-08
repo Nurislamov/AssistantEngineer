@@ -66,4 +66,4 @@ Diagnostics include `EquipmentSizing.HeatingSafetyFactorApplied` and `EquipmentS
 ## Limits
 
 The deterministic engine does not duplicate catalog persistence or catalog query logic. Heating selection quality depends on catalog heating capacity data being present.
-This remains an Standard-Based Calculation deterministic sizing pipeline; it does not claim external equivalence coverage.
+This remains a Standard-Based Calculation deterministic sizing pipeline; it does not claim external equivalence coverage.

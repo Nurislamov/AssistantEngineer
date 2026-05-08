@@ -13,7 +13,7 @@ Use neutral naming in product code, tests, and public metadata:
 - `ReferenceCaseInputAdapter`
 - `ExternalComparisonWorkflow`
 
-Avoid legacy parity-style naming in product and public assets.
+Avoid legacy external-equivalence naming in product and public assets.
 
 ## Claim Boundary
 

@@ -84,7 +84,7 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
             "calculations",
             "domestic-hot-water",
             "Iso12831DomesticHotWaterApplicationIntegration.md");
-        var parityDocPath = Path.Combine(
+        var validationDocPath = Path.Combine(
             TestPaths.RepoRoot,
             "docs",
             "calculations",
@@ -103,7 +103,7 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
 
         Assert.True(File.Exists(manifestPath), $"Manifest was not found: {manifestPath}");
         Assert.True(File.Exists(integrationDocPath), $"Integration doc was not found: {integrationDocPath}");
-        Assert.True(File.Exists(parityDocPath), $"equivalence doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(validationDocPath), $"validation doc was not found: {validationDocPath}");
         Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
         Assert.True(File.Exists(statusPath), $"Status sample was not found: {statusPath}");
 
@@ -127,9 +127,9 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "StandardReference equivalence");
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus comparison workflow");
 
-        var parityDoc = File.ReadAllText(parityDocPath);
-        Assert.Contains("compatibility path remains default", parityDoc, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("opt-in", parityDoc, StringComparison.OrdinalIgnoreCase);
+        var validationDoc = File.ReadAllText(validationDocPath);
+        Assert.Contains("compatibility path remains default", validationDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", validationDoc, StringComparison.OrdinalIgnoreCase);
 
         var scopeDoc = File.ReadAllText(scopeDocPath);
         Assert.Contains("compatibility path remains default", scopeDoc, StringComparison.OrdinalIgnoreCase);

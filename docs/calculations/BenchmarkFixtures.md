@@ -8,7 +8,7 @@ Current location:
 tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/BenchmarkFixtures/Fixtures
 ```
 
-The infrastructure is not production code and does not call external tools, web services or reference projects during normal `dotnet test`.
+The infrastructure is not production code and does not call external tools or web services during normal `dotnet test`.
 
 ## Reference Types
 

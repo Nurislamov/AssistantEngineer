@@ -72,7 +72,7 @@ public sealed class En15316SystemEnergyTraceabilityTests
     [Fact]
     public void DisclosureFiles_ReflectDefaultCompatibilityAndOptInIntegrationStatus()
     {
-        var parityDocPath = Path.Combine(
+        var validationDocPath = Path.Combine(
             TestPaths.RepoRoot,
             "docs",
             "calculations",
@@ -83,20 +83,20 @@ public sealed class En15316SystemEnergyTraceabilityTests
             "calculations",
             "EngineeringCoreV1Scope.md");
 
-        Assert.True(File.Exists(parityDocPath), $"equivalence doc was not found: {parityDocPath}");
+        Assert.True(File.Exists(validationDocPath), $"validation doc was not found: {validationDocPath}");
         Assert.True(File.Exists(scopeDocPath), $"Scope doc was not found: {scopeDocPath}");
 
-        var parityDoc = File.ReadAllText(parityDocPath);
+        var validationDoc = File.ReadAllText(validationDocPath);
         var scopeDoc = File.ReadAllText(scopeDocPath);
 
-        Assert.Contains("SystemEnergyEngine", parityDoc);
-        Assert.Contains("remains default", parityDoc, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("opt-in", parityDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("SystemEnergyEngine", validationDoc);
+        Assert.Contains("remains default", validationDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("opt-in", validationDoc, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("EN15316-inspired", scopeDoc, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("opt-in", scopeDoc, StringComparison.OrdinalIgnoreCase);
 
-        AssertTokenAppearsOnlyAsNegatedClaim(parityDoc, "full EN 15316 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(validationDoc, "full EN 15316 compliance");
         AssertTokenAppearsOnlyAsNegatedClaim(scopeDoc, "full EN 15316 compliance");
     }
 
