@@ -291,10 +291,10 @@ public class VerificationServiceTests
                 BuildingId = _building.Id,
                 BuildingName = _building.Name,
                 CoolingLoadW = 1200,
-                CalculationMethod = "Energy Calculation equivalence / Application Load Aggregation Pipeline",
+                CalculationMethod = "Standard-Based Calculation / Application Load Aggregation Pipeline",
                 RequestedMethod = method.ToString(),
                 ActualMethod = "ExternalReferenceValidationDesignPoint",
-                CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation"
+                CalculationMethodLabel = "Standard-Based Calculation design-point aggregation"
             }));
         }
 

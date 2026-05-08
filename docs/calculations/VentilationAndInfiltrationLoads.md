@@ -1,6 +1,6 @@
 # Ventilation and infiltration loads
 
-This document describes the current AssistantEngineer implementation for sensible outdoor air loads in the Energy Calculation equivalence track.
+This document describes the current AssistantEngineer implementation for sensible outdoor air loads in the Standard-Based Calculation track.
 
 ## Scope
 
@@ -11,7 +11,7 @@ This stage covers:
 - natural ventilation load when an airflow is already supplied;
 - heat recovery efficiency for mechanical ventilation;
 - room-level result with separate mechanical, infiltration, and natural ventilation breakdown;
-- integration into the Energy Calculation equivalence room load application pipeline as separate components.
+- integration into the Standard-Based Calculation room load application pipeline as separate components.
 
 This stage does not cover:
 

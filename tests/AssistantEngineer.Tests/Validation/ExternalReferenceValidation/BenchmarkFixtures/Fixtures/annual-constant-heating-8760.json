@@ -3,7 +3,7 @@
   "description": "Benchmark reference fixture for 8760 constant hourly heating demand aggregation.",
   "category": "AnnualEnergyBalance",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance",
+  "method": "Standard-Based Calculation / Annual 8760 Energy Balance",
   "status": "Active",
   "sourceReference": "Internal benchmark reference values derived from constant hourly loads; no external equivalence claim.",
   "input": {

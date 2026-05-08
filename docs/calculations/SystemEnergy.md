@@ -1,6 +1,6 @@
 # System Energy
 
-This Energy Calculation equivalence step converts useful heating, cooling and DHW energy into simplified final energy.
+This Standard-Based Calculation step converts useful heating, cooling and DHW energy into simplified final energy.
 
 ## Formula
 

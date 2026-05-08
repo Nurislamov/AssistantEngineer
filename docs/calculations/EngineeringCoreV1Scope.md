@@ -97,9 +97,9 @@ Monthly adapter, synthetic weather and deterministic short fixtures are allowed 
 
 Calculation diagnostics must distinguish:
 
-- `Error` — invalid mandatory input; calculation must fail;
-- `Warning` — fallback, missing optional assumption, simplified model or partial source;
-- `Info` — method/source/assumption metadata.
+- `Error` - invalid mandatory input; calculation must fail;
+- `Warning` - fallback, missing optional assumption, simplified model or partial source;
+- `Info` - method/source/assumption metadata.
 
 A successful calculation result must not contain `CalculationDiagnosticSeverity.Error`.
 

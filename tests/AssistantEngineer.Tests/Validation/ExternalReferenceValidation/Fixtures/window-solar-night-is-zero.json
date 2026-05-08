@@ -2,7 +2,7 @@
   "fixtureName": "NightSolarGainIsZero",
   "description": "Window solar gain is zero when incident irradiance is zero.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "method": "Standard-Based Calculation / Window Solar Gains",
   "sourceReference": "AssistantEngineer deterministic fixture for zero irradiance window solar gain.",
   "assumptions": [
     "Incident irradiance is already mapped to the window plane.",

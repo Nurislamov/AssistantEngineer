@@ -2,7 +2,7 @@
   "fixtureName": "MonthlyAggregationConsistency",
   "description": "Annual total equals the sum of monthly totals for mixed monthly loads.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance",
+  "method": "Standard-Based Calculation / Annual 8760 Energy Balance",
   "category": "AnnualEnergyBalance",
   "sourceReference": "Internal deterministic fixture",
   "input": {

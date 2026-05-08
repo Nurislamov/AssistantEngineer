@@ -2,7 +2,7 @@
   "fixtureName": "RoomHeatingTransmissionOnly",
   "description": "Room heating load with fixed transmission component only.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Room Heating Cooling Load",
+  "method": "Standard-Based Calculation / Room Heating Cooling Load",
   "category": "RoomLoad",
   "sourceReference": "Internal deterministic fixture",
   "input": {

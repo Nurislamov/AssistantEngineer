@@ -2,7 +2,7 @@
   "fixtureName": "RoomCoolingSolarInternalVentilation",
   "description": "Room cooling load with transmission, solar, internal, ventilation and infiltration components.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Room Heating Cooling Load",
+  "method": "Standard-Based Calculation / Room Heating Cooling Load",
   "category": "RoomLoad",
   "sourceReference": "Internal deterministic fixture",
   "input": {

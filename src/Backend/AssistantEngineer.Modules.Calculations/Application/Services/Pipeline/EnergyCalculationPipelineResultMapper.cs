@@ -77,7 +77,7 @@ internal static class EnergyCalculationPipelineResultMapper
             CalculationMethod = roomPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
             ActualMethod = standardReferenceDesignPointMethod,
-            CalculationMethodLabel = "Standard reference design-point calculation pipeline",
+            CalculationMethodLabel = "Standard-Based Calculation design-point calculation pipeline",
             PeakHourOfYear = null,
             AreaM2 = Round(room.Area.SquareMeters),
             HeightM = Round(room.HeightM),
@@ -147,7 +147,7 @@ internal static class EnergyCalculationPipelineResultMapper
             CalculationMethod = roomPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
             ActualMethod = standardReferenceDesignPointMethod,
-            CalculationMethodLabel = "Standard reference design-point calculation pipeline",
+            CalculationMethodLabel = "Standard-Based Calculation design-point calculation pipeline",
             IndoorDesignTemperatureC = Round(room.IndoorTemperature.Celsius),
             OutdoorDesignTemperatureC = Round(outdoorDesignTemperature),
             DeltaTemperatureC = Round(Math.Max(room.IndoorTemperature.Celsius - outdoorDesignTemperature, 0)),
@@ -187,7 +187,7 @@ internal static class EnergyCalculationPipelineResultMapper
             diagnostics,
             requestedMethod,
             $"Floor {floor.Id} application aggregation",
-            "Energy Calculation equivalence design-point aggregation");
+            "Standard-Based Calculation design-point aggregation");
 
         return new FloorCalculationResult
         {
@@ -196,7 +196,7 @@ internal static class EnergyCalculationPipelineResultMapper
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod ?? string.Empty,
             ActualMethod = standardReferenceDesignPointMethod,
-            CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
+            CalculationMethodLabel = "Standard-Based Calculation design-point aggregation",
             PeakHourOfYear = null,
             RoomsCount = aggregation.RoomCount,
             CoolingLoadW = Round(aggregation.CoolingLoadW),
@@ -227,7 +227,7 @@ internal static class EnergyCalculationPipelineResultMapper
             diagnostics,
             requestedMethod.ToString(),
             $"Building {building.Id} application cooling aggregation",
-            "Energy Calculation equivalence design-point aggregation");
+            "Standard-Based Calculation design-point aggregation");
 
         return new BuildingCalculationResult
         {
@@ -236,7 +236,7 @@ internal static class EnergyCalculationPipelineResultMapper
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
             ActualMethod = standardReferenceDesignPointMethod,
-            CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
+            CalculationMethodLabel = "Standard-Based Calculation design-point aggregation",
             PeakHourOfYear = null,
             FloorsCount = building.Floors.Count,
             RoomsCount = aggregation.RoomCount,
@@ -268,7 +268,7 @@ internal static class EnergyCalculationPipelineResultMapper
             diagnostics,
             requestedMethod.ToString(),
             $"Building {building.Id} application heating aggregation",
-            "Energy Calculation equivalence design-point aggregation");
+            "Standard-Based Calculation design-point aggregation");
 
         return new BuildingHeatingLoadResult
         {
@@ -278,7 +278,7 @@ internal static class EnergyCalculationPipelineResultMapper
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
             ActualMethod = standardReferenceDesignPointMethod,
-            CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
+            CalculationMethodLabel = "Standard-Based Calculation design-point aggregation",
             RoomsCount = aggregation.RoomCount,
             TransmissionHeatLossW = Round(transmission),
             VentilationHeatLossW = Round(ventilation),
@@ -311,23 +311,23 @@ internal static class EnergyCalculationPipelineResultMapper
             diagnostics,
             coolingMethod.ToString(),
             $"Building {annual.BuildingId} application annual energy balance cooling method",
-            "Energy Calculation equivalence annual aggregation adapter");
+            "Standard-Based Calculation annual aggregation adapter");
         AddMethodCompatibilityDiagnostic(
             diagnostics,
             heatingMethod.ToString(),
             $"Building {annual.BuildingId} application annual energy balance heating method",
-            "Energy Calculation equivalence annual aggregation adapter");
+            "Standard-Based Calculation annual aggregation adapter");
 
         return new BuildingEnergyBalanceResult
         {
             BuildingId = annual.BuildingId,
             BuildingName = annual.BuildingName ?? source.BuildingName,
-            CoolingCalculationMethod = "Energy Calculation equivalence / Annual Aggregation Adapter",
-            HeatingCalculationMethod = "Energy Calculation equivalence / Annual Aggregation Adapter",
+            CoolingCalculationMethod = "Standard-Based Calculation / Annual Aggregation Adapter",
+            HeatingCalculationMethod = "Standard-Based Calculation / Annual Aggregation Adapter",
             RequestedCoolingMethod = coolingMethod.ToString(),
             RequestedHeatingMethod = heatingMethod.ToString(),
             ActualMethod = standardReferenceAnnualAggregationAdapter,
-            CalculationMethodLabel = "Energy Calculation equivalence annual aggregation adapter",
+            CalculationMethodLabel = "Standard-Based Calculation annual aggregation adapter",
             EnergyDataSource = sourceName,
             IsTrueHourly8760 = isTrueHourly8760,
             HourlyRecordCount = hourlyRecordCount,

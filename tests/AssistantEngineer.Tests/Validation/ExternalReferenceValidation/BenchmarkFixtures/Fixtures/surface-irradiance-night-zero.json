@@ -3,7 +3,7 @@
   "description": "Surface irradiance components are zero when solar altitude is below the horizon.",
   "category": "SurfaceIrradiance",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation equivalence / Surface Irradiance",
+  "method": "Standard-Based Calculation / Surface Irradiance",
   "status": "Active",
   "input": {
     "calculationBasis": "surface-irradiance",

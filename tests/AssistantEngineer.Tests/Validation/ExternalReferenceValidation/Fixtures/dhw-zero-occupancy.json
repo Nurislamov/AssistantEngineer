@@ -2,7 +2,7 @@
   "fixtureName": "DhwZeroOccupancy",
   "description": "Zero occupancy gives zero DHW demand with diagnostic.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / DHW Demand",
+  "method": "Standard-Based Calculation / DHW Demand",
   "category": "Dhw",
   "sourceReference": "Internal deterministic fixture",
   "input": {

@@ -2,7 +2,7 @@
   "fixtureName": "RoomSolarGainAggregation",
   "description": "Room-level solar gain aggregation across two windows.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "method": "Standard-Based Calculation / Window Solar Gains",
   "sourceReference": "AssistantEngineer deterministic fixture for room window solar gain aggregation.",
   "assumptions": [
     "Incident irradiance is already mapped to each window plane.",

@@ -1,6 +1,6 @@
 # Fixture Format
 
-Energy Calculation equivalence fixtures are JSON files under:
+Standard-Based Calculation fixtures are JSON files under:
 
 ```text
 tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/Fixtures
@@ -20,7 +20,7 @@ tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/BenchmarkFi
   "description": "What the fixture verifies.",
   "category": "AnnualEnergyBalance",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation equivalence / Function Name",
+  "method": "Standard-Based Calculation / Function Name",
   "status": "Active",
   "input": {},
   "expected": {

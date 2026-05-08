@@ -2,7 +2,7 @@
   "fixtureName": "DhwResidentialSimple",
   "description": "Simple people-based DHW demand.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / DHW Demand",
+  "method": "Standard-Based Calculation / DHW Demand",
   "category": "Dhw",
   "sourceReference": "Internal deterministic fixture",
   "input": {

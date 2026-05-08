@@ -1,9 +1,9 @@
-# Energy Calculation equivalence Verification
+# External Reference Validation Verification
 
 Verification is based on internal deterministic fixtures, focused engine tests, and application pipeline tests where the real backend path has been integrated.
 
-The engineering calculation mode comparison and disclosure rollup is an internal governance layer for default versus opt-in transparency and deterministic delta reporting. It is not an external equivalence or certification signal.
-Engineering Core V2 governance and internal release readiness are additional internal deterministic governance gates; they do not provide external certification or equivalence claims.
+The engineering calculation mode comparison and disclosure rollup is an internal governance layer for default versus opt-in transparency and deterministic delta reporting. It is not an external validation or certification signal.
+Engineering Core V2 governance and internal release readiness are additional internal deterministic governance gates; they do not provide external certification claims.
 
 ## Current Status
 
@@ -33,12 +33,12 @@ No function is marked ExternalReferenceCovered in this pass.
 
 The real backend calculation path now uses `EnergyCalculationPipelineService` behind `ILoadCalculationsFacade`.
 
-- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. Solar design-point input prefers annual climate solar data through the centralized surface irradiance path and reports reference-by-orientation fallback when used. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Standard reference design-point calculation pipeline.
+- Room heating and cooling endpoints assemble room, envelope, ventilation, infiltration, ground, solar and internal-gain inputs, then call `RoomLoadCalculationEngine`. Solar design-point input prefers annual climate solar data through the centralized surface irradiance path and reports reference-by-orientation fallback when used. `requestedMethod`, `actualMethod` and compatibility warnings are exposed where the public API method differs from the actual Standard-Based Calculation design-point calculation pipeline.
 - Floor and building load endpoints consume room load results and call `LoadAggregationEngine` in design-point mode. Diagnostics identify the design-point aggregation mode when hourly source data is not available.
 - Building energy balance uses the existing building energy source as an explicit adapter and feeds `AnnualEnergyBalanceEngine`. Diagnostics expose `TrueHourlySimulation` versus `MonthlyBalanceAdapter`, `hourlyRecordCount`, and `isTrueHourly8760`; representative monthly records are always false. True hourly source records now pass available transmission, mechanical ventilation, natural ventilation, aggregate ventilation, separate infiltration, ground, solar and internal-gain components through to the annual engine.
 - DHW remains on the deterministic `DomesticHotWaterDemandService` facade path by default. An ISO12831-3-inspired DHW calculator is available as an opt-in integration path; this is still internal deterministic engineering evidence only and not a full compliance claim.
 - Heating and cooling system services call `SystemEnergyEngine`, preserving useful, final and primary energy as separate values. Compatibility `SystemEnergyEngine` behavior remains default, and the EN15316-inspired modular chain is available as an explicit opt-in path.
-- ISO52016 room-envelope compatibility behavior remains default. ISO52016-inspired construction/mass envelope input integration is available as controlled opt-in (`Iso52016ConstructionOptions.UseConstructionLayerMassInput`) with compatibility fallback behavior; this is not a full ISO 52016 compliance or external equivalence claim.
+- ISO52016 room-envelope compatibility behavior remains default. ISO52016-inspired construction/mass envelope input integration is available as controlled opt-in (`Iso52016ConstructionOptions.UseConstructionLayerMassInput`) with compatibility fallback behavior; this is not a full ISO 52016 compliance or external validation claim.
 - Building input validation and correction framework exists as an internal governance gate for pre-calculation data quality diagnostics, suggested corrections, and readiness status. It does not perform automatic production data mutation.
 - Room equipment selection uses the actual room load, separate project heating/cooling safety factors, `EquipmentSizingEngine`, and the active equipment catalog provider. Heating capacity is evaluated when catalog candidates expose it; otherwise diagnostics state that heating sizing is skipped. Empty catalogs and rejected candidates return diagnostics instead of silent selections.
 - Cooling, heating and energy-balance reports consume facade results built from the same application pipeline. Excel generation stays in Infrastructure integrations.
@@ -69,7 +69,7 @@ The real backend calculation path now uses `EnergyCalculationPipelineService` be
 
 ## Known Limits
 
-The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when the source data can evaluate them. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark equivalence.
+The current status proves internal deterministic consistency, deterministic benchmark comparison for selected annual/signed component fixtures, and real application pipeline integration for the listed backend paths. The load-calculations annual endpoint is not a full 8760 simulation unless the upstream source supplies 8760 hourly records and the result says `energyDataSource = TrueHourlySimulation`. The true hourly component breakdown separates mechanical ventilation, natural ventilation, and infiltration when the source data can evaluate them. The design-point room load path is not full ISO hourly balance. No status in this matrix proves external benchmark validation coverage.
 
 ## Solar/weather layer
 
@@ -181,6 +181,6 @@ Status:
 
 This is not ExternalReferenceCovered.
 
-External equivalence requires benchmark comparison fixtures with documented source results and tolerances.
+External validation coverage requires benchmark comparison fixtures with documented source results and tolerances.
 
 END SECTION

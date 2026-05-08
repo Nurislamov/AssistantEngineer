@@ -1,6 +1,6 @@
 # Load Aggregation
 
-This Energy Calculation equivalence step aggregates deterministic room load results to thermal zones, floors and buildings.
+This Standard-Based Calculation step aggregates deterministic room load results to thermal zones, floors and buildings.
 
 ## Design-Point Mode
 
@@ -28,7 +28,7 @@ The aggregation result includes component sums for transmission, solar, ventilat
 
 ## Real Application Pipeline
 
-Floor and building load routes use room results from the same Energy Calculation equivalence pipeline and aggregate them with `LoadAggregationEngine`.
+Floor and building load routes use room results from the same Standard-Based Calculation pipeline and aggregate them with `LoadAggregationEngine`.
 
 - `GET /api/v1/floors/{floorId}/load-calculations/heating-load`
 - `GET /api/v1/floors/{floorId}/load-calculations/cooling-load`

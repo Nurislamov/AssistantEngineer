@@ -13,7 +13,7 @@ public class BuildingConfiguration : IEntityTypeConfiguration<Building>
         builder.Property(b => b.Name).IsRequired().HasMaxLength(200);
         builder.HasIndex(b => new { b.ProjectId, b.Name }).IsUnique();
 
-        // ������� �������� ��� �������� ����� ClimateZoneId
+        // Keep ClimateZoneId as an optional shadow property for compatibility with legacy migrations.
         builder.Property<int?>("ClimateZoneId");
 
         builder.HasOne(b => b.Project)

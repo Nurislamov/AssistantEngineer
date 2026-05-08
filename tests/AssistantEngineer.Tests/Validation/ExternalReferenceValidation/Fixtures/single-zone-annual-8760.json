@@ -2,14 +2,14 @@
   "fixtureName": "single-zone-annual-8760",
   "description": "Compact 8760-hour deterministic annual aggregation fixture for one zone. Monthly loads are constant within each month.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance",
+  "method": "Standard-Based Calculation / Annual 8760 Energy Balance",
   "category": "AnnualEnergyBalance",
   "sourceReference": "AssistantEngineer deterministic reference fixture v1; annual values are sums of monthly constant-load bins.",
   "assumptions": [
     "Common non-leap weather year with 8760 hours.",
     "Monthly load bins are compact expected summaries instead of listing 8760 hourly rows.",
     "Heating and cooling loads are never simultaneous within a monthly bin.",
-    "No external reference implementation is claimed for this fixture."
+    "No external comparison output is claimed for this fixture."
   ],
   "input": {
     "calculationBasis": "annual-aggregation",

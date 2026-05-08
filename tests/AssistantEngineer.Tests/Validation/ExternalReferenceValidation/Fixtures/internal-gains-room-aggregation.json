@@ -2,7 +2,7 @@
   "fixtureName": "RoomInternalGainAggregation",
   "description": "Room-level internal gain aggregation.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Internal Gains",
+  "method": "Standard-Based Calculation / Internal Gains",
   "category": "InternalGains",
   "sourceReference": "Internal deterministic fixture",
   "input": {

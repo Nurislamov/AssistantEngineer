@@ -2,7 +2,7 @@
   "fixtureName": "SingleWindowWinterTransmission",
   "description": "Single outdoor window transmission heat loss with winter boundary condition.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Transmission Heat Transfer",
+  "method": "Standard-Based Calculation / Transmission Heat Transfer",
   "sourceReference": "AssistantEngineer deterministic fixture for U x A x delta-T transmission heat transfer.",
   "assumptions": [
     "Window is treated only as a conductive envelope element.",

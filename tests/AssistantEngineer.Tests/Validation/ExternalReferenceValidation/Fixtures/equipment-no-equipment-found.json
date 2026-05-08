@@ -2,7 +2,7 @@
   "fixtureName": "NoEquipmentFound",
   "description": "Empty candidate list reports diagnostics.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Equipment Sizing Integration",
+  "method": "Standard-Based Calculation / Equipment Sizing Integration",
   "category": "EquipmentSizing",
   "sourceReference": "Internal deterministic fixture",
   "input": {

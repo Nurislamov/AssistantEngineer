@@ -1,4 +1,4 @@
-﻿# External Reference Validation Plan
+# External Reference Validation Plan
 
 AssistantEngineer is a standalone C# standard-based calculation platform.
 External tools are used only as independent comparison workflows.
@@ -61,7 +61,7 @@ This scope is internal engineering and comparison-workflow ready; it is not a ce
 ## Real Application Pipeline
 
 - Public method query values are preserved as `requestedMethod`.
-- Results expose `actualMethod` and diagnostics when API compatibility routes use the Standard reference design-point calculation pipeline.
+- Results expose `actualMethod` and diagnostics when API compatibility routes use the Standard-Based Calculation design-point calculation pipeline.
 - Room, floor, building, annual, DHW, and system-energy routes remain deterministic and traceable through application services.
 - Comparison workflows and anchors are explicit and non-claiming.
 

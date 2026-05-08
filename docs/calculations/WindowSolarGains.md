@@ -1,6 +1,6 @@
 # Window Solar Gains
 
-This document describes the current Energy Calculation equivalence scope for solar gains through windows.
+This document describes the current Standard-Based Calculation scope for solar gains through windows.
 
 ## Scope
 

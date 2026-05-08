@@ -2,7 +2,7 @@
   "fixtureName": "ThermalZoneAggregationNoDoubleCount",
   "description": "Thermal zone aggregation de-duplicates repeated room inputs.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Load Aggregation",
+  "method": "Standard-Based Calculation / Load Aggregation",
   "category": "Aggregation",
   "sourceReference": "Internal deterministic fixture",
   "input": {

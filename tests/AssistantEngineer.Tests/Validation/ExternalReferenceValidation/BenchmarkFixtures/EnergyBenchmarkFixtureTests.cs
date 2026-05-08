@@ -421,7 +421,7 @@ public class EnergyBenchmarkFixtureTests
           "description": "Temporary loader fixture.",
           "category": "AnnualEnergyBalance",
           "referenceType": "BenchmarkReference",
-          "method": "Energy Calculation equivalence / Annual 8760 Energy Balance",
+          "method": "Standard-Based Calculation / Annual 8760 Energy Balance",
           "status": "{{status}}",
           "input": {
             "calculationBasis": "annual-energy-balance",

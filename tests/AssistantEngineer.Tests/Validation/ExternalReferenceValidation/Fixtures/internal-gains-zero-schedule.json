@@ -2,7 +2,7 @@
   "fixtureName": "ZeroScheduleGivesZeroGain",
   "description": "Zero occupancy schedule factor gives zero occupancy gain.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Internal Gains",
+  "method": "Standard-Based Calculation / Internal Gains",
   "category": "InternalGains",
   "sourceReference": "Internal deterministic fixture",
   "input": {

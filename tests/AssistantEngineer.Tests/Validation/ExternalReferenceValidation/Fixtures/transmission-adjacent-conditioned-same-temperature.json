@@ -2,7 +2,7 @@
   "fixtureName": "AdjacentConditionedZoneSameTemperature",
   "description": "Adjacent conditioned zone at the same temperature produces zero net heat flow.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Transmission Heat Transfer",
+  "method": "Standard-Based Calculation / Transmission Heat Transfer",
   "sourceReference": "AssistantEngineer deterministic fixture for adjacent conditioned boundary handling.",
   "assumptions": [
     "The adjacent conditioned zone temperature is supplied explicitly.",

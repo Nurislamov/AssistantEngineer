@@ -1,7 +1,7 @@
 START FILE
 # Annual Energy Balance
 
-Annual energy balance is part of the **Energy Calculation equivalence** track.
+Annual energy balance is part of the **Standard-Based Calculation** track.
 
 It converts hourly or representative monthly energy records into:
 

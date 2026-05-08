@@ -3,7 +3,7 @@
   "description": "Window solar gain is zero when the hour is explicitly marked as night.",
   "category": "SolarGains",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation equivalence / Window Solar Gain",
+  "method": "Standard-Based Calculation / Window Solar Gain",
   "status": "Active",
   "input": {
     "calculationBasis": "window-solar-gain",

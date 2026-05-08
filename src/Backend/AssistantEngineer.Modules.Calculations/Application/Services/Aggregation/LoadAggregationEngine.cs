@@ -6,8 +6,8 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Aggregatio
 
 public sealed class LoadAggregationEngine
 {
-    private const string DesignPointMethod = "Energy Calculation equivalence / Design Point Load Aggregation";
-    private const string HourlyMethod = "Energy Calculation equivalence / Hourly Coincident Load Aggregation";
+    private const string DesignPointMethod = "Standard-Based Calculation / Design Point Load Aggregation";
+    private const string HourlyMethod = "Standard-Based Calculation / Hourly Coincident Load Aggregation";
 
     private readonly TimeProvider _timeProvider;
 

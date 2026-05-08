@@ -29,7 +29,7 @@ Validation should not claim:
 
 ## Proposed validation stages
 
-### Stage 1 — smoke validation cases
+### Stage 1 - smoke validation cases
 
 Small deterministic cases:
 
@@ -49,7 +49,7 @@ Expected result:
 - stable monthly/annual aggregation;
 - diagnostics show assumptions.
 
-### Stage 2 — simplified EnergyPlus comparison
+### Stage 2 - simplified EnergyPlus comparison
 
 Build a small EnergyPlus model that intentionally matches the simplified assumptions as closely as practical:
 
@@ -69,7 +69,7 @@ Expected result:
 - monthly seasonal behavior matches directionally;
 - differences are documented.
 
-### Stage 3 — ASHRAE 140-style comparative cases
+### Stage 3 - ASHRAE 140-style comparative cases
 
 Use ASHRAE 140-style thinking:
 
@@ -95,11 +95,11 @@ Possible starting tolerances:
 
 | Metric | Initial tolerance |
 |---|---|
-| Annual heating energy | ±20% |
-| Annual cooling energy | ±20% |
+| Annual heating energy | +/-20% |
+| Annual cooling energy | +/-20% |
 | Monthly heating/cooling trend | same seasonal direction |
-| Peak heating load | ±25% |
-| Peak cooling load | ±25% |
+| Peak heating load | +/-25% |
+| Peak cooling load | +/-25% |
 | Solar orientation sensitivity | directionally correct |
 | Free-floating temperature trend | directionally correct |
 

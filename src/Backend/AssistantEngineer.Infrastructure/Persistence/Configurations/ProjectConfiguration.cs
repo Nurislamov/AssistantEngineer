@@ -13,6 +13,6 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.Name).IsRequired().HasMaxLength(200);
         builder.HasIndex(p => p.Name).IsUnique();
 
-        // ����� ����-�-������ � CalculationPreferences ��������� � CalculationPreferencesConfiguration
+        // Project-to-preferences mapping is configured in CalculationPreferencesConfiguration.
     }
 }

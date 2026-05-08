@@ -2,7 +2,7 @@
   "fixtureName": "SingleWindowWithShading",
   "description": "Single window solar gain with frame, internal shading, and external shading factors.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "method": "Standard-Based Calculation / Window Solar Gains",
   "sourceReference": "AssistantEngineer deterministic fixture for window solar heat gain factors.",
   "assumptions": [
     "Solar gains are separate from window transmission heat transfer.",

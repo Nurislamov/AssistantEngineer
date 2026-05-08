@@ -2,7 +2,7 @@
   "fixtureName": "VentilationWithHeatRecovery",
   "description": "Mechanical ventilation heating load reduced by heat recovery efficiency.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Ventilation and Infiltration Loads",
+  "method": "Standard-Based Calculation / Ventilation and Infiltration Loads",
   "sourceReference": "AssistantEngineer deterministic fixture for ventilation load.",
   "assumptions": [
     "Dry sensible outdoor air load only.",

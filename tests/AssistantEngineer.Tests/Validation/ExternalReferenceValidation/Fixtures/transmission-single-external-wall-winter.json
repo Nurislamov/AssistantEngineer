@@ -2,7 +2,7 @@
   "fixtureName": "SingleExternalWallWinter",
   "description": "Single outdoor wall transmission heat loss with winter boundary condition.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Transmission Heat Transfer",
+  "method": "Standard-Based Calculation / Transmission Heat Transfer",
   "sourceReference": "AssistantEngineer deterministic fixture for U x A x delta-T transmission heat transfer.",
   "assumptions": [
     "Positive heat flow means heat leaves the room.",

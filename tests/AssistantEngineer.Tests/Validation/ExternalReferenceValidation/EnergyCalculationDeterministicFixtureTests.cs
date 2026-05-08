@@ -49,7 +49,7 @@ public class EnergyCalculationDeterministicFixtureTests
         var engine = new TransmissionHeatTransferEngine();
 
         Assert.Equal("InternalDeterministic", fixture.ReferenceType);
-        Assert.Equal("Energy Calculation equivalence / Transmission Heat Transfer", fixture.Method);
+        Assert.Equal("Standard-Based Calculation / Transmission Heat Transfer", fixture.Method);
         Assert.Equal("transmission-heat-transfer", fixture.Input.CalculationBasis);
 
         var request = new TransmissionHeatTransferRequest(
@@ -96,7 +96,7 @@ public class EnergyCalculationDeterministicFixtureTests
         var engine = new WindowSolarGainEngine();
 
         Assert.Equal("InternalDeterministic", fixture.ReferenceType);
-        Assert.Equal("Energy Calculation equivalence / Window Solar Gains", fixture.Method);
+        Assert.Equal("Standard-Based Calculation / Window Solar Gains", fixture.Method);
         Assert.Equal("window-solar-gains", fixture.Input.CalculationBasis);
 
         var result = engine.CalculateRoom(
@@ -139,7 +139,7 @@ public class EnergyCalculationDeterministicFixtureTests
         var engine = new VentilationAndInfiltrationLoadEngine();
 
         Assert.Equal("InternalDeterministic", fixture.ReferenceType);
-        Assert.Equal("Energy Calculation equivalence / Ventilation and Infiltration Loads", fixture.Method);
+        Assert.Equal("Standard-Based Calculation / Ventilation and Infiltration Loads", fixture.Method);
         Assert.Equal("ventilation-infiltration-loads", fixture.Input.CalculationBasis);
 
         var result = engine.Calculate(CreateVentilationInfiltrationInput(input));

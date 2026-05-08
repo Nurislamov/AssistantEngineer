@@ -2,7 +2,7 @@
   "fixtureName": "EnergyUseIntensity",
   "description": "Annual total divided by building area.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance",
+  "method": "Standard-Based Calculation / Annual 8760 Energy Balance",
   "category": "AnnualEnergyBalance",
   "sourceReference": "Internal deterministic fixture",
   "input": {

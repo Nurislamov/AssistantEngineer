@@ -43,7 +43,7 @@ AssistantEngineer implements calculation logic directly in C# using standard-bas
 
 ## Real Application Pipeline
 
-The backend calculation endpoints use the Energy Calculation equivalence application pipeline through public facades:
+The backend calculation endpoints use the Standard-Based Calculation application pipeline through public facades:
 
 - Room heating/cooling routes assemble room component inputs and call `RoomLoadCalculationEngine`.
 - Floor and building heating/cooling routes aggregate room load results with `LoadAggregationEngine`.

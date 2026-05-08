@@ -1,6 +1,6 @@
 # DHW Demand
 
-This Energy Calculation equivalence step calculates domestic hot water demand.
+This Standard-Based Calculation step calculates domestic hot water demand.
 
 ## Formula
 

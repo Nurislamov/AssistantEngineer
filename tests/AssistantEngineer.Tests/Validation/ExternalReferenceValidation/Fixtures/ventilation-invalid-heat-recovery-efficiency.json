@@ -2,7 +2,7 @@
   "fixtureName": "InvalidHeatRecoveryEfficiency",
   "description": "Invalid heat recovery efficiency produces calculation diagnostics and no load.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Ventilation and Infiltration Loads",
+  "method": "Standard-Based Calculation / Ventilation and Infiltration Loads",
   "sourceReference": "AssistantEngineer deterministic fixture for ventilation validation.",
   "assumptions": [
     "Heat recovery efficiency must be in the 0..1 range.",

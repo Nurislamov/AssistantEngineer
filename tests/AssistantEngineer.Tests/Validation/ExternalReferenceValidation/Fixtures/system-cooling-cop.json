@@ -2,7 +2,7 @@
   "fixtureName": "CoolingSystemCOP",
   "description": "Useful cooling energy divided by COP.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / System Energy",
+  "method": "Standard-Based Calculation / System Energy",
   "category": "SystemEnergy",
   "sourceReference": "Internal deterministic fixture",
   "input": {

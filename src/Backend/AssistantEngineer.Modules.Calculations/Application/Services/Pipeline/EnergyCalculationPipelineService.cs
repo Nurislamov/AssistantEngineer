@@ -37,8 +37,8 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
 public sealed class EnergyCalculationPipelineService
 {
-    private const string RoomPipelineMethod = "Energy Calculation equivalence / Application Room Load Pipeline";
-    private const string AggregationPipelineMethod = "Energy Calculation equivalence / Application Load Aggregation Pipeline";
+    private const string RoomPipelineMethod = "Standard-Based Calculation / Application Room Load Pipeline";
+    private const string AggregationPipelineMethod = "Standard-Based Calculation / Application Load Aggregation Pipeline";
     private const string ExternalReferenceValidationDesignPoint = "ExternalReferenceValidationDesignPoint";
     private const string ExternalReferenceValidationAnnualAggregationAdapter = "ExternalReferenceValidationAnnualAggregationAdapter";
     private readonly IRoomRepository _rooms;
@@ -322,7 +322,7 @@ public sealed class EnergyCalculationPipelineService
             return Result<BuildingEnergyBalanceResult>.NotFound($"Building with id {buildingId} not found.");
 
         if (building.ClimateZone is null)
-            return Result<BuildingEnergyBalanceResult>.Validation("Building climate zone is required for Energy Calculation equivalence energy balance.");
+            return Result<BuildingEnergyBalanceResult>.Validation("Building climate zone is required for Standard-Based Calculation energy balance.");
 
         var preferences = await GetPreferencesAsync(building.ProjectId, cancellationToken);
         var source = await _legacyEnergyCalculator.CalculateAsync(
@@ -404,7 +404,7 @@ public sealed class EnergyCalculationPipelineService
         string? requestedMethod = null)
     {
         if (room.Floor.Building.ClimateZone is null)
-            return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Energy Calculation equivalence room load calculation.");
+            return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Standard-Based Calculation room load calculation.");
 
         var input = BuildRoomLoadInput(
             room,
@@ -416,7 +416,7 @@ public sealed class EnergyCalculationPipelineService
             return result;
 
         _logger.LogDebug(
-            "Energy Calculation equivalence room load calculated for room {RoomId}: heating {HeatingLoadW} W, cooling {CoolingLoadW} W.",
+            "Standard-Based Calculation room load calculated for room {RoomId}: heating {HeatingLoadW} W, cooling {CoolingLoadW} W.",
             room.Id,
             result.Value.HeatingLoadW,
             result.Value.CoolingLoadW);
@@ -443,7 +443,7 @@ public sealed class EnergyCalculationPipelineService
             diagnostics,
             requestedMethod,
             $"Room {room.Id} application load pipeline",
-            "Standard reference design-point calculation pipeline");
+            "Standard-Based Calculation design-point calculation pipeline");
         EnergyCalculationPipelineRoomContextResolver.AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
 
         var groundContext = _roomContextResolver.ResolveGroundContext(room, climateContext);

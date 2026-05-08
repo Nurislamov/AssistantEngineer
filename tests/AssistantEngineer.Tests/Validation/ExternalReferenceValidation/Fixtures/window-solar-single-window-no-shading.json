@@ -2,7 +2,7 @@
   "fixtureName": "SingleWindowNoShading",
   "description": "Single window solar gain with provided incident irradiance and no shading.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "method": "Standard-Based Calculation / Window Solar Gains",
   "sourceReference": "AssistantEngineer deterministic fixture for window solar heat gain.",
   "assumptions": [
     "Solar gains are separate from window transmission heat transfer.",

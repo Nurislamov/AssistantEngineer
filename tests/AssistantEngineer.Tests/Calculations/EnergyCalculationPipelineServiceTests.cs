@@ -49,8 +49,8 @@ public class EnergyCalculationPipelineServiceTests
 
         Assert.True(heating.IsSuccess, heating.Error);
         Assert.True(cooling.IsSuccess, cooling.Error);
-        Assert.Contains("Energy Calculation equivalence", heating.Value.CalculationMethod);
-        Assert.Contains("Energy Calculation equivalence", cooling.Value.CalculationMethod);
+        Assert.Contains("Standard-Based Calculation", heating.Value.CalculationMethod);
+        Assert.Contains("Standard-Based Calculation", cooling.Value.CalculationMethod);
         Assert.Equal("En12831", heating.Value.RequestedMethod);
         Assert.Equal("Simplified", cooling.Value.RequestedMethod);
         Assert.Equal("ExternalReferenceValidationDesignPoint", heating.Value.ActualMethod);
@@ -93,10 +93,10 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal("ExternalReferenceValidationDesignPoint", heating.Value.ActualMethod);
         Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Standard reference design-point calculation pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Standard-Based Calculation design-point calculation pipeline", StringComparison.Ordinal));
         Assert.Contains(heating.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Standard reference design-point calculation pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Standard-Based Calculation design-point calculation pipeline", StringComparison.Ordinal));
     }
 
     [Fact]

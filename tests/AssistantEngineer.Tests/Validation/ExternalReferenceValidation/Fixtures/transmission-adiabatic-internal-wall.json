@@ -2,7 +2,7 @@
   "fixtureName": "AdiabaticInternalWall",
   "description": "Internal adiabatic wall is excluded from transmission heat transfer.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Transmission Heat Transfer",
+  "method": "Standard-Based Calculation / Transmission Heat Transfer",
   "sourceReference": "AssistantEngineer deterministic fixture for adiabatic envelope boundary handling.",
   "assumptions": [
     "Internal adiabatic boundaries do not contribute to heating or cooling load.",

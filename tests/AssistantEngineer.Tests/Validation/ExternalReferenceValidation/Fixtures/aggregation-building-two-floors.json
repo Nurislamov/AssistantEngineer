@@ -2,7 +2,7 @@
   "fixtureName": "BuildingAggregationTwoFloors",
   "description": "Building aggregation across rooms located on two floors.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Load Aggregation",
+  "method": "Standard-Based Calculation / Load Aggregation",
   "category": "Aggregation",
   "sourceReference": "Internal deterministic fixture",
   "input": {

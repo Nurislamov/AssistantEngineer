@@ -1,6 +1,6 @@
 # Transmission Heat Transfer
 
-This document describes the current Energy Calculation equivalence scope for transmission heat transfer through envelope elements.
+This document describes the current Standard-Based Calculation scope for transmission heat transfer through envelope elements.
 
 ## Scope
 

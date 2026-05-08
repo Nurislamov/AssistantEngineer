@@ -60,7 +60,7 @@ body:
     attributes:
       label: Metrics and tolerances
       description: Annual heating/cooling, peak load, trend, sign or other metrics with tolerances.
-      placeholder: Annual heating energy ±20%; peak heating load ±25%.
+      placeholder: Annual heating energy +/-20%; peak heating load +/-25%.
     validations:
       required: true
 

@@ -1,6 +1,6 @@
 # Room Heating / Cooling Load
 
-This Energy Calculation equivalence step combines completed room-level components into a deterministic room load result.
+This Standard-Based Calculation step combines completed room-level components into a deterministic room load result.
 
 ## Scope
 
@@ -47,7 +47,7 @@ Missing component inputs are reported as zero-component diagnostics. Invalid roo
 
 ## Real Application Pipeline
 
-Room load API routes use the Energy Calculation equivalence application pipeline:
+Room load API routes use the Standard-Based Calculation application pipeline:
 
 - `GET /api/v1/rooms/{roomId}/load-calculations/heating-load`
 - `GET /api/v1/rooms/{roomId}/load-calculations/cooling-load`

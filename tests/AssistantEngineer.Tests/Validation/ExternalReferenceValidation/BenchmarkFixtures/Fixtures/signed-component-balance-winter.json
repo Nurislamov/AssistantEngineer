@@ -3,7 +3,7 @@
   "description": "Benchmark reference fixture for winter signed component totals with negative heat-flow balance.",
   "category": "SignedComponentBalance",
   "referenceType": "BenchmarkReference",
-  "method": "Energy Calculation equivalence / Annual 8760 Energy Balance Signed Components",
+  "method": "Standard-Based Calculation / Annual 8760 Energy Balance Signed Components",
   "status": "Active",
   "sourceReference": "Internal benchmark reference values derived from constant signed hourly component loads; no external equivalence claim.",
   "input": {

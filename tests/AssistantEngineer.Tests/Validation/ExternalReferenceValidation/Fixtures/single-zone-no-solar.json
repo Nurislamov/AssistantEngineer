@@ -2,9 +2,9 @@
   "fixtureName": "single-zone-no-solar",
   "description": "Single thermal zone with constant winter outdoor temperature, no solar gains, and constant internal gains. This is a deterministic reference fixture for the AssistantEngineer hourly heat-balance path.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Room Heat Balance",
+  "method": "Standard-Based Calculation / Room Heat Balance",
   "category": "RoomLoad",
-  "sourceReference": "AssistantEngineer deterministic reference fixture v1; derived from documented steady-state heat-balance assumptions, not an external reference implementation.",
+  "sourceReference": "AssistantEngineer deterministic reference fixture v1; derived from documented steady-state heat-balance assumptions, not an external comparison output.",
   "assumptions": [
     "One-hour timestep.",
     "Single zone is held at the heating setpoint after each timestep when heating is required.",

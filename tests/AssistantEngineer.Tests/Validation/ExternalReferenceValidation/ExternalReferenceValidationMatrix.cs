@@ -155,7 +155,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Infrastructure.Integrations",
-            Notes: "����� ��������������� weather dataset �� 8760 �����."),
+            Notes: "Requires a normalized weather dataset for 8760 hours."),
 
         new(
             Code: "WEATHER.PVGIS",
@@ -164,7 +164,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Infrastructure.Integrations",
-            Notes: "����� �������� provider �� ���������� ����."),
+            Notes: "Provider separation from the calculation core remains partial."),
 
         new(
             Code: "ISO52016.HOURLY_HEATING_NEED",
@@ -173,7 +173,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "������� ��������� ����. �� ������ ����������� design-day fallback."),
+            Notes: "Main calculation path. Must not be replaced by a design-day fallback."),
 
         new(
             Code: "ISO52016.HOURLY_COOLING_NEED",
@@ -182,7 +182,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "������� ��������� ����. ����� 8760 hourly results."),
+            Notes: "Main calculation path. Requires 8760 hourly results."),
 
         new(
             Code: "ISO52016.MONTHLY_HEATING_COOLING_NEED",
@@ -191,7 +191,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Monthly results ������ ���� ������������ �� hourly ��� ��������������� monthly method."),
+            Notes: "Monthly results should be aggregated from hourly values or aligned with the monthly method."),
 
         new(
             Code: "ISO52016.INTERNAL_TEMPERATURE_HOURLY",
@@ -200,7 +200,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016",
-            Notes: "OperativeTemperatureC ��� ���� � contract, �� ����� reference test."),
+            Notes: "OperativeTemperatureC exists in the contract, but still needs reference tests."),
 
         new(
             Code: "ISO52016.SENSIBLE_LOAD_HOURLY",
@@ -209,7 +209,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016",
-            Notes: "HeatingLoadW � CoolingLoadW ���� � hourly contract, �� ����� ��������� fixtures."),
+            Notes: "HeatingLoadW and CoolingLoadW exist in the hourly contract, but still need reference fixtures."),
 
         new(
             Code: "ISO52016.THERMAL_ZONES",
@@ -218,7 +218,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "Thermal zones ��� ����, �� ����� ������� ��������� ������."),
+            Notes: "Thermal zones exist, but the computational model still needs reference validation."),
 
         new(
             Code: "ISO52016.MULTI_ZONE",
@@ -227,7 +227,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "����� tests ��� coupled / uncoupled zones."),
+            Notes: "Requires tests for coupled and uncoupled zones."),
 
         new(
             Code: "ISO52016.ADJACENT_HEATED_ZONE",
@@ -236,7 +236,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "��� heated adjacent zones separating wall ������ ���� adiabatic."),
+            Notes: "For heated adjacent zones, the separating wall should be treated as adiabatic."),
 
         new(
             Code: "ISO52016.ADJACENT_NON_HEATED_ZONE",
@@ -245,7 +245,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "����� ������������ ����������� non-heated zone � adjusted coefficient."),
+            Notes: "Requires adjacent non-heated zone temperature handling and adjusted coefficient support."),
 
         new(
             Code: "DHW.EN12831_3",
@@ -254,7 +254,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater",
-            Notes: "������� ��������� reference behaviour, ����� ���������."),
+            Notes: "First reproduce reference behavior, then extend."),
 
         new(
             Code: "PRIMARY_ENERGY.EN15316_1",
@@ -263,7 +263,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Performance",
-            Notes: "����� delivered/final/primary energy � carrier factors."),
+            Notes: "Requires delivered/final/primary energy with carrier factors."),
 
         new(
             Code: "LATENT.ENERGY_NEED",
@@ -272,7 +272,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "�� ������ � ������� equivalence target."),
+            Notes: "Out of current validation scope."),
 
         new(
             Code: "LATENT.MOISTURE_LOAD",
@@ -281,7 +281,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "�� ������ � ������� equivalence target."),
+            Notes: "Out of current validation scope."),
 
         new(
             Code: "SUPPLY_AIR.HUMIDIFICATION_CONDITIONS",
@@ -290,6 +290,6 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "�� ������ � ������� equivalence target.")
+            Notes: "Out of current validation scope."),
     ];
 }

@@ -1,4 +1,4 @@
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+п»їimport CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import {
@@ -24,7 +24,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
     <QueryState
       isLoading={query.isLoading}
       error={query.error}
-      loadingLabel="Загружаем статус расчетного ядра..."
+      loadingLabel="Loading engineering core status..."
       onRetry={() => query.refetch()}
     />
   );
@@ -38,7 +38,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
   if (!status) {
     return (
       <DataCard>
-        <Alert severity="warning">Статус Engineering Core V1 недоступен.</Alert>
+        <Alert severity="warning">Engineering Core V1 status is unavailable.</Alert>
       </DataCard>
     );
   }
@@ -55,7 +55,7 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
               Engineering Core {status.version}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Видимый статус расчетного ядра, формульных gates и ограничений модели.
+              Visible status of the engineering core, formula gates, and model limitations.
             </Typography>
           </Stack>
 
@@ -85,8 +85,8 @@ export function EngineeringCoreStatusPanel(): JSX.Element {
         </Stack>
 
         <Alert severity="info" icon={<InfoOutlinedIcon />}>
-          ClosedV1 означает закрытие engineering formula gates с documented limitations. Это не
-          заявление точного EnergyPlus, StandardReference или ASHRAE 140 equivalence.
+          ClosedV1 means engineering formula gates are closed with documented limitations. This is
+          not a claim of exact EnergyPlus, StandardReference, or ASHRAE 140 equivalence.
         </Alert>
 
         <Stack direction={{ xs: "column", md: "row" }} spacing={2}>

@@ -6,7 +6,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.AnnualEner
 
 public sealed class AnnualEnergyBalanceEngine
 {
-    private const string Method = "Energy Calculation equivalence / Annual 8760 Energy Balance";
+    private const string Method = "Standard-Based Calculation / Annual 8760 Energy Balance";
     private const string Version = "2026.04-internal-deterministic";
     private const string TrueHourlySimulationSource = "TrueHourlySimulation";
     private const string MonthlyBalanceAdapterSource = "MonthlyBalanceAdapter";

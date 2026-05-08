@@ -2,7 +2,7 @@
   "fixtureName": "InvalidShgcFailsDiagnostics",
   "description": "Invalid SHGC is reported as a calculation diagnostic and excluded from solar gains.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Window Solar Gains",
+  "method": "Standard-Based Calculation / Window Solar Gains",
   "sourceReference": "AssistantEngineer deterministic fixture for SHGC validation diagnostics.",
   "assumptions": [
     "Invalid solar factor inputs are not silently clamped into a successful solar gain."

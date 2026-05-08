@@ -2,7 +2,7 @@
   "fixtureName": "EquipmentGainByArea",
   "description": "Equipment internal gain from area and power density.",
   "referenceType": "InternalDeterministic",
-  "method": "Energy Calculation equivalence / Internal Gains",
+  "method": "Standard-Based Calculation / Internal Gains",
   "category": "InternalGains",
   "sourceReference": "Internal deterministic fixture",
   "input": {

@@ -14,7 +14,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
 
 public sealed class RoomLoadCalculationEngine
 {
-    private const string Method = "Energy Calculation equivalence / Room Heating Cooling Load";
+    private const string Method = "Standard-Based Calculation / Room Heating Cooling Load";
     private const string Version = "2026.04-internal-deterministic";
 
     private readonly TransmissionHeatTransferEngine _transmission;

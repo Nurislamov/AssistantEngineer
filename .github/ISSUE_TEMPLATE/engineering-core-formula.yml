@@ -33,7 +33,7 @@ body:
     attributes:
       label: Units
       description: Document input and output units.
-      placeholder: W = W/(m?·K) * m? * K
+      placeholder: W = W/(m2*K) * m2 * DeltaT
     validations:
       required: true
 

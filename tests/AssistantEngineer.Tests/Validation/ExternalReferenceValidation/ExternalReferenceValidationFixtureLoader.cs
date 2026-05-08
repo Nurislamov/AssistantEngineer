@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Validation.ExternalReferenceValidation;
 
@@ -21,11 +21,11 @@ internal static class ExternalReferenceValidationFixtureLoader
             fixtureFileName);
 
         if (!File.Exists(path))
-            throw new FileNotFoundException($"Energy calculation equivalence fixture '{fixtureFileName}' was not found.", path);
+            throw new FileNotFoundException($"Standard-Based Calculation fixture '{fixtureFileName}' was not found.", path);
 
         var json = File.ReadAllText(path);
         return JsonSerializer.Deserialize<ExternalReferenceValidationFixture>(json, JsonOptions) ??
-               throw new InvalidOperationException($"Energy calculation equivalence fixture '{fixtureFileName}' could not be deserialized.");
+               throw new InvalidOperationException($"Standard-Based Calculation fixture '{fixtureFileName}' could not be deserialized.");
     }
 }
 
