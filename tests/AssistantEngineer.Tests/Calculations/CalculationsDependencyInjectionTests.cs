@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
@@ -86,6 +87,10 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<INaturalVentilationZoneIntegrationValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationHourlyInputBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationZoneLoadCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterDemandInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterDemandBasisCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterDrawProfileBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterUsefulDemandCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso16798NaturalVentilationCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso16798NaturalVentilationApplicationAdapter>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<Iso52016HourlySteadyStateCalculator>(services, ServiceLifetime.Scoped);

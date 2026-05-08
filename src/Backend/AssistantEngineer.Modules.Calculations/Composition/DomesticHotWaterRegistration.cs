@@ -1,0 +1,19 @@
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.DomesticHotWater;
+using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AssistantEngineer.Modules.Calculations.Composition;
+
+internal static class DomesticHotWaterRegistration
+{
+    public static IServiceCollection AddDomesticHotWaterFoundation(
+        this IServiceCollection services)
+    {
+        services.AddSingleton<IDomesticHotWaterDemandInputValidator, DomesticHotWaterDemandInputValidator>();
+        services.AddSingleton<IDomesticHotWaterDemandBasisCalculator, DomesticHotWaterDemandBasisCalculator>();
+        services.AddSingleton<IDomesticHotWaterDrawProfileBuilder, DomesticHotWaterDrawProfileBuilder>();
+        services.AddSingleton<IDomesticHotWaterUsefulDemandCalculator, DomesticHotWaterUsefulDemandCalculator>();
+
+        return services;
+    }
+}

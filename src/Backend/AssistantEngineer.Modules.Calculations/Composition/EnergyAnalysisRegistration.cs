@@ -21,6 +21,7 @@ internal static class EnergyAnalysisRegistration
         this IServiceCollection services)
     {
         services.AddSingleton<AnnualEnergyBalanceEngine>();
+        services.AddDomesticHotWaterFoundation();
 
         services.AddScoped<BuildingComfortMetricsService>();
         services.AddScoped<BuildingZoneComfortMetricsService>();

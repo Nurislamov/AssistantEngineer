@@ -428,3 +428,61 @@ This stage provides deterministic standard-inspired application integration only
 ## Next stage
 
 - `AE-DHW-ISO12831-001A`
+
+---
+
+## Work item
+
+- `AE-DHW-ISO12831-001A`
+
+## Touched contracts
+
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDemandBasis.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterUseCategory.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterTemperatureModel.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterFixtureUseInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDemandBasisInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDrawProfileInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterUsefulDemandInput.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterUsefulDemandResult.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDemandValidationResult.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDemandBasisResult.cs`
+- `Application/Contracts/DomesticHotWater/DomesticHotWaterDrawProfileResult.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterDemandInputValidator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterDemandBasisCalculator.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterDrawProfileBuilder.cs`
+- `Application/Abstractions/DomesticHotWater/IDomesticHotWaterUsefulDemandCalculator.cs`
+
+## Touched services
+
+- `Application/Services/DomesticHotWater/DomesticHotWaterDiagnosticsFactory.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterDemandInputValidator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterDemandBasisCalculator.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterDrawProfileBuilder.cs`
+- `Application/Services/DomesticHotWater/DomesticHotWaterUsefulDemandCalculator.cs`
+- `Composition/DomesticHotWaterRegistration.cs`
+- updated `Composition/EnergyAnalysisRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterDemandInputValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterDemandBasisCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterDrawProfileBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterUsefulDemandCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/DomesticHotWaterArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+Domestic hot water useful-demand non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+
+This stage provides deterministic standard-inspired DHW useful-demand calculation only.
+
+## Next stage
+
+- `AE-DHW-ISO12831-001B`
