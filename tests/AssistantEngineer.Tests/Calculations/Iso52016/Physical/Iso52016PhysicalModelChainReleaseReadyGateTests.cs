@@ -93,7 +93,7 @@ public class Iso52016PhysicalModelChainReleaseReadyGateTests
     }
 
     [Fact]
-    public void StageDocumentation_StatesNoExternalParityClaims()
+    public void StageDocumentation_StatesNoExternalExactMatchClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var docPath = Path.Combine(

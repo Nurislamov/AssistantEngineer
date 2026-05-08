@@ -5,7 +5,7 @@ public static class ExternalReferenceValidationMatrix
     public static IReadOnlyList<ExternalReferenceValidationFeature> Features { get; } =
     [
         new(
-            Code: "ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER",
+            Code: "STANDARD_REFERENCE.TRANSMISSION_HEAT_TRANSFER",
             Name: "Transmission heat transfer",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -14,7 +14,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures and engine tests. Application pipeline integrated, including explicit ground boundary temperature diagnostics. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
+            Code: "STANDARD_REFERENCE.WINDOW_SOLAR_GAINS",
             Name: "Window solar gains",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
@@ -23,7 +23,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures and engine tests. BenchmarkCompared for deterministic window solar gain and night-zero fixtures. Application pipeline integrated; annual climate solar data uses the centralized surface irradiance path and orientation reference fallback is diagnosed. This is not ExternalReferenceCovered."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
+            Code: "STANDARD_REFERENCE.VENTILATION_INFILTRATION_LOADS",
             Name: "Ventilation and infiltration loads",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -32,7 +32,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures and engine tests. Application pipeline integrated; default ACH fallback is documented and diagnosed. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
+            Code: "STANDARD_REFERENCE.INTERNAL_GAINS",
             Name: "Internal gains",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -41,7 +41,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic engine tests. Application pipeline integrated; design-point schedule factor 1.0 is documented and hourly schedule expansion remains partial. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
+            Code: "STANDARD_REFERENCE.ROOM_HEATING_LOAD",
             Name: "Room heating load",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -50,7 +50,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated with requested/actual method diagnostics. Design-point, not full hourly balance. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
+            Code: "STANDARD_REFERENCE.ROOM_COOLING_LOAD",
             Name: "Room cooling load",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -59,7 +59,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated with requested/actual method diagnostics. Design-point, not full hourly balance. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
+            Code: "STANDARD_REFERENCE.THERMAL_ZONE_AGGREGATION",
             Name: "Thermal zone aggregation",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -68,7 +68,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures, engine tests, and application pipeline tests. Application pipeline integrated. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
+            Code: "STANDARD_REFERENCE.FLOOR_AGGREGATION",
             Name: "Floor aggregation",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -77,7 +77,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures, engine tests, and floor application pipeline tests. Application pipeline integrated. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
+            Code: "STANDARD_REFERENCE.BUILDING_AGGREGATION",
             Name: "Building aggregation",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -86,7 +86,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures, engine tests, and building application pipeline tests. Application pipeline integrated. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
+            Code: "STANDARD_REFERENCE.ANNUAL_ENERGY_BALANCE",
             Name: "Annual energy balance",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
@@ -95,7 +95,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "InternalDeterministicTested by fixtures, engine tests, mapper tests, hourly component tests, and application pipeline adapter tests. Application pipeline integrated with TrueHourlySimulation support when the provider supplies 8760 records, MonthlyBalanceAdapter fallback, hourly record count, and true-8760 flag. BenchmarkCompared for constant hourly deterministic benchmark fixtures and deterministic ventilation split fixture. True hourly source passes available transmission, mechanical ventilation, natural ventilation, separate infiltration, ground, solar and internal gains. This is not ExternalReferenceCovered."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
+            Code: "STANDARD_REFERENCE.SIGNED_COMPONENT_BALANCE",
             Name: "Signed component balance",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.BenchmarkCompared,
@@ -104,7 +104,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "InternalDeterministicTested for signed hourly transmission, mechanical ventilation, natural ventilation, aggregate ventilation, infiltration and ground components. BenchmarkCompared for deterministic signed component benchmark fixtures, including separate infiltration and ventilation subcomponent split. This is not ExternalReferenceCovered."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
+            Code: "STANDARD_REFERENCE.DHW_DEMAND",
             Name: "DHW demand",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -113,7 +113,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures and service tests; endpoint uses the deterministic facade path. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
+            Code: "STANDARD_REFERENCE.SYSTEM_ENERGY",
             Name: "System energy",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -122,7 +122,7 @@ public static class ExternalReferenceValidationMatrix
             Notes: "Covered by deterministic fixtures and engine tests; system services call SystemEnergyEngine. This is not external equivalence proof."),
 
         new(
-            Code: "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION",
+            Code: "STANDARD_REFERENCE.EQUIPMENT_SIZING_INTEGRATION",
             Name: "Equipment sizing integration",
             ReferenceStatus: ReferenceFeatureStatus.Implemented,
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.InternalDeterministicTested,
@@ -155,7 +155,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Infrastructure.Integrations",
-            Notes: "Нужен нормализованный weather dataset на 8760 часов."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ weather dataset пїЅпїЅ 8760 пїЅпїЅпїЅпїЅпїЅ."),
 
         new(
             Code: "WEATHER.PVGIS",
@@ -164,7 +164,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Infrastructure.Integrations",
-            Notes: "Нужно отделить provider от расчётного ядра."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ provider пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ."),
 
         new(
             Code: "ISO52016.HOURLY_HEATING_NEED",
@@ -173,7 +173,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Главный расчётный путь. Не должен подменяться design-day fallback."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ design-day fallback."),
 
         new(
             Code: "ISO52016.HOURLY_COOLING_NEED",
@@ -182,7 +182,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Главный расчётный путь. Нужны 8760 hourly results."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ 8760 hourly results."),
 
         new(
             Code: "ISO52016.MONTHLY_HEATING_COOLING_NEED",
@@ -191,7 +191,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Monthly results должны быть агрегированы из hourly или соответствовать monthly method."),
+            Notes: "Monthly results пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ hourly пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ monthly method."),
 
         new(
             Code: "ISO52016.INTERNAL_TEMPERATURE_HOURLY",
@@ -200,7 +200,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016",
-            Notes: "OperativeTemperatureC уже есть в contract, но нужен reference test."),
+            Notes: "OperativeTemperatureC пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ contract, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ reference test."),
 
         new(
             Code: "ISO52016.SENSIBLE_LOAD_HOURLY",
@@ -209,7 +209,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016",
-            Notes: "HeatingLoadW и CoolingLoadW есть в hourly contract, но нужны эталонные fixtures."),
+            Notes: "HeatingLoadW пїЅ CoolingLoadW пїЅпїЅпїЅпїЅ пїЅ hourly contract, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ fixtures."),
 
         new(
             Code: "ISO52016.THERMAL_ZONES",
@@ -218,7 +218,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P0,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "Thermal zones уже есть, но нужно сверить расчётную модель."),
+            Notes: "Thermal zones пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ."),
 
         new(
             Code: "ISO52016.MULTI_ZONE",
@@ -227,7 +227,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Iso52016",
-            Notes: "Нужны tests для coupled / uncoupled zones."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅ tests пїЅпїЅпїЅ coupled / uncoupled zones."),
 
         new(
             Code: "ISO52016.ADJACENT_HEATED_ZONE",
@@ -236,7 +236,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "Для heated adjacent zones separating wall должен быть adiabatic."),
+            Notes: "пїЅпїЅпїЅ heated adjacent zones separating wall пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ adiabatic."),
 
         new(
             Code: "ISO52016.ADJACENT_NON_HEATED_ZONE",
@@ -245,7 +245,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Buildings.Domain.Entities / Calculations",
-            Notes: "Нужно рассчитывать температуру non-heated zone и adjusted coefficient."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ non-heated zone пїЅ adjusted coefficient."),
 
         new(
             Code: "DHW.EN12831_3",
@@ -254,7 +254,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater",
-            Notes: "Сначала повторить reference behaviour, потом расширять."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ reference behaviour, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ."),
 
         new(
             Code: "PRIMARY_ENERGY.EN15316_1",
@@ -263,7 +263,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.Partial,
             Priority: ExternalReferenceValidationPriority.P1,
             AssistantEngineerArea: "AssistantEngineer.Modules.Calculations.Application.Services.Performance",
-            Notes: "Нужны delivered/final/primary energy и carrier factors."),
+            Notes: "пїЅпїЅпїЅпїЅпїЅ delivered/final/primary energy пїЅ carrier factors."),
 
         new(
             Code: "LATENT.ENERGY_NEED",
@@ -272,7 +272,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "Не входит в текущий equivalence target."),
+            Notes: "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ equivalence target."),
 
         new(
             Code: "LATENT.MOISTURE_LOAD",
@@ -281,7 +281,7 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "Не входит в текущий equivalence target."),
+            Notes: "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ equivalence target."),
 
         new(
             Code: "SUPPLY_AIR.HUMIDIFICATION_CONDITIONS",
@@ -290,6 +290,6 @@ public static class ExternalReferenceValidationMatrix
             AssistantEngineerStatus: AssistantEngineerFeatureStatus.OutOfScope,
             Priority: ExternalReferenceValidationPriority.P3,
             AssistantEngineerArea: "Not planned",
-            Notes: "Не входит в текущий equivalence target.")
+            Notes: "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ equivalence target.")
     ];
 }

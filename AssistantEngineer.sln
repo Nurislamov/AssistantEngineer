@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A8A3B7E4-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{E14F8B56-3A55-4F4B-9836-73F8CDA6D4D2}"
 	ProjectSection(SolutionItems) = preProject
-		docs\architecture\EnergyCalculationParityPlan.md = docs\architecture\EnergyCalculationParityPlan.md
+		docs\\architecture\\ExternalReferenceValidationPlan.md = docs\\architecture\\ExternalReferenceValidationPlan.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{37BBAED7-F78E-4B8B-BE13-D382758F619E}"

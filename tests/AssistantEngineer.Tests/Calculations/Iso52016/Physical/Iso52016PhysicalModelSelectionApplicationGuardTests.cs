@@ -131,7 +131,7 @@ public class Iso52016PhysicalModelSelectionApplicationGuardTests
     }
 
     [Fact]
-    public void StageDocument_StatesNoExternalParityClaims()
+    public void StageDocument_StatesNoExternalExactMatchClaims()
     {
         var repoRoot = FindRepositoryRoot();
 

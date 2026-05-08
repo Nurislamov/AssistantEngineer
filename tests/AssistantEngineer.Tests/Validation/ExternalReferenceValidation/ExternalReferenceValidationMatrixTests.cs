@@ -3,7 +3,7 @@ namespace AssistantEngineer.Tests.Validation.ExternalReferenceValidation;
 public class ExternalReferenceValidationMatrixTests
 {
     [Fact]
-    public void ParityMatrixContainsOnlyUniqueFeatureCodes()
+    public void ExternalReferenceValidationMatrixContainsOnlyUniqueFeatureCodes()
     {
         var duplicateCodes = ExternalReferenceValidationMatrix.Features
             .GroupBy(feature => feature.Code, StringComparer.Ordinal)
@@ -66,7 +66,7 @@ public class ExternalReferenceValidationMatrixTests
     }
 
     [Fact]
-    public void ParityMatrixContainsCoreIso52016Features()
+    public void ExternalReferenceValidationMatrixContainsCoreIso52016Features()
     {
         var codes = ExternalReferenceValidationMatrix.Features
             .Select(feature => feature.Code)
@@ -91,7 +91,7 @@ public class ExternalReferenceValidationMatrixTests
     }
 
     [Fact]
-    public void ParityMatrixContainsCoreIso52010WeatherFeatures()
+    public void ExternalReferenceValidationMatrixContainsCoreIso52010WeatherFeatures()
     {
         var codes = ExternalReferenceValidationMatrix.Features
             .Select(feature => feature.Code)
@@ -114,7 +114,7 @@ public class ExternalReferenceValidationMatrixTests
     }
 
     [Fact]
-    public void ParityMatrixContainsDhwAndPrimaryEnergyFeatures()
+    public void ExternalReferenceValidationMatrixContainsDhwAndPrimaryEnergyFeatures()
     {
         var codes = ExternalReferenceValidationMatrix.Features
             .Select(feature => feature.Code)
@@ -130,7 +130,7 @@ public class ExternalReferenceValidationMatrixTests
     }
 
     [Fact]
-    public void ParityMatrixContainsFinalExternalReferenceValidationFunctions()
+    public void ExternalReferenceValidationMatrixContainsFinalExternalReferenceValidationFunctions()
     {
         var codes = ExternalReferenceValidationMatrix.Features
             .Select(feature => feature.Code)
@@ -138,20 +138,20 @@ public class ExternalReferenceValidationMatrixTests
 
         var requiredCodes = new[]
         {
-            "ENERGY_CALCULATION_PARITY.TRANSMISSION_HEAT_TRANSFER",
-            "ENERGY_CALCULATION_PARITY.WINDOW_SOLAR_GAINS",
-            "ENERGY_CALCULATION_PARITY.VENTILATION_INFILTRATION_LOADS",
-            "ENERGY_CALCULATION_PARITY.INTERNAL_GAINS",
-            "ENERGY_CALCULATION_PARITY.ROOM_HEATING_LOAD",
-            "ENERGY_CALCULATION_PARITY.ROOM_COOLING_LOAD",
-            "ENERGY_CALCULATION_PARITY.THERMAL_ZONE_AGGREGATION",
-            "ENERGY_CALCULATION_PARITY.FLOOR_AGGREGATION",
-            "ENERGY_CALCULATION_PARITY.BUILDING_AGGREGATION",
-            "ENERGY_CALCULATION_PARITY.ANNUAL_ENERGY_BALANCE",
-            "ENERGY_CALCULATION_PARITY.SIGNED_COMPONENT_BALANCE",
-            "ENERGY_CALCULATION_PARITY.DHW_DEMAND",
-            "ENERGY_CALCULATION_PARITY.SYSTEM_ENERGY",
-            "ENERGY_CALCULATION_PARITY.EQUIPMENT_SIZING_INTEGRATION"
+            "STANDARD_REFERENCE.TRANSMISSION_HEAT_TRANSFER",
+            "STANDARD_REFERENCE.WINDOW_SOLAR_GAINS",
+            "STANDARD_REFERENCE.VENTILATION_INFILTRATION_LOADS",
+            "STANDARD_REFERENCE.INTERNAL_GAINS",
+            "STANDARD_REFERENCE.ROOM_HEATING_LOAD",
+            "STANDARD_REFERENCE.ROOM_COOLING_LOAD",
+            "STANDARD_REFERENCE.THERMAL_ZONE_AGGREGATION",
+            "STANDARD_REFERENCE.FLOOR_AGGREGATION",
+            "STANDARD_REFERENCE.BUILDING_AGGREGATION",
+            "STANDARD_REFERENCE.ANNUAL_ENERGY_BALANCE",
+            "STANDARD_REFERENCE.SIGNED_COMPONENT_BALANCE",
+            "STANDARD_REFERENCE.DHW_DEMAND",
+            "STANDARD_REFERENCE.SYSTEM_ENERGY",
+            "STANDARD_REFERENCE.EQUIPMENT_SIZING_INTEGRATION"
         };
 
         foreach (var requiredCode in requiredCodes)
@@ -159,7 +159,7 @@ public class ExternalReferenceValidationMatrixTests
     }
 
     [Fact]
-    public void NoFeatureClaimsExternalParityWithoutEvidence()
+    public void NoFeatureClaimsExternalExactMatchWithoutEvidence()
     {
         var violations = ExternalReferenceValidationMatrix.Features
             .Where(feature => feature.AssistantEngineerStatus == AssistantEngineerFeatureStatus.ExternalReferenceCovered)

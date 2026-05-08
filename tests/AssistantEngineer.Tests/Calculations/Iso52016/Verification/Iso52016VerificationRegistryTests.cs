@@ -89,7 +89,7 @@ public class Iso52016VerificationRegistryTests
     }
 
     [Fact]
-    public void Registry_HasNoPositiveParityClaims()
+    public void Registry_HasNoUnsupportedValidationClaims()
     {
         var registry = File.ReadAllLines(RegistryPath());
 

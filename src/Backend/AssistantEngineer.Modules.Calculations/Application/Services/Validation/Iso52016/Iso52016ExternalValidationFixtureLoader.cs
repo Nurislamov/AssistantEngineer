@@ -208,7 +208,7 @@ public sealed class Iso52016ExternalValidationFixtureLoader
                     $"StandardReferenceInspiredNaming fixture must use derivationKind=StandardReferenceInspiredMethodologyNote: {filePath}");
             }
 
-            if (!ContainsNonParityStatement(fixture.Reference.SourceDescription))
+            if (!ContainsClaimBoundaryStatement(fixture.Reference.SourceDescription))
             {
                 throw new InvalidOperationException(
                     $"StandardReferenceInspiredNaming fixture reference.sourceDescription must explicitly state non-equivalence scope: {filePath}");
@@ -229,7 +229,7 @@ public sealed class Iso52016ExternalValidationFixtureLoader
         }
     }
 
-    private static bool ContainsNonParityStatement(string sourceDescription)
+    private static bool ContainsClaimBoundaryStatement(string sourceDescription)
     {
         if (string.IsNullOrWhiteSpace(sourceDescription))
             return false;

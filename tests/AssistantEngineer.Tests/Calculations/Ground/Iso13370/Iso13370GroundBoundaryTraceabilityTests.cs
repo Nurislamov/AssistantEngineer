@@ -32,7 +32,7 @@ public sealed class Iso13370GroundBoundaryTraceabilityTests
     }
 
     [Fact]
-    public void RequiredDocsAndFixtures_ExistAndContainNoParityClaims()
+    public void RequiredDocsAndFixtures_ExistAndContainNoUnsupportedExternalReferenceClaims()
     {
         var docPath = Path.Combine(
             TestPaths.RepoRoot,

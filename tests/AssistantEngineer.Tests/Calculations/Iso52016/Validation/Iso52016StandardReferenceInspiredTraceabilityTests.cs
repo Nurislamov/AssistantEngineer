@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016.Validation;
 
@@ -27,7 +27,7 @@ public sealed class Iso52016StandardReferenceInspiredTraceabilityTests
     }
 
     [Fact]
-    public void StageDocumentation_ExistsAndStatesNonParityScope()
+    public void StageDocumentation_ExistsAndStatesNonExactMatchScope()
     {
         var paths = new[]
         {

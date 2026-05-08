@@ -5,7 +5,7 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 public sealed class Iso52016MatrixApplicationIntegrationHardeningReleaseGateTests
 {
     [Fact]
-    public void ReleaseManifest_ClosesApplicationIntegrationHardeningWithoutParityClaims()
+    public void ReleaseManifest_ClosesApplicationIntegrationHardeningWithoutUnsupportedValidationClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var manifestPath = Path.Combine(repoRoot, "docs", "releases", "Iso52016MatrixApplicationIntegrationHardeningReleaseManifest.json");

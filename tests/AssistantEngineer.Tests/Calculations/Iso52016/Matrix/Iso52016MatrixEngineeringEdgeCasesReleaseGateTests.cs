@@ -5,7 +5,7 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 public sealed class Iso52016MatrixEngineeringEdgeCasesReleaseGateTests
 {
     [Fact]
-    public void ReleaseManifest_ClosesEngineeringEdgeCasesWithoutParityClaims()
+    public void ReleaseManifest_ClosesEngineeringEdgeCasesWithoutUnsupportedValidationClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var manifestPath = Path.Combine(repoRoot, "docs", "releases", "Iso52016MatrixEngineeringEdgeCasesReleaseManifest.json");

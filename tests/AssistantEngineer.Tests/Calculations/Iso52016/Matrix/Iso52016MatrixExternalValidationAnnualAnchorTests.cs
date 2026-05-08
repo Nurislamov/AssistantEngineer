@@ -55,7 +55,7 @@ public class Iso52016MatrixExternalValidationAnnualAnchorTests
     }
 
     [Fact]
-    public void Annual8760Anchor_DocsAndManifestKeepParityClaimsHonest()
+    public void Annual8760Anchor_DocsAndManifestKeepsExactMatchClaimsHonest()
     {
         var repoRoot = FindRepositoryRoot();
 

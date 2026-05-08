@@ -93,10 +93,10 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal("ExternalReferenceValidationDesignPoint", heating.Value.ActualMethod);
         Assert.Contains(cooling.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Energy Calculation equivalence design-point pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Standard reference design-point calculation pipeline", StringComparison.Ordinal));
         Assert.Contains(heating.Value.Diagnostics, diagnostic =>
             diagnostic.Code == "CalculationMethod.ApiCompatibility" &&
-            diagnostic.Message.Contains("Energy Calculation equivalence design-point pipeline", StringComparison.Ordinal));
+            diagnostic.Message.Contains("Standard reference design-point calculation pipeline", StringComparison.Ordinal));
     }
 
     [Fact]

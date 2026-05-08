@@ -47,7 +47,7 @@ public sealed class Iso52016ExternalValidationClaimBoundaryTests
     }
 
     [Fact]
-    public void Loader_RejectsPositiveParityClaims()
+    public void Loader_RejectsUnsupportedValidationClaims()
     {
         var positiveToken = "StandardReference" + " equivalence";
         var fixture = CreateValidFixtureObject();

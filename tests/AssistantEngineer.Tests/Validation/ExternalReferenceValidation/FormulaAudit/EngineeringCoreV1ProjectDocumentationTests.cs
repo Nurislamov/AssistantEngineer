@@ -122,7 +122,7 @@ public class EngineeringCoreV1ProjectDocumentationTests
     }
 
     [Fact]
-    public void DeveloperGuideDocumentsForbiddenParityClaims()
+    public void DeveloperGuideDocumentsForbiddenUnsupportedValidationClaims()
     {
         var content = ReadDeveloperGuide();
 

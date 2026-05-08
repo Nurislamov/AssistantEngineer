@@ -25,7 +25,7 @@ public class EnergyPlusValidationCaseRegistryTests
     }
 
     [Fact]
-    public void RegistryDeclaresPlannedValidationAndNonParityPurpose()
+    public void RegistryDeclaresPlannedValidationAndNonExactMatchPurpose()
     {
         using var registry = ReadRegistry();
         var root = registry.RootElement;

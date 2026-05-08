@@ -162,7 +162,7 @@ public class EngineeringCoreV1ReleaseDocumentationTests
     }
 
     [Fact]
-    public void ValidationPlanAvoidsExactParityClaim()
+    public void ValidationPlanAvoidsExactMatchClaim()
     {
         var content = ReadValidationPlan();
 

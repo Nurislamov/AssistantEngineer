@@ -27,7 +27,7 @@ public sealed class Iso52016ManualIndependentFixtureReferenceTests
     }
 
     [Fact]
-    public void ManualIndependentReferences_DoNotDeclareParityClaims()
+    public void ManualIndependentReferences_DoNotDeclareExactMatchClaims()
     {
         var fixtures = _loader.LoadFromDirectory(FixtureDirectory());
         var forbidden = new[] { "ASHRAE 140 / BESTEST-style validated", "validated against StandardReference", "validated against EnergyPlus" };

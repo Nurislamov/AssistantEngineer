@@ -443,7 +443,7 @@ public sealed class EnergyCalculationPipelineService
             diagnostics,
             requestedMethod,
             $"Room {room.Id} application load pipeline",
-            "Energy Calculation equivalence design-point pipeline");
+            "Standard reference design-point calculation pipeline");
         EnergyCalculationPipelineRoomContextResolver.AddInternalGainScheduleDiagnostics(room, diagnostics, assumptions);
 
         var groundContext = _roomContextResolver.ResolveGroundContext(room, climateContext);

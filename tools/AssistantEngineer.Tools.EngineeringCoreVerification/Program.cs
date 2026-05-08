@@ -378,18 +378,23 @@ internal static class Program
     private static void AssertNoForbiddenTerminologyAndClaims(string repoRoot)
     {
         var forbidden = BuildForbiddenTermsAndClaims();
-        var scanRoots = new[]
+        var scanTargets = new[]
         {
+            Path.Combine(repoRoot, "README.md"),
+            Path.Combine(repoRoot, "AssistantEngineer.sln"),
+            Path.Combine(repoRoot, ".github"),
+            Path.Combine(repoRoot, "docker"),
             Path.Combine(repoRoot, "src"),
             Path.Combine(repoRoot, "tests"),
             Path.Combine(repoRoot, "docs"),
-            Path.Combine(repoRoot, "scripts")
+            Path.Combine(repoRoot, "scripts"),
+            Path.Combine(repoRoot, "tools")
         };
 
         var violations = new List<string>();
-        foreach (var root in scanRoots.Where(Directory.Exists))
+        foreach (var target in scanTargets)
         {
-            foreach (var file in EnumerateTextFiles(root))
+            foreach (var file in EnumerateTextFiles(target))
             {
                 var text = File.ReadAllText(file);
                 foreach (var marker in forbidden)
@@ -416,6 +421,9 @@ internal static class Program
         var pe = "Building";
         var energy = "Energy";
         var be = "BE";
+        var calc = "Calculation";
+        var parity = "Parity";
+        var underscore = "_";
 
         return new[]
         {
@@ -431,11 +439,17 @@ internal static class Program
             "fully " + "validated",
             "EnergyPlus " + "parity",
             "ASHRAE 140 " + "validated",
-            py + pe + energy + " parity"
+            py + pe + energy + " parity",
+            energy + calc + parity,
+            "ENERGY" + underscore + "CALCULATION" + underscore + "PARITY",
+            parity + "Matrix",
+            energy + calc + parity + "Plan",
+            energy + calc + parity + "Verification",
+            "energy" + calc + parity
         };
     }
 
-    private static IEnumerable<string> EnumerateTextFiles(string root)
+    private static IEnumerable<string> EnumerateTextFiles(string path)
     {
         var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -444,12 +458,23 @@ internal static class Program
 
         var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            ".cs", ".md", ".json", ".yml", ".yaml", ".ps1", ".txt", ".tsx", ".ts", ".xml", ".csv"
+            ".cs", ".md", ".json", ".yml", ".yaml", ".ps1", ".txt", ".tsx", ".ts", ".xml", ".csv", ".sln"
         };
 
-        foreach (var file in Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories))
+        if (File.Exists(path))
         {
-            var relative = Path.GetRelativePath(root, file);
+            if (extensions.Contains(Path.GetExtension(path)))
+                yield return path;
+
+            yield break;
+        }
+
+        if (!Directory.Exists(path))
+            yield break;
+
+        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(path, file);
             var segments = relative.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             if (segments.Any(segment => excluded.Contains(segment)))
                 continue;

@@ -92,7 +92,7 @@ public class Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
     }
 
     [Fact]
-    public void Documentation_StatesExplicitOptInAndNoExternalParityClaims()
+    public void Documentation_StatesExplicitOptInAndNoExternalExactMatchClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var docPath = Path.Combine(

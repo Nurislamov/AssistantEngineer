@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Tests.Validation.EnergyPlus;
+namespace AssistantEngineer.Tests.Validation.EnergyPlus;
 
 public class EnergyPlusValidationHarnessTests
 {
@@ -135,7 +135,7 @@ public class EnergyPlusValidationHarnessTests
     }
 
     [Fact]
-    public void ValidationFixturesDoNotClaimExactEnergyPlusOrAshrae140Parity()
+    public void ValidationFixturesDoNotClaimExactEnergyPlusOrAshrae140Validation()
     {
         foreach (var validationCase in EnergyPlusValidationFixtures.Cases)
         {

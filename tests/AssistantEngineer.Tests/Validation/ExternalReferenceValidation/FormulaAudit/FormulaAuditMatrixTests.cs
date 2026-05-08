@@ -101,7 +101,7 @@ public class FormulaAuditMatrixTests
     }
 
     [Fact]
-    public void SimplifiedIsoInspiredFeaturesDoNotClaimFullIsoOrEnergyPlusParity()
+    public void SimplifiedIsoInspiredFeaturesDoNotClaimFullIsoOrUnsupportedEnergyPlusClaims()
     {
         var simplifiedFeatureIds = new[]
         {

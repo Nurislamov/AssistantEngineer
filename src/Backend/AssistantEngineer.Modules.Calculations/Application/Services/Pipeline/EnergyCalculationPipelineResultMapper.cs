@@ -57,7 +57,7 @@ internal static class EnergyCalculationPipelineResultMapper
         CalculationPreferences preferences,
         CoolingLoadCalculationMethod requestedMethod,
         string roomPipelineMethod,
-        string energyCalculationParityDesignPoint)
+        string standardReferenceDesignPointMethod)
     {
         var reserveFactor = preferences.CoolingSafetyFactor;
         var designCapacity = load.CoolingLoadW * reserveFactor;
@@ -76,8 +76,8 @@ internal static class EnergyCalculationPipelineResultMapper
             RoomName = room.Name,
             CalculationMethod = roomPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
-            ActualMethod = energyCalculationParityDesignPoint,
-            CalculationMethodLabel = "Energy Calculation equivalence design-point pipeline",
+            ActualMethod = standardReferenceDesignPointMethod,
+            CalculationMethodLabel = "Standard reference design-point calculation pipeline",
             PeakHourOfYear = null,
             AreaM2 = Round(room.Area.SquareMeters),
             HeightM = Round(room.HeightM),
@@ -125,7 +125,7 @@ internal static class EnergyCalculationPipelineResultMapper
         HeatingLoadCalculationMethod requestedMethod,
         CalculationPreferences preferences,
         string roomPipelineMethod,
-        string energyCalculationParityDesignPoint)
+        string standardReferenceDesignPointMethod)
     {
         var ventilation = load.HeatingBreakdown.VentilationW;
         var infiltration = load.HeatingBreakdown.InfiltrationW;
@@ -146,8 +146,8 @@ internal static class EnergyCalculationPipelineResultMapper
             RoomName = room.Name,
             CalculationMethod = roomPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
-            ActualMethod = energyCalculationParityDesignPoint,
-            CalculationMethodLabel = "Energy Calculation equivalence design-point pipeline",
+            ActualMethod = standardReferenceDesignPointMethod,
+            CalculationMethodLabel = "Standard reference design-point calculation pipeline",
             IndoorDesignTemperatureC = Round(room.IndoorTemperature.Celsius),
             OutdoorDesignTemperatureC = Round(outdoorDesignTemperature),
             DeltaTemperatureC = Round(Math.Max(room.IndoorTemperature.Celsius - outdoorDesignTemperature, 0)),
@@ -179,7 +179,7 @@ internal static class EnergyCalculationPipelineResultMapper
         CalculationPreferences preferences,
         string? requestedMethod,
         string aggregationPipelineMethod,
-        string energyCalculationParityDesignPoint)
+        string standardReferenceDesignPointMethod)
     {
         var designCapacity = aggregation.CoolingLoadW * preferences.CoolingSafetyFactor;
         var diagnostics = aggregation.Diagnostics.ToList();
@@ -195,7 +195,7 @@ internal static class EnergyCalculationPipelineResultMapper
             FloorName = floor.Name,
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod ?? string.Empty,
-            ActualMethod = energyCalculationParityDesignPoint,
+            ActualMethod = standardReferenceDesignPointMethod,
             CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
             PeakHourOfYear = null,
             RoomsCount = aggregation.RoomCount,
@@ -219,7 +219,7 @@ internal static class EnergyCalculationPipelineResultMapper
         CalculationPreferences preferences,
         CoolingLoadCalculationMethod requestedMethod,
         string aggregationPipelineMethod,
-        string energyCalculationParityDesignPoint)
+        string standardReferenceDesignPointMethod)
     {
         var designCapacity = aggregation.CoolingLoadW * preferences.CoolingSafetyFactor;
         var diagnostics = aggregation.Diagnostics.ToList();
@@ -235,7 +235,7 @@ internal static class EnergyCalculationPipelineResultMapper
             BuildingName = building.Name,
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
-            ActualMethod = energyCalculationParityDesignPoint,
+            ActualMethod = standardReferenceDesignPointMethod,
             CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
             PeakHourOfYear = null,
             FloorsCount = building.Floors.Count,
@@ -259,7 +259,7 @@ internal static class EnergyCalculationPipelineResultMapper
         IReadOnlyList<RoomHeatingLoadResult> rooms,
         HeatingLoadCalculationMethod requestedMethod,
         string aggregationPipelineMethod,
-        string energyCalculationParityDesignPoint)
+        string standardReferenceDesignPointMethod)
     {
         var transmission = rooms.Sum(room => room.TransmissionHeatLossW);
         var ventilation = rooms.Sum(room => room.VentilationHeatLossW);
@@ -277,7 +277,7 @@ internal static class EnergyCalculationPipelineResultMapper
             BuildingName = building.Name,
             CalculationMethod = aggregationPipelineMethod,
             RequestedMethod = requestedMethod.ToString(),
-            ActualMethod = energyCalculationParityDesignPoint,
+            ActualMethod = standardReferenceDesignPointMethod,
             CalculationMethodLabel = "Energy Calculation equivalence design-point aggregation",
             RoomsCount = aggregation.RoomCount,
             TransmissionHeatLossW = Round(transmission),
@@ -301,7 +301,7 @@ internal static class EnergyCalculationPipelineResultMapper
         bool isTrueHourly8760,
         int hourlyRecordCount,
         IReadOnlyList<CalculationDiagnostic> adapterDiagnostics,
-        string energyCalculationParityAnnualAggregationAdapter)
+        string standardReferenceAnnualAggregationAdapter)
     {
         var diagnostics = source.Diagnostics
             .Concat(annual.Diagnostics)
@@ -326,7 +326,7 @@ internal static class EnergyCalculationPipelineResultMapper
             HeatingCalculationMethod = "Energy Calculation equivalence / Annual Aggregation Adapter",
             RequestedCoolingMethod = coolingMethod.ToString(),
             RequestedHeatingMethod = heatingMethod.ToString(),
-            ActualMethod = energyCalculationParityAnnualAggregationAdapter,
+            ActualMethod = standardReferenceAnnualAggregationAdapter,
             CalculationMethodLabel = "Energy Calculation equivalence annual aggregation adapter",
             EnergyDataSource = sourceName,
             IsTrueHourly8760 = isTrueHourly8760,

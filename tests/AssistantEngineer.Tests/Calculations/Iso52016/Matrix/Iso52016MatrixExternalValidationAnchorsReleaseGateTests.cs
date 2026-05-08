@@ -5,7 +5,7 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016.Matrix;
 public sealed class Iso52016MatrixExternalValidationAnchorsReleaseGateTests
 {
     [Fact]
-    public void ReleaseManifest_ClosesExternalValidationAnchorsWithoutFullParityClaims()
+    public void ReleaseManifest_ClosesExternalValidationAnchorsWithoutFullExternalExactMatchClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var manifestPath = Path.Combine(repoRoot, "docs", "releases", "Iso52016MatrixExternalValidationAnchorsReleaseManifest.json");

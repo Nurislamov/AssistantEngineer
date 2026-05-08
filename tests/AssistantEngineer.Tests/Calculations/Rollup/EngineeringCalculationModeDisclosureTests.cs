@@ -47,7 +47,7 @@ public sealed class EngineeringCalculationModeDisclosureTests
     }
 
     [Fact]
-    public void CatalogDisclosure_DoesNotContainPositiveParityClaims()
+    public void CatalogDisclosure_DoesNotContainUnsupportedValidationClaims()
     {
         var catalog = new EngineeringCalculationModeCatalogProvider().GetCatalog();
         var allText = string.Join(

@@ -114,7 +114,7 @@ public class Iso52016MatrixSolverStageTraceabilityTests
     }
 
     [Fact]
-    public void Documentation_IncludesApiPathAndNonParityClaim()
+    public void Documentation_IncludesApiPathAndNonExactMatchClaim()
     {
         var repoRoot = FindRepositoryRoot();
 

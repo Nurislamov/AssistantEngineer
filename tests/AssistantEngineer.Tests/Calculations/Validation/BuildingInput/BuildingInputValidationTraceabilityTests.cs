@@ -59,7 +59,7 @@ public sealed class BuildingInputValidationTraceabilityTests
     }
 
     [Fact]
-    public void DisclosureFiles_DoNotContainPositiveParityOrCertificationClaims()
+    public void DisclosureFiles_DoNotContainUnsupportedValidationOrCertificationClaims()
     {
         var paths = new[]
         {

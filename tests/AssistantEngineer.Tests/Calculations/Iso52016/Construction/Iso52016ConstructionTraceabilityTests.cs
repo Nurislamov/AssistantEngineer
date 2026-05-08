@@ -36,7 +36,7 @@ public sealed class Iso52016ConstructionTraceabilityTests
     }
 
     [Fact]
-    public void RequiredDocsAndFixtures_ExistAndContainNoPositiveParityClaims()
+    public void RequiredDocsAndFixtures_ExistAndContainNoUnsupportedValidationClaims()
     {
         var docPath = Path.Combine(
             TestPaths.RepoRoot,

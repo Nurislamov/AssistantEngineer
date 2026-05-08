@@ -63,7 +63,7 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
     }
 
     [Fact]
-    public void StageDocument_StatesNoExternalParityClaims()
+    public void StageDocument_StatesNoExternalExactMatchClaims()
     {
         var repoRoot = FindRepositoryRoot();
         var docPath = Path.Combine(

@@ -32,7 +32,7 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
     }
 
     [Fact]
-    public void DocsAndFixtures_ExistAndDoNotContainPositiveParityClaims()
+    public void DocsAndFixtures_ExistAndDoNotContainUnsupportedValidationClaims()
     {
         var docPath = Path.Combine(
             TestPaths.RepoRoot,

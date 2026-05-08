@@ -73,7 +73,7 @@ public sealed class Iso52016MatrixExternalValidationNamingAnchorTests
     }
 
     [Fact]
-    public void NamingAnchorDocsManifestAndVerificationScript_DoNotClaimFullParity()
+    public void NamingAnchorDocsManifestAndVerificationScript_DoNotClaimFullExternalExactMatch()
     {
         var repoRoot = FindRepositoryRoot();
 
