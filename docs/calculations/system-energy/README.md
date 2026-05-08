@@ -122,3 +122,53 @@ This stage consumes `SystemEnergyGenerationHandoff` from 5A and calculates deter
 ## Next prompt
 
 `AE-SYS-EN15316-001C` - primary energy, carrier aggregation and disclosure/reporting.
+
+## AE-SYS-EN15316-001C - Primary energy, carrier aggregation and disclosure
+
+This stage consumes `SystemEnergyFinalEnergyResult` from 5B and calculates deterministic EN15316-style primary energy and reporting-ready summaries.
+
+### Primary energy convention
+
+- Final energy by carrier is multiplied by primary energy factors.
+- Renewable primary energy:
+  - `renewablePrimary = finalEnergy * renewableFactor`
+- Non-renewable primary energy:
+  - `nonRenewablePrimary = finalEnergy * nonRenewableFactor`
+- Total primary energy:
+  - `totalPrimary = finalEnergy * totalFactor`
+
+### Factor sourcing
+
+Factors can be:
+- user-provided
+- project default
+- internal reference
+- national annex placeholder
+- external dataset
+
+National-annex placeholder factors are explicitly treated as non-compliance data and must be externally validated for compliance workflows.
+
+### Emissions (optional disclosure data)
+
+- Optional emissions are calculated as:
+  - `emissionsKg = finalEnergyKWh * emissionFactorKgPerKWh`
+- Emissions are reporting/disclosure data and are not compliance conclusions by themselves.
+
+### Reporting summary outputs
+
+The reporting/API summary includes:
+- carrier summaries
+- end-use summaries
+- disclosure summary
+- annual totals
+- monthly totals
+
+### Scope boundaries in this stage
+
+- No full EN15316 compliance claim.
+- No protected EN15316 tables copied.
+- No national annex compliance claim.
+- No certification-grade EPB report.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.

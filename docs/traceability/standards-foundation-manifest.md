@@ -684,3 +684,84 @@ This stage provides deterministic EN15316-style generator/final-energy calculati
 ## Next stage
 
 - `AE-SYS-EN15316-001C`
+
+---
+
+## Work item
+
+- `AE-SYS-EN15316-001C`
+
+## Touched contracts
+
+- `Application/Contracts/SystemEnergy/SystemEnergyPrimaryEnergyFactorKind.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyFactorSourceKind.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEmissionFactorKind.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyReportingScope.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyDisclosureStatus.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyDisclosureStatusMapper.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyPrimaryEnergyFactor.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEmissionFactor.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyFactorSet.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyFactorSetValidationResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyCarrierPrimaryEnergyResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEndUsePrimaryEnergyResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEmissionResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyPrimaryEnergyResult.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyCarrierSummary.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyEndUseSummary.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyDisclosureSummary.cs`
+- `Application/Contracts/SystemEnergy/SystemEnergyCalculationSummary.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyFactorSetValidator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyPrimaryEnergyCalculator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyEmissionCalculator.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyCalculationSummaryBuilder.cs`
+- `Application/Abstractions/SystemEnergy/ISystemEnergyDefaultFactorSetProvider.cs`
+
+## Touched services
+
+- `Application/Services/SystemEnergy/SystemEnergyFactorSetValidator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyDefaultFactorSetProvider.cs`
+- `Application/Services/SystemEnergy/SystemEnergyEmissionCalculator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyPrimaryEnergyCalculator.cs`
+- `Application/Services/SystemEnergy/SystemEnergyCalculationSummaryBuilder.cs`
+- updated `Composition/SystemEnergyRegistration.cs`
+
+## Tests
+
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyPrimaryTestData.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyFactorSetValidatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyDefaultFactorSetProviderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyPrimaryEnergyCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyEmissionCalculatorTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyCalculationSummaryBuilderTests.cs`
+- `tests/AssistantEngineer.Tests/Calculations/SystemEnergy/SystemEnergyPrimaryEnergyArchitectureTests.cs`
+- updated DI coverage in `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
+
+## Claim boundaries
+
+System-energy primary/reporting stage non-claims:
+- No `Full ISO compliance` claim.
+- No `Full EN compliance` claim.
+- No `pyBuildingEnergy parity` claim.
+- No `EnergyPlus parity` claim.
+- No `ASHRAE 140 validation` claim.
+- No national annex compliance claim.
+- No certification-grade EPB reporting claim.
+
+This stage provides deterministic EN15316-style primary-energy and reporting-summary preparation only.
+
+## Completed standard-inspired lane (current internal engineering level)
+
+- `AE-STANDARDS-FOUNDATION-001`
+- `AE-ZONES-STANDARDS-001A`
+- `AE-ZONES-STANDARDS-001B`
+- `AE-GROUND-ISO13370-001A`
+- `AE-GROUND-ISO13370-001B`
+- `AE-VENT-EN16798-001A`
+- `AE-VENT-EN16798-001B`
+- `AE-VENT-EN16798-001C`
+- `AE-DHW-ISO12831-001A`
+- `AE-DHW-ISO12831-001B`
+- `AE-SYS-EN15316-001A`
+- `AE-SYS-EN15316-001B`
+- `AE-SYS-EN15316-001C`

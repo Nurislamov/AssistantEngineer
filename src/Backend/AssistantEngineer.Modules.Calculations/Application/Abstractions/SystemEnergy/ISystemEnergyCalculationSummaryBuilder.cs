@@ -1,0 +1,8 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+
+namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.SystemEnergy;
+
+public interface ISystemEnergyCalculationSummaryBuilder
+{
+    SystemEnergyCalculationSummary Build(SystemEnergyPrimaryEnergyResult primaryEnergyResult);
+}
