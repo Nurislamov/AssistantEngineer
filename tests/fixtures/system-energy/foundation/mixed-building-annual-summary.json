@@ -1,0 +1,67 @@
+{
+  "id": "mixed-building-annual-summary",
+  "scenario": "Heating + cooling + DHW mixed carriers annual summary",
+  "loadInputs": [
+    {
+      "loadId": "L-H",
+      "buildingId": "B1",
+      "zoneId": "Z1",
+      "roomId": "R1",
+      "endUse": "SpaceHeating",
+      "hourlyUsefulEnergyKWh8760": [3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0],
+      "monthlyUsefulEnergyKWh": null,
+      "annualUsefulEnergyKWh": null,
+      "source": "Fixture",
+      "diagnostics": []
+    },
+    {
+      "loadId": "L-C",
+      "buildingId": "B1",
+      "zoneId": "Z1",
+      "roomId": "R1",
+      "endUse": "SpaceCooling",
+      "hourlyUsefulEnergyKWh8760": [2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0],
+      "monthlyUsefulEnergyKWh": null,
+      "annualUsefulEnergyKWh": null,
+      "source": "Fixture",
+      "diagnostics": []
+    },
+    {
+      "loadId": "L-D",
+      "buildingId": "B1",
+      "zoneId": "Z1",
+      "roomId": "R1",
+      "endUse": "DomesticHotWater",
+      "hourlyUsefulEnergyKWh8760": [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+      "monthlyUsefulEnergyKWh": null,
+      "annualUsefulEnergyKWh": null,
+      "source": "Fixture",
+      "diagnostics": []
+    }
+  ],
+  "stageDefinitions": [
+    { "stageId": "EM-G", "subsystemKind": "Emission", "appliesToUse": "Generic", "efficiency": 1.0, "lossFraction": null, "fixedLossProfile": null, "auxiliaryEnergyProfile": null, "recoveredLossFraction": 0.0, "targetCarrier": "Unknown", "calculationMode": "FixedEfficiency", "verboseDiagnostics": false, "priority": 0 },
+    { "stageId": "DIST-G", "subsystemKind": "Distribution", "appliesToUse": "Generic", "efficiency": 1.0, "lossFraction": null, "fixedLossProfile": null, "auxiliaryEnergyProfile": null, "recoveredLossFraction": 0.0, "targetCarrier": "Unknown", "calculationMode": "FixedEfficiency", "verboseDiagnostics": false, "priority": 0 },
+    { "stageId": "STOR-G", "subsystemKind": "Storage", "appliesToUse": "Generic", "efficiency": 1.0, "lossFraction": null, "fixedLossProfile": null, "auxiliaryEnergyProfile": null, "recoveredLossFraction": 0.0, "targetCarrier": "Unknown", "calculationMode": "FixedEfficiency", "verboseDiagnostics": false, "priority": 0 }
+  ],
+  "generatorDefinitions": [
+    { "generatorId": "G-H", "useKind": "SpaceHeating", "generatorKind": "GasBoiler", "carrierKind": "NaturalGas", "efficiency": 0.9, "cop": null, "seasonalPerformanceFactor": null, "renewableContributionFraction": null, "auxiliaryEnergyProfile": null, "priority": 0 },
+    { "generatorId": "G-C", "useKind": "SpaceCooling", "generatorKind": "Chiller", "carrierKind": "Electricity", "efficiency": null, "cop": 4.0, "seasonalPerformanceFactor": null, "renewableContributionFraction": null, "auxiliaryEnergyProfile": null, "priority": 0 },
+    { "generatorId": "G-D", "useKind": "DomesticHotWater", "generatorKind": "ElectricResistance", "carrierKind": "Electricity", "efficiency": 1.0, "cop": null, "seasonalPerformanceFactor": null, "renewableContributionFraction": null, "auxiliaryEnergyProfile": null, "priority": 0 }
+  ],
+  "factorCatalog": {
+    "catalogId": "CAT-1",
+    "version": "v1",
+    "entries": [
+      { "carrierKind": "Electricity", "primaryEnergyFactorNonRenewable": 1.8, "primaryEnergyFactorRenewable": 0.4, "totalPrimaryEnergyFactor": 2.2, "co2FactorKgPerKWh": 0.35, "sourceLabel": "Fixture" },
+      { "carrierKind": "NaturalGas", "primaryEnergyFactorNonRenewable": 1.1, "primaryEnergyFactorRenewable": 0.0, "totalPrimaryEnergyFactor": 1.1, "co2FactorKgPerKWh": 0.21, "sourceLabel": "Fixture" }
+    ]
+  },
+  "ownershipPolicy": "NoDoubleCounting",
+  "strictFactorMode": true,
+  "expected": {
+    "annualFinalEnergyKWh": 58.0,
+    "annualPrimaryEnergyKWh": 83.6,
+    "annualCo2Kg": 14.7
+  }
+}

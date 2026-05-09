@@ -15,5 +15,8 @@ public enum SystemEnergyGeneratorKind
     LpgBoiler = 10,
     SolarThermal = 11,
     Custom = 12,
-    Other = 13
+    Other = 13,
+    GasBoiler = 14,
+    SolarThermalContribution = 15,
+    GenericEfficiencyGenerator = 16
 }

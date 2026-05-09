@@ -118,6 +118,11 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<ISystemEnergyFinalEnergyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyFactorSetValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyEmissionCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyDistributionCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyStorageCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyGenerationCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyLoadIntakeBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<ISystemEnergyFoundationCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyPrimaryEnergyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyCalculationSummaryBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyDefaultFactorSetProvider>(services, ServiceLifetime.Singleton);

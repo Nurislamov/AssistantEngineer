@@ -9,6 +9,38 @@ public sealed class SystemEnergyEmissionCalculator : ISystemEnergyEmissionCalcul
 {
     private const string Source = "SystemEnergyEmissionCalculator";
 
+    public SystemEnergyStageCalculationResult Calculate(SystemEnergyStageCalculationRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var stage = request.StageDefinition with
+        {
+            SubsystemKind = SystemEnergySubsystemKind.Emission
+        };
+
+        if (request.StageDefinition.SubsystemKind != SystemEnergySubsystemKind.Emission)
+        {
+            var diagnostics = new List<StandardCalculationDiagnostic>
+            {
+                CreateWarning(
+                    "AE-SYS-EMISSION-STAGE-KIND-CORRECTED",
+                    $"Stage '{request.StageDefinition.StageId}' was evaluated as Emission subsystem.")
+            };
+
+            var result = SystemEnergyStageCalculatorCore.CalculateStage(request with
+            {
+                StageDefinition = stage
+            }, Source);
+
+            return result with
+            {
+                Diagnostics = SystemEnergyStageCalculatorCore.SortDiagnostics(result.Diagnostics.Concat(diagnostics))
+            };
+        }
+
+        return SystemEnergyStageCalculatorCore.CalculateStage(request, Source);
+    }
+
     public IReadOnlyList<SystemEnergyEmissionResult> Calculate(
         SystemEnergyFinalEnergyResult finalEnergyResult,
         SystemEnergyFactorSet factorSet)

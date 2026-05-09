@@ -12,4 +12,8 @@ public sealed record SystemEnergyUsefulLoadInput(
     IReadOnlyList<double>? MonthlyUsefulEnergyKWh,
     double? AnnualUsefulEnergyKWh,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    IReadOnlyList<double>? HourlySystemLoadKWh8760 = null,
+    double TimeStepHours = 1.0,
+    SystemEnergyLossOwnershipPolicy LossOwnershipPolicy = SystemEnergyLossOwnershipPolicy.NoDoubleCounting,
+    IReadOnlyList<string>? Assumptions = null);

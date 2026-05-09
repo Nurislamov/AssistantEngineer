@@ -23,6 +23,11 @@ internal static class SystemEnergyRegistration
         services.AddSingleton<ISystemEnergyFinalEnergyCalculator, SystemEnergyFinalEnergyCalculator>();
         services.AddSingleton<ISystemEnergyFactorSetValidator, SystemEnergyFactorSetValidator>();
         services.AddSingleton<ISystemEnergyEmissionCalculator, SystemEnergyEmissionCalculator>();
+        services.AddSingleton<ISystemEnergyDistributionCalculator, SystemEnergyDistributionCalculator>();
+        services.AddSingleton<ISystemEnergyStorageCalculator, SystemEnergyStorageCalculator>();
+        services.AddSingleton<ISystemEnergyGenerationCalculator, SystemEnergyGenerationCalculator>();
+        services.AddSingleton<ISystemEnergyLoadIntakeBuilder, SystemEnergyLoadIntakeBuilder>();
+        services.AddSingleton<ISystemEnergyFoundationCalculator, SystemEnergyFoundationCalculator>();
         services.AddSingleton<ISystemEnergyPrimaryEnergyCalculator, SystemEnergyPrimaryEnergyCalculator>();
         services.AddSingleton<ISystemEnergyCalculationSummaryBuilder, SystemEnergyCalculationSummaryBuilder>();
         services.AddSingleton<ISystemEnergyDefaultFactorSetProvider, SystemEnergyDefaultFactorSetProvider>();
