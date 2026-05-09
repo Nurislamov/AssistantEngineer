@@ -1,0 +1,15 @@
+{
+  "id": "iso52016-multizone-trace-fixture",
+  "expectedModules": [ "Iso52016", "MultiZone" ],
+  "expectedStepNames": [
+    "ISO52016 multi-zone mode and profile intake",
+    "Transmission/ventilation/solar/internal lanes and heating/cooling summary"
+  ],
+  "expectedValueKeys": [
+    "calculationMode",
+    "zoneCount",
+    "timeStepCount",
+    "annualHeatingNeedKWh",
+    "annualCoolingNeedKWh"
+  ]
+}

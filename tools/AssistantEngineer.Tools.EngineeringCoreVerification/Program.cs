@@ -22,6 +22,8 @@ internal static class Program
 
             Console.WriteLine("Engineering Core V1 verification");
             Console.WriteLine($"Repository: {repoRoot}");
+            Console.WriteLine($".NET SDK: {Environment.Version}");
+            Console.WriteLine($"Started (UTC): {DateTimeOffset.UtcNow:O}");
             if (options.SkipFrontend)
             {
                 WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
@@ -35,14 +37,20 @@ internal static class Program
             AssertExternalComparisonWorkflowFoundation(repoRoot);
 
             var steps = BuildSteps(options);
+            var stepResults = new List<StepResult>();
 
             foreach (var step in steps)
             {
-                var exitCode = RunStep(step);
-                if (exitCode != 0)
-                    return exitCode;
+                var result = RunStep(step);
+                stepResults.Add(result);
+                if (result.ExitCode != 0)
+                {
+                    WriteSummary(stepResults);
+                    return result.ExitCode;
+                }
             }
 
+            WriteSummary(stepResults);
             Console.WriteLine();
             WriteSuccess("Engineering Core V1 verification completed successfully.");
             Console.WriteLine();
@@ -90,6 +98,8 @@ internal static class Program
         Console.WriteLine("  --skip-frontend");
         Console.WriteLine("  --skip-full-dotnet");
         Console.WriteLine("  --fast");
+        Console.WriteLine("  --no-restore");
+        Console.WriteLine("  --no-build");
     }
 
     private static IReadOnlyList<VerificationStep> BuildSteps(VerificationOptions options)
@@ -108,133 +118,163 @@ internal static class Program
         [
             DotnetTest(
                 "Engineering Core status and formula audit tests",
-                "FormulaAudit|EngineeringCoreStatus|EngineeringCoreReportDisclosureTests"),
+                "FormulaAudit|EngineeringCoreStatus|EngineeringCoreReportDisclosureTests",
+                options),
 
             DotnetTest(
                 "Engineering Core documentation guard tests",
-                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1FrontendDisclosureDocumentationTests|Iso52016MultiZoneStageVerificationTests|Iso13370VirtualGroundTraceabilityTests|En15316SystemEnergyTraceabilityTests"),
+                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1FrontendDisclosureDocumentationTests|Iso52016MultiZoneStageVerificationTests|Iso13370VirtualGroundTraceabilityTests|En15316SystemEnergyTraceabilityTests",
+                options),
 
             DotnetTest(
                 "Engineering Core test profile script guard tests",
-                "EngineeringCoreV1TestProfileScriptsTests"),
+                "EngineeringCoreV1TestProfileScriptsTests",
+                options),
 
             DotnetTest(
                 "Engineering Core release readiness gate tests",
-                "EngineeringCoreV1ReleaseReadinessGateTests"),
+                "EngineeringCoreV1ReleaseReadinessGateTests",
+                options),
 
             DotnetTest(
                 "Engineering Core repository communication guard tests",
-                "EngineeringCoreV1RepositoryCommunicationTests"),
+                "EngineeringCoreV1RepositoryCommunicationTests",
+                options),
 
             DotnetTest(
                 "Engineering Core CI profile workflow guard tests",
-                "EngineeringCoreV1CiProfileWorkflowTests"),
+                "EngineeringCoreV1CiProfileWorkflowTests",
+                options),
 
             DotnetTest(
                 "Engineering Core diagnostics catalog guard tests",
-                "EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests"),
+                "EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core release evidence package guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-release-evidence.ps1",
-                "EngineeringCoreV1ReleaseEvidencePackageTests"),
+                "EngineeringCoreV1ReleaseEvidencePackageTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core API contract snapshot guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-api-contract-snapshots.ps1",
-                "EngineeringCoreV1ApiContractSnapshotTests"),
+                "EngineeringCoreV1ApiContractSnapshotTests",
+                options),
 
             DotnetTest(
                 "Engineering Core OpenAPI contract guard tests",
-                "EngineeringCoreV1OpenApiContractTests"),
+                "EngineeringCoreV1OpenApiContractTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core report contract snapshot guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-report-contract-snapshots.ps1",
-                "EngineeringCoreV1ReportContractSnapshotTests"),
+                "EngineeringCoreV1ReportContractSnapshotTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core report export disclosure guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-export-disclosure-checklist.ps1",
-                "EngineeringCoreV1ReportExportDisclosureGuardTests"),
+                "EngineeringCoreV1ReportExportDisclosureGuardTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core validation registry guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-validation-readiness.ps1",
-                "EnergyPlusValidationCaseRegistryTests"),
+                "EnergyPlusValidationCaseRegistryTests",
+                options),
 
             ScriptThenDotnetTest(
                 "EnergyPlus smoke fixture scaffold guard tests",
                 ".\\scripts\\engineering-core\\generate-ep-smoke-001-comparison-readiness.ps1",
-                "EnergyPlusSmoke001FixtureScaffoldTests"),
+                "EnergyPlusSmoke001FixtureScaffoldTests",
+                options),
 
             ScriptThenDotnetTest(
                 "EnergyPlus smoke fixture comparison harness tests",
                 ".\\scripts\\engineering-core\\compare-ep-smoke-001-placeholder.ps1",
-                "EnergyPlusSmoke001ComparisonHarnessTests"),
+                "EnergyPlusSmoke001ComparisonHarnessTests",
+                options),
 
             ScriptThenDotnetTest(
                 "EnergyPlus validation comparison summary tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-validation-comparison-summary.ps1",
-                "EnergyPlusValidationComparisonSummaryTests"),
+                "EnergyPlusValidationComparisonSummaryTests",
+                options),
 
             ScriptThenDotnetTest(
                 "EnergyPlus real fixture intake gate tests",
                 ".\\scripts\\engineering-core\\assert-ep-smoke-001-real-fixture-ready.ps1",
-                "EnergyPlusRealFixtureIntakeGateTests"),
+                "EnergyPlusRealFixtureIntakeGateTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Generic EnergyPlus validation fixture runner tests",
                 ".\\scripts\\engineering-core\\compare-energyplus-validation-fixtures.ps1",
-                "EnergyPlusValidationGenericComparisonRunnerTests"),
+                "EnergyPlusValidationGenericComparisonRunnerTests",
+                options),
 
             new VerificationStep(
                 "EnergyPlus smoke 002/003 fixture scaffold tests",
                 "pwsh",
-                "-NoProfile -ExecutionPolicy Bypass -Command \"& .\\scripts\\engineering-core\\compare-energyplus-validation-fixtures.ps1; & .\\scripts\\engineering-core\\generate-engineering-core-v1-validation-comparison-summary.ps1; dotnet test .\\AssistantEngineer.sln --filter 'EnergyPlusSmoke002And003FixtureScaffoldTests'\""),
+                "-NoProfile -ExecutionPolicy Bypass -Command \"& .\\scripts\\engineering-core\\compare-energyplus-validation-fixtures.ps1; & .\\scripts\\engineering-core\\generate-engineering-core-v1-validation-comparison-summary.ps1; dotnet test .\\AssistantEngineer.sln -c Debug " +
+                BuildDotnetTestFlags(options) +
+                " --filter 'EnergyPlusSmoke002And003FixtureScaffoldTests'\""),
 
             ScriptThenDotnetTest(
                 "EnergyPlus validation fixture catalog tests",
                 ".\\scripts\\engineering-core\\generate-energyplus-validation-fixture-catalog.ps1",
-                "EnergyPlusValidationFixtureCatalogTests"),
+                "EnergyPlusValidationFixtureCatalogTests",
+                options),
 
             DotnetTest(
                 "EnergyPlus validation fixture authoring kit tests",
-                "EnergyPlusValidationFixtureAuthoringKitTests"),
+                "EnergyPlusValidationFixtureAuthoringKitTests",
+                options),
 
             DotnetTest(
                 "EnergyPlus validation profile script tests",
-                "EnergyPlusValidationProfileScriptsTests"),
+                "EnergyPlusValidationProfileScriptsTests",
+                options),
 
             ScriptThenDotnetTest(
                 "EnergyPlus validation evidence package tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-validation-evidence.ps1",
-                "EnergyPlusValidationEvidencePackageTests"),
+                "EnergyPlusValidationEvidencePackageTests",
+                options),
 
             ScriptThenDotnetTest(
                 "Engineering Core traceability matrix guard tests",
                 ".\\scripts\\engineering-core\\generate-engineering-core-v1-traceability-matrix.ps1",
-                "EngineeringCoreV1TraceabilityMatrixTests"),
+                "EngineeringCoreV1TraceabilityMatrixTests",
+                options),
 
             DotnetTest(
                 "Engineering Core frontend visibility guard tests",
-                "EngineeringCoreFrontendIntegrationGuardTests|EngineeringCoreDiagnosticsCatalogPanelFrontendGuardTests"),
+                "EngineeringCoreFrontendIntegrationGuardTests|EngineeringCoreDiagnosticsCatalogPanelFrontendGuardTests",
+                options),
 
             DotnetTest(
                 "Engineering Core weather and annual 8760 gate tests",
-                "EpwAnnualClimateDataImportServiceTests|PvgisAnnualClimateDataImportServiceTests|AnnualEnergy8760ScenarioTests"),
+                "EpwAnnualClimateDataImportServiceTests|PvgisAnnualClimateDataImportServiceTests|AnnualEnergy8760ScenarioTests",
+                options),
 
             DotnetTest(
                 "Engineering Core hourly heat-balance, zone, ground and adjacent closure tests",
-                "Iso52016EngineeringCoreV1ClosureTests|GroundSimplifiedEngineeringCoreV1ClosureTests|AdjacentZoneSimplifiedEngineeringCoreV1ClosureTests|Iso52016MultiZone|Iso13370VirtualGround"),
+                "Iso52016EngineeringCoreV1ClosureTests|GroundSimplifiedEngineeringCoreV1ClosureTests|AdjacentZoneSimplifiedEngineeringCoreV1ClosureTests|Iso52016MultiZone|Iso13370VirtualGround",
+                options),
 
             DotnetTest(
                 "Engineering Core natural ventilation EN16798-style guard tests",
-                "Iso16798NaturalVentilation|VentilationAndInfiltrationLoadEngineTests"),
+                "Iso16798NaturalVentilation|VentilationAndInfiltrationLoadEngineTests",
+                options),
 
             DotnetTest(
                 "EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests",
-                "EnergyPlusValidation")
+                "EnergyPlusValidation",
+                options)
         ]);
 
         if (!options.SkipFullDotnet && !options.Fast)
@@ -242,44 +282,83 @@ internal static class Program
             steps.Add(new VerificationStep(
                 "Full backend test suite",
                 "dotnet",
-                "test .\\AssistantEngineer.sln"));
+                "test .\\AssistantEngineer.sln -c Debug " + BuildDotnetTestFlags(options)));
         }
 
         return steps;
     }
 
-    private static VerificationStep DotnetTest(string name, string filter) =>
+    private static VerificationStep DotnetTest(string name, string filter, VerificationOptions options) =>
         new(
             name,
             "dotnet",
-            $"test .\\AssistantEngineer.sln --filter \"{filter}\"");
+            $"test .\\AssistantEngineer.sln -c Debug {BuildDotnetTestFlags(options)} --filter \"{filter}\"");
 
-    private static VerificationStep ScriptThenDotnetTest(string name, string script, string filter) =>
+    private static VerificationStep ScriptThenDotnetTest(string name, string script, string filter, VerificationOptions options) =>
         new(
             name,
             "pwsh",
-            $"-NoProfile -ExecutionPolicy Bypass -Command \"& {script}; dotnet test .\\AssistantEngineer.sln --filter '{filter}'\"");
+            $"-NoProfile -ExecutionPolicy Bypass -Command \"& {script}; dotnet test .\\AssistantEngineer.sln -c Debug {BuildDotnetTestFlags(options)} --filter '{filter}'\"");
 
-    private static int RunStep(VerificationStep step)
+    private static StepResult RunStep(VerificationStep step)
     {
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"==> {step.Name}");
         Console.ResetColor();
 
+        var stopwatch = Stopwatch.StartNew();
         var exitCode = RunProcess(step.FileName, step.Arguments);
+        stopwatch.Stop();
 
         if (exitCode != 0)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"FAILED: {step.Name}");
+            Console.WriteLine($"FAILED: {step.Name} ({FormatDuration(stopwatch.Elapsed)})");
             Console.ResetColor();
-            return exitCode;
+            return new StepResult(step.Name, exitCode, stopwatch.Elapsed);
         }
 
-        WriteSuccess($"OK: {step.Name}");
-        return 0;
+        WriteSuccess($"OK: {step.Name} ({FormatDuration(stopwatch.Elapsed)})");
+        return new StepResult(step.Name, 0, stopwatch.Elapsed);
     }
+
+    private static string BuildDotnetTestFlags(VerificationOptions options)
+    {
+        var flags = new List<string>();
+        if (options.NoRestore)
+            flags.Add("--no-restore");
+
+        if (options.NoBuild)
+            flags.Add("--no-build");
+
+        return string.Join(" ", flags);
+    }
+
+    private static void WriteSummary(IReadOnlyCollection<StepResult> results)
+    {
+        if (results.Count == 0)
+            return;
+
+        var totalDuration = TimeSpan.FromTicks(results.Sum(item => item.Duration.Ticks));
+        Console.WriteLine();
+        Console.WriteLine("Verification summary:");
+        foreach (var result in results)
+        {
+            var status = result.ExitCode == 0 ? "OK" : "FAIL";
+            Console.WriteLine($"- {status,-4} {result.Name} ({FormatDuration(result.Duration)})");
+        }
+
+        Console.WriteLine($"Total duration: {FormatDuration(totalDuration)}");
+        Console.WriteLine("Slowest 5 steps:");
+        foreach (var result in results.OrderByDescending(item => item.Duration).Take(5))
+            Console.WriteLine($"- {result.Name}: {FormatDuration(result.Duration)}");
+    }
+
+    private static string FormatDuration(TimeSpan duration) =>
+        duration.TotalMinutes >= 1
+            ? $"{duration:mm\\:ss\\.fff}"
+            : $"{duration:ss\\.fff}s";
 
     private static int RunProcess(string fileName, string arguments)
     {
@@ -635,15 +714,24 @@ internal static class Program
     private sealed record VerificationOptions(
         bool SkipFrontend,
         bool SkipFullDotnet,
-        bool Fast)
+        bool Fast,
+        bool NoRestore,
+        bool NoBuild)
     {
         public static VerificationOptions Parse(IReadOnlyCollection<string> args) =>
             new(
                 SkipFrontend: Has(args, "--skip-frontend") || Has(args, "-SkipFrontend"),
                 SkipFullDotnet: Has(args, "--skip-full-dotnet") || Has(args, "-SkipFullDotnet"),
-                Fast: Has(args, "--fast") || Has(args, "-Fast"));
+                Fast: Has(args, "--fast") || Has(args, "-Fast"),
+                NoRestore: Has(args, "--no-restore") || Has(args, "-NoRestore"),
+                NoBuild: Has(args, "--no-build") || Has(args, "-NoBuild"));
 
         private static bool Has(IReadOnlyCollection<string> args, string option) =>
             args.Any(arg => string.Equals(arg, option, StringComparison.OrdinalIgnoreCase));
     }
+
+    private sealed record StepResult(
+        string Name,
+        int ExitCode,
+        TimeSpan Duration);
 }

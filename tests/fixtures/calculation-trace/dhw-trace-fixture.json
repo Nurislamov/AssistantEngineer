@@ -1,0 +1,14 @@
+{
+  "id": "dhw-trace-fixture",
+  "expectedModules": [ "DomesticHotWater" ],
+  "expectedStepNames": [
+    "Useful demand basis and draw-off profile",
+    "Losses, recovered losses, and auxiliary energy summary"
+  ],
+  "expectedValueKeys": [
+    "demandBasis",
+    "drawOffProfileMode",
+    "annualUsefulDemandKWh",
+    "annualSystemHeatRequirementKWh"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "natural-ventilation-trace-fixture",
+  "expectedModules": [ "Ventilation" ],
+  "expectedStepNames": [
+    "Natural ventilation control intake",
+    "Airflow and Hve summary"
+  ],
+  "expectedValueKeys": [
+    "openingCount",
+    "controlMode",
+    "totalAirflowM3PerS",
+    "heatTransferCoefficientWPerK"
+  ]
+}

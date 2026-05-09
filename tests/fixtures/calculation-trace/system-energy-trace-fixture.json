@@ -1,0 +1,15 @@
+{
+  "id": "system-energy-trace-fixture",
+  "expectedModules": [ "SystemEnergy" ],
+  "expectedStepNames": [
+    "Intake uses and stage chain",
+    "Final, primary, and CO2 summary by carrier"
+  ],
+  "expectedValueKeys": [
+    "intakeUses",
+    "stageChain",
+    "annualFinalEnergyKWh",
+    "annualPrimaryEnergyKWh",
+    "annualCo2Kg"
+  ]
+}

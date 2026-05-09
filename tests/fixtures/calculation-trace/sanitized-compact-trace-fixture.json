@@ -1,0 +1,13 @@
+{
+  "id": "sanitized-compact-trace-fixture",
+  "expectedModules": [ "Generic" ],
+  "expectedStepNames": [
+    "Detailed profile step"
+  ],
+  "expectedValueKeys": [
+    "hourlyProfile"
+  ],
+  "detailLevel": "Summary",
+  "maxCollectionItems": 4,
+  "expectsCompactArraySummary": true
+}

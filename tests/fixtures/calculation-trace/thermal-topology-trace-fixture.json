@@ -1,0 +1,13 @@
+{
+  "id": "thermal-topology-trace-fixture",
+  "expectedModules": [ "ThermalTopology", "Validation" ],
+  "expectedStepNames": [
+    "Thermal zones and boundaries intake",
+    "Topology validation diagnostics"
+  ],
+  "expectedValueKeys": [
+    "zoneCount",
+    "boundaryClassificationSummary",
+    "hasInvalidTopology"
+  ]
+}

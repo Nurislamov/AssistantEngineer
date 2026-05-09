@@ -1,0 +1,13 @@
+{
+  "id": "ground-trace-fixture",
+  "expectedModules": [ "Ground" ],
+  "expectedStepNames": [
+    "Ground profile and H_ground convention"
+  ],
+  "expectedValueKeys": [
+    "groundBoundaryCount",
+    "profileMode",
+    "hGroundConvention",
+    "equivalentGroundHeatTransferCoefficient"
+  ]
+}

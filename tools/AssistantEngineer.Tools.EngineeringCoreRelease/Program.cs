@@ -23,16 +23,26 @@ internal static class Program
             return command switch
             {
                 "regenerate-artifacts" => RegenerateArtifacts(Has(toolArgs, "--skip-missing") || Has(toolArgs, "-SkipMissing")),
-                "verify-smoke" => VerifySmoke(Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend")),
+                "verify-smoke" => VerifySmoke(
+                    Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend"),
+                    noRestore: Has(toolArgs, "--no-restore") || Has(toolArgs, "-NoRestore"),
+                    noBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild")),
                 "verify-contracts" => VerifyContracts(
                     Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend"),
-                    Has(toolArgs, "--skip-regenerate") || Has(toolArgs, "-SkipRegenerate")),
-                "verify-manifest" => VerifyManifest(Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend")),
+                    Has(toolArgs, "--skip-regenerate") || Has(toolArgs, "-SkipRegenerate"),
+                    noRestore: Has(toolArgs, "--no-restore") || Has(toolArgs, "-NoRestore"),
+                    noBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild")),
+                "verify-manifest" => VerifyManifest(
+                    Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend"),
+                    noRestore: Has(toolArgs, "--no-restore") || Has(toolArgs, "-NoRestore"),
+                    noBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild")),
                 "assert-release-ready" => AssertReleaseReady(new ReleaseReadyOptions(
                     SkipFrontend: Has(toolArgs, "--skip-frontend") || Has(toolArgs, "-SkipFrontend"),
                     SkipFullDotnet: Has(toolArgs, "--skip-full-dotnet") || Has(toolArgs, "-SkipFullDotnet"),
                     SkipGitStatus: Has(toolArgs, "--skip-git-status") || Has(toolArgs, "-SkipGitStatus"),
-                    Fast: Has(toolArgs, "--fast") || Has(toolArgs, "-Fast"))),
+                    Fast: Has(toolArgs, "--fast") || Has(toolArgs, "-Fast"),
+                    NoRestore: Has(toolArgs, "--no-restore") || Has(toolArgs, "-NoRestore"),
+                    NoBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild"))),
                 _ => Unknown(command)
             };
         }
@@ -54,7 +64,7 @@ internal static class Program
         Console.WriteLine("  verify-smoke [--skip-frontend]");
         Console.WriteLine("  verify-contracts [--skip-frontend] [--skip-regenerate]");
         Console.WriteLine("  verify-manifest [--skip-frontend]");
-        Console.WriteLine("  assert-release-ready [--skip-frontend] [--skip-full-dotnet] [--skip-git-status] [--fast]");
+        Console.WriteLine("  assert-release-ready [--skip-frontend] [--skip-full-dotnet] [--skip-git-status] [--fast] [--no-restore] [--no-build]");
     }
 
     private static int Unknown(string command)
@@ -98,16 +108,16 @@ internal static class Program
                 throw new FileNotFoundException($"Required generator not found: {generator}", generator);
             }
 
-            var code = RunStep($"Generate: {generator}", "pwsh", $"-NoProfile -ExecutionPolicy Bypass -File \"{generator}\"");
-            if (code != 0)
-                return code;
+            var stepResult = RunStep($"Generate: {generator}", "pwsh", $"-NoProfile -ExecutionPolicy Bypass -File \"{generator}\"");
+            if (stepResult.ExitCode != 0)
+                return stepResult.ExitCode;
         }
 
         WriteSuccess("Engineering Core V1 artifact regeneration completed successfully.");
         return 0;
     }
 
-    private static int VerifySmoke(bool skipFrontend)
+    private static int VerifySmoke(bool skipFrontend, bool noRestore = false, bool noBuild = false)
     {
         Console.WriteLine("Engineering Core V1 smoke verification");
         if (skipFrontend)
@@ -121,34 +131,40 @@ internal static class Program
 
         if (!skipFrontend)
         {
-            var frontendCode = RunStep(
+            var frontendResult = RunStep(
                 "Frontend build smoke",
                 "npm",
                 "--prefix .\\src\\Frontend run build");
 
-            if (frontendCode != 0)
-                return frontendCode;
+            if (frontendResult.ExitCode != 0)
+                return frontendResult.ExitCode;
         }
 
         var steps = new[]
         {
             DotnetTest(
                 "Core formula/status/report/diagnostics smoke tests",
-                "FormulaAudit|EngineeringCoreStatus|EngineeringCoreReportDisclosureTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests"),
+                "FormulaAudit|EngineeringCoreStatus|EngineeringCoreReportDisclosureTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Frontend visibility smoke tests",
-                "EngineeringCoreFrontendIntegrationGuardTests|EngineeringCoreDiagnosticsCatalogPanelFrontendGuardTests"),
+                "EngineeringCoreFrontendIntegrationGuardTests|EngineeringCoreDiagnosticsCatalogPanelFrontendGuardTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Weather/annual/hourly closure smoke tests",
-                "AnnualEnergy8760ScenarioTests|EpwAnnualClimateDataImportServiceTests|PvgisAnnualClimateDataImportServiceTests|Iso52016EngineeringCoreV1ClosureTests")
+                "AnnualEnergy8760ScenarioTests|EpwAnnualClimateDataImportServiceTests|PvgisAnnualClimateDataImportServiceTests|Iso52016EngineeringCoreV1ClosureTests",
+                noRestore,
+                noBuild)
         };
 
         return RunSteps(steps, "Engineering Core V1 smoke verification completed successfully.");
     }
 
-    private static int VerifyContracts(bool skipFrontend, bool skipRegenerate)
+    private static int VerifyContracts(bool skipFrontend, bool skipRegenerate, bool noRestore = false, bool noBuild = false)
     {
         Console.WriteLine("Engineering Core V1 contracts verification");
         if (skipFrontend)
@@ -162,45 +178,51 @@ internal static class Program
 
         if (!skipRegenerate)
         {
-            var regenerateCode = RunStep(
+            var regenerateResult = RunStep(
                 "Regenerate Engineering Core V1 artifacts",
                 "dotnet",
                 "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreRelease\\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- regenerate-artifacts");
 
-            if (regenerateCode != 0)
-                return regenerateCode;
+            if (regenerateResult.ExitCode != 0)
+                return regenerateResult.ExitCode;
         }
 
         if (!skipFrontend)
         {
-            var frontendCode = RunStep(
+            var frontendResult = RunStep(
                 "Frontend build",
                 "npm",
                 "--prefix .\\src\\Frontend run build");
 
-            if (frontendCode != 0)
-                return frontendCode;
+            if (frontendResult.ExitCode != 0)
+                return frontendResult.ExitCode;
         }
 
         var steps = new[]
         {
             DotnetTest(
                 "API/OpenAPI/report/export/diagnostics contract tests",
-                "EngineeringCoreV1ApiContractSnapshotTests|EngineeringCoreV1OpenApiContractTests|EngineeringCoreV1ReportContractSnapshotTests|EngineeringCoreV1ReportExportDisclosureGuardTests|EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests"),
+                "EngineeringCoreV1ApiContractSnapshotTests|EngineeringCoreV1OpenApiContractTests|EngineeringCoreV1ReportContractSnapshotTests|EngineeringCoreV1ReportExportDisclosureGuardTests|EngineeringCoreV1FormulaAuditDiagnosticsCatalogTests|EngineeringCoreDiagnosticsCatalogFacadeAndApiTests|EngineeringCoreDiagnosticsCatalogFrontendGuardTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Release evidence/manifest/traceability/validation registry tests",
-                "EngineeringCoreV1ReleaseEvidencePackageTests|EngineeringCoreV1ReleaseManifestTests|EngineeringCoreV1TraceabilityMatrixTests|EnergyPlusValidationCaseRegistryTests"),
+                "EngineeringCoreV1ReleaseEvidencePackageTests|EngineeringCoreV1ReleaseManifestTests|EngineeringCoreV1TraceabilityMatrixTests|EnergyPlusValidationCaseRegistryTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Documentation and contribution guard tests",
-                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1VerificationRunbookTests|EngineeringCoreV1CiWorkflowTests|EngineeringCoreV1ContributionGuardTests")
+                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1VerificationRunbookTests|EngineeringCoreV1CiWorkflowTests|EngineeringCoreV1ContributionGuardTests",
+                noRestore,
+                noBuild)
         };
 
         return RunSteps(steps, "Engineering Core V1 contracts verification completed successfully.");
     }
 
-    private static int VerifyManifest(bool skipFrontend)
+    private static int VerifyManifest(bool skipFrontend, bool noRestore = false, bool noBuild = false)
     {
         Console.WriteLine("Engineering Core V1 manifest verification");
         if (skipFrontend)
@@ -216,15 +238,21 @@ internal static class Program
         {
             DotnetTest(
                 "Manifest consistency tests",
-                "EngineeringCoreV1ReleaseManifestTests"),
+                "EngineeringCoreV1ReleaseManifestTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Release documentation guard tests",
-                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1VerificationRunbookTests"),
+                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1VerificationRunbookTests",
+                noRestore,
+                noBuild),
 
             DotnetTest(
                 "Status/disclosure/frontend guard tests",
-                "EngineeringCoreStatus|EngineeringCoreReportDisclosureTests|EngineeringCoreFrontendIntegrationGuardTests")
+                "EngineeringCoreStatus|EngineeringCoreReportDisclosureTests|EngineeringCoreFrontendIntegrationGuardTests",
+                noRestore,
+                noBuild)
         };
 
         if (!skipFrontend)
@@ -241,6 +269,9 @@ internal static class Program
     private static int AssertReleaseReady(ReleaseReadyOptions options)
     {
         Console.WriteLine("Engineering Core V1 release readiness gate");
+        Console.WriteLine($"Repository: {Directory.GetCurrentDirectory()}");
+        Console.WriteLine($".NET SDK: {Environment.Version}");
+        Console.WriteLine($"Started (UTC): {DateTimeOffset.UtcNow:O}");
         if (options.SkipFrontend)
         {
             WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
@@ -284,48 +315,89 @@ internal static class Program
                 "Required release readiness files are missing: " + string.Join(", ", missingFiles));
         }
 
-        var regenerateCode = RunStep(
-            "Regenerate Engineering Core V1 generated artifacts",
-            "dotnet",
-            "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreRelease\\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- regenerate-artifacts");
+        var stepResults = new List<StepResult>();
 
-        if (regenerateCode != 0)
-            return regenerateCode;
-
-        if (!options.SkipFrontend)
+        if (!options.NoRestore)
         {
-            var frontendCode = RunStep(
-                "Frontend build",
-                "npm",
-                "--prefix .\\src\\Frontend run build");
-
-            if (frontendCode != 0)
-                return frontendCode;
+            var restoreResult = RunStep(
+                "Restore solution",
+                "dotnet",
+                "restore .\\AssistantEngineer.sln");
+            stepResults.Add(restoreResult);
+            if (restoreResult.ExitCode != 0)
+            {
+                WriteSummary(stepResults);
+                return restoreResult.ExitCode;
+            }
         }
 
-        var smokeCode = RunStep(
+        if (!options.NoBuild)
+        {
+            var buildArgs = "build .\\AssistantEngineer.sln -c Debug";
+            if (!options.NoRestore)
+                buildArgs += " --no-restore";
+
+            var buildResult = RunStep(
+                "Build solution (Debug)",
+                "dotnet",
+                buildArgs);
+            stepResults.Add(buildResult);
+            if (buildResult.ExitCode != 0)
+            {
+                WriteSummary(stepResults);
+                return buildResult.ExitCode;
+            }
+        }
+
+        var regenerateResult = RunInternalStep(
+            "Regenerate Engineering Core V1 generated artifacts",
+            () => RegenerateArtifacts(skipMissing: false));
+        stepResults.Add(regenerateResult);
+        if (regenerateResult.ExitCode != 0)
+        {
+            WriteSummary(stepResults);
+            return regenerateResult.ExitCode;
+        }
+
+        var smokeResult = RunInternalStep(
             "Smoke verification profile",
-            "dotnet",
-            "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreRelease\\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- verify-smoke " + (options.SkipFrontend ? "--skip-frontend" : ""));
+            () => VerifySmoke(
+                options.SkipFrontend,
+                noRestore: true,
+                noBuild: true));
+        stepResults.Add(smokeResult);
+        if (smokeResult.ExitCode != 0)
+        {
+            WriteSummary(stepResults);
+            return smokeResult.ExitCode;
+        }
 
-        if (smokeCode != 0)
-            return smokeCode;
-
-        var contractsCode = RunStep(
+        var contractsResult = RunInternalStep(
             "Contracts verification profile",
-            "dotnet",
-            "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreRelease\\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- verify-contracts --skip-regenerate " + (options.SkipFrontend ? "--skip-frontend" : ""));
+            () => VerifyContracts(
+                options.SkipFrontend,
+                skipRegenerate: true,
+                noRestore: true,
+                noBuild: true));
+        stepResults.Add(contractsResult);
+        if (contractsResult.ExitCode != 0)
+        {
+            WriteSummary(stepResults);
+            return contractsResult.ExitCode;
+        }
 
-        if (contractsCode != 0)
-            return contractsCode;
-
-        var manifestCode = RunStep(
-            "Manifest verification",
-            "dotnet",
-            "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreRelease\\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- verify-manifest " + (options.SkipFrontend ? "--skip-frontend" : ""));
-
-        if (manifestCode != 0)
-            return manifestCode;
+        var manifestResult = RunInternalStep(
+            "Manifest verification profile",
+            () => VerifyManifest(
+                options.SkipFrontend,
+                noRestore: true,
+                noBuild: true));
+        stepResults.Add(manifestResult);
+        if (manifestResult.ExitCode != 0)
+        {
+            WriteSummary(stepResults);
+            return manifestResult.ExitCode;
+        }
 
         if (!options.Fast)
         {
@@ -335,39 +407,37 @@ internal static class Program
             if (options.SkipFullDotnet)
                 verificationArgs.Add("--skip-full-dotnet");
 
-            var verificationCode = RunStep(
+            var verificationResult = RunStep(
                 "Full Engineering Core V1 verification",
                 "dotnet",
-                "run --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreVerification\\AssistantEngineer.Tools.EngineeringCoreVerification.csproj -- " + string.Join(" ", verificationArgs));
+                "run --no-build --project .\\tools\\AssistantEngineer.Tools.EngineeringCoreVerification\\AssistantEngineer.Tools.EngineeringCoreVerification.csproj -- --no-restore --no-build " + string.Join(" ", verificationArgs));
 
-            if (verificationCode != 0)
-                return verificationCode;
-        }
-
-        if (!options.SkipFullDotnet && !options.Fast)
-        {
-            var fullTestCode = RunStep(
-                "Full backend test suite",
-                "dotnet",
-                "test .\\AssistantEngineer.sln");
-
-            if (fullTestCode != 0)
-                return fullTestCode;
+            stepResults.Add(verificationResult);
+            if (verificationResult.ExitCode != 0)
+            {
+                WriteSummary(stepResults);
+                return verificationResult.ExitCode;
+            }
         }
 
         if (!options.SkipGitStatus)
         {
-            var gitStatusCode = RunStep(
+            var gitStatusResult = RunStep(
                 "Git working tree status",
                 "git",
                 "status --short");
 
-            if (gitStatusCode != 0)
-                return gitStatusCode;
+            stepResults.Add(gitStatusResult);
+            if (gitStatusResult.ExitCode != 0)
+            {
+                WriteSummary(stepResults);
+                return gitStatusResult.ExitCode;
+            }
         }
 
         Console.WriteLine();
         WriteSuccess("Engineering Core V1 release readiness gate completed successfully.");
+        WriteSummary(stepResults);
         Console.WriteLine();
         Console.WriteLine("Release-ready interpretation:");
         Console.WriteLine("- Engineering Core V1 is closed as an engineering formula gate.");
@@ -378,44 +448,106 @@ internal static class Program
         return 0;
     }
 
-    private static CommandStep DotnetTest(string name, string filter) =>
+    private static CommandStep DotnetTest(string name, string filter, bool noRestore, bool noBuild) =>
         new(
             name,
             "dotnet",
-            $"test .\\AssistantEngineer.sln --filter \"{filter}\"");
+            $"test .\\AssistantEngineer.sln -c Debug {BuildDotnetTestFlags(noRestore, noBuild)} --filter \"{filter}\"");
 
     private static int RunSteps(IEnumerable<CommandStep> steps, string successMessage)
     {
         foreach (var step in steps)
         {
-            var code = RunStep(step.Name, step.FileName, step.Arguments);
-            if (code != 0)
-                return code;
+            var stepResult = RunStep(step.Name, step.FileName, step.Arguments);
+            if (stepResult.ExitCode != 0)
+                return stepResult.ExitCode;
         }
 
         WriteSuccess(successMessage);
         return 0;
     }
 
-    private static int RunStep(string name, string fileName, string arguments)
+    private static StepResult RunStep(string name, string fileName, string arguments)
     {
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"==> {name}");
         Console.ResetColor();
 
+        var stopwatch = Stopwatch.StartNew();
         var code = RunProcess(fileName, arguments);
+        stopwatch.Stop();
 
         if (code == 0)
         {
-            WriteSuccess($"OK: {name}");
-            return 0;
+            WriteSuccess($"OK: {name} ({FormatDuration(stopwatch.Elapsed)})");
+            return new StepResult(name, 0, stopwatch.Elapsed);
         }
 
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.Error.WriteLine($"FAILED: {name}");
+        Console.Error.WriteLine($"FAILED: {name} ({FormatDuration(stopwatch.Elapsed)})");
         Console.ResetColor();
-        return code;
+        return new StepResult(name, code, stopwatch.Elapsed);
+    }
+
+    private static string BuildDotnetTestFlags(bool noRestore, bool noBuild)
+    {
+        var flags = new List<string>();
+        if (noRestore)
+            flags.Add("--no-restore");
+
+        if (noBuild)
+            flags.Add("--no-build");
+
+        return string.Join(" ", flags);
+    }
+
+    private static void WriteSummary(IReadOnlyCollection<StepResult> stepResults)
+    {
+        if (stepResults.Count == 0)
+            return;
+
+        var total = TimeSpan.FromTicks(stepResults.Sum(step => step.Duration.Ticks));
+        Console.WriteLine();
+        Console.WriteLine("Release readiness summary:");
+        foreach (var step in stepResults)
+        {
+            var status = step.ExitCode == 0 ? "OK" : "FAIL";
+            Console.WriteLine($"- {status,-4} {step.Name} ({FormatDuration(step.Duration)})");
+        }
+
+        Console.WriteLine($"Total duration: {FormatDuration(total)}");
+        Console.WriteLine("Slowest 5 steps:");
+        foreach (var step in stepResults.OrderByDescending(result => result.Duration).Take(5))
+            Console.WriteLine($"- {step.Name}: {FormatDuration(step.Duration)}");
+    }
+
+    private static string FormatDuration(TimeSpan duration) =>
+        duration.TotalMinutes >= 1
+            ? $"{duration:mm\\:ss\\.fff}"
+            : $"{duration:ss\\.fff}s";
+
+    private static StepResult RunInternalStep(string name, Func<int> action)
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine($"==> {name}");
+        Console.ResetColor();
+
+        var stopwatch = Stopwatch.StartNew();
+        var exitCode = action();
+        stopwatch.Stop();
+
+        if (exitCode == 0)
+        {
+            WriteSuccess($"OK: {name} ({FormatDuration(stopwatch.Elapsed)})");
+            return new StepResult(name, 0, stopwatch.Elapsed);
+        }
+
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine($"FAILED: {name} ({FormatDuration(stopwatch.Elapsed)})");
+        Console.ResetColor();
+        return new StepResult(name, exitCode, stopwatch.Elapsed);
     }
 
     private static int RunProcess(string fileName, string arguments)
@@ -548,5 +680,12 @@ internal static class Program
         bool SkipFrontend,
         bool SkipFullDotnet,
         bool SkipGitStatus,
-        bool Fast);
+        bool Fast,
+        bool NoRestore,
+        bool NoBuild);
+
+    private sealed record StepResult(
+        string Name,
+        int ExitCode,
+        TimeSpan Duration);
 }

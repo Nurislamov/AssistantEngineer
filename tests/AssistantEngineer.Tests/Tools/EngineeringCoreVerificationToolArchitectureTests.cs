@@ -37,6 +37,9 @@ public class EngineeringCoreVerificationToolArchitectureTests
             "Engineering Core traceability matrix guard tests",
             "EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests",
             "Full backend test suite",
+            "--no-restore",
+            "--no-build",
+            " -c Debug ",
             "skip-frontend",
             "skip-full-dotnet",
             "fast"

@@ -1,0 +1,15 @@
+{
+  "id": "solar-trace-fixture",
+  "expectedModules": [ "Weather", "Solar" ],
+  "expectedStepNames": [
+    "Weather source and solar context intake",
+    "Solar position step",
+    "Surface irradiance step"
+  ],
+  "expectedValueKeys": [
+    "weatherSource",
+    "hourCount",
+    "avgSolarAltitudeDegrees",
+    "maxSurfaceIrradianceWm2"
+  ]
+}
