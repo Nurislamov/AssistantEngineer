@@ -54,6 +54,8 @@ internal static class Iso52016Registration
         services.AddScoped<IIso52016MultiZoneHourlySolver, Iso52016MultiZoneHourlySolver>();
         services.AddScoped<IIso52016MultiZoneEnergySimulationService, Iso52016MultiZoneEnergySimulationService>();
         services.AddScoped<IIso52016MultiZoneBuildingSimulationFacade, Iso52016MultiZoneBuildingSimulationFacade>();
+        services.AddScoped<IAdjacentUnconditionedZoneTemperatureCalculator, AdjacentUnconditionedZoneTemperatureCalculator>();
+        services.AddScoped<IIso52016MultiZoneNormalizedInputBuilder, Iso52016MultiZoneNormalizedInputBuilder>();
 
         services.AddScoped<IIso52016BuildingEnergySimulationApplicationService, Iso52016BuildingEnergySimulationApplicationService>();
 

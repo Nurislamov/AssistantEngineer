@@ -1,0 +1,72 @@
+{
+  "id": "conditioned-adjacent-unconditioned-reduction",
+  "claimBoundary": [
+    "Standard-based multi-zone internal analytical anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Conditioned zone adjacent to unconditioned zone with reduced-loss transfer profile.",
+  "input": {
+    "buildingId": "MZ-FX-COND-UNCOND",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Conditioned",
+        "floorAreaSquareMeters": 35.0,
+        "volumeCubicMeters": 100.0,
+        "boundaryIds": ["A-OUT", "A-UNCOND"]
+      }
+    ],
+    "boundaryLinks": [
+      {
+        "linkId": "A-OUT-LINK",
+        "boundaryType": "ExternalBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-OUT",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 50.0
+      },
+      {
+        "linkId": "A-UNCOND-LINK",
+        "boundaryType": "AdjacentUnconditionedZone",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-UNCOND",
+        "areaSquareMeters": 8.0,
+        "conductanceWPerK": 20.0,
+        "adjacentBoundaryCondition": {
+          "conditionId": "UNCOND-REDUCED",
+          "temperatureProfileCelsius": [8.0],
+          "isAdiabaticEquivalent": false,
+          "notes": "Adjacent unconditioned temperature lies between indoor and outdoor for reduced-loss path."
+        }
+      }
+    ],
+    "interZoneConductanceLinks": [],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [
+      {
+        "boundaryId": "A-OUT",
+        "temperatureProfileCelsius": [0.0]
+      }
+    ],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

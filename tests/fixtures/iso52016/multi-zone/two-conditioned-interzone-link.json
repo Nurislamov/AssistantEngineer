@@ -1,0 +1,96 @@
+{
+  "id": "two-conditioned-interzone-link",
+  "claimBoundary": [
+    "Standard-based multi-zone internal analytical anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Two conditioned zones with one inter-zone conductance boundary.",
+  "input": {
+    "buildingId": "MZ-FX-INTERZONE",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Zone A",
+        "floorAreaSquareMeters": 45.0,
+        "volumeCubicMeters": 120.0,
+        "boundaryIds": ["A-OUT", "A-B-INT"]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "name": "Zone B",
+        "floorAreaSquareMeters": 45.0,
+        "volumeCubicMeters": 120.0,
+        "boundaryIds": ["B-OUT"]
+      }
+    ],
+    "boundaryLinks": [
+      {
+        "linkId": "A-OUT-LINK",
+        "boundaryType": "ExternalBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-OUT",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 40.0
+      },
+      {
+        "linkId": "B-OUT-LINK",
+        "boundaryType": "ExternalBoundary",
+        "sourceZoneId": "ZONE-B",
+        "sourceBoundaryId": "B-OUT",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 40.0
+      },
+      {
+        "linkId": "A-B-INT-LINK",
+        "boundaryType": "InterZoneBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-B-INT",
+        "areaSquareMeters": 9.0,
+        "conductanceWPerK": 25.0,
+        "targetZoneId": "ZONE-B"
+      }
+    ],
+    "interZoneConductanceLinks": [],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [
+      {
+        "boundaryId": "A-OUT",
+        "temperatureProfileCelsius": [0.0]
+      },
+      {
+        "boundaryId": "B-OUT",
+        "temperatureProfileCelsius": [0.0]
+      }
+    ],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 22.0,
+        "thermalCapacityJPerK": 1200000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [50.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "initialTemperatureCelsius": 18.0,
+        "thermalCapacityJPerK": 1200000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

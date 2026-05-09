@@ -275,13 +275,14 @@ public sealed class Iso52016MultiZoneHourlySolver : IIso52016MultiZoneHourlySolv
         ISet<string> warningKeys)
     {
         var conductance = Math.Max(0.0, boundaryLink.ConductanceWPerK);
-        if (conductance <= 0.0)
-            return;
 
         switch (boundaryLink.BoundaryType)
         {
             case MultiZoneBoundaryLinkType.ExternalBoundary:
                 {
+                    if (conductance <= 0.0)
+                        return;
+
                     if (!TryResolveBoundaryTemperature(boundaryLink.SourceBoundaryId, hourOfYear, boundaryConditionsById, out var boundaryTemperature))
                     {
                         AddWarningOnce(
@@ -298,8 +299,32 @@ public sealed class Iso52016MultiZoneHourlySolver : IIso52016MultiZoneHourlySolv
                     break;
                 }
 
+            case MultiZoneBoundaryLinkType.GroundBoundary:
+                {
+                    if (conductance <= 0.0)
+                        return;
+
+                    if (!TryResolveBoundaryTemperature(boundaryLink.SourceBoundaryId, hourOfYear, boundaryConditionsById, out var boundaryTemperature))
+                    {
+                        AddWarningOnce(
+                            diagnostics,
+                            warningKeys,
+                            key: $"NO-GROUND-BOUNDARY-TEMP-{boundaryLink.LinkId}",
+                            code: "Iso52016.MultiZone.HourlySolver.GroundBoundaryTemperatureMissing",
+                            message: $"Ground boundary link '{boundaryLink.LinkId}' has no temperature profile. Transfer for this boundary is skipped.");
+                        return;
+                    }
+
+                    aMatrix[zoneIndex, zoneIndex] += conductance;
+                    rhs[zoneIndex] += conductance * boundaryTemperature;
+                    break;
+                }
+
             case MultiZoneBoundaryLinkType.AdjacentUnconditionedZone:
                 {
+                    if (conductance <= 0.0)
+                        return;
+
                     var hasTemperature = false;
                     var boundaryTemperature = 0.0;
 
@@ -334,8 +359,17 @@ public sealed class Iso52016MultiZoneHourlySolver : IIso52016MultiZoneHourlySolv
                 {
                     if (boundaryLink.AdjacentBoundaryCondition?.IsAdiabaticEquivalent == true)
                     {
+                        AddWarningOnce(
+                            diagnostics,
+                            warningKeys,
+                            key: $"SAME-USE-ADIABATIC-{boundaryLink.LinkId}",
+                            code: "Iso52016.MultiZone.HourlySolver.SameUseAdiabaticPolicyApplied",
+                            message: $"Same-use adjacent boundary '{boundaryLink.LinkId}' is treated as adiabatic-style and does not add exterior loss.");
                         return;
                     }
+
+                    if (conductance <= 0.0)
+                        return;
 
                     if (!string.IsNullOrWhiteSpace(boundaryLink.TargetZoneId) &&
                         zoneIndexById.TryGetValue(boundaryLink.TargetZoneId, out var targetZoneIndex) &&
@@ -347,6 +381,13 @@ public sealed class Iso52016MultiZoneHourlySolver : IIso52016MultiZoneHourlySolv
                         aMatrix[targetZoneIndex, zoneIndex] -= conductance;
                     }
 
+                    break;
+            }
+
+            case MultiZoneBoundaryLinkType.InterZoneBoundary:
+                {
+                    if (conductance <= 0.0)
+                        return;
                     break;
                 }
         }

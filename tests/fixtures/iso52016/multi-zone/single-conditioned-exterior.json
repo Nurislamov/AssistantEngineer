@@ -1,0 +1,58 @@
+{
+  "id": "single-conditioned-exterior",
+  "claimBoundary": [
+    "Standard-based multi-zone internal analytical anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Single conditioned zone with one exterior opaque boundary.",
+  "input": {
+    "buildingId": "MZ-FX-SINGLE-EXT",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Zone A",
+        "floorAreaSquareMeters": 30.0,
+        "volumeCubicMeters": 80.0,
+        "boundaryIds": ["A-OUT"]
+      }
+    ],
+    "boundaryLinks": [
+      {
+        "linkId": "A-OUT-LINK",
+        "boundaryType": "ExternalBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-OUT",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 45.0
+      }
+    ],
+    "interZoneConductanceLinks": [],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [
+      {
+        "boundaryId": "A-OUT",
+        "temperatureProfileCelsius": [0.0]
+      }
+    ],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

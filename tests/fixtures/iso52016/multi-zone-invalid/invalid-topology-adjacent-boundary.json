@@ -1,0 +1,115 @@
+{
+  "id": "invalid-topology-adjacent-boundary",
+  "claimBoundary": [
+    "Standard-based multi-zone invalid-topology validation anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Invalid topology sample with missing adjacent zone id, self-reference, exterior with target, negative area, and duplicate inconsistent inter-zone boundary pair.",
+  "input": {
+    "buildingId": "MZ-FX-INVALID-TOPOLOGY",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Zone A",
+        "floorAreaSquareMeters": 40.0,
+        "volumeCubicMeters": 100.0,
+        "boundaryIds": ["A-OUT", "A-SELF", "A-INT-1", "A-INT-2"]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "name": "Zone B",
+        "floorAreaSquareMeters": 40.0,
+        "volumeCubicMeters": 100.0,
+        "boundaryIds": ["B-OUT"]
+      }
+    ],
+    "boundaryLinks": [
+      {
+        "linkId": "A-OUT-LINK",
+        "boundaryType": "ExternalBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-OUT",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 40.0,
+        "targetZoneId": "ZONE-B"
+      },
+      {
+        "linkId": "A-SELF-LINK",
+        "boundaryType": "InterZoneBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-SELF",
+        "areaSquareMeters": 8.0,
+        "conductanceWPerK": 20.0,
+        "targetZoneId": "ZONE-A"
+      },
+      {
+        "linkId": "A-NEG-LINK",
+        "boundaryType": "AdjacentUnconditionedZone",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-NEG",
+        "areaSquareMeters": -2.0,
+        "conductanceWPerK": -5.0
+      },
+      {
+        "linkId": "A-B-INT-LINK-1",
+        "boundaryType": "InterZoneBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-INT-1",
+        "areaSquareMeters": 10.0,
+        "conductanceWPerK": 30.0,
+        "targetZoneId": "ZONE-B"
+      },
+      {
+        "linkId": "A-B-INT-LINK-2",
+        "boundaryType": "InterZoneBoundary",
+        "sourceZoneId": "ZONE-B",
+        "sourceBoundaryId": "B-INT-2",
+        "areaSquareMeters": 12.0,
+        "conductanceWPerK": 45.0,
+        "targetZoneId": "ZONE-A"
+      }
+    ],
+    "interZoneConductanceLinks": [],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [
+      {
+        "boundaryId": "A-OUT",
+        "temperatureProfileCelsius": [0.0]
+      },
+      {
+        "boundaryId": "B-OUT",
+        "temperatureProfileCelsius": [0.0]
+      }
+    ],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

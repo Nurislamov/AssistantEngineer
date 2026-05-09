@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.MultiZone;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
@@ -59,6 +60,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IThermalTopologyValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalBoundaryConditionResolver>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IThermalZoneBoundaryCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IThermalBoundaryClassificationService>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundGeometryNormalizer>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundBoundaryInputValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundTemperatureProfileProvider>(services, ServiceLifetime.Singleton);
@@ -120,6 +122,8 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<Iso52016ConstructionReferenceDataProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyApplicationAdapter>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IAdjacentUnconditionedZoneTemperatureCalculator>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IIso52016MultiZoneNormalizedInputBuilder>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EngineeringStageManifestRegistryProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<EngineeringStageManifestRegistryValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<EngineeringClaimBoundaryScanner>(services, ServiceLifetime.Singleton);

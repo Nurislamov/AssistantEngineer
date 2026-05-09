@@ -156,6 +156,13 @@ public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputVal
 
         foreach (var link in boundaryLinks)
         {
+            if (string.IsNullOrWhiteSpace(link.LinkId))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.BoundaryLinkIdRequired",
+                    "Boundary link id is required."));
+            }
+
             if (string.IsNullOrWhiteSpace(link.SourceZoneId) || !zoneIdSet.Contains(link.SourceZoneId))
             {
                 diagnostics.Add(CreateError(
@@ -163,18 +170,27 @@ public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputVal
                     $"Boundary link '{link.LinkId}' references source zone '{link.SourceZoneId}' that is not part of this graph input."));
             }
 
-            if (link.AreaSquareMeters < 0.0)
+            if (!(link.AreaSquareMeters > 0.0))
             {
                 diagnostics.Add(CreateError(
-                    "Iso52016.MultiZone.InputValidator.BoundaryAreaNegative",
-                    $"Boundary link '{link.LinkId}' area cannot be negative."));
+                    "Iso52016.MultiZone.InputValidator.BoundaryAreaNonPositive",
+                    $"Boundary link '{link.LinkId}' area must be greater than zero."));
             }
 
-            if (link.ConductanceWPerK < 0.0)
+            var adiabaticSameUse = link.BoundaryType == MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone &&
+                                    link.AdjacentBoundaryCondition?.IsAdiabaticEquivalent == true;
+            if (!adiabaticSameUse && !(link.ConductanceWPerK > 0.0))
             {
                 diagnostics.Add(CreateError(
-                    "Iso52016.MultiZone.InputValidator.BoundaryConductanceNegative",
-                    $"Boundary link '{link.LinkId}' conductance cannot be negative."));
+                    "Iso52016.MultiZone.InputValidator.BoundaryConductanceNonPositive",
+                    $"Boundary link '{link.LinkId}' conductance must be greater than zero for non-adiabatic boundaries."));
+            }
+
+            if (adiabaticSameUse && Math.Abs(link.ConductanceWPerK) > 1e-9)
+            {
+                diagnostics.Add(CreateWarning(
+                    "Iso52016.MultiZone.InputValidator.AdiabaticSameUseConductanceIgnored",
+                    $"Same-use adiabatic boundary link '{link.LinkId}' has non-zero conductance, but adiabatic policy ignores it."));
             }
 
             if (link.BoundaryType == MultiZoneBoundaryLinkType.InterZoneBoundary)
@@ -194,12 +210,54 @@ public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputVal
                 }
             }
 
+            if (link.BoundaryType == MultiZoneBoundaryLinkType.ExternalBoundary &&
+                !string.IsNullOrWhiteSpace(link.TargetZoneId))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.ExteriorBoundaryTargetZoneForbidden",
+                    $"External boundary link '{link.LinkId}' cannot specify target zone '{link.TargetZoneId}'."));
+            }
+
+            if (link.BoundaryType == MultiZoneBoundaryLinkType.GroundBoundary &&
+                !string.IsNullOrWhiteSpace(link.TargetZoneId))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.GroundBoundaryTargetZoneForbidden",
+                    $"Ground boundary link '{link.LinkId}' cannot specify target zone '{link.TargetZoneId}'."));
+            }
+
+            if (link.BoundaryType is MultiZoneBoundaryLinkType.InterZoneBoundary or MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone &&
+                (string.IsNullOrWhiteSpace(link.TargetZoneId) || !zoneIdSet.Contains(link.TargetZoneId)))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.AdjacentBoundaryTargetZoneMissing",
+                    $"Adjacent/inter-zone boundary link '{link.LinkId}' requires target zone and references '{link.TargetZoneId}'."));
+            }
+
+            if (link.BoundaryType == MultiZoneBoundaryLinkType.AdjacentUnconditionedZone &&
+                (link.AdjacentBoundaryCondition?.TemperatureProfileCelsius is not { Count: > 0 }) &&
+                (string.IsNullOrWhiteSpace(link.TargetZoneId) || !zoneIdSet.Contains(link.TargetZoneId)))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.AdjacentUnconditionedSourceMissing",
+                    $"Adjacent-unconditioned boundary link '{link.LinkId}' requires either target zone or explicit adjacent temperature profile."));
+            }
+
             if (link.BoundaryType == MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone &&
                 link.AdjacentBoundaryCondition is { IsAdiabaticEquivalent: false })
             {
                 diagnostics.Add(CreateWarning(
                     "Iso52016.MultiZone.InputValidator.SameUseBoundaryAdiabaticHintMissing",
                     $"Same-use adjacent boundary link '{link.LinkId}' should typically set IsAdiabaticEquivalent=true for adiabatic-style foundation behavior."));
+            }
+
+            if (link.BoundaryType == MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone &&
+                link.AdjacentBoundaryCondition?.IsAdiabaticEquivalent == true &&
+                link.AdjacentBoundaryCondition.TemperatureProfileCelsius.Count > 0)
+            {
+                diagnostics.Add(CreateWarning(
+                    "Iso52016.MultiZone.InputValidator.AdiabaticSameUseTemperatureIgnored",
+                    $"Same-use adiabatic boundary link '{link.LinkId}' provides adjacent temperature profile that is ignored by adiabatic policy."));
             }
 
             if (link.AdjacentBoundaryCondition?.TemperatureProfileCelsius is { } adjacentTemperatureProfile)
@@ -266,6 +324,36 @@ public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputVal
                 diagnostics);
         }
 
+        var hourlyBoundaryConditionIds = hourlyBoundaryConditions
+            .Where(condition => !string.IsNullOrWhiteSpace(condition.BoundaryId))
+            .Select(condition => condition.BoundaryId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var groundBoundaryLink in boundaryLinks.Where(link => link.BoundaryType == MultiZoneBoundaryLinkType.GroundBoundary))
+        {
+            if (!hourlyBoundaryConditionIds.Contains(groundBoundaryLink.SourceBoundaryId))
+            {
+                diagnostics.Add(CreateError(
+                    "Iso52016.MultiZone.InputValidator.GroundBoundaryTemperatureMissing",
+                    $"Ground boundary link '{groundBoundaryLink.LinkId}' requires a boundary temperature profile."));
+            }
+        }
+
+        foreach (var duplicateBoundaryLinkId in boundaryLinks
+                     .Select(link => link.LinkId?.Trim() ?? string.Empty)
+                     .Where(linkId => !string.IsNullOrWhiteSpace(linkId))
+                     .GroupBy(linkId => linkId, StringComparer.OrdinalIgnoreCase)
+                     .Where(group => group.Count() > 1)
+                     .Select(group => group.Key)
+                     .OrderBy(item => item, StringComparer.OrdinalIgnoreCase))
+        {
+            diagnostics.Add(CreateError(
+                "Iso52016.MultiZone.InputValidator.DuplicateBoundaryLinkId",
+                $"Boundary link id '{duplicateBoundaryLinkId}' is duplicated."));
+        }
+
+        ValidateInterZoneBoundaryDuplication(boundaryLinks, diagnostics);
+
         foreach (var claimFlag in claimFlags.Where(flag => !string.IsNullOrWhiteSpace(flag)))
         {
             if (!SupportedClaimFlags.Contains(claimFlag.Trim()))
@@ -276,9 +364,62 @@ public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputVal
             }
         }
 
+        var orderedDiagnostics = diagnostics
+            .OrderByDescending(diagnostic => diagnostic.Severity)
+            .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+            .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+            .ToArray();
+
         return new MultiZoneInputValidationResult(
             IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),
-            Diagnostics: diagnostics);
+            Diagnostics: orderedDiagnostics);
+    }
+
+    private static void ValidateInterZoneBoundaryDuplication(
+        IReadOnlyList<ThermalZoneBoundaryLink> boundaryLinks,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        static string PairKey(string source, string target) =>
+            string.Compare(source, target, StringComparison.OrdinalIgnoreCase) <= 0
+                ? $"{source}<->{target}"
+                : $"{target}<->{source}";
+
+        var interZoneLinks = boundaryLinks
+            .Where(link =>
+                link.BoundaryType == MultiZoneBoundaryLinkType.InterZoneBoundary &&
+                !string.IsNullOrWhiteSpace(link.SourceZoneId) &&
+                !string.IsNullOrWhiteSpace(link.TargetZoneId))
+            .ToArray();
+
+        var groups = interZoneLinks
+            .GroupBy(link => PairKey(link.SourceZoneId, link.TargetZoneId!), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var group in groups)
+        {
+            var items = group.OrderBy(item => item.LinkId, StringComparer.OrdinalIgnoreCase).ToArray();
+            if (items.Length <= 1)
+                continue;
+
+            diagnostics.Add(CreateError(
+                "Iso52016.MultiZone.InputValidator.InterZoneBoundaryDuplicatePair",
+                $"Inter-zone pair '{group.Key}' has duplicated boundary links and risks double counting."));
+
+            if (items.Length >= 2)
+            {
+                var baseItem = items[0];
+                foreach (var item in items.Skip(1))
+                {
+                    if (Math.Abs(baseItem.AreaSquareMeters - item.AreaSquareMeters) > 1e-6 ||
+                        Math.Abs(baseItem.ConductanceWPerK - item.ConductanceWPerK) > 1e-6)
+                    {
+                        diagnostics.Add(CreateWarning(
+                            "Iso52016.MultiZone.InputValidator.InterZoneBoundaryPairInconsistent",
+                            $"Inter-zone pair '{group.Key}' has inconsistent area/conductance across opposing links."));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private static void ValidateInterZoneLink(
