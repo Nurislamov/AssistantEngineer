@@ -1,6 +1,7 @@
 export const paths = {
   dashboard: "/",
   buildings: "/buildings",
+  engineeringWorkflow: "/engineering-workflow",
   reports: "/reports",
   calculations: "/calculations",
   buildingDetails: (buildingId: number | string) => `/buildings/${buildingId}`,

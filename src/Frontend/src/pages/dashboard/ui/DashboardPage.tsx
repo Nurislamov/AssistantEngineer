@@ -1,6 +1,7 @@
-﻿import ApartmentIcon from "@mui/icons-material/Apartment";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import RouteIcon from "@mui/icons-material/Route";
 import { Button, Stack, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { paths } from "@/app/router/paths";
@@ -25,6 +26,7 @@ export function DashboardPage(): JSX.Element {
         }
       />
       <EngineeringCoreStatusPanel />
+      <EngineeringCoreDiagnosticsCatalogPanel />
 
       <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
         <DashboardCard
@@ -33,6 +35,13 @@ export function DashboardPage(): JSX.Element {
           description="Create projects, buildings, floors, rooms, envelope elements, and model inputs."
           to={paths.buildings}
           action="Open buildings"
+        />
+        <DashboardCard
+          icon={<RouteIcon color="primary" />}
+          title="Workflow"
+          description="Follow the staged engineering workflow with diagnostics, trace summary, and report export previews."
+          to={paths.engineeringWorkflow}
+          action="Open workflow"
         />
         <DashboardCard
           icon={<CalculateIcon color="primary" />}
@@ -81,5 +90,3 @@ function DashboardCard({ icon, title, description, to, action }: DashboardCardPr
     </DataCard>
   );
 }
-
-

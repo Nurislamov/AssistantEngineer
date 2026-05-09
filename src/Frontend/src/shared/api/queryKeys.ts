@@ -30,6 +30,10 @@
     buildingLatest: (buildingId: number) => ["calculations", "building", buildingId, "latest"] as const,
     roomLatest: (roomId: number) => ["calculations", "room", roomId, "latest"] as const,
   },
+  workflow: {
+    state: (projectId: number, buildingId: number, mode: "api" | "dev") =>
+      ["workflow", "state", projectId, buildingId, mode] as const,
+  },
 } as const;
 
 

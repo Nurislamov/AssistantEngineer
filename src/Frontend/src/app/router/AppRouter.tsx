@@ -5,6 +5,7 @@ import { BuildingDetailsPage } from "@/pages/building-details/ui/BuildingDetails
 import { BuildingsPage } from "@/pages/buildings/ui/BuildingsPage";
 import { CalculationResultsPage } from "@/pages/calculation-results/ui/CalculationResultsPage";
 import { DashboardPage } from "@/pages/dashboard/ui/DashboardPage";
+import { EngineeringWorkflowPage } from "@/pages/engineering-workflow/ui/EngineeringWorkflowPage";
 import { EquipmentSelectionPage } from "@/pages/equipment-selection/ui/EquipmentSelectionPage";
 import { ReportsPage } from "@/pages/reports/ui/ReportsPage";
 
@@ -14,6 +15,7 @@ export function AppRouter(): JSX.Element {
       <Route element={<AppLayout />}>
         <Route path={paths.dashboard} element={<DashboardPage />} />
         <Route path={paths.buildings} element={<BuildingsPage />} />
+        <Route path={paths.engineeringWorkflow} element={<EngineeringWorkflowPage />} />
         <Route path={paths.calculations} element={<CalculationResultsPage />} />
         <Route path={paths.reports} element={<ReportsPage />} />
         <Route path="/buildings/:buildingId" element={<BuildingDetailsPage />} />

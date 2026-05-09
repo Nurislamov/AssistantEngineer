@@ -3,6 +3,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import RouteIcon from "@mui/icons-material/Route";
 import {
   Box,
   Drawer,
@@ -25,6 +26,7 @@ interface AppSidebarProps {
 const navItems = [
   { label: "Dashboard", to: paths.dashboard, icon: <DashboardIcon /> },
   { label: "Buildings", to: paths.buildings, icon: <ApartmentIcon /> },
+  { label: "Workflow", to: paths.engineeringWorkflow, icon: <RouteIcon /> },
   {
     label: "Calculations",
     to: paths.calculations,
