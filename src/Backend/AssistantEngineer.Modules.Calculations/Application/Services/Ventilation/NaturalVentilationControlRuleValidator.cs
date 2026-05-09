@@ -63,8 +63,11 @@ public sealed class NaturalVentilationControlRuleValidator : INaturalVentilation
             }
 
             if (rule.ControlMode == NaturalVentilationControlMode.Temperature ||
+                rule.ControlMode == NaturalVentilationControlMode.TemperatureDriven ||
+                rule.ControlMode == NaturalVentilationControlMode.CoolingAssist ||
                 rule.ControlMode == NaturalVentilationControlMode.OccupancyAndTemperature ||
-                rule.ControlMode == NaturalVentilationControlMode.NightVentilation)
+                rule.ControlMode == NaturalVentilationControlMode.NightVentilation ||
+                rule.ControlMode == NaturalVentilationControlMode.NightPurge)
             {
                 var hasThreshold =
                     rule.IndoorTemperatureOpenAboveCelsius.HasValue ||
@@ -106,7 +109,27 @@ public sealed class NaturalVentilationControlRuleValidator : INaturalVentilation
                     "AE-VENT-CONTROL-NIGHT-MODE-INCOMPLETE",
                     $"Control rule '{rule.RuleId}' night ventilation mode is not fully configured."));
             }
+
+            if (rule.MaximumWindSpeedMetersPerSecond.HasValue &&
+                (!double.IsFinite(rule.MaximumWindSpeedMetersPerSecond.Value) ||
+                 rule.MaximumWindSpeedMetersPerSecond.Value < 0.0))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-CONTROL-WIND-LIMIT-INVALID",
+                    $"Control rule '{rule.RuleId}' maximum wind speed must be finite and non-negative."));
+            }
+
+            ValidateFractionRange(
+                rule.FallbackOpeningFraction,
+                $"Control rule '{rule.RuleId}' fallback opening fraction must be within [0,1].",
+                diagnostics);
         }
+
+        diagnostics = diagnostics
+            .OrderByDescending(diagnostic => diagnostic.Severity)
+            .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+            .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+            .ToList();
 
         return new NaturalVentilationControlRuleValidationResult(
             IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),

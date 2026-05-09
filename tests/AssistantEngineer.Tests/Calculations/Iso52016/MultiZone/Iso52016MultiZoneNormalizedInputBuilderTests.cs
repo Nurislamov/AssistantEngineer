@@ -1,6 +1,8 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.MultiZone;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Topology;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
+using AssistantEngineer.Modules.Calculations.Application.Services.Standards;
 using AssistantEngineer.Modules.Calculations.Application.Services.Topology;
 
 namespace AssistantEngineer.Tests.Calculations.Iso52016.MultiZone;
@@ -60,6 +62,72 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilderTests
         Assert.Contains(
             build.Diagnostics,
             item => item.Code == "Iso52016.MultiZone.NormalizedInput.InterZonePairDeduplicated");
+    }
+
+    [Fact]
+    public void NaturalVentilationResultIsMappedIntoZoneVentilationLane()
+    {
+        var builder = CreateBuilder();
+        var request = CreateSingleZoneExteriorAndAdjacentUnconditionedRequest() with
+        {
+            NaturalVentilationZoneIntegration = CreateNaturalVentilationResult(
+                ("ZONE-A", new[] { 45.0 })),
+            VentilationLaneMergeMode = NaturalVentilationVentilationLaneMergeMode.NaturalOnly
+        };
+
+        var build = builder.Build(request);
+        var zoneProfile = Assert.Single(build.Input.ZoneHourlyProfiles!, profile => profile.ZoneId == "ZONE-A");
+
+        Assert.Equal(45.0, zoneProfile.VentilationInfiltrationConductanceProfileWPerK[0], 6);
+    }
+
+    [Fact]
+    public void NoDoubleCountingModeUsesMaxAgainstBaseVentilationLane()
+    {
+        var builder = CreateBuilder();
+        var request = CreateSingleZoneExteriorAndAdjacentUnconditionedRequest() with
+        {
+            ZoneHourlyProfiles =
+            [
+                new MultiZoneZoneHourlyProfile("ZONE-A", 20.0, 1_000_000.0, [21.0], [26.0], [0.0], [0.0], [30.0]),
+                new MultiZoneZoneHourlyProfile("ZONE-U", 15.0, 500_000.0, [15.0], [35.0], [0.0], [0.0], [0.0])
+            ],
+            NaturalVentilationZoneIntegration = CreateNaturalVentilationResult(
+                ("ZONE-A", new[] { 20.0 })),
+            VentilationLaneMergeMode = NaturalVentilationVentilationLaneMergeMode.NoDoubleCountingMax
+        };
+
+        var build = builder.Build(request);
+        var zoneProfile = Assert.Single(build.Input.ZoneHourlyProfiles!, profile => profile.ZoneId == "ZONE-A");
+
+        Assert.Equal(30.0, zoneProfile.VentilationInfiltrationConductanceProfileWPerK[0], 6);
+    }
+
+    [Fact]
+    public void AdditiveModeCanCombineBaseAndVentilationComponents()
+    {
+        var builder = CreateBuilder();
+        var request = CreateSingleZoneExteriorAndAdjacentUnconditionedRequest() with
+        {
+            ZoneHourlyProfiles =
+            [
+                new MultiZoneZoneHourlyProfile("ZONE-A", 20.0, 1_000_000.0, [21.0], [26.0], [0.0], [0.0], [10.0]),
+                new MultiZoneZoneHourlyProfile("ZONE-U", 15.0, 500_000.0, [15.0], [35.0], [0.0], [0.0], [0.0])
+            ],
+            NaturalVentilationZoneIntegration = CreateNaturalVentilationResult(
+                ("ZONE-A", new[] { 15.0 })),
+            InfiltrationVentilationConductanceProfilesByZoneId = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal)
+            {
+                ["ZONE-A"] = new[] { 5.0 }
+            },
+            VentilationLaneMergeMode = NaturalVentilationVentilationLaneMergeMode.Additive
+        };
+
+        var build = builder.Build(request);
+        var zoneProfile = Assert.Single(build.Input.ZoneHourlyProfiles!, profile => profile.ZoneId == "ZONE-A");
+
+        Assert.Equal(30.0, zoneProfile.VentilationInfiltrationConductanceProfileWPerK[0], 6);
+        Assert.Contains(build.Diagnostics, diagnostic => diagnostic.Code == "Iso52016.MultiZone.NormalizedInput.VentilationLaneMerged");
     }
 
     private static Iso52016MultiZoneNormalizedInputBuilder CreateBuilder() =>
@@ -219,4 +287,29 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilderTests
                 new MultiZoneZoneHourlyProfile("ZONE-B", 19.0, 900_000.0, [21.0], [26.0], [0.0], [0.0], [0.0])
             ],
             ExteriorTemperatureProfileCelsius: [0.0]);
+
+    private static NaturalVentilationZoneIntegrationResult CreateNaturalVentilationResult(
+        params (string ZoneId, IReadOnlyList<double> HveProfile)[] profiles)
+    {
+        var profileDictionary = profiles.ToDictionary(
+            item => item.ZoneId,
+            item => item.HveProfile,
+            StringComparer.Ordinal);
+        var emptyProfileDictionary = profiles.ToDictionary(
+            item => item.ZoneId,
+            _ => (IReadOnlyList<double>)new[] { 0.0 },
+            StringComparer.Ordinal);
+
+        return new NaturalVentilationZoneIntegrationResult(
+            CalculationId: "VENT-HANDOFF",
+            HourlyZones: [],
+            UnassignedRooms: [],
+            UnassignedOpenings: [],
+            ZoneAirflowCubicMetersPerHourProfiles: emptyProfileDictionary,
+            ZoneVentilationHeatTransferCoefficientProfilesWPerKelvin: profileDictionary,
+            ZoneSensibleVentilationLoadProfilesWatts: emptyProfileDictionary,
+            ZoneAirChangesPerHourProfiles: emptyProfileDictionary,
+            Disclosure: new StandardCalculationDisclosureFactory().CreateNaturalVentilationEn16798Disclosure(),
+            Diagnostics: []);
+    }
 }

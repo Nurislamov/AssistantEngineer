@@ -21,4 +21,8 @@ public sealed record NaturalVentilationOpeningControlRule(
     string? ScheduleId,
     string? OccupancyProfileId,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    double? MaximumWindSpeedMetersPerSecond = null,
+    bool? HeatingLockoutEnabled = null,
+    bool? CoolingLockoutEnabled = null,
+    double? FallbackOpeningFraction = null);

@@ -13,4 +13,5 @@ public sealed record NaturalVentilationZoneIntegrationInput(
     double? DefaultAirDensityKgPerCubicMeter,
     double? DefaultAirSpecificHeatJPerKgKelvin,
     StandardCalculationDisclosure? DisclosureOverride,
-    string? Source);
+    string? Source,
+    bool StrictBoundaryValidation = true);

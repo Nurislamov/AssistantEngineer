@@ -1,0 +1,14 @@
+{
+  "id": "nv-stage2-closed-window",
+  "claimBoundary": [
+    "Internal engineering deterministic fixture.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "scenario": {
+    "controlMode": "AlwaysClosed",
+    "expectedAirflowM3PerS": 0.0,
+    "expectedHveWPerK": 0.0,
+    "expectedSensibleLoadW": 0.0
+  }
+}

@@ -60,7 +60,9 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
                 IsNightHour: environment.IsNightHour,
                 RoomId: environment.RoomId,
                 ZoneId: environment.ZoneId,
-                Diagnostics: environment.Diagnostics))
+                Diagnostics: environment.Diagnostics,
+                HeatingModeActive: environment.HeatingModeActive,
+                CoolingModeActive: environment.CoolingModeActive))
             .ToArray();
 
         var controlEvaluation = _controlEvaluator.Evaluate(
@@ -82,8 +84,6 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
             var hourlyInput = _hourlyInputBuilder.BuildHourlyAirflowInput(input, environment, operationsForHour);
             diagnostics.AddRange(hourlyInput.Environment.Diagnostics);
 
-            var airflowResult = _airflowCalculator.Calculate(hourlyInput);
-            diagnostics.AddRange(airflowResult.Diagnostics);
             var openingFractionsById = hourlyInput.Openings
                 .Where(opening => !string.IsNullOrWhiteSpace(opening.OpeningId))
                 .ToDictionary(
@@ -92,16 +92,34 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
                     StringComparer.Ordinal);
 
             var cp = ResolveAirSpecificHeat(input, environment, diagnostics, environment.HourIndex);
+            var density = ResolveAirDensity(input, environment, diagnostics, environment.HourIndex);
             var deltaTemperature = environment.IndoorTemperatureCelsius - environment.OutdoorTemperatureCelsius;
 
-            foreach (var opening in airflowResult.Openings)
+            IReadOnlyList<NaturalVentilationOpeningResult> hourlyOpeningResults;
+            if (input.FlowConfiguration is NaturalVentilationFlowConfiguration.ScheduledAirflow or NaturalVentilationFlowConfiguration.CustomAirflow)
+            {
+                hourlyOpeningResults = BuildPrescribedOpeningResults(
+                    input,
+                    hourlyInput,
+                    environment,
+                    density,
+                    diagnostics);
+            }
+            else
+            {
+                var airflowResult = _airflowCalculator.Calculate(hourlyInput);
+                diagnostics.AddRange(airflowResult.Diagnostics);
+                hourlyOpeningResults = airflowResult.Openings;
+            }
+
+            foreach (var opening in hourlyOpeningResults)
             {
                 var openingDiagnostics = new List<StandardCalculationDiagnostic>();
                 openingDiagnostics.AddRange(opening.Diagnostics);
 
                 var airflowM3PerS = Math.Max(0.0, opening.AirflowCubicMetersPerSecond ?? 0.0);
                 var airflowM3PerH = Math.Max(0.0, opening.AirflowCubicMetersPerHour ?? airflowM3PerS * 3600.0);
-                var airflowKgPerS = Math.Max(0.0, opening.AirflowKilogramsPerSecond ?? 0.0);
+                var airflowKgPerS = Math.Max(0.0, opening.AirflowKilogramsPerSecond ?? airflowM3PerS * density);
 
                 var hve = airflowKgPerS * cp;
                 var sensibleLoad = hve * deltaTemperature;
@@ -397,6 +415,120 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
             "AE-VENT-ZONE-AIR-CP-DEFAULTED",
             $"Air specific heat defaulted to {DefaultAirSpecificHeatJPerKgKelvin:F1} J/(kg.K) at hour {hourIndex}."));
         return DefaultAirSpecificHeatJPerKgKelvin;
+    }
+
+    private static double ResolveAirDensity(
+        NaturalVentilationZoneIntegrationInput input,
+        NaturalVentilationHourlyZoneEnvironment environment,
+        ICollection<StandardCalculationDiagnostic> diagnostics,
+        int hourIndex)
+    {
+        if (environment.AirDensityKgPerCubicMeter is > 0.0)
+            return environment.AirDensityKgPerCubicMeter.Value;
+
+        if (input.DefaultAirDensityKgPerCubicMeter is > 0.0)
+            return input.DefaultAirDensityKgPerCubicMeter.Value;
+
+        const double defaultDensity = 1.204;
+        diagnostics.Add(CreateInfo(
+            "AE-VENT-ZONE-AIR-DENSITY-DEFAULTED",
+            $"Air density defaulted to {defaultDensity:F3} kg/m3 at hour {hourIndex}."));
+        return defaultDensity;
+    }
+
+    private static IReadOnlyList<NaturalVentilationOpeningResult> BuildPrescribedOpeningResults(
+        NaturalVentilationZoneIntegrationInput input,
+        NaturalVentilationCalculationInput hourlyInput,
+        NaturalVentilationHourlyZoneEnvironment environment,
+        double density,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        var prescribedAirflow = Math.Max(0.0, environment.PrescribedAirflowCubicMetersPerSecond ?? 0.0);
+        if (prescribedAirflow <= 0.0)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-ZERO",
+                $"Flow configuration '{input.FlowConfiguration}' used prescribed airflow mode with zero airflow at hour {environment.HourIndex}."));
+        }
+
+        var openings = hourlyInput.Openings
+            .Where(opening => opening.IsOperable != false)
+            .ToArray();
+
+        if (openings.Length == 0 || prescribedAirflow <= 0.0)
+        {
+            if (openings.Length == 0)
+            {
+                diagnostics.Add(CreateInfo(
+                    "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-NO-OPENINGS",
+                    $"Flow configuration '{input.FlowConfiguration}' has no operable openings at hour {environment.HourIndex}; airflow is set to zero."));
+            }
+
+            return hourlyInput.Openings.Select(opening => new NaturalVentilationOpeningResult(
+                OpeningId: opening.OpeningId,
+                RoomId: opening.RoomId,
+                ZoneId: opening.ZoneId,
+                SurfaceId: opening.SurfaceId,
+                EffectiveOpeningAreaSquareMeters: Math.Max(0.0, opening.OpeningAreaSquareMeters * (opening.OpeningFraction ?? 0.0)),
+                DischargeCoefficient: opening.DischargeCoefficient ?? 0.0,
+                WindPressureDifferencePa: null,
+                StackPressureDifferencePa: null,
+                CombinedPressureDifferencePa: null,
+                AirflowCubicMetersPerSecond: 0.0,
+                AirflowCubicMetersPerHour: 0.0,
+                AirflowKilogramsPerSecond: 0.0,
+                Diagnostics:
+                [
+                    CreateInfo(
+                        "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-OPENING-CLOSED",
+                        $"Opening '{opening.OpeningId}' has zero airflow in prescribed airflow mode.")
+                ])).ToArray();
+        }
+
+        var totalWeight = openings.Sum(opening => Math.Max(0.0, opening.OpeningFraction ?? 0.0));
+        if (totalWeight <= 0.0)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-NO-OPEN-FRACTION",
+                $"Flow configuration '{input.FlowConfiguration}' has no open fractions at hour {environment.HourIndex}; airflow is set to zero."));
+            return BuildPrescribedOpeningResults(
+                input,
+                hourlyInput,
+                environment with { PrescribedAirflowCubicMetersPerSecond = 0.0 },
+                density,
+                diagnostics);
+        }
+
+        diagnostics.Add(CreateInfo(
+            "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-USED",
+            $"Flow configuration '{input.FlowConfiguration}' used prescribed airflow mode at hour {environment.HourIndex}."));
+
+        return hourlyInput.Openings.Select(opening =>
+        {
+            var weight = Math.Max(0.0, opening.OpeningFraction ?? 0.0);
+            var openingAirflowM3PerS = prescribedAirflow * (weight / totalWeight);
+            var openingAirflowM3PerH = openingAirflowM3PerS * 3600.0;
+            var openingAirflowKgPerS = openingAirflowM3PerS * density;
+            return new NaturalVentilationOpeningResult(
+                OpeningId: opening.OpeningId,
+                RoomId: opening.RoomId,
+                ZoneId: opening.ZoneId,
+                SurfaceId: opening.SurfaceId,
+                EffectiveOpeningAreaSquareMeters: Math.Max(0.0, opening.OpeningAreaSquareMeters * (opening.OpeningFraction ?? 0.0)),
+                DischargeCoefficient: opening.DischargeCoefficient ?? 0.0,
+                WindPressureDifferencePa: null,
+                StackPressureDifferencePa: null,
+                CombinedPressureDifferencePa: null,
+                AirflowCubicMetersPerSecond: openingAirflowM3PerS,
+                AirflowCubicMetersPerHour: openingAirflowM3PerH,
+                AirflowKilogramsPerSecond: openingAirflowKgPerS,
+                Diagnostics:
+                [
+                    CreateInfo(
+                        "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-OPENING-DISTRIBUTED",
+                        $"Opening '{opening.OpeningId}' received a deterministic share of prescribed airflow.")
+                ]);
+        }).ToArray();
     }
 
     private static StandardCalculationDisclosure MergeDisclosure(

@@ -90,8 +90,14 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
                 break;
 
             case NaturalVentilationControlMode.Temperature:
+            case NaturalVentilationControlMode.TemperatureDriven:
                 fraction = EvaluateTemperature(rule, context, diagnostics);
                 reasons.Add("Temperature");
+                break;
+
+            case NaturalVentilationControlMode.CoolingAssist:
+                fraction = EvaluateCoolingAssist(rule, context, diagnostics);
+                reasons.Add("CoolingAssist");
                 break;
 
             case NaturalVentilationControlMode.OccupancyAndTemperature:
@@ -104,6 +110,7 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
                 break;
 
             case NaturalVentilationControlMode.NightVentilation:
+            case NaturalVentilationControlMode.NightPurge:
                 if (!context.IsNightHour)
                 {
                     diagnostics.Add(CreateInfo(
@@ -121,9 +128,17 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
                 break;
 
             case NaturalVentilationControlMode.Manual:
+            case NaturalVentilationControlMode.Custom:
                 if (rule.FixedOpeningFraction.HasValue)
                 {
                     fraction = rule.FixedOpeningFraction.Value;
+                }
+                else if (rule.FallbackOpeningFraction.HasValue)
+                {
+                    fraction = rule.FallbackOpeningFraction.Value;
+                    diagnostics.Add(CreateInfo(
+                        "AE-VENT-CONTROL-FALLBACK-FRACTION-USED",
+                        $"Control rule '{rule.RuleId}' used configured fallback opening fraction."));
                 }
                 else
                 {
@@ -146,6 +161,8 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
                 break;
         }
 
+        fraction = ApplyGlobalLockouts(rule, context, fraction, diagnostics);
+
         fraction = ApplyFractionLimits(rule, fraction, diagnostics);
         var isOpen = fraction > 0.0;
 
@@ -153,6 +170,7 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
             isOpen &&
             context.IsNightHour &&
             (rule.ControlMode == NaturalVentilationControlMode.NightVentilation ||
+             rule.ControlMode == NaturalVentilationControlMode.NightPurge ||
              rule.NightVentilationMode is NaturalVentilationNightVentilationMode.Enabled
                  or NaturalVentilationNightVentilationMode.ScheduleDriven
                  or NaturalVentilationNightVentilationMode.TemperatureDriven);
@@ -303,6 +321,22 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
         return indoorOpenSatisfied && deltaTSatisfied ? 1.0 : 0.0;
     }
 
+    private static double EvaluateCoolingAssist(
+        NaturalVentilationOpeningControlRule rule,
+        NaturalVentilationHourlyControlContext context,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        if (context.OutdoorTemperatureCelsius >= context.IndoorTemperatureCelsius)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-CONTROL-COOLING-ASSIST-OUTDOOR-HOTTER",
+                $"Control rule '{rule.RuleId}' cooling-assist opening is blocked because outdoor air is not cooler than indoor air."));
+            return 0.0;
+        }
+
+        return EvaluateTemperature(rule, context, diagnostics);
+    }
+
     private static double EvaluateNightVentilation(
         NaturalVentilationOpeningControlRule rule,
         NaturalVentilationHourlyControlContext context,
@@ -325,6 +359,46 @@ public sealed class NaturalVentilationOpeningControlEvaluator : INaturalVentilat
             return context.ScheduleFraction.GetValueOrDefault();
 
         return Math.Max(temperatureFraction, rule.FixedOpeningFraction ?? 1.0);
+    }
+
+    private static double ApplyGlobalLockouts(
+        NaturalVentilationOpeningControlRule rule,
+        NaturalVentilationHourlyControlContext context,
+        double fraction,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        if (fraction <= 0.0)
+            return 0.0;
+
+        if (rule.MaximumWindSpeedMetersPerSecond.HasValue &&
+            context.WindSpeedMetersPerSecond.HasValue &&
+            context.WindSpeedMetersPerSecond.Value > rule.MaximumWindSpeedMetersPerSecond.Value)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-CONTROL-WIND-LIMIT-BLOCKED",
+                $"Control rule '{rule.RuleId}' opening is blocked by maximum wind speed constraint."));
+            return 0.0;
+        }
+
+        if (rule.HeatingLockoutEnabled == true &&
+            context.HeatingModeActive == true)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-CONTROL-HEATING-LOCKOUT-BLOCKED",
+                $"Control rule '{rule.RuleId}' opening is blocked by heating lockout."));
+            return 0.0;
+        }
+
+        if (rule.CoolingLockoutEnabled == true &&
+            context.CoolingModeActive == true)
+        {
+            diagnostics.Add(CreateInfo(
+                "AE-VENT-CONTROL-COOLING-LOCKOUT-BLOCKED",
+                $"Control rule '{rule.RuleId}' opening is blocked by cooling lockout."));
+            return 0.0;
+        }
+
+        return fraction;
     }
 
     private static double ApplyFractionLimits(

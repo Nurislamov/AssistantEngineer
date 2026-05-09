@@ -1,0 +1,14 @@
+{
+  "id": "nv-stage2-temperature-driven-cooling-assist",
+  "claimBoundary": [
+    "Internal engineering deterministic fixture.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "scenario": {
+    "controlMode": "CoolingAssist",
+    "indoorHotOutdoorCooler": true,
+    "expectedOpeningPositive": true,
+    "expectedCoolingBenefitSignConsistent": true
+  }
+}

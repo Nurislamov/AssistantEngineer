@@ -90,6 +90,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<INaturalVentilationZoneIntegrationValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationHourlyInputBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<INaturalVentilationZoneLoadCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<INaturalVentilationCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDemandInputValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDemandBasisCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDrawProfileBuilder>(services, ServiceLifetime.Singleton);

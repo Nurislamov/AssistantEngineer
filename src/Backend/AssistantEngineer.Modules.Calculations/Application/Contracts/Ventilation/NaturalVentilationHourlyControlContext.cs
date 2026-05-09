@@ -12,4 +12,6 @@ public sealed record NaturalVentilationHourlyControlContext(
     bool IsNightHour,
     string? RoomId,
     string? ZoneId,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    bool? HeatingModeActive = null,
+    bool? CoolingModeActive = null);

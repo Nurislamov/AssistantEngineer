@@ -1,0 +1,13 @@
+{
+  "id": "nv-stage2-stack-driven",
+  "claimBoundary": [
+    "Internal engineering deterministic fixture.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "scenario": {
+    "flowConfiguration": "StackOnly",
+    "largeDeltaT": true,
+    "expectedAirflowGreaterThanClosedCase": true
+  }
+}

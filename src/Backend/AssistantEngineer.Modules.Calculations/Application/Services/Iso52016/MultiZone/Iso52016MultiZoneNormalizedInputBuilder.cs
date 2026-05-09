@@ -53,6 +53,11 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilder : IIso52016MultiZone
             .GroupBy(profile => profile.ZoneId, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
 
+        zoneProfilesByZoneId = ApplyVentilationLaneIntegration(
+            request,
+            zoneProfilesByZoneId,
+            diagnostics);
+
         var normalizedBoundariesByZone = classification.Boundaries
             .GroupBy(boundary => boundary.SourceZoneId, StringComparer.Ordinal)
             .ToDictionary(
@@ -261,6 +266,137 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilder : IIso52016MultiZone
             BoundaryExposureKind.SameUseAdjacentZone => MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone,
             _ => MultiZoneBoundaryLinkType.AdjacentConditionedSameUseZone
         };
+
+    private static Dictionary<string, MultiZoneZoneHourlyProfile> ApplyVentilationLaneIntegration(
+        MultiZoneNormalizedInputBuildRequest request,
+        IReadOnlyDictionary<string, MultiZoneZoneHourlyProfile> zoneProfilesByZoneId,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        var hasNatural = request.NaturalVentilationZoneIntegration is not null;
+        var hasInfiltration = request.InfiltrationVentilationConductanceProfilesByZoneId is { Count: > 0 };
+        var hasMechanical = request.MechanicalVentilationConductanceProfilesByZoneId is { Count: > 0 };
+        var hasCustom = request.CustomVentilationConductanceProfilesByZoneId is { Count: > 0 };
+
+        if (!hasNatural && !hasInfiltration && !hasMechanical && !hasCustom)
+            return new Dictionary<string, MultiZoneZoneHourlyProfile>(zoneProfilesByZoneId, StringComparer.Ordinal);
+
+        var result = new Dictionary<string, MultiZoneZoneHourlyProfile>(StringComparer.Ordinal);
+        foreach (var (zoneId, profile) in zoneProfilesByZoneId)
+        {
+            IReadOnlyList<double>? naturalProfile = null;
+            IReadOnlyList<double>? infiltrationProfile = null;
+            IReadOnlyList<double>? mechanicalProfile = null;
+            IReadOnlyList<double>? customProfile = null;
+
+            if (request.NaturalVentilationZoneIntegration is not null)
+            {
+                request.NaturalVentilationZoneIntegration.ZoneVentilationHeatTransferCoefficientProfilesWPerKelvin
+                    .TryGetValue(zoneId, out naturalProfile);
+            }
+
+            request.InfiltrationVentilationConductanceProfilesByZoneId?.TryGetValue(zoneId, out infiltrationProfile);
+            request.MechanicalVentilationConductanceProfilesByZoneId?.TryGetValue(zoneId, out mechanicalProfile);
+            request.CustomVentilationConductanceProfilesByZoneId?.TryGetValue(zoneId, out customProfile);
+
+            var mergedProfile = BuildMergedVentilationProfile(
+                zoneId,
+                profile.VentilationInfiltrationConductanceProfileWPerK,
+                naturalProfile,
+                infiltrationProfile,
+                mechanicalProfile,
+                customProfile,
+                request.VentilationLaneMergeMode,
+                diagnostics);
+
+            result[zoneId] = profile with
+            {
+                VentilationInfiltrationConductanceProfileWPerK = mergedProfile
+            };
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<double> BuildMergedVentilationProfile(
+        string zoneId,
+        IReadOnlyList<double> baseProfile,
+        IReadOnlyList<double>? naturalProfile,
+        IReadOnlyList<double>? infiltrationProfile,
+        IReadOnlyList<double>? mechanicalProfile,
+        IReadOnlyList<double>? customProfile,
+        NaturalVentilationVentilationLaneMergeMode mergeMode,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        var lengths = new[]
+        {
+            baseProfile?.Count ?? 0,
+            naturalProfile?.Count ?? 0,
+            infiltrationProfile?.Count ?? 0,
+            mechanicalProfile?.Count ?? 0,
+            customProfile?.Count ?? 0
+        };
+        var targetLength = Math.Max(1, lengths.Max());
+
+        var baseExpanded = BuildProfileByLength(baseProfile, targetLength);
+        var naturalExpanded = BuildProfileByLength(naturalProfile, targetLength);
+        var infiltrationExpanded = BuildProfileByLength(infiltrationProfile, targetLength);
+        var mechanicalExpanded = BuildProfileByLength(mechanicalProfile, targetLength);
+        var customExpanded = BuildProfileByLength(customProfile, targetLength);
+
+        var merged = new double[targetLength];
+        for (var hour = 0; hour < targetLength; hour++)
+        {
+            var natural = naturalExpanded[hour];
+            var infiltration = infiltrationExpanded[hour];
+            var mechanical = mechanicalExpanded[hour];
+            var custom = customExpanded[hour];
+            var componentsTotal = Math.Max(0.0, natural + infiltration + mechanical + custom);
+            var baseValue = baseExpanded[hour];
+
+            merged[hour] = mergeMode switch
+            {
+                NaturalVentilationVentilationLaneMergeMode.NaturalOnly => Math.Max(0.0, natural),
+                NaturalVentilationVentilationLaneMergeMode.Additive => Math.Max(0.0, baseValue + componentsTotal),
+                _ => Math.Max(baseValue, componentsTotal)
+            };
+        }
+
+        diagnostics.Add(CreateWarning(
+            "Iso52016.MultiZone.NormalizedInput.VentilationLaneMerged",
+            $"Zone '{zoneId}' ventilation lane merged using mode '{mergeMode}' with component diagnostics (infiltration, natural, mechanical, custom)."));
+
+        return merged;
+    }
+
+    private static double[] BuildProfileByLength(
+        IReadOnlyList<double>? profile,
+        int length)
+    {
+        var values = new double[length];
+        if (profile is null || profile.Count == 0)
+            return values;
+
+        for (var hour = 0; hour < length; hour++)
+        {
+            values[hour] = Math.Max(0.0, ResolveProfileValue(profile, hour));
+        }
+
+        return values;
+    }
+
+    private static double ResolveProfileValue(
+        IReadOnlyList<double> profile,
+        int index)
+    {
+        if (profile.Count == 0)
+            return 0.0;
+        if (profile.Count == 1)
+            return profile[0];
+        if (index < profile.Count)
+            return profile[index];
+
+        return profile[^1];
+    }
 
     private static IReadOnlyList<double> ResolveGroundProfile(
         NormalizedThermalBoundary boundary,

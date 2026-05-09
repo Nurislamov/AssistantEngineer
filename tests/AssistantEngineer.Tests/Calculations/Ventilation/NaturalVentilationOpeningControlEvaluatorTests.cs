@@ -83,7 +83,7 @@ public sealed class NaturalVentilationOpeningControlEvaluatorTests
         var operation = _evaluator.Evaluate(
             CreateRule(
                 "R1",
-                NaturalVentilationControlMode.Temperature,
+                NaturalVentilationControlMode.TemperatureDriven,
                 indoorOpenAbove: 24.0),
             CreateContext(hour: 0, indoorTemperature: 26.0));
 
@@ -149,6 +149,64 @@ public sealed class NaturalVentilationOpeningControlEvaluatorTests
         Assert.False(day.IsNightVentilationActive);
         Assert.True(night.OpeningFraction > 0.0);
         Assert.True(night.IsNightVentilationActive);
+    }
+
+    [Fact]
+    public void CoolingAssistDoesNotOpenWhenOutdoorHotterThanIndoor()
+    {
+        var operation = _evaluator.Evaluate(
+            CreateRule(
+                "R1",
+                NaturalVentilationControlMode.CoolingAssist,
+                indoorOpenAbove: 24.0),
+            CreateContext(hour: 0, indoorTemperature: 26.0, outdoorTemperature: 30.0));
+
+        Assert.Equal(0.0, operation.OpeningFraction, 6);
+        Assert.Contains(operation.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-CONTROL-COOLING-ASSIST-OUTDOOR-HOTTER");
+    }
+
+    [Fact]
+    public void NightPurgeFollowsNightMaskAndTemperature()
+    {
+        var rule = CreateRule(
+            "R1",
+            NaturalVentilationControlMode.NightPurge,
+            nightMode: NaturalVentilationNightVentilationMode.TemperatureDriven,
+            indoorOpenAbove: 24.0);
+
+        var day = _evaluator.Evaluate(rule, CreateContext(hour: 14, indoorTemperature: 26.0, isNight: false));
+        var night = _evaluator.Evaluate(rule, CreateContext(hour: 2, indoorTemperature: 26.0, isNight: true));
+
+        Assert.Equal(0.0, day.OpeningFraction, 6);
+        Assert.True(night.OpeningFraction > 0.0);
+    }
+
+    [Fact]
+    public void WindLimitClosesOpening()
+    {
+        var operation = _evaluator.Evaluate(
+            CreateRule(
+                "R1",
+                NaturalVentilationControlMode.AlwaysOpen,
+                maxWindSpeed: 3.0),
+            CreateContext(hour: 0, windSpeed: 5.0));
+
+        Assert.Equal(0.0, operation.OpeningFraction, 6);
+        Assert.Contains(operation.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-CONTROL-WIND-LIMIT-BLOCKED");
+    }
+
+    [Fact]
+    public void HeatingLockoutClosesOpening()
+    {
+        var operation = _evaluator.Evaluate(
+            CreateRule(
+                "R1",
+                NaturalVentilationControlMode.AlwaysOpen,
+                heatingLockoutEnabled: true),
+            CreateContext(hour: 0, heatingModeActive: true));
+
+        Assert.Equal(0.0, operation.OpeningFraction, 6);
+        Assert.Contains(operation.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-CONTROL-HEATING-LOCKOUT-BLOCKED");
     }
 
     [Fact]
@@ -230,7 +288,9 @@ public sealed class NaturalVentilationOpeningControlEvaluatorTests
         bool? requiresOccupancy = null,
         double? indoorOpenAbove = null,
         double? outdoorMin = null,
-        NaturalVentilationNightVentilationMode nightMode = NaturalVentilationNightVentilationMode.Disabled) =>
+        NaturalVentilationNightVentilationMode nightMode = NaturalVentilationNightVentilationMode.Disabled,
+        double? maxWindSpeed = null,
+        bool? heatingLockoutEnabled = null) =>
         new(
             RuleId: id,
             OpeningId: "O1",
@@ -250,24 +310,29 @@ public sealed class NaturalVentilationOpeningControlEvaluatorTests
             ScheduleId: null,
             OccupancyProfileId: null,
             Source: "UnitTest",
-            Diagnostics: []);
+            Diagnostics: [],
+            MaximumWindSpeedMetersPerSecond: maxWindSpeed,
+            HeatingLockoutEnabled: heatingLockoutEnabled);
 
     private static NaturalVentilationHourlyControlContext CreateContext(
         int hour,
         double indoorTemperature = 22.0,
         double outdoorTemperature = 18.0,
+        double? windSpeed = 2.0,
         double? scheduleFraction = 0.0,
         double? occupancyFraction = 0.0,
-        bool isNight = false) =>
+        bool isNight = false,
+        bool? heatingModeActive = null) =>
         new(
             HourIndex: hour,
             IndoorTemperatureCelsius: indoorTemperature,
             OutdoorTemperatureCelsius: outdoorTemperature,
-            WindSpeedMetersPerSecond: 2.0,
+            WindSpeedMetersPerSecond: windSpeed,
             OccupancyFraction: occupancyFraction,
             ScheduleFraction: scheduleFraction,
             IsNightHour: isNight,
             RoomId: "R1",
             ZoneId: "Z1",
-            Diagnostics: []);
+            Diagnostics: [],
+            HeatingModeActive: heatingModeActive);
 }

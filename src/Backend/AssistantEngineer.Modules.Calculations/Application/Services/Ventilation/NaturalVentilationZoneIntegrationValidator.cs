@@ -28,9 +28,14 @@ public sealed class NaturalVentilationZoneIntegrationValidator : INaturalVentila
             diagnostics.Add(CreateError(
                 "AE-VENT-ZONE-TOPOLOGY-MISSING",
                 "Natural ventilation zone integration requires topology with rooms or zones."));
+            var orderedEarlyDiagnostics = diagnostics
+                .OrderByDescending(diagnostic => diagnostic.Severity)
+                .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+                .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+                .ToArray();
             return new NaturalVentilationZoneIntegrationValidationResult(
                 IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),
-                Diagnostics: diagnostics);
+                Diagnostics: orderedEarlyDiagnostics);
         }
 
         diagnostics.AddRange(input.Topology.Diagnostics);
@@ -58,6 +63,9 @@ public sealed class NaturalVentilationZoneIntegrationValidator : INaturalVentila
         var openingsById = input.Openings
             .Where(opening => !string.IsNullOrWhiteSpace(opening.OpeningId))
             .ToDictionary(opening => opening.OpeningId, opening => opening, StringComparer.Ordinal);
+        var surfacesById = input.Topology.Surfaces
+            .Where(surface => !string.IsNullOrWhiteSpace(surface.SurfaceId))
+            .ToDictionary(surface => surface.SurfaceId, surface => surface, StringComparer.Ordinal);
 
         foreach (var opening in input.Openings)
         {
@@ -75,6 +83,67 @@ public sealed class NaturalVentilationZoneIntegrationValidator : INaturalVentila
                 diagnostics.Add(CreateError(
                     "AE-VENT-ZONE-OPENING-ZONE-MISSING",
                     $"Opening '{opening.OpeningId}' references missing topology zone '{opening.ZoneId}'."));
+            }
+
+            if (!(opening.OpeningAreaSquareMeters > 0.0))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-ZONE-OPENING-AREA-NONPOSITIVE",
+                    $"Opening '{opening.OpeningId}' opening area must be greater than zero."));
+            }
+
+            if (opening.OpeningFraction.HasValue &&
+                (!double.IsFinite(opening.OpeningFraction.Value) ||
+                 opening.OpeningFraction.Value < 0.0 ||
+                 opening.OpeningFraction.Value > 1.0))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-ZONE-OPENING-FRACTION-INVALID",
+                    $"Opening '{opening.OpeningId}' opening fraction must be within [0,1]."));
+            }
+
+            if (opening.MaximumOpeningFraction.HasValue &&
+                (!double.IsFinite(opening.MaximumOpeningFraction.Value) ||
+                 opening.MaximumOpeningFraction.Value < 0.0 ||
+                 opening.MaximumOpeningFraction.Value > 1.0))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-ZONE-OPENING-MAX-FRACTION-INVALID",
+                    $"Opening '{opening.OpeningId}' maximum opening fraction must be within [0,1]."));
+            }
+
+            var boundaryId = string.IsNullOrWhiteSpace(opening.BoundaryId)
+                ? opening.SurfaceId
+                : opening.BoundaryId;
+
+            if (input.StrictBoundaryValidation && string.IsNullOrWhiteSpace(boundaryId))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-ZONE-OPENING-BOUNDARY-ID-MISSING",
+                    $"Opening '{opening.OpeningId}' requires boundary id/surface id for topology validation."));
+            }
+
+            if (!string.IsNullOrWhiteSpace(boundaryId))
+            {
+                if (!surfacesById.TryGetValue(boundaryId, out var surface))
+                {
+                    if (input.StrictBoundaryValidation)
+                    {
+                        diagnostics.Add(CreateError(
+                            "AE-VENT-ZONE-OPENING-BOUNDARY-MISSING",
+                            $"Opening '{opening.OpeningId}' references missing topology boundary '{boundaryId}'."));
+                    }
+                    else
+                    {
+                        diagnostics.Add(CreateWarning(
+                            "AE-VENT-ZONE-OPENING-BOUNDARY-MISSING",
+                            $"Opening '{opening.OpeningId}' references missing topology boundary '{boundaryId}'."));
+                    }
+                }
+                else
+                {
+                    ValidateOpeningBoundaryKind(opening, surface, diagnostics);
+                }
             }
         }
 
@@ -103,6 +172,15 @@ public sealed class NaturalVentilationZoneIntegrationValidator : INaturalVentila
                 diagnostics.Add(CreateError(
                     "AE-VENT-ZONE-WIND-SPEED-INVALID",
                     $"Hourly environment hour {environment.HourIndex} has invalid wind speed."));
+            }
+
+            if (environment.PrescribedAirflowCubicMetersPerSecond.HasValue &&
+                (!double.IsFinite(environment.PrescribedAirflowCubicMetersPerSecond.Value) ||
+                 environment.PrescribedAirflowCubicMetersPerSecond.Value < 0.0))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-INVALID",
+                    $"Hourly environment hour {environment.HourIndex} has invalid prescribed airflow."));
             }
 
             if (environment.AirDensityKgPerCubicMeter.HasValue &&
@@ -191,9 +269,56 @@ public sealed class NaturalVentilationZoneIntegrationValidator : INaturalVentila
             }
         }
 
+        var orderedDiagnostics = diagnostics
+            .OrderByDescending(diagnostic => diagnostic.Severity)
+            .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+            .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+            .ToArray();
+
         return new NaturalVentilationZoneIntegrationValidationResult(
             IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),
-            Diagnostics: diagnostics);
+            Diagnostics: orderedDiagnostics);
+    }
+
+    private static void ValidateOpeningBoundaryKind(
+        NaturalVentilationOpeningGeometry opening,
+        ThermalTopologySurface surface,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        if (!string.IsNullOrWhiteSpace(opening.RoomId) &&
+            !string.IsNullOrWhiteSpace(surface.RoomId) &&
+            !string.Equals(opening.RoomId, surface.RoomId, StringComparison.Ordinal))
+        {
+            diagnostics.Add(CreateError(
+                "AE-VENT-ZONE-OPENING-BOUNDARY-ROOM-MISMATCH",
+                $"Opening '{opening.OpeningId}' room '{opening.RoomId}' does not match boundary room '{surface.RoomId}'."));
+        }
+
+        if (!string.IsNullOrWhiteSpace(opening.ZoneId) &&
+            !string.IsNullOrWhiteSpace(surface.ZoneId) &&
+            !string.Equals(opening.ZoneId, surface.ZoneId, StringComparison.Ordinal))
+        {
+            diagnostics.Add(CreateError(
+                "AE-VENT-ZONE-OPENING-BOUNDARY-ZONE-MISMATCH",
+                $"Opening '{opening.OpeningId}' zone '{opening.ZoneId}' does not match boundary zone '{surface.ZoneId}'."));
+        }
+
+        if (surface.BoundaryKind == ThermalBoundaryKind.Outdoor)
+            return;
+
+        var code = surface.BoundaryKind switch
+        {
+            ThermalBoundaryKind.Ground => "AE-VENT-ZONE-OPENING-BOUNDARY-GROUND-UNSUPPORTED",
+            ThermalBoundaryKind.Adiabatic => "AE-VENT-ZONE-OPENING-BOUNDARY-ADIABATIC-UNSUPPORTED",
+            ThermalBoundaryKind.AdjacentConditionedZone => "AE-VENT-ZONE-OPENING-BOUNDARY-ADJACENT-CONDITIONED-UNSUPPORTED",
+            ThermalBoundaryKind.AdjacentUnconditionedZone => "AE-VENT-ZONE-OPENING-BOUNDARY-ADJACENT-UNCONDITIONED-UNSUPPORTED",
+            ThermalBoundaryKind.InternalPartition => "AE-VENT-ZONE-OPENING-BOUNDARY-INTERNAL-UNSUPPORTED",
+            _ => "AE-VENT-ZONE-OPENING-BOUNDARY-NONEXTERIOR-UNSUPPORTED"
+        };
+
+        diagnostics.Add(CreateError(
+            code,
+            $"Opening '{opening.OpeningId}' is attached to non-exterior boundary '{surface.SurfaceId}' ({surface.BoundaryKind})."));
     }
 
     private static string BuildTargetKey(NaturalVentilationHourlyZoneEnvironment environment)

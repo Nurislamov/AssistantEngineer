@@ -20,4 +20,11 @@ public sealed record NaturalVentilationOpeningGeometry(
     double? OppositeWindPressureCoefficient,
     double? OrientationAzimuthDegrees,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    string? BoundaryId = null,
+    string? OpeningName = null,
+    double? GrossOpeningAreaSquareMeters = null,
+    double? EffectiveOpeningAreaSquareMeters = null,
+    double? SillHeightMeters = null,
+    bool? IsOperable = null,
+    double? MaximumOpeningFraction = null);

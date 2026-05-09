@@ -8,5 +8,7 @@ public enum NaturalVentilationFlowConfiguration
     StackOnly = 3,
     WindOnly = 4,
     CombinedWindAndStack = 5,
-    Other = 6
+    Other = 6,
+    ScheduledAirflow = 7,
+    CustomAirflow = 8
 }

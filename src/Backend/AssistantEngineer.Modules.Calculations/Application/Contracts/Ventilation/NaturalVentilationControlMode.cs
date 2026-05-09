@@ -12,5 +12,9 @@ public enum NaturalVentilationControlMode
     OccupancyAndTemperature = 7,
     NightVentilation = 8,
     Manual = 9,
-    Other = 10
+    Other = 10,
+    TemperatureDriven = 11,
+    CoolingAssist = 12,
+    NightPurge = 13,
+    Custom = 14
 }

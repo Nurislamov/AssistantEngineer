@@ -49,6 +49,23 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
     }
 
     [Fact]
+    public void ClosedOpeningProducesZeroAirflowHveAndLoad()
+    {
+        var input = CreateInput(
+            topology: CreateTopology([CreateRoom("R1", volume: 100.0)]),
+            openings: [CreateOpening("O1", roomId: "R1")],
+            rules: [CreateRule("Rule-1", openingId: "O1", roomId: "R1", mode: NaturalVentilationControlMode.AlwaysClosed)],
+            environments: [CreateEnvironment(hour: 0, roomId: "R1", indoorTemperature: 22.0, outdoorTemperature: 12.0)]);
+
+        var result = _calculator.Calculate(input);
+
+        var zone = Assert.Single(result.HourlyZones);
+        Assert.Equal(0.0, zone.TotalAirflowCubicMetersPerSecond, 6);
+        Assert.Equal(0.0, zone.VentilationHeatTransferCoefficientWPerKelvin, 6);
+        Assert.Equal(0.0, zone.SensibleVentilationLoadWatts, 6);
+    }
+
+    [Fact]
     public void NegativeLoadWhenOutdoorWarmerThanIndoor()
     {
         var input = CreateInput(
@@ -61,6 +78,31 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
 
         var zone = Assert.Single(result.HourlyZones);
         Assert.True(zone.SensibleVentilationLoadWatts < 0.0);
+    }
+
+    [Fact]
+    public void ScheduledAirflowModeUsesPrescribedAirflowForHve()
+    {
+        var baseInput = CreateInput(
+            topology: CreateTopology([CreateRoom("R1", volume: 100.0)]),
+            openings: [CreateOpening("O1", roomId: "R1")],
+            rules: [CreateRule("Rule-1", openingId: "O1", roomId: "R1")],
+            environments:
+            [
+                CreateEnvironment(hour: 0, roomId: "R1", cp: 1000.0) with
+                {
+                    PrescribedAirflowCubicMetersPerSecond = 0.2
+                }
+            ]);
+
+        var input = baseInput with { FlowConfiguration = NaturalVentilationFlowConfiguration.ScheduledAirflow };
+
+        var result = _calculator.Calculate(input);
+
+        var zone = Assert.Single(result.HourlyZones);
+        Assert.Equal(0.2, zone.TotalAirflowCubicMetersPerSecond, 6);
+        Assert.Equal(0.2 * 1.2 * 1000.0, zone.VentilationHeatTransferCoefficientWPerKelvin, 6);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-USED");
     }
 
     [Fact]
@@ -278,7 +320,8 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
             DefaultAirDensityKgPerCubicMeter: 1.2,
             DefaultAirSpecificHeatJPerKgKelvin: defaultAirSpecificHeatJPerKgKelvin,
             DisclosureOverride: disclosureOverride,
-            Source: "UnitTest");
+            Source: "UnitTest",
+            StrictBoundaryValidation: false);
 
     private static BuildingThermalTopology CreateTopology(
         IReadOnlyList<ThermalTopologyRoom> rooms)
@@ -331,13 +374,14 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
     private static NaturalVentilationOpeningControlRule CreateRule(
         string ruleId,
         string openingId,
-        string roomId) =>
+        string roomId,
+        NaturalVentilationControlMode mode = NaturalVentilationControlMode.AlwaysOpen) =>
         new(
             RuleId: ruleId,
             OpeningId: openingId,
             RoomId: roomId,
             ZoneId: "Z1",
-            ControlMode: NaturalVentilationControlMode.AlwaysOpen,
+            ControlMode: mode,
             NightVentilationMode: NaturalVentilationNightVentilationMode.Disabled,
             FixedOpeningFraction: null,
             MinimumOpeningFraction: null,

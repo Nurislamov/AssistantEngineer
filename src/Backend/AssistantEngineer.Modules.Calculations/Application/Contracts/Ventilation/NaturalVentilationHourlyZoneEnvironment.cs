@@ -15,4 +15,8 @@ public sealed record NaturalVentilationHourlyZoneEnvironment(
     double? AirDensityKgPerCubicMeter,
     double? AirSpecificHeatJPerKgKelvin,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    double? WindDirectionDegrees = null,
+    bool? HeatingModeActive = null,
+    bool? CoolingModeActive = null,
+    double? PrescribedAirflowCubicMetersPerSecond = null);

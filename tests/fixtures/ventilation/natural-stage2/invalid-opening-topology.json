@@ -1,0 +1,17 @@
+{
+  "id": "nv-stage2-invalid-opening-topology",
+  "claimBoundary": [
+    "Internal engineering deterministic fixture.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "scenario": {
+    "cases": [
+      "opening-on-ground-boundary",
+      "opening-on-adiabatic-boundary",
+      "negative-opening-area",
+      "missing-boundary-id",
+      "schedule-length-mismatch"
+    ]
+  }
+}

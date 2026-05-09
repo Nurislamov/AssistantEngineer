@@ -86,6 +86,108 @@ public sealed class NaturalVentilationZoneIntegrationValidatorTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-WIND-SPEED-INVALID");
     }
 
+    [Fact]
+    public void RejectsOpeningOnGroundBoundary()
+    {
+        var input = CreateInput() with
+        {
+            Topology = CreateTopology(new ThermalTopologySurface(
+                SurfaceId: "S1",
+                RoomId: "R1",
+                ZoneId: "Z1",
+                BoundaryKind: ThermalBoundaryKind.Ground,
+                AreaSquareMeters: 8.0,
+                UValueWPerSquareMeterKelvin: 0.4,
+                AdjacentZoneId: null,
+                AdjacentRoomId: null,
+                BoundarySource: "UnitTest",
+                Diagnostics: []))
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-OPENING-BOUNDARY-GROUND-UNSUPPORTED");
+    }
+
+    [Fact]
+    public void RejectsOpeningOnAdiabaticBoundary()
+    {
+        var input = CreateInput() with
+        {
+            Topology = CreateTopology(new ThermalTopologySurface(
+                SurfaceId: "S1",
+                RoomId: "R1",
+                ZoneId: "Z1",
+                BoundaryKind: ThermalBoundaryKind.Adiabatic,
+                AreaSquareMeters: 8.0,
+                UValueWPerSquareMeterKelvin: 0.4,
+                AdjacentZoneId: null,
+                AdjacentRoomId: null,
+                BoundarySource: "UnitTest",
+                Diagnostics: []))
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-OPENING-BOUNDARY-ADIABATIC-UNSUPPORTED");
+    }
+
+    [Fact]
+    public void RejectsOpeningWithMissingBoundaryReferenceInStrictMode()
+    {
+        var input = CreateInput() with
+        {
+            Openings =
+            [
+                CreateOpening() with
+                {
+                    SurfaceId = null,
+                    BoundaryId = null
+                }
+            ]
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-OPENING-BOUNDARY-ID-MISSING");
+    }
+
+    [Fact]
+    public void DiagnosticsAreDeterministicAndSorted()
+    {
+        var input = CreateInput() with
+        {
+            CalculationId = "",
+            Openings =
+            [
+                CreateOpening() with
+                {
+                    OpeningAreaSquareMeters = -1.0,
+                    SurfaceId = null,
+                    BoundaryId = null
+                }
+            ]
+        };
+
+        var first = _validator.Validate(input);
+        var second = _validator.Validate(input);
+
+        var firstCodes = first.Diagnostics.Select(diagnostic => $"{diagnostic.Severity}:{diagnostic.Code}:{diagnostic.Message}").ToArray();
+        var secondCodes = second.Diagnostics.Select(diagnostic => $"{diagnostic.Severity}:{diagnostic.Code}:{diagnostic.Message}").ToArray();
+        var expectedOrder = first.Diagnostics
+            .OrderByDescending(diagnostic => diagnostic.Severity)
+            .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+            .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+            .Select(diagnostic => $"{diagnostic.Severity}:{diagnostic.Code}:{diagnostic.Message}")
+            .ToArray();
+
+        Assert.Equal(firstCodes, secondCodes);
+        Assert.Equal(expectedOrder, firstCodes);
+    }
+
     private static NaturalVentilationZoneIntegrationInput CreateInput() =>
         new(
             CalculationId: "VENT-ZONE-1",
@@ -108,12 +210,25 @@ public sealed class NaturalVentilationZoneIntegrationValidatorTests
             DisclosureOverride: null,
             Source: "UnitTest");
 
-    private static BuildingThermalTopology CreateTopology() =>
+    private static BuildingThermalTopology CreateTopology(ThermalTopologySurface? surface = null) =>
         new(
             BuildingId: "B1",
             Zones: [new ThermalTopologyZone("Z1", "Zone 1", ["R1"], [])],
             Rooms: [new ThermalTopologyRoom("R1", "Z1", 100.0, 40.0, [], [])],
-            Surfaces: [],
+            Surfaces:
+            [
+                surface ?? new ThermalTopologySurface(
+                    SurfaceId: "S1",
+                    RoomId: "R1",
+                    ZoneId: "Z1",
+                    BoundaryKind: ThermalBoundaryKind.Outdoor,
+                    AreaSquareMeters: 8.0,
+                    UValueWPerSquareMeterKelvin: 0.4,
+                    AdjacentZoneId: null,
+                    AdjacentRoomId: null,
+                    BoundarySource: "UnitTest",
+                    Diagnostics: [])
+            ],
             Disclosure: new StandardCalculationDisclosureFactory().CreateThermalZonesDisclosure(),
             Diagnostics: []);
 

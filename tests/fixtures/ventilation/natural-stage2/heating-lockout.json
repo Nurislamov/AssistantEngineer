@@ -1,0 +1,13 @@
+{
+  "id": "nv-stage2-heating-lockout",
+  "claimBoundary": [
+    "Internal engineering deterministic fixture.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "scenario": {
+    "controlMode": "TemperatureDriven",
+    "heatingLockoutEnabled": true,
+    "expectedOpeningFraction": 0.0
+  }
+}
