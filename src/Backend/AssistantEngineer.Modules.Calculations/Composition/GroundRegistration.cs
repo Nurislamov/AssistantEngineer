@@ -17,7 +17,9 @@ internal static class GroundRegistration
         services.AddSingleton<Iso13370GroundBoundaryApplicationAdapter>();
         services.AddSingleton<IGroundGeometryNormalizer, GroundGeometryNormalizer>();
         services.AddSingleton<IGroundBoundaryInputValidator, GroundBoundaryInputValidator>();
+        services.AddSingleton<IGroundTemperatureProfileCalculator, GroundTemperatureProfileCalculator>();
         services.AddSingleton<IGroundTemperatureProfileProvider, GroundTemperatureProfileProvider>();
+        services.AddSingleton<IGroundBoundaryHeatTransferCalculator, GroundBoundaryHeatTransferCalculator>();
         services.AddSingleton<IGroundBoundaryCalculator, GroundBoundaryCalculator>();
         services.AddGroundBoundaryTopologyIntegration();
 

@@ -24,6 +24,60 @@ public sealed class Iso52016MultiZoneGroundBoundaryTests
         Assert.True(warmHeating < coldHeating);
     }
 
+    [Fact]
+    public void GroundBoundaryDiffersFromExteriorBoundaryWithSameConductance()
+    {
+        var service = CreateService();
+        var withGround = CreateInput(groundTemperature: 10.0);
+        var withExterior = new MultiZoneCalculationInput(
+            BuildingId: "BLD-GROUND",
+            Zones:
+            [
+                new ThermalZoneNode("ZONE-A", "Zone A", 20.0, 50.0, ["A-OUT"])
+            ],
+            BoundaryLinks:
+            [
+                new ThermalZoneBoundaryLink(
+                    LinkId: "A-OUT-LINK",
+                    BoundaryType: MultiZoneBoundaryLinkType.ExternalBoundary,
+                    SourceZoneId: "ZONE-A",
+                    SourceBoundaryId: "A-OUT",
+                    AreaSquareMeters: 20.0,
+                    ConductanceWPerK: 30.0)
+            ],
+            InterZoneConductanceLinks: [],
+            InterZoneAirflowLinks: [],
+            HourlyBoundaryConditions:
+            [
+                new MultiZoneHourlyBoundaryCondition("A-OUT", [0.0])
+            ],
+            ZoneHourlyProfiles: withGround.ZoneHourlyProfiles,
+            ClaimFlags: withGround.ClaimFlags);
+
+        var groundResult = service.Simulate(withGround);
+        var exteriorResult = service.Simulate(withExterior);
+
+        Assert.True(groundResult.IsValid);
+        Assert.True(exteriorResult.IsValid);
+        Assert.NotEqual(
+            groundResult.HourlyResults[0].HeatingLoadsByZoneW["ZONE-A"],
+            exteriorResult.HourlyResults[0].HeatingLoadsByZoneW["ZONE-A"]);
+    }
+
+    [Fact]
+    public void GroundBoundaryDoesNotCreateExteriorBoundaryPath()
+    {
+        var service = CreateService();
+        var input = CreateInput(groundTemperature: 10.0);
+
+        var result = service.Simulate(input);
+
+        Assert.True(result.IsValid);
+        Assert.DoesNotContain(
+            result.Diagnostics,
+            item => item.Code == "Iso52016.MultiZone.HourlySolver.ExternalBoundaryTemperatureMissing");
+    }
+
     private static Iso52016MultiZoneEnergySimulationService CreateService()
     {
         var validator = new Iso52016MultiZoneInputValidator();

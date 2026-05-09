@@ -9,4 +9,7 @@ public sealed record GroundClimateInput(
     double? GroundTemperatureAmplitudeCelsius,
     double? GroundTemperaturePhaseShiftDays,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    double? AnnualMeanGroundTemperatureCelsius = null,
+    int? ColdestMonthIndex = null,
+    GroundTemperatureProfileMode TemperatureProfileMode = GroundTemperatureProfileMode.SeasonalSinusoidal);

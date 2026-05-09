@@ -1,0 +1,51 @@
+{
+  "id": "basement-simplified-case",
+  "claimBoundary": [
+    "Ground boundary deterministic fixture anchor.",
+    "Internal engineering implementation only.",
+    "Validation anchor only.",
+    "Not full compliance."
+  ],
+  "scenario": "Basement simplified lane uses below-grade depth/height deterministic factor.",
+  "boundary": {
+    "boundaryId": "G-basement-1",
+    "zoneId": "ZONE-A",
+    "boundaryType": "HeatedBasementFloor",
+    "areaSquareMeters": 40.0,
+    "exposedPerimeterMeters": 20.0,
+    "thermalTransmittanceUValueWPerSquareMeterKelvin": 0.3,
+    "floorDepthBelowGradeMeters": 2.0,
+    "wallHeightBelowGradeMeters": 2.0,
+    "characteristicDimensionMeters": 4.0,
+    "soilThermalConductivityWPerMeterKelvin": 2.0,
+    "groundAnnualMeanTemperatureCelsius": 10.0,
+    "groundTemperatureAmplitudeCelsius": 3.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "coldestMonthIndex": 1,
+    "edgeInsulationThicknessMeters": null,
+    "edgeInsulationConductivityWPerMeterKelvin": null,
+    "calculationMode": "SimplifiedBasement",
+    "thermalBoundaryId": "TB-G-4",
+    "adjacentZoneId": null
+  },
+  "groundTemperatureProfileRequest": {
+    "timeResolution": "Hourly",
+    "mode": "ConstantAnnualMean",
+    "outdoorTemperatureProfileCelsius": null,
+    "annualMeanOutdoorTemperatureCelsius": 8.0,
+    "groundAnnualMeanTemperatureCelsius": 10.0,
+    "groundTemperatureAmplitudeCelsius": 0.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "numberOfSteps": 1,
+    "timeStepHours": 1.0,
+    "coldestMonthIndex": 1
+  },
+  "zoneIndoorTemperatureProfileCelsius": [20.0],
+  "expected": {
+    "equivalentGroundHeatTransferCoefficientWPerKelvin": 13.68,
+    "heatFlowProfileWatts": [-136.8]
+  },
+  "expectedDiagnosticCodes": [
+    "AE-GROUND-HEAT-TRANSFER-BASEMENT-SIMPLIFIED"
+  ]
+}

@@ -1,5 +1,7 @@
 # Ground Boundary Calculation Lane
 
+- Foundation documentation: `docs/calculations/ground-boundaries.md`
+
 ## AE-GROUND-ISO13370-001A purpose
 
 `AE-GROUND-ISO13370-001A` adds a deterministic internal engineering ground-contact calculation lane inspired by ISO13370 methodology.

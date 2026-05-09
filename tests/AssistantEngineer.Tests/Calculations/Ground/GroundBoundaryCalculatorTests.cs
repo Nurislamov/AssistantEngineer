@@ -19,7 +19,10 @@ public sealed class GroundBoundaryCalculatorTests
     private readonly GroundBoundaryCalculator _calculator = new(
         new GroundGeometryNormalizer(),
         new GroundBoundaryInputValidator(),
-        new GroundTemperatureProfileProvider(new AnnualProfileShapeValidator()),
+        new GroundTemperatureProfileProvider(
+            new AnnualProfileShapeValidator(),
+            new GroundTemperatureProfileCalculator()),
+        new GroundBoundaryHeatTransferCalculator(),
         new StandardCalculationDisclosureFactory());
 
     [Fact]

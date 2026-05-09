@@ -13,4 +13,8 @@ public sealed record GroundBoundaryCalculationInput(
     GroundSoilProperties Soil,
     GroundClimateInput Climate,
     StandardCalculationDisclosure? DisclosureOverride,
-    string? Source);
+    string? Source,
+    GroundBoundaryType? BoundaryType = null,
+    GroundBoundaryCalculationMode CalculationMode = GroundBoundaryCalculationMode.Auto,
+    string? ThermalBoundaryId = null,
+    string? AdjacentZoneId = null);

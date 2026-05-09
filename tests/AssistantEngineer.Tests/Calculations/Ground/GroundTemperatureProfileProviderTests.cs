@@ -7,7 +7,7 @@ namespace AssistantEngineer.Tests.Calculations.Ground;
 public sealed class GroundTemperatureProfileProviderTests
 {
     private readonly GroundTemperatureProfileProvider _provider =
-        new(new AnnualProfileShapeValidator());
+        new(new AnnualProfileShapeValidator(), new GroundTemperatureProfileCalculator());
 
     [Fact]
     public void BuildsProfileFromAnnualMean()

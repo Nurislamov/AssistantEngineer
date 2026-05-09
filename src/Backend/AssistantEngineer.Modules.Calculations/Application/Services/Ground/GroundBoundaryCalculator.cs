@@ -11,17 +11,20 @@ public sealed class GroundBoundaryCalculator : IGroundBoundaryCalculator
     private readonly IGroundGeometryNormalizer _geometryNormalizer;
     private readonly IGroundBoundaryInputValidator _inputValidator;
     private readonly IGroundTemperatureProfileProvider _temperatureProfileProvider;
+    private readonly IGroundBoundaryHeatTransferCalculator _groundHeatTransferCalculator;
     private readonly IStandardCalculationDisclosureFactory _disclosureFactory;
 
     public GroundBoundaryCalculator(
         IGroundGeometryNormalizer geometryNormalizer,
         IGroundBoundaryInputValidator inputValidator,
         IGroundTemperatureProfileProvider temperatureProfileProvider,
+        IGroundBoundaryHeatTransferCalculator groundHeatTransferCalculator,
         IStandardCalculationDisclosureFactory disclosureFactory)
     {
         _geometryNormalizer = geometryNormalizer ?? throw new ArgumentNullException(nameof(geometryNormalizer));
         _inputValidator = inputValidator ?? throw new ArgumentNullException(nameof(inputValidator));
         _temperatureProfileProvider = temperatureProfileProvider ?? throw new ArgumentNullException(nameof(temperatureProfileProvider));
+        _groundHeatTransferCalculator = groundHeatTransferCalculator ?? throw new ArgumentNullException(nameof(groundHeatTransferCalculator));
         _disclosureFactory = disclosureFactory ?? throw new ArgumentNullException(nameof(disclosureFactory));
     }
 
@@ -53,6 +56,14 @@ public sealed class GroundBoundaryCalculator : IGroundBoundaryCalculator
             input.Soil,
             diagnostics);
 
+        var groundHeatTransfer = _groundHeatTransferCalculator.Calculate(
+            BuildGroundHeatTransferRequest(
+                input,
+                normalizedGeometry,
+                equivalentU,
+                profile));
+        diagnostics.AddRange(groundHeatTransfer.Diagnostics);
+
         double? heatTransferCoefficient = null;
         if (equivalentU.HasValue && normalizedGeometry.AreaSquareMeters > 0.0)
         {
@@ -63,6 +74,12 @@ public sealed class GroundBoundaryCalculator : IGroundBoundaryCalculator
             _disclosureFactory.CreateGroundIso13370Disclosure(),
             input.DisclosureOverride,
             diagnostics);
+
+        var orderedDiagnostics = diagnostics
+            .OrderByDescending(item => item.Severity)
+            .ThenBy(item => item.Code, StringComparer.Ordinal)
+            .ThenBy(item => item.Message, StringComparer.Ordinal)
+            .ToArray();
 
         return new GroundBoundaryCalculationResult(
             BoundaryId: input.BoundaryId,
@@ -77,8 +94,60 @@ public sealed class GroundBoundaryCalculator : IGroundBoundaryCalculator
             MonthlyGroundBoundaryTemperaturesCelsius: profile.MonthlyGroundBoundaryTemperaturesCelsius,
             HourlyGroundBoundaryTemperaturesCelsius: profile.HourlyGroundBoundaryTemperaturesCelsius,
             Disclosure: disclosure,
-            Diagnostics: diagnostics);
+            Diagnostics: orderedDiagnostics);
     }
+
+    private static GroundHeatTransferRequest BuildGroundHeatTransferRequest(
+        GroundBoundaryCalculationInput input,
+        GroundContactGeometry geometry,
+        double? equivalentU,
+        GroundTemperatureProfileResult profile)
+    {
+        var boundaryDefinition = new GroundBoundaryDefinition(
+            BoundaryId: input.BoundaryId,
+            ZoneId: input.ZoneId ?? "UNKNOWN-ZONE",
+            BoundaryType: input.BoundaryType ?? MapBoundaryType(input.ContactKind),
+            AreaSquareMeters: geometry.AreaSquareMeters,
+            ExposedPerimeterMeters: geometry.ExposedPerimeterMeters,
+            ThermalTransmittanceUValueWPerSquareMeterKelvin: equivalentU ?? geometry.FloorUValueWPerSquareMeterKelvin ?? geometry.WallUValueWPerSquareMeterKelvin,
+            FloorDepthBelowGradeMeters: geometry.DepthBelowGroundMeters,
+            WallHeightBelowGradeMeters: geometry.BasementWallHeightMeters,
+            CharacteristicDimensionMeters: geometry.CharacteristicDimensionMeters,
+            SoilThermalConductivityWPerMeterKelvin: input.Soil.ConductivityWPerMeterKelvin,
+            GroundAnnualMeanTemperatureCelsius: input.Climate.AnnualMeanGroundTemperatureCelsius
+                                                ?? profile.MonthlyGroundBoundaryTemperaturesCelsius.Average(),
+            GroundTemperatureAmplitudeCelsius: profile.GroundTemperatureAmplitudeCelsius,
+            GroundTemperaturePhaseShiftDays: profile.GroundTemperaturePhaseShiftDays,
+            ColdestMonthIndex: input.Climate.ColdestMonthIndex,
+            EdgeInsulationThicknessMeters: geometry.EdgeInsulationThicknessMeters,
+            EdgeInsulationConductivityWPerMeterKelvin: geometry.EdgeInsulationConductivityWPerMeterKelvin,
+            CalculationMode: input.CalculationMode,
+            ThermalBoundaryId: input.ThermalBoundaryId ?? input.SurfaceId,
+            AdjacentZoneId: input.AdjacentZoneId);
+
+        var defaultIndoor = profile.AnnualMeanOutdoorTemperatureCelsius + 8.0;
+        var zoneIndoorProfile = profile.HourlyGroundBoundaryTemperaturesCelsius
+            .Select(_ => defaultIndoor)
+            .ToArray();
+
+        return new GroundHeatTransferRequest(
+            Boundary: boundaryDefinition,
+            ZoneIndoorTemperatureProfileCelsius: zoneIndoorProfile,
+            GroundTemperatureProfileCelsius: profile.HourlyGroundBoundaryTemperaturesCelsius,
+            TimeStepHours: 1.0);
+    }
+
+    private static GroundBoundaryType MapBoundaryType(GroundContactKind kind) =>
+        kind switch
+        {
+            GroundContactKind.SlabOnGround => GroundBoundaryType.SlabOnGround,
+            GroundContactKind.SuspendedFloor or GroundContactKind.Crawlspace => GroundBoundaryType.SuspendedFloor,
+            GroundContactKind.HeatedBasement => GroundBoundaryType.HeatedBasementFloor,
+            GroundContactKind.UnheatedBasement => GroundBoundaryType.UnheatedBasementCeiling,
+            GroundContactKind.BuriedWall => GroundBoundaryType.HeatedBasementWall,
+            GroundContactKind.Other => GroundBoundaryType.Unsupported,
+            _ => GroundBoundaryType.GenericGroundContact
+        };
 
     private static double? CalculateEquivalentUValue(
         GroundContactKind contactKind,

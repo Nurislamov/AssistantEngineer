@@ -53,6 +53,45 @@ public sealed class GroundBoundaryInputValidatorTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-SOIL-CONDUCTIVITY-NONPOSITIVE");
     }
 
+    [Fact]
+    public void RejectsGroundBoundaryWithAdjacentZone()
+    {
+        var input = CreateValidInput() with
+        {
+            AdjacentZoneId = "ZONE-B"
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-ADJACENT-ZONE-FORBIDDEN");
+    }
+
+    [Fact]
+    public void RejectsNegativeAmplitude()
+    {
+        var input = CreateValidInput() with
+        {
+            Climate = CreateClimate(monthly: null, hourly: null, annualMean: 12.0, amplitude: -1.0, phaseShiftDays: 30.0)
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-AMPLITUDE-NEGATIVE");
+    }
+
+    [Fact]
+    public void RejectsInvalidPhaseShift()
+    {
+        var input = CreateValidInput() with
+        {
+            Climate = CreateClimate(monthly: null, hourly: null, annualMean: 12.0, amplitude: 2.0, phaseShiftDays: 370.0)
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-PHASE-SHIFT-OUT-OF-RANGE");
+    }
+
     [Theory]
     [InlineData(11)]
     [InlineData(13)]
@@ -126,13 +165,15 @@ public sealed class GroundBoundaryInputValidatorTests
     private static GroundClimateInput CreateClimate(
         IReadOnlyList<double>? monthly,
         IReadOnlyList<double>? hourly,
-        double? annualMean) =>
+        double? annualMean,
+        double? amplitude = 4.0,
+        double? phaseShiftDays = 30.0) =>
         new(
             MonthlyOutdoorTemperaturesCelsius: monthly,
             HourlyOutdoorTemperaturesCelsius: hourly,
             AnnualMeanOutdoorTemperatureCelsius: annualMean,
-            GroundTemperatureAmplitudeCelsius: 4.0,
-            GroundTemperaturePhaseShiftDays: 30.0,
+            GroundTemperatureAmplitudeCelsius: amplitude,
+            GroundTemperaturePhaseShiftDays: phaseShiftDays,
             Source: "UnitTest",
             Diagnostics: []);
 }

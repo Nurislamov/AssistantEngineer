@@ -1,0 +1,76 @@
+{
+  "id": "invalid-ground-topology",
+  "claimBoundary": [
+    "Standard-based multi-zone invalid-topology validation anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Invalid ground topology sample with forbidden adjacent target zone, non-positive area/conductance, and unsupported profile length.",
+  "input": {
+    "buildingId": "MZ-FX-INVALID-GROUND",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Zone A",
+        "floorAreaSquareMeters": 30.0,
+        "volumeCubicMeters": 75.0,
+        "boundaryIds": ["A-GRD"]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "name": "Zone B",
+        "floorAreaSquareMeters": 30.0,
+        "volumeCubicMeters": 75.0,
+        "boundaryIds": ["B-OUT"]
+      }
+    ],
+    "boundaryLinks": [
+      {
+        "linkId": "A-GRD-LINK",
+        "boundaryType": "GroundBoundary",
+        "sourceZoneId": "ZONE-A",
+        "sourceBoundaryId": "A-GRD",
+        "areaSquareMeters": -5.0,
+        "conductanceWPerK": -2.0,
+        "targetZoneId": "ZONE-B"
+      }
+    ],
+    "interZoneConductanceLinks": [],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [
+      {
+        "boundaryId": "A-GRD",
+        "temperatureProfileCelsius": [10.0, 11.0]
+      }
+    ],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "initialTemperatureCelsius": 20.0,
+        "thermalCapacityJPerK": 1000000.0,
+        "heatingSetpointProfileCelsius": [21.0],
+        "coolingSetpointProfileCelsius": [26.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

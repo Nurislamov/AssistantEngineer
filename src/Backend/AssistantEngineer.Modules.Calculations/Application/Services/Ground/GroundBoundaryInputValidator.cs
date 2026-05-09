@@ -33,6 +33,13 @@ public sealed class GroundBoundaryInputValidator : IGroundBoundaryInputValidator
                 "Ground contact kind must be specified for calculation-ready input."));
         }
 
+        if (!string.IsNullOrWhiteSpace(input.AdjacentZoneId))
+        {
+            diagnostics.Add(CreateError(
+                "AE-GROUND-ADJACENT-ZONE-FORBIDDEN",
+                $"Ground boundary '{input.BoundaryId}' cannot specify adjacent zone '{input.AdjacentZoneId}'."));
+        }
+
         if (!(input.Geometry.AreaSquareMeters > 0.0))
         {
             diagnostics.Add(CreateError(
@@ -45,6 +52,42 @@ public sealed class GroundBoundaryInputValidator : IGroundBoundaryInputValidator
             diagnostics.Add(CreateError(
                 "AE-GROUND-SOIL-CONDUCTIVITY-NONPOSITIVE",
                 "Soil conductivity must be greater than zero."));
+        }
+
+        if (input.Climate.AnnualMeanGroundTemperatureCelsius.HasValue &&
+            !double.IsFinite(input.Climate.AnnualMeanGroundTemperatureCelsius.Value))
+        {
+            diagnostics.Add(CreateError(
+                "AE-GROUND-ANNUAL-MEAN-GROUND-INVALID",
+                "Annual mean ground temperature must be finite when provided."));
+        }
+
+        if (input.Climate.GroundTemperatureAmplitudeCelsius.HasValue)
+        {
+            var amplitude = input.Climate.GroundTemperatureAmplitudeCelsius.Value;
+            if (!double.IsFinite(amplitude))
+            {
+                diagnostics.Add(CreateError(
+                    "AE-GROUND-AMPLITUDE-INVALID",
+                    "Ground temperature amplitude must be finite when provided."));
+            }
+            else if (amplitude < 0.0)
+            {
+                diagnostics.Add(CreateError(
+                    "AE-GROUND-AMPLITUDE-NEGATIVE",
+                    "Ground temperature amplitude cannot be negative."));
+            }
+        }
+
+        if (input.Climate.GroundTemperaturePhaseShiftDays.HasValue)
+        {
+            var phaseShift = input.Climate.GroundTemperaturePhaseShiftDays.Value;
+            if (!double.IsFinite(phaseShift) || phaseShift < 0.0 || phaseShift > 365.0)
+            {
+                diagnostics.Add(CreateError(
+                    "AE-GROUND-PHASE-SHIFT-OUT-OF-RANGE",
+                    "Ground temperature phase shift must be finite and within [0, 365] days."));
+            }
         }
 
         if (RequiresFloorUValue(input.ContactKind))
@@ -141,9 +184,15 @@ public sealed class GroundBoundaryInputValidator : IGroundBoundaryInputValidator
             }
         }
 
+        var orderedDiagnostics = diagnostics
+            .OrderByDescending(diagnostic => diagnostic.Severity)
+            .ThenBy(diagnostic => diagnostic.Code, StringComparer.Ordinal)
+            .ThenBy(diagnostic => diagnostic.Message, StringComparer.Ordinal)
+            .ToArray();
+
         return new GroundBoundaryInputValidationResult(
             IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),
-            Diagnostics: diagnostics);
+            Diagnostics: orderedDiagnostics);
     }
 
     private static bool RequiresFloorUValue(GroundContactKind kind) =>

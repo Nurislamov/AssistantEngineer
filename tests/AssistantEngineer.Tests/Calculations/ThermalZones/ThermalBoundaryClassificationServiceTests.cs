@@ -143,6 +143,34 @@ public sealed class ThermalBoundaryClassificationServiceTests
     }
 
     [Fact]
+    public void RejectsGroundBoundaryWithAdjacentZoneId()
+    {
+        var request = BuildRequest(
+            new ThermalBoundaryDefinition(
+                BoundaryId: "B-GROUND-INVALID",
+                SourceZoneId: "ZONE-A",
+                AdjacentZoneId: "ZONE-B",
+                ExposureKind: BoundaryExposureKind.Ground,
+                ElementKind: BoundaryElementKind.Slab,
+                AreaSquareMeters: 9.0,
+                UValueWPerSquareMeterKelvin: 0.3),
+            new ThermalZoneDefinition(
+                ZoneId: "ZONE-B",
+                Name: "B",
+                Kind: ThermalZoneKind.Conditioned,
+                FloorAreaSquareMeters: 20.0,
+                VolumeCubicMeters: 50.0,
+                HeatingSetpointProfileId: null,
+                CoolingSetpointProfileId: null,
+                Boundaries: []));
+
+        var result = _service.Classify(request);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Diagnostics, item => item.Code == "Topology.Classification.GroundBoundaryAdjacentZoneForbidden");
+    }
+
+    [Fact]
     public void SameUseAdjacentBoundary_TreatedAsAdiabaticStyleByPolicy()
     {
         var request = BuildRequest(

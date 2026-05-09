@@ -40,6 +40,14 @@ public sealed class GroundBoundaryTopologyMapper : IGroundBoundaryTopologyMapper
                 "GroundBoundaryTopologyMapper.Map"));
         }
 
+        if (!string.IsNullOrWhiteSpace(surface.AdjacentZoneId))
+        {
+            diagnostics.Add(CreateWarning(
+                "AE-GROUND-SURFACE-ADJACENT-ZONE-FORBIDDEN",
+                $"Ground surface '{surface.SurfaceId}' specifies adjacent zone '{surface.AdjacentZoneId}', which is invalid for ground topology mapping.",
+                "GroundBoundaryTopologyMapper.Map"));
+        }
+
         var area = metadata.Geometry.AreaSquareMeters;
         if (!(area > 0.0))
         {
@@ -107,7 +115,11 @@ public sealed class GroundBoundaryTopologyMapper : IGroundBoundaryTopologyMapper
             Soil: metadata.Soil,
             Climate: metadata.Climate,
             DisclosureOverride: null,
-            Source: metadata.Source ?? surface.BoundarySource);
+            Source: metadata.Source ?? surface.BoundarySource,
+            BoundaryType: MapBoundaryType(metadata.ContactKind),
+            CalculationMode: ResolveCalculationMode(metadata.ContactKind),
+            ThermalBoundaryId: surface.SurfaceId,
+            AdjacentZoneId: surface.AdjacentZoneId);
     }
 
     private static bool RequiresFloorUValue(GroundContactKind kind) =>
@@ -121,6 +133,27 @@ public sealed class GroundBoundaryTopologyMapper : IGroundBoundaryTopologyMapper
         kind is GroundContactKind.BuriedWall
             or GroundContactKind.HeatedBasement
             or GroundContactKind.UnheatedBasement;
+
+    private static GroundBoundaryType MapBoundaryType(GroundContactKind kind) =>
+        kind switch
+        {
+            GroundContactKind.SlabOnGround => GroundBoundaryType.SlabOnGround,
+            GroundContactKind.SuspendedFloor or GroundContactKind.Crawlspace => GroundBoundaryType.SuspendedFloor,
+            GroundContactKind.HeatedBasement => GroundBoundaryType.HeatedBasementFloor,
+            GroundContactKind.UnheatedBasement => GroundBoundaryType.UnheatedBasementCeiling,
+            GroundContactKind.BuriedWall => GroundBoundaryType.HeatedBasementWall,
+            GroundContactKind.Other => GroundBoundaryType.Unsupported,
+            _ => GroundBoundaryType.GenericGroundContact
+        };
+
+    private static GroundBoundaryCalculationMode ResolveCalculationMode(GroundContactKind kind) =>
+        kind switch
+        {
+            GroundContactKind.SlabOnGround => GroundBoundaryCalculationMode.SimplifiedSlabOnGround,
+            GroundContactKind.HeatedBasement or GroundContactKind.UnheatedBasement or GroundContactKind.BuriedWall
+                => GroundBoundaryCalculationMode.SimplifiedBasement,
+            _ => GroundBoundaryCalculationMode.GenericConductance
+        };
 
     private static StandardCalculationDiagnostic CreateWarning(
         string code,

@@ -24,7 +24,10 @@ public sealed class BuildingGroundBoundaryCalculatorTests
         new GroundBoundaryCalculator(
             new GroundGeometryNormalizer(),
             new GroundBoundaryInputValidator(),
-            new GroundTemperatureProfileProvider(new AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles.AnnualProfileShapeValidator()),
+            new GroundTemperatureProfileProvider(
+                new AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles.AnnualProfileShapeValidator(),
+                new GroundTemperatureProfileCalculator()),
+            new GroundBoundaryHeatTransferCalculator(),
             DisclosureFactory),
         DisclosureFactory);
 

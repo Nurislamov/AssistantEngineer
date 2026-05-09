@@ -1,0 +1,48 @@
+{
+  "id": "seasonal-sinusoidal-ground-profile",
+  "claimBoundary": [
+    "Ground boundary deterministic fixture anchor.",
+    "Internal engineering implementation only.",
+    "Validation anchor only.",
+    "Not full compliance."
+  ],
+  "scenario": "Seasonal sinusoidal monthly profile with deterministic coldest/warmest month ordering.",
+  "boundary": {
+    "boundaryId": "G-seasonal-1",
+    "zoneId": "ZONE-A",
+    "boundaryType": "GenericGroundContact",
+    "areaSquareMeters": 30.0,
+    "exposedPerimeterMeters": 15.0,
+    "thermalTransmittanceUValueWPerSquareMeterKelvin": 0.25,
+    "floorDepthBelowGradeMeters": 0.0,
+    "wallHeightBelowGradeMeters": 0.0,
+    "characteristicDimensionMeters": 4.0,
+    "soilThermalConductivityWPerMeterKelvin": 2.0,
+    "groundAnnualMeanTemperatureCelsius": 11.0,
+    "groundTemperatureAmplitudeCelsius": 4.0,
+    "groundTemperaturePhaseShiftDays": 0.0,
+    "coldestMonthIndex": 1,
+    "edgeInsulationThicknessMeters": null,
+    "edgeInsulationConductivityWPerMeterKelvin": null,
+    "calculationMode": "GenericConductance",
+    "thermalBoundaryId": "TB-G-2",
+    "adjacentZoneId": null
+  },
+  "groundTemperatureProfileRequest": {
+    "timeResolution": "Monthly",
+    "mode": "SeasonalSinusoidal",
+    "outdoorTemperatureProfileCelsius": [3.0, 4.0, 7.0, 11.0, 15.0, 19.0, 21.0, 20.0, 16.0, 11.0, 6.0, 4.0],
+    "annualMeanOutdoorTemperatureCelsius": 11.0,
+    "groundAnnualMeanTemperatureCelsius": 11.0,
+    "groundTemperatureAmplitudeCelsius": 4.0,
+    "groundTemperaturePhaseShiftDays": 0.0,
+    "numberOfSteps": 12,
+    "timeStepHours": 730.0,
+    "coldestMonthIndex": 1
+  },
+  "zoneIndoorTemperatureProfileCelsius": [21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0],
+  "expected": {
+    "expectedColdestStepIndex": 0,
+    "expectedWarmestStepIndex": 6
+  }
+}

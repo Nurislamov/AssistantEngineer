@@ -101,6 +101,40 @@ public sealed class GroundBoundaryTopologyMapperTests
         Assert.Contains(input.Geometry.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-SURFACE-UVALUE-MISSING");
     }
 
+    [Fact]
+    public void AddsDiagnosticWhenGroundSurfaceHasAdjacentZone()
+    {
+        var surface = new ThermalTopologySurface(
+            SurfaceId: "S1",
+            RoomId: "R1",
+            ZoneId: "Z1",
+            BoundaryKind: ThermalBoundaryKind.Ground,
+            AreaSquareMeters: 50.0,
+            UValueWPerSquareMeterKelvin: 0.25,
+            AdjacentZoneId: "Z2",
+            AdjacentRoomId: null,
+            BoundarySource: "UnitTest",
+            Diagnostics: []);
+        var topology = new BuildingThermalTopology(
+            BuildingId: "B1",
+            Zones: [new ThermalTopologyZone("Z1", "Zone 1", ["R1"], [])],
+            Rooms: [new ThermalTopologyRoom("R1", "Z1", 100.0, 40.0, [surface], [])],
+            Surfaces: [surface],
+            Disclosure: new StandardCalculationDisclosureFactory().CreateThermalZonesDisclosure(),
+            Diagnostics: []);
+        var metadata = CreateMetadata(
+            surfaceId: "S1",
+            contactKind: GroundContactKind.SlabOnGround,
+            area: 50.0,
+            floorU: 0.2,
+            wallU: null);
+
+        var input = _mapper.Map(topology, surface, metadata);
+
+        Assert.Equal("Z2", input.AdjacentZoneId);
+        Assert.Contains(input.Geometry.Diagnostics, diagnostic => diagnostic.Code == "AE-GROUND-SURFACE-ADJACENT-ZONE-FORBIDDEN");
+    }
+
     private static BuildingThermalTopology CreateTopology(
         string buildingId,
         string surfaceId,

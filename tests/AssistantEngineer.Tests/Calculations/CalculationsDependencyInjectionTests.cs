@@ -63,7 +63,9 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IThermalBoundaryClassificationService>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundGeometryNormalizer>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundBoundaryInputValidator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundTemperatureProfileCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundTemperatureProfileProvider>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IGroundBoundaryHeatTransferCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundBoundaryCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IGroundBoundaryTopologyMapper>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IBuildingGroundBoundaryCalculator>(services, ServiceLifetime.Singleton);

@@ -407,13 +407,23 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilder : IIso52016MultiZone
             request.GroundTemperatureProfilesByBoundaryId.TryGetValue(boundary.BoundaryId, out var groundProfile) &&
             groundProfile.Count > 0)
         {
+            diagnostics.Add(CreateWarning(
+                "Iso52016.MultiZone.NormalizedInput.GroundProfileUsesGroundTemperatureLane",
+                $"Ground boundary '{boundary.BoundaryId}' uses explicit ground temperature profile lane."));
             return groundProfile;
         }
 
+        var exterior = request.ExteriorTemperatureProfileCelsius;
+        var representativeGround = exterior.Count > 0
+            ? exterior.Average()
+            : 10.0;
+        var fallbackLength = exterior.Count > 0 ? exterior.Count : 1;
+        var fallback = Enumerable.Repeat(representativeGround, fallbackLength).ToArray();
+
         diagnostics.Add(CreateWarning(
-            "Iso52016.MultiZone.NormalizedInput.GroundProfileFallbackToExterior",
-            $"Ground boundary '{boundary.BoundaryId}' has no explicit ground profile and falls back to exterior profile."));
-        return request.ExteriorTemperatureProfileCelsius;
+            "Iso52016.MultiZone.NormalizedInput.GroundProfileFallbackConstantFromExteriorAnnualMean",
+            $"Ground boundary '{boundary.BoundaryId}' has no explicit ground profile and uses deterministic constant ground-temperature fallback derived from exterior annual mean."));
+        return fallback;
     }
 
     private IReadOnlyList<double> ResolveAdjacentUnconditionedProfile(

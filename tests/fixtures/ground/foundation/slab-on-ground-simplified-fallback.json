@@ -1,0 +1,50 @@
+{
+  "id": "slab-on-ground-simplified-fallback",
+  "claimBoundary": [
+    "Ground boundary deterministic fixture anchor.",
+    "Internal engineering implementation only.",
+    "Validation anchor only.",
+    "Not full compliance."
+  ],
+  "scenario": "Slab-on-ground simplified lane falls back to generic when perimeter/characteristic metadata is incomplete.",
+  "boundary": {
+    "boundaryId": "G-slab-fallback-1",
+    "zoneId": "ZONE-A",
+    "boundaryType": "SlabOnGround",
+    "areaSquareMeters": 60.0,
+    "exposedPerimeterMeters": null,
+    "thermalTransmittanceUValueWPerSquareMeterKelvin": 0.25,
+    "floorDepthBelowGradeMeters": 0.0,
+    "wallHeightBelowGradeMeters": 0.0,
+    "characteristicDimensionMeters": null,
+    "soilThermalConductivityWPerMeterKelvin": 2.0,
+    "groundAnnualMeanTemperatureCelsius": 10.0,
+    "groundTemperatureAmplitudeCelsius": 2.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "coldestMonthIndex": 1,
+    "edgeInsulationThicknessMeters": null,
+    "edgeInsulationConductivityWPerMeterKelvin": null,
+    "calculationMode": "SimplifiedSlabOnGround",
+    "thermalBoundaryId": "TB-G-3",
+    "adjacentZoneId": null
+  },
+  "groundTemperatureProfileRequest": {
+    "timeResolution": "Hourly",
+    "mode": "ConstantAnnualMean",
+    "outdoorTemperatureProfileCelsius": null,
+    "annualMeanOutdoorTemperatureCelsius": 8.0,
+    "groundAnnualMeanTemperatureCelsius": 10.0,
+    "groundTemperatureAmplitudeCelsius": 0.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "numberOfSteps": 1,
+    "timeStepHours": 1.0,
+    "coldestMonthIndex": 1
+  },
+  "zoneIndoorTemperatureProfileCelsius": [20.0],
+  "expected": {
+    "equivalentGroundHeatTransferCoefficientWPerKelvin": 15.0
+  },
+  "expectedDiagnosticCodes": [
+    "AE-GROUND-HEAT-TRANSFER-SLAB-FALLBACK-GENERIC"
+  ]
+}

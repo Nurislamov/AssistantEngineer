@@ -9,4 +9,9 @@ public sealed record GroundTemperatureProfileResult(
     double AnnualMeanOutdoorTemperatureCelsius,
     double GroundTemperatureAmplitudeCelsius,
     double GroundTemperaturePhaseShiftDays,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    IReadOnlyList<double>? GroundTemperatureProfileCelsius = null,
+    IReadOnlyList<string>? Assumptions = null,
+    IReadOnlyList<string>? Warnings = null,
+    GroundTemperatureProfileMode? Mode = null,
+    GroundProfileTimeResolution? TimeResolution = null);

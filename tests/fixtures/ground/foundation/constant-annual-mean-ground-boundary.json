@@ -1,0 +1,50 @@
+{
+  "id": "constant-annual-mean-ground-boundary",
+  "claimBoundary": [
+    "Ground boundary deterministic fixture anchor.",
+    "Internal engineering implementation only.",
+    "Validation anchor only.",
+    "Not full compliance."
+  ],
+  "scenario": "Constant annual mean ground boundary with deterministic H = A * U and single-step heat flow.",
+  "boundary": {
+    "boundaryId": "G-const-1",
+    "zoneId": "ZONE-A",
+    "boundaryType": "GenericGroundContact",
+    "areaSquareMeters": 50.0,
+    "exposedPerimeterMeters": 20.0,
+    "thermalTransmittanceUValueWPerSquareMeterKelvin": 0.3,
+    "floorDepthBelowGradeMeters": 0.0,
+    "wallHeightBelowGradeMeters": 0.0,
+    "characteristicDimensionMeters": 5.0,
+    "soilThermalConductivityWPerMeterKelvin": 2.0,
+    "groundAnnualMeanTemperatureCelsius": 12.0,
+    "groundTemperatureAmplitudeCelsius": 0.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "coldestMonthIndex": 1,
+    "edgeInsulationThicknessMeters": null,
+    "edgeInsulationConductivityWPerMeterKelvin": null,
+    "calculationMode": "GenericConductance",
+    "thermalBoundaryId": "TB-G-1",
+    "adjacentZoneId": null
+  },
+  "groundTemperatureProfileRequest": {
+    "timeResolution": "Hourly",
+    "mode": "ConstantAnnualMean",
+    "outdoorTemperatureProfileCelsius": null,
+    "annualMeanOutdoorTemperatureCelsius": 10.0,
+    "groundAnnualMeanTemperatureCelsius": 12.0,
+    "groundTemperatureAmplitudeCelsius": 0.0,
+    "groundTemperaturePhaseShiftDays": 45.0,
+    "numberOfSteps": 1,
+    "timeStepHours": 1.0,
+    "coldestMonthIndex": 1
+  },
+  "zoneIndoorTemperatureProfileCelsius": [20.0],
+  "expected": {
+    "equivalentGroundHeatTransferCoefficientWPerKelvin": 15.0,
+    "heatFlowProfileWatts": [-120.0],
+    "annualHeatLossKiloWattHours": 0.12,
+    "annualHeatGainKiloWattHours": 0.0
+  }
+}

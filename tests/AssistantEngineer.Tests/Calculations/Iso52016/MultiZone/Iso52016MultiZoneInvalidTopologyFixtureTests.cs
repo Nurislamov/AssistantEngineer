@@ -28,6 +28,26 @@ public sealed class Iso52016MultiZoneInvalidTopologyFixtureTests
         Assert.Contains(first.Diagnostics, item => item.Code == "Iso52016.MultiZone.InputValidator.InterZoneBoundaryDuplicatePair");
     }
 
+    [Fact]
+    public void InvalidGroundTopologyFixture_IsRejectedWithDeterministicDiagnostics()
+    {
+        var fixture = LoadFixture("invalid-ground-topology.json");
+        var validator = new Iso52016MultiZoneInputValidator();
+
+        var first = validator.Validate(fixture.Input);
+        var second = validator.Validate(fixture.Input);
+
+        Assert.False(first.IsValid);
+        Assert.Equal(
+            first.Diagnostics.Select(item => item.Code),
+            second.Diagnostics.Select(item => item.Code));
+
+        Assert.Contains(first.Diagnostics, item => item.Code == "Iso52016.MultiZone.InputValidator.GroundBoundaryTargetZoneForbidden");
+        Assert.Contains(first.Diagnostics, item => item.Code == "Iso52016.MultiZone.InputValidator.BoundaryAreaNonPositive");
+        Assert.Contains(first.Diagnostics, item => item.Code == "Iso52016.MultiZone.InputValidator.BoundaryConductanceNonPositive");
+        Assert.Contains(first.Diagnostics, item => item.Code == "Iso52016.MultiZone.InputValidator.ProfileLengthUnsupported");
+    }
+
     private static MultiZoneFixtureDocument LoadFixture(string fileName)
     {
         var path = Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "iso52016", "multi-zone-invalid", fileName);

@@ -130,6 +130,20 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilderTests
         Assert.Contains(build.Diagnostics, diagnostic => diagnostic.Code == "Iso52016.MultiZone.NormalizedInput.VentilationLaneMerged");
     }
 
+    [Fact]
+    public void GroundBoundaryWithoutExplicitProfile_UsesConstantGroundFallbackNotExteriorShape()
+    {
+        var builder = CreateBuilder();
+        var build = builder.Build(CreateGroundBoundaryRequestWithoutGroundProfile());
+
+        Assert.True(build.IsValid);
+        var groundCondition = Assert.Single(build.Input.HourlyBoundaryConditions!, item => item.BoundaryId == "A-GROUND");
+        Assert.Equal(8760, groundCondition.TemperatureProfileCelsius.Count);
+        Assert.Equal(10.0, groundCondition.TemperatureProfileCelsius[0], 6);
+        Assert.Equal(10.0, groundCondition.TemperatureProfileCelsius[1], 6);
+        Assert.Contains(build.Diagnostics, item => item.Code == "Iso52016.MultiZone.NormalizedInput.GroundProfileFallbackConstantFromExteriorAnnualMean");
+    }
+
     private static Iso52016MultiZoneNormalizedInputBuilder CreateBuilder() =>
         new(
             new ThermalBoundaryClassificationService(),
@@ -312,4 +326,45 @@ public sealed class Iso52016MultiZoneNormalizedInputBuilderTests
             Disclosure: new StandardCalculationDisclosureFactory().CreateNaturalVentilationEn16798Disclosure(),
             Diagnostics: []);
     }
+
+    private static MultiZoneNormalizedInputBuildRequest CreateGroundBoundaryRequestWithoutGroundProfile() =>
+        new(
+            BuildingId: "BLD-GROUND-NORM",
+            Zones:
+            [
+                new ThermalZoneDefinition(
+                    ZoneId: "ZONE-A",
+                    Name: "Zone A",
+                    Kind: ThermalZoneKind.Conditioned,
+                    FloorAreaSquareMeters: 30.0,
+                    VolumeCubicMeters: 75.0,
+                    HeatingSetpointProfileId: "SP-H-A",
+                    CoolingSetpointProfileId: "SP-C-A",
+                    Boundaries:
+                    [
+                        new ThermalBoundaryDefinition(
+                            BoundaryId: "A-GROUND",
+                            SourceZoneId: "ZONE-A",
+                            AdjacentZoneId: null,
+                            ExposureKind: BoundaryExposureKind.Ground,
+                            ElementKind: BoundaryElementKind.Slab,
+                            AreaSquareMeters: 20.0,
+                            UValueWPerSquareMeterKelvin: 0.35)
+                    ])
+            ],
+            ZoneHourlyProfiles:
+            [
+                new MultiZoneZoneHourlyProfile(
+                    "ZONE-A",
+                    20.0,
+                    1_000_000.0,
+                    Enumerable.Repeat(21.0, 8760).ToArray(),
+                    Enumerable.Repeat(26.0, 8760).ToArray(),
+                    Enumerable.Repeat(0.0, 8760).ToArray(),
+                    Enumerable.Repeat(0.0, 8760).ToArray(),
+                    Enumerable.Repeat(0.0, 8760).ToArray())
+            ],
+            ExteriorTemperatureProfileCelsius: Enumerable.Range(0, 8760)
+                .Select(hour => hour % 2 == 0 ? 0.0 : 20.0)
+                .ToArray());
 }
