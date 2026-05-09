@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Reporting;
+using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Reporting.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,19 @@ public class ReportingDependencyInjectionTests
         AssertServiceLifetime<IBuildingCoolingReportsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingHeatingReportsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyBalanceReportsFacade>(services, ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void AddReportingModuleRegistersEngineeringReportFoundationServices()
+    {
+        var services = new ServiceCollection();
+
+        services.AddReportingModule();
+
+        AssertServiceLifetime<IEngineeringReportBuilder>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEngineeringReportJsonExporter>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEngineeringReportMarkdownExporter>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEngineeringReportDiagnosticAggregator>(services, ServiceLifetime.Scoped);
     }
 
     [Fact]

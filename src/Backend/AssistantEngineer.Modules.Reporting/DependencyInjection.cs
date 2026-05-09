@@ -8,6 +8,7 @@ public static class DependencyInjection
     public static IServiceCollection AddReportingModule(
         this IServiceCollection services)
     {
+        services.AddEngineeringReportFoundationServices();
         services.AddReportingCalculationServices();
         services.AddReportingGenerators();
         services.AddReportingDataServices();

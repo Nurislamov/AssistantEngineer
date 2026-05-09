@@ -1,0 +1,19 @@
+{
+  "id": "markdown-export",
+  "reportKind": "FullEngineeringCore",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "SystemEnergy",
+    "CalculationTraceAppendix"
+  ],
+  "expectedHeadings": [
+    "## Executive Summary",
+    "## System Energy",
+    "## Calculation Trace Appendix"
+  ],
+  "expectedTableColumns": [
+    "| Carrier | Final (kWh) | Primary total (kWh) | CO2 (kg) |",
+    "| StepId | StepName | Module | Inputs | Intermediate | Outputs | Diagnostics |"
+  ]
+}
+

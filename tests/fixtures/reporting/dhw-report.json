@@ -1,0 +1,15 @@
+{
+  "id": "dhw-report",
+  "reportKind": "DomesticHotWater",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "DomesticHotWater",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}
+

@@ -1,0 +1,24 @@
+{
+  "id": "full-engineering-core-report",
+  "reportKind": "FullEngineeringCore",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "WeatherAndSolar",
+    "ThermalZones",
+    "HeatingCoolingLoads",
+    "NaturalVentilation",
+    "GroundBoundaries",
+    "DomesticHotWater",
+    "SystemEnergy",
+    "FinalEnergy",
+    "PrimaryEnergyAndCarbon",
+    "ValidationDiagnostics",
+    "CalculationTraceAppendix",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}

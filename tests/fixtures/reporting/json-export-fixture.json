@@ -1,0 +1,10 @@
+{
+  "id": "json-export",
+  "reportKind": "FullEngineeringCore",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "SystemEnergy",
+    "CalculationTraceAppendix"
+  ]
+}
+

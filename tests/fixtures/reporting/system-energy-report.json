@@ -1,0 +1,17 @@
+{
+  "id": "system-energy-report",
+  "reportKind": "SystemEnergy",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "SystemEnergy",
+    "FinalEnergy",
+    "PrimaryEnergyAndCarbon",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}
+

@@ -1,0 +1,15 @@
+{
+  "id": "heating-cooling-load",
+  "reportKind": "HeatingCoolingLoad",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "HeatingCoolingLoads",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}
+

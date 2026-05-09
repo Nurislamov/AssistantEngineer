@@ -1,0 +1,8 @@
+{
+  "id": "trace-appendix-report",
+  "reportKind": "FullEngineeringCore",
+  "expectedSections": [
+    "CalculationTraceAppendix"
+  ]
+}
+

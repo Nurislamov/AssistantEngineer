@@ -1,0 +1,13 @@
+{
+  "id": "minimal-calculation-summary",
+  "reportKind": "CalculationSummary",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}

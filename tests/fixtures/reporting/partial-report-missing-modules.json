@@ -1,0 +1,18 @@
+{
+  "id": "partial-report-missing-modules",
+  "reportKind": "FullEngineeringCore",
+  "expectedSections": [
+    "ExecutiveSummary",
+    "InputSummary",
+    "DomesticHotWater",
+    "SystemEnergy",
+    "FinalEnergy",
+    "PrimaryEnergyAndCarbon",
+    "ValidationDiagnostics",
+    "Assumptions",
+    "Warnings",
+    "ValidationDiagnostics",
+    "Limitations",
+    "Metadata"
+  ]
+}
