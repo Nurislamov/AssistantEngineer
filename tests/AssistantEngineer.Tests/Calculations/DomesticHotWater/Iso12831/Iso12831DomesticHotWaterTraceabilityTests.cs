@@ -40,15 +40,24 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
             "calculations",
             "domestic-hot-water",
             "Iso12831DomesticHotWaterDemandCalculator.md");
+        var en12831StyleDocPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "DomesticHotWaterEn12831Style.md");
 
         Assert.True(File.Exists(docPath), $"Documentation file was not found: {docPath}");
+        Assert.True(File.Exists(en12831StyleDocPath), $"Documentation file was not found: {en12831StyleDocPath}");
 
         var docText = File.ReadAllText(docPath);
+        var en12831StyleDocText = File.ReadAllText(en12831StyleDocPath);
         Assert.DoesNotContain("ISO 12831-3 validated", docText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 12831-3 compliance");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
+        AssertTokenAppearsOnlyAsNegatedClaim(en12831StyleDocText, "full EN12831-3 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(en12831StyleDocText, "external validation");
 
         var fixturePaths = new[]
         {
@@ -56,7 +65,11 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "domestic-hot-water", "iso12831", "office-area-based-daytime.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "domestic-hot-water", "iso12831", "hotel-unit-based-morning-evening.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "domestic-hot-water", "iso12831", "custom-volume-flat-profile.json"),
-            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "domestic-hot-water", "iso12831", "zero-occupants-zero-demand.json")
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "domestic-hot-water", "iso12831", "zero-occupants-zero-demand.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "dhw", "en12831", "residential-table-driven.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "dhw", "en12831", "office-table-driven.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "dhw", "en12831", "school-table-driven.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "dhw", "en12831", "explicit-volume-override.json")
         };
 
         foreach (var path in fixturePaths)
@@ -67,6 +80,8 @@ public sealed class Iso12831DomesticHotWaterTraceabilityTests
             AssertTokenAppearsOnlyAsNegatedClaim(text, "StandardReference equivalence");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "EnergyPlus comparison workflow");
             AssertTokenAppearsOnlyAsNegatedClaim(text, "full ISO 12831-3 compliance");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "full EN12831-3 compliance");
+            AssertTokenAppearsOnlyAsNegatedClaim(text, "external validation");
         }
     }
 

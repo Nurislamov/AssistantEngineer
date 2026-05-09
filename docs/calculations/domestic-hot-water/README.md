@@ -57,6 +57,12 @@ This stage covers useful DHW demand only and does not model DHW system losses.
 
 Existing ISO12831-inspired calculator and compatibility application service remain in place. This stage adds canonical useful-demand contracts/services additively.
 
+## EN12831-3-style table/profile lane
+
+For the additive table/profile-driven path, see:
+
+- `docs/calculations/DomesticHotWaterEn12831Style.md`
+
 ## Next prompt
 
 `AE-DHW-ISO12831-001B` - DHW storage/distribution/circulation losses and EN15316 handoff.

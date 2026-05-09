@@ -23,6 +23,15 @@ internal sealed record En15316SystemEnergyFixtureTolerance(
 
 internal static class En15316SystemEnergyFixtureLoader
 {
+    private static readonly HashSet<string> LegacyFixtureFileNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "boiler-heating-emission-distribution-generation.json",
+        "condensing-boiler-heating-with-recovered-losses.json",
+        "heat-pump-heating-electricity-primary.json",
+        "chiller-cooling-electricity-primary.json",
+        "dhw-storage-distribution-generation-chain.json"
+    };
+
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -41,6 +50,7 @@ internal static class En15316SystemEnergyFixtureLoader
 
         var fixtures = Directory
             .GetFiles(FixtureDirectory, "*.json", SearchOption.TopDirectoryOnly)
+            .Where(path => LegacyFixtureFileNames.Contains(Path.GetFileName(path)))
             .Order(StringComparer.OrdinalIgnoreCase)
             .Select(LoadFromFile)
             .ToArray();

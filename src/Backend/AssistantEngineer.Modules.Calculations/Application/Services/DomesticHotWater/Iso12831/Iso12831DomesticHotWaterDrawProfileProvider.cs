@@ -54,6 +54,46 @@ public sealed class Iso12831DomesticHotWaterDrawProfileProvider
     ];
 
     public Result<Iso12831DomesticHotWaterProfiles> ResolveProfiles(
+        DomesticHotWaterDrawProfileTable drawProfileTable,
+        IReadOnlyList<double>? weekdayOverride,
+        IReadOnlyList<double>? weekendOverride,
+        IReadOnlyList<double>? customDrawProfile)
+    {
+        ArgumentNullException.ThrowIfNull(drawProfileTable);
+
+        var weekday = weekdayOverride ?? drawProfileTable.WeekdayWeights24;
+        var weekend = weekendOverride ?? drawProfileTable.WeekendWeights24;
+
+        var weekdayValidation = Validate(weekday, "Weekday DHW draw profile");
+        if (weekdayValidation.IsFailure)
+            return Result<Iso12831DomesticHotWaterProfiles>.Failure(weekdayValidation);
+
+        var weekendValidation = Validate(weekend, "Weekend DHW draw profile");
+        if (weekendValidation.IsFailure)
+            return Result<Iso12831DomesticHotWaterProfiles>.Failure(weekendValidation);
+
+        if (drawProfileTable.DrawProfileKind == Iso12831DomesticHotWaterDrawProfileKind.Custom)
+        {
+            if (customDrawProfile is null)
+                return Result<Iso12831DomesticHotWaterProfiles>.Validation(
+                    "Custom draw profile kind requires CustomDrawProfile with 24 values.");
+
+            var customValidation = Validate(customDrawProfile, "Custom DHW draw profile");
+            if (customValidation.IsFailure)
+                return Result<Iso12831DomesticHotWaterProfiles>.Failure(customValidation);
+
+            var normalizedCustom = Normalize(customDrawProfile);
+            return Result<Iso12831DomesticHotWaterProfiles>.Success(
+                new Iso12831DomesticHotWaterProfiles(normalizedCustom, normalizedCustom));
+        }
+
+        return Result<Iso12831DomesticHotWaterProfiles>.Success(
+            new Iso12831DomesticHotWaterProfiles(
+                WeekdayProfile: Normalize(weekday),
+                WeekendProfile: Normalize(weekend)));
+    }
+
+    public Result<Iso12831DomesticHotWaterProfiles> ResolveProfiles(
         Iso12831DomesticHotWaterDrawProfileKind kind,
         IReadOnlyList<double>? weekdayOverride,
         IReadOnlyList<double>? weekendOverride,

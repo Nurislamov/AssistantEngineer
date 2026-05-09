@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ground.Iso13370;
 using AssistantEngineer.Modules.Calculations.Application.Models.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Options;
@@ -15,15 +16,30 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
     private readonly Iso13370GroundHeatTransferOptions _options;
     private readonly Iso13370GroundBoundaryCalculator _calculator;
     private readonly Iso13370GroundBoundaryApplicationAdapter _adapter;
+    private readonly Iso13370VirtualGroundTemperatureCalculator _virtualGroundCalculator;
+
+    public Iso13370GroundHeatTransferService(
+        IOptions<Iso13370GroundHeatTransferOptions> options,
+        Iso13370GroundBoundaryCalculator calculator,
+        Iso13370GroundBoundaryApplicationAdapter adapter,
+        Iso13370VirtualGroundTemperatureCalculator virtualGroundCalculator)
+    {
+        _options = options.Value;
+        _calculator = calculator;
+        _adapter = adapter;
+        _virtualGroundCalculator = virtualGroundCalculator;
+    }
 
     public Iso13370GroundHeatTransferService(
         IOptions<Iso13370GroundHeatTransferOptions> options,
         Iso13370GroundBoundaryCalculator calculator,
         Iso13370GroundBoundaryApplicationAdapter adapter)
+        : this(
+            options,
+            calculator,
+            adapter,
+            new Iso13370VirtualGroundTemperatureCalculator())
     {
-        _options = options.Value;
-        _calculator = calculator;
-        _adapter = adapter;
     }
 
     public Iso13370GroundHeatTransferService(
@@ -31,7 +47,8 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
         : this(
             options,
             new Iso13370GroundBoundaryCalculator(new Iso13370GroundTemperatureProfileCalculator()),
-            new Iso13370GroundBoundaryApplicationAdapter())
+            new Iso13370GroundBoundaryApplicationAdapter(),
+            new Iso13370VirtualGroundTemperatureCalculator())
     {
     }
 
@@ -46,6 +63,9 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
         {
             return BuildMatrixFallbackBoundaryCondition(room, envelopeDefaults);
         }
+
+        if (_options.UseIso13370VirtualGroundTemperatureLane)
+            return CalculateVirtualGroundBoundaryCondition(room, envelopeDefaults);
 
         return CalculateIso13370InspiredBoundaryCondition(room, envelopeDefaults);
     }
@@ -113,6 +133,46 @@ public sealed class Iso13370GroundHeatTransferService : IGroundHeatTransferServi
             GroundTemperatureWeight = result.GroundWeight,
             OutdoorTemperatureWeight = result.OutdoorWeight,
             IndoorTemperatureWeight = result.IndoorWeight
+        };
+    }
+
+    private GroundBoundaryCondition CalculateVirtualGroundBoundaryCondition(
+        Room room,
+        BuildingEnvelopeDefaults envelopeDefaults)
+    {
+        var virtualInput = _adapter.BuildVirtualGroundInput(
+            room,
+            floorUValueWPerM2K: envelopeDefaults.FloorUValueWPerM2K,
+            annualAverageOutdoorTemperatureC: _options.OutdoorAnnualMeanTemperatureC,
+            monthlyOutdoorTemperatureProfileC: null,
+            seasonalAmplitudeC: _options.VirtualGroundSeasonalAmplitudeC,
+            seasonalPhaseShiftMonths: _options.VirtualGroundSeasonalPhaseShiftMonths,
+            groundConductivityWPerMK: _options.GroundConductivityWPerMK,
+            equivalentGroundThicknessM: _options.VirtualGroundEquivalentGroundThicknessM > 0.0
+                ? _options.VirtualGroundEquivalentGroundThicknessM
+                : null,
+            enablePerimeterThermalBridge: _options.UseIso13370VirtualGroundPerimeterThermalBridge,
+            thermalBridgeLinearTransmittanceWPerMK: _options.VirtualGroundThermalBridgeLinearTransmittanceWPerMK,
+            options: new Iso13370GroundCalculationOptions(
+                EnableSeasonalComponent: _options.VirtualGroundEnableSeasonalComponent,
+                EnablePerimeterThermalBridge: _options.VirtualGroundEnablePerimeterThermalBridge,
+                SeasonalAttenuationFactor: _options.VirtualGroundSeasonalAttenuationFactor,
+                MonthlyHeatTransferVariationFactor: _options.VirtualGroundMonthlyHeatTransferVariationFactor,
+                MinimumEquivalentGroundThicknessM: _options.VirtualGroundMinimumEquivalentGroundThicknessM,
+                MaximumEquivalentGroundThicknessM: _options.VirtualGroundMaximumEquivalentGroundThicknessM));
+
+        var result = _virtualGroundCalculator.Calculate(virtualInput);
+        var metadata = room.GroundContactMetadata!;
+        var (groundWeight, outdoorWeight, indoorWeight) = GetBoundaryWeights(
+            metadata.ContactType,
+            metadata.UnderfloorVentilationAirChangesPerHour);
+
+        return new GroundBoundaryCondition
+        {
+            HeatTransferCoefficientWPerK = result.AnnualEquivalentGroundHeatTransferCoefficientWPerK,
+            GroundTemperatureWeight = groundWeight,
+            OutdoorTemperatureWeight = outdoorWeight,
+            IndoorTemperatureWeight = indoorWeight
         };
     }
 

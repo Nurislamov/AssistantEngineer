@@ -1,15 +1,17 @@
 {
   "stageId": "AE-VENT-001",
-  "title": "ISO16798-inspired natural ventilation depth",
+  "title": "EN16798-style standard-based natural ventilation depth",
   "status": "internal-engineering-anchor",
   "claimBoundary": [
-    "ISO16798-inspired natural ventilation engineering calculator.",
-    "Internal deterministic engineering anchors only.",
-    "No full ISO 16798 compliance claim.",
-    "No StandardReference equivalence claim.",
+    "EN16798-style standard-based natural ventilation engineering calculator.",
+    "Internal analytical anchors only.",
+    "Not full validation.",
+    "No full EN16798 compliance claim.",
+    "No StandardReference comparison claim.",
     "No EnergyPlus comparison workflow claim.",
     "No ASHRAE 140 / BESTEST-style validation anchor claim.",
-    "No external certification claim."
+    "No external certification claim.",
+    "No external validation claim."
   ],
   "implementationFiles": [
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ventilation/Iso16798/Iso16798NaturalVentilationInput.cs",
@@ -24,11 +26,18 @@
     "tests/fixtures/ventilation/iso16798-natural/closed-openings-zero-flow.json",
     "tests/fixtures/ventilation/iso16798-natural/stack-only-temperature-delta.json",
     "tests/fixtures/ventilation/iso16798-natural/wind-only-open-window.json",
-    "tests/fixtures/ventilation/iso16798-natural/stack-plus-wind-ach-clamped.json"
+    "tests/fixtures/ventilation/iso16798-natural/stack-plus-wind-ach-clamped.json",
+    "tests/fixtures/ventilation/natural/single-sided-wind-only.json",
+    "tests/fixtures/ventilation/natural/single-sided-stack-only.json",
+    "tests/fixtures/ventilation/natural/opening-schedule-closed.json",
+    "tests/fixtures/ventilation/natural/occupancy-controlled.json",
+    "tests/fixtures/ventilation/natural/ach-clamped.json"
   ],
   "testGuards": [
     "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationEnhancedCalculatorTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationEnhancedFixtureTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationDiagnosticsTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/Ventilation/Iso16798/Iso16798NaturalVentilationTraceabilityTests.cs"
   ],

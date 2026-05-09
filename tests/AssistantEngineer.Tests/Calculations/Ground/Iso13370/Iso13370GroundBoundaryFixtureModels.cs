@@ -27,6 +27,14 @@ internal sealed record Iso13370GroundBoundaryFixtureTolerance(
 
 internal static class Iso13370GroundBoundaryFixtureLoader
 {
+    private static readonly HashSet<string> LegacyFixtureNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "slab-on-ground-simple.json",
+        "conditioned-basement-buried.json",
+        "unconditioned-basement-outdoor-coupled.json",
+        "ventilated-crawlspace-outdoor-dominant.json"
+    };
+
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -44,6 +52,7 @@ internal static class Iso13370GroundBoundaryFixtureLoader
             throw new DirectoryNotFoundException($"Fixture directory was not found: {FixtureDirectory}");
 
         var fixtures = Directory.GetFiles(FixtureDirectory, "*.json", SearchOption.TopDirectoryOnly)
+            .Where(path => LegacyFixtureNames.Contains(Path.GetFileName(path)))
             .Order(StringComparer.OrdinalIgnoreCase)
             .Select(LoadFromFile)
             .ToArray();

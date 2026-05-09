@@ -58,6 +58,12 @@ This stage prepares useful energy into pre-generation system loads and generatio
 - No `EnergyPlus comparison workflow` claim.
 - No `ASHRAE 140 / BESTEST-style validation anchor` claim.
 
+## Circuit-level foundation
+
+An additive EN15316-style circuit-level heating foundation is documented in:
+
+- `docs/calculations/En15316SystemEnergyCircuitModel.md`
+
 ## Next prompt
 
 `AE-SYS-EN15316-001B` - generator and final energy calculation.

@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation.Iso16798;
+
 namespace AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 
 public sealed record VentilationAndInfiltrationLoadInput(
@@ -20,4 +22,5 @@ public sealed record VentilationAndInfiltrationLoadInput(
     VentilationLoadCalculationMode CalculationMode = VentilationLoadCalculationMode.DesignPoint,
     double? AirDensityKgPerM3 = null,
     double? AirSpecificHeatJPerKgK = null,
-    string? DiagnosticsContext = null);
+    string? DiagnosticsContext = null,
+    Iso16798NaturalVentilationResult? NaturalVentilationEnhancedResult = null);

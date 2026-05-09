@@ -43,17 +43,30 @@ public sealed class Iso12831DomesticHotWaterDemandCalculator
             return Result<Iso12831DomesticHotWaterResult>.Validation(
                 "StorageLossKWhPerDay and CirculationLossKWhPerDay must be non-negative.");
 
-        var defaults = _referenceDataProvider.Resolve(input.UsageCategory);
+        var resolvedReference = _referenceDataProvider.Resolve(
+            input.UsageCategory,
+            input.UseTableDrivenReferenceData,
+            input.TableDrivenUsageCategory);
+        var defaults = resolvedReference.ReferenceDefaults;
         var diagnostics = new List<Iso12831DomesticHotWaterDiagnostics>();
         var assumptions = new List<string>
         {
-            "ISO12831-inspired domestic hot water engineering calculator.",
+            "EN12831-3-style standard-based domestic hot water engineering calculator.",
             "Internal deterministic engineering anchors only.",
             "No full ISO 12831-3 compliance claim.",
-            "No external certification claim.",
+            "Not a full validation package.",
+            "No external validation claim.",
             "Water draw energy uses liters x 1 kg/l x 4.186 kJ/(kg K) x deltaT / 3600.",
             "Monthly and hourly allocation uses a non-leap 365-day calendar."
         };
+
+        if (input.UseTableDrivenReferenceData)
+        {
+            diagnostics.Add(new Iso12831DomesticHotWaterDiagnostics(
+                "Iso12831Dhw.TableDrivenReferenceApplied",
+                $"Applied EN12831-3-style table/profile entry '{resolvedReference.ReferenceEntryId}'."));
+            assumptions.Add(resolvedReference.TemperatureAssumptions.Notes);
+        }
 
         var equivalentOccupantsUsed = ResolveEquivalentOccupants(input, defaults, diagnostics);
         var referenceDailyVolumeLiters = ResolveReferenceDailyVolume(
@@ -89,12 +102,17 @@ public sealed class Iso12831DomesticHotWaterDemandCalculator
         IReadOnlyList<Iso12831DomesticHotWaterHourlyResult> hourlyResults = [];
         if (input.IncludeHourlyProfile)
         {
-            var drawProfileKind = ResolveDrawProfileKind(input, defaults, diagnostics);
-            var profilesResult = _drawProfileProvider.ResolveProfiles(
-                drawProfileKind,
-                input.WeekdayDrawProfile,
-                input.WeekendDrawProfile,
-                input.CustomDrawProfile);
+            var profilesResult = resolvedReference.UsageProfileSet is { } tableProfileSet
+                ? _drawProfileProvider.ResolveProfiles(
+                    tableProfileSet.DrawProfileTable,
+                    input.WeekdayDrawProfile,
+                    input.WeekendDrawProfile,
+                    input.CustomDrawProfile)
+                : _drawProfileProvider.ResolveProfiles(
+                    ResolveDrawProfileKind(input, defaults, diagnostics),
+                    input.WeekdayDrawProfile,
+                    input.WeekendDrawProfile,
+                    input.CustomDrawProfile);
 
             if (profilesResult.IsFailure)
                 return Result<Iso12831DomesticHotWaterResult>.Failure(profilesResult);

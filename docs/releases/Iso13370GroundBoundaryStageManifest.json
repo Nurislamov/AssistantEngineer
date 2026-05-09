@@ -18,22 +18,39 @@
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundContactKind.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundBoundaryTemperatureProfile.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370MonthlyGroundBoundaryRecord.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370VirtualGroundInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370VirtualGroundResult.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/SlabOnGroundGeometry.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/GroundThermalProperties.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/GroundThermalBridgeInput.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/MonthlyGroundBoundaryCondition.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Ground/Iso13370/Iso13370GroundCalculationOptions.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370GroundBoundaryCalculator.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370GroundTemperatureProfileCalculator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370VirtualGroundTemperatureCalculator.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundBoundaryApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundHeatTransferService.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Composition/GroundRegistration.cs"
   ],
   "fixtureFiles": [
     "tests/fixtures/ground/iso13370/slab-on-ground-simple.json",
     "tests/fixtures/ground/iso13370/conditioned-basement-buried.json",
     "tests/fixtures/ground/iso13370/unconditioned-basement-outdoor-coupled.json",
-    "tests/fixtures/ground/iso13370/ventilated-crawlspace-outdoor-dominant.json"
+    "tests/fixtures/ground/iso13370/ventilated-crawlspace-outdoor-dominant.json",
+    "tests/fixtures/ground/iso13370/slab-on-ground-basic.json",
+    "tests/fixtures/ground/iso13370/insulated-slab.json",
+    "tests/fixtures/ground/iso13370/high-conductivity-ground.json",
+    "tests/fixtures/ground/iso13370/thermal-bridge-enabled.json"
   ],
   "testGuards": [
     "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryCalculatorTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryFixtureTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundTemperatureProfileTests.cs",
-    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryTraceabilityTests.cs"
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryTraceabilityTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370VirtualGroundTemperatureCalculatorTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370VirtualGroundFixtureTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370VirtualGroundTraceabilityTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/Ground/Iso13370/Iso13370GroundBoundaryApplicationIntegrationTests.cs"
   ],
   "generatedArtifacts": []
 }

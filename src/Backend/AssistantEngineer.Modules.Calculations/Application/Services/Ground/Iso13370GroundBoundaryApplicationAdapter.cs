@@ -45,6 +45,54 @@ public sealed class Iso13370GroundBoundaryApplicationAdapter
             ContactKind: MapContactKind(metadata.ContactType));
     }
 
+    public Iso13370VirtualGroundInput BuildVirtualGroundInput(
+        Room room,
+        double floorUValueWPerM2K,
+        double annualAverageOutdoorTemperatureC,
+        IReadOnlyList<double>? monthlyOutdoorTemperatureProfileC,
+        double seasonalAmplitudeC,
+        double seasonalPhaseShiftMonths,
+        double groundConductivityWPerMK,
+        double? equivalentGroundThicknessM,
+        bool enablePerimeterThermalBridge,
+        double thermalBridgeLinearTransmittanceWPerMK,
+        Iso13370GroundCalculationOptions? options)
+    {
+        ArgumentNullException.ThrowIfNull(room);
+
+        if (room.GroundContactMetadata is null)
+        {
+            throw new InvalidOperationException(
+                "Ground contact metadata is required to map to Iso13370VirtualGroundInput.");
+        }
+
+        var metadata = room.GroundContactMetadata;
+        var area = Math.Max(room.Area.SquareMeters, 0.0);
+        var perimeter = Math.Max(metadata.ExposedPerimeterM, 0.0);
+        var slabResistance = floorUValueWPerM2K > 0.0
+            ? 1.0 / floorUValueWPerM2K
+            : 0.0;
+
+        return new Iso13370VirtualGroundInput(
+            Geometry: new SlabOnGroundGeometry(
+                FloorAreaM2: area,
+                ExposedPerimeterM: perimeter,
+                SlabThermalResistanceM2KPerW: slabResistance),
+            GroundThermalProperties: new GroundThermalProperties(
+                GroundConductivityWPerMK: groundConductivityWPerMK,
+                EquivalentGroundThicknessM: equivalentGroundThicknessM ?? 0.0),
+            AnnualAverageOutdoorTemperatureC: annualAverageOutdoorTemperatureC,
+            MonthlyOutdoorTemperatureProfileC: monthlyOutdoorTemperatureProfileC,
+            SeasonalAmplitudeC: seasonalAmplitudeC,
+            SeasonalPhaseShiftMonths: seasonalPhaseShiftMonths,
+            IndoorSetpointTemperatureC: room.IndoorTemperature.Celsius,
+            ThermalBridge: new GroundThermalBridgeInput(
+                Enabled: enablePerimeterThermalBridge,
+                LinearThermalTransmittanceWPerMK: thermalBridgeLinearTransmittanceWPerMK,
+                BridgeLengthM: perimeter),
+            Options: options);
+    }
+
     private static Iso13370GroundContactKind MapContactKind(GroundContactType contactType) => contactType switch
     {
         GroundContactType.SlabOnGround => Iso13370GroundContactKind.SlabOnGround,

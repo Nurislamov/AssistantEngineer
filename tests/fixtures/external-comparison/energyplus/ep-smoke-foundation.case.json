@@ -1,0 +1,18 @@
+{
+  "caseId": "EC-EP-SMOKE-001",
+  "name": "EnergyPlus smoke comparison foundation case",
+  "workflow": "External comparison workflow (EnergyPlus outputs)",
+  "validationAnchor": "ASHRAE 140 / BESTEST-style validation anchor",
+  "modelInputPath": "tests/fixtures/validation/energyplus/EP-SMOKE-001/assistantengineer-input.json",
+  "expectedOutput": null,
+  "tolerance": {
+    "relativePercent": 5.0,
+    "absolute": 0.001
+  },
+  "provenance": null,
+  "status": "FixtureDefined",
+  "claimBoundary": "not full validation; not compliance claim",
+  "notes": [
+    "External comparison output is not imported yet."
+  ]
+}

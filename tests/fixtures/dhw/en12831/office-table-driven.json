@@ -1,0 +1,50 @@
+{
+  "id": "office-table-driven",
+  "claimBoundary": [
+    "EN12831-3-style standard-based domestic hot water calculation.",
+    "Internal analytical anchors only.",
+    "No full EN12831-3 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "usageCategory": "Office",
+    "referenceMode": "AreaBased",
+    "peopleCount": 0,
+    "equivalentOccupants": 0.0,
+    "areaM2": 1800.0,
+    "unitsCount": 0,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 0.0,
+    "hotWaterTemperatureC": 58.0,
+    "coldWaterTemperatureC": 12.0,
+    "distributionLossFactor": 0.08,
+    "storageLossKWhPerDay": 2.0,
+    "circulationLossKWhPerDay": 1.0,
+    "includeHourlyProfile": true,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "OfficeDaytime",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null,
+    "useTableDrivenReferenceData": true,
+    "tableDrivenUsageCategory": "Office"
+  },
+  "expected": {
+    "dailyVolumeLiters": 630.0,
+    "dailyDrawEnergyKWh": 33.701,
+    "dailyTotalEnergyKWh": 39.397,
+    "annualVolumeLiters": 229950.0,
+    "annualDrawEnergyKWh": 12301.048,
+    "annualTotalEnergyKWh": 14380.131,
+    "equivalentOccupantsUsed": 0.0,
+    "referenceDailyVolumeLiters": 630.0,
+    "hourlyResultsCount": 8760
+  },
+  "tolerance": {
+    "absolute": 20.0,
+    "relativePercent": 5.0
+  }
+}

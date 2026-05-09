@@ -1,6 +1,6 @@
 {
   "stageId": "AE-EN15316-002",
-  "title": "EN15316-inspired modular system energy controlled application integration",
+  "title": "EN15316-inspired modular system energy controlled application integration with useful-energy handoff",
   "status": "internal-application-integration-anchor",
   "dependsOn": [
     "AE-EN15316-001"
@@ -21,15 +21,21 @@
     "src/Backend/AssistantEngineer.Modules.Calculations/Composition/CalculationOptionsRegistration.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Composition/EnergyAnalysisRegistration.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyEngine.cs",
-    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/En15316/En15316SystemEnergyApplicationAdapter.cs"
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/En15316/En15316SystemEnergyApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyUsefulEnergyHandoffBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs"
   ],
   "testGuards": [
     "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyApplicationIntegrationTests.cs",
-    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyApplicationIntegrationTraceabilityTests.cs"
+    "tests/AssistantEngineer.Tests/Calculations/SystemEnergy/En15316/En15316SystemEnergyApplicationIntegrationTraceabilityTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs"
   ],
   "updatedDisclosureFiles": [
     "docs/calculations/ExternalReferenceValidationVerification.md",
     "docs/calculations/EngineeringCoreV1Scope.md",
+    "docs/calculations/EngineeringCoreV2Scope.md",
+    "docs/calculations/SystemEnergy.md",
+    "docs/calculations/En15316SystemEnergyCircuitModel.md",
     "docs/api/engineering-core-v1/status.sample.json"
   ],
   "generatedArtifacts": []

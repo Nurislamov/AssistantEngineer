@@ -5,6 +5,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Options;
 public sealed class SystemEnergyOptions
 {
     public bool UseEn15316InspiredChain { get; init; } = false;
+    public bool UseEn15316CircuitLevelCalculator { get; init; } = false;
 
     public En15316GenerationTechnology DefaultHeatingTechnology { get; init; } =
         En15316GenerationTechnology.Boiler;

@@ -348,6 +348,14 @@ internal static class EnergyCalculationPipelineResultMapper
                     CoolingDemandKWh = Round(month.CoolingKWh)
                 })
                 .ToList(),
+            HourlyBalanceRecords = source.HourlyBalanceRecords
+                .Select(hour => new AnnualEnergyBalanceHourInput(
+                    HourIndex: hour.HourIndex,
+                    Month: hour.Month,
+                    HeatingLoadW: hour.HeatingLoadW,
+                    CoolingLoadW: hour.CoolingLoadW,
+                    HourDurationH: hour.HourDurationH))
+                .ToList(),
             Diagnostics = diagnostics,
             Assumptions = annual.AssumptionsUsed.ToList()
         };

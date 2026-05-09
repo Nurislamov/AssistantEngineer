@@ -1,0 +1,70 @@
+{
+  "id": "boiler-simple-circuit",
+  "claimBoundary": [
+    "EN15316-style system energy calculation.",
+    "Internal engineering anchor.",
+    "Not full validation.",
+    "No full EN15316 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "calculationId": "boiler-simple-circuit",
+    "circuits": [
+      {
+        "circuitId": "boiler-c1",
+        "circuitType": "Radiator",
+        "emission": {
+          "modelKind": "Simplified",
+          "efficiency": 0.97
+        },
+        "distribution": {
+          "efficiency": 0.94,
+          "auxiliaryEnergyFraction": 0.01
+        },
+        "generation": {
+          "technology": "Boiler",
+          "carrier": "NaturalGas",
+          "efficiency": 0.9,
+          "primaryEnergyFactor": 1.1
+        },
+        "storage": {
+          "efficiency": 0.99
+        },
+        "designFlowReturnTemperatureC": {
+          "flowTemperatureC": 55.0,
+          "returnTemperatureC": 45.0
+        }
+      }
+    ],
+    "operatingConditions": [
+      {
+        "conditionId": "winter",
+        "flowReturnTemperatureC": {
+          "flowTemperatureC": 55.0,
+          "returnTemperatureC": 45.0
+        },
+        "outdoorTemperatureC": -5.0
+      }
+    ],
+    "timeSteps": [
+      {
+        "timeStepIndex": 0,
+        "month": 1,
+        "usefulHeatingLoadKWh": 100.0,
+        "usefulDhwLoadKWh": 20.0,
+        "operatingConditionId": "winter"
+      }
+    ]
+  },
+  "expected": {
+    "annualUsefulEnergyKWh": 120.0,
+    "annualFinalEnergyKWh": 149.185058,
+    "annualPrimaryEnergyKWh": 164.103564,
+    "annualDistributionLossEnergyKWh": 7.896469,
+    "timeStepCount": 1
+  },
+  "tolerance": {
+    "absolute": 5.0,
+    "relativePercent": 2.0
+  }
+}

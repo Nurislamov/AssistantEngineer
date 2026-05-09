@@ -1,0 +1,50 @@
+{
+  "id": "residential-table-driven",
+  "claimBoundary": [
+    "EN12831-3-style standard-based domestic hot water calculation.",
+    "Internal analytical anchors only.",
+    "No full EN12831-3 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "usageCategory": "ResidentialApartment",
+    "referenceMode": "PeopleBased",
+    "peopleCount": 3,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 0,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 0.0,
+    "hotWaterTemperatureC": 55.0,
+    "coldWaterTemperatureC": 10.0,
+    "distributionLossFactor": 0.1,
+    "storageLossKWhPerDay": 0.6,
+    "circulationLossKWhPerDay": 0.4,
+    "includeHourlyProfile": true,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "ResidentialWeekdayWeekend",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null,
+    "useTableDrivenReferenceData": true,
+    "tableDrivenUsageCategory": "ResidentialDwelling"
+  },
+  "expected": {
+    "dailyVolumeLiters": 144.0,
+    "dailyDrawEnergyKWh": 7.535,
+    "dailyTotalEnergyKWh": 9.288,
+    "annualVolumeLiters": 52560.0,
+    "annualDrawEnergyKWh": 2750.202,
+    "annualTotalEnergyKWh": 3390.222,
+    "equivalentOccupantsUsed": 3.0,
+    "referenceDailyVolumeLiters": 144.0,
+    "hourlyResultsCount": 8760
+  },
+  "tolerance": {
+    "absolute": 10.0,
+    "relativePercent": 5.0
+  }
+}

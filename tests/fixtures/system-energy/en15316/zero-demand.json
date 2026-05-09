@@ -1,0 +1,70 @@
+{
+  "id": "zero-demand",
+  "claimBoundary": [
+    "EN15316-style system energy calculation.",
+    "Internal engineering anchor.",
+    "Not full validation.",
+    "No full EN15316 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "calculationId": "zero-demand",
+    "circuits": [
+      {
+        "circuitId": "zero-c1",
+        "circuitType": "Simplified",
+        "emission": {
+          "modelKind": "Simplified",
+          "efficiency": 0.97
+        },
+        "distribution": {
+          "efficiency": 0.95,
+          "auxiliaryEnergyFraction": 0.01
+        },
+        "generation": {
+          "technology": "ElectricResistance",
+          "carrier": "Electricity",
+          "efficiency": 0.99,
+          "primaryEnergyFactor": 2.0
+        },
+        "storage": {
+          "efficiency": 1.0
+        },
+        "designFlowReturnTemperatureC": {
+          "flowTemperatureC": 50.0,
+          "returnTemperatureC": 40.0
+        }
+      }
+    ],
+    "operatingConditions": [
+      {
+        "conditionId": "off",
+        "flowReturnTemperatureC": {
+          "flowTemperatureC": 50.0,
+          "returnTemperatureC": 40.0
+        },
+        "outdoorTemperatureC": 10.0
+      }
+    ],
+    "timeSteps": [
+      {
+        "timeStepIndex": 0,
+        "month": 7,
+        "usefulHeatingLoadKWh": 0.0,
+        "usefulDhwLoadKWh": 0.0,
+        "operatingConditionId": "off"
+      }
+    ]
+  },
+  "expected": {
+    "annualUsefulEnergyKWh": 0.0,
+    "annualFinalEnergyKWh": 0.0,
+    "annualPrimaryEnergyKWh": 0.0,
+    "annualDistributionLossEnergyKWh": 0.0,
+    "timeStepCount": 1
+  },
+  "tolerance": {
+    "absolute": 0.1,
+    "relativePercent": 0.1
+  }
+}

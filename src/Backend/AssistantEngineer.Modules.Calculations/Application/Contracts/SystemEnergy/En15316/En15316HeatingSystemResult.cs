@@ -1,0 +1,26 @@
+namespace AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy.En15316;
+
+public sealed record En15316HeatingSystemResult(
+    string CalculationId,
+    IReadOnlyList<HeatingSystemTimeStepResult> TimeSteps,
+    IReadOnlyDictionary<int, double> MonthlyUsefulHeatingEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyUsefulDhwEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyUsefulTotalEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyEmissionLossEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyDistributionLossEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyStorageLossEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyGeneratorLossEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyFinalEnergyKWh,
+    IReadOnlyDictionary<int, double> MonthlyPrimaryEnergyKWh,
+    double AnnualUsefulHeatingEnergyKWh,
+    double AnnualUsefulDhwEnergyKWh,
+    double AnnualUsefulEnergyKWh,
+    double AnnualEmissionLossEnergyKWh,
+    double AnnualDistributionLossEnergyKWh,
+    double AnnualStorageLossEnergyKWh,
+    double AnnualGeneratorLossEnergyKWh,
+    double AnnualFinalEnergyKWh,
+    double AnnualPrimaryEnergyKWh,
+    double AnnualOverallUsefulToFinalEfficiency,
+    IReadOnlyList<En15316SystemEnergyDiagnostics> Diagnostics,
+    IReadOnlyList<string> AssumptionsUsed);

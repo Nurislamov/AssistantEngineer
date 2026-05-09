@@ -55,7 +55,10 @@ public sealed class En15316SystemEnergyApplicationIntegrationTests
         var service = new SystemEnergyEngine(
             Options.Create(options),
             calculator,
-            adapter);
+            adapter,
+            new En15316HeatingSystemCircuitCalculator(
+                new En15316HeatingSystemInputValidator(),
+                new En15316SystemEnergyReferenceDataProvider()));
 
         var input = new SystemEnergyInput(
             UsefulHeatingEnergyKWh: 5000,
@@ -190,6 +193,59 @@ public sealed class En15316SystemEnergyApplicationIntegrationTests
     }
 
     [Fact]
+    public void CircuitLevelOptIn_UsesCircuitCalculatorPath()
+    {
+        var service = CreateService(new SystemEnergyOptions
+        {
+            UseEn15316InspiredChain = true,
+            UseEn15316CircuitLevelCalculator = true
+        });
+
+        var circuitInput = new En15316HeatingSystemInput(
+            CalculationId: "engine-circuit-opt-in",
+            Circuits:
+            [
+                new HeatingCircuit(
+                    CircuitId: "c1",
+                    CircuitType: HeatingCircuitType.Radiator,
+                    Emission: new EmissionSystemModel(En15316EmissionModelKind.Simplified, Efficiency: 0.97),
+                    Distribution: new DistributionCircuitModel(Efficiency: 0.93, AuxiliaryEnergyFraction: 0.02),
+                    Generation: new GenerationSystemModel(
+                        Technology: En15316GenerationTechnology.Boiler,
+                        Carrier: En15316EnergyCarrier.NaturalGas,
+                        Efficiency: 0.9,
+                        PrimaryEnergyFactor: 1.1),
+                    Storage: new StorageSystemModel(Efficiency: 0.99),
+                    DesignFlowReturnTemperatureC: new FlowReturnTemperaturePair(55, 45))
+            ],
+            OperatingConditions:
+            [
+                new HeatingOperatingCondition(
+                    ConditionId: "winter",
+                    FlowReturnTemperatureC: new FlowReturnTemperaturePair(55, 45),
+                    OutdoorTemperatureC: -5)
+            ],
+            TimeSteps:
+            [
+                new HeatingSystemTimeStepInput(
+                    TimeStepIndex: 0,
+                    Month: 1,
+                    UsefulHeatingLoadKWh: 100,
+                    UsefulDhwLoadKWh: 20,
+                    OperatingConditionId: "winter")
+            ]);
+
+        var result = service.Calculate(new SystemEnergyInput(
+            UsefulHeatingEnergyKWh: 1, // ignored by opt-in circuit path
+            En15316HeatingCircuitInput: circuitInput));
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.True(result.Value.TotalFinalEnergyKWh > 0);
+        Assert.True(result.Value.PrimaryEnergyKWh > 0);
+        Assert.Equal(0, result.Value.FinalCoolingEnergyKWh, 6);
+    }
+
+    [Fact]
     public void DIRegistration_UsesSafeLifetimes()
     {
         var services = new ServiceCollection();
@@ -214,7 +270,10 @@ public sealed class En15316SystemEnergyApplicationIntegrationTests
         new(
             Options.Create(options),
             new En15316SystemEnergyChainCalculator(new En15316SystemEnergyReferenceDataProvider()),
-            new En15316SystemEnergyApplicationAdapter());
+            new En15316SystemEnergyApplicationAdapter(),
+            new En15316HeatingSystemCircuitCalculator(
+                new En15316HeatingSystemInputValidator(),
+                new En15316SystemEnergyReferenceDataProvider()));
 
     private static void AssertServiceLifetime<TService>(
         IServiceCollection services,

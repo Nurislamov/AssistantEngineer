@@ -1,0 +1,79 @@
+{
+  "id": "distribution-losses-enabled",
+  "claimBoundary": [
+    "EN15316-style system energy calculation.",
+    "Internal engineering anchor.",
+    "Not full validation.",
+    "No full EN15316 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "calculationId": "distribution-losses-enabled",
+    "circuits": [
+      {
+        "circuitId": "dist-c1",
+        "circuitType": "Radiator",
+        "emission": {
+          "modelKind": "Simplified",
+          "efficiency": 0.98
+        },
+        "distribution": {
+          "efficiency": 0.85,
+          "auxiliaryEnergyFraction": 0.00
+        },
+        "generation": {
+          "technology": "Boiler",
+          "carrier": "NaturalGas",
+          "efficiency": 0.9,
+          "primaryEnergyFactor": 1.1
+        },
+        "storage": {
+          "efficiency": 1.0
+        },
+        "designFlowReturnTemperatureC": {
+          "flowTemperatureC": 60.0,
+          "returnTemperatureC": 45.0
+        }
+      }
+    ],
+    "operatingConditions": [
+      {
+        "conditionId": "design",
+        "flowReturnTemperatureC": {
+          "flowTemperatureC": 60.0,
+          "returnTemperatureC": 45.0
+        },
+        "outdoorTemperatureC": -10.0,
+        "outdoorResetSlopePerK": 0.1,
+        "outdoorResetReferenceTemperatureC": 15.0
+      }
+    ],
+    "timeSteps": [
+      {
+        "timeStepIndex": 0,
+        "month": 1,
+        "usefulHeatingLoadKWh": 100.0,
+        "usefulDhwLoadKWh": 0.0,
+        "operatingConditionId": "design"
+      },
+      {
+        "timeStepIndex": 1,
+        "month": 1,
+        "usefulHeatingLoadKWh": 80.0,
+        "usefulDhwLoadKWh": 0.0,
+        "operatingConditionId": "design"
+      }
+    ]
+  },
+  "expected": {
+    "annualUsefulEnergyKWh": 180.0,
+    "annualFinalEnergyKWh": 208.779164,
+    "annualPrimaryEnergyKWh": 229.65708,
+    "annualDistributionLossEnergyKWh": 28.185187,
+    "timeStepCount": 2
+  },
+  "tolerance": {
+    "absolute": 5.0,
+    "relativePercent": 2.0
+  }
+}

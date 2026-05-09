@@ -40,14 +40,24 @@ public sealed class En15316SystemEnergyTraceabilityTests
             "calculations",
             "system-energy",
             "En15316SystemEnergyChainCalculator.md");
+        var circuitDocPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "calculations",
+            "En15316SystemEnergyCircuitModel.md");
 
         Assert.True(File.Exists(docPath), $"Documentation file was not found: {docPath}");
+        Assert.True(File.Exists(circuitDocPath), $"Documentation file was not found: {circuitDocPath}");
 
         var docText = File.ReadAllText(docPath);
+        var circuitDocText = File.ReadAllText(circuitDocPath);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full EN 15316 compliance");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
         Assert.DoesNotContain("EN 15316 validated", docText, StringComparison.OrdinalIgnoreCase);
+        AssertTokenAppearsOnlyAsNegatedClaim(circuitDocText, "full EN15316 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(circuitDocText, "external validation");
+        Assert.Contains("handoff", circuitDocText, StringComparison.OrdinalIgnoreCase);
 
         var fixturePaths = new[]
         {
@@ -55,7 +65,11 @@ public sealed class En15316SystemEnergyTraceabilityTests
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "condensing-boiler-heating-with-recovered-losses.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "heat-pump-heating-electricity-primary.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "chiller-cooling-electricity-primary.json"),
-            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "dhw-storage-distribution-generation-chain.json")
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "dhw-storage-distribution-generation-chain.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "boiler-simple-circuit.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "heat-pump-simple-circuit.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "distribution-losses-enabled.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "system-energy", "en15316", "zero-demand.json")
         };
 
         foreach (var path in fixturePaths)

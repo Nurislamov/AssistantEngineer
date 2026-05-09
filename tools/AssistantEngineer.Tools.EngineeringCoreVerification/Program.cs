@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tools.EngineeringCoreVerification;
 
@@ -31,6 +32,7 @@ internal static class Program
             }
 
             AssertNoForbiddenTerminologyAndClaims(repoRoot);
+            AssertExternalComparisonWorkflowFoundation(repoRoot);
 
             var steps = BuildSteps(options);
 
@@ -62,7 +64,11 @@ internal static class Program
             Console.WriteLine("- annual true hourly 8760 gate");
             Console.WriteLine("- hourly heat-balance and single-zone gates");
             Console.WriteLine("- ground and adjacent simplified gates");
+            Console.WriteLine("- ISO13370-style virtual ground lane guards");
+            Console.WriteLine("- EN16798-style standard-based natural ventilation guards");
+            Console.WriteLine("- multi-zone fixtures and documentation guards");
             Console.WriteLine("- EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness scaffold");
+            Console.WriteLine("- external comparison workflow foundation guardrails");
             Console.WriteLine("- release/scope/developer documentation");
 
             return 0;
@@ -106,7 +112,7 @@ internal static class Program
 
             DotnetTest(
                 "Engineering Core documentation guard tests",
-                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1FrontendDisclosureDocumentationTests"),
+                "EngineeringCoreV1ProjectDocumentationTests|EngineeringCoreV1ReleaseDocumentationTests|EngineeringCoreV1ScopeDocumentationTests|EngineeringCoreV1FrontendDisclosureDocumentationTests|Iso52016MultiZoneStageVerificationTests|Iso13370VirtualGroundTraceabilityTests|En15316SystemEnergyTraceabilityTests"),
 
             DotnetTest(
                 "Engineering Core test profile script guard tests",
@@ -220,7 +226,11 @@ internal static class Program
 
             DotnetTest(
                 "Engineering Core hourly heat-balance, zone, ground and adjacent closure tests",
-                "Iso52016EngineeringCoreV1ClosureTests|GroundSimplifiedEngineeringCoreV1ClosureTests|AdjacentZoneSimplifiedEngineeringCoreV1ClosureTests"),
+                "Iso52016EngineeringCoreV1ClosureTests|GroundSimplifiedEngineeringCoreV1ClosureTests|AdjacentZoneSimplifiedEngineeringCoreV1ClosureTests|Iso52016MultiZone|Iso13370VirtualGround"),
+
+            DotnetTest(
+                "Engineering Core natural ventilation EN16798-style guard tests",
+                "Iso16798NaturalVentilation|VentilationAndInfiltrationLoadEngineTests"),
 
             DotnetTest(
                 "EnergyPlus/ASHRAE 140 / BESTEST-style validation anchor harness guard tests",
@@ -451,6 +461,119 @@ internal static class Program
             energy + calc + parity + "Verification",
             "energy" + calc + parity
         };
+    }
+
+    private static void AssertExternalComparisonWorkflowFoundation(string repoRoot)
+    {
+        var requiredPaths = new[]
+        {
+            Path.Combine(repoRoot, "docs", "validation", "ExternalComparisonCaseRegistry.json"),
+            Path.Combine(repoRoot, "docs", "calculations", "ExternalComparisonWorkflow.md"),
+            Path.Combine(repoRoot, "docs", "calculations", "EnergyPlusComparisonWorkflow.md"),
+            Path.Combine(repoRoot, "docs", "calculations", "Ashrae140BestestStyleAnchors.md"),
+            Path.Combine(repoRoot, "tests", "fixtures", "external-comparison", "energyplus", "README.md"),
+            Path.Combine(repoRoot, "tests", "fixtures", "external-comparison", "ashrae140-style", "README.md")
+        };
+
+        var missing = requiredPaths.Where(path => !File.Exists(path)).ToArray();
+        if (missing.Length > 0)
+        {
+            throw new InvalidOperationException(
+                "External comparison workflow foundation files are missing:\n" +
+                string.Join('\n', missing.Select(path => Path.GetRelativePath(repoRoot, path))));
+        }
+
+        using var registry = JsonDocument.Parse(
+            File.ReadAllText(Path.Combine(repoRoot, "docs", "validation", "ExternalComparisonCaseRegistry.json")));
+
+        if (!registry.RootElement.TryGetProperty("cases", out var casesNode) || casesNode.ValueKind != JsonValueKind.Array)
+            throw new InvalidOperationException("ExternalComparisonCaseRegistry.json must contain a 'cases' array.");
+
+        var unsupportedClaimMarkers = new[]
+        {
+            ("energyplus " + "validated").ToLowerInvariant(),
+            ("ashrae 140 " + "validated").ToLowerInvariant(),
+            ("bestest " + "passed").ToLowerInvariant()
+        };
+
+        var violations = new List<string>();
+        foreach (var caseNode in casesNode.EnumerateArray())
+        {
+            var caseId = GetString(caseNode, "caseId");
+            var status = GetString(caseNode, "status");
+            var expectedOutput = caseNode.TryGetProperty("expectedOutput", out var expectedNode) ? expectedNode : default;
+            var tolerance = caseNode.TryGetProperty("tolerance", out var toleranceNode) ? toleranceNode : default;
+            var provenance = caseNode.TryGetProperty("provenance", out var provenanceNode) ? provenanceNode : default;
+
+            var hasExpectedOutputPath =
+                expectedOutput.ValueKind == JsonValueKind.Object &&
+                !string.IsNullOrWhiteSpace(GetString(expectedOutput, "outputPath"));
+
+            var hasTolerance =
+                tolerance.ValueKind == JsonValueKind.Object &&
+                tolerance.TryGetProperty("relativePercent", out var relativePercent) &&
+                relativePercent.ValueKind == JsonValueKind.Number &&
+                tolerance.TryGetProperty("absolute", out var absolute) &&
+                absolute.ValueKind == JsonValueKind.Number;
+
+            var hasProvenance =
+                provenance.ValueKind == JsonValueKind.Object &&
+                !string.IsNullOrWhiteSpace(GetString(provenance, "sourceTool")) &&
+                !string.IsNullOrWhiteSpace(GetString(provenance, "artifactPath"));
+
+            if (status.Equals("PassedTolerance", StringComparison.Ordinal))
+            {
+                if (!hasExpectedOutputPath || !hasTolerance || !hasProvenance)
+                {
+                    violations.Add(
+                        $"{caseId}: PassedTolerance requires expectedOutput.outputPath + tolerance + provenance.");
+                }
+            }
+
+            if (status.Equals("ExternalOutputImported", StringComparison.Ordinal))
+            {
+                if (!hasExpectedOutputPath || !hasProvenance)
+                {
+                    violations.Add(
+                        $"{caseId}: ExternalOutputImported requires expectedOutput.outputPath + provenance.");
+                }
+            }
+
+            if (status.Equals("Compared", StringComparison.Ordinal) || status.Equals("FailedTolerance", StringComparison.Ordinal))
+            {
+                if (!hasExpectedOutputPath || !hasTolerance)
+                {
+                    violations.Add(
+                        $"{caseId}: {status} requires expectedOutput.outputPath + tolerance.");
+                }
+            }
+
+            var claimBoundary = GetString(caseNode, "claimBoundary");
+            var notes = caseNode.TryGetProperty("notes", out var notesNode) && notesNode.ValueKind == JsonValueKind.Array
+                ? string.Join(" ", notesNode.EnumerateArray().Select(item => item.GetString() ?? string.Empty))
+                : string.Empty;
+            var fullText = $"{GetString(caseNode, "name")} {GetString(caseNode, "workflow")} {claimBoundary} {notes}".ToLowerInvariant();
+
+            foreach (var marker in unsupportedClaimMarkers)
+            {
+                if (fullText.Contains(marker, StringComparison.Ordinal))
+                    violations.Add($"{caseId}: unsupported claim marker '{marker}'.");
+            }
+        }
+
+        if (violations.Count > 0)
+        {
+            throw new InvalidOperationException(
+                "External comparison workflow guard violations found:\n" +
+                string.Join('\n', violations.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(item => item, StringComparer.OrdinalIgnoreCase)));
+        }
+
+        static string GetString(JsonElement node, string propertyName)
+        {
+            return node.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
+                ? property.GetString() ?? string.Empty
+                : string.Empty;
+        }
     }
 
     private static IEnumerable<string> EnumerateTextFiles(string path)

@@ -22,12 +22,12 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         Assert.Equal("internal-engineering-anchor", root.GetProperty("status").GetString());
 
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
-        Assert.Contains("ISO16798-inspired natural ventilation engineering calculator.", claimBoundary);
-        Assert.Contains("No full ISO 16798 compliance claim.", claimBoundary);
-        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("EN16798-style standard-based natural ventilation engineering calculator.", claimBoundary);
+        Assert.Contains("No full EN16798 compliance claim.", claimBoundary);
+        Assert.Contains("No StandardReference comparison claim.", claimBoundary);
         Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
         Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
-        Assert.Contains("No external certification claim.", claimBoundary);
+        Assert.Contains("No external validation claim.", claimBoundary);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         Assert.DoesNotContain("ASHRAE 140 / BESTEST-style validated", docText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 16798 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference comparison");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
 
         var fixturePaths = new[]
@@ -54,7 +54,12 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "closed-openings-zero-flow.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "stack-only-temperature-delta.json"),
             Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "wind-only-open-window.json"),
-            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "stack-plus-wind-ach-clamped.json")
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "iso16798-natural", "stack-plus-wind-ach-clamped.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "natural", "single-sided-wind-only.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "natural", "single-sided-stack-only.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "natural", "opening-schedule-closed.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "natural", "occupancy-controlled.json"),
+            Path.Combine(TestPaths.RepoRoot, "tests", "fixtures", "ventilation", "natural", "ach-clamped.json")
         };
 
         foreach (var path in fixturePaths)
@@ -99,7 +104,7 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         var claimBoundary = root.GetProperty("claimBoundary").EnumerateArray().Select(item => item.GetString()).ToArray();
         Assert.Contains("Compatibility behavior preserved by default.", claimBoundary);
         Assert.Contains("No full ISO 16798 compliance claim.", claimBoundary);
-        Assert.Contains("No StandardReference equivalence claim.", claimBoundary);
+        Assert.Contains("No StandardReference comparison claim.", claimBoundary);
         Assert.Contains("No EnergyPlus comparison workflow claim.", claimBoundary);
         Assert.Contains("No ASHRAE 140 / BESTEST-style validation anchor claim.", claimBoundary);
         Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
@@ -110,8 +115,10 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         Assert.DoesNotContain("ISO 16798 validated", docText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ExternalReferenceCovered", docText, StringComparison.OrdinalIgnoreCase);
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "full ISO 16798 compliance");
-        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference equivalence");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "full EN16798 compliance");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "StandardReference comparison");
         AssertTokenAppearsOnlyAsNegatedClaim(docText, "EnergyPlus comparison workflow");
+        AssertTokenAppearsOnlyAsNegatedClaim(docText, "external validation claim");
     }
 
     private static void AssertTokenAppearsOnlyAsNegatedClaim(string text, string token)
@@ -130,3 +137,4 @@ public sealed class Iso16798NaturalVentilationTraceabilityTests
         }
     }
 }
+

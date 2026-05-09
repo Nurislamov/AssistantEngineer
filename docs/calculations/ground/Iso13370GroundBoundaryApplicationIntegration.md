@@ -23,9 +23,15 @@
    - `Iso13370GroundHeatTransferService` keeps the compatibility formula path.
 2. Opt-in mode:
    - `UseIso13370InspiredBoundaryCalculator = true`.
-   - service maps room metadata through `Iso13370GroundBoundaryApplicationAdapter`;
-   - service uses `Iso13370GroundBoundaryCalculator`;
-   - mapped outputs: heat transfer coefficient and boundary weights.
+   - default inspired lane:
+     - `UseIso13370VirtualGroundTemperatureLane = false`;
+     - service maps room metadata through `Iso13370GroundBoundaryApplicationAdapter`;
+     - service uses `Iso13370GroundBoundaryCalculator`.
+   - virtual-ground lane:
+     - `UseIso13370VirtualGroundTemperatureLane = true`;
+     - service maps room metadata into `Iso13370VirtualGroundInput`;
+     - service uses `Iso13370VirtualGroundTemperatureCalculator`.
+   - mapped outputs remain: heat transfer coefficient and boundary weights.
 3. Missing metadata fallback:
    - matrix fallback path is preserved in both compatibility and opt-in modes.
 
@@ -42,6 +48,7 @@
 - this stage does not switch behavior globally;
 - adoption remains explicit via options flag;
 - existing room-level and matrix fallback behavior remains stable by default.
+- virtual-ground lane is additive and opt-in only.
 
 ## Limitations
 

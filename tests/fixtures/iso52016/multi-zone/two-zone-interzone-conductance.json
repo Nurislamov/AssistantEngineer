@@ -1,0 +1,68 @@
+{
+  "id": "two-zone-interzone-conductance",
+  "claimBoundary": [
+    "Standard-based multi-zone internal analytical anchor.",
+    "Internal engineering anchor only.",
+    "Not full validation.",
+    "No external-comparison output claim."
+  ],
+  "notes": "Two zones with different initial temperatures and an inter-zone conductance link.",
+  "input": {
+    "buildingId": "MZ-FX-INTERZONE-COND",
+    "zones": [
+      {
+        "zoneId": "ZONE-A",
+        "name": "Zone A",
+        "floorAreaSquareMeters": 30.0,
+        "volumeCubicMeters": 90.0,
+        "boundaryIds": []
+      },
+      {
+        "zoneId": "ZONE-B",
+        "name": "Zone B",
+        "floorAreaSquareMeters": 30.0,
+        "volumeCubicMeters": 90.0,
+        "boundaryIds": []
+      }
+    ],
+    "boundaryLinks": [],
+    "interZoneConductanceLinks": [
+      {
+        "linkId": "COND-A-B",
+        "fromZoneId": "ZONE-A",
+        "toZoneId": "ZONE-B",
+        "conductanceWPerK": 60.0
+      }
+    ],
+    "interZoneAirflowLinks": [],
+    "hourlyBoundaryConditions": [],
+    "zoneHourlyProfiles": [
+      {
+        "zoneId": "ZONE-A",
+        "initialTemperatureCelsius": 25.0,
+        "thermalCapacityJPerK": 800000.0,
+        "heatingSetpointProfileCelsius": [0.0],
+        "coolingSetpointProfileCelsius": [50.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      },
+      {
+        "zoneId": "ZONE-B",
+        "initialTemperatureCelsius": 15.0,
+        "thermalCapacityJPerK": 800000.0,
+        "heatingSetpointProfileCelsius": [0.0],
+        "coolingSetpointProfileCelsius": [50.0],
+        "internalGainsProfileW": [0.0],
+        "solarGainsProfileW": [0.0],
+        "ventilationInfiltrationConductanceProfileWPerK": [0.0]
+      }
+    ],
+    "claimFlags": [
+      "validation anchor",
+      "internal engineering anchor",
+      "standard-based calculation",
+      "not full validation"
+    ]
+  }
+}

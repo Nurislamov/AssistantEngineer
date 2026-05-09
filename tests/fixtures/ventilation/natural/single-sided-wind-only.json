@@ -1,0 +1,60 @@
+{
+  "id": "single-sided-wind-only",
+  "claimBoundary": [
+    "EN16798-style standard-based natural ventilation internal analytical anchor.",
+    "Internal analytical anchor only.",
+    "Not full validation.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "roomVolumeM3": 100.0,
+    "indoorTemperatureC": 22.0,
+    "outdoorTemperatureC": 22.0,
+    "windSpeedMPerS": 4.0,
+    "airDensityKgPerM3": 1.2,
+    "airSpecificHeatJPerKgK": 1005.0,
+    "dischargeCoefficient": 0.6,
+    "maximumAirChangesPerHour": 50.0,
+    "openingHeightM": 2.0,
+    "usefulHeightDifferenceM": 2.0,
+    "windPressureCoefficient": 0.7,
+    "windExposureFactor": 1.2,
+    "stackCoefficient": 1.0,
+    "windCoefficient": 1.0,
+    "openings": [
+      {
+        "openingId": "wind-only-opening",
+        "openingAreaM2": 1.0,
+        "openingRatio": 0.5,
+        "isOpen": true
+      }
+    ],
+    "naturalVentilationOpenings": [
+      {
+        "openingId": "wind-only-opening",
+        "openingAreaM2": 1.0,
+        "openingFraction": 0.5,
+        "isOpen": true,
+        "openingHeightM": 2.0,
+        "dischargeCoefficient": 0.6
+      }
+    ],
+    "calculationOptions": {
+      "branchSelectionMode": "SumWindAndStack",
+      "useDensityCorrection": false,
+      "useAltitudeDensityCorrection": false,
+      "singleSidedOpeningCoefficient": 1.0,
+      "maximumAirChangesPerHour": 50.0
+    }
+  },
+  "expected": {
+    "selectedBranch": "WindOnly",
+    "expectZeroAirflow": false,
+    "expectPositiveWindComponent": true,
+    "expectPositiveStackComponent": false,
+    "expectClampedAch": false,
+    "expectClosedBySchedule": false,
+    "expectClosedByOccupancy": false
+  }
+}

@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.SystemEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Modules.Calculations.Composition;
@@ -25,6 +26,9 @@ internal static class SystemEnergyRegistration
         services.AddSingleton<ISystemEnergyPrimaryEnergyCalculator, SystemEnergyPrimaryEnergyCalculator>();
         services.AddSingleton<ISystemEnergyCalculationSummaryBuilder, SystemEnergyCalculationSummaryBuilder>();
         services.AddSingleton<ISystemEnergyDefaultFactorSetProvider, SystemEnergyDefaultFactorSetProvider>();
+        services.AddSingleton<SystemEnergyUsefulEnergyHandoffBuilder>();
+        services.AddSingleton<En15316HeatingSystemInputValidator>();
+        services.AddSingleton<En15316HeatingSystemCircuitCalculator>();
 
         return services;
     }

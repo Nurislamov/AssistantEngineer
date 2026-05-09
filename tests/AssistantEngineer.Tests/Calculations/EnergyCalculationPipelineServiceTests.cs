@@ -15,7 +15,10 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy.En15316;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
 using AssistantEngineer.Modules.Calculations.Application.Models.Sizing;
@@ -28,6 +31,8 @@ using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.E
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Options;
@@ -359,6 +364,99 @@ public class EnergyCalculationPipelineServiceTests
     }
 
     [Fact]
+    public async Task SystemEnergyHandoff_MapsBuildingAndDhwUsefulEnergy_WithStandardBasedLabel()
+    {
+        var building = CreateDeterministicBuilding();
+        var hourlyRecords = CreateAnnualHourlyRecords(heatingLoadW: 100, coolingLoadW: 50);
+        var options = new SystemEnergyOptions
+        {
+            UseEn15316InspiredChain = true,
+            UseEn15316CircuitLevelCalculator = true,
+            DefaultHeatingTechnology = En15316GenerationTechnology.DirectElectric,
+            DefaultHeatingCarrier = En15316EnergyCarrier.Electricity,
+            DefaultCoolingTechnology = En15316GenerationTechnology.Chiller,
+            DefaultCoolingCarrier = En15316EnergyCarrier.Electricity,
+            DefaultDhwCarrier = En15316EnergyCarrier.NaturalGas
+        };
+        var service = CreateService(
+            building,
+            energyCalculator: new FixedBuildingEnergyCalculator(hourlyRecords),
+            systemEnergyOptions: options);
+        var dhwHandoff = CreateDhwHandoff(hourlyUseful: 0.2);
+
+        var result = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(
+            building.Id,
+            dhwHandoff: dhwHandoff);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal("Standard-Based Calculation", result.Value.CalculationMethodLabel);
+        Assert.NotNull(result.Value.SystemEnergyInput.En15316HeatingCircuitInput);
+        Assert.Equal(8760, result.Value.SystemEnergyInput.En15316HeatingCircuitInput!.TimeSteps.Count);
+        Assert.Equal(0.1, result.Value.SystemEnergyInput.En15316HeatingCircuitInput.TimeSteps[0].UsefulHeatingLoadKWh, 6);
+        Assert.Equal(0.2, result.Value.SystemEnergyInput.En15316HeatingCircuitInput.TimeSteps[0].UsefulDhwLoadKWh, 6);
+        Assert.Equal(438, result.Value.SystemEnergyInput.UsefulCoolingEnergyKWh, 6);
+        Assert.Contains(result.Value.BuildingHandoff.Entries, entry =>
+            entry.EnergyServiceType == SystemEnergyHandoffEnergyServiceType.SpaceHeating &&
+            entry.Carrier == En15316EnergyCarrier.Electricity);
+        Assert.NotNull(result.Value.DomesticHotWaterHandoff);
+        Assert.NotNull(result.Value.SystemEnergyResult);
+    }
+
+    [Fact]
+    public async Task SystemEnergyHandoff_AnnualFinalEnergy_MatchesDeterministicChainResult()
+    {
+        var building = CreateDeterministicBuilding();
+        var options = new SystemEnergyOptions
+        {
+            UseEn15316InspiredChain = true,
+            UseEn15316CircuitLevelCalculator = true,
+            DefaultHeatingTechnology = En15316GenerationTechnology.DirectElectric,
+            DefaultHeatingCarrier = En15316EnergyCarrier.Electricity,
+            DefaultCoolingTechnology = En15316GenerationTechnology.Chiller,
+            DefaultCoolingCarrier = En15316EnergyCarrier.Electricity
+        };
+        var service = CreateService(
+            building,
+            systemEnergyOptions: options);
+
+        var result = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        var system = Assert.IsType<SystemEnergyResult>(result.Value.SystemEnergyResult);
+
+        var expectedHeatingFinal = (100.0 / 0.97 / 0.93 / 0.98) * 1.02;
+        var expectedCoolingFinal = 50.0 / 2.8;
+        var expectedTotal = expectedHeatingFinal + expectedCoolingFinal;
+
+        Assert.Equal(expectedHeatingFinal, system.FinalHeatingEnergyKWh, 3);
+        Assert.Equal(expectedCoolingFinal, system.FinalCoolingEnergyKWh, 3);
+        Assert.Equal(expectedTotal, system.TotalFinalEnergyKWh, 3);
+    }
+
+    [Fact]
+    public async Task SystemEnergyHandoff_OutputMetadata_DoesNotIntroduceUnsupportedClaims()
+    {
+        var building = CreateDeterministicBuilding();
+        var options = new SystemEnergyOptions
+        {
+            UseEn15316InspiredChain = true,
+            UseEn15316CircuitLevelCalculator = true
+        };
+        var service = CreateService(building, systemEnergyOptions: options);
+
+        var result = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(building.Id);
+
+        Assert.True(result.IsSuccess, result.Error);
+        var assumptions = Assert.IsType<SystemEnergyResult>(result.Value.SystemEnergyResult).AssumptionsUsed;
+        AssertTokensAppearOnlyAsNegatedClaim(assumptions, "full EN15316 compliance");
+        AssertTokensAppearOnlyAsNegatedClaim(assumptions, "external validation");
+        Assert.DoesNotContain(
+            result.Value.Diagnostics,
+            diagnostic => diagnostic.Message.Contains("validated", StringComparison.OrdinalIgnoreCase) &&
+                          !diagnostic.Message.Contains("not", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task EnergyBalanceApplicationPathReturnsValidationWhenSourceUnavailable()
     {
         var building = CreateDeterministicBuilding();
@@ -521,10 +619,21 @@ public class EnergyCalculationPipelineServiceTests
         IGroundTemperatureService? groundTemperatureService = null,
         ISolarRadiationService? solarRadiationService = null,
         CalculationPreferences? preferences = null,
-        IBuildingEnergyCalculator? energyCalculator = null)
+        IBuildingEnergyCalculator? energyCalculator = null,
+        SystemEnergyOptions? systemEnergyOptions = null)
     {
         var repository = new BuildingGraphRepositoryStub(building, preferences);
         var timeProvider = new FixedTimeProvider(FixedNow);
+        var options = systemEnergyOptions ?? new SystemEnergyOptions();
+        var referenceData = new En15316SystemEnergyReferenceDataProvider();
+        var systemEnergyEngine = new SystemEnergyEngine(
+            Options.Create(options),
+            new En15316SystemEnergyChainCalculator(referenceData),
+            new En15316SystemEnergyApplicationAdapter(),
+            new En15316HeatingSystemCircuitCalculator(
+                new En15316HeatingSystemInputValidator(),
+                referenceData));
+        var handoffBuilder = new SystemEnergyUsefulEnergyHandoffBuilder(referenceData);
 
         return new EnergyCalculationPipelineService(
             repository,
@@ -544,7 +653,10 @@ public class EnergyCalculationPipelineServiceTests
             annualClimateDataProvider,
             groundTemperatureService,
             solarRadiationService,
-            Options.Create(new Iso52016EnergyNeedOptions()));
+            Options.Create(new Iso52016EnergyNeedOptions()),
+            systemEnergyEngine,
+            handoffBuilder,
+            Options.Create(options));
     }
 
     private static Building CreateDeterministicBuilding(
@@ -692,6 +804,38 @@ public class EnergyCalculationPipelineServiceTests
                 CoolingLoadW: coolingLoadW,
                 HourDurationH: 1.0))
             .ToArray();
+
+    private static DomesticHotWaterEn15316Handoff CreateDhwHandoff(double hourlyUseful)
+    {
+        var useful = Enumerable.Repeat(hourlyUseful, 8760).ToArray();
+        var zeros = Enumerable.Repeat(0.0, 8760).ToArray();
+
+        return new DomesticHotWaterEn15316Handoff(
+            CalculationId: "DHW-HANDOFF-TEST",
+            EndUse: "DomesticHotWater",
+            UsefulEnergySource: "Internal deterministic test anchor",
+            AnnualUsefulDhwEnergyKWh: useful.Sum(),
+            AnnualDhwSystemHeatRequirementKWh: useful.Sum(),
+            AnnualDhwAuxiliaryElectricityKWh: 0.0,
+            HourlyUsefulDhwEnergyKWh8760: useful,
+            HourlyDhwSystemHeatRequirementKWh8760: useful,
+            HourlyDhwAuxiliaryElectricityKWh8760: zeros,
+            HourlyRecoverableLossKWh8760: zeros,
+            HourlyNonRecoverableLossKWh8760: zeros,
+            Diagnostics: []);
+    }
+
+    private static void AssertTokensAppearOnlyAsNegatedClaim(IEnumerable<string> lines, string token)
+    {
+        foreach (var line in lines.Where(line => line.Contains(token, StringComparison.OrdinalIgnoreCase)))
+        {
+            Assert.True(
+                line.Contains("No ", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("not ", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("does not", StringComparison.OrdinalIgnoreCase),
+                $"Token '{token}' appears without negation in line: {line}");
+        }
+    }
 
     private static int MonthFromHour(int hour)
     {

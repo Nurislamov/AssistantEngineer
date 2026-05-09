@@ -15,4 +15,9 @@ public sealed record Iso16798NaturalVentilationInput(
     double WindExposureFactor,
     double StackCoefficient,
     double WindCoefficient,
-    IReadOnlyList<Iso16798NaturalVentilationOpeningInput> Openings);
+    IReadOnlyList<Iso16798NaturalVentilationOpeningInput> Openings,
+    IReadOnlyList<NaturalVentilationOpening>? NaturalVentilationOpenings = null,
+    NaturalVentilationOpeningSchedule? OpeningSchedule = null,
+    NaturalVentilationDrivingForces? DrivingForces = null,
+    NaturalVentilationOccupancyControl? OccupancyControl = null,
+    NaturalVentilationCalculationOptions? CalculationOptions = null);

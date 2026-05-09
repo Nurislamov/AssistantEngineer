@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Buildings.Domain.Ground;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ground.Iso13370;
 using AssistantEngineer.Modules.Calculations.Application.Models.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ground;
@@ -133,6 +134,71 @@ public sealed class Iso13370GroundBoundaryApplicationIntegrationTests
     }
 
     [Fact]
+    public void VirtualGroundLane_UsesVirtualGroundCalculatorWhenEnabled()
+    {
+        var optionsValue = new Iso13370GroundHeatTransferOptions
+        {
+            UseIso13370InspiredBoundaryCalculator = true,
+            UseIso13370VirtualGroundTemperatureLane = true,
+            GroundConductivityWPerMK = 2.4,
+            OutdoorAnnualMeanTemperatureC = 10.0,
+            VirtualGroundSeasonalAmplitudeC = 8.0,
+            VirtualGroundSeasonalPhaseShiftMonths = 1.0,
+            VirtualGroundEquivalentGroundThicknessM = 1.8,
+            VirtualGroundEnableSeasonalComponent = true,
+            VirtualGroundEnablePerimeterThermalBridge = true,
+            UseIso13370VirtualGroundPerimeterThermalBridge = true,
+            VirtualGroundThermalBridgeLinearTransmittanceWPerMK = 0.15,
+            VirtualGroundSeasonalAttenuationFactor = 0.55,
+            VirtualGroundMonthlyHeatTransferVariationFactor = 0.05,
+            VirtualGroundMinimumEquivalentGroundThicknessM = 0.3,
+            VirtualGroundMaximumEquivalentGroundThicknessM = 8.0
+        };
+
+        var options = Options.Create(optionsValue);
+        var boundaryCalculator = new Iso13370GroundBoundaryCalculator(new Iso13370GroundTemperatureProfileCalculator());
+        var adapter = new Iso13370GroundBoundaryApplicationAdapter();
+        var virtualCalculator = new Iso13370VirtualGroundTemperatureCalculator();
+        var service = new Iso13370GroundHeatTransferService(options, boundaryCalculator, adapter, virtualCalculator);
+
+        var room = CreateRoom(areaM2: 50);
+        SetGroundMetadata(
+            room,
+            GroundContactType.SlabOnGround,
+            exposedPerimeterM: 22,
+            burialDepthM: 0.0,
+            wallHeightBelowGradeM: 0.0,
+            horizontalInsulationWidthM: 0.3,
+            perimeterInsulationDepthM: 0.2,
+            underfloorVentilationAch: 0.0);
+
+        var defaults = CreateDefaults();
+        var result = service.CalculateBoundaryCondition(room, defaults);
+
+        var expectedInput = adapter.BuildVirtualGroundInput(
+            room,
+            floorUValueWPerM2K: defaults.FloorUValueWPerM2K,
+            annualAverageOutdoorTemperatureC: optionsValue.OutdoorAnnualMeanTemperatureC,
+            monthlyOutdoorTemperatureProfileC: null,
+            seasonalAmplitudeC: optionsValue.VirtualGroundSeasonalAmplitudeC,
+            seasonalPhaseShiftMonths: optionsValue.VirtualGroundSeasonalPhaseShiftMonths,
+            groundConductivityWPerMK: optionsValue.GroundConductivityWPerMK,
+            equivalentGroundThicknessM: optionsValue.VirtualGroundEquivalentGroundThicknessM,
+            enablePerimeterThermalBridge: optionsValue.UseIso13370VirtualGroundPerimeterThermalBridge,
+            thermalBridgeLinearTransmittanceWPerMK: optionsValue.VirtualGroundThermalBridgeLinearTransmittanceWPerMK,
+            options: new Iso13370GroundCalculationOptions(
+                EnableSeasonalComponent: optionsValue.VirtualGroundEnableSeasonalComponent,
+                EnablePerimeterThermalBridge: optionsValue.VirtualGroundEnablePerimeterThermalBridge,
+                SeasonalAttenuationFactor: optionsValue.VirtualGroundSeasonalAttenuationFactor,
+                MonthlyHeatTransferVariationFactor: optionsValue.VirtualGroundMonthlyHeatTransferVariationFactor,
+                MinimumEquivalentGroundThicknessM: optionsValue.VirtualGroundMinimumEquivalentGroundThicknessM,
+                MaximumEquivalentGroundThicknessM: optionsValue.VirtualGroundMaximumEquivalentGroundThicknessM));
+        var expected = virtualCalculator.Calculate(expectedInput);
+
+        Assert.Equal(expected.AnnualEquivalentGroundHeatTransferCoefficientWPerK, result.HeatTransferCoefficientWPerK, precision: 6);
+    }
+
+    [Fact]
     public void DIRegistration_UsesSingletonLifetimeForGroundIntegrationServices()
     {
         var services = new ServiceCollection();
@@ -141,6 +207,7 @@ public sealed class Iso13370GroundBoundaryApplicationIntegrationTests
 
         AssertServiceLifetime<IGroundHeatTransferService>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso13370GroundBoundaryCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<Iso13370VirtualGroundTemperatureCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso13370GroundTemperatureProfileCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso13370GroundBoundaryApplicationAdapter>(services, ServiceLifetime.Singleton);
 

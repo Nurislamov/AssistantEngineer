@@ -1,0 +1,70 @@
+{
+  "id": "heat-pump-simple-circuit",
+  "claimBoundary": [
+    "EN15316-style system energy calculation.",
+    "Internal engineering anchor.",
+    "Not full validation.",
+    "No full EN15316 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "calculationId": "heat-pump-simple-circuit",
+    "circuits": [
+      {
+        "circuitId": "hp-c1",
+        "circuitType": "Underfloor",
+        "emission": {
+          "modelKind": "C3",
+          "efficiency": 0.97
+        },
+        "distribution": {
+          "efficiency": 0.95,
+          "auxiliaryEnergyFraction": 0.02
+        },
+        "generation": {
+          "technology": "HeatPump",
+          "carrier": "Electricity",
+          "cop": 3.2,
+          "primaryEnergyFactor": 2.0
+        },
+        "storage": {
+          "efficiency": 0.995
+        },
+        "designFlowReturnTemperatureC": {
+          "flowTemperatureC": 45.0,
+          "returnTemperatureC": 35.0
+        }
+      }
+    ],
+    "operatingConditions": [
+      {
+        "conditionId": "mid-season",
+        "flowReturnTemperatureC": {
+          "flowTemperatureC": 45.0,
+          "returnTemperatureC": 35.0
+        },
+        "outdoorTemperatureC": 7.0
+      }
+    ],
+    "timeSteps": [
+      {
+        "timeStepIndex": 0,
+        "month": 2,
+        "usefulHeatingLoadKWh": 150.0,
+        "usefulDhwLoadKWh": 0.0,
+        "operatingConditionId": "mid-season"
+      }
+    ]
+  },
+  "expected": {
+    "annualUsefulEnergyKWh": 150.0,
+    "annualFinalEnergyKWh": 52.672974,
+    "annualPrimaryEnergyKWh": 105.345947,
+    "annualDistributionLossEnergyKWh": 8.221115,
+    "timeStepCount": 1
+  },
+  "tolerance": {
+    "absolute": 5.0,
+    "relativePercent": 2.0
+  }
+}

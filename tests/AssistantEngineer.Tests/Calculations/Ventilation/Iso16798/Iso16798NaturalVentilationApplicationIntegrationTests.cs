@@ -103,6 +103,52 @@ public sealed class Iso16798NaturalVentilationApplicationIntegrationTests
     }
 
     [Fact]
+    public void Adapter_BuildsEnhancedContractsWithDefaults()
+    {
+        var opening = new NaturalVentilationOpeningState(
+            IsOpen: true,
+            OpeningFactor: 0.65,
+            EffectiveOpeningAreaM2: 0.9,
+            Reason: "Adapter test opening");
+
+        var room = CreateRoomWithVentilationParameters(
+            stackCoefficient: 0.6,
+            windCoefficient: 0.7,
+            windExposureFactor: 1.2);
+
+        var options = new NaturalVentilationOptions
+        {
+            Enabled = true,
+            UseIso16798InspiredCalculator = true,
+            OpeningDischargeCoefficient = 0.62,
+            MaximumAirChangesPerHour = 8.0
+        };
+
+        var adapter = new Iso16798NaturalVentilationApplicationAdapter();
+        var input = adapter.BuildInput(
+            room,
+            opening,
+            options,
+            indoorTemperatureC: 25.0,
+            outdoorTemperatureC: 20.0,
+            windSpeedMPerS: 3.5,
+            openingScheduleFraction: 0.8,
+            occupancyFraction: 0.5,
+            altitudeMeters: 350.0);
+
+        Assert.NotNull(input.NaturalVentilationOpenings);
+        Assert.NotNull(input.OpeningSchedule);
+        Assert.NotNull(input.DrivingForces);
+        Assert.NotNull(input.OccupancyControl);
+        Assert.NotNull(input.CalculationOptions);
+        Assert.Equal(0.8, input.OpeningSchedule!.OpeningFraction, 6);
+        Assert.True(input.OccupancyControl!.Enabled);
+        Assert.True(input.DrivingForces!.AltitudeMeters.HasValue);
+        Assert.Equal(350.0, input.DrivingForces.AltitudeMeters.Value, 6);
+        Assert.True(input.CalculationOptions!.UseAltitudeDensityCorrection);
+    }
+
+    [Fact]
     public void DisabledNaturalVentilation_ReturnsZero()
     {
         var room = CreateRoomWithVentilationParameters(0.3, 0.4, 1.1);

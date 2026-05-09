@@ -1,0 +1,43 @@
+{
+  "id": "slab-on-ground-basic",
+  "claimBoundary": [
+    "ISO13370-style virtual ground calculation.",
+    "Internal analytical anchor only.",
+    "Not full validation.",
+    "No full ISO 13370 compliance claim.",
+    "No StandardReference comparison claim.",
+    "No EnergyPlus comparison workflow claim.",
+    "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "geometry": {
+      "floorAreaM2": 48.0,
+      "exposedPerimeterM": 24.0,
+      "slabThermalResistanceM2KPerW": 2.0
+    },
+    "groundThermalProperties": {
+      "groundConductivityWPerMK": 2.0,
+      "equivalentGroundThicknessM": 1.8
+    },
+    "annualAverageOutdoorTemperatureC": 10.0,
+    "monthlyOutdoorTemperatureProfileC": [2.0, 4.0, 7.0, 12.0, 16.0, 20.0, 23.0, 22.0, 18.0, 12.0, 7.0, 3.0],
+    "seasonalAmplitudeC": 8.0,
+    "seasonalPhaseShiftMonths": 1.0,
+    "indoorSetpointTemperatureC": 20.0,
+    "thermalBridge": {
+      "enabled": false,
+      "linearThermalTransmittanceWPerMK": 0.0,
+      "bridgeLengthM": 24.0
+    },
+    "options": {
+      "enableSeasonalComponent": true,
+      "enablePerimeterThermalBridge": true,
+      "seasonalAttenuationFactor": 0.55,
+      "monthlyHeatTransferVariationFactor": 0.05,
+      "minimumEquivalentGroundThicknessM": 0.3,
+      "maximumEquivalentGroundThicknessM": 8.0
+    }
+  }
+}
+

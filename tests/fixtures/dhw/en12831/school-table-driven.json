@@ -1,0 +1,50 @@
+{
+  "id": "school-table-driven",
+  "claimBoundary": [
+    "EN12831-3-style standard-based domestic hot water calculation.",
+    "Internal analytical anchors only.",
+    "No full EN12831-3 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "usageCategory": "School",
+    "referenceMode": "PeopleBased",
+    "peopleCount": 120,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 0,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 0.0,
+    "hotWaterTemperatureC": 52.0,
+    "coldWaterTemperatureC": 9.0,
+    "distributionLossFactor": 0.05,
+    "storageLossKWhPerDay": 1.2,
+    "circulationLossKWhPerDay": 0.8,
+    "includeHourlyProfile": false,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "SchoolDaytime",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null,
+    "useTableDrivenReferenceData": true,
+    "tableDrivenUsageCategory": "School"
+  },
+  "expected": {
+    "dailyVolumeLiters": 1188.0,
+    "dailyDrawEnergyKWh": 59.4,
+    "dailyTotalEnergyKWh": 64.37,
+    "annualVolumeLiters": 433620.0,
+    "annualDrawEnergyKWh": 21681.0,
+    "annualTotalEnergyKWh": 23495.0,
+    "equivalentOccupantsUsed": 108.0,
+    "referenceDailyVolumeLiters": 1188.0,
+    "hourlyResultsCount": 0
+  },
+  "tolerance": {
+    "absolute": 25.0,
+    "relativePercent": 5.0
+  }
+}

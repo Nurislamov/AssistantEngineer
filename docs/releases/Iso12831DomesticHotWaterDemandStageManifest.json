@@ -16,6 +16,11 @@
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterResult.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDiagnostics.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterUsageCategory.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/DomesticHotWaterUsageCategory.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/DomesticHotWaterReferenceTableEntry.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/DomesticHotWaterDrawProfileTable.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/DomesticHotWaterTemperatureAssumptions.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/DomesticHotWaterUsageProfileSet.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDrawProfileKind.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterReferenceMode.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterMonthlyResult.cs",
@@ -29,12 +34,18 @@
     "tests/fixtures/domestic-hot-water/iso12831/office-area-based-daytime.json",
     "tests/fixtures/domestic-hot-water/iso12831/hotel-unit-based-morning-evening.json",
     "tests/fixtures/domestic-hot-water/iso12831/custom-volume-flat-profile.json",
-    "tests/fixtures/domestic-hot-water/iso12831/zero-occupants-zero-demand.json"
+    "tests/fixtures/domestic-hot-water/iso12831/zero-occupants-zero-demand.json",
+    "tests/fixtures/dhw/en12831/residential-table-driven.json",
+    "tests/fixtures/dhw/en12831/office-table-driven.json",
+    "tests/fixtures/dhw/en12831/school-table-driven.json",
+    "tests/fixtures/dhw/en12831/explicit-volume-override.json"
   ],
   "testGuards": [
     "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDemandCalculatorTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterFixtureTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterDrawProfileTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterReferenceDataProviderTests.cs",
+    "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterEn12831StyleFixtureTests.cs",
     "tests/AssistantEngineer.Tests/Calculations/DomesticHotWater/Iso12831/Iso12831DomesticHotWaterTraceabilityTests.cs"
   ],
   "generatedArtifacts": []

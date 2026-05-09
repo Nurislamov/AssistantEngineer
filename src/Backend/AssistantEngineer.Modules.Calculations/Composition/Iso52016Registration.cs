@@ -1,8 +1,10 @@
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.MultiZone;
 using AssistantEngineer.Modules.Calculations.Application.Services.InternalGains;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Construction;
+using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +49,11 @@ internal static class Iso52016Registration
 
         services.AddScoped<IIso52016BuildingRoomCollector, Iso52016BuildingRoomCollector>();
         services.AddScoped<IIso52016BuildingDomainSimulationFacade, Iso52016BuildingDomainSimulationFacade>();
+        services.AddScoped<IIso52016MultiZoneInputValidator, Iso52016MultiZoneInputValidator>();
+        services.AddScoped<IIso52016MultiZoneGraphBuilder, Iso52016MultiZoneGraphBuilder>();
+        services.AddScoped<IIso52016MultiZoneHourlySolver, Iso52016MultiZoneHourlySolver>();
+        services.AddScoped<IIso52016MultiZoneEnergySimulationService, Iso52016MultiZoneEnergySimulationService>();
+        services.AddScoped<IIso52016MultiZoneBuildingSimulationFacade, Iso52016MultiZoneBuildingSimulationFacade>();
 
         services.AddScoped<IIso52016BuildingEnergySimulationApplicationService, Iso52016BuildingEnergySimulationApplicationService>();
 

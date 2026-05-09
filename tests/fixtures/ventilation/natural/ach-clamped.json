@@ -1,0 +1,74 @@
+{
+  "id": "ach-clamped",
+  "claimBoundary": [
+    "EN16798-style standard-based natural ventilation internal analytical anchor.",
+    "Internal analytical anchor only.",
+    "Not full validation.",
+    "No full EN16798 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "roomVolumeM3": 90.0,
+    "indoorTemperatureC": 26.0,
+    "outdoorTemperatureC": 18.0,
+    "windSpeedMPerS": 6.0,
+    "airDensityKgPerM3": 1.2,
+    "airSpecificHeatJPerKgK": 1005.0,
+    "dischargeCoefficient": 0.62,
+    "maximumAirChangesPerHour": 12.0,
+    "openingHeightM": 2.0,
+    "usefulHeightDifferenceM": 3.0,
+    "windPressureCoefficient": 0.5,
+    "windExposureFactor": 1.4,
+    "stackCoefficient": 0.8,
+    "windCoefficient": 1.1,
+    "openings": [
+      {
+        "openingId": "north-window",
+        "openingAreaM2": 1.5,
+        "openingRatio": 0.6,
+        "isOpen": true
+      },
+      {
+        "openingId": "south-window",
+        "openingAreaM2": 1.0,
+        "openingRatio": 0.3,
+        "isOpen": true
+      }
+    ],
+    "naturalVentilationOpenings": [
+      {
+        "openingId": "north-window",
+        "openingAreaM2": 1.5,
+        "openingFraction": 0.6,
+        "isOpen": true,
+        "openingHeightM": 2.0,
+        "dischargeCoefficient": 0.62
+      },
+      {
+        "openingId": "south-window",
+        "openingAreaM2": 1.0,
+        "openingFraction": 0.3,
+        "isOpen": true,
+        "openingHeightM": 2.0,
+        "dischargeCoefficient": 0.62
+      }
+    ],
+    "calculationOptions": {
+      "branchSelectionMode": "SumWindAndStack",
+      "useDensityCorrection": false,
+      "useAltitudeDensityCorrection": false,
+      "singleSidedOpeningCoefficient": 1.0,
+      "maximumAirChangesPerHour": 12.0
+    }
+  },
+  "expected": {
+    "selectedBranch": "WindStackSum",
+    "expectZeroAirflow": false,
+    "expectPositiveWindComponent": true,
+    "expectPositiveStackComponent": true,
+    "expectClampedAch": true,
+    "expectClosedBySchedule": false,
+    "expectClosedByOccupancy": false
+  }
+}

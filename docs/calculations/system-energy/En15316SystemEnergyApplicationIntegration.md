@@ -23,6 +23,7 @@
    - `UseEn15316InspiredChain = false` (default): compatibility behavior.
    - `UseEn15316InspiredChain = true`: adapter + pure EN15316-inspired chain calculator.
 3. Public service contract remains unchanged (`SystemEnergyResult`).
+4. `EnergyCalculationPipelineService` can produce an opt-in useful-energy handoff result for EN15316-style circuit-level processing.
 
 ## Mapping strategy
 
@@ -34,6 +35,12 @@
 - emission, distribution, and storage are pass-through in this integration stage.
 - generation uses existing efficiency/COP inputs.
 - fan energy is mapped once and must not be double-counted.
+- pipeline useful-energy handoff preserves:
+  - `Standard-Based Calculation` method label;
+  - source module metadata;
+  - timestep/month traceability;
+  - service-type separation (space heating, space cooling, DHW);
+  - carrier selection metadata.
 
 ## Compatibility guarantee
 

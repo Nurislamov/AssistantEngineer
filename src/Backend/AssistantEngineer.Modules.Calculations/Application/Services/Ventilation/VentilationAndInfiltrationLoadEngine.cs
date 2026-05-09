@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation.Iso16798;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -64,7 +65,8 @@ public sealed class VentilationAndInfiltrationLoadEngine
             input,
             airDensity,
             airSpecificHeat,
-            naturalAirflow);
+            naturalAirflow.Airflow,
+            naturalAirflow.EnhancedResult);
 
         return Result<VentilationAndInfiltrationLoadResult>.Success(
             CreateResult(
@@ -161,7 +163,8 @@ public sealed class VentilationAndInfiltrationLoadEngine
         VentilationAndInfiltrationLoadInput input,
         double airDensity,
         double airSpecificHeat,
-        AirflowResult airflow)
+        AirflowResult airflow,
+        Iso16798NaturalVentilationResult? enhancedResult)
     {
         var loads = CalculateHeatingCoolingLoads(
             input,
@@ -173,7 +176,14 @@ public sealed class VentilationAndInfiltrationLoadEngine
             Round(airflow.AirflowM3PerHour),
             Round(airflow.AirflowM3PerSecond),
             Round(loads.HeatingLoadW),
-            Round(loads.CoolingLoadW));
+            Round(loads.CoolingLoadW),
+            AirChangeRatePerHour: Round(enhancedResult?.AirChangeRatePerHour ?? airflow.AirChangesPerHour),
+            HeatTransferCoefficientWPerK: Round(enhancedResult?.HeatTransferCoefficientWPerK ?? airDensity * airSpecificHeat * airflow.AirflowM3PerSecond),
+            WindComponentM3PerHour: Round(enhancedResult?.WindComponentM3PerHour ?? 0.0),
+            StackComponentM3PerHour: Round(enhancedResult?.StackComponentM3PerHour ?? 0.0),
+            SelectedBranch: enhancedResult?.SelectedBranch ?? "CompatibilityNaturalVentilationInput",
+            ClampReason: enhancedResult?.ClampReason,
+            ControlReason: enhancedResult?.ControlReason);
     }
 
     private static HeatingCoolingLoad CalculateHeatingCoolingLoads(
@@ -328,10 +338,24 @@ public sealed class VentilationAndInfiltrationLoadEngine
             airflowM3PerHour);
     }
 
-    private static AirflowResult ResolveNaturalVentilationAirflow(
+    private static NaturalAirflowResolution ResolveNaturalVentilationAirflow(
         VentilationAndInfiltrationLoadInput input,
         List<CalculationDiagnostic> diagnostics)
     {
+        if (input.NaturalVentilationEnhancedResult is not null)
+        {
+            var enhancedAirflowM3PerHour = Math.Max(0.0, input.NaturalVentilationEnhancedResult.AirflowM3PerHour);
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Info,
+                "Ventilation.NaturalVentilationEnhancedResultUsed",
+                $"Enhanced EN16798-style standard-based natural ventilation result used with branch '{input.NaturalVentilationEnhancedResult.SelectedBranch}'.",
+                input.DiagnosticsContext));
+
+            return new NaturalAirflowResolution(
+                CreateAirflowResult(input.VolumeM3, enhancedAirflowM3PerHour),
+                input.NaturalVentilationEnhancedResult);
+        }
+
         var airflowM3PerHour = 0.0;
         var hasNaturalInput = false;
 
@@ -352,9 +376,11 @@ public sealed class VentilationAndInfiltrationLoadEngine
                 input.DiagnosticsContext));
         }
 
-        return CreateAirflowResult(
-            input.VolumeM3,
-            airflowM3PerHour);
+        return new NaturalAirflowResolution(
+            CreateAirflowResult(
+                input.VolumeM3,
+                airflowM3PerHour),
+            null);
     }
 
     private static AirflowResult CreateAirflowResult(
@@ -595,6 +621,10 @@ public sealed class VentilationAndInfiltrationLoadEngine
         double AirflowM3PerHour,
         double AirflowM3PerSecond,
         double AirChangesPerHour);
+
+    private sealed record NaturalAirflowResolution(
+        AirflowResult Airflow,
+        Iso16798NaturalVentilationResult? EnhancedResult);
 
     private sealed record HeatingCoolingLoad(
         double HeatingLoadW,

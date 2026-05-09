@@ -59,6 +59,16 @@ These modules are intentionally described as simplified or inspired models.
 
 These modules may use ISO-like concepts, names, DTOs or calculation categories, but they do not claim full standard implementation.
 
+## V2 stage linkage
+
+Engineering Core V2 adds a deterministic standard-based multi-zone calculation stage documented in `docs/calculations/EngineeringCoreV2Scope.md` and `docs/calculations/Iso52016MultiZoneCalculation.md`.
+
+The V1 default behavior remains compatibility-first, including:
+
+- single-zone deterministic engineering flow;
+- simplified adjacent boundary model in V1 defaults;
+- explicit non-claim boundaries for compliance and external validation.
+
 ## Explicit non-claims
 
 Engineering-core v1 does not claim:

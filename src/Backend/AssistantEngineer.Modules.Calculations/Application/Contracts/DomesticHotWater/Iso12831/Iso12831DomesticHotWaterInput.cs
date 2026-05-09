@@ -22,4 +22,6 @@ public sealed record Iso12831DomesticHotWaterInput(
     Iso12831DomesticHotWaterDrawProfileKind DrawProfileKind,
     IReadOnlyList<double>? WeekdayDrawProfile,
     IReadOnlyList<double>? WeekendDrawProfile,
-    IReadOnlyList<double>? CustomDrawProfile);
+    IReadOnlyList<double>? CustomDrawProfile,
+    bool UseTableDrivenReferenceData = false,
+    DomesticHotWaterUsageCategory? TableDrivenUsageCategory = null);

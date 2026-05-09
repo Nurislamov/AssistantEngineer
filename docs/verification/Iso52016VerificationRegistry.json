@@ -1102,6 +1102,58 @@
       ],
       "entrypointWrapperScripts": [],
       "deprecatedWrapperAliases": []
+    },
+    {
+      "id": "ISO52016-MULTI-ZONE-CALCULATION",
+      "name": "ISO52016-style multi-zone calculation stage",
+      "scope": "Standard-based multi-zone coupled hourly calculation stage with deterministic internal anchors and explicit non-claims.",
+      "relatedManifests": [
+        "docs/releases/Iso52016MultiZoneCalculationStageManifest.json"
+      ],
+      "requiredDocs": [
+        "docs/calculations/Iso52016MultiZoneCalculation.md",
+        "docs/calculations/EngineeringCoreV2Scope.md",
+        "docs/calculations/ExternalReferenceValidationVerification.md"
+      ],
+      "requiredSourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/MultiZone/MultiZoneCalculationInput.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneGraphBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016MultiZoneBuildingSimulationFacade.cs"
+      ],
+      "requiredTestFiles": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneGraphBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneHourlySolverTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneFixtureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Verification/Iso52016MultiZoneStageVerificationTests.cs",
+        "tests/fixtures/iso52016/multi-zone/two-zone-independent.json",
+        "tests/fixtures/iso52016/multi-zone/two-zone-interzone-conductance.json",
+        "tests/fixtures/iso52016/multi-zone/adjacent-unconditioned-zone.json",
+        "tests/fixtures/iso52016/multi-zone/same-use-adiabatic-boundary.json"
+      ],
+      "testFilters": [
+        "FullyQualifiedName~Iso52016MultiZone"
+      ],
+      "generatedArtifactPaths": [],
+      "requiredNonClaims": [
+        "No full airflow network coupling claim.",
+        "No moisture/latent coupling claim.",
+        "No detailed HVAC plant coupling claim."
+      ],
+      "claimBoundary": [
+        "Validation/internal engineering anchors only.",
+        "No full ISO 52016 equivalence claim.",
+        "No StandardReference equivalence claim.",
+        "No EnergyPlus comparison workflow claim.",
+        "No ASHRAE 140 / BESTEST-style validation anchor claim.",
+        "No full airflow network coupling claim.",
+        "No moisture/latent coupling claim.",
+        "No detailed HVAC plant coupling claim."
+      ],
+      "entrypointWrapperScripts": [],
+      "deprecatedWrapperAliases": []
     }
   ]
 }

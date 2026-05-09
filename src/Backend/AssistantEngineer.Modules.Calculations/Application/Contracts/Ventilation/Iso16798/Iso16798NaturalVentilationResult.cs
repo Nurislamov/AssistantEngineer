@@ -10,4 +10,11 @@ public sealed record Iso16798NaturalVentilationResult(
     double AirChangesPerHour,
     double ClampedAirChangesPerHour,
     double HeatTransferCoefficientWPerK,
-    IReadOnlyList<Iso16798NaturalVentilationDiagnostics> Diagnostics);
+    IReadOnlyList<Iso16798NaturalVentilationDiagnostics> Diagnostics,
+    double AirflowM3PerHour = 0.0,
+    double AirChangeRatePerHour = 0.0,
+    double WindComponentM3PerHour = 0.0,
+    double StackComponentM3PerHour = 0.0,
+    string SelectedBranch = "Closed",
+    string? ClampReason = null,
+    string? ControlReason = null);

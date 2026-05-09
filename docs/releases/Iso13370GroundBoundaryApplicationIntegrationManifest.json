@@ -18,6 +18,8 @@
   "implementationFiles": [
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso13370GroundHeatTransferOptions.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Options/Iso13370GroundHeatTransferOptionsValidator.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundBoundaryApplicationAdapter.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370/Iso13370VirtualGroundTemperatureCalculator.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Ground/Iso13370GroundHeatTransferService.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Composition/GroundRegistration.cs"
   ],

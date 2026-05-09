@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.SystemEnergy.En15316;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -12,22 +13,28 @@ public sealed class SystemEnergyEngine
     private readonly SystemEnergyOptions _options;
     private readonly En15316SystemEnergyChainCalculator _en15316Calculator;
     private readonly En15316SystemEnergyApplicationAdapter _en15316Adapter;
+    private readonly En15316HeatingSystemCircuitCalculator _en15316CircuitCalculator;
 
     public SystemEnergyEngine(
         IOptions<SystemEnergyOptions> options,
         En15316SystemEnergyChainCalculator en15316Calculator,
-        En15316SystemEnergyApplicationAdapter en15316Adapter)
+        En15316SystemEnergyApplicationAdapter en15316Adapter,
+        En15316HeatingSystemCircuitCalculator en15316CircuitCalculator)
     {
         _options = options.Value;
         _en15316Calculator = en15316Calculator;
         _en15316Adapter = en15316Adapter;
+        _en15316CircuitCalculator = en15316CircuitCalculator;
     }
 
     public SystemEnergyEngine()
         : this(
             Microsoft.Extensions.Options.Options.Create(new SystemEnergyOptions()),
             new En15316SystemEnergyChainCalculator(new En15316SystemEnergyReferenceDataProvider()),
-            new En15316SystemEnergyApplicationAdapter())
+            new En15316SystemEnergyApplicationAdapter(),
+            new En15316HeatingSystemCircuitCalculator(
+                new En15316HeatingSystemInputValidator(),
+                new En15316SystemEnergyReferenceDataProvider()))
     {
     }
 
@@ -44,6 +51,16 @@ public sealed class SystemEnergyEngine
 
     private Result<SystemEnergyResult> CalculateEn15316Inspired(SystemEnergyInput input)
     {
+        if (_options.UseEn15316CircuitLevelCalculator &&
+            input.En15316HeatingCircuitInput is not null)
+        {
+            var circuitResult = _en15316CircuitCalculator.Calculate(input.En15316HeatingCircuitInput);
+            if (circuitResult.IsFailure)
+                return Result<SystemEnergyResult>.Failure(circuitResult);
+
+            return Result<SystemEnergyResult>.Success(MapCircuitResultWithAdditionalEndUses(input, circuitResult.Value));
+        }
+
         var diagnostics = Validate(input);
 
         if (HasErrorDiagnostics(diagnostics))
@@ -64,6 +81,67 @@ public sealed class SystemEnergyEngine
 
         return Result<SystemEnergyResult>.Success(
             _en15316Adapter.MapToSystemEnergyResult(en15316Result.Value, input));
+    }
+
+    private static SystemEnergyResult MapCircuitResultWithAdditionalEndUses(
+        SystemEnergyInput source,
+        En15316HeatingSystemResult circuitResult)
+    {
+        var diagnostics = circuitResult.Diagnostics
+            .Select(item => new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                item.Code,
+                item.Message,
+                source.DiagnosticsContext))
+            .ToList();
+
+        var assumptions = circuitResult.AssumptionsUsed
+            .Concat(["Circuit-level EN15316-style path was used through explicit opt-in."])
+            .ToList();
+
+        var finalCooling = ConvertUsefulToFinal(
+            source.UsefulCoolingEnergyKWh,
+            efficiency: null,
+            cop: source.CoolingCop,
+            missingCode: "SystemEnergy.CircuitPathCoolingAssumptionMissing",
+            missingMessage: "Circuit-level path received cooling useful energy without cooling COP; cooling useful energy was carried through as final energy.",
+            context: source.DiagnosticsContext,
+            diagnostics: diagnostics);
+        var finalFan = Math.Max(0, source.FanEnergyKWh);
+        var totalFinal = circuitResult.AnnualFinalEnergyKWh + finalCooling + finalFan;
+
+        var primary = circuitResult.AnnualPrimaryEnergyKWh;
+        if (source.PrimaryEnergyFactor is > 0)
+        {
+            var additionalPrimary = (finalCooling + finalFan) * source.PrimaryEnergyFactor.Value;
+            primary += additionalPrimary;
+            assumptions.Add("Cooling/fan primary energy contribution was evaluated with SystemEnergyInput primary factor on the circuit-level opt-in path.");
+        }
+        else if (source.PrimaryEnergyFactor.HasValue)
+        {
+            diagnostics.Add(new CalculationDiagnostic(
+                CalculationDiagnosticSeverity.Warning,
+                "SystemEnergy.CircuitPathPrimaryFactorInvalid",
+                "Primary energy factor must be greater than zero to evaluate cooling/fan primary energy on circuit-level opt-in path.",
+                source.DiagnosticsContext));
+        }
+        else if (source.UsefulCoolingEnergyKWh > 0 || source.FanEnergyKWh > 0)
+        {
+            assumptions.Add("Cooling/fan primary energy was not calculated because primary factor was not supplied on the circuit-level opt-in path.");
+        }
+
+        return new SystemEnergyResult(
+            UsefulHeatingKWh: Round(circuitResult.AnnualUsefulHeatingEnergyKWh),
+            UsefulCoolingKWh: Round(Math.Max(0, source.UsefulCoolingEnergyKWh)),
+            UsefulDhwKWh: Round(circuitResult.AnnualUsefulDhwEnergyKWh),
+            FinalHeatingEnergyKWh: Round(circuitResult.AnnualFinalEnergyKWh),
+            FinalCoolingEnergyKWh: Round(finalCooling),
+            FinalDhwEnergyKWh: 0.0,
+            FinalFanEnergyKWh: Round(finalFan),
+            TotalFinalEnergyKWh: Round(totalFinal),
+            PrimaryEnergyKWh: Round(primary),
+            Diagnostics: diagnostics,
+            AssumptionsUsed: assumptions);
     }
 
     private static Result<SystemEnergyResult> CalculateCompatibility(SystemEnergyInput input)

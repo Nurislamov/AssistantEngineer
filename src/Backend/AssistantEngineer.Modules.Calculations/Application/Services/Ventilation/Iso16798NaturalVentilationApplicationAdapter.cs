@@ -13,7 +13,10 @@ public sealed class Iso16798NaturalVentilationApplicationAdapter
         NaturalVentilationOptions options,
         double indoorTemperatureC,
         double outdoorTemperatureC,
-        double windSpeedMPerS)
+        double windSpeedMPerS,
+        double? openingScheduleFraction = null,
+        double? occupancyFraction = null,
+        double? altitudeMeters = null)
     {
         ArgumentNullException.ThrowIfNull(room);
         ArgumentNullException.ThrowIfNull(options);
@@ -46,6 +49,37 @@ public sealed class Iso16798NaturalVentilationApplicationAdapter
                     OpeningAreaM2: openingArea,
                     OpeningRatio: openingState.OpeningFactor,
                     IsOpen: openingState.IsOpen)
-            });
+            },
+            NaturalVentilationOpenings: new[]
+            {
+                new NaturalVentilationOpening(
+                    OpeningId: "compatibility-opening",
+                    OpeningAreaM2: openingArea,
+                    OpeningFraction: openingState.OpeningFactor,
+                    IsOpen: openingState.IsOpen,
+                    OpeningHeightM: Math.Max(room.HeightM, 0.0),
+                    DischargeCoefficient: options.OpeningDischargeCoefficient)
+            },
+            OpeningSchedule: new NaturalVentilationOpeningSchedule(
+                OpeningFraction: Math.Clamp(openingScheduleFraction ?? 1.0, 0.0, 1.0)),
+            DrivingForces: new NaturalVentilationDrivingForces(
+                IndoorTemperatureC: indoorTemperatureC,
+                OutdoorTemperatureC: outdoorTemperatureC,
+                WindSpeedMPerS: windSpeedMPerS,
+                OpeningHeightM: Math.Max(room.HeightM, 0.0),
+                AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
+                AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
+                AltitudeMeters: altitudeMeters),
+            OccupancyControl: new NaturalVentilationOccupancyControl(
+                Enabled: occupancyFraction.HasValue,
+                OccupancyFraction: Math.Clamp(occupancyFraction ?? 1.0, 0.0, 1.0),
+                MinimumOccupancyFractionToEnable: 0.01,
+                DisableWhenUnoccupied: true),
+            CalculationOptions: new NaturalVentilationCalculationOptions(
+                BranchSelectionMode: NaturalVentilationBranchSelectionMode.SumWindAndStack,
+                UseDensityCorrection: true,
+                UseAltitudeDensityCorrection: altitudeMeters.HasValue,
+                SingleSidedOpeningCoefficient: 1.0,
+                MaximumAirChangesPerHour: options.MaximumAirChangesPerHour));
     }
 }

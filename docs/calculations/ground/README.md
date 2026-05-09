@@ -43,6 +43,11 @@ This stage provides reusable application-level contracts and services for ground
 - hourly ground boundary temperatures (8760)
 - diagnostics and standard-inspired disclosure
 
+## Virtual ground lane
+
+- `docs/calculations/Iso13370VirtualGround.md` documents the ISO13370-style virtual ground temperature and slab-on-ground calculation lane.
+- This lane is additive and opt-in; default behavior remains unchanged.
+
 ## What this prompt intentionally does not do
 
 - No `Full ISO compliance` claim.

@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation.Iso16798;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
@@ -158,6 +159,44 @@ public class VentilationAndInfiltrationLoadEngineTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "Ventilation.AirConstantsUsed");
         Assert.Equal(AirPhysicalConstants.AirDensityKgPerM3, result.AirDensityKgPerM3);
         Assert.Equal(AirPhysicalConstants.AirSpecificHeatJPerKgK, result.AirSpecificHeatJPerKgK);
+    }
+
+    [Fact]
+    public void EnhancedNaturalVentilationResult_IsUsedWhenProvided()
+    {
+        var enhanced = new Iso16798NaturalVentilationResult(
+            CalculationMode: Iso16798NaturalVentilationCalculationMode.MaxWindOrStack,
+            EffectiveOpeningAreaM2: 0.9,
+            StackAirflowM3PerS: 0.2,
+            WindAirflowM3PerS: 0.5,
+            TotalAirflowM3PerS: 0.5,
+            TotalAirflowM3PerH: 1800.0,
+            AirChangesPerHour: 18.0,
+            ClampedAirChangesPerHour: 10.0,
+            HeatTransferCoefficientWPerK: 335.0,
+            Diagnostics: [],
+            AirflowM3PerHour: 1000.0,
+            AirChangeRatePerHour: 10.0,
+            WindComponentM3PerHour: 1800.0,
+            StackComponentM3PerHour: 720.0,
+            SelectedBranch: "MaxWindStack:Wind",
+            ClampReason: "Air-change rate was clamped to maximum ACH 10.000000.",
+            ControlReason: null);
+
+        var result = Calculate(new VentilationAndInfiltrationLoadInput(
+            RoomId: 101,
+            AreaM2: 40,
+            VolumeM3: 100,
+            OccupancyPeople: 0,
+            IndoorTemperatureC: 25,
+            OutdoorTemperatureC: 15,
+            NaturalVentilationEnhancedResult: enhanced));
+
+        Assert.Equal(1000.0, result.NaturalVentilation.AirflowM3PerHour);
+        Assert.Equal(10.0, result.NaturalVentilation.AirChangeRatePerHour);
+        Assert.Equal(335.0, result.NaturalVentilation.HeatTransferCoefficientWPerK);
+        Assert.Equal("MaxWindStack:Wind", result.NaturalVentilation.SelectedBranch);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "Ventilation.NaturalVentilationEnhancedResultUsed");
     }
 
     [Fact]

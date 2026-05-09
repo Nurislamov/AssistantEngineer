@@ -340,7 +340,7 @@ public sealed class EngineeringStageManifestRegistryValidator
 
         var requiredSubjects = new[]
         {
-            "StandardReference equivalence",
+            "StandardReference comparison",
             "EnergyPlus comparison workflow",
             "ASHRAE 140 / BESTEST-style validation anchor",
             "external certification"
@@ -348,6 +348,25 @@ public sealed class EngineeringStageManifestRegistryValidator
 
         foreach (var subject in requiredSubjects)
         {
+            if (subject.Equals("StandardReference comparison", StringComparison.Ordinal))
+            {
+                if (ContainsNegatedClaim(claimText, "StandardReference comparison") ||
+                    ContainsNegatedClaim(claimText, "StandardReference equivalence"))
+                {
+                    continue;
+                }
+
+                passed = false;
+                diagnostics.Add(new EngineeringGovernanceCheckDiagnostic(
+                    Code: "Governance.Manifest.ClaimBoundaryMissingRequiredNonClaim",
+                    Severity: EngineeringGovernanceDiagnosticSeverity.Error,
+                    Message: "Claim boundary must include a negated non-claim for 'StandardReference comparison' or 'StandardReference equivalence'.",
+                    FilePath: stage.ManifestPath,
+                    StageId: stage.StageId,
+                    Token: subject));
+                continue;
+            }
+
             if (ContainsNegatedClaim(claimText, subject))
                 continue;
 

@@ -1,0 +1,50 @@
+{
+  "id": "explicit-volume-override",
+  "claimBoundary": [
+    "EN12831-3-style standard-based domestic hot water calculation.",
+    "Internal analytical anchors only.",
+    "No full EN12831-3 compliance claim.",
+    "No external validation claim."
+  ],
+  "input": {
+    "usageCategory": "Hotel",
+    "referenceMode": "CustomVolume",
+    "peopleCount": 0,
+    "equivalentOccupants": 0.0,
+    "areaM2": 0.0,
+    "unitsCount": 80,
+    "litersPerPersonDay": 0.0,
+    "litersPerM2Day": 0.0,
+    "litersPerUnitDay": 0.0,
+    "customDailyVolumeLiters": 9500.0,
+    "hotWaterTemperatureC": 60.0,
+    "coldWaterTemperatureC": 10.0,
+    "distributionLossFactor": 0.15,
+    "storageLossKWhPerDay": 12.0,
+    "circulationLossKWhPerDay": 10.0,
+    "includeHourlyProfile": false,
+    "year": 2025,
+    "holidayDates": null,
+    "drawProfileKind": "HotelMorningEvening",
+    "weekdayDrawProfile": null,
+    "weekendDrawProfile": null,
+    "customDrawProfile": null,
+    "useTableDrivenReferenceData": true,
+    "tableDrivenUsageCategory": "Hotel"
+  },
+  "expected": {
+    "dailyVolumeLiters": 9500.0,
+    "dailyDrawEnergyKWh": 552.319,
+    "dailyTotalEnergyKWh": 657.167,
+    "annualVolumeLiters": 3467500.0,
+    "annualDrawEnergyKWh": 201596.597,
+    "annualTotalEnergyKWh": 239866.087,
+    "equivalentOccupantsUsed": 0.0,
+    "referenceDailyVolumeLiters": 9500.0,
+    "hourlyResultsCount": 0
+  },
+  "tolerance": {
+    "absolute": 50.0,
+    "relativePercent": 5.0
+  }
+}

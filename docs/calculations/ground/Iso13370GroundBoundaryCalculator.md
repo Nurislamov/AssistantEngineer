@@ -63,3 +63,4 @@ Fixtures for this stage live in:
 
 - existing `Iso13370GroundHeatTransferService` remains the compatibility path;
 - new calculator and adapter are additive for controlled adoption in later opt-in stages.
+- deeper slab-on-ground virtual temperature lane is documented in `docs/calculations/Iso13370VirtualGround.md`.

@@ -1,0 +1,43 @@
+{
+  "registryName": "AssistantEngineer External Comparison Case Registry",
+  "version": "v1",
+  "purpose": "External comparison workflow registry for internal engineering anchors; not full validation and not a compliance claim.",
+  "cases": [
+    {
+      "caseId": "EC-EP-SMOKE-001",
+      "name": "EnergyPlus smoke comparison foundation case",
+      "workflow": "External comparison workflow (EnergyPlus outputs)",
+      "validationAnchor": "ASHRAE 140 / BESTEST-style validation anchor",
+      "modelInputPath": "tests/fixtures/external-comparison/energyplus/ep-smoke-foundation.case.json",
+      "expectedOutput": null,
+      "tolerance": {
+        "relativePercent": 5.0,
+        "absolute": 0.001
+      },
+      "provenance": null,
+      "status": "FixtureDefined",
+      "claimBoundary": "not full validation; not compliance claim",
+      "notes": [
+        "External comparison output has not been imported."
+      ]
+    },
+    {
+      "caseId": "EC-ASHRAE140-STYLE-001",
+      "name": "ASHRAE 140 style anchor foundation case",
+      "workflow": "ASHRAE 140 / BESTEST-style validation anchor workflow",
+      "validationAnchor": "external comparison output",
+      "modelInputPath": "tests/fixtures/external-comparison/ashrae140-style/ashrae140-style-foundation.case.json",
+      "expectedOutput": null,
+      "tolerance": {
+        "relativePercent": 10.0,
+        "absolute": 0.001
+      },
+      "provenance": null,
+      "status": "Planned",
+      "claimBoundary": "not full validation; not compliance claim",
+      "notes": [
+        "Case remains planned until external comparison output is imported."
+      ]
+    }
+  ]
+}

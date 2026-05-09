@@ -35,7 +35,9 @@ public sealed class Iso12831DomesticHotWaterApplicationAdapter
             DrawProfileKind: options.DefaultDrawProfileKind,
             WeekdayDrawProfile: request.WeekdayDrawProfile,
             WeekendDrawProfile: request.WeekendDrawProfile,
-            CustomDrawProfile: null);
+            CustomDrawProfile: null,
+            UseTableDrivenReferenceData: false,
+            TableDrivenUsageCategory: null);
     }
 
     public DomesticHotWaterDemandResult MapToCompatibilityResult(

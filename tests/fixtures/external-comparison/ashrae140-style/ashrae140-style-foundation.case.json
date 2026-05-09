@@ -1,0 +1,18 @@
+{
+  "caseId": "EC-ASHRAE140-STYLE-001",
+  "name": "ASHRAE 140 style anchor foundation case",
+  "workflow": "ASHRAE 140 / BESTEST-style validation anchor workflow",
+  "validationAnchor": "External comparison output",
+  "modelInputPath": "tests/fixtures/validation/energyplus/EP-SMOKE-002/assistantengineer-input.json",
+  "expectedOutput": null,
+  "tolerance": {
+    "relativePercent": 10.0,
+    "absolute": 0.001
+  },
+  "provenance": null,
+  "status": "Planned",
+  "claimBoundary": "not full validation; not compliance claim",
+  "notes": [
+    "Fixture is planned for future external comparison import."
+  ]
+}

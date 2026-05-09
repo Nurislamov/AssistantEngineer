@@ -28,6 +28,17 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
         Assert.Contains("Compatibility SystemEnergyEngine behavior preserved by default.", claimBoundary);
         Assert.Contains("No full EN 15316 compliance claim.", claimBoundary);
         Assert.DoesNotContain("ExternalReferenceCovered", claimBoundary, StringComparer.OrdinalIgnoreCase);
+
+        var implementationFiles = root.GetProperty("implementationFiles")
+            .EnumerateArray()
+            .Select(item => item.GetString())
+            .ToArray();
+        Assert.Contains(
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/SystemEnergy/SystemEnergyUsefulEnergyHandoffBuilder.cs",
+            implementationFiles);
+        Assert.Contains(
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs",
+            implementationFiles);
     }
 
     [Fact]
@@ -64,6 +75,8 @@ public sealed class En15316SystemEnergyApplicationIntegrationTraceabilityTests
         var integrationDoc = File.ReadAllText(integrationDocPath);
         Assert.Contains("Compatibility SystemEnergyEngine behavior preserved by default.", integrationDoc);
         Assert.Contains("opt-in", integrationDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("handoff", integrationDoc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Standard-Based Calculation", integrationDoc, StringComparison.Ordinal);
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "full EN 15316 compliance");
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "StandardReference equivalence");
         AssertTokenAppearsOnlyAsNegatedClaim(integrationDoc, "EnergyPlus comparison workflow");
