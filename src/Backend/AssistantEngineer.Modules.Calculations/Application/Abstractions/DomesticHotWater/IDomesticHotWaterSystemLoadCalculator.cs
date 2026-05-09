@@ -5,4 +5,6 @@ namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.Domest
 public interface IDomesticHotWaterSystemLoadCalculator
 {
     DomesticHotWaterSystemLoadResult Calculate(DomesticHotWaterSystemLossInput input);
+
+    DomesticHotWaterSystemLoadFoundationResult Calculate(DomesticHotWaterSystemLoadRequest request);
 }

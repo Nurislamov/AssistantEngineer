@@ -83,6 +83,27 @@ public sealed class DomesticHotWaterUsefulDemandCalculatorTests
     }
 
     [Fact]
+    public void ScheduledEnergyBasisUsesUsefulEnergyProfileDirectly()
+    {
+        var scheduledEnergy = Enumerable.Repeat(0.75, 8760).ToArray();
+        var input = CreateInput() with
+        {
+            Demand = CreateDemandInput() with
+            {
+                DemandBasis = DomesticHotWaterDemandBasis.ScheduledEnergy,
+                OccupantCount = null,
+                DailyVolumeLitersPerPerson = null,
+                CustomHourlyUsefulEnergyKWh = scheduledEnergy
+            }
+        };
+
+        var result = _calculator.Calculate(input);
+
+        Assert.Equal(scheduledEnergy.Sum(), result.AnnualUsefulEnergyKWh, 6);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-SCHEDULED-ENERGY-USED");
+    }
+
+    [Fact]
     public void DefaultsWaterDensityAndCpWithDiagnostics()
     {
         var input = CreateInput() with

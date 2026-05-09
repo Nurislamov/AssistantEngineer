@@ -96,11 +96,13 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IDomesticHotWaterDemandInputValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDemandBasisCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDrawProfileBuilder>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterDrawOffProfileBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterUsefulDemandCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterSystemLossInputValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterStorageLossCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterDistributionLossCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterCirculationLossCalculator>(services, ServiceLifetime.Singleton);
+        AssertServiceLifetime<IDomesticHotWaterLossCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterSystemLoadCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IDomesticHotWaterEn15316HandoffBuilder>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<ISystemEnergyUsefulLoadValidator>(services, ServiceLifetime.Singleton);

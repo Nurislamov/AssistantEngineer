@@ -14,4 +14,5 @@ public sealed record DomesticHotWaterEn15316Handoff(
     IReadOnlyList<double> HourlyDhwAuxiliaryElectricityKWh8760,
     IReadOnlyList<double> HourlyRecoverableLossKWh8760,
     IReadOnlyList<double> HourlyNonRecoverableLossKWh8760,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    DomesticHotWaterLossOwnershipPolicy LossOwnershipPolicy = DomesticHotWaterLossOwnershipPolicy.DhwOwnLosses);

@@ -15,6 +15,7 @@ public sealed class DomesticHotWaterArchitectureTests
                 path.EndsWith("DomesticHotWaterDemandInputValidator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterDemandBasisCalculator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterDrawProfileBuilder.cs", StringComparison.Ordinal) ||
+                path.EndsWith("DomesticHotWaterDrawOffProfileBuilder.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterUsefulDemandCalculator.cs", StringComparison.Ordinal))
             .ToArray();
 

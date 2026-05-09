@@ -4,6 +4,7 @@ public enum DomesticHotWaterUseCategory
 {
     Unknown = 0,
     Residential = 1,
+    Apartment = Residential,
     Office = 2,
     Hotel = 3,
     School = 4,
@@ -11,5 +12,8 @@ public enum DomesticHotWaterUseCategory
     Restaurant = 6,
     SportsFacility = 7,
     Industrial = 8,
-    Other = 9
+    Retail = 9,
+    Other = 10,
+    Generic = Other,
+    Unsupported = 11
 }

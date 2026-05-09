@@ -1,0 +1,60 @@
+{
+  "id": "en15316-handoff-ownership",
+  "scenario": "System-energy ownership avoids double counting",
+  "demandDefinition": {
+    "demandId": "DHW-FX-G",
+    "buildingId": "B1",
+    "zoneId": "Z1",
+    "useKind": "Generic",
+    "demandBasis": "ScheduledEnergy",
+    "occupantCount": null,
+    "floorAreaSquareMeters": null,
+    "dwellingCount": null,
+    "fixtureCount": null,
+    "dailyVolumeLitersPerPerson": null,
+    "dailyVolumeLitersPerSquareMeter": null,
+    "dailyVolumeLitersPerDwelling": null,
+    "coldWaterTemperatureCelsius": 10.0,
+    "hotWaterSetpointTemperatureCelsius": 55.0,
+    "referenceDrawOffTemperatureCelsius": null,
+    "timeStepHours": 1.0,
+    "hourlySchedule": null,
+    "monthlySchedule": null,
+    "scheduledVolumeProfile": null,
+    "scheduledUsefulEnergyProfileKWh": [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+    "annualOperatingDays": null,
+    "source": "Fixture",
+    "diagnostics": []
+  },
+  "resolution": "Monthly",
+  "numberOfSteps": 12,
+  "schedule": [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+  "lossDefinition": {
+    "systemKind": "CirculationLoop",
+    "storageVolumeLiters": 200.0,
+    "storageLossCoefficientWPerKelvin": 2.0,
+    "storageAmbientTemperatureCelsius": 20.0,
+    "distributionPipeLengthMeters": 10.0,
+    "distributionLossCoefficientWPerMeterKelvin": 0.2,
+    "circulationOperationSchedule": null,
+    "circulationOperationFraction": 1.0,
+    "circulationLoopLengthMeters": 8.0,
+    "circulationLossCoefficientWPerMeterKelvin": 0.25,
+    "recoveredLossFraction": 0.5,
+    "auxiliaryEnergyProfileKWh": null,
+    "auxiliaryEnergyPerStepKWh": null,
+    "lossOwnershipPolicy": "SystemEnergyOwnLosses",
+    "timeStepHours": 1.0,
+    "source": "Fixture",
+    "diagnostics": []
+  },
+  "expected": {
+    "totalVolumeLiters": 230.02595938795847,
+    "totalUsefulEnergyKWh": 12.0,
+    "annualSystemLoadKWh": 12.0,
+    "annualAuxiliaryEnergyKWh": 0.0
+  },
+  "expectedDiagnosticCodes": [
+    "AE-DHW-LOSS-OWNERSHIP-SYSTEM-ENERGY"
+  ]
+}

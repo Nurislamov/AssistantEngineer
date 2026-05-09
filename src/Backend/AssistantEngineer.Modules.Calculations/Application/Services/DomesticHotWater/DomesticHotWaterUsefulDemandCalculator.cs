@@ -65,16 +65,55 @@ public sealed class DomesticHotWaterUsefulDemandCalculator : IDomesticHotWaterUs
             $"Temperature rise calculated as {deltaT:F3} K."));
 
         IReadOnlyList<double> hourlyVolume;
+        IReadOnlyList<double> hourlyEnergy;
         double annualVolume;
         double dailyVolume;
+        IReadOnlyList<double> monthlyVolume;
+        IReadOnlyList<double> monthlyEnergy;
+        double annualEnergy;
+        double dailyEnergy;
 
-        if (input.Demand.DemandBasis == DomesticHotWaterDemandBasis.CustomHourlyVolume &&
+        if (input.Demand.DemandBasis == DomesticHotWaterDemandBasis.ScheduledEnergy &&
+            basis.UsesScheduledUsefulEnergy &&
+            basis.ScheduledUsefulEnergyKWh is { Count: 8760 })
+        {
+            hourlyEnergy = basis.ScheduledUsefulEnergyKWh.ToArray();
+            annualEnergy = hourlyEnergy.Sum();
+            dailyEnergy = annualEnergy / 365.0;
+
+            if (deltaT > 0.0)
+            {
+                hourlyVolume = hourlyEnergy
+                    .Select(energy => energy * 3_600_000.0 / (density * cp * deltaT))
+                    .ToArray();
+            }
+            else
+            {
+                hourlyVolume = new double[8760];
+            }
+
+            annualVolume = hourlyVolume.Sum();
+            dailyVolume = annualVolume / 365.0;
+            monthlyVolume = BuildMonthlySums(hourlyVolume);
+            monthlyEnergy = BuildMonthlySums(hourlyEnergy);
+            diagnostics.Add(CreateInfo(
+                "AE-DHW-SCHEDULED-ENERGY-USED",
+                "Scheduled useful-energy profile was used directly for useful demand."));
+        }
+        else if (input.Demand.DemandBasis is DomesticHotWaterDemandBasis.CustomHourlyVolume or DomesticHotWaterDemandBasis.ScheduledVolume &&
             basis.UsesCustomHourlyVolume &&
             basis.CustomHourlyVolumeLiters8760.Count == 8760)
         {
             hourlyVolume = basis.CustomHourlyVolumeLiters8760.ToArray();
             annualVolume = hourlyVolume.Sum();
             dailyVolume = annualVolume / 365.0;
+            monthlyVolume = BuildMonthlySums(hourlyVolume);
+            hourlyEnergy = hourlyVolume
+                .Select(volume => CalculateEnergyKWh(volume, density, cp, Math.Max(deltaT, 0.0)))
+                .ToArray();
+            monthlyEnergy = BuildMonthlySums(hourlyEnergy);
+            annualEnergy = hourlyEnergy.Sum();
+            dailyEnergy = annualEnergy / 365.0;
             diagnostics.Add(CreateInfo(
                 "AE-DHW-CUSTOM-HOURLY-VOLUME-USED",
                 "Custom 8760 hourly volume was used directly."));
@@ -86,23 +125,20 @@ public sealed class DomesticHotWaterUsefulDemandCalculator : IDomesticHotWaterUs
             hourlyVolume = drawProfile.AnnualHourlyFractions8760
                 .Select(fraction => annualVolume * fraction)
                 .ToArray();
+            monthlyVolume = BuildMonthlySums(hourlyVolume);
+            hourlyEnergy = hourlyVolume
+                .Select(volume => CalculateEnergyKWh(volume, density, cp, Math.Max(deltaT, 0.0)))
+                .ToArray();
+            monthlyEnergy = BuildMonthlySums(hourlyEnergy);
+            annualEnergy = hourlyEnergy.Sum();
+            dailyEnergy = annualEnergy / 365.0;
             diagnostics.Add(CreateInfo(
                 "AE-DHW-HOURLY-VOLUME-PROFILE-CALCULATED",
                 "8760 hourly DHW volume profile was calculated from normalized annual fractions."));
         }
-
-        var monthlyVolume = BuildMonthlySums(hourlyVolume);
         diagnostics.Add(CreateInfo(
             "AE-DHW-MONTHLY-VOLUME-CALCULATED",
             "Monthly DHW volume sums were calculated using a non-leap calendar."));
-
-        var hourlyEnergy = hourlyVolume
-            .Select(volume => CalculateEnergyKWh(volume, density, cp, Math.Max(deltaT, 0.0)))
-            .ToArray();
-        var monthlyEnergy = BuildMonthlySums(hourlyEnergy);
-
-        var annualEnergy = hourlyEnergy.Sum();
-        var dailyEnergy = annualEnergy / 365.0;
 
         diagnostics.Add(CreateInfo(
             "AE-DHW-USEFUL-ENERGY-CALCULATED",
@@ -131,6 +167,31 @@ public sealed class DomesticHotWaterUsefulDemandCalculator : IDomesticHotWaterUs
             HourlyUsefulEnergyKWh8760: hourlyEnergy,
             Disclosure: disclosure,
             Diagnostics: diagnostics);
+    }
+
+    public DomesticHotWaterDrawOffProfileResult Calculate(DomesticHotWaterDemandDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+
+        var resolution = definition.ScheduledUsefulEnergyProfileKWh is { Count: 12 } ||
+                         definition.MonthlySchedule is { Count: 12 }
+            ? DomesticHotWaterDrawOffProfileResolution.Monthly
+            : DomesticHotWaterDrawOffProfileResolution.Hourly;
+        var numberOfSteps = resolution == DomesticHotWaterDrawOffProfileResolution.Monthly ? 12 : 8760;
+
+        var drawOffBuilder = new DomesticHotWaterDrawOffProfileBuilder();
+        var request = new DomesticHotWaterDrawOffProfileRequest(
+            DemandDefinition: definition,
+            Resolution: resolution,
+            NumberOfSteps: numberOfSteps,
+            Schedule: resolution == DomesticHotWaterDrawOffProfileResolution.Monthly
+                ? definition.MonthlySchedule
+                : definition.HourlySchedule,
+            NormalizationMode: DomesticHotWaterScheduleNormalizationMode.NormalizeToUnity,
+            FallbackProfileMode: DomesticHotWaterFallbackProfileMode.DeterministicByUseKind,
+            DiagnosticsMode: DomesticHotWaterDiagnosticsMode.Verbose);
+
+        return drawOffBuilder.Build(request);
     }
 
     private static DomesticHotWaterDrawProfileInput MergeDrawProfileInput(DomesticHotWaterUsefulDemandInput input)

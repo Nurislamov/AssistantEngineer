@@ -135,6 +135,23 @@ public sealed class DomesticHotWaterDemandBasisCalculatorTests
     }
 
     [Fact]
+    public void ScheduledEnergyStoresHourlyProfile()
+    {
+        var input = CreateInput() with
+        {
+            DemandBasis = DomesticHotWaterDemandBasis.ScheduledEnergy,
+            CustomHourlyUsefulEnergyKWh = Enumerable.Repeat(0.5, 8760).ToArray()
+        };
+
+        var result = _calculator.CalculateDailyVolume(input);
+
+        Assert.True(result.UsesScheduledUsefulEnergy);
+        Assert.NotNull(result.ScheduledUsefulEnergyKWh);
+        Assert.Equal(8760, result.ScheduledUsefulEnergyKWh!.Count);
+        Assert.Equal(0.0, result.DailyVolumeLiters, 6);
+    }
+
+    [Fact]
     public void UnsupportedBasisDoesNotFallbackSilently()
     {
         var input = CreateInput() with

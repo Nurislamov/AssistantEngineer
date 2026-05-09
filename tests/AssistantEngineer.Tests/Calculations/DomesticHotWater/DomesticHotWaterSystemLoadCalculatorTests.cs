@@ -22,6 +22,7 @@ public sealed class DomesticHotWaterSystemLoadCalculatorTests
         new DomesticHotWaterDistributionLossCalculator(),
         new DomesticHotWaterCirculationLossCalculator(),
         new DomesticHotWaterEn15316HandoffBuilder(),
+        new DomesticHotWaterLossCalculator(),
         new StandardCalculationDisclosureFactory());
 
     [Fact]
@@ -91,6 +92,22 @@ public sealed class DomesticHotWaterSystemLoadCalculatorTests
         Assert.Equal(8760, result.En15316Handoff.HourlyDhwSystemHeatRequirementKWh8760.Count);
         Assert.Equal(8760, result.En15316Handoff.HourlyDhwAuxiliaryElectricityKWh8760.Count);
         Assert.Contains(result.En15316Handoff.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-EN15316-HANDOFF-ONLY");
+    }
+
+    [Fact]
+    public void LossOwnership_SystemEnergyOwnLosses_UsesUsefulOnly()
+    {
+        var useful = DomesticHotWaterSystemLossTestData.CreateUsefulDemand(hourlyUsefulEnergy: Enumerable.Repeat(2.0, 8760).ToArray());
+        var input = DomesticHotWaterSystemLossTestData.CreateSystemLossInput(usefulDemand: useful) with
+        {
+            LossOwnershipPolicy = DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses
+        };
+
+        var result = _calculator.Calculate(input);
+
+        Assert.Equal(useful.AnnualUsefulEnergyKWh, result.AnnualSystemHeatRequirementKWh, 6);
+        Assert.Equal(0.0, result.AnnualRecoverableLossKWh, 6);
+        Assert.Equal(0.0, result.AnnualNonRecoverableLossKWh, 6);
     }
 
     [Fact]

@@ -24,6 +24,7 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
     private readonly IDomesticHotWaterDistributionLossCalculator _distributionLossCalculator;
     private readonly IDomesticHotWaterCirculationLossCalculator _circulationLossCalculator;
     private readonly IDomesticHotWaterEn15316HandoffBuilder _handoffBuilder;
+    private readonly IDomesticHotWaterLossCalculator _lossCalculator;
     private readonly IStandardCalculationDisclosureFactory _disclosureFactory;
 
     public DomesticHotWaterSystemLoadCalculator(
@@ -32,6 +33,7 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
         IDomesticHotWaterDistributionLossCalculator distributionLossCalculator,
         IDomesticHotWaterCirculationLossCalculator circulationLossCalculator,
         IDomesticHotWaterEn15316HandoffBuilder handoffBuilder,
+        IDomesticHotWaterLossCalculator lossCalculator,
         IStandardCalculationDisclosureFactory disclosureFactory)
     {
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
@@ -39,6 +41,7 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
         _distributionLossCalculator = distributionLossCalculator ?? throw new ArgumentNullException(nameof(distributionLossCalculator));
         _circulationLossCalculator = circulationLossCalculator ?? throw new ArgumentNullException(nameof(circulationLossCalculator));
         _handoffBuilder = handoffBuilder ?? throw new ArgumentNullException(nameof(handoffBuilder));
+        _lossCalculator = lossCalculator ?? throw new ArgumentNullException(nameof(lossCalculator));
         _disclosureFactory = disclosureFactory ?? throw new ArgumentNullException(nameof(disclosureFactory));
     }
 
@@ -102,26 +105,48 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
                 "Auxiliary electricity component was not available and defaulted to zero.",
                 "DomesticHotWaterSystemLoadCalculator");
 
-        var hourlySystemHeatRequirement = input.UsefulDemand.HourlyUsefulEnergyKWh8760
-            .Select((useful, index) =>
-                useful +
-                storage.HourlyLossKWh8760[index] +
-                distribution.HourlyLossKWh8760[index] +
-                circulationThermal.HourlyLossKWh8760[index])
-            .ToArray();
+        double[] hourlySystemHeatRequirement;
+        double[] hourlyRecoverableLoss;
+        double[] hourlyNonRecoverableLoss;
+        if (input.LossOwnershipPolicy == DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses)
+        {
+            hourlySystemHeatRequirement = input.UsefulDemand.HourlyUsefulEnergyKWh8760.ToArray();
+            hourlyRecoverableLoss = new double[8760];
+            hourlyNonRecoverableLoss = new double[8760];
+            diagnostics.Add(CreateInfo(
+                "AE-DHW-LOSS-OWNERSHIP-SYSTEM-ENERGY",
+                "DHW system heat lane uses useful demand only because technical losses are owned by system-energy chain."));
+        }
+        else
+        {
+            hourlySystemHeatRequirement = input.UsefulDemand.HourlyUsefulEnergyKWh8760
+                .Select((useful, index) =>
+                    useful +
+                    storage.HourlyLossKWh8760[index] +
+                    distribution.HourlyLossKWh8760[index] +
+                    circulationThermal.HourlyLossKWh8760[index])
+                .ToArray();
 
-        var hourlyRecoverableLoss = storage.HourlyRecoverableLossKWh8760
-            .Select((value, index) =>
-                value +
-                distribution.HourlyRecoverableLossKWh8760[index] +
-                circulationThermal.HourlyRecoverableLossKWh8760[index])
-            .ToArray();
-        var hourlyNonRecoverableLoss = storage.HourlyNonRecoverableLossKWh8760
-            .Select((value, index) =>
-                value +
-                distribution.HourlyNonRecoverableLossKWh8760[index] +
-                circulationThermal.HourlyNonRecoverableLossKWh8760[index])
-            .ToArray();
+            hourlyRecoverableLoss = storage.HourlyRecoverableLossKWh8760
+                .Select((value, index) =>
+                    value +
+                    distribution.HourlyRecoverableLossKWh8760[index] +
+                    circulationThermal.HourlyRecoverableLossKWh8760[index])
+                .ToArray();
+            hourlyNonRecoverableLoss = storage.HourlyNonRecoverableLossKWh8760
+                .Select((value, index) =>
+                    value +
+                    distribution.HourlyNonRecoverableLossKWh8760[index] +
+                    circulationThermal.HourlyNonRecoverableLossKWh8760[index])
+                .ToArray();
+
+            if (input.LossOwnershipPolicy == DomesticHotWaterLossOwnershipPolicy.NoDoubleCounting)
+            {
+                diagnostics.Add(CreateInfo(
+                    "AE-DHW-LOSS-OWNERSHIP-NO-DOUBLE-COUNTING",
+                    "DHW technical losses are included in DHW system-load lane under no-double-counting ownership policy."));
+            }
+        }
 
         var monthlySystemHeat = BuildMonthlyFromHourly(hourlySystemHeatRequirement);
 
@@ -172,7 +197,8 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
                 HourlyDhwAuxiliaryElectricityKWh8760: auxiliary.HourlyLossKWh8760,
                 HourlyRecoverableLossKWh8760: hourlyRecoverableLoss,
                 HourlyNonRecoverableLossKWh8760: hourlyNonRecoverableLoss,
-                Diagnostics: []),
+                Diagnostics: [],
+                LossOwnershipPolicy: input.LossOwnershipPolicy),
             Disclosure: disclosure,
             Diagnostics: diagnostics);
 
@@ -189,6 +215,72 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
         };
     }
 
+    public DomesticHotWaterSystemLoadFoundationResult Calculate(DomesticHotWaterSystemLoadRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(request.UsefulDemandProfileKWh);
+        ArgumentNullException.ThrowIfNull(request.LossDefinition);
+
+        var assumptions = new List<string>();
+        var warnings = new List<string>();
+        var diagnostics = new List<StandardCalculationDiagnostic>();
+
+        if (request.UsefulDemandProfileKWh.Any(value => !double.IsFinite(value) || value < 0.0))
+        {
+            diagnostics.Add(CreateWarning(
+                "AE-DHW-SYSTEM-USEFUL-PROFILE-INVALID",
+                "Useful demand profile contains invalid values; invalid values were clamped to zero."));
+        }
+
+        var useful = request.UsefulDemandProfileKWh
+            .Select(value => double.IsFinite(value) && value > 0.0 ? value : 0.0)
+            .ToArray();
+        var setpointProfile = request.HotWaterSetpointProfileCelsius;
+
+        var losses = _lossCalculator.Calculate(useful, request.LossDefinition, setpointProfile);
+        diagnostics.AddRange(losses.Diagnostics);
+        assumptions.AddRange(losses.Assumptions);
+        warnings.AddRange(losses.Warnings);
+
+        var system = new double[useful.Length];
+        for (var index = 0; index < useful.Length; index++)
+        {
+            var raw = useful[index] +
+                      losses.StorageLossesProfileKWh[index] +
+                      losses.DistributionLossesProfileKWh[index] +
+                      losses.CirculationLossesProfileKWh[index] -
+                      losses.RecoveredLossesProfileKWh[index];
+            system[index] = Math.Max(0.0, raw);
+        }
+
+        assumptions.Add("System load convention: useful + storage + distribution + circulation - recovered.");
+        assumptions.Add("Auxiliary energy profile is tracked separately and not added to thermal system load.");
+
+        var monthly = BuildMonthlyFromProfile(system);
+        var summary = new DomesticHotWaterSystemLoadAnnualSummary(
+            UsefulEnergyKWh: useful.Sum(),
+            StorageLossesKWh: losses.StorageLossesProfileKWh.Sum(),
+            DistributionLossesKWh: losses.DistributionLossesProfileKWh.Sum(),
+            CirculationLossesKWh: losses.CirculationLossesProfileKWh.Sum(),
+            RecoveredLossesKWh: losses.RecoveredLossesProfileKWh.Sum(),
+            AuxiliaryEnergyKWh: losses.AuxiliaryEnergyProfileKWh.Sum(),
+            SystemLoadKWh: system.Sum());
+
+        return new DomesticHotWaterSystemLoadFoundationResult(
+            UsefulEnergyProfileKWh: useful,
+            StorageLossesProfileKWh: losses.StorageLossesProfileKWh,
+            DistributionLossesProfileKWh: losses.DistributionLossesProfileKWh,
+            CirculationLossesProfileKWh: losses.CirculationLossesProfileKWh,
+            RecoveredLossesProfileKWh: losses.RecoveredLossesProfileKWh,
+            AuxiliaryEnergyProfileKWh: losses.AuxiliaryEnergyProfileKWh,
+            SystemLoadProfileKWh: system,
+            MonthlySystemLoadKWh: monthly,
+            AnnualSummary: summary,
+            Assumptions: assumptions.ToArray(),
+            Warnings: warnings.ToArray(),
+            Diagnostics: SortDiagnostics(diagnostics));
+    }
+
     private static IReadOnlyList<double> BuildMonthlyFromHourly(IReadOnlyList<double> hourlyValues)
     {
         var monthly = new double[12];
@@ -201,6 +293,17 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
         }
 
         return monthly;
+    }
+
+    private static IReadOnlyList<double> BuildMonthlyFromProfile(IReadOnlyList<double> values)
+    {
+        if (values.Count == 12)
+            return values.ToArray();
+
+        if (values.Count != 8760)
+            return Enumerable.Repeat(0.0, 12).ToArray();
+
+        return BuildMonthlyFromHourly(values);
     }
 
     private static StandardCalculationDisclosure MergeDisclosure(
@@ -280,4 +383,12 @@ public sealed class DomesticHotWaterSystemLoadCalculator : IDomesticHotWaterSyst
             message,
             StandardCalculationStage.DomesticHotWater,
             "DomesticHotWaterSystemLoadCalculator");
+
+    private static IReadOnlyList<StandardCalculationDiagnostic> SortDiagnostics(
+        IEnumerable<StandardCalculationDiagnostic> diagnostics) =>
+        diagnostics
+            .OrderByDescending(item => item.Severity)
+            .ThenBy(item => item.Code, StringComparer.Ordinal)
+            .ThenBy(item => item.Message, StringComparer.Ordinal)
+            .ToArray();
 }

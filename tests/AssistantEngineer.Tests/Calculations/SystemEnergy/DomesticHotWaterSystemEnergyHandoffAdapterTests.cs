@@ -42,4 +42,19 @@ public sealed class DomesticHotWaterSystemEnergyHandoffAdapterTests
             result.UsefulLoads.SelectMany(load => load.Diagnostics),
             diagnostic => diagnostic.Code == "AE-SYS-DHW-HANDOFF-ADAPTED");
     }
+
+    [Fact]
+    public void SystemEnergyOwnLosses_UsesUsefulLaneInsteadOfSystemHeatLane()
+    {
+        var handoff = SystemEnergyTestData.CreateDhwHandoff(
+            usefulHourly: 0.8,
+            systemLoadHourly: 1.6,
+            ownershipPolicy: AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater.DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses);
+
+        var result = _adapter.BuildUsefulLoadSet(handoff);
+        var usefulLoad = Assert.Single(result.UsefulLoads);
+
+        Assert.Equal(0.8, usefulLoad.HourlyUsefulEnergyKWh8760[0], 6);
+        Assert.Contains(usefulLoad.Diagnostics, diagnostic => diagnostic.Code == "AE-SYS-DHW-HANDOFF-LOSS-OWNERSHIP-SYSTEM-ENERGY");
+    }
 }

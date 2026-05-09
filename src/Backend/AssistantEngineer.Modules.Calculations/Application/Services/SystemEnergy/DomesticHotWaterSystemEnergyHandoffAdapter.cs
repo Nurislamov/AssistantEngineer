@@ -28,8 +28,23 @@ public sealed class DomesticHotWaterSystemEnergyHandoffAdapter : IDomesticHotWat
                 "DHW auxiliary electricity handoff profile was adapted into canonical auxiliary-load input.")
         };
 
-        var usefulHourly = SystemEnergyProfileHelper.Ensure8760(handoff.HourlyDhwSystemHeatRequirementKWh8760);
+        var usefulHourly = handoff.LossOwnershipPolicy == DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses
+            ? SystemEnergyProfileHelper.Ensure8760(handoff.HourlyUsefulDhwEnergyKWh8760)
+            : SystemEnergyProfileHelper.Ensure8760(handoff.HourlyDhwSystemHeatRequirementKWh8760);
         var usefulMonthly = SystemEnergyProfileHelper.AggregateMonthly(usefulHourly);
+
+        if (handoff.LossOwnershipPolicy == DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses)
+        {
+            usefulDiagnostics.Add(CreateInfo(
+                "AE-SYS-DHW-HANDOFF-LOSS-OWNERSHIP-SYSTEM-ENERGY",
+                "DHW handoff uses useful-energy lane only because technical losses are owned by system-energy chain."));
+        }
+        else if (handoff.LossOwnershipPolicy == DomesticHotWaterLossOwnershipPolicy.NoDoubleCounting)
+        {
+            usefulDiagnostics.Add(CreateInfo(
+                "AE-SYS-DHW-HANDOFF-NO-DOUBLE-COUNTING",
+                "DHW handoff uses declared no-double-counting policy and preserves system-load lane."));
+        }
 
         var usefulLoad = new SystemEnergyUsefulLoadInput(
             LoadId: $"{handoff.CalculationId}-DHW-SYSTEM-LOAD",

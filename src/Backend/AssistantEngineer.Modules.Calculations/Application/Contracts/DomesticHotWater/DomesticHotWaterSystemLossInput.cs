@@ -10,5 +10,6 @@ public sealed record DomesticHotWaterSystemLossInput(
     DomesticHotWaterCirculationLossInput Circulation,
     double? DefaultAmbientTemperatureCelsius,
     double? DefaultRecoverableFraction,
-    StandardCalculationDisclosure? DisclosureOverride,
-    string? Source);
+    DomesticHotWaterLossOwnershipPolicy LossOwnershipPolicy = DomesticHotWaterLossOwnershipPolicy.DhwOwnLosses,
+    StandardCalculationDisclosure? DisclosureOverride = null,
+    string? Source = null);

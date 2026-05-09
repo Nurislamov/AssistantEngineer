@@ -104,14 +104,14 @@ public sealed class DomesticHotWaterDemandInputValidator : IDomesticHotWaterDema
         switch (demand.DemandBasis)
         {
             case DomesticHotWaterDemandBasis.People:
-                if (demand.OccupantCount is null || demand.OccupantCount <= 0.0)
+                if (demand.OccupantCount is null || demand.OccupantCount < 0.0)
                 {
                     diagnostics.Add(CreateError(
                         "AE-DHW-OCCUPANT-COUNT-MISSING",
-                        "People-based demand requires OccupantCount > 0."));
+                        "People-based demand requires OccupantCount >= 0."));
                 }
 
-                if (demand.DailyVolumeLitersPerPerson is null || demand.DailyVolumeLitersPerPerson <= 0.0)
+                if (demand.DailyVolumeLitersPerPerson is null || demand.DailyVolumeLitersPerPerson < 0.0)
                 {
                     diagnostics.Add(CreateWarning(
                         "AE-DHW-DAILY-VOLUME-RATE-MISSING",
@@ -120,14 +120,14 @@ public sealed class DomesticHotWaterDemandInputValidator : IDomesticHotWaterDema
                 break;
 
             case DomesticHotWaterDemandBasis.DwellingUnit:
-                if (demand.DwellingUnitCount is null || demand.DwellingUnitCount <= 0.0)
+                if (demand.DwellingUnitCount is null || demand.DwellingUnitCount < 0.0)
                 {
                     diagnostics.Add(CreateError(
                         "AE-DHW-DWELLING-COUNT-MISSING",
-                        "Dwelling-unit-based demand requires DwellingUnitCount > 0."));
+                        "Dwelling-unit-based demand requires DwellingUnitCount >= 0."));
                 }
 
-                if (demand.DailyVolumeLitersPerDwellingUnit is null || demand.DailyVolumeLitersPerDwellingUnit <= 0.0)
+                if (demand.DailyVolumeLitersPerDwellingUnit is null || demand.DailyVolumeLitersPerDwellingUnit < 0.0)
                 {
                     diagnostics.Add(CreateWarning(
                         "AE-DHW-DAILY-VOLUME-RATE-MISSING",
@@ -136,14 +136,14 @@ public sealed class DomesticHotWaterDemandInputValidator : IDomesticHotWaterDema
                 break;
 
             case DomesticHotWaterDemandBasis.FloorArea:
-                if (demand.FloorAreaSquareMeters is null || demand.FloorAreaSquareMeters <= 0.0)
+                if (demand.FloorAreaSquareMeters is null || demand.FloorAreaSquareMeters < 0.0)
                 {
                     diagnostics.Add(CreateError(
                         "AE-DHW-FLOOR-AREA-MISSING",
-                        "Floor-area-based demand requires FloorAreaSquareMeters > 0."));
+                        "Floor-area-based demand requires FloorAreaSquareMeters >= 0."));
                 }
 
-                if (demand.DailyVolumeLitersPerSquareMeter is null || demand.DailyVolumeLitersPerSquareMeter <= 0.0)
+                if (demand.DailyVolumeLitersPerSquareMeter is null || demand.DailyVolumeLitersPerSquareMeter < 0.0)
                 {
                     diagnostics.Add(CreateWarning(
                         "AE-DHW-DAILY-VOLUME-RATE-MISSING",
@@ -182,16 +182,20 @@ public sealed class DomesticHotWaterDemandInputValidator : IDomesticHotWaterDema
             case DomesticHotWaterDemandBasis.CustomDailyVolume:
                 if (demand.CustomDailyVolumeLiters is null ||
                     !double.IsFinite(demand.CustomDailyVolumeLiters.Value) ||
-                    demand.CustomDailyVolumeLiters.Value <= 0.0)
+                    demand.CustomDailyVolumeLiters.Value < 0.0)
                 {
                     diagnostics.Add(CreateError(
                         "AE-DHW-CUSTOM-DAILY-VOLUME-INVALID",
-                        "Custom daily volume must be finite and > 0."));
+                        "Custom daily volume must be finite and >= 0."));
                 }
                 break;
 
             case DomesticHotWaterDemandBasis.CustomHourlyVolume:
                 ValidateCustomHourlyVolume(demand.CustomHourlyVolumeLiters, diagnostics);
+                break;
+
+            case DomesticHotWaterDemandBasis.ScheduledEnergy:
+                ValidateCustomHourlyUsefulEnergy(demand.CustomHourlyUsefulEnergyKWh, diagnostics);
                 break;
         }
 
@@ -204,6 +208,27 @@ public sealed class DomesticHotWaterDemandInputValidator : IDomesticHotWaterDema
                 sumCode: "AE-DHW-PROFILE-SUM-NONPOSITIVE",
                 label: "Custom daily profile fractions",
                 diagnostics: diagnostics);
+        }
+    }
+
+    private static void ValidateCustomHourlyUsefulEnergy(
+        IReadOnlyList<double>? hourlyUsefulEnergy,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        if (hourlyUsefulEnergy is null ||
+            (hourlyUsefulEnergy.Count != 8760 && hourlyUsefulEnergy.Count != 12))
+        {
+            diagnostics.Add(CreateError(
+                "AE-DHW-SCHEDULED-ENERGY-INVALID",
+                "Scheduled useful energy must contain 8760 hourly values or 12 monthly values."));
+            return;
+        }
+
+        if (hourlyUsefulEnergy.Any(value => !double.IsFinite(value) || value < 0.0))
+        {
+            diagnostics.Add(CreateError(
+                "AE-DHW-SCHEDULED-ENERGY-INVALID",
+                "Scheduled useful energy values must be finite and non-negative."));
         }
     }
 

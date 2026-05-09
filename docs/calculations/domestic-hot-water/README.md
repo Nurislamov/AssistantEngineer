@@ -1,5 +1,9 @@
 # Domestic Hot Water Calculations
 
+For the current DHW foundation summary (useful demand, draw-off profiles, losses, recovery, and system-energy handoff), see:
+
+- `docs/calculations/domestic-hot-water.md`
+
 ## AE-DHW-ISO12831-001A purpose
 
 `AE-DHW-ISO12831-001A` adds a deterministic standard-inspired useful domestic hot water demand lane at the application level.

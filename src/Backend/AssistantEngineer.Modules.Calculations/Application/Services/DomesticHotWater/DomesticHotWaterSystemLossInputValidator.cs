@@ -70,10 +70,26 @@ public sealed class DomesticHotWaterSystemLossInputValidator : IDomesticHotWater
         ValidateStorage(input.Storage, diagnostics);
         ValidateDistribution(input.Distribution, diagnostics);
         ValidateCirculation(input.Circulation, diagnostics);
+        ValidateLossOwnership(input, diagnostics);
 
         return new DomesticHotWaterSystemLossValidationResult(
             IsValid: diagnostics.All(diagnostic => diagnostic.Severity != CalculationDiagnosticSeverity.Error),
             Diagnostics: diagnostics);
+    }
+
+    private static void ValidateLossOwnership(
+        DomesticHotWaterSystemLossInput input,
+        ICollection<StandardCalculationDiagnostic> diagnostics)
+    {
+        if (input.LossOwnershipPolicy != DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses)
+            return;
+
+        if (input.Storage.IsStoragePresent || input.Distribution.IsDistributionPresent || input.Circulation.IsCirculationPresent)
+        {
+            diagnostics.Add(CreateWarning(
+                "AE-DHW-LOSS-OWNERSHIP-DUPLICATE-RISK",
+                "Loss ownership is assigned to system-energy chain, but DHW-side loss inputs are also present. Downstream pipeline should prevent double counting."));
+        }
     }
 
     private static void ValidateStorage(

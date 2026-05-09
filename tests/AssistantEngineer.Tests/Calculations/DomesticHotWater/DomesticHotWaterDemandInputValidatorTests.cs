@@ -112,6 +112,40 @@ public sealed class DomesticHotWaterDemandInputValidatorTests
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-MONTHLY-PROFILE-INVALID");
     }
 
+    [Fact]
+    public void AcceptsZeroOccupancyAsDeterministicZeroDemand()
+    {
+        var input = CreateInput() with
+        {
+            Demand = CreateDemandInput() with
+            {
+                OccupantCount = 0
+            }
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void RejectsInvalidScheduledEnergyProfileLength()
+    {
+        var input = CreateInput() with
+        {
+            Demand = CreateDemandInput() with
+            {
+                DemandBasis = DomesticHotWaterDemandBasis.ScheduledEnergy,
+                CustomHourlyUsefulEnergyKWh = Enumerable.Repeat(1.0, 24).ToArray()
+            }
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-SCHEDULED-ENERGY-INVALID");
+    }
+
     private static DomesticHotWaterUsefulDemandInput CreateInput() =>
         new(
             CalculationId: "DHW-VAL-1",

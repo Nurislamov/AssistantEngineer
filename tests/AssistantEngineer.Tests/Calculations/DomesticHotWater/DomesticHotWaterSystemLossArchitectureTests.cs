@@ -16,6 +16,7 @@ public sealed class DomesticHotWaterSystemLossArchitectureTests
                 path.EndsWith("DomesticHotWaterStorageLossCalculator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterDistributionLossCalculator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterCirculationLossCalculator.cs", StringComparison.Ordinal) ||
+                path.EndsWith("DomesticHotWaterLossCalculator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterSystemLoadCalculator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("DomesticHotWaterEn15316HandoffBuilder.cs", StringComparison.Ordinal))
             .ToArray();

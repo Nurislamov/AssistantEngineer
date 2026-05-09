@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater;
 
 namespace AssistantEngineer.Tests.Calculations.DomesticHotWater;
@@ -91,5 +92,18 @@ public sealed class DomesticHotWaterSystemLossInputValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-CIRCULATION-OPERATION-PROFILE-INVALID");
+    }
+
+    [Fact]
+    public void WarnsWhenLossOwnershipCanDoubleCount()
+    {
+        var input = DomesticHotWaterSystemLossTestData.CreateSystemLossInput() with
+        {
+            LossOwnershipPolicy = DomesticHotWaterLossOwnershipPolicy.SystemEnergyOwnLosses
+        };
+
+        var result = _validator.Validate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-DHW-LOSS-OWNERSHIP-DUPLICATE-RISK");
     }
 }

@@ -5,4 +5,6 @@ namespace AssistantEngineer.Modules.Calculations.Application.Abstractions.Domest
 public interface IDomesticHotWaterUsefulDemandCalculator
 {
     DomesticHotWaterUsefulDemandResult Calculate(DomesticHotWaterUsefulDemandInput input);
+
+    DomesticHotWaterDrawOffProfileResult Calculate(DomesticHotWaterDemandDefinition definition);
 }

@@ -35,21 +35,24 @@ internal static class SystemEnergyTestData
             Source: "test");
 
     public static DomesticHotWaterEn15316Handoff CreateDhwHandoff(
+        double usefulHourly = 1.0,
         double systemLoadHourly = 1.2,
-        double auxiliaryHourly = 0.05) =>
+        double auxiliaryHourly = 0.05,
+        DomesticHotWaterLossOwnershipPolicy ownershipPolicy = DomesticHotWaterLossOwnershipPolicy.DhwOwnLosses) =>
         new(
             CalculationId: "DHW-H1",
             EndUse: "DomesticHotWater",
             UsefulEnergySource: "test",
-            AnnualUsefulDhwEnergyKWh: HourlyConstant(1.0).Sum(),
+            AnnualUsefulDhwEnergyKWh: HourlyConstant(usefulHourly).Sum(),
             AnnualDhwSystemHeatRequirementKWh: HourlyConstant(systemLoadHourly).Sum(),
             AnnualDhwAuxiliaryElectricityKWh: HourlyConstant(auxiliaryHourly).Sum(),
-            HourlyUsefulDhwEnergyKWh8760: HourlyConstant(1.0),
+            HourlyUsefulDhwEnergyKWh8760: HourlyConstant(usefulHourly),
             HourlyDhwSystemHeatRequirementKWh8760: HourlyConstant(systemLoadHourly),
             HourlyDhwAuxiliaryElectricityKWh8760: HourlyConstant(auxiliaryHourly),
             HourlyRecoverableLossKWh8760: HourlyConstant(0.2),
             HourlyNonRecoverableLossKWh8760: HourlyConstant(0.3),
-            Diagnostics: []);
+            Diagnostics: [],
+            LossOwnershipPolicy: ownershipPolicy);
 
     public static SystemEnergyGenerationHandoff CreateGenerationHandoff(
         double heatingHourlyLoad = 10.0,

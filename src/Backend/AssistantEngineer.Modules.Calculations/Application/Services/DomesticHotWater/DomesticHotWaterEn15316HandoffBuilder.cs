@@ -28,7 +28,8 @@ public sealed class DomesticHotWaterEn15316HandoffBuilder : IDomesticHotWaterEn1
             HourlyDhwAuxiliaryElectricityKWh8760: result.HourlyAuxiliaryElectricityKWh8760,
             HourlyRecoverableLossKWh8760: result.HourlyRecoverableLossKWh8760,
             HourlyNonRecoverableLossKWh8760: result.HourlyNonRecoverableLossKWh8760,
-            Diagnostics: diagnostics);
+            Diagnostics: diagnostics,
+            LossOwnershipPolicy: result.En15316Handoff.LossOwnershipPolicy);
     }
 
     private static StandardCalculationDiagnostic CreateInfo(

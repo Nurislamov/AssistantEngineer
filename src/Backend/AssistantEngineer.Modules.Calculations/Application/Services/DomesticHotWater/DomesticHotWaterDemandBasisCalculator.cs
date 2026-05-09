@@ -28,6 +28,8 @@ public sealed class DomesticHotWaterDemandBasisCalculator : IDomesticHotWaterDem
         var dailyVolume = 0.0;
         var customHourly = Array.Empty<double>();
         var usesCustomHourly = false;
+        IReadOnlyList<double>? scheduledEnergy = null;
+        var usesScheduledEnergy = false;
 
         switch (input.DemandBasis)
         {
@@ -126,6 +128,28 @@ public sealed class DomesticHotWaterDemandBasisCalculator : IDomesticHotWaterDem
                 }
                 break;
 
+            case DomesticHotWaterDemandBasis.ScheduledEnergy:
+                if (input.CustomHourlyUsefulEnergyKWh is { Count: 8760 } energy8760)
+                {
+                    scheduledEnergy = energy8760.ToArray();
+                    usesScheduledEnergy = true;
+                    dailyVolume = 0.0;
+                }
+                else if (input.CustomHourlyUsefulEnergyKWh is { Count: 12 } energy12)
+                {
+                    var monthlyToHourly = ExpandMonthlyToHourly(energy12);
+                    scheduledEnergy = monthlyToHourly;
+                    usesScheduledEnergy = true;
+                    dailyVolume = 0.0;
+                }
+                else
+                {
+                    diagnostics.Add(CreateWarning(
+                        "AE-DHW-SCHEDULED-ENERGY-INVALID",
+                        "Scheduled energy basis requires 8760 hourly or 12 monthly useful-energy values."));
+                }
+                break;
+
             case DomesticHotWaterDemandBasis.Other:
             case DomesticHotWaterDemandBasis.Unknown:
             default:
@@ -144,7 +168,9 @@ public sealed class DomesticHotWaterDemandBasisCalculator : IDomesticHotWaterDem
             DailyVolumeLiters: dailyVolume,
             CustomHourlyVolumeLiters8760: customHourly,
             UsesCustomHourlyVolume: usesCustomHourly,
-            Diagnostics: diagnostics);
+            Diagnostics: diagnostics,
+            ScheduledUsefulEnergyKWh: scheduledEnergy,
+            UsesScheduledUsefulEnergy: usesScheduledEnergy);
     }
 
     private static Iso12831DomesticHotWaterUsageCategory MapUseCategory(DomesticHotWaterUseCategory category) =>
@@ -158,6 +184,24 @@ public sealed class DomesticHotWaterDemandBasisCalculator : IDomesticHotWaterDem
             DomesticHotWaterUseCategory.Restaurant => Iso12831DomesticHotWaterUsageCategory.Restaurant,
             _ => Iso12831DomesticHotWaterUsageCategory.Custom
         };
+
+    private static IReadOnlyList<double> ExpandMonthlyToHourly(IReadOnlyList<double> monthlyValues)
+    {
+        int[] daysPerMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var hourly = new double[8760];
+        var offset = 0;
+        for (var month = 0; month < 12; month++)
+        {
+            var hours = daysPerMonth[month] * 24;
+            var hourlyValue = Math.Max(0.0, monthlyValues[month]) / hours;
+            for (var index = 0; index < hours; index++)
+                hourly[offset + index] = hourlyValue;
+
+            offset += hours;
+        }
+
+        return hourly;
+    }
 
     private static StandardCalculationDiagnostic CreateInfo(
         string code,

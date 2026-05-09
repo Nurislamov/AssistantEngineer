@@ -6,4 +6,6 @@ public sealed record DomesticHotWaterDemandBasisResult(
     double DailyVolumeLiters,
     IReadOnlyList<double> CustomHourlyVolumeLiters8760,
     bool UsesCustomHourlyVolume,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    IReadOnlyList<double>? ScheduledUsefulEnergyKWh = null,
+    bool UsesScheduledUsefulEnergy = false);

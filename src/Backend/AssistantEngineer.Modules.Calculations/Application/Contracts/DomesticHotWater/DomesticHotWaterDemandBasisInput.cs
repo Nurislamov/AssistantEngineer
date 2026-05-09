@@ -16,4 +16,5 @@ public sealed record DomesticHotWaterDemandBasisInput(
     IReadOnlyList<double>? CustomHourlyVolumeLiters,
     IReadOnlyList<double>? CustomDailyProfileFractions,
     string? Source,
-    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics);
+    IReadOnlyList<StandardCalculationDiagnostic> Diagnostics,
+    IReadOnlyList<double>? CustomHourlyUsefulEnergyKWh = null);
