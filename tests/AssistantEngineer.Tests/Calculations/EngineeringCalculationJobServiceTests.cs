@@ -18,11 +18,34 @@ public class EngineeringCalculationJobServiceTests
 
         Assert.Equal("job-queued", result.JobId);
         Assert.Equal(EngineeringCalculationJobStatus.Queued, result.Status);
-        Assert.Contains(result.Diagnostics, item => item.Code == "CALCULATION_JOB_WORKER_NOT_ENABLED");
+        Assert.DoesNotContain(result.Diagnostics, item => item.Code == "CALCULATION_JOB_WORKER_NOT_ENABLED");
         Assert.True(result.HistoryEvents.Count >= 2);
         Assert.Equal(0, fixture.Runner.InvocationCount);
     }
 
+    [Fact]
+    public async Task EngineeringCalculationJobExecuteQueuedRunsExistingJobAndStoresScenarioArtifacts()
+    {
+        var fixture = CreateFixture();
+        fixture.Runner.ResultFactory = request => CreateScenarioResult(request.ScenarioId, EngineeringCalculationExecutionStatus.Completed);
+
+        var queued = await fixture.Service.CreateOrRunJobAsync(
+            CreateJobRequest("job-worker", "scenario-worker", EngineeringCalculationJobExecutionMode.Queued),
+            CancellationToken.None);
+
+        Assert.Equal(EngineeringCalculationJobStatus.Queued, queued.Status);
+        Assert.Equal(0, fixture.Runner.InvocationCount);
+
+        var completed = await fixture.Service.ExecuteQueuedJobAsync("job-worker", CancellationToken.None);
+
+        Assert.NotNull(completed);
+        Assert.Equal(EngineeringCalculationJobStatus.Completed, completed.Status);
+        Assert.NotNull(completed.ScenarioResultSummary);
+        Assert.True(fixture.Runner.InvocationCount > 0);
+        Assert.Contains(completed.HistoryEvents, item => item.Status == EngineeringCalculationJobStatus.Running);
+        Assert.Contains(completed.HistoryEvents, item => item.Status == EngineeringCalculationJobStatus.Completed);
+        Assert.NotEmpty(completed.PersistedArtifactReferences);
+    }
     [Fact]
     public async Task EngineeringCalculationJobSynchronousExecutesRunnerAndStoresScenarioArtifacts()
     {

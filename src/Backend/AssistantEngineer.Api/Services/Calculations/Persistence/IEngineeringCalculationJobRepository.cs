@@ -11,6 +11,9 @@ public interface IEngineeringCalculationJobRepository
     Task<EngineeringCalculationJobRecordDto> UpdateAsync(
         EngineeringCalculationJobRecordDto job,
         CancellationToken cancellationToken);
+    Task<IReadOnlyList<EngineeringCalculationJobRecordDto>> ListQueuedAsync(
+        int maxCount,
+        CancellationToken cancellationToken);
 
     Task<EngineeringCalculationJobRecordDto?> GetByIdAsync(
         string jobId,

@@ -57,6 +57,27 @@ public sealed class EfEngineeringCalculationJobRepository : IEngineeringCalculat
         return Map(entity);
     }
 
+    public async Task<IReadOnlyList<EngineeringCalculationJobRecordDto>> ListQueuedAsync(
+        int maxCount,
+        CancellationToken cancellationToken)
+    {
+        var take = Math.Max(1, maxCount);
+        var queued = EngineeringCalculationJobStatus.Queued.ToString();
+        var retryScheduled = EngineeringCalculationJobStatus.RetryScheduled.ToString();
+
+        var entities = await _context.Jobs
+            .AsNoTracking()
+            .Where(item =>
+                !item.CancellationRequested &&
+                (item.Status == queued || item.Status == retryScheduled))
+            .OrderBy(item => item.QueuedAtUtc ?? item.CreatedAtUtc)
+            .ThenBy(item => item.Id)
+            .Take(take)
+            .ToArrayAsync(cancellationToken);
+
+        return entities.Select(Map).ToArray();
+    }
+
     public async Task<EngineeringCalculationJobRecordDto?> GetByIdAsync(
         string jobId,
         CancellationToken cancellationToken)

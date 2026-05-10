@@ -50,7 +50,6 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         var warnings = new List<string>();
         var progress = 0;
         var currentStep = "Created";
-        var queuedAtUtc = timestamp;
 
         var job = new EngineeringCalculationJobRecordDto(
             JobId: jobId,
@@ -84,27 +83,11 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             UpdatedAtUtc = timestamp
         };
         job = await _jobRepository.UpdateAsync(job, cancellationToken);
-        progress = job.ProgressPercent;
-        currentStep = job.CurrentStep;
-        await AppendEventAsync(job, EngineeringCalculationJobStatus.Queued, "Calculation job queued.", null, progress, diagnostics, timestamp.AddMilliseconds(1), cancellationToken);
+        await AppendEventAsync(job, EngineeringCalculationJobStatus.Queued, "Calculation job queued.", null, job.ProgressPercent, diagnostics, timestamp.AddMilliseconds(1), cancellationToken);
 
         if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.Queued)
         {
-            diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
-                Severity: "warning",
-                Code: "CALCULATION_JOB_WORKER_NOT_ENABLED",
-                Message: "Job is queued in foundation mode because background worker is not enabled.",
-                SourceStep: "Review",
-                SuggestedCorrection: "Use synchronous execution mode or enable worker in future production deployment."));
-            warnings.Add("Queued job remains pending until a worker is enabled.");
-
-            job = job with
-            {
-                DiagnosticsJson = JsonSerializer.Serialize(SortAndDistinctDiagnostics(diagnostics), JsonOptions),
-                UpdatedAtUtc = timestamp.AddMilliseconds(2)
-            };
-            job = await _jobRepository.UpdateAsync(job, cancellationToken);
-
+            assumptions.Add("Queued execution mode stores the job for the background worker; it no longer reports a fake completed or stranded execution path.");
             return await BuildJobResultAsync(
                 job,
                 scenarioResultSummary: null,
@@ -114,127 +97,94 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
                 cancellationToken: cancellationToken);
         }
 
-        job = job with
+        return await ExecuteJobAsync(
+            job,
+            request,
+            assumptions,
+            warnings,
+            diagnostics,
+            timestamp.AddMilliseconds(2),
+            cancellationToken);
+    }
+
+    public async Task<EngineeringCalculationJobResultDto?> ExecuteQueuedJobAsync(
+        string jobId,
+        CancellationToken cancellationToken)
+    {
+        var job = await _jobRepository.GetByIdAsync(jobId, cancellationToken);
+        if (job is null)
         {
-            Status = EngineeringCalculationJobStatus.Running,
-            ProgressPercent = 25,
-            CurrentStep = "Running",
-            StartedAtUtc = timestamp.AddMilliseconds(2),
-            UpdatedAtUtc = timestamp.AddMilliseconds(2)
-        };
-        job = await _jobRepository.UpdateAsync(job, cancellationToken);
-        await AppendEventAsync(job, EngineeringCalculationJobStatus.Running, "Calculation job started.", null, job.ProgressPercent, diagnostics, timestamp.AddMilliseconds(2), cancellationToken);
-
-        try
-        {
-            var scenarioRequest = request.ScenarioRequest with
-            {
-                ScenarioId = scenarioId,
-                ProjectId = request.ProjectId,
-                IncludeTrace = request.IncludeTrace,
-                IncludeReport = request.IncludeReport,
-                ReportFormats = request.RequestedReportFormats ?? request.ScenarioRequest.ReportFormats
-            };
-
-            if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.DryRun)
-            {
-                scenarioRequest = scenarioRequest with { ExecutionMode = EngineeringCalculationExecutionMode.DryRun };
-                assumptions.Add("Job execution mode DryRun maps to scenario DryRun path.");
-            }
-            else if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.ValidateOnly)
-            {
-                scenarioRequest = scenarioRequest with { ExecutionMode = EngineeringCalculationExecutionMode.ValidateOnly };
-                assumptions.Add("Job execution mode ValidateOnly maps to scenario ValidateOnly path.");
-            }
-
-            var startedAt = job.StartedAtUtc ?? timestamp.AddMilliseconds(2);
-            var scenarioResult = await _scenarioRunner.RunAsync(scenarioRequest, cancellationToken);
-            diagnostics.AddRange(scenarioResult.ValidationDiagnostics);
-            assumptions.AddRange(scenarioResult.Assumptions);
-            warnings.AddRange(scenarioResult.Warnings);
-
-            await _workflowPersistenceService.SaveRunScenarioAsync(scenarioRequest, scenarioResult, cancellationToken);
-
-            var completedAt = request.DeterministicTimestampUtc ?? DateTimeOffset.UtcNow;
-            var finalStatus = MapScenarioStatus(scenarioResult.Status);
-            var normalizedDiagnostics = SortAndDistinctDiagnostics(diagnostics);
-            var duration = Math.Max(0.0, (completedAt - startedAt).TotalMilliseconds);
-
-            job = job with
-            {
-                Status = finalStatus,
-                ResultSummaryJson = JsonSerializer.Serialize(scenarioResult, JsonOptions),
-                DiagnosticsJson = JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
-                ProgressPercent = 100,
-                CurrentStep = "Completed",
-                CompletedAtUtc = completedAt,
-                UpdatedAtUtc = completedAt,
-                DurationMilliseconds = duration
-            };
-            job = await _jobRepository.UpdateAsync(job, cancellationToken);
-
-            await AppendEventAsync(
-                job,
-                finalStatus,
-                $"Calculation job completed with status `{finalStatus}`.",
-                null,
-                100,
-                normalizedDiagnostics,
-                completedAt,
-                cancellationToken);
-
-            return await BuildJobResultAsync(
-                job,
-                scenarioResult,
-                normalizedDiagnostics,
-                assumptions.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray(),
-                warnings.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray(),
-                cancellationToken);
+            return null;
         }
-        catch (Exception exception)
+
+        var diagnostics = DeserializeDiagnostics(job.DiagnosticsJson).ToList();
+        var request = DeserializeJobRequest(job.RequestJson);
+        if (request is null)
         {
-            var failedAt = request.DeterministicTimestampUtc ?? DateTimeOffset.UtcNow;
+            var failedAt = DateTimeOffset.UtcNow;
             diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
                 Severity: "error",
-                Code: "CALCULATION_JOB_EXECUTION_FAILED",
-                Message: exception.Message,
+                Code: "CALCULATION_JOB_REQUEST_DESERIALIZATION_FAILED",
+                Message: "Queued job request payload could not be deserialized.",
                 SourceStep: "Review",
-                SuggestedCorrection: "Inspect scenario inputs and backend runner logs, then retry."));
-
-            var normalizedDiagnostics = SortAndDistinctDiagnostics(diagnostics);
-            var startedAt = job.StartedAtUtc ?? timestamp.AddMilliseconds(2);
-            var duration = Math.Max(0.0, (failedAt - startedAt).TotalMilliseconds);
+                SuggestedCorrection: "Recreate the job from the original scenario request."));
 
             job = job with
             {
                 Status = EngineeringCalculationJobStatus.FailedExecution,
-                DiagnosticsJson = JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
+                DiagnosticsJson = JsonSerializer.Serialize(SortAndDistinctDiagnostics(diagnostics), JsonOptions),
                 ProgressPercent = 100,
                 CurrentStep = "Failed",
                 CompletedAtUtc = failedAt,
                 UpdatedAtUtc = failedAt,
-                DurationMilliseconds = duration
+                DurationMilliseconds = 0
             };
             job = await _jobRepository.UpdateAsync(job, cancellationToken);
+            await AppendEventAsync(job, EngineeringCalculationJobStatus.FailedExecution, "Calculation job failed before execution because its request payload is invalid.", null, 100, diagnostics, failedAt, cancellationToken);
+            return await BuildJobResultAsync(job, null, SortAndDistinctDiagnostics(diagnostics), [], [], cancellationToken);
+        }
 
-            await AppendEventAsync(
-                job,
-                EngineeringCalculationJobStatus.FailedExecution,
-                "Calculation job failed during execution.",
-                null,
-                100,
-                normalizedDiagnostics,
-                failedAt,
-                cancellationToken);
-
+        if (job.Status is not (EngineeringCalculationJobStatus.Queued or EngineeringCalculationJobStatus.RetryScheduled))
+        {
             return await BuildJobResultAsync(
                 job,
-                scenarioResultSummary: null,
-                diagnostics: normalizedDiagnostics,
-                assumptions: assumptions,
-                warnings: warnings,
-                cancellationToken: cancellationToken);
+                DeserializeScenarioResult(job.ResultSummaryJson),
+                diagnostics,
+                assumptions: [],
+                warnings: [],
+                cancellationToken);
         }
+
+        if (job.CancellationRequested)
+        {
+            var cancelledAt = DateTimeOffset.UtcNow;
+            job = job with
+            {
+                Status = EngineeringCalculationJobStatus.Cancelled,
+                ProgressPercent = 100,
+                CurrentStep = "Cancelled",
+                CompletedAtUtc = cancelledAt,
+                UpdatedAtUtc = cancelledAt
+            };
+            job = await _jobRepository.UpdateAsync(job, cancellationToken);
+            await AppendEventAsync(job, EngineeringCalculationJobStatus.Cancelled, "Queued job was cancelled before worker execution.", null, 100, diagnostics, cancelledAt, cancellationToken);
+            return await BuildJobResultAsync(job, null, diagnostics, [], [], cancellationToken);
+        }
+
+        var assumptions = new List<string>
+        {
+            "Queued job was picked up by the background worker; execution still uses the existing scenario runner."
+        };
+        var warnings = new List<string>();
+
+        return await ExecuteJobAsync(
+            job,
+            request,
+            assumptions,
+            warnings,
+            diagnostics,
+            DateTimeOffset.UtcNow,
+            cancellationToken);
     }
 
     public async Task<EngineeringCalculationJobResultDto?> GetJobAsync(
@@ -365,6 +315,146 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             cancellationToken);
     }
 
+    private async Task<EngineeringCalculationJobResultDto> ExecuteJobAsync(
+        EngineeringCalculationJobRecordDto job,
+        EngineeringCalculationJobRequestDto request,
+        List<string> assumptions,
+        List<string> warnings,
+        List<EngineeringWorkflowDiagnosticDto> diagnostics,
+        DateTimeOffset startedAt,
+        CancellationToken cancellationToken)
+    {
+        job = job with
+        {
+            Status = EngineeringCalculationJobStatus.Running,
+            ProgressPercent = 25,
+            CurrentStep = "Running",
+            StartedAtUtc = startedAt,
+            UpdatedAtUtc = startedAt
+        };
+        job = await _jobRepository.UpdateAsync(job, cancellationToken);
+        await AppendEventAsync(job, EngineeringCalculationJobStatus.Running, "Calculation job started.", null, job.ProgressPercent, diagnostics, startedAt, cancellationToken);
+
+        try
+        {
+            var scenarioRequest = request.ScenarioRequest with
+            {
+                ScenarioId = job.ScenarioId,
+                ProjectId = job.ProjectId,
+                IncludeTrace = request.IncludeTrace,
+                IncludeReport = request.IncludeReport,
+                ReportFormats = request.RequestedReportFormats ?? request.ScenarioRequest.ReportFormats
+            };
+
+            if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.DryRun)
+            {
+                scenarioRequest = scenarioRequest with { ExecutionMode = EngineeringCalculationExecutionMode.DryRun };
+                assumptions.Add("Job execution mode DryRun maps to scenario DryRun path.");
+            }
+            else if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.ValidateOnly)
+            {
+                scenarioRequest = scenarioRequest with { ExecutionMode = EngineeringCalculationExecutionMode.ValidateOnly };
+                assumptions.Add("Job execution mode ValidateOnly maps to scenario ValidateOnly path.");
+            }
+
+            var scenarioResult = await _scenarioRunner.RunAsync(scenarioRequest, cancellationToken);
+            diagnostics.AddRange(scenarioResult.ValidationDiagnostics);
+            assumptions.AddRange(scenarioResult.Assumptions);
+            warnings.AddRange(scenarioResult.Warnings);
+
+            await _workflowPersistenceService.SaveRunScenarioAsync(scenarioRequest, scenarioResult, cancellationToken);
+
+            var completedAt = request.DeterministicTimestampUtc ?? DateTimeOffset.UtcNow;
+            if (completedAt < startedAt)
+            {
+                completedAt = startedAt;
+            }
+
+            var finalStatus = MapScenarioStatus(scenarioResult.Status);
+            var normalizedDiagnostics = SortAndDistinctDiagnostics(diagnostics);
+            var duration = Math.Max(0.0, (completedAt - startedAt).TotalMilliseconds);
+
+            job = job with
+            {
+                Status = finalStatus,
+                ResultSummaryJson = JsonSerializer.Serialize(scenarioResult, JsonOptions),
+                DiagnosticsJson = JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
+                ProgressPercent = 100,
+                CurrentStep = "Completed",
+                CompletedAtUtc = completedAt,
+                UpdatedAtUtc = completedAt,
+                DurationMilliseconds = duration
+            };
+            job = await _jobRepository.UpdateAsync(job, cancellationToken);
+
+            await AppendEventAsync(
+                job,
+                finalStatus,
+                $"Calculation job completed with status `{finalStatus}`.",
+                null,
+                100,
+                normalizedDiagnostics,
+                completedAt,
+                cancellationToken);
+
+            return await BuildJobResultAsync(
+                job,
+                scenarioResult,
+                normalizedDiagnostics,
+                assumptions.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray(),
+                warnings.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray(),
+                cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            var failedAt = request.DeterministicTimestampUtc ?? DateTimeOffset.UtcNow;
+            if (failedAt < startedAt)
+            {
+                failedAt = startedAt;
+            }
+
+            diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
+                Severity: "error",
+                Code: "CALCULATION_JOB_EXECUTION_FAILED",
+                Message: exception.Message,
+                SourceStep: "Review",
+                SuggestedCorrection: "Inspect scenario inputs and backend runner logs, then retry."));
+
+            var normalizedDiagnostics = SortAndDistinctDiagnostics(diagnostics);
+            var duration = Math.Max(0.0, (failedAt - startedAt).TotalMilliseconds);
+
+            job = job with
+            {
+                Status = EngineeringCalculationJobStatus.FailedExecution,
+                DiagnosticsJson = JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
+                ProgressPercent = 100,
+                CurrentStep = "Failed",
+                CompletedAtUtc = failedAt,
+                UpdatedAtUtc = failedAt,
+                DurationMilliseconds = duration
+            };
+            job = await _jobRepository.UpdateAsync(job, cancellationToken);
+
+            await AppendEventAsync(
+                job,
+                EngineeringCalculationJobStatus.FailedExecution,
+                "Calculation job failed during execution.",
+                null,
+                100,
+                normalizedDiagnostics,
+                failedAt,
+                cancellationToken);
+
+            return await BuildJobResultAsync(
+                job,
+                scenarioResultSummary: null,
+                diagnostics: normalizedDiagnostics,
+                assumptions: assumptions,
+                warnings: warnings,
+                cancellationToken: cancellationToken);
+        }
+    }
+
     private async Task<EngineeringCalculationJobResultDto> BuildJobResultAsync(
         EngineeringCalculationJobRecordDto job,
         EngineeringCalculationScenarioResultDto? scenarioResultSummary,
@@ -380,7 +470,8 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             ["persistence"] = _workflowPersistenceService.GetProviderInfo().ProviderLabel,
             ["persistenceProvider"] = _workflowPersistenceService.GetProviderInfo().Provider.ToString(),
             ["durablePersistenceEnabled"] = _workflowPersistenceService.GetProviderInfo().DurableEnabled ? "true" : "false",
-            ["executionMode"] = job.ExecutionMode.ToString()
+            ["executionMode"] = job.ExecutionMode.ToString(),
+            ["queuedWorkerSupported"] = "true"
         };
 
         return new EngineeringCalculationJobResultDto(
@@ -499,6 +590,23 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         }
 
         return 1;
+    }
+
+    private static EngineeringCalculationJobRequestDto? DeserializeJobRequest(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<EngineeringCalculationJobRequestDto>(raw, JsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     private static EngineeringCalculationScenarioResultDto? DeserializeScenarioResult(string? raw)

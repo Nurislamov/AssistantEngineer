@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
@@ -74,13 +75,41 @@ public class ApiPresentationRegistrationTests
             services,
             ServiceLifetime.Singleton);
 
-        AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
+        AssertServiceLifetime<IEngineeringCalculationScenarioModuleExecutor>(
+            services,
+            ServiceLifetime.Scoped);
+
+        
+                AssertServiceLifetime<IEngineeringCalculationWeatherSolarScenarioStep>(
+            services,
+            ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEngineeringCalculationVentilationScenarioStep>(
+            services,
+            ServiceLifetime.Scoped);        AssertServiceLifetime<IEngineeringCalculationGroundScenarioStep>(
+            services,
+            ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEngineeringCalculationDomesticHotWaterScenarioStep>(
+            services,
+            ServiceLifetime.Scoped);        AssertServiceLifetime<IEngineeringCalculationSystemEnergyScenarioStep>(
+            services,
+            ServiceLifetime.Scoped);AssertServiceLifetime<IEngineeringCalculationScenarioResultBuilder>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringCalculationScenarioRequestValidator>(
+            services,
+            ServiceLifetime.Scoped);
+AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
             services,
             ServiceLifetime.Scoped);
 
         AssertServiceLifetime<IEngineeringCalculationJobService>(
             services,
             ServiceLifetime.Scoped);
+        Assert.Contains(services, service =>
+            service.ServiceType == typeof(IHostedService) &&
+            service.ImplementationType == typeof(EngineeringCalculationJobWorker) &&
+            service.Lifetime == ServiceLifetime.Singleton);
     }
 
     private static void AssertServiceLifetime<TService>(

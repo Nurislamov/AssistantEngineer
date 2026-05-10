@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Api;
+using AssistantEngineer.Api;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
@@ -61,6 +61,14 @@ public class CompositionRootResolutionTests
         services.AddOptions<EngineeringWorkflowPersistenceOptions>();
         services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
         services.AddEngineeringWorkflowServices();
+        services.AddScoped<IEngineeringCalculationScenarioModuleExecutor, EngineeringCalculationScenarioModuleExecutor>();
+        services.AddScoped<IEngineeringCalculationVentilationScenarioStep, EngineeringCalculationVentilationScenarioStep>();
+        services.AddScoped<IEngineeringCalculationDomesticHotWaterScenarioStep, EngineeringCalculationDomesticHotWaterScenarioStep>();
+        services.AddScoped<IEngineeringCalculationSystemEnergyScenarioStep, EngineeringCalculationSystemEnergyScenarioStep>();
+        services.AddScoped<IEngineeringCalculationGroundScenarioStep, EngineeringCalculationGroundScenarioStep>();
+        services.AddScoped<IEngineeringCalculationWeatherSolarScenarioStep, EngineeringCalculationWeatherSolarScenarioStep>();
+        services.AddScoped<IEngineeringCalculationScenarioResultBuilder, EngineeringCalculationScenarioResultBuilder>();
+        services.AddScoped<IEngineeringCalculationScenarioRequestValidator, EngineeringCalculationScenarioRequestValidator>();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
         services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
 

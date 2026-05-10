@@ -154,4 +154,26 @@ public class EngineeringCalculationJobRepositoryTests
             await _connection.DisposeAsync();
         }
     }
+
+    [Fact]
+    public async Task JobRepositoryListsQueuedJobsInFifoOrder()
+    {
+        var store = new EngineeringWorkflowMemoryStore();
+        var repository = new InMemoryEngineeringCalculationJobRepository(store);
+        var older = CreateJob("job-older", "scenario-older", DateTimeOffset.Parse("2026-05-10T00:00:00Z"));
+        var newer = CreateJob("job-newer", "scenario-newer", DateTimeOffset.Parse("2026-05-10T00:01:00Z"));
+        var running = CreateJob("job-running", "scenario-running", DateTimeOffset.Parse("2026-05-10T00:02:00Z")) with
+        {
+            Status = EngineeringCalculationJobStatus.Running,
+            CurrentStep = "Running"
+        };
+
+        await repository.CreateAsync(newer, CancellationToken.None);
+        await repository.CreateAsync(running, CancellationToken.None);
+        await repository.CreateAsync(older, CancellationToken.None);
+
+        var queued = await repository.ListQueuedAsync(10, CancellationToken.None);
+
+        Assert.Equal(new[] { "job-older", "job-newer" }, queued.Select(item => item.JobId).ToArray());
+    }
 }

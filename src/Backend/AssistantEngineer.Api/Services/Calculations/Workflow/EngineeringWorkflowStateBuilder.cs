@@ -1,32 +1,28 @@
-﻿using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Trace;
-using AssistantEngineer.Modules.Calculations.Application.Facades;
+using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Api.Services.Calculations.Workflow;
 
 public sealed class EngineeringWorkflowStateBuilder : IEngineeringWorkflowStateBuilder
 {
-    private readonly IBuildingsFacade _buildings;
-    private readonly IEngineeringCoreStatusFacade _engineeringCoreStatus;
+    private readonly IEngineeringWorkflowInputSnapshotBuilder _inputSnapshotBuilder;
     private readonly IEngineeringWorkflowDiagnosticsService _workflowDiagnostics;
     private readonly IEngineeringWorkflowTracePreviewService _tracePreviewService;
 
     public EngineeringWorkflowStateBuilder(
-        IBuildingsFacade buildings,
-        IEngineeringCoreStatusFacade engineeringCoreStatus,
+        IEngineeringWorkflowInputSnapshotBuilder inputSnapshotBuilder,
         IEngineeringWorkflowDiagnosticsService workflowDiagnostics,
         IEngineeringWorkflowTracePreviewService tracePreviewService)
     {
-        _buildings = buildings;
-        _engineeringCoreStatus = engineeringCoreStatus;
+        _inputSnapshotBuilder = inputSnapshotBuilder;
         _workflowDiagnostics = workflowDiagnostics;
         _tracePreviewService = tracePreviewService;
     }
 
-public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
+    public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
         int projectId,
         int? buildingId,
         CancellationToken cancellationToken)
@@ -39,7 +35,13 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
             "Partial data returns diagnostics rather than fake successful completion."
         };
 
-        var projectResult = await _buildings.GetProjectByIdAsync(projectId, cancellationToken);
+        var snapshot = await _inputSnapshotBuilder.BuildAsync(
+            projectId,
+            buildingId,
+            EngineeringWorkflowCatalog.DefaultWeatherYear,
+            cancellationToken);
+
+        var projectResult = snapshot.ProjectResult;
         var projectName = projectResult.IsSuccess ? projectResult.Value.Name : $"Project #{projectId}";
 
         if (projectResult.IsFailure)
@@ -52,9 +54,7 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
                 SuggestedCorrection: "Select an existing project or create a new one before workflow run."));
         }
 
-        var buildingsResult = await _buildings.GetBuildingsByProjectAsync(projectId, cancellationToken);
-        var buildings = buildingsResult.IsSuccess ? buildingsResult.Value : [];
-
+        var buildingsResult = snapshot.BuildingsResult;
         if (buildingsResult.IsFailure)
         {
             diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
@@ -65,7 +65,7 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
                 SuggestedCorrection: "Ensure project/building persistence is available."));
         }
 
-        var selectedBuildingId = buildingId ?? buildings.FirstOrDefault()?.Id;
+        var selectedBuildingId = snapshot.SelectedBuildingId;
 
         if (!selectedBuildingId.HasValue)
         {
@@ -127,11 +127,12 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
                 {
                     ["mode"] = "api",
                     ["stage"] = "foundation",
-                    ["buildingSelection"] = "missing"
+                    ["buildingSelection"] = "missing",
+                    ["inputSnapshot"] = "resolved"
                 });
         }
 
-        var buildingResult = await _buildings.GetBuildingByIdAsync(selectedBuildingId.Value, cancellationToken);
+        var buildingResult = snapshot.BuildingResult ?? Result<BuildingResponse>.Failure("Building snapshot is unavailable.");
         if (buildingResult.IsFailure)
         {
             diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
@@ -146,17 +147,11 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
 
         var building = buildingResult.Value;
 
-        var roomsResult = await _buildings.GetRoomsByBuildingAsync(selectedBuildingId.Value, cancellationToken);
-        var zonesResult = await _buildings.GetThermalZonesByBuildingAsync(selectedBuildingId.Value, cancellationToken);
-        var readinessResult = await _buildings.CheckBuildingReadinessAsync(
-            selectedBuildingId.Value,
-            EngineeringWorkflowCatalog.DefaultWeatherYear,
-            cancellationToken);
-        var validationResult = await _buildings.ValidateBuildingModelAsync(
-            selectedBuildingId.Value,
-            EngineeringWorkflowCatalog.DefaultWeatherYear,
-            cancellationToken);
-        var coreStatusResult = _engineeringCoreStatus.GetEngineeringCoreV1Status();
+        var roomsResult = snapshot.RoomsResult ?? Result<List<RoomResponse>>.Failure("Rooms snapshot is unavailable.");
+        var zonesResult = snapshot.ZonesResult ?? Result<List<ThermalZoneResponse>>.Failure("Thermal zones snapshot is unavailable.");
+        var readinessResult = snapshot.ReadinessResult ?? Result<BuildingCalculationReadinessReport>.Failure("Building readiness snapshot is unavailable.");
+        var validationResult = snapshot.ValidationResult ?? Result<BuildingValidationReport>.Failure("Building validation snapshot is unavailable.");
+        var coreStatusResult = snapshot.CoreStatusResult;
 
         if (roomsResult.IsFailure)
         {
@@ -185,38 +180,10 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
 
         var rooms = roomsResult.IsSuccess ? roomsResult.Value : [];
         var zones = zonesResult.IsSuccess ? zonesResult.Value : [];
-
-        var walls = new List<WallResponse>();
-        var windows = new List<WindowResponse>();
-        var ventilationConfiguredRoomCount = 0;
-        var groundConfiguredRoomCount = 0;
-
-        foreach (var room in rooms)
-        {
-            var roomWalls = await _buildings.GetRoomWallsAsync(room.Id, cancellationToken);
-            if (roomWalls.IsSuccess)
-            {
-                walls.AddRange(roomWalls.Value);
-            }
-
-            var roomWindows = await _buildings.GetRoomWindowsAsync(room.Id, cancellationToken);
-            if (roomWindows.IsSuccess)
-            {
-                windows.AddRange(roomWindows.Value);
-            }
-
-            var roomVentilation = await _buildings.GetRoomVentilationParametersAsync(room.Id, cancellationToken);
-            if (roomVentilation.IsSuccess)
-            {
-                ventilationConfiguredRoomCount++;
-            }
-
-            var roomGround = await _buildings.GetRoomGroundContactAsync(room.Id, cancellationToken);
-            if (roomGround.IsSuccess)
-            {
-                groundConfiguredRoomCount++;
-            }
-        }
+        var walls = snapshot.Walls;
+        var windows = snapshot.Windows;
+        var ventilationConfiguredRoomCount = snapshot.VentilationConfiguredRoomCount;
+        var groundConfiguredRoomCount = snapshot.GroundConfiguredRoomCount;
 
         var boundaryDtos = walls
             .OrderBy(wall => wall.RoomId)
@@ -325,7 +292,8 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
             ["mode"] = "api",
             ["stage"] = "foundation",
             ["weatherYear"] = EngineeringWorkflowCatalog.DefaultWeatherYear.ToString(),
-            ["buildingSelection"] = "resolved"
+            ["buildingSelection"] = "resolved",
+            ["inputSnapshot"] = "resolved"
         };
 
         var provisionalState = new EngineeringWorkflowStateDto(
@@ -443,13 +411,6 @@ public async Task<EngineeringWorkflowStateDto> BuildWorkflowStateAsync(
 
         return finalState;
     }
-
-
-
-
-
-
-
 
     public EngineeringWorkflowStateDto BuildInfrastructureFallbackState(
         int projectId,
