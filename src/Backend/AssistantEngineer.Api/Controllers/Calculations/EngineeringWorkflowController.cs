@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
@@ -59,6 +60,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringReportBuilder _reportBuilder;
     private readonly IEngineeringReportJsonExporter _reportJsonExporter;
     private readonly IEngineeringReportMarkdownExporter _reportMarkdownExporter;
+    private readonly IEngineeringCalculationScenarioRunner _scenarioRunner;
 
     public EngineeringWorkflowController(
         IBuildingsFacade buildings,
@@ -67,7 +69,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
         ICalculationTraceSanitizer traceSanitizer,
         IEngineeringReportBuilder reportBuilder,
         IEngineeringReportJsonExporter reportJsonExporter,
-        IEngineeringReportMarkdownExporter reportMarkdownExporter)
+        IEngineeringReportMarkdownExporter reportMarkdownExporter,
+        IEngineeringCalculationScenarioRunner scenarioRunner)
     {
         _buildings = buildings;
         _engineeringCoreStatus = engineeringCoreStatus;
@@ -76,6 +79,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         _reportBuilder = reportBuilder;
         _reportJsonExporter = reportJsonExporter;
         _reportMarkdownExporter = reportMarkdownExporter;
+        _scenarioRunner = scenarioRunner;
     }
 
     [HttpGet("{projectId:int}/state")]
@@ -115,23 +119,26 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [HttpPost("prepare-calculation")]
-    public ActionResult<EngineeringWorkflowCalculationPreparationResponseDto> PrepareCalculation(
-        [FromBody] EngineeringWorkflowCalculationPreparationRequestDto request)
+    public async Task<ActionResult<EngineeringWorkflowCalculationPreparationResponseDto>> PrepareCalculation(
+        [FromBody] EngineeringWorkflowCalculationPreparationRequestDto request,
+        CancellationToken cancellationToken)
     {
-        var diagnostics = ValidateState(request.State).ToList();
+        var scenarioRequest = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: $"wf-prep-{request.State.ProjectId}-{request.State.BuildingId?.ToString() ?? "none"}",
+            ProjectId: request.State.ProjectId,
+            BuildingId: request.State.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.PrepareOnly,
+            State: request.State,
+            RequestedModules: request.State.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: false,
+            IncludeReport: false,
+            ReportFormats: ["Json"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
 
-        if (request.ExecuteCalculation)
-        {
-            diagnostics.Add(new EngineeringWorkflowDiagnosticDto(
-                Severity: "warning",
-                Code: "WORKFLOW_CALCULATION_RUNNER_NOT_WIRED",
-                Message: "Calculation runner endpoint is not wired in this foundation stage. Request is prepared but not executed.",
-                SourceStep: "Review",
-                SuggestedCorrection: "Wire full production calculation runner in a dedicated stage."));
-        }
-
-        diagnostics = SortAndDistinctDiagnostics(diagnostics).ToList();
-        var hasErrors = diagnostics.Any(diagnostic => IsErrorSeverity(diagnostic.Severity));
+        var scenarioResult = await _scenarioRunner.RunAsync(scenarioRequest, cancellationToken);
 
         var preview = new SortedDictionary<string, string>(StringComparer.Ordinal)
         {
@@ -141,32 +148,34 @@ public sealed class EngineeringWorkflowController : ControllerBase
             ["currentStep"] = request.State.CurrentStep,
             ["zonesCount"] = request.State.Zones.Count.ToString(),
             ["boundariesCount"] = request.State.Boundaries.Count.ToString(),
-            ["diagnosticsCount"] = diagnostics.Count.ToString(),
-            ["availableModulesCount"] = request.State.AvailableModules.Count.ToString()
+            ["diagnosticsCount"] = scenarioResult.ValidationDiagnostics.Count.ToString(),
+            ["availableModulesCount"] = request.State.AvailableModules.Count.ToString(),
+            ["scenarioStatus"] = scenarioResult.Status.ToString()
         };
 
-        var assumptions = new[]
-        {
-            "Calculation request preparation is orchestration-only in this API foundation stage.",
-            "No engineering physics is executed by prepare-calculation endpoint.",
-            "Prepared request can be used by future production calculation runner wiring."
-        };
+        var status = scenarioResult.Status is EngineeringCalculationExecutionStatus.FailedValidation or EngineeringCalculationExecutionStatus.FailedExecution
+            ? "blocked"
+            : "prepared";
 
         var response = new EngineeringWorkflowCalculationPreparationResponseDto(
-            RequestId: $"wf-prep-{request.State.ProjectId}-{request.State.BuildingId?.ToString() ?? "none"}",
-            Status: hasErrors ? "blocked" : "prepared",
+            RequestId: scenarioResult.ScenarioId,
+            Status: status,
             Executed: false,
             RequestPreview: preview,
-            Assumptions: assumptions,
-            Diagnostics: diagnostics,
-            Metadata: new SortedDictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["stage"] = "foundation",
-                ["execution"] = "not-executed",
-                ["runnerWired"] = "false"
-            });
+            Assumptions: scenarioResult.Assumptions,
+            Diagnostics: scenarioResult.ValidationDiagnostics,
+            Metadata: scenarioResult.Metadata);
 
         return Ok(response);
+    }
+
+    [HttpPost("run-calculation")]
+    public async Task<ActionResult<EngineeringCalculationScenarioResultDto>> RunCalculation(
+        [FromBody] EngineeringCalculationScenarioRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _scenarioRunner.RunAsync(request, cancellationToken);
+        return Ok(result);
     }
 
     [HttpPost("trace-preview")]

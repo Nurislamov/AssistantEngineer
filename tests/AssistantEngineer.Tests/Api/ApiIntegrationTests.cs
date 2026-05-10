@@ -535,6 +535,78 @@ public class ApiIntegrationTests
         Assert.Contains("#", markdownPayload.Content, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task PostEngineeringWorkflowRunCalculationReturnsScenarioResult()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var request = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-api-integration",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: true,
+            IncludeReport: true,
+            ReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        var response = await client.PostAsJsonAsync("/api/v1/engineering-workflow/run-calculation", request);
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+
+        Assert.NotNull(payload);
+        Assert.Equal("scenario-api-integration", payload.ScenarioId);
+        Assert.NotEmpty(payload.ModuleResults);
+        Assert.Contains(payload.ModuleResults, item => item.ModuleKind == "ThermalTopology");
+        Assert.True(payload.Status is EngineeringCalculationExecutionStatus.FailedValidation or EngineeringCalculationExecutionStatus.PartiallyExecuted or EngineeringCalculationExecutionStatus.CompletedWithWarnings or EngineeringCalculationExecutionStatus.Completed);
+    }
+
+    [Fact]
+    public async Task EngineeringCalculationScenarioValidateOnlyModeDoesNotExecuteModules()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var request = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-validate-only",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.ValidationOnly,
+            ExecutionMode: EngineeringCalculationExecutionMode.ValidateOnly,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: false,
+            IncludeReport: false,
+            ReportFormats: ["Json"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        var response = await client.PostAsJsonAsync("/api/v1/engineering-workflow/run-calculation", request);
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+
+        Assert.NotNull(payload);
+        Assert.True(payload.Status is EngineeringCalculationExecutionStatus.Prepared or EngineeringCalculationExecutionStatus.FailedValidation);
+        Assert.Empty(payload.ModuleResults);
+    }
+
     private static string? GetExtensionValue(ProblemDetails problem, string key) =>
         problem.Extensions.TryGetValue(key, out var value)
             ? value switch

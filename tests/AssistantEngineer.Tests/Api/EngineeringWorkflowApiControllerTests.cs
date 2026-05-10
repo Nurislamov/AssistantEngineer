@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Controllers.Calculations;
+using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Trace;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -42,7 +43,8 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(typeof(IEngineeringReportBuilder), dependencies);
         Assert.Contains(typeof(IEngineeringReportJsonExporter), dependencies);
         Assert.Contains(typeof(IEngineeringReportMarkdownExporter), dependencies);
-        Assert.Equal(7, dependencies.Length);
+        Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
+        Assert.Equal(8, dependencies.Length);
     }
 
     [Fact]
@@ -53,6 +55,7 @@ public class EngineeringWorkflowApiControllerTests
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetWorkflowState), "{projectId:int}/state");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.Validate), "validate");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.PrepareCalculation), "prepare-calculation");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.RunCalculation), "run-calculation");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.TracePreview), "trace-preview");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GenerateReport), "report");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.ExportReportJson), "report/export/json");

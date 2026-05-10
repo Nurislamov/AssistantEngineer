@@ -1,5 +1,6 @@
-﻿using AssistantEngineer.Api.Filters;
+using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
+using AssistantEngineer.Api.Services.Calculations;
 
 namespace AssistantEngineer.Api.Configuration;
 
@@ -12,6 +13,7 @@ internal static class ApiPresentationRegistration
         services.AddScoped<GlobalExceptionFilter>();
 
         services.AddSingleton<IExceptionProblemDetailsMapper, ExceptionProblemDetailsMapper>();
+        services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
 
         services.AddControllers();
 

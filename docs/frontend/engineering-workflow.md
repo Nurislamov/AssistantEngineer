@@ -42,6 +42,7 @@ Supported modes:
   - `GET /api/v1/engineering-workflow/{projectId}/state`;
   - `POST /api/v1/engineering-workflow/validate`;
   - `POST /api/v1/engineering-workflow/prepare-calculation`;
+  - `POST /api/v1/engineering-workflow/run-calculation`;
   - `POST /api/v1/engineering-workflow/trace-preview`;
   - `POST /api/v1/engineering-workflow/report`;
   - `POST /api/v1/engineering-workflow/report/export/json`;
@@ -79,6 +80,12 @@ Engineering report preview panel:
 - supports Markdown export output;
 - displays trace appendix summary when requested.
 
+Workflow scenario execution panel:
+
+- runs available modules through backend scenario runner endpoint;
+- shows deterministic execution status (`Prepared`, `PartiallyExecuted`, `CompletedWithWarnings`, `FailedValidation`, `FailedExecution`);
+- shows module execution status markers without frontend-side physics.
+
 ## Partial workflow behavior
 
 Workflow supports partial data.
@@ -90,6 +97,7 @@ Missing module data is surfaced as diagnostics and incomplete step status instea
 - Frontend workflow is foundation-level.
 - Not all production endpoints may be wired yet.
 - Frontend does not prove calculation validity.
+- Frontend runner view may return partial execution when required structured module inputs are missing.
 - Report preview summarizes current internal engineering calculations only.
 - Report preview is not a legal compliance certificate.
 - Report preview is not external validation evidence.
@@ -101,6 +109,7 @@ Missing module data is surfaced as diagnostics and incomplete step status instea
 To move from foundation to production:
 
 - wire full production calculation runner execution endpoint;
+- extend scenario runner persistence/job execution path beyond request-response foundation mode;
 - keep frontend client in `api` mode for production paths;
 - preserve visible non-claims and diagnostics in normal UI;
 - keep validation, trace, and report contracts deterministic and testable.

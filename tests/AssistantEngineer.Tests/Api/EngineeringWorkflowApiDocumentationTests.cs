@@ -20,6 +20,7 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("GET /api/v1/engineering-workflow/{projectId}/state", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/validate", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/prepare-calculation", content, StringComparison.Ordinal);
+        Assert.Contains("POST /api/v1/engineering-workflow/run-calculation", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/trace-preview", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report/export/json", content, StringComparison.Ordinal);

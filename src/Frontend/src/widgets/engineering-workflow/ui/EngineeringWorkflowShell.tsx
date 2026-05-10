@@ -20,6 +20,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useEngineeringWorkflow } from "@/entities/engineering-workflow/model/useEngineeringWorkflow";
 import type {
+  EngineeringCalculationScenarioResult,
   EngineeringWorkflowCalculationPreparationResult,
   EngineeringWorkflowReportRequest,
   ProjectWorkflowState,
@@ -67,6 +68,7 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
   const [jsonOutput, setJsonOutput] = useState("");
   const [markdownOutput, setMarkdownOutput] = useState("");
   const [preparation, setPreparation] = useState<EngineeringWorkflowCalculationPreparationResult | null>(null);
+  const [scenarioResult, setScenarioResult] = useState<EngineeringCalculationScenarioResult | null>(null);
 
   useEffect(() => {
     if (workflow.state?.currentStep) {
@@ -140,6 +142,31 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
     setPreparation(await workflow.prepareCalculation());
   };
 
+  const runAvailableModules = async () => {
+    const result = await workflow.runCalculation("ExecuteAvailableModules");
+    setScenarioResult(result);
+
+    if (result.calculationTraceSummary) {
+      setTraceSummary(result.calculationTraceSummary);
+    }
+
+    if (result.reportPreview) {
+      setReportPreview(result.reportPreview);
+    }
+
+    if (result.reportJson) {
+      setJsonOutput(result.reportJson);
+    }
+
+    if (result.reportMarkdown) {
+      setMarkdownOutput(result.reportMarkdown);
+    }
+
+    if (result.validationDiagnostics.length > 0) {
+      setReportDiagnostics((previous) => deduplicateDiagnostics([...previous, ...result.validationDiagnostics]));
+    }
+  };
+
   return (
     <Stack spacing={2}>
       <QueryState isLoading={workflow.isLoading} error={workflow.error} onRetry={() => void workflow.refresh()} />
@@ -183,6 +210,9 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
                     <Button variant="contained" startIcon={<PlayArrowIcon />} onClick={() => void prepareRequest()}>
                       Prepare calculation request
                     </Button>
+                    <Button variant="contained" color="secondary" startIcon={<PlayArrowIcon />} onClick={() => void runAvailableModules()}>
+                      Run available modules
+                    </Button>
                     <Button variant="outlined" onClick={() => void generateReport(workflow.state!)}>
                       Generate report preview
                     </Button>
@@ -191,6 +221,21 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
                     <Alert severity={preparation.status === "prepared" ? "success" : "error"}>
                       Request status: {preparation.status}. {preparation.metadata.note}
                     </Alert>
+                  ) : null}
+                  {scenarioResult ? (
+                    <Alert severity={scenarioResult.status.includes("Failed") ? "error" : scenarioResult.status === "PartiallyExecuted" ? "warning" : "success"}>
+                      Scenario status: {scenarioResult.status}. Executed modules: {scenarioResult.executedModules.length}. Skipped modules: {scenarioResult.skippedModules.length}.
+                    </Alert>
+                  ) : null}
+                  {scenarioResult ? (
+                    <Stack spacing={1}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>Module execution status</Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap">
+                        {scenarioResult.moduleResults.map((item) => (
+                          <Chip key={item.moduleKind} label={`${item.moduleKind}: ${item.status}`} size="small" variant="outlined" sx={{ mb: 1 }} />
+                        ))}
+                      </Stack>
+                    </Stack>
                   ) : null}
                 </Stack>
               </DataCard>

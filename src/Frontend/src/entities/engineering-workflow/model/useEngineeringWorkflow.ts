@@ -3,6 +3,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { createEngineeringWorkflowClient } from "../api/engineeringWorkflowClient";
 import type {
+  EngineeringCalculationScenarioRequest,
+  EngineeringCalculationScenarioResult,
   EngineeringWorkflowCalculationPreparationResult,
   EngineeringWorkflowCalculationRequest,
   EngineeringWorkflowReportRequest,
@@ -21,6 +23,7 @@ interface UseEngineeringWorkflowResult {
   refresh: () => Promise<unknown>;
   validate: () => Promise<WorkflowDiagnostic[]>;
   prepareCalculation: () => Promise<EngineeringWorkflowCalculationPreparationResult>;
+  runCalculation: (mode?: "ExecuteAvailableModules" | "ExecuteFullRequired") => Promise<EngineeringCalculationScenarioResult>;
   loadTracePreview: (detailLevel: WorkflowTraceDetailLevel) => Promise<WorkflowCalculationTraceSummary>;
   generateReport: (request: EngineeringWorkflowReportRequest) => Promise<EngineeringWorkflowReportResult>;
   exportReportJson: (request: EngineeringWorkflowReportRequest) => Promise<string>;
@@ -60,6 +63,10 @@ export function useEngineeringWorkflow(
   const traceMutation = useMutation({
     mutationFn: ({ state, detailLevel }: { state: ProjectWorkflowState; detailLevel: WorkflowTraceDetailLevel }) =>
       client.getTracePreview(state, detailLevel),
+  });
+
+  const runMutation = useMutation({
+    mutationFn: (request: EngineeringCalculationScenarioRequest) => client.runCalculation(request),
   });
 
   const reportMutation = useMutation({
@@ -117,6 +124,52 @@ export function useEngineeringWorkflow(
     return traceMutation.mutateAsync({ state: stateQuery.data, detailLevel });
   };
 
+  const runCalculation = async (
+    mode: "ExecuteAvailableModules" | "ExecuteFullRequired" = "ExecuteAvailableModules",
+  ): Promise<EngineeringCalculationScenarioResult> => {
+    if (!stateQuery.data) {
+      return {
+        scenarioId: `workflow-run-missing-${buildingId}`,
+        status: "FailedValidation",
+        executed: false,
+        executedModules: [],
+        skippedModules: [],
+        unavailableModules: ["Runner"],
+        validationDiagnostics: [
+          {
+            severity: "error",
+            code: "WORKFLOW_STATE_MISSING",
+            message: "Workflow state is not loaded.",
+            sourceStep: "Review",
+          },
+        ],
+        assumptions: ["Scenario runner was not executed because workflow state is missing."],
+        warnings: [],
+        moduleSummaries: {},
+        moduleResults: [],
+        timings: [],
+        metadata: { mode },
+      };
+    }
+
+    const request: EngineeringCalculationScenarioRequest = {
+      scenarioId: `wf-run-${stateQuery.data.projectId ?? projectId}-${stateQuery.data.buildingId ?? buildingId}`,
+      projectId: stateQuery.data.projectId,
+      buildingId: stateQuery.data.buildingId,
+      scenarioKind: "FullEngineeringCore",
+      executionMode: mode,
+      state: stateQuery.data,
+      requestedModules: stateQuery.data.availableModules,
+      detailLevel: stateQuery.data.calculationTraceSummary?.detailLevel ?? "Standard",
+      includeTrace: true,
+      includeReport: true,
+      reportFormats: ["Json", "Markdown"],
+      diagnosticsMode: "Deterministic",
+    };
+
+    return runMutation.mutateAsync(request);
+  };
+
   const generateReport = async (request: EngineeringWorkflowReportRequest) =>
     reportMutation.mutateAsync(request);
 
@@ -134,6 +187,7 @@ export function useEngineeringWorkflow(
     refresh,
     validate,
     prepareCalculation,
+    runCalculation,
     loadTracePreview,
     generateReport,
     exportReportJson,

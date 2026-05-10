@@ -1,6 +1,7 @@
-﻿using AssistantEngineer.Api.Configuration;
+using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
+using AssistantEngineer.Api.Services.Calculations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Tests.Architecture;
@@ -26,6 +27,10 @@ public class ApiPresentationRegistrationTests
         AssertServiceLifetime<IExceptionProblemDetailsMapper>(
             services,
             ServiceLifetime.Singleton);
+
+        AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
+            services,
+            ServiceLifetime.Scoped);
     }
 
     private static void AssertServiceLifetime<TService>(

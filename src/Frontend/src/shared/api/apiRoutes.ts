@@ -89,6 +89,7 @@ export const apiRoutes = {
       `${apiPrefix}/engineering-workflow/${projectId}/state`,
     validate: () => `${apiPrefix}/engineering-workflow/validate`,
     prepareCalculation: () => `${apiPrefix}/engineering-workflow/prepare-calculation`,
+    runCalculation: () => `${apiPrefix}/engineering-workflow/run-calculation`,
     tracePreview: () => `${apiPrefix}/engineering-workflow/trace-preview`,
     report: () => `${apiPrefix}/engineering-workflow/report`,
     reportExportJson: () => `${apiPrefix}/engineering-workflow/report/export/json`,

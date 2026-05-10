@@ -2,6 +2,8 @@ import { apiRoutes } from "@/shared/api/apiRoutes";
 import { apiRequest } from "@/shared/api/httpClient";
 import { formatNumber } from "@/shared/lib/format";
 import type {
+  EngineeringCalculationScenarioRequest,
+  EngineeringCalculationScenarioResponse,
   EngineeringWorkflowApiStateResponse,
   EngineeringWorkflowCalculationPreparationResult,
   EngineeringWorkflowCalculationRequest,
@@ -37,6 +39,7 @@ export interface EngineeringWorkflowClient {
   prepareCalculation(
     request: EngineeringWorkflowCalculationRequest,
   ): Promise<EngineeringWorkflowCalculationPreparationResult>;
+  runCalculation(request: EngineeringCalculationScenarioRequest): Promise<EngineeringCalculationScenarioResponse>;
   getTracePreview(
     state: ProjectWorkflowState,
     detailLevel: WorkflowTraceDetailLevel,
@@ -245,6 +248,40 @@ const apiClient: EngineeringWorkflowClient = {
     }
   },
 
+  async runCalculation(
+    request: EngineeringCalculationScenarioRequest,
+  ): Promise<EngineeringCalculationScenarioResponse> {
+    try {
+      return await apiRequest<EngineeringCalculationScenarioResponse>(
+        apiRoutes.engineeringWorkflow.runCalculation(),
+        {
+          method: "POST",
+          body: request,
+        },
+      );
+    } catch (error) {
+      return {
+        scenarioId: request.scenarioId,
+        status: "FailedExecution",
+        executed: false,
+        executedModules: [],
+        skippedModules: [],
+        unavailableModules: ["Runner"],
+        validationDiagnostics: [buildErrorDiagnostic(error instanceof Error ? error.message : "Run calculation request failed.")],
+        assumptions: ["Scenario runner fallback was used because API request failed."],
+        warnings: ["Scenario runner request failed."],
+        moduleSummaries: {},
+        moduleResults: [],
+        timings: [],
+        calculationTraceSummary: undefined,
+        reportPreview: undefined,
+        reportJson: null,
+        reportMarkdown: null,
+        metadata: { mode: "api", error: "run-calculation-request-failed" },
+      };
+    }
+  },
+
   async getTracePreview(
     state: ProjectWorkflowState,
     detailLevel: WorkflowTraceDetailLevel,
@@ -395,6 +432,24 @@ const devClient: EngineeringWorkflowClient = {
   async exportReportJson(request: EngineeringWorkflowReportRequest): Promise<string> {
     const content = await apiClient.exportReportJson(request);
     return `${content}\n`;
+  },
+
+  async runCalculation(
+    request: EngineeringCalculationScenarioRequest,
+  ): Promise<EngineeringCalculationScenarioResponse> {
+    const result = await apiClient.runCalculation(request);
+    const diagnostic: WorkflowDiagnostic = {
+      severity: "assumption",
+      code: "WORKFLOW_DEV_ADAPTER_ACTIVE",
+      message: "Scenario execution response includes internal dev adapter marker.",
+      sourceStep: "Review",
+      suggestedCorrection: "Switch VITE_ENGINEERING_WORKFLOW_MODE to api for production endpoint behavior.",
+    };
+
+    return {
+      ...result,
+      validationDiagnostics: deduplicateDiagnostics([...(result.validationDiagnostics ?? []), diagnostic]),
+    };
   },
 
   async exportReportMarkdown(request: EngineeringWorkflowReportRequest): Promise<string> {

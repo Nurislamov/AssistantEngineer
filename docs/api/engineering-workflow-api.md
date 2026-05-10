@@ -17,6 +17,7 @@ Endpoints:
 - `GET /api/v1/engineering-workflow/{projectId}/state?buildingId={buildingId}`
 - `POST /api/v1/engineering-workflow/validate`
 - `POST /api/v1/engineering-workflow/prepare-calculation`
+- `POST /api/v1/engineering-workflow/run-calculation`
 - `POST /api/v1/engineering-workflow/trace-preview`
 - `POST /api/v1/engineering-workflow/report`
 - `POST /api/v1/engineering-workflow/report/export/json`
@@ -33,6 +34,7 @@ Core DTO families:
 - workflow state and step/status diagnostics;
 - validation request/response;
 - calculation preparation request/response;
+- calculation scenario runner request/response;
 - trace preview request/response;
 - report generation request/response;
 - report export request/response.
@@ -44,6 +46,18 @@ Validation endpoint performs deterministic workflow-level checks and diagnostics
 It does not execute full engineering scenario simulation.
 
 Missing or partial data produces diagnostics rather than crash.
+
+## Scenario runner behavior
+
+`run-calculation` uses scenario runner orchestration and supports deterministic execution modes:
+
+- `ValidateOnly`
+- `PrepareOnly`
+- `ExecuteAvailableModules`
+- `ExecuteFullRequired`
+- `DryRun`
+
+Runner response contains execution status, executed/skipped modules, diagnostics, optional trace summary, optional report preview, and optional JSON/Markdown exports.
 
 ## Trace preview behavior
 
@@ -68,6 +82,7 @@ Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
 ## Known limitations
 
 - API foundation may prepare or preview calculations without executing full production scenario if runner is not wired.
+- API foundation may execute available modules partially and report skipped modules with diagnostics.
 - Workflow API is not a compliance certificate.
 - Reports summarize current internal engineering calculations only.
 - Trace explains internal calculation chain only.

@@ -1,4 +1,5 @@
 using AssistantEngineer.Api;
+using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Facades;
@@ -46,6 +47,7 @@ public class CompositionRootResolutionTests
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddInfrastructure(configuration, "Testing");
+        services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions
         {

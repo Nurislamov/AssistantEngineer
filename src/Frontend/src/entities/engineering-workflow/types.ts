@@ -177,6 +177,107 @@ export interface EngineeringWorkflowCalculationPreparationResult {
   metadata: Record<string, string>;
 }
 
+export type EngineeringCalculationScenarioKind =
+  | "HeatingCoolingOnly"
+  | "DomesticHotWaterOnly"
+  | "SystemEnergyOnly"
+  | "FullEngineeringCore"
+  | "ValidationOnly"
+  | "ReportOnly"
+  | "TraceOnly";
+
+export type EngineeringCalculationExecutionMode =
+  | "ValidateOnly"
+  | "PrepareOnly"
+  | "ExecuteAvailableModules"
+  | "ExecuteFullRequired"
+  | "DryRun";
+
+export type EngineeringCalculationExecutionStatus =
+  | "NotStarted"
+  | "Prepared"
+  | "PartiallyExecuted"
+  | "Completed"
+  | "CompletedWithWarnings"
+  | "FailedValidation"
+  | "FailedExecution"
+  | "NotSupported";
+
+export type EngineeringCalculationModuleExecutionStatus =
+  | "NotStarted"
+  | "Executed"
+  | "Skipped"
+  | "Failed"
+  | "NotSupported";
+
+export interface EngineeringCalculationModuleValue {
+  key: string;
+  label: string;
+  value: unknown;
+  unit?: string;
+}
+
+export interface EngineeringCalculationModuleExecutionResult {
+  moduleKind: string;
+  status: EngineeringCalculationModuleExecutionStatus;
+  summaryValues: EngineeringCalculationModuleValue[];
+  diagnostics: WorkflowDiagnostic[];
+  assumptions: string[];
+  warnings: string[];
+  durationMilliseconds?: number;
+  sourceServiceName: string;
+}
+
+export interface EngineeringCalculationModuleTiming {
+  moduleKind: string;
+  durationMilliseconds: number;
+}
+
+export interface EngineeringCalculationModuleSummaries {
+  topologySummary?: string;
+  ventilationSummary?: string;
+  groundSummary?: string;
+  heatingCoolingSummary?: string;
+  domesticHotWaterSummary?: string;
+  systemEnergySummary?: string;
+}
+
+export interface EngineeringCalculationScenarioRequest {
+  scenarioId: string;
+  projectId?: number;
+  buildingId?: number;
+  scenarioKind: EngineeringCalculationScenarioKind;
+  executionMode: EngineeringCalculationExecutionMode;
+  state: ProjectWorkflowState;
+  requestedModules?: string[];
+  detailLevel?: WorkflowTraceDetailLevel;
+  includeTrace: boolean;
+  includeReport: boolean;
+  reportFormats?: WorkflowReportFormat[];
+  deterministicTimestampUtc?: string;
+  diagnosticsMode?: string;
+}
+
+export interface EngineeringCalculationScenarioResult {
+  scenarioId: string;
+  status: EngineeringCalculationExecutionStatus;
+  executed: boolean;
+  executedModules: string[];
+  skippedModules: string[];
+  unavailableModules: string[];
+  validationDiagnostics: WorkflowDiagnostic[];
+  assumptions: string[];
+  warnings: string[];
+  moduleSummaries: EngineeringCalculationModuleSummaries;
+  moduleResults: EngineeringCalculationModuleExecutionResult[];
+  timings: EngineeringCalculationModuleTiming[];
+  calculationTraceSummary?: WorkflowCalculationTraceSummary | null;
+  reportPreview?: WorkflowReportPreview | null;
+  reportJson?: string | null;
+  reportMarkdown?: string | null;
+  metadata: Record<string, string>;
+}
+
 export interface EngineeringWorkflowReportRequest {
   reportKind: WorkflowReportKind;
   format: WorkflowReportFormat;
@@ -220,6 +321,8 @@ export interface EngineeringWorkflowValidationResponse {
   diagnostics: WorkflowDiagnostic[];
   steps: Array<{ kind: WorkflowStepKind; status: WorkflowStepStatus; isComplete: boolean }>;
 }
+
+export type EngineeringCalculationScenarioResponse = EngineeringCalculationScenarioResult;
 
 export interface EngineeringWorkflowTracePreviewResponse {
   traceDocument: unknown;
