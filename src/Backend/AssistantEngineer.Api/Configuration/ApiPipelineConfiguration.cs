@@ -1,4 +1,4 @@
-﻿namespace AssistantEngineer.Api.Configuration;
+namespace AssistantEngineer.Api.Configuration;
 
 internal static class ApiPipelineConfiguration
 {
@@ -13,6 +13,7 @@ internal static class ApiPipelineConfiguration
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseRequestTimeouts();
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

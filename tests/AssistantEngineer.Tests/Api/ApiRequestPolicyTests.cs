@@ -57,6 +57,8 @@ public class ApiRequestPolicyTests
             { typeof(BenchmarksController), nameof(BenchmarksController.RunIso52016ReferenceCases) },
             { typeof(AnnualClimateDataController), nameof(AnnualClimateDataController.ImportFromEpw) },
             { typeof(AnnualClimateDataController), nameof(AnnualClimateDataController.ImportFromPvgis) },
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.CreateOrRunJob) },
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.RunCalculation) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetIso52016Breakdown) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.SimulateIso52016) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.GetEnergySignature) },

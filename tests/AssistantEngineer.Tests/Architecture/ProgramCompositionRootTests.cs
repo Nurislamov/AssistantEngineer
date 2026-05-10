@@ -25,6 +25,11 @@ public class ProgramCompositionRootTests
             StringComparison.Ordinal);
 
         Assert.Contains(
+            "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment)",
+            programText,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
             "builder.Services.AddApiVersioningSupport()",
             programText,
             StringComparison.Ordinal);
@@ -90,6 +95,7 @@ public class ProgramCompositionRootTests
             "UseHttpsRedirection(",
             "UseRouting(",
             "UseRequestTimeouts(",
+            "UseAuthentication(",
             "UseAuthorization(",
             "MapControllers("
         };
@@ -146,6 +152,7 @@ public class ProgramCompositionRootTests
             "builder.Configuration.AddApiConfiguration();",
             "builder.ConfigureRequestLimits();",
             "builder.Services.AddApiPresentation();",
+            "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);",
             "builder.Services.AddApiVersioningSupport();",
             "builder.Services.AddApiDocumentation();",
             "builder.Services.AddAssistantEngineerModules(",

@@ -8,5 +8,7 @@ public sealed class EngineeringWorkflowPersistenceOptions
 
     public string? SqliteConnectionString { get; set; }
 
+    // Historical option name kept for configuration compatibility.
+    // For the SQLite provider this now applies EF Core migrations, not EnsureCreated().
     public bool EnsureCreatedOnStartup { get; set; } = true;
 }

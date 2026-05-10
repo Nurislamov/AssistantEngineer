@@ -6,6 +6,7 @@ public class ApiConfigurationStructureTests
 {
     private static readonly string[] ExpectedConfigurationTypes =
     [
+        "AssistantEngineer.Api.Configuration.ApiAuthenticationRegistration",
         "AssistantEngineer.Api.Configuration.ApiBehaviorOptionsSetup",
         "AssistantEngineer.Api.Configuration.ApiConfigurationRegistration",
         "AssistantEngineer.Api.Configuration.ApiDocumentationRegistration",
@@ -87,9 +88,19 @@ public class ApiConfigurationStructureTests
             StringComparison.Ordinal);
 
         Assert.Contains(
+            "UseAuthentication()",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
             "UseAuthorization()",
             text,
             StringComparison.Ordinal);
+
+        Assert.True(
+            text.IndexOf("UseAuthentication()", StringComparison.Ordinal) <
+            text.IndexOf("UseAuthorization()", StringComparison.Ordinal),
+            "Authentication middleware must run before authorization middleware.");
 
         Assert.Contains(
             "MapControllers()",

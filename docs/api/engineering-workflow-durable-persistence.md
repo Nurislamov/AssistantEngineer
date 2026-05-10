@@ -22,7 +22,7 @@ Keys:
 
 - `Provider` (`InMemory` or `SQLite`)
 - `SqliteConnectionString` (optional for SQLite; if omitted, a local default SQLite file path is used)
-- `EnsureCreatedOnStartup` (`true`/`false`)
+- `EnsureCreatedOnStartup` (`true`/`false`) - historical option name kept for compatibility; for SQLite it now applies EF Core migrations on startup.
 
 Environment override pattern can use standard ASP.NET Core configuration mapping, for example:
 
@@ -70,9 +70,9 @@ Metadata now includes provider status:
 
 ## Migration and schema strategy
 
-Current durable provider uses SQLite foundation schema initialization (`EnsureCreated`) for local/dev foundation workflows.
+Current durable provider uses an initial EF Core migration for the SQLite workflow schema and applies pending migrations when `EnsureCreatedOnStartup=true`. The option name is historical; the initializer no longer calls `EnsureCreated()` for the durable provider.
 
-Production migration lifecycle and rollout controls remain future work.
+Production rollout controls, backup policy, and multi-node migration orchestration remain future work.
 
 ## Known limitations
 

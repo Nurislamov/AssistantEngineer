@@ -1,9 +1,7 @@
-using AssistantEngineer.Api.Controllers.Calculations;
+﻿using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
-using AssistantEngineer.Modules.Calculations.Application.Abstractions.Trace;
-using AssistantEngineer.Modules.Calculations.Application.Facades;
+using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -37,17 +35,16 @@ public class EngineeringWorkflowApiControllerTests
         var constructor = Assert.Single(typeof(EngineeringWorkflowController).GetConstructors());
         var dependencies = constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
-        Assert.Contains(typeof(IBuildingsFacade), dependencies);
-        Assert.Contains(typeof(IEngineeringCoreStatusFacade), dependencies);
-        Assert.Contains(typeof(ICalculationTraceBuilder), dependencies);
-        Assert.Contains(typeof(ICalculationTraceSanitizer), dependencies);
-        Assert.Contains(typeof(IEngineeringReportBuilder), dependencies);
+        Assert.Contains(typeof(IEngineeringWorkflowStateBuilder), dependencies);
+        Assert.Contains(typeof(IEngineeringWorkflowDiagnosticsService), dependencies);
+        Assert.Contains(typeof(IEngineeringWorkflowTracePreviewService), dependencies);
+        Assert.Contains(typeof(IEngineeringWorkflowReportPreviewService), dependencies);
         Assert.Contains(typeof(IEngineeringReportJsonExporter), dependencies);
         Assert.Contains(typeof(IEngineeringReportMarkdownExporter), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
-        Assert.Equal(10, dependencies.Length);
+        Assert.Equal(9, dependencies.Length);
     }
 
     [Fact]

@@ -7,6 +7,7 @@ builder.Configuration.AddApiConfiguration();
 builder.ConfigureRequestLimits();
 
 builder.Services.AddApiPresentation();
+builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);
 builder.Services.AddApiVersioningSupport();
 builder.Services.AddApiDocumentation();
 builder.Services.AddAssistantEngineerModules(

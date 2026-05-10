@@ -1,6 +1,7 @@
-using AssistantEngineer.Api;
+﻿using AssistantEngineer.Api;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
+using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Facades;
@@ -59,6 +60,7 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationJobEventRepository, InMemoryEngineeringCalculationJobEventRepository>();
         services.AddOptions<EngineeringWorkflowPersistenceOptions>();
         services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
+        services.AddEngineeringWorkflowServices();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
         services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
 

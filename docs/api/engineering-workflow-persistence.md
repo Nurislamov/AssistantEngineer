@@ -61,7 +61,7 @@ Primary keys:
 
 - `Provider`
 - `SqliteConnectionString`
-- `EnsureCreatedOnStartup`
+- `EnsureCreatedOnStartup` - historical compatibility option; for SQLite this applies EF Core migrations on startup.
 
 ## Determinism rules
 
