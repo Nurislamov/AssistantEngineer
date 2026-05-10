@@ -11,4 +11,6 @@ public sealed class EngineeringWorkflowPersistenceOptions
     // Historical option name kept for configuration compatibility.
     // For the SQLite provider this now applies EF Core migrations, not EnsureCreated().
     public bool EnsureCreatedOnStartup { get; set; } = true;
+
+    public EngineeringWorkflowPayloadLimitsOptions PayloadLimits { get; set; } = new();
 }

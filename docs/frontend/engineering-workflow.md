@@ -143,3 +143,14 @@ To move from foundation to production:
 - keep frontend client in `api` mode for production paths;
 - preserve visible non-claims and diagnostics in normal UI;
 - keep validation, trace, and report contracts deterministic and testable.
+
+## Frontend test baseline (P2-03)
+
+Frontend package now includes foundation test infrastructure with:
+
+- `Vitest` as unit test runner;
+- `React Testing Library` with `jsdom` for component tests;
+- workflow client tests for request building and controlled diagnostics on API failures;
+- diagnostics panel rendering test for deterministic frontend behavior.
+
+The frontend test baseline validates orchestration and UI contracts only. It does not move engineering calculation physics into TypeScript.

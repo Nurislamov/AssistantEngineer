@@ -105,6 +105,8 @@ Workflow API persists:
 
 Persistence response payloads remain deterministic and diagnostics-focused.
 
+Persistence snapshots are protected by configurable payload size gates with deterministic truncation marker behavior for oversized JSON/artifact content.
+
 Provider model is documented in:
 
 - `docs/api/engineering-workflow-durable-persistence.md`

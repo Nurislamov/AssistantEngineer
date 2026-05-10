@@ -3,6 +3,7 @@ using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Persistence;
 
@@ -98,6 +99,33 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
                 TryDeleteFile(dbPath);
             }
         }
+    }
+
+    [Fact]
+    public void PayloadLimitsOptionsResolveFromConfiguration()
+    {
+        using var provider = BuildServiceProvider(new Dictionary<string, string?>
+        {
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:Provider"] = "InMemory",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:Enabled"] = "true",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:RequestJsonMaxBytes"] = "1234",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:StateJsonMaxBytes"] = "2345",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:ResultSummaryJsonMaxBytes"] = "3456",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:DiagnosticsJsonMaxBytes"] = "4567",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:ArtifactContentMaxBytes"] = "5678",
+            [$"{EngineeringWorkflowPersistenceOptions.SectionName}:PayloadLimits:TruncationMarker"] = "[MARKER]"
+        });
+
+        using var scope = provider.CreateScope();
+        var options = scope.ServiceProvider.GetRequiredService<IOptions<EngineeringWorkflowPersistenceOptions>>().Value;
+
+        Assert.True(options.PayloadLimits.Enabled);
+        Assert.Equal(1234, options.PayloadLimits.RequestJsonMaxBytes);
+        Assert.Equal(2345, options.PayloadLimits.StateJsonMaxBytes);
+        Assert.Equal(3456, options.PayloadLimits.ResultSummaryJsonMaxBytes);
+        Assert.Equal(4567, options.PayloadLimits.DiagnosticsJsonMaxBytes);
+        Assert.Equal(5678, options.PayloadLimits.ArtifactContentMaxBytes);
+        Assert.Equal("[MARKER]", options.PayloadLimits.TruncationMarker);
     }
 
     private static ServiceProvider BuildServiceProvider(IReadOnlyDictionary<string, string?> values)

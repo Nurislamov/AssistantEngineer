@@ -63,12 +63,40 @@ Primary keys:
 - `SqliteConnectionString`
 - `EnsureCreatedOnStartup` - historical compatibility option; for SQLite this applies EF Core migrations on startup.
 
+Payload size gate keys:
+
+- `PayloadLimits:Enabled`
+- `PayloadLimits:RequestJsonMaxBytes`
+- `PayloadLimits:StateJsonMaxBytes`
+- `PayloadLimits:ResultSummaryJsonMaxBytes`
+- `PayloadLimits:DiagnosticsJsonMaxBytes`
+- `PayloadLimits:ArtifactContentMaxBytes`
+- `PayloadLimits:TruncationMarker`
+
+## Payload size gates and truncation policy
+
+Workflow persistence applies deterministic payload gates for JSON/text snapshots:
+
+- `RequestJson`
+- `StateJson`
+- `ResultSummaryJson`
+- `DiagnosticsJson`
+- artifact `Content`
+
+When a payload exceeds configured byte limits:
+
+- persistence stores deterministic truncated content with marker `[TRUNCATED_BY_ASSISTANT_ENGINEER_PAYLOAD_LIMIT]`;
+- persistence emits warning diagnostics for truncated workflow/scenario payloads;
+- workflow state snapshots are compacted first to keep deterministic deserialization behavior where practical;
+- artifacts remain retrievable and include truncation marker when compacted.
+
 ## Determinism rules
 
 - workflow state and scenario snapshots are serialized in stable JSON shape;
 - diagnostics are sorted and deduplicated before persistence;
 - compact scenario summaries are stored in scenario record;
 - full trace/report content is stored in artifacts;
+- oversized payloads use deterministic truncation marker and compacted shape;
 - no local file writes are required for persistence operations.
 
 ## Known limitations
@@ -77,6 +105,7 @@ Primary keys:
 - Persistence may be in-memory when provider selection is not configured for durable storage.
 - Persistence does not validate calculation correctness.
 - Artifacts summarize internal engineering calculations only.
+- Payload truncation protects storage size and can remove low-priority detail from persisted snapshots.
 - Workflow persistence is not a compliance certificate.
 - Workflow persistence is not external validation evidence.
 - Workflow persistence provides no full standard compliance claim.

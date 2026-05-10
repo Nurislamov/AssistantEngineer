@@ -18,7 +18,21 @@ internal static class EngineeringWorkflowPersistenceRegistration
                 {
                     options.SqliteConnectionString = configuration.GetConnectionString("EngineeringWorkflowPersistence");
                 }
-            });
+            })
+            .Validate(options =>
+            {
+                if (!options.PayloadLimits.Enabled)
+                {
+                    return true;
+                }
+
+                return options.PayloadLimits.RequestJsonMaxBytes > 0
+                       && options.PayloadLimits.StateJsonMaxBytes > 0
+                       && options.PayloadLimits.ResultSummaryJsonMaxBytes > 0
+                       && options.PayloadLimits.DiagnosticsJsonMaxBytes > 0
+                       && options.PayloadLimits.ArtifactContentMaxBytes > 0
+                       && !string.IsNullOrWhiteSpace(options.PayloadLimits.TruncationMarker);
+            }, "Engineering workflow payload limits must define positive byte caps and non-empty truncation marker when enabled.");
 
         services.AddSingleton<EngineeringWorkflowMemoryStore>();
         services.AddSingleton<EngineeringWorkflowPersistenceDatabaseInitializer>();

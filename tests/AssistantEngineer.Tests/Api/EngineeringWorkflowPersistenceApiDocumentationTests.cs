@@ -24,6 +24,8 @@ public class EngineeringWorkflowPersistenceApiDocumentationTests
         Assert.Contains("Provider", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("InMemory", content, StringComparison.Ordinal);
         Assert.Contains("SQLite", content, StringComparison.Ordinal);
+        Assert.Contains("PayloadLimits", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("TruncationMarker", content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -43,6 +45,7 @@ public class EngineeringWorkflowPersistenceApiDocumentationTests
         Assert.Contains("not a compliance certificate", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not external validation evidence", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no full standard compliance claim", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("payload truncation", content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -62,6 +65,8 @@ public class EngineeringWorkflowPersistenceApiDocumentationTests
         Assert.Contains("InMemory", content, StringComparison.Ordinal);
         Assert.Contains("SQLite", content, StringComparison.Ordinal);
         Assert.Contains("EnsureCreatedOnStartup", content, StringComparison.Ordinal);
+        Assert.Contains("PayloadLimits", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("TruncationMarker", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not a compliance certificate", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no full standard compliance claim", content, StringComparison.OrdinalIgnoreCase);
     }

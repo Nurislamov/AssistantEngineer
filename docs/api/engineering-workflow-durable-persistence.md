@@ -23,11 +23,20 @@ Keys:
 - `Provider` (`InMemory` or `SQLite`)
 - `SqliteConnectionString` (optional for SQLite; if omitted, a local default SQLite file path is used)
 - `EnsureCreatedOnStartup` (`true`/`false`) - historical option name kept for compatibility; for SQLite it now applies EF Core migrations on startup.
+- `PayloadLimits:*` deterministic payload-size gate settings for persisted JSON/text snapshots.
 
 Environment override pattern can use standard ASP.NET Core configuration mapping, for example:
 
 - `EngineeringWorkflowPersistence__Provider=SQLite`
 - `EngineeringWorkflowPersistence__SqliteConnectionString=Data Source=...`
+- `EngineeringWorkflowPersistence__PayloadLimits__ArtifactContentMaxBytes=2097152`
+- `EngineeringWorkflowPersistence__PayloadLimits__TruncationMarker=[TRUNCATED_BY_ASSISTANT_ENGINEER_PAYLOAD_LIMIT]`
+
+## Payload size gates
+
+Durable persistence keeps configurable byte limits for request/state/result/diagnostics JSON and artifact content.
+
+When payload limits are exceeded, persistence stores deterministic truncated content and includes marker metadata instead of writing unbounded blobs.
 
 ## Stored durable records
 
