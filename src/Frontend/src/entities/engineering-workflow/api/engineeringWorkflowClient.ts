@@ -2,7 +2,10 @@ import { apiRoutes } from "@/shared/api/apiRoutes";
 import { apiRequest } from "@/shared/api/httpClient";
 import { formatNumber } from "@/shared/lib/format";
 import type {
+  EngineeringCalculationArtifactKind,
+  EngineeringCalculationArtifactRecord,
   EngineeringCalculationScenarioRequest,
+  EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResponse,
   EngineeringWorkflowApiStateResponse,
   EngineeringWorkflowCalculationPreparationResult,
@@ -40,6 +43,13 @@ export interface EngineeringWorkflowClient {
     request: EngineeringWorkflowCalculationRequest,
   ): Promise<EngineeringWorkflowCalculationPreparationResult>;
   runCalculation(request: EngineeringCalculationScenarioRequest): Promise<EngineeringCalculationScenarioResponse>;
+  getScenarioResult(scenarioId: string): Promise<EngineeringCalculationScenarioRecord | null>;
+  listProjectScenarios(projectId: number): Promise<EngineeringCalculationScenarioRecord[]>;
+  getScenarioArtifacts(scenarioId: string): Promise<EngineeringCalculationArtifactRecord[]>;
+  getScenarioArtifact(
+    scenarioId: string,
+    artifactKind: EngineeringCalculationArtifactKind,
+  ): Promise<EngineeringCalculationArtifactRecord | null>;
   getTracePreview(
     state: ProjectWorkflowState,
     detailLevel: WorkflowTraceDetailLevel,
@@ -279,6 +289,49 @@ const apiClient: EngineeringWorkflowClient = {
         reportMarkdown: null,
         metadata: { mode: "api", error: "run-calculation-request-failed" },
       };
+    }
+  },
+
+  async getScenarioResult(scenarioId: string): Promise<EngineeringCalculationScenarioRecord | null> {
+    try {
+      return await apiRequest<EngineeringCalculationScenarioRecord>(
+        apiRoutes.engineeringWorkflow.scenarioById(scenarioId),
+      );
+    } catch {
+      return null;
+    }
+  },
+
+  async listProjectScenarios(projectId: number): Promise<EngineeringCalculationScenarioRecord[]> {
+    try {
+      return await apiRequest<EngineeringCalculationScenarioRecord[]>(
+        apiRoutes.engineeringWorkflow.projectScenarios(projectId),
+      );
+    } catch {
+      return [];
+    }
+  },
+
+  async getScenarioArtifacts(scenarioId: string): Promise<EngineeringCalculationArtifactRecord[]> {
+    try {
+      return await apiRequest<EngineeringCalculationArtifactRecord[]>(
+        apiRoutes.engineeringWorkflow.scenarioArtifacts(scenarioId),
+      );
+    } catch {
+      return [];
+    }
+  },
+
+  async getScenarioArtifact(
+    scenarioId: string,
+    artifactKind: EngineeringCalculationArtifactKind,
+  ): Promise<EngineeringCalculationArtifactRecord | null> {
+    try {
+      return await apiRequest<EngineeringCalculationArtifactRecord>(
+        apiRoutes.engineeringWorkflow.scenarioArtifactByKind(scenarioId, artifactKind),
+      );
+    } catch {
+      return null;
     }
   },
 

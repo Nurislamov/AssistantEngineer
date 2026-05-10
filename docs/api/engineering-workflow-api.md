@@ -18,6 +18,10 @@ Endpoints:
 - `POST /api/v1/engineering-workflow/validate`
 - `POST /api/v1/engineering-workflow/prepare-calculation`
 - `POST /api/v1/engineering-workflow/run-calculation`
+- `GET /api/v1/engineering-workflow/{projectId}/scenarios`
+- `GET /api/v1/engineering-workflow/scenarios/{scenarioId}`
+- `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts`
+- `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}`
 - `POST /api/v1/engineering-workflow/trace-preview`
 - `POST /api/v1/engineering-workflow/report`
 - `POST /api/v1/engineering-workflow/report/export/json`
@@ -59,6 +63,8 @@ Missing or partial data produces diagnostics rather than crash.
 
 Runner response contains execution status, executed/skipped modules, diagnostics, optional trace summary, optional report preview, and optional JSON/Markdown exports.
 
+`run-calculation` and `prepare-calculation` also persist scenario records, compact result summaries, diagnostics snapshots, and artifacts in persistence foundation storage.
+
 ## Trace preview behavior
 
 Trace preview endpoint uses calculation trace foundation services and returns compact deterministic trace output by requested detail level (`Summary`, `Standard`, `Detailed`).
@@ -73,6 +79,17 @@ Export endpoints use report JSON/Markdown exporters and return serialized output
 
 Partial reports are supported with diagnostics for missing module data.
 
+## Persistence behavior
+
+Workflow API persists:
+
+- latest workflow state snapshot per project;
+- scenario request/response summary records;
+- scenario artifacts (`TraceJson`, `ReportJson`, `ReportMarkdown`, `ValidationDiagnostics`, `ScenarioResultJson`);
+- scenario history events (`Created`, `Prepared`, `Started`, `Completed`, `Failed`, `ReportGenerated`).
+
+Persistence response payloads remain deterministic and diagnostics-focused.
+
 ## Frontend api/dev mode behavior
 
 Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
@@ -83,6 +100,7 @@ Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
 
 - API foundation may prepare or preview calculations without executing full production scenario if runner is not wired.
 - API foundation may execute available modules partially and report skipped modules with diagnostics.
+- API persistence foundation may be in-memory depending on current deployment wiring.
 - Workflow API is not a compliance certificate.
 - Reports summarize current internal engineering calculations only.
 - Trace explains internal calculation chain only.

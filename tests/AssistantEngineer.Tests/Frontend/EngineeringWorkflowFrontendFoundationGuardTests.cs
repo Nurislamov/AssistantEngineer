@@ -57,6 +57,10 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("buildCalculationRequest", client, StringComparison.Ordinal);
         Assert.Contains("prepareCalculation", client, StringComparison.Ordinal);
         Assert.Contains("runCalculation", client, StringComparison.Ordinal);
+        Assert.Contains("getScenarioResult", client, StringComparison.Ordinal);
+        Assert.Contains("listProjectScenarios", client, StringComparison.Ordinal);
+        Assert.Contains("getScenarioArtifacts", client, StringComparison.Ordinal);
+        Assert.Contains("getScenarioArtifact", client, StringComparison.Ordinal);
         Assert.Contains("getTracePreview", client, StringComparison.Ordinal);
         Assert.Contains("generateReport", client, StringComparison.Ordinal);
         Assert.Contains("exportReportJson", client, StringComparison.Ordinal);
@@ -67,6 +71,10 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("apiRoutes.engineeringWorkflow.validate()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.prepareCalculation()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.runCalculation()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.projectScenarios", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.scenarioById", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.scenarioArtifacts", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.scenarioArtifactByKind", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.tracePreview()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.report()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.reportExportJson()", client, StringComparison.Ordinal);
@@ -84,6 +92,14 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
             "engineering-workflow",
             "ui",
             "EngineeringWorkflowShell.tsx");
+        var historyPanel = ReadRepoFile(
+            "src",
+            "Frontend",
+            "src",
+            "widgets",
+            "engineering-workflow",
+            "ui",
+            "EngineeringScenarioHistoryPanel.tsx");
 
         Assert.Contains("\"Project\"", shell, StringComparison.Ordinal);
         Assert.Contains("\"Building\"", shell, StringComparison.Ordinal);
@@ -106,6 +122,8 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("Ready", shell, StringComparison.Ordinal);
         Assert.Contains("Run available modules", shell, StringComparison.Ordinal);
         Assert.Contains("Module execution status", shell, StringComparison.Ordinal);
+        Assert.Contains("Scenario history", historyPanel, StringComparison.Ordinal);
+        Assert.Contains("Artifacts", historyPanel, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -241,6 +259,10 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("WORKFLOW_STATE_MISSING", hook, StringComparison.Ordinal);
         Assert.Contains("status: \"blocked\"", hook, StringComparison.Ordinal);
         Assert.Contains("runCalculation", hook, StringComparison.Ordinal);
+        Assert.Contains("listScenarios", hook, StringComparison.Ordinal);
+        Assert.Contains("getScenarioResult", hook, StringComparison.Ordinal);
+        Assert.Contains("getScenarioArtifacts", hook, StringComparison.Ordinal);
+        Assert.Contains("getScenarioArtifact", hook, StringComparison.Ordinal);
         Assert.Contains("FailedValidation", hook, StringComparison.Ordinal);
         Assert.Contains("resolveWorkflowMode", hook, StringComparison.Ordinal);
     }

@@ -20,6 +20,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useEngineeringWorkflow } from "@/entities/engineering-workflow/model/useEngineeringWorkflow";
 import type {
+  EngineeringCalculationArtifactRecord,
+  EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResult,
   EngineeringWorkflowCalculationPreparationResult,
   EngineeringWorkflowReportRequest,
@@ -36,6 +38,7 @@ import { EmptyState } from "@/shared/ui/EmptyState";
 import { QueryState } from "@/shared/ui/QueryState";
 import { CalculationTracePanel } from "./CalculationTracePanel";
 import { EngineeringReportPreview } from "./EngineeringReportPreview";
+import { EngineeringScenarioHistoryPanel } from "./EngineeringScenarioHistoryPanel";
 import { WorkflowDiagnosticsPanel } from "./WorkflowDiagnosticsPanel";
 
 interface EngineeringWorkflowShellProps {
@@ -69,6 +72,9 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
   const [markdownOutput, setMarkdownOutput] = useState("");
   const [preparation, setPreparation] = useState<EngineeringWorkflowCalculationPreparationResult | null>(null);
   const [scenarioResult, setScenarioResult] = useState<EngineeringCalculationScenarioResult | null>(null);
+  const [scenarioHistory, setScenarioHistory] = useState<EngineeringCalculationScenarioRecord[]>([]);
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string | undefined>();
+  const [scenarioArtifacts, setScenarioArtifacts] = useState<EngineeringCalculationArtifactRecord[]>([]);
 
   useEffect(() => {
     if (workflow.state?.currentStep) {
@@ -83,6 +89,15 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
       setReportPreview(workflow.state.reportSummary);
     }
   }, [workflow.state]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      const scenarios = await workflow.listScenarios();
+      setScenarioHistory(scenarios);
+    };
+
+    void loadHistory();
+  }, [workflow.state?.projectId]);
 
   const stepStatus = useMemo(() => {
     const map = new Map<WorkflowStepKind, WorkflowStepStatus>();
@@ -145,6 +160,7 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
   const runAvailableModules = async () => {
     const result = await workflow.runCalculation("ExecuteAvailableModules");
     setScenarioResult(result);
+    setSelectedScenarioId(result.scenarioId);
 
     if (result.calculationTraceSummary) {
       setTraceSummary(result.calculationTraceSummary);
@@ -164,6 +180,92 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
 
     if (result.validationDiagnostics.length > 0) {
       setReportDiagnostics((previous) => deduplicateDiagnostics([...previous, ...result.validationDiagnostics]));
+    }
+
+    const scenarios = await workflow.listScenarios();
+    setScenarioHistory(scenarios);
+  };
+
+  const loadScenarioResult = async (scenarioId: string) => {
+    const record = await workflow.getScenarioResult(scenarioId);
+    setSelectedScenarioId(scenarioId);
+
+    if (!record) {
+      return;
+    }
+
+    const artifact = await workflow.getScenarioArtifact(scenarioId, "ScenarioResultJson");
+    if (!artifact?.content) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(artifact.content) as EngineeringCalculationScenarioResult;
+      setScenarioResult(parsed);
+
+      if (parsed.calculationTraceSummary) {
+        setTraceSummary(parsed.calculationTraceSummary);
+      }
+
+      if (parsed.reportPreview) {
+        setReportPreview(parsed.reportPreview);
+      }
+
+      if (parsed.reportJson) {
+        setJsonOutput(parsed.reportJson);
+      }
+
+      if (parsed.reportMarkdown) {
+        setMarkdownOutput(parsed.reportMarkdown);
+      }
+    } catch {
+      // Keep UI deterministic and leave currently rendered results untouched.
+    }
+  };
+
+  const loadScenarioArtifacts = async (scenarioId: string) => {
+    const artifacts = await workflow.getScenarioArtifacts(scenarioId);
+    setSelectedScenarioId(scenarioId);
+    setScenarioArtifacts(artifacts);
+  };
+
+  const openScenarioArtifact = async (scenarioId: string, artifactKind: EngineeringCalculationArtifactRecord["artifactKind"]) => {
+    const artifact = await workflow.getScenarioArtifact(scenarioId, artifactKind);
+    if (!artifact) {
+      return;
+    }
+
+    if (artifact.artifactKind === "TraceJson") {
+      try {
+        const parsed = JSON.parse(artifact.content) as { steps?: Array<{ stepId: string; moduleKind: string; stepName: string; sequence: number; assumptions: string[]; warnings: string[]; diagnostics: unknown[] }>; traceId?: string; calculationId?: string; assumptions?: string[]; warnings?: string[] };
+        setTraceSummary({
+          traceId: parsed.traceId ?? "persisted-trace",
+          calculationId: parsed.calculationId,
+          detailLevel: "Detailed",
+          modules: (parsed.steps ?? []).map((item) => item.moduleKind),
+          assumptions: parsed.assumptions ?? [],
+          warnings: parsed.warnings ?? [],
+          steps: (parsed.steps ?? []).map((item) => ({
+            stepId: item.stepId,
+            moduleKind: item.moduleKind,
+            stepName: item.stepName,
+            sequence: item.sequence,
+            assumptions: item.assumptions ?? [],
+            warnings: item.warnings ?? [],
+            diagnosticsCount: Array.isArray(item.diagnostics) ? item.diagnostics.length : 0,
+          })),
+        });
+      } catch {
+        // Keep UI deterministic and leave currently rendered trace untouched.
+      }
+    }
+
+    if (artifact.artifactKind === "ReportJson" || artifact.artifactKind === "ScenarioResultJson") {
+      setJsonOutput(artifact.content);
+    }
+
+    if (artifact.artifactKind === "ReportMarkdown") {
+      setMarkdownOutput(artifact.content);
     }
   };
 
@@ -219,12 +321,12 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
                   </Stack>
                   {preparation ? (
                     <Alert severity={preparation.status === "prepared" ? "success" : "error"}>
-                      Request status: {preparation.status}. {preparation.metadata.note}
+                      Request status: {preparation.status}. Scenario ID: {preparation.requestId}. {preparation.metadata.note}
                     </Alert>
                   ) : null}
                   {scenarioResult ? (
                     <Alert severity={scenarioResult.status.includes("Failed") ? "error" : scenarioResult.status === "PartiallyExecuted" ? "warning" : "success"}>
-                      Scenario status: {scenarioResult.status}. Executed modules: {scenarioResult.executedModules.length}. Skipped modules: {scenarioResult.skippedModules.length}.
+                      Scenario ID: {scenarioResult.scenarioId}. Status: {scenarioResult.status}. Executed modules: {scenarioResult.executedModules.length}. Skipped modules: {scenarioResult.skippedModules.length}.
                     </Alert>
                   ) : null}
                   {scenarioResult ? (
@@ -255,6 +357,15 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
                 markdownOutput={markdownOutput}
                 onExportJson={() => exportJson(workflow.state!)}
                 onExportMarkdown={() => exportMarkdown(workflow.state!)}
+              />
+
+              <EngineeringScenarioHistoryPanel
+                scenarios={scenarioHistory}
+                selectedScenarioId={selectedScenarioId}
+                onViewResult={(scenarioId) => void loadScenarioResult(scenarioId)}
+                onLoadArtifacts={(scenarioId) => void loadScenarioArtifacts(scenarioId)}
+                artifacts={scenarioArtifacts}
+                onViewArtifact={(scenarioId, artifactKind) => void openScenarioArtifact(scenarioId, artifactKind)}
               />
             </Stack>
 

@@ -573,6 +573,91 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task EngineeringWorkflowPrepareAndRunPersistScenarioAndArtifacts()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var prepareResponse = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/prepare-calculation",
+            new EngineeringWorkflowCalculationPreparationRequestDto(state, ExecuteCalculation: false));
+        await EnsureSuccessWithBodyAsync(prepareResponse);
+        var preparePayload = await prepareResponse.Content.ReadFromJsonAsync<EngineeringWorkflowCalculationPreparationResponseDto>();
+        Assert.NotNull(preparePayload);
+
+        var preparedScenarioResponse = await client.GetAsync($"/api/v1/engineering-workflow/scenarios/{preparePayload.RequestId}");
+        await EnsureSuccessWithBodyAsync(preparedScenarioResponse);
+        var preparedScenario = await preparedScenarioResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioRecordDto>();
+        Assert.NotNull(preparedScenario);
+        Assert.Equal(preparePayload.RequestId, preparedScenario.ScenarioId);
+        Assert.Equal(EngineeringCalculationExecutionMode.PrepareOnly, preparedScenario.ExecutionMode);
+
+        var runRequest = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-persistence-integration",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: true,
+            IncludeReport: true,
+            ReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        var runResponse = await client.PostAsJsonAsync("/api/v1/engineering-workflow/run-calculation", runRequest);
+        await EnsureSuccessWithBodyAsync(runResponse);
+        var runPayload = await runResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+        Assert.NotNull(runPayload);
+
+        var persistedRunResponse = await client.GetAsync($"/api/v1/engineering-workflow/scenarios/{runPayload.ScenarioId}");
+        await EnsureSuccessWithBodyAsync(persistedRunResponse);
+        var persistedRun = await persistedRunResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioRecordDto>();
+        Assert.NotNull(persistedRun);
+        Assert.Equal(runPayload.Status, persistedRun.Status);
+
+        var artifactsResponse = await client.GetAsync($"/api/v1/engineering-workflow/scenarios/{runPayload.ScenarioId}/artifacts");
+        await EnsureSuccessWithBodyAsync(artifactsResponse);
+        var artifacts = await artifactsResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationArtifactRecordDto>>();
+        Assert.NotNull(artifacts);
+        Assert.Contains(artifacts, item => item.ArtifactKind == EngineeringCalculationArtifactKind.ScenarioResultJson);
+        Assert.Contains(artifacts, item => item.ArtifactKind == EngineeringCalculationArtifactKind.ValidationDiagnostics);
+
+        var scenarioResultArtifactResponse = await client.GetAsync(
+            $"/api/v1/engineering-workflow/scenarios/{runPayload.ScenarioId}/artifacts/ScenarioResultJson");
+        await EnsureSuccessWithBodyAsync(scenarioResultArtifactResponse);
+        var scenarioResultArtifact = await scenarioResultArtifactResponse.Content.ReadFromJsonAsync<EngineeringCalculationArtifactRecordDto>();
+        Assert.NotNull(scenarioResultArtifact);
+        Assert.Equal(EngineeringCalculationArtifactKind.ScenarioResultJson, scenarioResultArtifact.ArtifactKind);
+        Assert.Contains("\"scenarioId\"", scenarioResultArtifact.Content, StringComparison.OrdinalIgnoreCase);
+
+        var projectScenariosResponse = await client.GetAsync("/api/v1/engineering-workflow/0/scenarios");
+        await EnsureSuccessWithBodyAsync(projectScenariosResponse);
+        var projectScenarios = await projectScenariosResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>();
+        Assert.NotNull(projectScenarios);
+        Assert.Contains(projectScenarios, item => item.ScenarioId == runPayload.ScenarioId);
+        Assert.Contains(projectScenarios, item => item.ScenarioId == preparePayload.RequestId);
+    }
+
+    [Fact]
+    public async Task EngineeringWorkflowScenarioArtifactEndpointReturnsNotFoundForMissingArtifact()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/v1/engineering-workflow/scenarios/unknown-scenario/artifacts/TraceJson");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task EngineeringCalculationScenarioValidateOnlyModeDoesNotExecuteModules()
     {
         await using var factory = new AssistantEngineerApiFactory();

@@ -3,7 +3,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/shared/api/queryKeys";
 import { createEngineeringWorkflowClient } from "../api/engineeringWorkflowClient";
 import type {
+  EngineeringCalculationArtifactKind,
+  EngineeringCalculationArtifactRecord,
   EngineeringCalculationScenarioRequest,
+  EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResult,
   EngineeringWorkflowCalculationPreparationResult,
   EngineeringWorkflowCalculationRequest,
@@ -24,6 +27,13 @@ interface UseEngineeringWorkflowResult {
   validate: () => Promise<WorkflowDiagnostic[]>;
   prepareCalculation: () => Promise<EngineeringWorkflowCalculationPreparationResult>;
   runCalculation: (mode?: "ExecuteAvailableModules" | "ExecuteFullRequired") => Promise<EngineeringCalculationScenarioResult>;
+  listScenarios: () => Promise<EngineeringCalculationScenarioRecord[]>;
+  getScenarioResult: (scenarioId: string) => Promise<EngineeringCalculationScenarioRecord | null>;
+  getScenarioArtifacts: (scenarioId: string) => Promise<EngineeringCalculationArtifactRecord[]>;
+  getScenarioArtifact: (
+    scenarioId: string,
+    artifactKind: EngineeringCalculationArtifactKind,
+  ) => Promise<EngineeringCalculationArtifactRecord | null>;
   loadTracePreview: (detailLevel: WorkflowTraceDetailLevel) => Promise<WorkflowCalculationTraceSummary>;
   generateReport: (request: EngineeringWorkflowReportRequest) => Promise<EngineeringWorkflowReportResult>;
   exportReportJson: (request: EngineeringWorkflowReportRequest) => Promise<string>;
@@ -67,6 +77,23 @@ export function useEngineeringWorkflow(
 
   const runMutation = useMutation({
     mutationFn: (request: EngineeringCalculationScenarioRequest) => client.runCalculation(request),
+  });
+
+  const listScenariosMutation = useMutation({
+    mutationFn: (nextProjectId: number) => client.listProjectScenarios(nextProjectId),
+  });
+
+  const scenarioResultMutation = useMutation({
+    mutationFn: (scenarioId: string) => client.getScenarioResult(scenarioId),
+  });
+
+  const scenarioArtifactsMutation = useMutation({
+    mutationFn: (scenarioId: string) => client.getScenarioArtifacts(scenarioId),
+  });
+
+  const scenarioArtifactMutation = useMutation({
+    mutationFn: ({ scenarioId, artifactKind }: { scenarioId: string; artifactKind: EngineeringCalculationArtifactKind }) =>
+      client.getScenarioArtifact(scenarioId, artifactKind),
   });
 
   const reportMutation = useMutation({
@@ -173,6 +200,25 @@ export function useEngineeringWorkflow(
   const generateReport = async (request: EngineeringWorkflowReportRequest) =>
     reportMutation.mutateAsync(request);
 
+  const listScenarios = async () => {
+    if (!stateQuery.data?.projectId || stateQuery.data.projectId <= 0) {
+      return [];
+    }
+
+    return listScenariosMutation.mutateAsync(stateQuery.data.projectId);
+  };
+
+  const getScenarioResult = async (scenarioId: string) =>
+    scenarioResultMutation.mutateAsync(scenarioId);
+
+  const getScenarioArtifacts = async (scenarioId: string) =>
+    scenarioArtifactsMutation.mutateAsync(scenarioId);
+
+  const getScenarioArtifact = async (
+    scenarioId: string,
+    artifactKind: EngineeringCalculationArtifactKind,
+  ) => scenarioArtifactMutation.mutateAsync({ scenarioId, artifactKind });
+
   const exportReportJson = async (request: EngineeringWorkflowReportRequest) =>
     client.exportReportJson(request);
 
@@ -188,6 +234,10 @@ export function useEngineeringWorkflow(
     validate,
     prepareCalculation,
     runCalculation,
+    listScenarios,
+    getScenarioResult,
+    getScenarioArtifacts,
+    getScenarioArtifact,
     loadTracePreview,
     generateReport,
     exportReportJson,

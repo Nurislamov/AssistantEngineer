@@ -1,5 +1,6 @@
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Common;
 using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
@@ -61,6 +62,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringReportJsonExporter _reportJsonExporter;
     private readonly IEngineeringReportMarkdownExporter _reportMarkdownExporter;
     private readonly IEngineeringCalculationScenarioRunner _scenarioRunner;
+    private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
 
     public EngineeringWorkflowController(
         IBuildingsFacade buildings,
@@ -70,7 +72,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
         IEngineeringReportBuilder reportBuilder,
         IEngineeringReportJsonExporter reportJsonExporter,
         IEngineeringReportMarkdownExporter reportMarkdownExporter,
-        IEngineeringCalculationScenarioRunner scenarioRunner)
+        IEngineeringCalculationScenarioRunner scenarioRunner,
+        IEngineeringWorkflowPersistenceService workflowPersistence)
     {
         _buildings = buildings;
         _engineeringCoreStatus = engineeringCoreStatus;
@@ -80,6 +83,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         _reportJsonExporter = reportJsonExporter;
         _reportMarkdownExporter = reportMarkdownExporter;
         _scenarioRunner = scenarioRunner;
+        _workflowPersistence = workflowPersistence;
     }
 
     [HttpGet("{projectId:int}/state")]
@@ -88,11 +92,23 @@ public sealed class EngineeringWorkflowController : ControllerBase
         [FromQuery] int? buildingId,
         CancellationToken cancellationToken)
     {
+        var persistedState = await _workflowPersistence.GetLatestWorkflowStateAsync(
+            projectId,
+            buildingId,
+            cancellationToken);
+
+        if (persistedState is not null)
+        {
+            return Ok(persistedState);
+        }
+
         EngineeringWorkflowStateDto state;
 
         try
         {
             state = await BuildWorkflowStateAsync(projectId, buildingId, cancellationToken);
+            state = AddMissingPersistedStateDiagnostic(state);
+            await _workflowPersistence.SaveWorkflowStateAsync(state, state.Diagnostics, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -106,11 +122,19 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [HttpPost("validate")]
-    public ActionResult<EngineeringWorkflowValidationResponseDto> Validate(
-        [FromBody] EngineeringWorkflowValidationRequestDto request)
+    public async Task<ActionResult<EngineeringWorkflowValidationResponseDto>> Validate(
+        [FromBody] EngineeringWorkflowValidationRequestDto request,
+        CancellationToken cancellationToken)
     {
         var diagnostics = ValidateState(request.State);
         var steps = BuildStepStatuses(request.State, diagnostics);
+        var stateToPersist = request.State with
+        {
+            Diagnostics = diagnostics,
+            Steps = steps
+        };
+
+        await _workflowPersistence.SaveWorkflowStateAsync(stateToPersist, diagnostics, cancellationToken);
 
         return Ok(new EngineeringWorkflowValidationResponseDto(
             IsValid: diagnostics.All(diagnostic => !IsErrorSeverity(diagnostic.Severity)),
@@ -139,6 +163,10 @@ public sealed class EngineeringWorkflowController : ControllerBase
             DiagnosticsMode: "Deterministic");
 
         var scenarioResult = await _scenarioRunner.RunAsync(scenarioRequest, cancellationToken);
+        var persistedScenario = await _workflowPersistence.SavePreparedScenarioAsync(
+            scenarioRequest,
+            scenarioResult,
+            cancellationToken);
 
         var preview = new SortedDictionary<string, string>(StringComparer.Ordinal)
         {
@@ -150,7 +178,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
             ["boundariesCount"] = request.State.Boundaries.Count.ToString(),
             ["diagnosticsCount"] = scenarioResult.ValidationDiagnostics.Count.ToString(),
             ["availableModulesCount"] = request.State.AvailableModules.Count.ToString(),
-            ["scenarioStatus"] = scenarioResult.Status.ToString()
+            ["scenarioStatus"] = scenarioResult.Status.ToString(),
+            ["scenarioId"] = persistedScenario.ScenarioId
         };
 
         var status = scenarioResult.Status is EngineeringCalculationExecutionStatus.FailedValidation or EngineeringCalculationExecutionStatus.FailedExecution
@@ -158,7 +187,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
             : "prepared";
 
         var response = new EngineeringWorkflowCalculationPreparationResponseDto(
-            RequestId: scenarioResult.ScenarioId,
+            RequestId: persistedScenario.ScenarioId,
             Status: status,
             Executed: false,
             RequestPreview: preview,
@@ -175,7 +204,82 @@ public sealed class EngineeringWorkflowController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _scenarioRunner.RunAsync(request, cancellationToken);
+        await _workflowPersistence.SaveRunScenarioAsync(request, result, cancellationToken);
+
         return Ok(result);
+    }
+
+    [HttpGet("scenarios/{scenarioId}")]
+    public async Task<ActionResult<EngineeringCalculationScenarioRecordDto>> GetScenarioResult(
+        string scenarioId,
+        CancellationToken cancellationToken)
+    {
+        var scenario = await _workflowPersistence.GetScenarioAsync(scenarioId, cancellationToken);
+        if (scenario is null)
+        {
+            return NotFound(new
+            {
+                scenarioId,
+                code = "WORKFLOW_SCENARIO_NOT_FOUND",
+                message = "Scenario record was not found in workflow persistence foundation store."
+            });
+        }
+
+        return Ok(scenario);
+    }
+
+    [HttpGet("{projectId:int}/scenarios")]
+    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>> GetProjectScenarios(
+        int projectId,
+        CancellationToken cancellationToken)
+    {
+        var scenarios = await _workflowPersistence.ListProjectScenariosAsync(projectId, cancellationToken);
+        return Ok(scenarios);
+    }
+
+    [HttpGet("scenarios/{scenarioId}/artifacts")]
+    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationArtifactRecordDto>>> GetScenarioArtifacts(
+        string scenarioId,
+        CancellationToken cancellationToken)
+    {
+        var artifacts = await _workflowPersistence.ListScenarioArtifactsAsync(scenarioId, cancellationToken);
+        return Ok(artifacts);
+    }
+
+    [HttpGet("scenarios/{scenarioId}/artifacts/{artifactKind}")]
+    public async Task<ActionResult<EngineeringCalculationArtifactRecordDto>> GetScenarioArtifactByKind(
+        string scenarioId,
+        string artifactKind,
+        CancellationToken cancellationToken)
+    {
+        if (!Enum.TryParse<EngineeringCalculationArtifactKind>(artifactKind, true, out var parsedKind))
+        {
+            return BadRequest(new
+            {
+                scenarioId,
+                artifactKind,
+                code = "WORKFLOW_ARTIFACT_KIND_INVALID",
+                message = "Artifact kind is invalid for workflow persistence endpoint."
+            });
+        }
+
+        var artifact = await _workflowPersistence.GetScenarioArtifactAsync(
+            scenarioId,
+            parsedKind,
+            cancellationToken);
+
+        if (artifact is null)
+        {
+            return NotFound(new
+            {
+                scenarioId,
+                artifactKind = parsedKind.ToString(),
+                code = "WORKFLOW_ARTIFACT_NOT_FOUND",
+                message = "Scenario artifact was not found in workflow persistence foundation store."
+            });
+        }
+
+        return Ok(artifact);
     }
 
     [HttpPost("trace-preview")]
@@ -1103,6 +1207,34 @@ public sealed class EngineeringWorkflowController : ControllerBase
 
         var steps = BuildStepStatuses(state, diagnostics);
         return state with { Steps = steps };
+    }
+
+    private static EngineeringWorkflowStateDto AddMissingPersistedStateDiagnostic(
+        EngineeringWorkflowStateDto state)
+    {
+        var diagnostics = SortAndDistinctDiagnostics(state.Diagnostics.Concat(
+        [
+            new EngineeringWorkflowDiagnosticDto(
+                Severity: "info",
+                Code: "WORKFLOW_STATE_NOT_PERSISTED_YET",
+                Message: "No persisted workflow state existed for this project; deterministic foundation state was generated and persisted.",
+                SourceStep: "Project",
+                SuggestedCorrection: "Continue workflow edits and use validate/prepare/run endpoints to create scenario history.")
+        ]));
+
+        var metadata = state.Metadata
+            .OrderBy(item => item.Key, StringComparer.Ordinal)
+            .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
+        metadata["persistence"] = "in-memory-foundation";
+        metadata["stateSource"] = "generated-and-persisted";
+
+        var updated = state with
+        {
+            Diagnostics = diagnostics,
+            Metadata = metadata
+        };
+
+        return updated with { Steps = BuildStepStatuses(updated, diagnostics) };
     }
 
     private static string SelectCurrentStep(

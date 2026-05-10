@@ -203,6 +203,13 @@ export type EngineeringCalculationExecutionStatus =
   | "FailedExecution"
   | "NotSupported";
 
+export type EngineeringCalculationArtifactKind =
+  | "TraceJson"
+  | "ReportJson"
+  | "ReportMarkdown"
+  | "ValidationDiagnostics"
+  | "ScenarioResultJson";
+
 export type EngineeringCalculationModuleExecutionStatus =
   | "NotStarted"
   | "Executed"
@@ -276,6 +283,33 @@ export interface EngineeringCalculationScenarioResult {
   reportJson?: string | null;
   reportMarkdown?: string | null;
   metadata: Record<string, string>;
+}
+
+export interface EngineeringCalculationScenarioRecord {
+  scenarioId: string;
+  projectId: number;
+  buildingId?: number | null;
+  scenarioKind: EngineeringCalculationScenarioKind;
+  executionMode: EngineeringCalculationExecutionMode;
+  status: EngineeringCalculationExecutionStatus;
+  requestJson: string;
+  resultSummaryJson?: string | null;
+  createdAtUtc: string;
+  startedAtUtc?: string | null;
+  completedAtUtc?: string | null;
+  durationMilliseconds?: number | null;
+  diagnosticsJson?: string | null;
+}
+
+export interface EngineeringCalculationArtifactRecord {
+  artifactId: string;
+  scenarioId: string;
+  artifactKind: EngineeringCalculationArtifactKind;
+  contentType: string;
+  content: string;
+  createdAtUtc: string;
+  sizeBytes?: number | null;
+  checksumSha256?: string | null;
 }
 
 export interface EngineeringWorkflowReportRequest {

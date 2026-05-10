@@ -1,5 +1,6 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Facades;
@@ -47,6 +48,13 @@ public class CompositionRootResolutionTests
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddInfrastructure(configuration, "Testing");
+        services.AddSingleton<EngineeringWorkflowMemoryStore>();
+        services.AddScoped<IEngineeringProjectRepository, InMemoryEngineeringProjectRepository>();
+        services.AddScoped<IEngineeringWorkflowStateRepository, InMemoryEngineeringWorkflowStateRepository>();
+        services.AddScoped<IEngineeringCalculationScenarioRepository, InMemoryEngineeringCalculationScenarioRepository>();
+        services.AddScoped<IEngineeringCalculationArtifactRepository, InMemoryEngineeringCalculationArtifactRepository>();
+        services.AddScoped<IEngineeringScenarioHistoryRepository, InMemoryEngineeringScenarioHistoryRepository>();
+        services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions

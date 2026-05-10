@@ -25,6 +25,10 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("POST /api/v1/engineering-workflow/report", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report/export/json", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report/export/markdown", content, StringComparison.Ordinal);
+        Assert.Contains("GET /api/v1/engineering-workflow/{projectId}/scenarios", content, StringComparison.Ordinal);
+        Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}", content, StringComparison.Ordinal);
+        Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts", content, StringComparison.Ordinal);
+        Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}", content, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -44,5 +48,6 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("trace explains internal calculation chain only", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no external validation evidence", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no full standard compliance claim", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("persistence foundation may be in-memory", content, StringComparison.OrdinalIgnoreCase);
     }
 }

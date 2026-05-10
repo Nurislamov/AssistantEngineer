@@ -58,6 +58,9 @@ Workflow API integrates runner through:
 
 - `POST /api/v1/engineering-workflow/prepare-calculation` (PrepareOnly orchestration path)
 - `POST /api/v1/engineering-workflow/run-calculation` (scenario execution path)
+- `GET /api/v1/engineering-workflow/{projectId}/scenarios` (persisted scenario history list)
+- `GET /api/v1/engineering-workflow/scenarios/{scenarioId}` (persisted scenario record)
+- `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}` (persisted trace/report/result artifact access)
 
 ## Frontend Behavior
 
@@ -70,7 +73,8 @@ Workflow API integrates runner through:
 - foundation runner executes only modules with available structured inputs.
 - no hidden external weather calls.
 - no fake calculation success.
+- persistence provider can be foundation-level in-memory.
 - not a compliance certificate.
 - not external validation evidence.
 - no full standard compliance claim.
-- production persistence/job queue may be future work.
+- production persistence scaling and background job queue execution may be future work.

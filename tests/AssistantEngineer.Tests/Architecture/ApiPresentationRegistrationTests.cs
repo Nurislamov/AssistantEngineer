@@ -2,6 +2,7 @@ using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Tests.Architecture;
@@ -27,6 +28,34 @@ public class ApiPresentationRegistrationTests
         AssertServiceLifetime<IExceptionProblemDetailsMapper>(
             services,
             ServiceLifetime.Singleton);
+
+        AssertServiceLifetime<EngineeringWorkflowMemoryStore>(
+            services,
+            ServiceLifetime.Singleton);
+
+        AssertServiceLifetime<IEngineeringProjectRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringWorkflowStateRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringCalculationScenarioRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringCalculationArtifactRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringScenarioHistoryRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringWorkflowPersistenceService>(
+            services,
+            ServiceLifetime.Scoped);
 
         AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
             services,

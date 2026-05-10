@@ -43,6 +43,10 @@ Supported modes:
   - `POST /api/v1/engineering-workflow/validate`;
   - `POST /api/v1/engineering-workflow/prepare-calculation`;
   - `POST /api/v1/engineering-workflow/run-calculation`;
+  - `GET /api/v1/engineering-workflow/{projectId}/scenarios`;
+  - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}`;
+  - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts`;
+  - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}`;
   - `POST /api/v1/engineering-workflow/trace-preview`;
   - `POST /api/v1/engineering-workflow/report`;
   - `POST /api/v1/engineering-workflow/report/export/json`;
@@ -86,6 +90,13 @@ Workflow scenario execution panel:
 - shows deterministic execution status (`Prepared`, `PartiallyExecuted`, `CompletedWithWarnings`, `FailedValidation`, `FailedExecution`);
 - shows module execution status markers without frontend-side physics.
 
+Scenario history panel:
+
+- lists persisted scenario runs by project;
+- shows scenario id/status/timestamps and diagnostics count;
+- loads persisted scenario artifacts (trace/report/result snapshots);
+- keeps empty state explicit when no persisted runs exist.
+
 ## Partial workflow behavior
 
 Workflow supports partial data.
@@ -97,6 +108,7 @@ Missing module data is surfaced as diagnostics and incomplete step status instea
 - Frontend workflow is foundation-level.
 - Not all production endpoints may be wired yet.
 - Frontend does not prove calculation validity.
+- Persistence provider may be foundation-level in-memory depending on deployment wiring.
 - Frontend runner view may return partial execution when required structured module inputs are missing.
 - Report preview summarizes current internal engineering calculations only.
 - Report preview is not a legal compliance certificate.

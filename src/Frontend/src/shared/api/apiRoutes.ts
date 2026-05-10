@@ -87,9 +87,17 @@ export const apiRoutes = {
   engineeringWorkflow: {
     state: (projectId: number) =>
       `${apiPrefix}/engineering-workflow/${projectId}/state`,
+    projectScenarios: (projectId: number) =>
+      `${apiPrefix}/engineering-workflow/${projectId}/scenarios`,
     validate: () => `${apiPrefix}/engineering-workflow/validate`,
     prepareCalculation: () => `${apiPrefix}/engineering-workflow/prepare-calculation`,
     runCalculation: () => `${apiPrefix}/engineering-workflow/run-calculation`,
+    scenarioById: (scenarioId: string) =>
+      `${apiPrefix}/engineering-workflow/scenarios/${encodeURIComponent(scenarioId)}`,
+    scenarioArtifacts: (scenarioId: string) =>
+      `${apiPrefix}/engineering-workflow/scenarios/${encodeURIComponent(scenarioId)}/artifacts`,
+    scenarioArtifactByKind: (scenarioId: string, artifactKind: string) =>
+      `${apiPrefix}/engineering-workflow/scenarios/${encodeURIComponent(scenarioId)}/artifacts/${encodeURIComponent(artifactKind)}`,
     tracePreview: () => `${apiPrefix}/engineering-workflow/trace-preview`,
     report: () => `${apiPrefix}/engineering-workflow/report`,
     reportExportJson: () => `${apiPrefix}/engineering-workflow/report/export/json`,

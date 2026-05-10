@@ -112,3 +112,86 @@ public sealed record EngineeringCalculationScenarioResultDto(
     string? ReportJson,
     string? ReportMarkdown,
     IReadOnlyDictionary<string, string> Metadata);
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum EngineeringProjectRecordStatus
+{
+    Active,
+    Archived
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum EngineeringCalculationArtifactKind
+{
+    TraceJson,
+    ReportJson,
+    ReportMarkdown,
+    ValidationDiagnostics,
+    ScenarioResultJson
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum EngineeringScenarioHistoryEventKind
+{
+    Created,
+    Prepared,
+    Started,
+    ModuleCompleted,
+    Completed,
+    Failed,
+    ReportGenerated
+}
+
+public sealed record EngineeringProjectRecordDto(
+    int ProjectId,
+    string ProjectName,
+    string? Description,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc,
+    EngineeringProjectRecordStatus Status,
+    IReadOnlyDictionary<string, string>? MetadataJson);
+
+public sealed record EngineeringWorkflowStateRecordDto(
+    string WorkflowStateId,
+    int ProjectId,
+    int? BuildingId,
+    int Version,
+    string CurrentStep,
+    string WorkflowStateJson,
+    string? ValidationDiagnosticsJson,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset UpdatedAtUtc);
+
+public sealed record EngineeringCalculationScenarioRecordDto(
+    string ScenarioId,
+    int ProjectId,
+    int? BuildingId,
+    EngineeringCalculationScenarioKind ScenarioKind,
+    EngineeringCalculationExecutionMode ExecutionMode,
+    EngineeringCalculationExecutionStatus Status,
+    string RequestJson,
+    string? ResultSummaryJson,
+    DateTimeOffset CreatedAtUtc,
+    DateTimeOffset? StartedAtUtc,
+    DateTimeOffset? CompletedAtUtc,
+    double? DurationMilliseconds,
+    string? DiagnosticsJson);
+
+public sealed record EngineeringCalculationArtifactRecordDto(
+    string ArtifactId,
+    string ScenarioId,
+    EngineeringCalculationArtifactKind ArtifactKind,
+    string ContentType,
+    string Content,
+    DateTimeOffset CreatedAtUtc,
+    int? SizeBytes,
+    string? ChecksumSha256);
+
+public sealed record EngineeringScenarioHistoryEntryDto(
+    string EventId,
+    string ScenarioId,
+    int ProjectId,
+    EngineeringScenarioHistoryEventKind EventKind,
+    string Message,
+    string? DiagnosticsJson,
+    DateTimeOffset CreatedAtUtc);
