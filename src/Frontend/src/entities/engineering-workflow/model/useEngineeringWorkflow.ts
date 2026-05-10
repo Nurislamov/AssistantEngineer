@@ -58,8 +58,8 @@ export function useEngineeringWorkflow(
   });
 
   const traceMutation = useMutation({
-    mutationFn: ({ calculationId, detailLevel }: { calculationId: string; detailLevel: WorkflowTraceDetailLevel }) =>
-      client.getTracePreview(calculationId, detailLevel),
+    mutationFn: ({ state, detailLevel }: { state: ProjectWorkflowState; detailLevel: WorkflowTraceDetailLevel }) =>
+      client.getTracePreview(state, detailLevel),
   });
 
   const reportMutation = useMutation({
@@ -102,8 +102,19 @@ export function useEngineeringWorkflow(
   };
 
   const loadTracePreview = async (detailLevel: WorkflowTraceDetailLevel) => {
-    const calculationId = stateQuery.data?.calculationTraceSummary?.calculationId ?? `building-${buildingId}`;
-    return traceMutation.mutateAsync({ calculationId, detailLevel });
+    if (!stateQuery.data) {
+      return {
+        traceId: `workflow-trace-missing-${buildingId}`,
+        calculationId: `building-${buildingId}`,
+        detailLevel,
+        modules: ["Validation"],
+        assumptions: ["Workflow state is not loaded."],
+        warnings: ["Trace preview could not be loaded because workflow state is missing."],
+        steps: [],
+      };
+    }
+
+    return traceMutation.mutateAsync({ state: stateQuery.data, detailLevel });
   };
 
   const generateReport = async (request: EngineeringWorkflowReportRequest) =>

@@ -27,6 +27,7 @@ public class ApiVersioningTests
     [InlineData(typeof(AnnualClimateDataController), "api/v{version:apiVersion}/climate-zones/{climateZoneId:int}/annual-climate-data")]
     [InlineData(typeof(BuildingLoadCalculationsController), "api/v{version:apiVersion}/buildings/{buildingId:int}/load-calculations")]
     [InlineData(typeof(DomesticHotWaterController), "api/v{version:apiVersion}/domestic-hot-water")]
+    [InlineData(typeof(EngineeringWorkflowController), "api/v{version:apiVersion}/engineering-workflow")]
     [InlineData(typeof(FloorLoadCalculationsController), "api/v{version:apiVersion}/floors/{floorId:int}/load-calculations")]
     [InlineData(typeof(GroundTemperatureController), "api/v{version:apiVersion}/buildings/{buildingId:int}/ground-temperature")]
     [InlineData(typeof(RoomLoadCalculationsController), "api/v{version:apiVersion}/rooms/{roomId:int}/load-calculations")]

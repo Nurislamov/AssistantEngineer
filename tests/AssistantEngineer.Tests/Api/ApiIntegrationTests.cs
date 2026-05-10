@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using AssistantEngineer.Api.Contracts.Common;
+using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
@@ -391,6 +392,147 @@ public class ApiIntegrationTests
         Assert.Equal("validation_failed", GetExtensionValue(problem, "code"));
         Assert.False(string.IsNullOrWhiteSpace(GetExtensionValue(problem, "correlationId")));
         Assert.Contains(problem.Errors.Keys, key => string.Equals(key, "sourceFile", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task GetEngineeringWorkflowStateReturnsDeterministicFoundationState()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var state = await response.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+
+        Assert.NotNull(state);
+        Assert.Equal(0, state.ProjectId);
+        Assert.Equal(0, state.BuildingId);
+        Assert.Contains(state.AvailableModules, item => item == "Reporting");
+        Assert.Contains(state.Steps, item => item.Kind == "Validation");
+        Assert.NotEmpty(state.Diagnostics);
+    }
+
+    [Fact]
+    public async Task PostEngineeringWorkflowValidateReturnsDiagnosticsAndStepStatuses()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/validate",
+            new EngineeringWorkflowValidationRequestDto(state));
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringWorkflowValidationResponseDto>();
+
+        Assert.NotNull(payload);
+        Assert.NotEmpty(payload.Diagnostics);
+        Assert.Contains(payload.Steps, item => item.Kind == "Project");
+    }
+
+    [Fact]
+    public async Task PostEngineeringWorkflowPrepareCalculationReturnsPreparedOrBlockedWithoutExecution()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/prepare-calculation",
+            new EngineeringWorkflowCalculationPreparationRequestDto(state, ExecuteCalculation: false));
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringWorkflowCalculationPreparationResponseDto>();
+
+        Assert.NotNull(payload);
+        Assert.False(payload.Executed);
+        Assert.True(payload.Status is "prepared" or "blocked");
+        Assert.NotEmpty(payload.RequestPreview);
+    }
+
+    [Fact]
+    public async Task PostEngineeringWorkflowTracePreviewReturnsCompactTraceSummary()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/trace-preview",
+            new EngineeringWorkflowTracePreviewRequestDto(state, DetailLevel: "Summary"));
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringWorkflowTracePreviewResponseDto>();
+
+        Assert.NotNull(payload);
+        Assert.NotNull(payload.TraceDocument);
+        Assert.NotEmpty(payload.TraceSummary.Steps);
+        Assert.Equal("Summary", payload.TraceSummary.DetailLevel);
+    }
+
+    [Fact]
+    public async Task PostEngineeringWorkflowReportReturnsReportDocument()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/report",
+            new EngineeringWorkflowReportRequestDto(state));
+
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringWorkflowReportResponseDto>();
+
+        Assert.NotNull(payload);
+        Assert.NotNull(payload.ReportDocument);
+        Assert.NotEmpty(payload.Preview.Sections);
+        Assert.Contains(payload.Preview.ExportFormatsAvailable, item => item == "Json");
+    }
+
+    [Fact]
+    public async Task PostEngineeringWorkflowReportExportJsonAndMarkdownReturnContent()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var jsonResponse = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/report/export/json",
+            new EngineeringWorkflowReportExportRequestDto(new EngineeringWorkflowReportRequestDto(state)));
+
+        await EnsureSuccessWithBodyAsync(jsonResponse);
+        var jsonPayload = await jsonResponse.Content.ReadFromJsonAsync<EngineeringWorkflowReportExportResponseDto>();
+        Assert.NotNull(jsonPayload);
+        Assert.Equal("Json", jsonPayload.Format);
+        Assert.Contains("\"schemaVersion\"", jsonPayload.Content, StringComparison.OrdinalIgnoreCase);
+
+        var markdownResponse = await client.PostAsJsonAsync(
+            "/api/v1/engineering-workflow/report/export/markdown",
+            new EngineeringWorkflowReportExportRequestDto(new EngineeringWorkflowReportRequestDto(state)));
+
+        await EnsureSuccessWithBodyAsync(markdownResponse);
+        var markdownPayload = await markdownResponse.Content.ReadFromJsonAsync<EngineeringWorkflowReportExportResponseDto>();
+        Assert.NotNull(markdownPayload);
+        Assert.Equal("Markdown", markdownPayload.Format);
+        Assert.Contains("#", markdownPayload.Content, StringComparison.Ordinal);
     }
 
     private static string? GetExtensionValue(ProblemDetails problem, string key) =>

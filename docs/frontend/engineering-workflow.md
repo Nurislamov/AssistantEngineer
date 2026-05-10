@@ -38,7 +38,14 @@ Workflow client is implemented in:
 
 Supported modes:
 
-- `api`: uses available backend endpoints and reports pending endpoint gaps through diagnostics.
+- `api`: uses workflow backend endpoints:
+  - `GET /api/v1/engineering-workflow/{projectId}/state`;
+  - `POST /api/v1/engineering-workflow/validate`;
+  - `POST /api/v1/engineering-workflow/prepare-calculation`;
+  - `POST /api/v1/engineering-workflow/trace-preview`;
+  - `POST /api/v1/engineering-workflow/report`;
+  - `POST /api/v1/engineering-workflow/report/export/json`;
+  - `POST /api/v1/engineering-workflow/report/export/markdown`.
 - `dev`: explicit internal dev adapter mode for workflow foundation export behavior.
 
 Dev mode is explicit and must not be presented as production-complete workflow execution.
@@ -93,7 +100,7 @@ Missing module data is surfaced as diagnostics and incomplete step status instea
 
 To move from foundation to production:
 
-- wire dedicated backend endpoints for trace retrieval and report generation/export;
+- wire full production calculation runner execution endpoint;
 - keep frontend client in `api` mode for production paths;
 - preserve visible non-claims and diagnostics in normal UI;
 - keep validation, trace, and report contracts deterministic and testable.

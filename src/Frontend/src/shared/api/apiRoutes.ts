@@ -84,6 +84,16 @@ export const apiRoutes = {
       `${apiPrefix}/reports/buildings/${buildingId}/cooling/excel`,
     buildingHeating: (buildingId: number) => `${apiPrefix}/reports/buildings/${buildingId}/heating`,
   },
+  engineeringWorkflow: {
+    state: (projectId: number) =>
+      `${apiPrefix}/engineering-workflow/${projectId}/state`,
+    validate: () => `${apiPrefix}/engineering-workflow/validate`,
+    prepareCalculation: () => `${apiPrefix}/engineering-workflow/prepare-calculation`,
+    tracePreview: () => `${apiPrefix}/engineering-workflow/trace-preview`,
+    report: () => `${apiPrefix}/engineering-workflow/report`,
+    reportExportJson: () => `${apiPrefix}/engineering-workflow/report/export/json`,
+    reportExportMarkdown: () => `${apiPrefix}/engineering-workflow/report/export/markdown`,
+  },
 } as const;
 
 export const backendEndpointAvailability = {

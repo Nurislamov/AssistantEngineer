@@ -62,6 +62,13 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("exportReportMarkdown", client, StringComparison.Ordinal);
         Assert.Contains("mode: \"api\" | \"dev\"", client, StringComparison.Ordinal);
         Assert.Contains("internal dev adapter", client, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("apiRoutes.engineeringWorkflow.state", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.validate()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.prepareCalculation()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.tracePreview()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.report()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.reportExportJson()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.reportExportMarkdown()", client, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -143,6 +143,10 @@ export interface ProjectWorkflowState {
   projectId?: number;
   projectName?: string;
   buildingId?: number;
+  availableModules: string[];
+  assumptions: string[];
+  links: string[];
+  metadata: Record<string, string>;
   buildingMetadata: WorkflowBuildingMetadata;
   zones: WorkflowZoneSummary[];
   boundaries: WorkflowBoundarySummary[];
@@ -186,4 +190,53 @@ export interface EngineeringWorkflowReportResult {
   diagnostics: WorkflowDiagnostic[];
   json?: string;
   markdown?: string;
+}
+
+export interface EngineeringWorkflowApiStateResponse {
+  projectId: number;
+  projectName: string;
+  buildingId?: number | null;
+  currentStep: WorkflowStepKind;
+  steps: Array<{ kind: WorkflowStepKind; status: WorkflowStepStatus; isComplete: boolean }>;
+  availableModules: string[];
+  buildingMetadata: WorkflowBuildingMetadata;
+  zones: WorkflowZoneSummary[];
+  boundaries: WorkflowBoundarySummary[];
+  weatherSolarSettings: WorkflowWeatherSolarSummary;
+  ventilationSettings: WorkflowVentilationSummary;
+  groundSettings: WorkflowGroundSummary;
+  domesticHotWaterSettings: WorkflowDomesticHotWaterSummary;
+  systemEnergySettings: WorkflowSystemEnergySummary;
+  diagnostics: WorkflowDiagnostic[];
+  assumptions: string[];
+  links: string[];
+  calculationTraceSummary?: WorkflowCalculationTraceSummary | null;
+  reportSummary?: WorkflowReportPreview | null;
+  metadata: Record<string, string>;
+}
+
+export interface EngineeringWorkflowValidationResponse {
+  isValid: boolean;
+  diagnostics: WorkflowDiagnostic[];
+  steps: Array<{ kind: WorkflowStepKind; status: WorkflowStepStatus; isComplete: boolean }>;
+}
+
+export interface EngineeringWorkflowTracePreviewResponse {
+  traceDocument: unknown;
+  traceSummary: WorkflowCalculationTraceSummary;
+  diagnostics: WorkflowDiagnostic[];
+}
+
+export interface EngineeringWorkflowReportResponse {
+  reportDocument: unknown;
+  preview: WorkflowReportPreview;
+  diagnostics: WorkflowDiagnostic[];
+}
+
+export interface EngineeringWorkflowReportExportResponse {
+  format: "Json" | "Markdown";
+  content: string;
+  schemaVersion: string;
+  reportId: string;
+  diagnostics: WorkflowDiagnostic[];
 }
