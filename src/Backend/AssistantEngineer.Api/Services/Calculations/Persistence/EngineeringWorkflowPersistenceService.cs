@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssistantEngineer.Api.Contracts.Calculations;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Services.Calculations.Persistence;
 
@@ -20,19 +21,44 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
     private readonly IEngineeringCalculationScenarioRepository _scenarioRepository;
     private readonly IEngineeringCalculationArtifactRepository _artifactRepository;
     private readonly IEngineeringScenarioHistoryRepository _historyRepository;
+    private readonly EngineeringWorkflowPersistenceOptions _options;
 
     public EngineeringWorkflowPersistenceService(
         IEngineeringProjectRepository projectRepository,
         IEngineeringWorkflowStateRepository workflowStateRepository,
         IEngineeringCalculationScenarioRepository scenarioRepository,
         IEngineeringCalculationArtifactRepository artifactRepository,
-        IEngineeringScenarioHistoryRepository historyRepository)
+        IEngineeringScenarioHistoryRepository historyRepository,
+        IOptions<EngineeringWorkflowPersistenceOptions> options)
     {
         _projectRepository = projectRepository;
         _workflowStateRepository = workflowStateRepository;
         _scenarioRepository = scenarioRepository;
         _artifactRepository = artifactRepository;
         _historyRepository = historyRepository;
+        _options = options.Value;
+    }
+
+    public EngineeringWorkflowPersistenceProviderInfo GetProviderInfo()
+    {
+        var provider = _options.Provider switch
+        {
+            EngineeringWorkflowPersistenceProvider.SQLite => EngineeringWorkflowPersistenceProvider.SQLite,
+            EngineeringWorkflowPersistenceProvider.None => EngineeringWorkflowPersistenceProvider.InMemory,
+            _ => EngineeringWorkflowPersistenceProvider.InMemory
+        };
+
+        return provider switch
+        {
+            EngineeringWorkflowPersistenceProvider.SQLite => new EngineeringWorkflowPersistenceProviderInfo(
+                Provider: provider,
+                DurableEnabled: true,
+                ProviderLabel: "sqlite-foundation"),
+            _ => new EngineeringWorkflowPersistenceProviderInfo(
+                Provider: EngineeringWorkflowPersistenceProvider.InMemory,
+                DurableEnabled: false,
+                ProviderLabel: "in-memory-foundation")
+        };
     }
 
     public async Task<EngineeringWorkflowStateDto?> GetLatestWorkflowStateAsync(
@@ -60,7 +86,10 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
         var metadata = state.Metadata
             .OrderBy(item => item.Key, StringComparer.Ordinal)
             .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
-        metadata["persistence"] = "in-memory-foundation";
+        var providerInfo = GetProviderInfo();
+        metadata["persistence"] = providerInfo.ProviderLabel;
+        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
+        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
         metadata["workflowStateId"] = record.WorkflowStateId;
         metadata["workflowStateVersion"] = record.Version.ToString();
 

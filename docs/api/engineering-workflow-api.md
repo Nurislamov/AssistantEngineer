@@ -90,6 +90,16 @@ Workflow API persists:
 
 Persistence response payloads remain deterministic and diagnostics-focused.
 
+Provider model is documented in:
+
+- `docs/api/engineering-workflow-durable-persistence.md`
+
+Workflow state and scenario responses include persistence metadata:
+
+- `persistence`
+- `persistenceProvider`
+- `durablePersistenceEnabled`
+
 ## Frontend api/dev mode behavior
 
 Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
@@ -101,6 +111,7 @@ Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
 - API foundation may prepare or preview calculations without executing full production scenario if runner is not wired.
 - API foundation may execute available modules partially and report skipped modules with diagnostics.
 - API persistence foundation may be in-memory depending on current deployment wiring.
+- API persistence durable mode can run on SQLite foundation provider and should not be interpreted as production-certified durability.
 - Workflow API is not a compliance certificate.
 - Reports summarize current internal engineering calculations only.
 - Trace explains internal calculation chain only.

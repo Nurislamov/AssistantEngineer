@@ -62,6 +62,8 @@ Workflow API integrates runner through:
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}` (persisted scenario record)
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}` (persisted trace/report/result artifact access)
 
+Durable persistence provider foundation (Stage 12) stores scenario/request/result/artifact snapshots through workflow persistence service while keeping runner orchestration-only.
+
 ## Frontend Behavior
 
 - Frontend calls runner endpoint in API mode.
@@ -74,6 +76,7 @@ Workflow API integrates runner through:
 - no hidden external weather calls.
 - no fake calculation success.
 - persistence provider can be foundation-level in-memory.
+- durable SQLite provider is local foundation-level and not a production durability claim.
 - not a compliance certificate.
 - not external validation evidence.
 - no full standard compliance claim.

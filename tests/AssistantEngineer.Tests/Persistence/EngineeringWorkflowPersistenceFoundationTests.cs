@@ -1,5 +1,6 @@
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Persistence;
 
@@ -137,6 +138,8 @@ public class EngineeringWorkflowPersistenceFoundationTests
         Assert.Equal(12, persisted.ProjectId);
         Assert.Equal(120, persisted.BuildingId);
         Assert.Equal("in-memory-foundation", persisted.Metadata["persistence"]);
+        Assert.Equal("InMemory", persisted.Metadata["persistenceProvider"]);
+        Assert.Equal("false", persisted.Metadata["durablePersistenceEnabled"]);
     }
 
     private static EngineeringWorkflowPersistenceService CreateService()
@@ -147,7 +150,11 @@ public class EngineeringWorkflowPersistenceFoundationTests
             new InMemoryEngineeringWorkflowStateRepository(store),
             new InMemoryEngineeringCalculationScenarioRepository(store),
             new InMemoryEngineeringCalculationArtifactRepository(store),
-            new InMemoryEngineeringScenarioHistoryRepository(store));
+            new InMemoryEngineeringScenarioHistoryRepository(store),
+            Options.Create(new EngineeringWorkflowPersistenceOptions
+            {
+                Provider = EngineeringWorkflowPersistenceProvider.InMemory
+            }));
     }
 
     private static EngineeringWorkflowStateDto CreateState(int projectId, int buildingId)

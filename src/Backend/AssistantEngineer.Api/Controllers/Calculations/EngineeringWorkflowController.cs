@@ -186,6 +186,14 @@ public sealed class EngineeringWorkflowController : ControllerBase
             ? "blocked"
             : "prepared";
 
+        var providerInfo = _workflowPersistence.GetProviderInfo();
+        var metadata = scenarioResult.Metadata
+            .OrderBy(item => item.Key, StringComparer.Ordinal)
+            .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
+        metadata["persistence"] = providerInfo.ProviderLabel;
+        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
+        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
+
         var response = new EngineeringWorkflowCalculationPreparationResponseDto(
             RequestId: persistedScenario.ScenarioId,
             Status: status,
@@ -193,7 +201,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
             RequestPreview: preview,
             Assumptions: scenarioResult.Assumptions,
             Diagnostics: scenarioResult.ValidationDiagnostics,
-            Metadata: scenarioResult.Metadata);
+            Metadata: metadata);
 
         return Ok(response);
     }
@@ -205,8 +213,15 @@ public sealed class EngineeringWorkflowController : ControllerBase
     {
         var result = await _scenarioRunner.RunAsync(request, cancellationToken);
         await _workflowPersistence.SaveRunScenarioAsync(request, result, cancellationToken);
+        var providerInfo = _workflowPersistence.GetProviderInfo();
+        var metadata = result.Metadata
+            .OrderBy(item => item.Key, StringComparer.Ordinal)
+            .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
+        metadata["persistence"] = providerInfo.ProviderLabel;
+        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
+        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
 
-        return Ok(result);
+        return Ok(result with { Metadata = metadata });
     }
 
     [HttpGet("scenarios/{scenarioId}")]
@@ -1202,6 +1217,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
                 ["mode"] = "api",
                 ["stage"] = "foundation",
                 ["persistence"] = "unavailable",
+                ["persistenceProvider"] = "Unavailable",
+                ["durablePersistenceEnabled"] = "false",
                 ["fallback"] = "deterministic"
             });
 
@@ -1209,15 +1226,20 @@ public sealed class EngineeringWorkflowController : ControllerBase
         return state with { Steps = steps };
     }
 
-    private static EngineeringWorkflowStateDto AddMissingPersistedStateDiagnostic(
+    private EngineeringWorkflowStateDto AddMissingPersistedStateDiagnostic(
         EngineeringWorkflowStateDto state)
     {
+        var providerInfo = _workflowPersistence.GetProviderInfo();
+        var persistenceMessage = providerInfo.Provider == EngineeringWorkflowPersistenceProvider.SQLite
+            ? "No persisted workflow state existed for this project; deterministic foundation state was generated and persisted in SQLite provider."
+            : "No persisted workflow state existed for this project; deterministic foundation state was generated and persisted in in-memory provider.";
+
         var diagnostics = SortAndDistinctDiagnostics(state.Diagnostics.Concat(
         [
             new EngineeringWorkflowDiagnosticDto(
                 Severity: "info",
                 Code: "WORKFLOW_STATE_NOT_PERSISTED_YET",
-                Message: "No persisted workflow state existed for this project; deterministic foundation state was generated and persisted.",
+                Message: persistenceMessage,
                 SourceStep: "Project",
                 SuggestedCorrection: "Continue workflow edits and use validate/prepare/run endpoints to create scenario history.")
         ]));
@@ -1225,7 +1247,9 @@ public sealed class EngineeringWorkflowController : ControllerBase
         var metadata = state.Metadata
             .OrderBy(item => item.Key, StringComparer.Ordinal)
             .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
-        metadata["persistence"] = "in-memory-foundation";
+        metadata["persistence"] = providerInfo.ProviderLabel;
+        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
+        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
         metadata["stateSource"] = "generated-and-persisted";
 
         var updated = state with

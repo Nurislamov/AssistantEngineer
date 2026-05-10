@@ -37,3 +37,6 @@ artifacts/iso52016/application-integration-hardening/
 artifacts/iso52016/physical-chain/
 artifacts/iso52016/physical-scenario-anchors/
 artifacts/iso52016/physical-selection-application-integration-hardening/
+*.db
+*.db-shm
+*.db-wal

@@ -276,7 +276,7 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
       {workflow.state ? (
         <>
           <Alert severity={workflow.mode === "dev" ? "warning" : "info"}>
-            {workflow.state.workflowModeLabel}. This frontend workflow aggregates existing contracts and does not run engineering physics in browser.
+            {workflow.state.workflowModeLabel}. Persistence provider: {workflow.state.metadata.persistenceProvider ?? "n/a"} ({workflow.state.metadata.durablePersistenceEnabled === "true" ? "durable foundation" : "foundation"}). This frontend workflow aggregates existing contracts and does not run engineering physics in browser.
           </Alert>
 
           <Stack direction={{ xs: "column", lg: "row" }} spacing={2} alignItems="stretch">

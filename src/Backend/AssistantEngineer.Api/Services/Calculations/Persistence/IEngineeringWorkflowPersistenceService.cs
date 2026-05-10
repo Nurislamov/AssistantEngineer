@@ -4,6 +4,8 @@ namespace AssistantEngineer.Api.Services.Calculations.Persistence;
 
 public interface IEngineeringWorkflowPersistenceService
 {
+    EngineeringWorkflowPersistenceProviderInfo GetProviderInfo();
+
     Task<EngineeringWorkflowStateDto?> GetLatestWorkflowStateAsync(
         int projectId,
         int? buildingId,

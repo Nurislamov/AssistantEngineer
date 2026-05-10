@@ -122,6 +122,7 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("Ready", shell, StringComparison.Ordinal);
         Assert.Contains("Run available modules", shell, StringComparison.Ordinal);
         Assert.Contains("Module execution status", shell, StringComparison.Ordinal);
+        Assert.Contains("Persistence provider", shell, StringComparison.Ordinal);
         Assert.Contains("Scenario history", historyPanel, StringComparison.Ordinal);
         Assert.Contains("Artifacts", historyPanel, StringComparison.Ordinal);
     }
@@ -198,6 +199,7 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.DoesNotContain("enthalpy", client, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("psychrometric", client, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("matrix solver", client, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("in-memory only", client, StringComparison.OrdinalIgnoreCase);
 
         Assert.Contains("does not execute calculation physics in browser", ReadRepoFile(
             "src",

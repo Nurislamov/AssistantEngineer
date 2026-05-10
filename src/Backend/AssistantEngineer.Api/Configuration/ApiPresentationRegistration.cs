@@ -14,13 +14,7 @@ internal static class ApiPresentationRegistration
         services.AddScoped<GlobalExceptionFilter>();
 
         services.AddSingleton<IExceptionProblemDetailsMapper, ExceptionProblemDetailsMapper>();
-        services.AddSingleton<EngineeringWorkflowMemoryStore>();
-        services.AddScoped<IEngineeringProjectRepository, InMemoryEngineeringProjectRepository>();
-        services.AddScoped<IEngineeringWorkflowStateRepository, InMemoryEngineeringWorkflowStateRepository>();
-        services.AddScoped<IEngineeringCalculationScenarioRepository, InMemoryEngineeringCalculationScenarioRepository>();
-        services.AddScoped<IEngineeringCalculationArtifactRepository, InMemoryEngineeringCalculationArtifactRepository>();
-        services.AddScoped<IEngineeringScenarioHistoryRepository, InMemoryEngineeringScenarioHistoryRepository>();
-        services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
+        services.AddEngineeringWorkflowPersistence();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
 
         services.AddControllers();

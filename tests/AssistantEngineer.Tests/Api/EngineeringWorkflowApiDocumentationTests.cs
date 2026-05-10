@@ -49,5 +49,6 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("no external validation evidence", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("no full standard compliance claim", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("persistence foundation may be in-memory", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("provider model", content, StringComparison.OrdinalIgnoreCase);
     }
 }

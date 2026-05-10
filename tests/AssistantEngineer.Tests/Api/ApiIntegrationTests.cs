@@ -569,6 +569,8 @@ public class ApiIntegrationTests
         Assert.Equal("scenario-api-integration", payload.ScenarioId);
         Assert.NotEmpty(payload.ModuleResults);
         Assert.Contains(payload.ModuleResults, item => item.ModuleKind == "ThermalTopology");
+        Assert.Equal("InMemory", payload.Metadata["persistenceProvider"]);
+        Assert.Equal("false", payload.Metadata["durablePersistenceEnabled"]);
         Assert.True(payload.Status is EngineeringCalculationExecutionStatus.FailedValidation or EngineeringCalculationExecutionStatus.PartiallyExecuted or EngineeringCalculationExecutionStatus.CompletedWithWarnings or EngineeringCalculationExecutionStatus.Completed);
     }
 
@@ -658,6 +660,76 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task EngineeringWorkflowSqliteProviderPersistsScenarioAcrossRequests()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"assistant-engineer-stage12-api-{Guid.NewGuid():N}.db");
+        try
+        {
+            await using var factory = new AssistantEngineerApiFactory(new Dictionary<string, string?>
+            {
+                ["EngineeringWorkflowPersistence:Provider"] = "SQLite",
+                ["EngineeringWorkflowPersistence:EnsureCreatedOnStartup"] = "true",
+                ["EngineeringWorkflowPersistence:SqliteConnectionString"] = $"Data Source={dbPath};Cache=Shared;Mode=ReadWriteCreate"
+            });
+            var client = factory.CreateClient();
+
+            var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+            stateResponse.EnsureSuccessStatusCode();
+            var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+            Assert.NotNull(state);
+
+            var request = new EngineeringCalculationScenarioRequestDto(
+                ScenarioId: "scenario-sqlite-integration",
+                ProjectId: state.ProjectId,
+                BuildingId: state.BuildingId,
+                ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+                ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+                State: state,
+                RequestedModules: state.AvailableModules,
+                DetailLevel: "Summary",
+                IncludeTrace: true,
+                IncludeReport: true,
+                ReportFormats: ["Json", "Markdown"],
+                DeterministicTimestampUtc: null,
+                DiagnosticsMode: "Deterministic");
+
+            var runResponse = await client.PostAsJsonAsync("/api/v1/engineering-workflow/run-calculation", request);
+            await EnsureSuccessWithBodyAsync(runResponse);
+            var runPayload = await runResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+            Assert.NotNull(runPayload);
+            Assert.Equal("SQLite", runPayload.Metadata["persistenceProvider"]);
+            Assert.Equal("true", runPayload.Metadata["durablePersistenceEnabled"]);
+
+            var scenarioResponse = await client.GetAsync("/api/v1/engineering-workflow/scenarios/scenario-sqlite-integration");
+            await EnsureSuccessWithBodyAsync(scenarioResponse);
+            var scenarioRecord = await scenarioResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioRecordDto>();
+            Assert.NotNull(scenarioRecord);
+            Assert.Equal("scenario-sqlite-integration", scenarioRecord.ScenarioId);
+
+            var stateAgainResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+            await EnsureSuccessWithBodyAsync(stateAgainResponse);
+            var persistedState = await stateAgainResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+            Assert.NotNull(persistedState);
+            Assert.True(persistedState.Metadata.ContainsKey("persistenceProvider"));
+            Assert.True(persistedState.Metadata.ContainsKey("durablePersistenceEnabled"));
+        }
+        finally
+        {
+            if (File.Exists(dbPath))
+            {
+                try
+                {
+                    File.Delete(dbPath);
+                }
+                catch (IOException)
+                {
+                    // SQLite file cleanup is best-effort for integration tests.
+                }
+            }
+        }
+    }
+
+    [Fact]
     public async Task EngineeringCalculationScenarioValidateOnlyModeDoesNotExecuteModules()
     {
         await using var factory = new AssistantEngineerApiFactory();
@@ -721,9 +793,12 @@ public class ApiIntegrationTests
         private readonly IReadOnlyList<Building> _buildings;
         private readonly IReadOnlyList<CoolingEquipmentCatalogItem> _equipmentCatalogItems;
         private readonly IReadOnlyList<ClimateData> _climateData;
+        private readonly IReadOnlyDictionary<string, string?> _configurationOverrides;
 
-        public AssistantEngineerApiFactory()
+        public AssistantEngineerApiFactory(IReadOnlyDictionary<string, string?>? configurationOverrides = null)
         {
+            _configurationOverrides = configurationOverrides ?? new Dictionary<string, string?>();
+
             var project = DomainInvariantTests.CreateProject("Integration project");
             var climateZone = ClimateZone.Create(
                 "Integration climate",
@@ -814,10 +889,17 @@ public class ApiIntegrationTests
             builder.UseEnvironment("Testing");
             builder.ConfigureAppConfiguration(configuration =>
             {
-                configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                var values = new Dictionary<string, string?>
                 {
                     ["ConnectionStrings:DefaultConnection"] = "Host=localhost;Port=5432;Database=AssistantEngineerTests;Username=postgres"
-                });
+                };
+
+                foreach (var overrideItem in _configurationOverrides)
+                {
+                    values[overrideItem.Key] = overrideItem.Value;
+                }
+
+                configuration.AddInMemoryCollection(values);
             });
 
             builder.ConfigureTestServices(services =>

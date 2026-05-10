@@ -97,6 +97,12 @@ Scenario history panel:
 - loads persisted scenario artifacts (trace/report/result snapshots);
 - keeps empty state explicit when no persisted runs exist.
 
+Persistence status visibility:
+
+- frontend reads backend metadata (`persistence`, `persistenceProvider`, `durablePersistenceEnabled`);
+- status is displayed as foundation context only;
+- UI does not claim production durability when provider is `InMemory` or foundation SQLite.
+
 ## Partial workflow behavior
 
 Workflow supports partial data.

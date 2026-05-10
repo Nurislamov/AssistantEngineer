@@ -39,11 +39,21 @@ This layer is orchestration and storage only. It does not implement engineering 
 - `POST /api/v1/engineering-workflow/prepare-calculation`
 - `POST /api/v1/engineering-workflow/run-calculation`
 
-## Storage provider
+## Provider model
 
-Current stage uses an internal deterministic in-memory persistence provider registered in API presentation layer.
+Current foundation supports provider selection:
 
-This keeps foundation behavior explicit without introducing unrelated production database refactoring in this stage.
+- `InMemory` for deterministic dev/test fallback behavior;
+- `SQLite` for local durable persistence foundation;
+- `None` which falls back to deterministic in-memory behavior in current stage.
+
+Configuration section: `EngineeringWorkflowPersistence`.
+
+Primary keys:
+
+- `Provider`
+- `SqliteConnectionString`
+- `EnsureCreatedOnStartup`
 
 ## Determinism rules
 
@@ -55,7 +65,8 @@ This keeps foundation behavior explicit without introducing unrelated production
 
 ## Known limitations
 
-- Persistence may be in-memory in current deployment wiring.
+- Durable provider may still be SQLite/local foundation-level in current deployment wiring.
+- Persistence may be in-memory when provider selection is not configured for durable storage.
 - Persistence does not validate calculation correctness.
 - Artifacts summarize internal engineering calculations only.
 - Workflow persistence is not a compliance certificate.
