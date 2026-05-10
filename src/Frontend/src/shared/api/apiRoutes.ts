@@ -92,6 +92,15 @@ export const apiRoutes = {
     validate: () => `${apiPrefix}/engineering-workflow/validate`,
     prepareCalculation: () => `${apiPrefix}/engineering-workflow/prepare-calculation`,
     runCalculation: () => `${apiPrefix}/engineering-workflow/run-calculation`,
+    jobs: () => `${apiPrefix}/engineering-workflow/jobs`,
+    jobById: (jobId: string) =>
+      `${apiPrefix}/engineering-workflow/jobs/${encodeURIComponent(jobId)}`,
+    jobEvents: (jobId: string) =>
+      `${apiPrefix}/engineering-workflow/jobs/${encodeURIComponent(jobId)}/events`,
+    cancelJob: (jobId: string) =>
+      `${apiPrefix}/engineering-workflow/jobs/${encodeURIComponent(jobId)}/cancel`,
+    projectJobs: (projectId: number) =>
+      `${apiPrefix}/engineering-workflow/${projectId}/jobs`,
     scenarioById: (scenarioId: string) =>
       `${apiPrefix}/engineering-workflow/scenarios/${encodeURIComponent(scenarioId)}`,
     scenarioArtifacts: (scenarioId: string) =>

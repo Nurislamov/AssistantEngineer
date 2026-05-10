@@ -62,6 +62,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringReportJsonExporter _reportJsonExporter;
     private readonly IEngineeringReportMarkdownExporter _reportMarkdownExporter;
     private readonly IEngineeringCalculationScenarioRunner _scenarioRunner;
+    private readonly IEngineeringCalculationJobService _jobService;
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
 
     public EngineeringWorkflowController(
@@ -73,6 +74,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         IEngineeringReportJsonExporter reportJsonExporter,
         IEngineeringReportMarkdownExporter reportMarkdownExporter,
         IEngineeringCalculationScenarioRunner scenarioRunner,
+        IEngineeringCalculationJobService jobService,
         IEngineeringWorkflowPersistenceService workflowPersistence)
     {
         _buildings = buildings;
@@ -83,6 +85,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         _reportJsonExporter = reportJsonExporter;
         _reportMarkdownExporter = reportMarkdownExporter;
         _scenarioRunner = scenarioRunner;
+        _jobService = jobService;
         _workflowPersistence = workflowPersistence;
     }
 
@@ -222,6 +225,80 @@ public sealed class EngineeringWorkflowController : ControllerBase
         metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
 
         return Ok(result with { Metadata = metadata });
+    }
+
+    [HttpPost("jobs")]
+    public async Task<ActionResult<EngineeringCalculationJobResultDto>> CreateOrRunJob(
+        [FromBody] EngineeringCalculationJobRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        if (request.ProjectId < 0)
+        {
+            return BadRequest(new
+            {
+                code = "CALCULATION_JOB_PROJECT_INVALID",
+                message = "Project id must be zero or greater for engineering workflow jobs."
+            });
+        }
+
+        var result = await _jobService.CreateOrRunJobAsync(request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("jobs/{jobId}")]
+    public async Task<ActionResult<EngineeringCalculationJobResultDto>> GetJob(
+        string jobId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _jobService.GetJobAsync(jobId, cancellationToken);
+        if (result is null)
+        {
+            return NotFound(new
+            {
+                jobId,
+                code = "CALCULATION_JOB_NOT_FOUND",
+                message = "Calculation job was not found in workflow persistence store."
+            });
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("jobs/{jobId}/events")]
+    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationJobEventDto>>> GetJobEvents(
+        string jobId,
+        CancellationToken cancellationToken)
+    {
+        var events = await _jobService.ListJobEventsAsync(jobId, cancellationToken);
+        return Ok(events);
+    }
+
+    [HttpPost("jobs/{jobId}/cancel")]
+    public async Task<ActionResult<EngineeringCalculationJobResultDto>> CancelJob(
+        string jobId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _jobService.CancelJobAsync(jobId, cancellationToken);
+        if (result is null)
+        {
+            return NotFound(new
+            {
+                jobId,
+                code = "CALCULATION_JOB_NOT_FOUND",
+                message = "Calculation job was not found in workflow persistence store."
+            });
+        }
+
+        return Ok(result);
+    }
+
+    [HttpGet("{projectId:int}/jobs")]
+    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationJobResultDto>>> ListProjectJobs(
+        int projectId,
+        CancellationToken cancellationToken)
+    {
+        var jobs = await _jobService.ListProjectJobsAsync(projectId, cancellationToken);
+        return Ok(jobs);
     }
 
     [HttpGet("scenarios/{scenarioId}")]

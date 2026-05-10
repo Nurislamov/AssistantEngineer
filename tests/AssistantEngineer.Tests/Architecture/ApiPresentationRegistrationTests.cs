@@ -54,6 +54,14 @@ public class ApiPresentationRegistrationTests
             services,
             ServiceLifetime.Scoped);
 
+        AssertServiceLifetime<IEngineeringCalculationJobRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringCalculationJobEventRepository>(
+            services,
+            ServiceLifetime.Scoped);
+
         AssertServiceLifetime<IEngineeringWorkflowPersistenceService>(
             services,
             ServiceLifetime.Scoped);
@@ -67,6 +75,10 @@ public class ApiPresentationRegistrationTests
             ServiceLifetime.Singleton);
 
         AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringCalculationJobService>(
             services,
             ServiceLifetime.Scoped);
     }

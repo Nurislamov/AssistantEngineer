@@ -16,6 +16,7 @@ internal static class ApiPresentationRegistration
         services.AddSingleton<IExceptionProblemDetailsMapper, ExceptionProblemDetailsMapper>();
         services.AddEngineeringWorkflowPersistence();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
+        services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
 
         services.AddControllers();
 

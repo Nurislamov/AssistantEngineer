@@ -575,6 +575,122 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task EngineeringCalculationJobSynchronousEndpointReturnsPersistedLifecycleResult()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var scenarioRequest = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-job-sync",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: true,
+            IncludeReport: true,
+            ReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        var request = new EngineeringCalculationJobRequestDto(
+            JobId: "job-api-sync",
+            ProjectId: state.ProjectId,
+            ScenarioId: "scenario-job-sync",
+            ScenarioRequest: scenarioRequest,
+            ExecutionMode: EngineeringCalculationJobExecutionMode.Synchronous,
+            RequestedPriority: null,
+            IncludeTrace: true,
+            IncludeReport: true,
+            RequestedReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null);
+
+        var response = await client.PostAsJsonAsync("/api/v1/engineering-workflow/jobs", request);
+        await EnsureSuccessWithBodyAsync(response);
+        var payload = await response.Content.ReadFromJsonAsync<EngineeringCalculationJobResultDto>();
+
+        Assert.NotNull(payload);
+        Assert.Equal("job-api-sync", payload.JobId);
+        Assert.Equal("scenario-job-sync", payload.ScenarioId);
+        Assert.NotNull(payload.ScenarioResultSummary);
+        Assert.True(payload.Status is EngineeringCalculationJobStatus.Completed or EngineeringCalculationJobStatus.CompletedWithWarnings or EngineeringCalculationJobStatus.FailedValidation);
+
+        var getJobResponse = await client.GetAsync("/api/v1/engineering-workflow/jobs/job-api-sync");
+        await EnsureSuccessWithBodyAsync(getJobResponse);
+        var persisted = await getJobResponse.Content.ReadFromJsonAsync<EngineeringCalculationJobResultDto>();
+        Assert.NotNull(persisted);
+        Assert.Equal("job-api-sync", persisted.JobId);
+    }
+
+    [Fact]
+    public async Task EngineeringCalculationJobQueuedEndpointListsEventsAndSupportsCancel()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var scenarioRequest = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-job-queued",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: true,
+            IncludeReport: true,
+            ReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        var request = new EngineeringCalculationJobRequestDto(
+            JobId: "job-api-queued",
+            ProjectId: state.ProjectId,
+            ScenarioId: "scenario-job-queued",
+            ScenarioRequest: scenarioRequest,
+            ExecutionMode: EngineeringCalculationJobExecutionMode.Queued,
+            RequestedPriority: null,
+            IncludeTrace: true,
+            IncludeReport: true,
+            RequestedReportFormats: ["Json", "Markdown"],
+            DeterministicTimestampUtc: null);
+
+        var createResponse = await client.PostAsJsonAsync("/api/v1/engineering-workflow/jobs", request);
+        await EnsureSuccessWithBodyAsync(createResponse);
+        var created = await createResponse.Content.ReadFromJsonAsync<EngineeringCalculationJobResultDto>();
+        Assert.NotNull(created);
+        Assert.Equal(EngineeringCalculationJobStatus.Queued, created.Status);
+
+        var eventsResponse = await client.GetAsync("/api/v1/engineering-workflow/jobs/job-api-queued/events");
+        await EnsureSuccessWithBodyAsync(eventsResponse);
+        var events = await eventsResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationJobEventDto>>();
+        Assert.NotNull(events);
+        Assert.NotEmpty(events);
+
+        var cancelResponse = await client.PostAsync("/api/v1/engineering-workflow/jobs/job-api-queued/cancel", null);
+        await EnsureSuccessWithBodyAsync(cancelResponse);
+        var cancelled = await cancelResponse.Content.ReadFromJsonAsync<EngineeringCalculationJobResultDto>();
+        Assert.NotNull(cancelled);
+        Assert.Equal(EngineeringCalculationJobStatus.Cancelled, cancelled.Status);
+
+        var projectJobsResponse = await client.GetAsync("/api/v1/engineering-workflow/0/jobs");
+        await EnsureSuccessWithBodyAsync(projectJobsResponse);
+        var jobs = await projectJobsResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationJobResultDto>>();
+        Assert.NotNull(jobs);
+        Assert.Contains(jobs, item => item.JobId == "job-api-queued");
+    }
+
+    [Fact]
     public async Task EngineeringWorkflowPrepareAndRunPersistScenarioAndArtifacts()
     {
         await using var factory = new AssistantEngineerApiFactory();

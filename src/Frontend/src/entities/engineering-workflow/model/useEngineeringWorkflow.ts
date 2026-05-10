@@ -5,6 +5,9 @@ import { createEngineeringWorkflowClient } from "../api/engineeringWorkflowClien
 import type {
   EngineeringCalculationArtifactKind,
   EngineeringCalculationArtifactRecord,
+  EngineeringCalculationJobEvent,
+  EngineeringCalculationJobRequest,
+  EngineeringCalculationJobResult,
   EngineeringCalculationScenarioRequest,
   EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResult,
@@ -27,6 +30,13 @@ interface UseEngineeringWorkflowResult {
   validate: () => Promise<WorkflowDiagnostic[]>;
   prepareCalculation: () => Promise<EngineeringWorkflowCalculationPreparationResult>;
   runCalculation: (mode?: "ExecuteAvailableModules" | "ExecuteFullRequired") => Promise<EngineeringCalculationScenarioResult>;
+  createCalculationJob: (
+    mode?: "Synchronous" | "Queued" | "DryRun" | "ValidateOnly",
+  ) => Promise<EngineeringCalculationJobResult>;
+  getCalculationJob: (jobId: string) => Promise<EngineeringCalculationJobResult | null>;
+  listProjectJobs: () => Promise<EngineeringCalculationJobResult[]>;
+  getCalculationJobEvents: (jobId: string) => Promise<EngineeringCalculationJobEvent[]>;
+  cancelCalculationJob: (jobId: string) => Promise<EngineeringCalculationJobResult | null>;
   listScenarios: () => Promise<EngineeringCalculationScenarioRecord[]>;
   getScenarioResult: (scenarioId: string) => Promise<EngineeringCalculationScenarioRecord | null>;
   getScenarioArtifacts: (scenarioId: string) => Promise<EngineeringCalculationArtifactRecord[]>;
@@ -77,6 +87,26 @@ export function useEngineeringWorkflow(
 
   const runMutation = useMutation({
     mutationFn: (request: EngineeringCalculationScenarioRequest) => client.runCalculation(request),
+  });
+
+  const createJobMutation = useMutation({
+    mutationFn: (request: EngineeringCalculationJobRequest) => client.createCalculationJob(request),
+  });
+
+  const getJobMutation = useMutation({
+    mutationFn: (jobId: string) => client.getCalculationJob(jobId),
+  });
+
+  const listJobsMutation = useMutation({
+    mutationFn: (nextProjectId: number) => client.listProjectJobs(nextProjectId),
+  });
+
+  const listJobEventsMutation = useMutation({
+    mutationFn: (jobId: string) => client.getCalculationJobEvents(jobId),
+  });
+
+  const cancelJobMutation = useMutation({
+    mutationFn: (jobId: string) => client.cancelCalculationJob(jobId),
   });
 
   const listScenariosMutation = useMutation({
@@ -197,6 +227,85 @@ export function useEngineeringWorkflow(
     return runMutation.mutateAsync(request);
   };
 
+  const createCalculationJob = async (
+    mode: "Synchronous" | "Queued" | "DryRun" | "ValidateOnly" = "Synchronous",
+  ): Promise<EngineeringCalculationJobResult> => {
+    if (!stateQuery.data) {
+      return {
+        jobId: `job-missing-${buildingId}`,
+        projectId,
+        scenarioId: `wf-run-missing-${buildingId}`,
+        status: "FailedValidation",
+        progressPercent: 100,
+        currentStep: "FailedValidation",
+        queuedAtUtc: new Date().toISOString(),
+        completedAtUtc: new Date().toISOString(),
+        diagnostics: [
+          {
+            severity: "error",
+            code: "WORKFLOW_STATE_MISSING",
+            message: "Workflow state is not loaded.",
+            sourceStep: "Review",
+          },
+        ],
+        assumptions: ["Job runner was not executed because workflow state is missing."],
+        warnings: [],
+        persistedArtifactReferences: [],
+        historyEvents: [],
+        metadata: { mode },
+      };
+    }
+
+    const scenarioRequest: EngineeringCalculationScenarioRequest = {
+      scenarioId: `wf-run-${stateQuery.data.projectId ?? projectId}-${stateQuery.data.buildingId ?? buildingId}`,
+      projectId: stateQuery.data.projectId,
+      buildingId: stateQuery.data.buildingId,
+      scenarioKind: "FullEngineeringCore",
+      executionMode:
+        mode === "DryRun"
+          ? "DryRun"
+          : mode === "ValidateOnly"
+            ? "ValidateOnly"
+            : "ExecuteAvailableModules",
+      state: stateQuery.data,
+      requestedModules: stateQuery.data.availableModules,
+      detailLevel: stateQuery.data.calculationTraceSummary?.detailLevel ?? "Standard",
+      includeTrace: true,
+      includeReport: true,
+      reportFormats: ["Json", "Markdown"],
+      diagnosticsMode: "Deterministic",
+    };
+
+    const request: EngineeringCalculationJobRequest = {
+      projectId: stateQuery.data.projectId ?? projectId,
+      scenarioId: scenarioRequest.scenarioId,
+      scenarioRequest,
+      executionMode: mode,
+      includeTrace: true,
+      includeReport: true,
+      requestedReportFormats: ["Json", "Markdown"],
+    };
+
+    return createJobMutation.mutateAsync(request);
+  };
+
+  const getCalculationJob = async (jobId: string) =>
+    getJobMutation.mutateAsync(jobId);
+
+  const listProjectJobs = async () => {
+    if (!stateQuery.data?.projectId || stateQuery.data.projectId <= 0) {
+      return [];
+    }
+
+    return listJobsMutation.mutateAsync(stateQuery.data.projectId);
+  };
+
+  const getCalculationJobEvents = async (jobId: string) =>
+    listJobEventsMutation.mutateAsync(jobId);
+
+  const cancelCalculationJob = async (jobId: string) =>
+    cancelJobMutation.mutateAsync(jobId);
+
   const generateReport = async (request: EngineeringWorkflowReportRequest) =>
     reportMutation.mutateAsync(request);
 
@@ -234,6 +343,11 @@ export function useEngineeringWorkflow(
     validate,
     prepareCalculation,
     runCalculation,
+    createCalculationJob,
+    getCalculationJob,
+    listProjectJobs,
+    getCalculationJobEvents,
+    cancelCalculationJob,
     listScenarios,
     getScenarioResult,
     getScenarioArtifacts,

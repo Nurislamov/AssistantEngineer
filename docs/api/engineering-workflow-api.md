@@ -18,6 +18,11 @@ Endpoints:
 - `POST /api/v1/engineering-workflow/validate`
 - `POST /api/v1/engineering-workflow/prepare-calculation`
 - `POST /api/v1/engineering-workflow/run-calculation`
+- `POST /api/v1/engineering-workflow/jobs`
+- `GET /api/v1/engineering-workflow/jobs/{jobId}`
+- `GET /api/v1/engineering-workflow/jobs/{jobId}/events`
+- `POST /api/v1/engineering-workflow/jobs/{jobId}/cancel`
+- `GET /api/v1/engineering-workflow/{projectId}/jobs`
 - `GET /api/v1/engineering-workflow/{projectId}/scenarios`
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}`
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts`
@@ -42,6 +47,7 @@ Core DTO families:
 - trace preview request/response;
 - report generation request/response;
 - report export request/response.
+- calculation job request/result/event/progress lifecycle payloads.
 
 ## Validation behavior
 
@@ -65,6 +71,14 @@ Runner response contains execution status, executed/skipped modules, diagnostics
 
 `run-calculation` and `prepare-calculation` also persist scenario records, compact result summaries, diagnostics snapshots, and artifacts in persistence foundation storage.
 
+## Job lifecycle behavior
+
+`jobs` endpoints provide persisted lifecycle (`Created`, `Queued`, `Running`, terminal statuses, cancellation request/cancelled states) over the existing scenario runner.
+
+Synchronous mode executes scenario runner in-process and persists job progress/events.
+
+Queued mode remains honest foundation behavior when worker is not enabled and does not fake asynchronous completion.
+
 ## Trace preview behavior
 
 Trace preview endpoint uses calculation trace foundation services and returns compact deterministic trace output by requested detail level (`Summary`, `Standard`, `Detailed`).
@@ -87,6 +101,7 @@ Workflow API persists:
 - scenario request/response summary records;
 - scenario artifacts (`TraceJson`, `ReportJson`, `ReportMarkdown`, `ValidationDiagnostics`, `ScenarioResultJson`);
 - scenario history events (`Created`, `Prepared`, `Started`, `Completed`, `Failed`, `ReportGenerated`).
+- job records and job events for lifecycle/progress retrieval.
 
 Persistence response payloads remain deterministic and diagnostics-focused.
 

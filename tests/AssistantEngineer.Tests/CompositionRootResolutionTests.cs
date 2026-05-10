@@ -55,9 +55,12 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationScenarioRepository, InMemoryEngineeringCalculationScenarioRepository>();
         services.AddScoped<IEngineeringCalculationArtifactRepository, InMemoryEngineeringCalculationArtifactRepository>();
         services.AddScoped<IEngineeringScenarioHistoryRepository, InMemoryEngineeringScenarioHistoryRepository>();
+        services.AddScoped<IEngineeringCalculationJobRepository, InMemoryEngineeringCalculationJobRepository>();
+        services.AddScoped<IEngineeringCalculationJobEventRepository, InMemoryEngineeringCalculationJobEventRepository>();
         services.AddOptions<EngineeringWorkflowPersistenceOptions>();
         services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
+        services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions
         {

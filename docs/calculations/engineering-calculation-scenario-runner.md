@@ -58,6 +58,7 @@ Workflow API integrates runner through:
 
 - `POST /api/v1/engineering-workflow/prepare-calculation` (PrepareOnly orchestration path)
 - `POST /api/v1/engineering-workflow/run-calculation` (scenario execution path)
+- `POST /api/v1/engineering-workflow/jobs` (job lifecycle orchestration path that executes scenario runner in synchronous mode)
 - `GET /api/v1/engineering-workflow/{projectId}/scenarios` (persisted scenario history list)
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}` (persisted scenario record)
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}` (persisted trace/report/result artifact access)

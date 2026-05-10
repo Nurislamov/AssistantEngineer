@@ -57,6 +57,11 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("buildCalculationRequest", client, StringComparison.Ordinal);
         Assert.Contains("prepareCalculation", client, StringComparison.Ordinal);
         Assert.Contains("runCalculation", client, StringComparison.Ordinal);
+        Assert.Contains("createCalculationJob", client, StringComparison.Ordinal);
+        Assert.Contains("getCalculationJob", client, StringComparison.Ordinal);
+        Assert.Contains("listProjectJobs", client, StringComparison.Ordinal);
+        Assert.Contains("getCalculationJobEvents", client, StringComparison.Ordinal);
+        Assert.Contains("cancelCalculationJob", client, StringComparison.Ordinal);
         Assert.Contains("getScenarioResult", client, StringComparison.Ordinal);
         Assert.Contains("listProjectScenarios", client, StringComparison.Ordinal);
         Assert.Contains("getScenarioArtifacts", client, StringComparison.Ordinal);
@@ -71,6 +76,11 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("apiRoutes.engineeringWorkflow.validate()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.prepareCalculation()", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.runCalculation()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.jobs()", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.jobById", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.projectJobs", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.jobEvents", client, StringComparison.Ordinal);
+        Assert.Contains("apiRoutes.engineeringWorkflow.cancelJob", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.projectScenarios", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.scenarioById", client, StringComparison.Ordinal);
         Assert.Contains("apiRoutes.engineeringWorkflow.scenarioArtifacts", client, StringComparison.Ordinal);
@@ -100,6 +110,14 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
             "engineering-workflow",
             "ui",
             "EngineeringScenarioHistoryPanel.tsx");
+        var jobPanel = ReadRepoFile(
+            "src",
+            "Frontend",
+            "src",
+            "widgets",
+            "engineering-workflow",
+            "ui",
+            "EngineeringCalculationJobPanel.tsx");
 
         Assert.Contains("\"Project\"", shell, StringComparison.Ordinal);
         Assert.Contains("\"Building\"", shell, StringComparison.Ordinal);
@@ -125,6 +143,10 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("Persistence provider", shell, StringComparison.Ordinal);
         Assert.Contains("Scenario history", historyPanel, StringComparison.Ordinal);
         Assert.Contains("Artifacts", historyPanel, StringComparison.Ordinal);
+        Assert.Contains("Calculation jobs", jobPanel, StringComparison.Ordinal);
+        Assert.Contains("Progress", jobPanel, StringComparison.Ordinal);
+        Assert.Contains("Job events", jobPanel, StringComparison.Ordinal);
+        Assert.Contains("Cancel job", jobPanel, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -261,6 +283,10 @@ public class EngineeringWorkflowFrontendFoundationGuardTests
         Assert.Contains("WORKFLOW_STATE_MISSING", hook, StringComparison.Ordinal);
         Assert.Contains("status: \"blocked\"", hook, StringComparison.Ordinal);
         Assert.Contains("runCalculation", hook, StringComparison.Ordinal);
+        Assert.Contains("createCalculationJob", hook, StringComparison.Ordinal);
+        Assert.Contains("listProjectJobs", hook, StringComparison.Ordinal);
+        Assert.Contains("getCalculationJobEvents", hook, StringComparison.Ordinal);
+        Assert.Contains("cancelCalculationJob", hook, StringComparison.Ordinal);
         Assert.Contains("listScenarios", hook, StringComparison.Ordinal);
         Assert.Contains("getScenarioResult", hook, StringComparison.Ordinal);
         Assert.Contains("getScenarioArtifacts", hook, StringComparison.Ordinal);

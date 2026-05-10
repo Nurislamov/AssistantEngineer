@@ -20,6 +20,10 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
 
     public DbSet<EngineeringScenarioHistoryEntryEntity> HistoryEntries => Set<EngineeringScenarioHistoryEntryEntity>();
 
+    public DbSet<EngineeringCalculationJobEntity> Jobs => Set<EngineeringCalculationJobEntity>();
+
+    public DbSet<EngineeringCalculationJobEventEntity> JobEvents => Set<EngineeringCalculationJobEventEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<EngineeringProjectEntity>(entity =>
@@ -115,6 +119,56 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
                 .WithMany(item => item.HistoryEntries)
                 .HasForeignKey(item => item.ProjectId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<EngineeringCalculationJobEntity>(entity =>
+        {
+            entity.ToTable("engineering_workflow_jobs");
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Id).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.ScenarioId).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.Status).HasMaxLength(64).IsRequired();
+            entity.Property(item => item.ExecutionMode).HasMaxLength(64).IsRequired();
+            entity.Property(item => item.RequestJson).HasColumnType("TEXT").IsRequired();
+            entity.Property(item => item.ResultSummaryJson).HasColumnType("TEXT");
+            entity.Property(item => item.DiagnosticsJson).HasColumnType("TEXT");
+            entity.Property(item => item.CurrentStep).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.DurationMs);
+            entity.Property(item => item.CancellationRequested).IsRequired();
+            entity.HasIndex(item => item.ProjectId);
+            entity.HasIndex(item => item.ScenarioId);
+            entity.HasIndex(item => item.Status);
+            entity.HasIndex(item => item.CreatedAtUtc);
+            entity.HasIndex(item => item.UpdatedAtUtc);
+            entity.HasOne(item => item.Project)
+                .WithMany()
+                .HasForeignKey(item => item.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(item => item.Scenario)
+                .WithMany(item => item.Jobs)
+                .HasForeignKey(item => item.ScenarioId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<EngineeringCalculationJobEventEntity>(entity =>
+        {
+            entity.ToTable("engineering_workflow_job_events");
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Id).HasMaxLength(196).IsRequired();
+            entity.Property(item => item.JobId).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.ScenarioId).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.Status).HasMaxLength(64).IsRequired();
+            entity.Property(item => item.EventKind).HasMaxLength(64).IsRequired();
+            entity.Property(item => item.Message).HasMaxLength(4096).IsRequired();
+            entity.Property(item => item.DiagnosticsJson).HasColumnType("TEXT");
+            entity.HasIndex(item => item.ProjectId);
+            entity.HasIndex(item => item.ScenarioId);
+            entity.HasIndex(item => item.JobId);
+            entity.HasIndex(item => item.CreatedAtUtc);
+            entity.HasOne(item => item.Job)
+                .WithMany(item => item.Events)
+                .HasForeignKey(item => item.JobId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         base.OnModelCreating(modelBuilder);

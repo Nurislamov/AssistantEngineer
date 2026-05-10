@@ -25,4 +25,12 @@ public sealed class EngineeringWorkflowMemoryStore
     public Dictionary<string, List<string>> HistoryIdsByScenarioId { get; } = [];
 
     public Dictionary<int, List<string>> HistoryIdsByProjectId { get; } = [];
+
+    public Dictionary<string, EngineeringCalculationJobRecordDto> JobsById { get; } = [];
+
+    public Dictionary<int, List<string>> JobIdsByProjectId { get; } = [];
+
+    public Dictionary<string, EngineeringCalculationJobEventRecordDto> JobEventsById { get; } = [];
+
+    public Dictionary<string, List<string>> JobEventIdsByJobId { get; } = [];
 }

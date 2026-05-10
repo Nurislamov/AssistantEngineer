@@ -13,6 +13,8 @@ This layer is orchestration and storage only. It does not implement engineering 
 - `EngineeringCalculationScenarioRecord`
 - `EngineeringCalculationArtifactRecord`
 - `EngineeringScenarioHistoryEntry`
+- `EngineeringCalculationJobRecord`
+- `EngineeringCalculationJobEventRecord`
 
 ## Scenario lifecycle
 
@@ -20,6 +22,7 @@ This layer is orchestration and storage only. It does not implement engineering 
 2. `run-calculation` creates or updates scenario execution record with compact summary.
 3. Trace/report/result artifacts are saved by artifact kind.
 4. History events are appended (`Created`, `Prepared`, `Started`, `Completed`, `Failed`, `ReportGenerated`).
+5. Job lifecycle records/events are appended (`Created`, `Queued`, `Running`, terminal/cancel states).
 
 ## Artifact kinds
 
@@ -38,6 +41,11 @@ This layer is orchestration and storage only. It does not implement engineering 
 - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}`
 - `POST /api/v1/engineering-workflow/prepare-calculation`
 - `POST /api/v1/engineering-workflow/run-calculation`
+- `POST /api/v1/engineering-workflow/jobs`
+- `GET /api/v1/engineering-workflow/jobs/{jobId}`
+- `GET /api/v1/engineering-workflow/jobs/{jobId}/events`
+- `POST /api/v1/engineering-workflow/jobs/{jobId}/cancel`
+- `GET /api/v1/engineering-workflow/{projectId}/jobs`
 
 ## Provider model
 

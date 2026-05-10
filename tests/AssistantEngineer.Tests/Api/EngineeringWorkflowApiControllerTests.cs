@@ -45,8 +45,9 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(typeof(IEngineeringReportJsonExporter), dependencies);
         Assert.Contains(typeof(IEngineeringReportMarkdownExporter), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
+        Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
-        Assert.Equal(9, dependencies.Length);
+        Assert.Equal(10, dependencies.Length);
     }
 
     [Fact]
@@ -58,6 +59,11 @@ public class EngineeringWorkflowApiControllerTests
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.Validate), "validate");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.PrepareCalculation), "prepare-calculation");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.RunCalculation), "run-calculation");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.CreateOrRunJob), "jobs");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetJob), "jobs/{jobId}");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetJobEvents), "jobs/{jobId}/events");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.CancelJob), "jobs/{jobId}/cancel");
+        AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.ListProjectJobs), "{projectId:int}/jobs");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetScenarioResult), "scenarios/{scenarioId}");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetProjectScenarios), "{projectId:int}/scenarios");
         AssertActionHasRoute(actions, nameof(EngineeringWorkflowController.GetScenarioArtifacts), "scenarios/{scenarioId}/artifacts");

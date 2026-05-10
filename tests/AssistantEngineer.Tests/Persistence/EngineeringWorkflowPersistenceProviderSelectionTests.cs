@@ -24,6 +24,8 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
         Assert.IsType<InMemoryEngineeringCalculationScenarioRepository>(services.GetRequiredService<IEngineeringCalculationScenarioRepository>());
         Assert.IsType<InMemoryEngineeringCalculationArtifactRepository>(services.GetRequiredService<IEngineeringCalculationArtifactRepository>());
         Assert.IsType<InMemoryEngineeringScenarioHistoryRepository>(services.GetRequiredService<IEngineeringScenarioHistoryRepository>());
+        Assert.IsType<InMemoryEngineeringCalculationJobRepository>(services.GetRequiredService<IEngineeringCalculationJobRepository>());
+        Assert.IsType<InMemoryEngineeringCalculationJobEventRepository>(services.GetRequiredService<IEngineeringCalculationJobEventRepository>());
 
         var persistenceService = services.GetRequiredService<IEngineeringWorkflowPersistenceService>();
         var info = persistenceService.GetProviderInfo();
@@ -52,6 +54,8 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
             Assert.IsType<EfEngineeringCalculationScenarioRepository>(services.GetRequiredService<IEngineeringCalculationScenarioRepository>());
             Assert.IsType<EfEngineeringCalculationArtifactRepository>(services.GetRequiredService<IEngineeringCalculationArtifactRepository>());
             Assert.IsType<EfEngineeringScenarioHistoryRepository>(services.GetRequiredService<IEngineeringScenarioHistoryRepository>());
+            Assert.IsType<EfEngineeringCalculationJobRepository>(services.GetRequiredService<IEngineeringCalculationJobRepository>());
+            Assert.IsType<EfEngineeringCalculationJobEventRepository>(services.GetRequiredService<IEngineeringCalculationJobEventRepository>());
 
             var persistenceService = services.GetRequiredService<IEngineeringWorkflowPersistenceService>();
             var info = persistenceService.GetProviderInfo();

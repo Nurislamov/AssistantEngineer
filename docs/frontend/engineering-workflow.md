@@ -43,6 +43,11 @@ Supported modes:
   - `POST /api/v1/engineering-workflow/validate`;
   - `POST /api/v1/engineering-workflow/prepare-calculation`;
   - `POST /api/v1/engineering-workflow/run-calculation`;
+  - `POST /api/v1/engineering-workflow/jobs`;
+  - `GET /api/v1/engineering-workflow/jobs/{jobId}`;
+  - `GET /api/v1/engineering-workflow/jobs/{jobId}/events`;
+  - `POST /api/v1/engineering-workflow/jobs/{jobId}/cancel`;
+  - `GET /api/v1/engineering-workflow/{projectId}/jobs`;
   - `GET /api/v1/engineering-workflow/{projectId}/scenarios`;
   - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}`;
   - `GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts`;
@@ -89,6 +94,13 @@ Workflow scenario execution panel:
 - runs available modules through backend scenario runner endpoint;
 - shows deterministic execution status (`Prepared`, `PartiallyExecuted`, `CompletedWithWarnings`, `FailedValidation`, `FailedExecution`);
 - shows module execution status markers without frontend-side physics.
+
+Calculation jobs panel:
+
+- shows job id, status, progress percent, and current step;
+- shows persisted job events;
+- supports refresh and cancel action;
+- does not claim async worker completion when queue worker is not enabled.
 
 Scenario history panel:
 

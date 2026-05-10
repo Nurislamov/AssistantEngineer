@@ -4,6 +4,9 @@ import { formatNumber } from "@/shared/lib/format";
 import type {
   EngineeringCalculationArtifactKind,
   EngineeringCalculationArtifactRecord,
+  EngineeringCalculationJobEvent,
+  EngineeringCalculationJobRequest,
+  EngineeringCalculationJobResult,
   EngineeringCalculationScenarioRequest,
   EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResponse,
@@ -43,6 +46,11 @@ export interface EngineeringWorkflowClient {
     request: EngineeringWorkflowCalculationRequest,
   ): Promise<EngineeringWorkflowCalculationPreparationResult>;
   runCalculation(request: EngineeringCalculationScenarioRequest): Promise<EngineeringCalculationScenarioResponse>;
+  createCalculationJob(request: EngineeringCalculationJobRequest): Promise<EngineeringCalculationJobResult>;
+  getCalculationJob(jobId: string): Promise<EngineeringCalculationJobResult | null>;
+  listProjectJobs(projectId: number): Promise<EngineeringCalculationJobResult[]>;
+  getCalculationJobEvents(jobId: string): Promise<EngineeringCalculationJobEvent[]>;
+  cancelCalculationJob(jobId: string): Promise<EngineeringCalculationJobResult | null>;
   getScenarioResult(scenarioId: string): Promise<EngineeringCalculationScenarioRecord | null>;
   listProjectScenarios(projectId: number): Promise<EngineeringCalculationScenarioRecord[]>;
   getScenarioArtifacts(scenarioId: string): Promise<EngineeringCalculationArtifactRecord[]>;
@@ -289,6 +297,80 @@ const apiClient: EngineeringWorkflowClient = {
         reportMarkdown: null,
         metadata: { mode: "api", error: "run-calculation-request-failed" },
       };
+    }
+  },
+
+  async createCalculationJob(
+    request: EngineeringCalculationJobRequest,
+  ): Promise<EngineeringCalculationJobResult> {
+    try {
+      return await apiRequest<EngineeringCalculationJobResult>(
+        apiRoutes.engineeringWorkflow.jobs(),
+        {
+          method: "POST",
+          body: request,
+        },
+      );
+    } catch (error) {
+      return {
+        jobId: request.jobId ?? `job-${request.scenarioId ?? request.scenarioRequest.scenarioId}`,
+        projectId: request.projectId,
+        scenarioId: request.scenarioId ?? request.scenarioRequest.scenarioId,
+        status: "FailedExecution",
+        progressPercent: 100,
+        currentStep: "Failed",
+        queuedAtUtc: new Date().toISOString(),
+        completedAtUtc: new Date().toISOString(),
+        diagnostics: [buildErrorDiagnostic(error instanceof Error ? error.message : "Create calculation job request failed.")],
+        assumptions: ["Job fallback response was returned because API request failed."],
+        warnings: ["Job request failed."],
+        persistedArtifactReferences: [],
+        historyEvents: [],
+        metadata: { mode: "api", error: "job-request-failed" },
+      };
+    }
+  },
+
+  async getCalculationJob(jobId: string): Promise<EngineeringCalculationJobResult | null> {
+    try {
+      return await apiRequest<EngineeringCalculationJobResult>(
+        apiRoutes.engineeringWorkflow.jobById(jobId),
+      );
+    } catch {
+      return null;
+    }
+  },
+
+  async listProjectJobs(projectId: number): Promise<EngineeringCalculationJobResult[]> {
+    try {
+      return await apiRequest<EngineeringCalculationJobResult[]>(
+        apiRoutes.engineeringWorkflow.projectJobs(projectId),
+      );
+    } catch {
+      return [];
+    }
+  },
+
+  async getCalculationJobEvents(jobId: string): Promise<EngineeringCalculationJobEvent[]> {
+    try {
+      return await apiRequest<EngineeringCalculationJobEvent[]>(
+        apiRoutes.engineeringWorkflow.jobEvents(jobId),
+      );
+    } catch {
+      return [];
+    }
+  },
+
+  async cancelCalculationJob(jobId: string): Promise<EngineeringCalculationJobResult | null> {
+    try {
+      return await apiRequest<EngineeringCalculationJobResult>(
+        apiRoutes.engineeringWorkflow.cancelJob(jobId),
+        {
+          method: "POST",
+        },
+      );
+    } catch {
+      return null;
     }
   },
 

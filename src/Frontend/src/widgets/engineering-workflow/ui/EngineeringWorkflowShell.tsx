@@ -21,6 +21,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useEngineeringWorkflow } from "@/entities/engineering-workflow/model/useEngineeringWorkflow";
 import type {
   EngineeringCalculationArtifactRecord,
+  EngineeringCalculationJobEvent,
+  EngineeringCalculationJobResult,
   EngineeringCalculationScenarioRecord,
   EngineeringCalculationScenarioResult,
   EngineeringWorkflowCalculationPreparationResult,
@@ -37,6 +39,7 @@ import { DataCard } from "@/shared/ui/DataCard";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { QueryState } from "@/shared/ui/QueryState";
 import { CalculationTracePanel } from "./CalculationTracePanel";
+import { EngineeringCalculationJobPanel } from "./EngineeringCalculationJobPanel";
 import { EngineeringReportPreview } from "./EngineeringReportPreview";
 import { EngineeringScenarioHistoryPanel } from "./EngineeringScenarioHistoryPanel";
 import { WorkflowDiagnosticsPanel } from "./WorkflowDiagnosticsPanel";
@@ -75,6 +78,9 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
   const [scenarioHistory, setScenarioHistory] = useState<EngineeringCalculationScenarioRecord[]>([]);
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | undefined>();
   const [scenarioArtifacts, setScenarioArtifacts] = useState<EngineeringCalculationArtifactRecord[]>([]);
+  const [jobHistory, setJobHistory] = useState<EngineeringCalculationJobResult[]>([]);
+  const [currentJob, setCurrentJob] = useState<EngineeringCalculationJobResult | null>(null);
+  const [jobEvents, setJobEvents] = useState<EngineeringCalculationJobEvent[]>([]);
 
   useEffect(() => {
     if (workflow.state?.currentStep) {
@@ -94,6 +100,8 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
     const loadHistory = async () => {
       const scenarios = await workflow.listScenarios();
       setScenarioHistory(scenarios);
+      const jobs = await workflow.listProjectJobs();
+      setJobHistory(jobs);
     };
 
     void loadHistory();
@@ -158,9 +166,19 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
   };
 
   const runAvailableModules = async () => {
-    const result = await workflow.runCalculation("ExecuteAvailableModules");
+    const job = await workflow.createCalculationJob("Synchronous");
+    setCurrentJob(job);
+    setSelectedScenarioId(job.scenarioId);
+    setJobEvents(job.historyEvents ?? []);
+
+    const result = job.scenarioResultSummary;
+    if (!result) {
+      const refreshedJobs = await workflow.listProjectJobs();
+      setJobHistory(refreshedJobs);
+      return;
+    }
+
     setScenarioResult(result);
-    setSelectedScenarioId(result.scenarioId);
 
     if (result.calculationTraceSummary) {
       setTraceSummary(result.calculationTraceSummary);
@@ -184,6 +202,46 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
 
     const scenarios = await workflow.listScenarios();
     setScenarioHistory(scenarios);
+    const jobs = await workflow.listProjectJobs();
+    setJobHistory(jobs);
+  };
+
+  const refreshCurrentJob = async (jobId: string) => {
+    const job = await workflow.getCalculationJob(jobId);
+    if (!job) {
+      return;
+    }
+
+    setCurrentJob(job);
+    setSelectedScenarioId(job.scenarioId);
+    if (job.scenarioResultSummary) {
+      setScenarioResult(job.scenarioResultSummary);
+    }
+
+    const jobs = await workflow.listProjectJobs();
+    setJobHistory(jobs);
+  };
+
+  const refreshJobEvents = async (jobId: string) => {
+    const events = await workflow.getCalculationJobEvents(jobId);
+    setJobEvents(events);
+  };
+
+  const cancelJob = async (jobId: string) => {
+    const job = await workflow.cancelCalculationJob(jobId);
+    if (!job) {
+      return;
+    }
+
+    setCurrentJob(job);
+    setJobEvents(job.historyEvents ?? []);
+    const jobs = await workflow.listProjectJobs();
+    setJobHistory(jobs);
+  };
+
+  const selectJob = async (jobId: string) => {
+    await refreshCurrentJob(jobId);
+    await refreshJobEvents(jobId);
   };
 
   const loadScenarioResult = async (scenarioId: string) => {
@@ -366,6 +424,16 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
                 onLoadArtifacts={(scenarioId) => void loadScenarioArtifacts(scenarioId)}
                 artifacts={scenarioArtifacts}
                 onViewArtifact={(scenarioId, artifactKind) => void openScenarioArtifact(scenarioId, artifactKind)}
+              />
+
+              <EngineeringCalculationJobPanel
+                currentJob={currentJob}
+                jobs={jobHistory}
+                events={jobEvents}
+                onRefreshJob={(jobId) => void refreshCurrentJob(jobId)}
+                onRefreshEvents={(jobId) => void refreshJobEvents(jobId)}
+                onCancelJob={(jobId) => void cancelJob(jobId)}
+                onSelectJob={(jobId) => void selectJob(jobId)}
               />
             </Stack>
 

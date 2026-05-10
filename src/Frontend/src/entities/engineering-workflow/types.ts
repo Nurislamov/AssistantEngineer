@@ -203,6 +203,25 @@ export type EngineeringCalculationExecutionStatus =
   | "FailedExecution"
   | "NotSupported";
 
+export type EngineeringCalculationJobStatus =
+  | "Created"
+  | "Queued"
+  | "Running"
+  | "Completed"
+  | "CompletedWithWarnings"
+  | "FailedValidation"
+  | "FailedExecution"
+  | "CancelRequested"
+  | "Cancelled"
+  | "RetryScheduled"
+  | "NotSupported";
+
+export type EngineeringCalculationJobExecutionMode =
+  | "Synchronous"
+  | "Queued"
+  | "DryRun"
+  | "ValidateOnly";
+
 export type EngineeringCalculationArtifactKind =
   | "TraceJson"
   | "ReportJson"
@@ -282,6 +301,51 @@ export interface EngineeringCalculationScenarioResult {
   reportPreview?: WorkflowReportPreview | null;
   reportJson?: string | null;
   reportMarkdown?: string | null;
+  metadata: Record<string, string>;
+}
+
+export interface EngineeringCalculationJobRequest {
+  jobId?: string;
+  projectId: number;
+  scenarioId?: string;
+  scenarioRequest: EngineeringCalculationScenarioRequest;
+  executionMode: EngineeringCalculationJobExecutionMode;
+  requestedPriority?: number;
+  includeTrace: boolean;
+  includeReport: boolean;
+  requestedReportFormats?: WorkflowReportFormat[];
+  deterministicTimestampUtc?: string;
+}
+
+export interface EngineeringCalculationJobEvent {
+  eventId: string;
+  jobId: string;
+  scenarioId: string;
+  status: EngineeringCalculationJobStatus;
+  message: string;
+  moduleKind?: string | null;
+  progressPercent?: number | null;
+  diagnostics: WorkflowDiagnostic[];
+  createdAtUtc: string;
+}
+
+export interface EngineeringCalculationJobResult {
+  jobId: string;
+  projectId: number;
+  scenarioId: string;
+  status: EngineeringCalculationJobStatus;
+  progressPercent: number;
+  currentStep: string;
+  queuedAtUtc: string;
+  startedAtUtc?: string | null;
+  completedAtUtc?: string | null;
+  durationMilliseconds?: number | null;
+  scenarioResultSummary?: EngineeringCalculationScenarioResult | null;
+  diagnostics: WorkflowDiagnostic[];
+  assumptions: string[];
+  warnings: string[];
+  persistedArtifactReferences: EngineeringCalculationArtifactRecord[];
+  historyEvents: EngineeringCalculationJobEvent[];
   metadata: Record<string, string>;
 }
 

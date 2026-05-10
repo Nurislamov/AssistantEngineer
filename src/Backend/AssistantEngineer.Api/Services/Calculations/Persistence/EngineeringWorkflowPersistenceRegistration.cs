@@ -86,6 +86,28 @@ internal static class EngineeringWorkflowPersistenceRegistration
             return new InMemoryEngineeringScenarioHistoryRepository(serviceProvider.GetRequiredService<EngineeringWorkflowMemoryStore>());
         });
 
+        services.AddScoped<IEngineeringCalculationJobRepository>(serviceProvider =>
+        {
+            var provider = ResolveProvider(serviceProvider);
+            if (provider == EngineeringWorkflowPersistenceProvider.SQLite)
+            {
+                return new EfEngineeringCalculationJobRepository(serviceProvider.GetRequiredService<EngineeringWorkflowPersistenceDbContext>());
+            }
+
+            return new InMemoryEngineeringCalculationJobRepository(serviceProvider.GetRequiredService<EngineeringWorkflowMemoryStore>());
+        });
+
+        services.AddScoped<IEngineeringCalculationJobEventRepository>(serviceProvider =>
+        {
+            var provider = ResolveProvider(serviceProvider);
+            if (provider == EngineeringWorkflowPersistenceProvider.SQLite)
+            {
+                return new EfEngineeringCalculationJobEventRepository(serviceProvider.GetRequiredService<EngineeringWorkflowPersistenceDbContext>());
+            }
+
+            return new InMemoryEngineeringCalculationJobEventRepository(serviceProvider.GetRequiredService<EngineeringWorkflowMemoryStore>());
+        });
+
         services.AddScoped<IEngineeringWorkflowPersistenceService>(serviceProvider =>
         {
             var provider = ResolveProvider(serviceProvider);

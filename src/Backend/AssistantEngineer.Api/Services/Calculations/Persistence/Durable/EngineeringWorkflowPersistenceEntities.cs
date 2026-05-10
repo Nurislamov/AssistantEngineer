@@ -79,6 +79,8 @@ public sealed class EngineeringCalculationScenarioEntity
     public List<EngineeringCalculationArtifactEntity> Artifacts { get; set; } = [];
 
     public List<EngineeringScenarioHistoryEntryEntity> HistoryEntries { get; set; } = [];
+
+    public List<EngineeringCalculationJobEntity> Jobs { get; set; } = [];
 }
 
 public sealed class EngineeringCalculationArtifactEntity
@@ -121,4 +123,74 @@ public sealed class EngineeringScenarioHistoryEntryEntity
     public EngineeringCalculationScenarioEntity? Scenario { get; set; }
 
     public EngineeringProjectEntity? Project { get; set; }
+}
+
+public sealed class EngineeringCalculationJobEntity
+{
+    public string Id { get; set; } = string.Empty;
+
+    public int ProjectId { get; set; }
+
+    public string ScenarioId { get; set; } = string.Empty;
+
+    public string Status { get; set; } = string.Empty;
+
+    public string ExecutionMode { get; set; } = string.Empty;
+
+    public string RequestJson { get; set; } = string.Empty;
+
+    public string? ResultSummaryJson { get; set; }
+
+    public string? DiagnosticsJson { get; set; }
+
+    public int ProgressPercent { get; set; }
+
+    public string CurrentStep { get; set; } = string.Empty;
+
+    public DateTimeOffset CreatedAtUtc { get; set; }
+
+    public DateTimeOffset? QueuedAtUtc { get; set; }
+
+    public DateTimeOffset? StartedAtUtc { get; set; }
+
+    public DateTimeOffset? CompletedAtUtc { get; set; }
+
+    public DateTimeOffset UpdatedAtUtc { get; set; }
+
+    public double? DurationMs { get; set; }
+
+    public int RetryCount { get; set; }
+
+    public bool CancellationRequested { get; set; }
+
+    public EngineeringProjectEntity? Project { get; set; }
+
+    public EngineeringCalculationScenarioEntity? Scenario { get; set; }
+
+    public List<EngineeringCalculationJobEventEntity> Events { get; set; } = [];
+}
+
+public sealed class EngineeringCalculationJobEventEntity
+{
+    public string Id { get; set; } = string.Empty;
+
+    public string JobId { get; set; } = string.Empty;
+
+    public string ScenarioId { get; set; } = string.Empty;
+
+    public int ProjectId { get; set; }
+
+    public string Status { get; set; } = string.Empty;
+
+    public string EventKind { get; set; } = string.Empty;
+
+    public string Message { get; set; } = string.Empty;
+
+    public string? DiagnosticsJson { get; set; }
+
+    public int? ProgressPercent { get; set; }
+
+    public DateTimeOffset CreatedAtUtc { get; set; }
+
+    public EngineeringCalculationJobEntity? Job { get; set; }
 }
