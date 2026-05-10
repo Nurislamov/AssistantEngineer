@@ -113,6 +113,19 @@ public class ApiRequestPolicyTests
         Assert.Contains("https://localhost:5173", origins, StringComparer.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void AppSettingsDefineEngineeringIdempotencyBaseline()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
+            .Build();
+
+        Assert.True(configuration.GetValue<bool>("EngineeringIdempotency:Enabled"));
+        Assert.True(configuration.GetValue<int>("EngineeringIdempotency:TtlMinutes") > 0);
+        Assert.True(configuration.GetValue<int>("EngineeringIdempotency:MaxEntries") > 0);
+        Assert.True(configuration.GetValue<int>("EngineeringIdempotency:MaxCachedResponseBytes") > 0);
+    }
+
     public static TheoryData<Type, string> RateLimitedHeavyActions() =>
         new()
         {
@@ -121,4 +134,31 @@ public class ApiRequestPolicyTests
             { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.ExportReportJson) },
             { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.ExportReportMarkdown) }
         };
+
+    [Fact]
+    public void EngineeringWorkflowHeavyEndpointsAreIdempotencyAware()
+    {
+        var controllerPath = Path.Combine(
+            global::AssistantEngineer.Tests.TestPaths.ApiProjectPath,
+            "Controllers",
+            "Calculations",
+            "EngineeringWorkflowController.cs");
+        var submissionServicePath = Path.Combine(
+            global::AssistantEngineer.Tests.TestPaths.ApiProjectPath,
+            "Services",
+            "Calculations",
+            "Workflow",
+            "EngineeringWorkflowSubmissionService.cs");
+
+        var controllerText = File.ReadAllText(controllerPath);
+        var submissionText = File.ReadAllText(submissionServicePath);
+
+        Assert.Contains("Idempotency-Key", controllerText, StringComparison.Ordinal);
+        Assert.Contains("IEngineeringWorkflowSubmissionService", controllerText, StringComparison.Ordinal);
+        Assert.Contains("IEngineeringIdempotencyService", submissionText, StringComparison.Ordinal);
+        Assert.Contains("EvaluateAsync", submissionText, StringComparison.Ordinal);
+        Assert.Contains("RecordSuccessAsync", submissionText, StringComparison.Ordinal);
+        Assert.Contains("run-calculation", submissionText, StringComparison.Ordinal);
+        Assert.Contains("jobs", submissionText, StringComparison.Ordinal);
+    }
 }

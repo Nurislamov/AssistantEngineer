@@ -39,7 +39,7 @@ public class ApiHardeningDocumentationTests
         Assert.Contains("not a full production security program", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not distributed", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("structured audit logging is future work", content, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("idempotency keys are future work", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("distributed/durable idempotency remains future work", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("tenant/user isolation hardening is future work", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("distributed rate limiting for multi-node deployment is future work", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("not a compliance certificate", content, StringComparison.OrdinalIgnoreCase);

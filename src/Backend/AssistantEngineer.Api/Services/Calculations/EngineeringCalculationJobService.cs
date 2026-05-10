@@ -18,17 +18,20 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistenceService;
     private readonly IEngineeringCalculationJobRepository _jobRepository;
     private readonly IEngineeringCalculationJobEventRepository _jobEventRepository;
+    private readonly ILogger<EngineeringCalculationJobService> _logger;
 
     public EngineeringCalculationJobService(
         IEngineeringCalculationScenarioRunner scenarioRunner,
         IEngineeringWorkflowPersistenceService workflowPersistenceService,
         IEngineeringCalculationJobRepository jobRepository,
-        IEngineeringCalculationJobEventRepository jobEventRepository)
+        IEngineeringCalculationJobEventRepository jobEventRepository,
+        ILogger<EngineeringCalculationJobService> logger)
     {
         _scenarioRunner = scenarioRunner;
         _workflowPersistenceService = workflowPersistenceService;
         _jobRepository = jobRepository;
         _jobEventRepository = jobEventRepository;
+        _logger = logger;
     }
 
     public async Task<EngineeringCalculationJobResultDto> CreateOrRunJobAsync(
@@ -50,6 +53,13 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         var warnings = new List<string>();
         var progress = 0;
         var currentStep = "Created";
+
+        _logger.LogInformation(
+            "Engineering calculation job create requested. JobId={JobId}, ScenarioId={ScenarioId}, ProjectId={ProjectId}, ExecutionMode={ExecutionMode}",
+            jobId,
+            scenarioId,
+            request.ProjectId,
+            request.ExecutionMode);
 
         var job = new EngineeringCalculationJobRecordDto(
             JobId: jobId,
@@ -88,6 +98,10 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         if (request.ExecutionMode == EngineeringCalculationJobExecutionMode.Queued)
         {
             assumptions.Add("Queued execution mode stores the job for the background worker; it no longer reports a fake completed or stranded execution path.");
+            _logger.LogInformation(
+                "Engineering calculation job queued without immediate execution. JobId={JobId}, ScenarioId={ScenarioId}",
+                job.JobId,
+                job.ScenarioId);
             return await BuildJobResultAsync(
                 job,
                 scenarioResultSummary: null,
@@ -146,6 +160,10 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
 
         if (job.Status is not (EngineeringCalculationJobStatus.Queued or EngineeringCalculationJobStatus.RetryScheduled))
         {
+            _logger.LogInformation(
+                "Engineering queued job execution skipped because state is not queued. JobId={JobId}, Status={Status}",
+                job.JobId,
+                job.Status);
             return await BuildJobResultAsync(
                 job,
                 DeserializeScenarioResult(job.ResultSummaryJson),
@@ -168,6 +186,9 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             };
             job = await _jobRepository.UpdateAsync(job, cancellationToken);
             await AppendEventAsync(job, EngineeringCalculationJobStatus.Cancelled, "Queued job was cancelled before worker execution.", null, 100, diagnostics, cancelledAt, cancellationToken);
+            _logger.LogInformation(
+                "Engineering queued job cancelled before execution. JobId={JobId}",
+                job.JobId);
             return await BuildJobResultAsync(job, null, diagnostics, [], [], cancellationToken);
         }
 
@@ -271,6 +292,10 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             };
 
             await AppendEventAsync(job, EngineeringCalculationJobStatus.Cancelled, "Queued job cancelled.", null, job.ProgressPercent, diagnostics, timestamp, cancellationToken);
+            _logger.LogInformation(
+                "Engineering calculation job cancelled. JobId={JobId}, ProjectId={ProjectId}",
+                job.JobId,
+                job.ProjectId);
         }
         else if (job.Status == EngineeringCalculationJobStatus.Running)
         {
@@ -290,6 +315,9 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             };
 
             await AppendEventAsync(job, EngineeringCalculationJobStatus.CancelRequested, "Cancellation requested for running job.", null, job.ProgressPercent, diagnostics, timestamp, cancellationToken);
+            _logger.LogWarning(
+                "Engineering calculation job cancellation requested while running. JobId={JobId}",
+                job.JobId);
         }
         else
         {
@@ -334,6 +362,11 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         };
         job = await _jobRepository.UpdateAsync(job, cancellationToken);
         await AppendEventAsync(job, EngineeringCalculationJobStatus.Running, "Calculation job started.", null, job.ProgressPercent, diagnostics, startedAt, cancellationToken);
+        _logger.LogInformation(
+            "Engineering calculation job started. JobId={JobId}, ScenarioId={ScenarioId}, ProjectId={ProjectId}",
+            job.JobId,
+            job.ScenarioId,
+            job.ProjectId);
 
         try
         {
@@ -396,6 +429,13 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
                 normalizedDiagnostics,
                 completedAt,
                 cancellationToken);
+            _logger.LogInformation(
+                "Engineering calculation job completed. JobId={JobId}, ScenarioId={ScenarioId}, Status={Status}, DurationMs={DurationMs}, DiagnosticsCount={DiagnosticsCount}",
+                job.JobId,
+                job.ScenarioId,
+                finalStatus,
+                duration,
+                normalizedDiagnostics.Count);
 
             return await BuildJobResultAsync(
                 job,
@@ -444,6 +484,13 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
                 normalizedDiagnostics,
                 failedAt,
                 cancellationToken);
+            _logger.LogError(
+                exception,
+                "Engineering calculation job failed. JobId={JobId}, ScenarioId={ScenarioId}, DurationMs={DurationMs}, DiagnosticsCount={DiagnosticsCount}",
+                job.JobId,
+                job.ScenarioId,
+                duration,
+                normalizedDiagnostics.Count);
 
             return await BuildJobResultAsync(
                 job,

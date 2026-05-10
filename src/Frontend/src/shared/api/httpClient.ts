@@ -7,6 +7,7 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   body?: unknown;
   query?: Record<string, QueryValue>;
+  headers?: Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -64,6 +65,7 @@ export async function apiRequest<TResponse>(
     headers: {
       Accept: "application/json",
       ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(options.headers ?? {}),
     },
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });

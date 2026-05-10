@@ -53,12 +53,26 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
                 if (result is not null)
                 {
                     processed++;
+                    _logger.LogInformation(
+                        "Engineering queued calculation job processed by worker. JobId={JobId}, Status={Status}, ProgressPercent={ProgressPercent}",
+                        result.JobId,
+                        result.Status,
+                        result.ProgressPercent);
                 }
             }
             catch (Exception exception) when (exception is not OperationCanceledException)
             {
                 _logger.LogError(exception, "Queued engineering calculation job {JobId} failed inside worker loop.", job.JobId);
             }
+        }
+
+        if (jobs.Count > 0)
+        {
+            _logger.LogInformation(
+                "Engineering calculation job worker batch completed. RequestedBatchSize={RequestedBatchSize}, PulledJobs={PulledJobs}, ProcessedJobs={ProcessedJobs}",
+                Math.Max(1, _options.Value.BatchSize),
+                jobs.Count,
+                processed);
         }
 
         return processed;

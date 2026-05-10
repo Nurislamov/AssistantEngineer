@@ -685,9 +685,11 @@ public class ApiIntegrationTests
 
         var projectJobsResponse = await client.GetAsync("/api/v1/engineering-workflow/0/jobs");
         await EnsureSuccessWithBodyAsync(projectJobsResponse);
-        var jobs = await projectJobsResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationJobResultDto>>();
-        Assert.NotNull(jobs);
-        Assert.Contains(jobs, item => item.JobId == "job-api-queued");
+        var jobsPage = await projectJobsResponse.Content.ReadFromJsonAsync<PagedResponse<EngineeringCalculationJobResultDto>>();
+        Assert.NotNull(jobsPage);
+        Assert.Equal(1, jobsPage.Page);
+        Assert.True(jobsPage.PageSize <= 200);
+        Assert.Contains(jobsPage.Items, item => item.JobId == "job-api-queued");
     }
 
     [Fact]
@@ -758,10 +760,125 @@ public class ApiIntegrationTests
 
         var projectScenariosResponse = await client.GetAsync("/api/v1/engineering-workflow/0/scenarios");
         await EnsureSuccessWithBodyAsync(projectScenariosResponse);
-        var projectScenarios = await projectScenariosResponse.Content.ReadFromJsonAsync<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>();
-        Assert.NotNull(projectScenarios);
-        Assert.Contains(projectScenarios, item => item.ScenarioId == runPayload.ScenarioId);
-        Assert.Contains(projectScenarios, item => item.ScenarioId == preparePayload.RequestId);
+        var projectScenariosPage = await projectScenariosResponse.Content.ReadFromJsonAsync<PagedResponse<EngineeringCalculationScenarioRecordDto>>();
+        Assert.NotNull(projectScenariosPage);
+        Assert.Equal(1, projectScenariosPage.Page);
+        Assert.True(projectScenariosPage.PageSize <= 200);
+        Assert.Contains(projectScenariosPage.Items, item => item.ScenarioId == runPayload.ScenarioId);
+        Assert.Contains(projectScenariosPage.Items, item => item.ScenarioId == preparePayload.RequestId);
+    }
+
+    [Fact]
+    public async Task EngineeringWorkflowListEndpointsSupportPagingParameters()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        for (var index = 0; index < 3; index++)
+        {
+            var request = new EngineeringCalculationScenarioRequestDto(
+                ScenarioId: $"scenario-page-{index}",
+                ProjectId: state.ProjectId,
+                BuildingId: state.BuildingId,
+                ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+                ExecutionMode: EngineeringCalculationExecutionMode.PrepareOnly,
+                State: state,
+                RequestedModules: state.AvailableModules,
+                DetailLevel: "Summary",
+                IncludeTrace: false,
+                IncludeReport: false,
+                ReportFormats: ["Json"],
+                DeterministicTimestampUtc: null,
+                DiagnosticsMode: "Deterministic");
+
+            var runResponse = await client.PostAsJsonAsync("/api/v1/engineering-workflow/run-calculation", request);
+            await EnsureSuccessWithBodyAsync(runResponse);
+        }
+
+        var scenariosResponse = await client.GetAsync("/api/v1/engineering-workflow/0/scenarios?page=2&pageSize=1");
+        await EnsureSuccessWithBodyAsync(scenariosResponse);
+        var scenariosPage = await scenariosResponse.Content.ReadFromJsonAsync<PagedResponse<EngineeringCalculationScenarioRecordDto>>();
+        Assert.NotNull(scenariosPage);
+        Assert.Equal(2, scenariosPage.Page);
+        Assert.Equal(1, scenariosPage.PageSize);
+        Assert.True(scenariosPage.TotalCount >= 3);
+        Assert.Single(scenariosPage.Items);
+
+        var jobsResponse = await client.GetAsync("/api/v1/engineering-workflow/0/jobs?page=100&pageSize=1");
+        await EnsureSuccessWithBodyAsync(jobsResponse);
+        var jobsPage = await jobsResponse.Content.ReadFromJsonAsync<PagedResponse<EngineeringCalculationJobResultDto>>();
+        Assert.NotNull(jobsPage);
+        Assert.Equal(100, jobsPage.Page);
+        Assert.Equal(1, jobsPage.PageSize);
+        Assert.Empty(jobsPage.Items);
+
+        var cappedResponse = await client.GetAsync("/api/v1/engineering-workflow/0/scenarios?page=1&pageSize=1000");
+        await EnsureSuccessWithBodyAsync(cappedResponse);
+        var cappedPage = await cappedResponse.Content.ReadFromJsonAsync<PagedResponse<EngineeringCalculationScenarioRecordDto>>();
+        Assert.NotNull(cappedPage);
+        Assert.Equal(200, cappedPage.PageSize);
+    }
+
+    [Fact]
+    public async Task EngineeringWorkflowRunCalculationIdempotencyKeyReplaysResultForSameRequestAndConflictsForDifferentPayload()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var stateResponse = await client.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+        stateResponse.EnsureSuccessStatusCode();
+        var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+        Assert.NotNull(state);
+
+        var request = new EngineeringCalculationScenarioRequestDto(
+            ScenarioId: "scenario-idempotency-1",
+            ProjectId: state.ProjectId,
+            BuildingId: state.BuildingId,
+            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+            ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+            State: state,
+            RequestedModules: state.AvailableModules,
+            DetailLevel: "Summary",
+            IncludeTrace: false,
+            IncludeReport: false,
+            ReportFormats: ["Json"],
+            DeterministicTimestampUtc: null,
+            DiagnosticsMode: "Deterministic");
+
+        using var firstMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/engineering-workflow/run-calculation")
+        {
+            Content = JsonContent.Create(request)
+        };
+        firstMessage.Headers.Add("Idempotency-Key", "idempotency-run-001");
+        var firstResponse = await client.SendAsync(firstMessage);
+        await EnsureSuccessWithBodyAsync(firstResponse);
+        var firstPayload = await firstResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+        Assert.NotNull(firstPayload);
+
+        using var secondMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/engineering-workflow/run-calculation")
+        {
+            Content = JsonContent.Create(request)
+        };
+        secondMessage.Headers.Add("Idempotency-Key", "idempotency-run-001");
+        var secondResponse = await client.SendAsync(secondMessage);
+        await EnsureSuccessWithBodyAsync(secondResponse);
+        var secondPayload = await secondResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+        Assert.NotNull(secondPayload);
+        Assert.Equal(firstPayload.ScenarioId, secondPayload.ScenarioId);
+
+        var mutatedRequest = request with { DetailLevel = "Detailed" };
+        using var conflictMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/engineering-workflow/run-calculation")
+        {
+            Content = JsonContent.Create(mutatedRequest)
+        };
+        conflictMessage.Headers.Add("Idempotency-Key", "idempotency-run-001");
+        var conflictResponse = await client.SendAsync(conflictMessage);
+        Assert.Equal(HttpStatusCode.Conflict, conflictResponse.StatusCode);
     }
 
     [Fact]
@@ -1358,3 +1475,4 @@ public class ApiIntegrationTests
             }));
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Api.Contracts.Common;
+using AssistantEngineer.Api.Contracts.Common;
+using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Searching.Projects;
 using AssistantEngineer.Api.Sorting.Projects;
@@ -17,4 +18,14 @@ internal static class ProjectListQueryExtensions
                 query,
                 defaultSortBy: "id",
                 ProjectSortRules.ByField);
+
+    public static IEnumerable<EngineeringCalculationJobResultDto> ApplyProjectListQuery(
+        this IEnumerable<EngineeringCalculationJobResultDto> source,
+        CollectionQueryParameters query) =>
+        source;
+
+    public static IEnumerable<EngineeringCalculationScenarioRecordDto> ApplyProjectListQuery(
+        this IEnumerable<EngineeringCalculationScenarioRecordDto> source,
+        CollectionQueryParameters query) =>
+        source;
 }

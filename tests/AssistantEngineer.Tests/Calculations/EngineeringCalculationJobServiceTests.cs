@@ -1,6 +1,7 @@
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Calculations;
@@ -124,7 +125,8 @@ public class EngineeringCalculationJobServiceTests
             runner,
             workflowPersistence,
             jobRepository,
-            jobEventRepository);
+            jobEventRepository,
+            NullLogger<EngineeringCalculationJobService>.Instance);
 
         return new Fixture(service, runner);
     }

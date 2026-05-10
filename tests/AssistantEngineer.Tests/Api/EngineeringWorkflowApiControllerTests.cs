@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Api.Controllers.Calculations;
+using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
@@ -44,7 +44,8 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
-        Assert.Equal(9, dependencies.Length);
+        Assert.Contains(typeof(IEngineeringWorkflowSubmissionService), dependencies);
+        Assert.Equal(10, dependencies.Length);
     }
 
     [Fact]
@@ -85,3 +86,4 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(routes, route => string.Equals(route, template, StringComparison.Ordinal));
     }
 }
+

@@ -1,6 +1,9 @@
 using AssistantEngineer.Api;
+using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Api.Extensions.Collections;
+using AssistantEngineer.Api.Querying.Projects;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
@@ -17,6 +20,9 @@ namespace AssistantEngineer.Api.Controllers.Calculations;
 [Route("api/v{version:apiVersion}/engineering-workflow")]
 public sealed class EngineeringWorkflowController : ControllerBase
 {
+    private const string IdempotencyHeaderName = "Idempotency-Key";
+    private const int WorkflowListMaxPageSize = 200;
+
     private readonly IEngineeringWorkflowStateBuilder _stateBuilder;
     private readonly IEngineeringWorkflowDiagnosticsService _workflowDiagnostics;
     private readonly IEngineeringWorkflowTracePreviewService _tracePreviewService;
@@ -26,6 +32,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringCalculationScenarioRunner _scenarioRunner;
     private readonly IEngineeringCalculationJobService _jobService;
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
+    private readonly IEngineeringWorkflowSubmissionService _workflowSubmissionService;
 
     public EngineeringWorkflowController(
         IEngineeringWorkflowStateBuilder stateBuilder,
@@ -36,7 +43,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
         IEngineeringReportMarkdownExporter reportMarkdownExporter,
         IEngineeringCalculationScenarioRunner scenarioRunner,
         IEngineeringCalculationJobService jobService,
-        IEngineeringWorkflowPersistenceService workflowPersistence)
+        IEngineeringWorkflowPersistenceService workflowPersistence,
+        IEngineeringWorkflowSubmissionService workflowSubmissionService)
     {
         _stateBuilder = stateBuilder;
         _workflowDiagnostics = workflowDiagnostics;
@@ -47,6 +55,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         _scenarioRunner = scenarioRunner;
         _jobService = jobService;
         _workflowPersistence = workflowPersistence;
+        _workflowSubmissionService = workflowSubmissionService;
     }
 
     [HttpGet("{projectId:int}/state")]
@@ -174,19 +183,20 @@ public sealed class EngineeringWorkflowController : ControllerBase
     [HttpPost("run-calculation")]
     public async Task<ActionResult<EngineeringCalculationScenarioResultDto>> RunCalculation(
         [FromBody] EngineeringCalculationScenarioRequestDto request,
+        [FromHeader(Name = IdempotencyHeaderName)] string? idempotencyKey,
         CancellationToken cancellationToken)
     {
-        var result = await _scenarioRunner.RunAsync(request, cancellationToken);
-        await _workflowPersistence.SaveRunScenarioAsync(request, result, cancellationToken);
-        var providerInfo = _workflowPersistence.GetProviderInfo();
-        var metadata = result.Metadata
-            .OrderBy(item => item.Key, StringComparer.Ordinal)
-            .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
-        metadata["persistence"] = providerInfo.ProviderLabel;
-        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
-        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
+        var outcome = await _workflowSubmissionService.RunCalculationAsync(request, idempotencyKey, cancellationToken);
+        if (outcome.IsConflict)
+        {
+            return Conflict(new
+            {
+                code = outcome.ConflictCode ?? "ENGINEERING_IDEMPOTENCY_CONFLICT",
+                message = outcome.ConflictMessage ?? "Idempotency conflict for engineering workflow submission."
+            });
+        }
 
-        return Ok(result with { Metadata = metadata });
+        return Ok(outcome.Payload);
     }
 
     [RequestTimeout(RequestPolicies.LongRunning)]
@@ -194,6 +204,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     [HttpPost("jobs")]
     public async Task<ActionResult<EngineeringCalculationJobResultDto>> CreateOrRunJob(
         [FromBody] EngineeringCalculationJobRequestDto request,
+        [FromHeader(Name = IdempotencyHeaderName)] string? idempotencyKey,
         CancellationToken cancellationToken)
     {
         if (request.ProjectId < 0)
@@ -205,8 +216,16 @@ public sealed class EngineeringWorkflowController : ControllerBase
             });
         }
 
-        var result = await _jobService.CreateOrRunJobAsync(request, cancellationToken);
-        return Ok(result);
+        var outcome = await _workflowSubmissionService.CreateOrRunJobAsync(request, idempotencyKey, cancellationToken);
+        if (outcome.IsConflict)
+        {
+            return Conflict(new
+            {
+                code = outcome.ConflictCode ?? "ENGINEERING_IDEMPOTENCY_CONFLICT",
+                message = outcome.ConflictMessage ?? "Idempotency conflict for engineering workflow job submission."
+            });
+        }
+        return Ok(outcome.Payload);
     }
 
     [HttpGet("jobs/{jobId}")]
@@ -257,12 +276,15 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [HttpGet("{projectId:int}/jobs")]
-    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationJobResultDto>>> ListProjectJobs(
+    public async Task<ActionResult<PagedResponse<EngineeringCalculationJobResultDto>>> ListProjectJobs(
         int projectId,
+        [FromQuery] CollectionQueryParameters query,
         CancellationToken cancellationToken)
     {
         var jobs = await _jobService.ListProjectJobsAsync(projectId, cancellationToken);
-        return Ok(jobs);
+        return Ok(jobs
+            .ApplyProjectListQuery(query)
+            .ToPagedResponse(NormalizeWorkflowListQuery(query)));
     }
 
     [HttpGet("scenarios/{scenarioId}")]
@@ -285,12 +307,15 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [HttpGet("{projectId:int}/scenarios")]
-    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>> GetProjectScenarios(
+    public async Task<ActionResult<PagedResponse<EngineeringCalculationScenarioRecordDto>>> GetProjectScenarios(
         int projectId,
+        [FromQuery] CollectionQueryParameters query,
         CancellationToken cancellationToken)
     {
         var scenarios = await _workflowPersistence.ListProjectScenariosAsync(projectId, cancellationToken);
-        return Ok(scenarios);
+        return Ok(scenarios
+            .ApplyProjectListQuery(query)
+            .ToPagedResponse(NormalizeWorkflowListQuery(query)));
     }
 
     [HttpGet("scenarios/{scenarioId}/artifacts")]
@@ -400,5 +425,20 @@ public sealed class EngineeringWorkflowController : ControllerBase
             SchemaVersion: reportDocument.SchemaVersion,
             ReportId: reportDocument.ReportId,
             Diagnostics: diagnostics));
+    }
+
+    private static CollectionQueryParameters NormalizeWorkflowListQuery(CollectionQueryParameters query)
+    {
+        var page = query.GetPage();
+        var pageSize = Math.Min(query.GetPageSize(), WorkflowListMaxPageSize);
+
+        return new CollectionQueryParameters
+        {
+            Search = query.Search,
+            SortBy = query.SortBy,
+            SortDescending = query.SortDescending,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 }

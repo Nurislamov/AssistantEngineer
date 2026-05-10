@@ -32,6 +32,13 @@ Endpoints:
 - `POST /api/v1/engineering-workflow/report/export/json`
 - `POST /api/v1/engineering-workflow/report/export/markdown`
 
+List endpoints use paged response envelopes:
+
+- query: `page`, `pageSize`
+- default: `page=1`, `pageSize=50`
+- max `pageSize=200` for workflow jobs/scenarios endpoints
+- response: `items`, `page`, `pageSize`, `totalCount`, `totalPages`, `hasPreviousPage`, `hasNextPage`
+
 ## Request/response model
 
 Workflow DTO contracts are defined in:
@@ -70,6 +77,28 @@ Missing or partial data produces diagnostics rather than crash.
 Runner response contains execution status, executed/skipped modules, diagnostics, optional trace summary, optional report preview, and optional JSON/Markdown exports.
 
 `run-calculation` and `prepare-calculation` also persist scenario records, compact result summaries, diagnostics snapshots, and artifacts in persistence foundation storage.
+
+### Idempotency key (foundation baseline)
+
+Heavy submission endpoints support `Idempotency-Key` header:
+
+- `POST /api/v1/engineering-workflow/run-calculation`
+- `POST /api/v1/engineering-workflow/jobs`
+
+Behavior:
+
+- no header: existing behavior remains unchanged;
+- first request with key: request is processed and response reference is persisted in idempotency store;
+- repeated key with same scope and same request fingerprint: API replays persisted scenario/job reference without rerunning heavy orchestration;
+- repeated key with same scope but different request fingerprint: API returns `409 Conflict`.
+
+Scope baseline:
+
+- `projectId + action route + idempotency key`.
+
+Foundation limitation:
+
+- idempotency store is in-memory and local-node only (not distributed, not durable across restarts).
 
 ## Job lifecycle behavior
 
@@ -129,6 +158,7 @@ Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
 - API foundation may execute available modules partially and report skipped modules with diagnostics.
 - API persistence foundation may be in-memory depending on current deployment wiring.
 - API persistence durable mode can run on SQLite foundation provider and should not be interpreted as production-certified durability.
+- Idempotency baseline is in-memory and local-node only; distributed or durable idempotency store is future work.
 - Workflow API is not a compliance certificate.
 - Reports summarize current internal engineering calculations only.
 - Trace explains internal calculation chain only.

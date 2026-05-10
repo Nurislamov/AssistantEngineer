@@ -26,6 +26,7 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
     private readonly IEngineeringCalculationSystemEnergyScenarioStep _systemEnergyScenarioStep;
     private readonly IEngineeringCalculationScenarioResultBuilder _resultBuilder;
     private readonly IEngineeringCalculationScenarioRequestValidator _requestValidator;
+    private readonly ILogger<EngineeringCalculationScenarioRunner> _logger;
 
     public EngineeringCalculationScenarioRunner(
         ILoadCalculationsFacade loadCalculations,
@@ -38,7 +39,8 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
         IEngineeringCalculationDomesticHotWaterScenarioStep domesticHotWaterScenarioStep,
         IEngineeringCalculationSystemEnergyScenarioStep systemEnergyScenarioStep,
         IEngineeringCalculationScenarioResultBuilder resultBuilder,
-        IEngineeringCalculationScenarioRequestValidator requestValidator)
+        IEngineeringCalculationScenarioRequestValidator requestValidator,
+        ILogger<EngineeringCalculationScenarioRunner> logger)
     {
         _loadCalculations = loadCalculations;
         _thermalTopologyBuilder = thermalTopologyBuilder;
@@ -51,6 +53,7 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
         _systemEnergyScenarioStep = systemEnergyScenarioStep;
         _resultBuilder = resultBuilder;
         _requestValidator = requestValidator;
+        _logger = logger;
     }
 
     public async Task<EngineeringCalculationScenarioResultDto> RunAsync(
@@ -59,6 +62,14 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.State);
+
+        _logger.LogInformation(
+            "Engineering scenario run started. ProjectId={ProjectId}, BuildingId={BuildingId}, ScenarioId={ScenarioId}, ScenarioKind={ScenarioKind}, ExecutionMode={ExecutionMode}",
+            request.ProjectId ?? request.State.ProjectId,
+            request.BuildingId ?? request.State.BuildingId,
+            request.ScenarioId,
+            request.ScenarioKind,
+            request.ExecutionMode);
 
         var diagnostics = new List<EngineeringWorkflowDiagnosticDto>();
         diagnostics.AddRange(request.State.Diagnostics);
@@ -81,10 +92,18 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
 
         diagnostics.AddRange(_requestValidator.Validate(request));
         diagnostics = _requestValidator.SortAndDistinct(diagnostics).ToList();
+        _logger.LogInformation(
+            "Engineering scenario pre-validation completed. ScenarioId={ScenarioId}, DiagnosticsCount={DiagnosticsCount}, HasErrors={HasErrors}",
+            request.ScenarioId,
+            diagnostics.Count,
+            _requestValidator.HasErrors(diagnostics));
 
         if (request.ExecutionMode == EngineeringCalculationExecutionMode.ValidateOnly)
         {
             assumptions.Add("Execution mode ValidateOnly returns deterministic diagnostics without module execution.");
+            _logger.LogWarning(
+                "Engineering scenario execution bypassed due to ValidateOnly mode. ScenarioId={ScenarioId}",
+                request.ScenarioId);
             return _resultBuilder.BuildScenarioResult(
                 request,
                 moduleResults,
@@ -115,6 +134,9 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
                 Code: "SCENARIO_PREPARE_ONLY",
                 Message: "Scenario request is prepared and validated without module execution.",
                 SourceStep: "Review"));
+            _logger.LogInformation(
+                "Engineering scenario prepared without module execution. ScenarioId={ScenarioId}",
+                request.ScenarioId);
 
             return _resultBuilder.BuildScenarioResult(
                 request,
@@ -141,6 +163,9 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
         if (request.ExecutionMode == EngineeringCalculationExecutionMode.DryRun)
         {
             assumptions.Add("Execution mode DryRun returns deterministic execution plan without invoking calculators.");
+            _logger.LogInformation(
+                "Engineering scenario dry-run produced execution plan. ScenarioId={ScenarioId}",
+                request.ScenarioId);
             return _resultBuilder.BuildScenarioResult(
                 request,
                 moduleResults,
@@ -167,6 +192,10 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
             _requestValidator.HasErrors(diagnostics))
         {
             assumptions.Add("Execution mode ExecuteFullRequired stops when critical validation diagnostics are present.");
+            _logger.LogWarning(
+                "Engineering scenario blocked by validation errors in ExecuteFullRequired mode. ScenarioId={ScenarioId}, DiagnosticsCount={DiagnosticsCount}",
+                request.ScenarioId,
+                diagnostics.Count);
 
             return _resultBuilder.BuildScenarioResult(
                 request,
@@ -320,6 +349,15 @@ public sealed class EngineeringCalculationScenarioRunner : IEngineeringCalculati
         var trace = request.IncludeTrace
             ? _resultBuilder.BuildTrace(request, moduleResults, diagnostics, assumptions, warnings)
             : null;
+
+        _logger.LogInformation(
+            "Engineering scenario run completed. ScenarioId={ScenarioId}, ExecutedModules={ExecutedModules}, SkippedModules={SkippedModules}, UnavailableModules={UnavailableModules}, DiagnosticsCount={DiagnosticsCount}, WarningsCount={WarningsCount}",
+            request.ScenarioId,
+            executedModules.Count,
+            skippedModules.Count,
+            unavailableModules.Count,
+            diagnostics.Count,
+            warnings.Count);
 
         return _resultBuilder.BuildScenarioResult(
             request,

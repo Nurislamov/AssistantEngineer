@@ -26,6 +26,8 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("GET /api/v1/engineering-workflow/jobs/{jobId}/events", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/jobs/{jobId}/cancel", content, StringComparison.Ordinal);
         Assert.Contains("GET /api/v1/engineering-workflow/{projectId}/jobs", content, StringComparison.Ordinal);
+        Assert.Contains("page", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("pageSize", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("POST /api/v1/engineering-workflow/trace-preview", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report", content, StringComparison.Ordinal);
         Assert.Contains("POST /api/v1/engineering-workflow/report/export/json", content, StringComparison.Ordinal);
@@ -34,6 +36,7 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}", content, StringComparison.Ordinal);
         Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts", content, StringComparison.Ordinal);
         Assert.Contains("GET /api/v1/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}", content, StringComparison.Ordinal);
+        Assert.Contains("Idempotency-Key", content, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -55,5 +58,7 @@ public class EngineeringWorkflowApiDocumentationTests
         Assert.Contains("no full standard compliance claim", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("persistence foundation may be in-memory", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("provider model", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("idempotency", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("409", content, StringComparison.OrdinalIgnoreCase);
     }
 }

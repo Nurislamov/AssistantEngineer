@@ -1,5 +1,6 @@
 import { apiRoutes } from "@/shared/api/apiRoutes";
 import { apiRequest } from "@/shared/api/httpClient";
+import type { PagedResponse } from "@/shared/api/pagedResponse";
 import { formatNumber } from "@/shared/lib/format";
 import type {
   EngineeringCalculationArtifactKind,
@@ -35,6 +36,11 @@ function buildErrorDiagnostic(message: string): WorkflowDiagnostic {
     sourceStep: "Validation",
     suggestedCorrection: "Check backend API availability and retry workflow request.",
   };
+}
+
+function buildIdempotencyKey(seed: string): string {
+  const normalized = seed.trim().replace(/\s+/g, "-").toLowerCase();
+  return `wf-${normalized.slice(0, 120)}`;
 }
 
 export interface EngineeringWorkflowClient {
@@ -270,11 +276,16 @@ const apiClient: EngineeringWorkflowClient = {
     request: EngineeringCalculationScenarioRequest,
   ): Promise<EngineeringCalculationScenarioResponse> {
     try {
+      const idempotencyKey = buildIdempotencyKey(
+        `run-${request.projectId ?? request.state.projectId ?? "unknown"}-${request.scenarioId}`,
+      );
+
       return await apiRequest<EngineeringCalculationScenarioResponse>(
         apiRoutes.engineeringWorkflow.runCalculation(),
         {
           method: "POST",
           body: request,
+          headers: { "Idempotency-Key": idempotencyKey },
         },
       );
     } catch (error) {
@@ -304,11 +315,16 @@ const apiClient: EngineeringWorkflowClient = {
     request: EngineeringCalculationJobRequest,
   ): Promise<EngineeringCalculationJobResult> {
     try {
+      const idempotencyKey = buildIdempotencyKey(
+        `job-${request.projectId}-${request.jobId ?? request.scenarioId ?? request.scenarioRequest.scenarioId}`,
+      );
+
       return await apiRequest<EngineeringCalculationJobResult>(
         apiRoutes.engineeringWorkflow.jobs(),
         {
           method: "POST",
           body: request,
+          headers: { "Idempotency-Key": idempotencyKey },
         },
       );
     } catch (error) {
@@ -343,9 +359,13 @@ const apiClient: EngineeringWorkflowClient = {
 
   async listProjectJobs(projectId: number): Promise<EngineeringCalculationJobResult[]> {
     try {
-      return await apiRequest<EngineeringCalculationJobResult[]>(
+      const response = await apiRequest<PagedResponse<EngineeringCalculationJobResult>>(
         apiRoutes.engineeringWorkflow.projectJobs(projectId),
+        {
+          query: { page: 1, pageSize: 50, sortBy: "queuedAtUtc", sortDescending: true },
+        },
       );
+      return response.items;
     } catch {
       return [];
     }
@@ -386,9 +406,13 @@ const apiClient: EngineeringWorkflowClient = {
 
   async listProjectScenarios(projectId: number): Promise<EngineeringCalculationScenarioRecord[]> {
     try {
-      return await apiRequest<EngineeringCalculationScenarioRecord[]>(
+      const response = await apiRequest<PagedResponse<EngineeringCalculationScenarioRecord>>(
         apiRoutes.engineeringWorkflow.projectScenarios(projectId),
+        {
+          query: { page: 1, pageSize: 50, sortBy: "createdAtUtc", sortDescending: true },
+        },
       );
+      return response.items;
     } catch {
       return [];
     }

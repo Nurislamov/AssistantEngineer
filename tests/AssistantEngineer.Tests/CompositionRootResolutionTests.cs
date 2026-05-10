@@ -1,5 +1,6 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Infrastructure;
@@ -40,6 +41,7 @@ public class CompositionRootResolutionTests
             .Build();
 
         var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(configuration);
 
         services.AddLogging();
         services.AddHttpClient();
@@ -60,6 +62,7 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationJobEventRepository, InMemoryEngineeringCalculationJobEventRepository>();
         services.AddOptions<EngineeringWorkflowPersistenceOptions>();
         services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
+        services.AddEngineeringIdempotency();
         services.AddEngineeringWorkflowServices();
         services.AddScoped<IEngineeringCalculationScenarioModuleExecutor, EngineeringCalculationScenarioModuleExecutor>();
         services.AddScoped<IEngineeringCalculationVentilationScenarioStep, EngineeringCalculationVentilationScenarioStep>();

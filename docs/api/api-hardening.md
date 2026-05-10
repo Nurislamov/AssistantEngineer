@@ -63,7 +63,7 @@ It is a foundation-level hardening pass and not a full production security progr
 ## Known limitations after P2-01
 
 - structured audit logging is future work.
-- idempotency keys are future work.
+- local in-memory idempotency is available in P2-04, but distributed/durable idempotency remains future work.
 - tenant/user isolation hardening is future work.
 - distributed rate limiting for multi-node deployment is future work.
 - deeper readiness checks with external dependency semantics are future work.

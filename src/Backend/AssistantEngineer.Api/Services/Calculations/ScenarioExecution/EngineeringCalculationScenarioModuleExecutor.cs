@@ -5,6 +5,13 @@ namespace AssistantEngineer.Api.Services.Calculations;
 
 public sealed class EngineeringCalculationScenarioModuleExecutor : IEngineeringCalculationScenarioModuleExecutor
 {
+    private readonly ILogger<EngineeringCalculationScenarioModuleExecutor> _logger;
+
+    public EngineeringCalculationScenarioModuleExecutor(ILogger<EngineeringCalculationScenarioModuleExecutor> logger)
+    {
+        _logger = logger;
+    }
+
     public ScenarioModuleRunOutcome Execute(
         string moduleKind,
         string stepName,
@@ -15,6 +22,14 @@ public sealed class EngineeringCalculationScenarioModuleExecutor : IEngineeringC
         var stopwatch = Stopwatch.StartNew();
         var outcome = execute();
         stopwatch.Stop();
+
+        _logger.LogInformation(
+            "Engineering scenario module executed. ModuleKind={ModuleKind}, StepName={StepName}, Status={Status}, DurationMs={DurationMs}, DiagnosticsCount={DiagnosticsCount}",
+            moduleKind,
+            stepName,
+            outcome.Status,
+            stopwatch.Elapsed.TotalMilliseconds,
+            outcome.Diagnostics.Count);
 
         return new ScenarioModuleRunOutcome(moduleKind, stepName, outcome, stopwatch.Elapsed.TotalMilliseconds);
     }
@@ -29,6 +44,14 @@ public sealed class EngineeringCalculationScenarioModuleExecutor : IEngineeringC
         var stopwatch = Stopwatch.StartNew();
         var outcome = await execute();
         stopwatch.Stop();
+
+        _logger.LogInformation(
+            "Engineering scenario module executed async. ModuleKind={ModuleKind}, StepName={StepName}, Status={Status}, DurationMs={DurationMs}, DiagnosticsCount={DiagnosticsCount}",
+            moduleKind,
+            stepName,
+            outcome.Status,
+            stopwatch.Elapsed.TotalMilliseconds,
+            outcome.Diagnostics.Count);
 
         return new ScenarioModuleRunOutcome(moduleKind, stepName, outcome, stopwatch.Elapsed.TotalMilliseconds);
     }
@@ -72,6 +95,23 @@ public sealed class EngineeringCalculationScenarioModuleExecutor : IEngineeringC
             Warnings: outcome.Execution.Warnings,
             DurationMilliseconds: Round(outcome.DurationMilliseconds),
             SourceServiceName: outcome.Execution.SourceServiceName));
+
+        if (status == EngineeringCalculationModuleExecutionStatus.Skipped)
+        {
+            _logger.LogWarning(
+                "Engineering scenario module skipped. ModuleKind={ModuleKind}, DurationMs={DurationMs}, WarningsCount={WarningsCount}",
+                outcome.ModuleKind,
+                outcome.DurationMilliseconds,
+                outcome.Execution.Warnings.Count);
+        }
+        else if (status == EngineeringCalculationModuleExecutionStatus.Failed)
+        {
+            _logger.LogError(
+                "Engineering scenario module failed. ModuleKind={ModuleKind}, DurationMs={DurationMs}, DiagnosticsCount={DiagnosticsCount}",
+                outcome.ModuleKind,
+                outcome.DurationMilliseconds,
+                outcome.Execution.Diagnostics.Count);
+        }
     }
 
     private static double Round(double value) =>

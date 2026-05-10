@@ -1,5 +1,6 @@
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Tests.Calculations;
 
@@ -8,7 +9,7 @@ public class EngineeringCalculationScenarioModuleExecutorTests
     [Fact]
     public void ExecuteRecordsExecutedModuleAndAddsLedgerEntries()
     {
-        var executor = new EngineeringCalculationScenarioModuleExecutor();
+        var executor = new EngineeringCalculationScenarioModuleExecutor(NullLogger<EngineeringCalculationScenarioModuleExecutor>.Instance);
 
         var outcome = executor.Execute(
             "WeatherSolar",
@@ -44,7 +45,7 @@ public class EngineeringCalculationScenarioModuleExecutorTests
     [Fact]
     public void SkipCreatesWarningDiagnosticAndSkippedLedgerEntry()
     {
-        var executor = new EngineeringCalculationScenarioModuleExecutor();
+        var executor = new EngineeringCalculationScenarioModuleExecutor(NullLogger<EngineeringCalculationScenarioModuleExecutor>.Instance);
 
         var outcome = executor.Execute(
             "Ventilation",
@@ -78,7 +79,7 @@ public class EngineeringCalculationScenarioModuleExecutorTests
     [Fact]
     public void FailCreatesErrorDiagnosticAndUnavailableLedgerEntry()
     {
-        var executor = new EngineeringCalculationScenarioModuleExecutor();
+        var executor = new EngineeringCalculationScenarioModuleExecutor(NullLogger<EngineeringCalculationScenarioModuleExecutor>.Instance);
 
         var outcome = executor.Execute(
             "HeatingCooling",
@@ -110,7 +111,7 @@ public class EngineeringCalculationScenarioModuleExecutorTests
     [Fact]
     public async Task ExecuteAsyncRecordsAsyncExecution()
     {
-        var executor = new EngineeringCalculationScenarioModuleExecutor();
+        var executor = new EngineeringCalculationScenarioModuleExecutor(NullLogger<EngineeringCalculationScenarioModuleExecutor>.Instance);
 
         var outcome = await executor.ExecuteAsync(
             "DomesticHotWater",

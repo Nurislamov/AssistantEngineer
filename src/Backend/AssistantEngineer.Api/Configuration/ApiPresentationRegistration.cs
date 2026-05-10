@@ -1,6 +1,7 @@
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
 
@@ -16,6 +17,7 @@ internal static class ApiPresentationRegistration
 
         services.AddSingleton<IExceptionProblemDetailsMapper, ExceptionProblemDetailsMapper>();
         services.AddEngineeringWorkflowPersistence();
+        services.AddEngineeringIdempotency();
         services.AddEngineeringWorkflowServices();
         services.AddScoped<IEngineeringCalculationScenarioModuleExecutor, EngineeringCalculationScenarioModuleExecutor>();
         services.AddScoped<IEngineeringCalculationVentilationScenarioStep, EngineeringCalculationVentilationScenarioStep>();

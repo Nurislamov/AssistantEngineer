@@ -3,6 +3,7 @@ using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,6 +67,10 @@ public class ApiPresentationRegistrationTests
         AssertServiceLifetime<IEngineeringWorkflowPersistenceService>(
             services,
             ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringIdempotencyService>(
+            services,
+            ServiceLifetime.Singleton);
 
         AssertServiceLifetime<EngineeringWorkflowPersistenceDbContext>(
             services,

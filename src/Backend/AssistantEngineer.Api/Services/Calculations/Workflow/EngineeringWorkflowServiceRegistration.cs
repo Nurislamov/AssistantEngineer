@@ -9,6 +9,7 @@ public static class EngineeringWorkflowServiceRegistration
         services.AddScoped<IEngineeringWorkflowDiagnosticsService, EngineeringWorkflowDiagnosticsService>();
         services.AddScoped<IEngineeringWorkflowTracePreviewService, EngineeringWorkflowTracePreviewService>();
         services.AddScoped<IEngineeringWorkflowReportPreviewService, EngineeringWorkflowReportPreviewService>();
+        services.AddScoped<IEngineeringWorkflowSubmissionService, EngineeringWorkflowSubmissionService>();
 
         return services;
     }
