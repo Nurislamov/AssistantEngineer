@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddApiConfiguration();
 
 builder.ConfigureRequestLimits();
+builder.ConfigureApiHardening();
 
 builder.Services.AddApiPresentation();
 builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);

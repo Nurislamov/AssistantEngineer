@@ -10,6 +10,8 @@ public class ApiConfigurationStructureTests
         "AssistantEngineer.Api.Configuration.ApiBehaviorOptionsSetup",
         "AssistantEngineer.Api.Configuration.ApiConfigurationRegistration",
         "AssistantEngineer.Api.Configuration.ApiDocumentationRegistration",
+        "AssistantEngineer.Api.Configuration.ApiHardeningOptions",
+        "AssistantEngineer.Api.Configuration.ApiHardeningRegistration",
         "AssistantEngineer.Api.Configuration.ApiPipelineConfiguration",
         "AssistantEngineer.Api.Configuration.ApiPresentationRegistration",
         "AssistantEngineer.Api.Configuration.ApiVersioningRegistration",
@@ -83,6 +85,11 @@ public class ApiConfigurationStructureTests
             StringComparison.Ordinal);
 
         Assert.Contains(
+            "UseCors(",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
             "UseRequestTimeouts()",
             text,
             StringComparison.Ordinal);
@@ -97,13 +104,76 @@ public class ApiConfigurationStructureTests
             text,
             StringComparison.Ordinal);
 
+        Assert.Contains(
+            "UseRateLimiter()",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.DoesNotContain(
+            "AllowAnyOrigin(",
+            text,
+            StringComparison.Ordinal);
+
         Assert.True(
             text.IndexOf("UseAuthentication()", StringComparison.Ordinal) <
             text.IndexOf("UseAuthorization()", StringComparison.Ordinal),
             "Authentication middleware must run before authorization middleware.");
 
+        Assert.True(
+            text.IndexOf("UseAuthorization()", StringComparison.Ordinal) <
+            text.IndexOf("UseRateLimiter()", StringComparison.Ordinal),
+            "Rate limiter middleware must run after authorization middleware.");
+
+        Assert.Contains(
+            "MapHealthChecks(\"/health\"",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
+            "MapHealthChecks(\"/ready\"",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
+            ".AllowAnonymous()",
+            text,
+            StringComparison.Ordinal);
+
         Assert.Contains(
             "MapControllers()",
+            text,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ApiHardeningRegistrationOwnsHardeningServiceRegistration()
+    {
+        var apiProjectPath = global::AssistantEngineer.Tests.TestPaths.ApiProjectPath;
+
+        var registrationFile = Path.Combine(
+            apiProjectPath,
+            "Configuration",
+            "ApiHardeningRegistration.cs");
+
+        var text = File.ReadAllText(registrationFile);
+
+        Assert.Contains(
+            "AddCors(",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
+            "AddRateLimiter(",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
+            "AddHealthChecks(",
+            text,
+            StringComparison.Ordinal);
+
+        Assert.DoesNotContain(
+            "AllowAnyOrigin(",
             text,
             StringComparison.Ordinal);
     }

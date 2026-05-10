@@ -6,6 +6,7 @@ using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Controllers.Equipment;
 using AssistantEngineer.Api.Controllers.Reports;
 using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 
 namespace AssistantEngineer.Tests;
@@ -65,5 +66,59 @@ public class ApiRequestPolicyTests
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateHeatingSystemEnergy) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateCoolingSystemEnergy) },
             { typeof(BuildingEnergyAnalysisController), nameof(BuildingEnergyAnalysisController.CalculateSummary) }
+        };
+
+    [Theory]
+    [MemberData(nameof(RateLimitedHeavyActions))]
+    public void HeavyEngineeringWorkflowEndpointsUseEngineeringHeavyRateLimitingPolicy(Type controllerType, string actionName)
+    {
+        var method = controllerType.GetMethod(actionName);
+
+        Assert.NotNull(method);
+        var attribute = Assert.Single(method.GetCustomAttributes<EnableRateLimitingAttribute>());
+        Assert.Equal("EngineeringHeavy", attribute.PolicyName);
+    }
+
+    [Fact]
+    public void AppSettingsDefineApiHardeningBaselineWithoutWildcardOrigins()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false)
+            .Build();
+
+        Assert.True(configuration.GetValue<bool>("ApiHardening:Cors:Enabled"));
+        Assert.True(configuration.GetValue<bool>("ApiHardening:RateLimiting:Enabled"));
+        Assert.True(configuration.GetValue<int>("ApiHardening:RateLimiting:PermitLimit") > 0);
+        Assert.True(configuration.GetValue<int>("ApiHardening:RateLimiting:WindowSeconds") > 0);
+
+        var origins = configuration
+            .GetSection("ApiHardening:Cors:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        Assert.DoesNotContain(origins, origin => string.Equals(origin, "*", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void DevelopmentAppSettingsDefineLocalhostCorsOrigins()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.Development.json"), optional: false)
+            .Build();
+
+        var origins = configuration
+            .GetSection("ApiHardening:Cors:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        Assert.Contains("http://localhost:5173", origins, StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("https://localhost:5173", origins, StringComparer.OrdinalIgnoreCase);
+    }
+
+    public static TheoryData<Type, string> RateLimitedHeavyActions() =>
+        new()
+        {
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.RunCalculation) },
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.CreateOrRunJob) },
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.ExportReportJson) },
+            { typeof(EngineeringWorkflowController), nameof(EngineeringWorkflowController.ExportReportMarkdown) }
         };
 }

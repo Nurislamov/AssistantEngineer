@@ -20,6 +20,11 @@ public class ProgramCompositionRootTests
             StringComparison.Ordinal);
 
         Assert.Contains(
+            "builder.ConfigureApiHardening()",
+            programText,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
             "builder.Services.AddApiPresentation()",
             programText,
             StringComparison.Ordinal);
@@ -69,6 +74,9 @@ public class ProgramCompositionRootTests
             "ConfigureOptions<ApiBehaviorOptionsSetup>",
             "ConfigureOptions<ApiMvcOptionsSetup>",
             "AddRequestTimeouts(",
+            "AddRateLimiter(",
+            "AddCors(",
+            "AddHealthChecks(",
             "ConfigureKestrel(",
             "AddBuildingsModule(",
             "AddCalculationsModule(",
@@ -94,9 +102,12 @@ public class ProgramCompositionRootTests
             "MapOpenApi(",
             "UseHttpsRedirection(",
             "UseRouting(",
+            "UseCors(",
             "UseRequestTimeouts(",
             "UseAuthentication(",
             "UseAuthorization(",
+            "UseRateLimiter(",
+            "MapHealthChecks(",
             "MapControllers("
         };
 
@@ -151,6 +162,7 @@ public class ProgramCompositionRootTests
             "var builder = WebApplication.CreateBuilder(args);",
             "builder.Configuration.AddApiConfiguration();",
             "builder.ConfigureRequestLimits();",
+            "builder.ConfigureApiHardening();",
             "builder.Services.AddApiPresentation();",
             "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);",
             "builder.Services.AddApiVersioningSupport();",

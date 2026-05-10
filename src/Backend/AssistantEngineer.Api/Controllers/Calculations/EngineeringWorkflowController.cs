@@ -1,4 +1,5 @@
 using AssistantEngineer.Api;
+using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
@@ -7,6 +8,7 @@ using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AssistantEngineer.Api.Controllers.Calculations;
 
@@ -168,6 +170,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [RequestTimeout(RequestPolicies.LongRunning)]
+    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
     [HttpPost("run-calculation")]
     public async Task<ActionResult<EngineeringCalculationScenarioResultDto>> RunCalculation(
         [FromBody] EngineeringCalculationScenarioRequestDto request,
@@ -187,6 +190,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     }
 
     [RequestTimeout(RequestPolicies.LongRunning)]
+    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
     [HttpPost("jobs")]
     public async Task<ActionResult<EngineeringCalculationJobResultDto>> CreateOrRunJob(
         [FromBody] EngineeringCalculationJobRequestDto request,
@@ -364,6 +368,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
             Diagnostics: diagnostics));
     }
 
+    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
     [HttpPost("report/export/json")]
     public ActionResult<EngineeringWorkflowReportExportResponseDto> ExportReportJson(
         [FromBody] EngineeringWorkflowReportExportRequestDto request)
@@ -380,6 +385,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
             Diagnostics: diagnostics));
     }
 
+    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
     [HttpPost("report/export/markdown")]
     public ActionResult<EngineeringWorkflowReportExportResponseDto> ExportReportMarkdown(
         [FromBody] EngineeringWorkflowReportExportRequestDto request)

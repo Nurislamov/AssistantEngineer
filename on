@@ -1,0 +1,19 @@
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/Configuration/ApiPipelineConfiguration.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/Program.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/appsettings.Development.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/appsettings.Testing.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/Backend/AssistantEngineer.Api/appsettings.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/AssistantEngineer.Tests/Api/ApiRequestPolicyTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/AssistantEngineer.Tests/Architecture/ApiConfigurationStructureTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/AssistantEngineer.Tests/Architecture/ProgramCompositionRootTests.cs', LF will be replaced by CRLF the next time Git touches it
+ .../Configuration/ApiPipelineConfiguration.cs      | 21 [32m++++++[m[31m-[m
+ .../Calculations/EngineeringWorkflowController.cs  |  6 [32m++[m
+ src/Backend/AssistantEngineer.Api/Program.cs       |  3 [32m+[m[31m-[m
+ .../appsettings.Development.json                   | 36 [32m+++++++++++[m
+ .../AssistantEngineer.Api/appsettings.Testing.json | 36 [32m+++++++++++[m
+ src/Backend/AssistantEngineer.Api/appsettings.json | 31 [32m++++++++++[m
+ .../Api/ApiRequestPolicyTests.cs                   | 55 [32m+++++++++++++++++[m
+ .../Architecture/ApiConfigurationStructureTests.cs | 72 [32m+++++++++++++++++++++[m[31m-[m
+ .../Architecture/ProgramCompositionRootTests.cs    | 14 [32m++++[m[31m-[m
+ 9 files changed, 270 insertions(+), 4 deletions(-)
