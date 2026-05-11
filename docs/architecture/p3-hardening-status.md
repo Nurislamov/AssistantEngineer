@@ -13,6 +13,7 @@ P3-08 introduces hotspot refactor phase 2 for engineering calculation job lifecy
 P3-09 introduces hotspot refactor phase 3 for engineering report builder decomposition.
 P3-10 introduces frontend workflow shell hotspot decomposition with extracted hook and focused view components.
 P3-11 introduces ISO 52016 physical room model builder hotspot decomposition into focused physical input/mapping components.
+P3-12 introduces ISO 52016 multi-zone hourly solver hotspot decomposition into focused internal orchestration components.
 
 This is a production-hardening foundation step and does not change engineering calculation physics.
 
@@ -180,6 +181,21 @@ This is a production-hardening foundation step and does not change engineering c
   - validation/default/fraction guard behavior.
 - Added architecture guard coverage to keep `Iso52016PhysicalRoomModelBuilder` as a thin orchestration facade and prevent regression to god-builder size.
 - No solver behavior changes and no calculation physics updates; this is internal decomposition only.
+
+## Implemented in P3-12
+
+- Decomposed `Iso52016MultiZoneHourlySolver` into focused internal multi-zone solver components while preserving the facade entrypoint:
+  - `Iso52016MultiZoneBoundaryResolver`
+  - `Iso52016MultiZoneCouplingBuilder`
+  - `Iso52016MultiZoneHourlySimulationLoop`
+  - `Iso52016MultiZoneHvacController`
+  - `Iso52016MultiZoneLinearSystem`
+  - `Iso52016MultiZoneResultAggregator`
+  - `Iso52016MultiZoneSolverDiagnostics`
+- Preserved deterministic hourly/zone ordering, diagnostics ordering, and boundary/coupling processing semantics.
+- Preserved existing numerical behavior and validation-anchor expectations (no expected numerical value updates).
+- Added architecture guard coverage to keep `Iso52016MultiZoneHourlySolver` as a thin orchestration facade and prevent regression to god-solver size.
+- No solver equation redesign and no calculation physics updates; this is internal decomposition only.
 
 ## Safety boundary
 

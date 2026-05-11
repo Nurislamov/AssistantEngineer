@@ -155,6 +155,24 @@ public sealed class Iso52016MultiZoneHourlySolverTests
     }
 
     [Fact]
+    public void TwoZoneHeatingCase_MatchesDeterministicReferenceValues()
+    {
+        var service = CreateService();
+        var result = service.Simulate(CreateTwoZoneHeatingInput(includeInterZoneConductance: false));
+
+        Assert.True(result.IsValid);
+        Assert.Single(result.HourlyResults);
+
+        var hour = result.HourlyResults[0];
+        AssertClose(21.0, hour.ZoneTemperaturesCelsius["ZONE-A"]);
+        AssertClose(21.0, hour.ZoneTemperaturesCelsius["ZONE-B"]);
+        AssertClose(2013.3333333333335, hour.HeatingLoadsByZoneW["ZONE-A"]);
+        AssertClose(2013.3333333333335, hour.HeatingLoadsByZoneW["ZONE-B"]);
+        AssertClose(4026.666666666667, hour.BuildingHeatingLoadW);
+        AssertClose(0.0, hour.BuildingCoolingLoadW);
+    }
+
+    [Fact]
     public void RepeatedRun_IsDeterministic()
     {
         var service = CreateService();
