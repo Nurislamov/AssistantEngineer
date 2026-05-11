@@ -196,6 +196,9 @@ public class P2HardeningStatusGuardTests
         Assert.Contains("P3-04", content, StringComparison.Ordinal);
         Assert.Contains("P3-05", content, StringComparison.Ordinal);
         Assert.Contains("P3-06", content, StringComparison.Ordinal);
+        Assert.Contains("P3-07", content, StringComparison.Ordinal);
+        Assert.Contains("P3-08", content, StringComparison.Ordinal);
+        Assert.Contains("P3-09", content, StringComparison.Ordinal);
         Assert.Contains("TryClaimQueuedJobAsync", content, StringComparison.Ordinal);
         Assert.Contains("LeaseExpiresAtUtc", content, StringComparison.Ordinal);
         Assert.Contains("durable idempotency", content, StringComparison.OrdinalIgnoreCase);

@@ -8,6 +8,9 @@ P3-03 introduces workflow snapshot bulk loading for workflow-state input assembl
 P3-04 introduces in-memory workflow persistence synchronization cleanup without public global SyncRoot locking.
 P3-05 introduces ISO52016 interface naming normalization from `IIso52016*` to `ISo52016*`.
 P3-06 introduces frontend browser-level E2E smoke baseline using Playwright with mocked workflow API routes.
+P3-07 introduces hotspot refactor phase 1 for workflow persistence payload/artifact responsibilities.
+P3-08 introduces hotspot refactor phase 2 for engineering calculation job lifecycle orchestration.
+P3-09 introduces hotspot refactor phase 3 for engineering report builder decomposition.
 
 This is a production-hardening foundation step and does not change engineering calculation physics.
 
@@ -97,6 +100,51 @@ This is a production-hardening foundation step and does not change engineering c
 - Kept Vitest/RTL as existing unit/component baseline; Playwright is a separate E2E smoke gate.
 - Kept E2E tests backend-independent by mocking workflow endpoints through Playwright route interception.
 
+## Implemented in P3-07
+
+- Decomposed `EngineeringWorkflowPersistenceService` into focused helpers without changing public API behavior:
+  - `EngineeringWorkflowPersistencePayloadService`
+  - `EngineeringWorkflowArtifactPersistenceService`
+- Kept persistence orchestration in `EngineeringWorkflowPersistenceService` as a facade.
+- Preserved payload limit and deterministic truncation behavior for:
+  - workflow state payload,
+  - scenario request/result/diagnostics payloads,
+  - artifact content payloads.
+- Added focused tests for extracted payload/artifact components and architecture guard on hotspot size.
+
+## Implemented in P3-08
+
+- Decomposed `EngineeringCalculationJobService` into focused lifecycle components while preserving facade entrypoints:
+  - `EngineeringCalculationJobStatusTransitionPolicy`
+  - `EngineeringCalculationJobEventRecorder`
+  - `EngineeringCalculationJobExecutionOrchestrator`
+  - `EngineeringCalculationJobPayloadCodec`
+- Centralized job status transition mapping and terminal/cancellation transition behavior.
+- Centralized job event persistence and deterministic event diagnostics serialization.
+- Separated claimed/synchronous execution orchestration from the facade while keeping:
+  - P3-01 atomic claim-before-execute semantics,
+  - P3-02 idempotency request semantics and route-level behavior.
+- Preserved existing public API routes and calculation runner usage (no controller execution logic and no calculation physics changes).
+- Added tests and guard coverage for:
+  - lifecycle policy transitions,
+  - event recorder behavior,
+  - claimed execution regression path,
+  - hotspot size/facade boundary.
+
+## Implemented in P3-09
+
+- Decomposed `EngineeringReportBuilder` into focused components while preserving report endpoints and report-generation behavior:
+  - `EngineeringReportSectionBuilder`
+  - `EngineeringReportDiagnosticsSectionBuilder`
+  - `EngineeringReportFormattingService`
+  - `EngineeringReportSectionSelectionPolicy`
+- Kept `EngineeringReportBuilder` as facade/entrypoint with deterministic section orchestration.
+- Preserved section ordering, report metadata keys, diagnostics aggregation behavior, and summary value mapping semantics.
+- Added focused tests for:
+  - section builders with missing-data and diagnostics behavior,
+  - formatting helper deterministic behavior,
+  - hotspot size/facade architecture guard.
+
 ## Safety boundary
 
 - No new engineering formulas.
@@ -121,5 +169,15 @@ This is a production-hardening foundation step and does not change engineering c
 - full frontend E2E coverage across all pages and failure modes,
 - real backend end-to-end integration for frontend smoke tests,
 - visual regression matrix and cross-browser matrix expansion.
+- no DB schema rewrite for workflow persistence,
+- no object/blob storage migration for artifacts,
+- no distributed artifact storage provider,
+- no broad persistence architecture rewrite.
+- no distributed stale-lease recovery or dead-letter queue,
+- no advanced retry scheduler/backoff strategy,
+- no cross-node exactly-once execution guarantee.
+- no report schema redesign or new report format family,
+- no visual/PDF report rendering subsystem redesign,
+- no object-storage migration for report artifacts.
 
 These remain future hardening steps.

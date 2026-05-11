@@ -1,7 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AssistantEngineer.Api.Contracts.Calculations;
 using Microsoft.Extensions.Options;
 
@@ -9,13 +5,6 @@ namespace AssistantEngineer.Api.Services.Calculations.Persistence;
 
 public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflowPersistenceService
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        WriteIndented = false
-    };
-
     private readonly IEngineeringProjectRepository _projectRepository;
     private readonly IEngineeringWorkflowStateRepository _workflowStateRepository;
     private readonly IEngineeringCalculationScenarioRepository _scenarioRepository;
@@ -23,6 +12,8 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
     private readonly IEngineeringScenarioHistoryRepository _historyRepository;
     private readonly EngineeringWorkflowPersistenceOptions _options;
     private readonly EngineeringWorkflowPayloadLimitsOptions _payloadLimits;
+    private readonly EngineeringWorkflowPersistencePayloadService _payloadService;
+    private readonly EngineeringWorkflowArtifactPersistenceService _artifactPersistenceService;
 
     public EngineeringWorkflowPersistenceService(
         IEngineeringProjectRepository projectRepository,
@@ -39,6 +30,11 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
         _historyRepository = historyRepository;
         _options = options.Value;
         _payloadLimits = _options.PayloadLimits;
+        _payloadService = new EngineeringWorkflowPersistencePayloadService(_payloadLimits);
+        _artifactPersistenceService = new EngineeringWorkflowArtifactPersistenceService(
+            _artifactRepository,
+            _payloadService,
+            _payloadLimits);
     }
 
     public EngineeringWorkflowPersistenceProviderInfo GetProviderInfo()
@@ -74,7 +70,7 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
             return null;
         }
 
-        var state = DeserializeWorkflowState(record.WorkflowStateJson);
+        var state = _payloadService.DeserializeWorkflowState(record.WorkflowStateJson);
         if (state is null)
         {
             return null;
@@ -106,7 +102,7 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
         var now = DateTimeOffset.UtcNow;
         await EnsureProjectRecordAsync(state.ProjectId, state.ProjectName, state.Metadata, now, cancellationToken);
 
-        var normalizedDiagnostics = SortAndDistinctDiagnostics(validationDiagnostics ?? state.Diagnostics).ToList();
+        var normalizedDiagnostics = _payloadService.SortAndDistinctDiagnostics(validationDiagnostics ?? state.Diagnostics).ToList();
         var normalizedState = state with
         {
             Diagnostics = normalizedDiagnostics,
@@ -115,10 +111,10 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
                 .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal)
         };
 
-        var statePayload = SerializeStatePayload(normalizedState, normalizedDiagnostics);
-        var diagnosticsJsonPayload = ApplyPayloadLimit(
+        var statePayload = _payloadService.SerializeStatePayload(normalizedState, normalizedDiagnostics);
+        var diagnosticsJsonPayload = _payloadService.ApplyPayloadLimit(
             "workflow-state-validation-diagnostics",
-            JsonSerializer.Serialize(statePayload.Diagnostics, JsonOptions),
+            _payloadService.Serialize(statePayload.Diagnostics),
             _payloadLimits.DiagnosticsJsonMaxBytes,
             contentType: "application/json");
 
@@ -153,8 +149,8 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
             baseTimestamp,
             cancellationToken);
 
-        var scenarioDiagnostics = SortAndDistinctDiagnostics(scenarioResult.ValidationDiagnostics).ToList();
-        var recordBuildResult = BuildScenarioRecord(
+        var scenarioDiagnostics = _payloadService.SortAndDistinctDiagnostics(scenarioResult.ValidationDiagnostics).ToList();
+        var recordBuildResult = _payloadService.BuildScenarioRecord(
             scenarioRequest,
             scenarioResult,
             scenarioDiagnostics,
@@ -186,19 +182,19 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
             baseTimestamp.AddMilliseconds(1),
             cancellationToken);
 
-        await SaveScenarioArtifactAsync(
+        await _artifactPersistenceService.SaveScenarioArtifactAsync(
             scenarioResult.ScenarioId,
             EngineeringCalculationArtifactKind.ValidationDiagnostics,
             "application/json",
-            JsonSerializer.Serialize(recordBuildResult.Diagnostics, JsonOptions),
+            _payloadService.Serialize(recordBuildResult.Diagnostics),
             baseTimestamp.AddMilliseconds(2),
             cancellationToken);
 
-        await SaveScenarioArtifactAsync(
+        await _artifactPersistenceService.SaveScenarioArtifactAsync(
             scenarioResult.ScenarioId,
             EngineeringCalculationArtifactKind.ScenarioResultJson,
             "application/json",
-            JsonSerializer.Serialize(persistedScenarioResult, JsonOptions),
+            _payloadService.Serialize(persistedScenarioResult),
             baseTimestamp.AddMilliseconds(3),
             cancellationToken);
 
@@ -222,8 +218,8 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
         var createdAt = existing?.CreatedAtUtc ?? baseTimestamp;
         var startedAt = existing?.StartedAtUtc ?? baseTimestamp;
 
-        var scenarioDiagnostics = SortAndDistinctDiagnostics(scenarioResult.ValidationDiagnostics).ToList();
-        var recordBuildResult = BuildScenarioRecord(
+        var scenarioDiagnostics = _payloadService.SortAndDistinctDiagnostics(scenarioResult.ValidationDiagnostics).ToList();
+        var recordBuildResult = _payloadService.BuildScenarioRecord(
             scenarioRequest,
             scenarioResult,
             scenarioDiagnostics,
@@ -292,31 +288,31 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
             historyTime = historyTime.AddMilliseconds(1);
         }
 
-        await SaveScenarioArtifactAsync(
+        await _artifactPersistenceService.SaveScenarioArtifactAsync(
             scenarioResult.ScenarioId,
             EngineeringCalculationArtifactKind.ValidationDiagnostics,
             "application/json",
-            JsonSerializer.Serialize(recordBuildResult.Diagnostics, JsonOptions),
+            _payloadService.Serialize(recordBuildResult.Diagnostics),
             historyTime,
             cancellationToken);
         historyTime = historyTime.AddMilliseconds(1);
 
-        await SaveScenarioArtifactAsync(
+        await _artifactPersistenceService.SaveScenarioArtifactAsync(
             scenarioResult.ScenarioId,
             EngineeringCalculationArtifactKind.ScenarioResultJson,
             "application/json",
-            JsonSerializer.Serialize(persistedScenarioResult, JsonOptions),
+            _payloadService.Serialize(persistedScenarioResult),
             historyTime,
             cancellationToken);
         historyTime = historyTime.AddMilliseconds(1);
 
         if (scenarioResult.CalculationTrace is not null)
         {
-            await SaveScenarioArtifactAsync(
+            await _artifactPersistenceService.SaveScenarioArtifactAsync(
                 scenarioResult.ScenarioId,
                 EngineeringCalculationArtifactKind.TraceJson,
                 "application/json",
-                JsonSerializer.Serialize(scenarioResult.CalculationTrace, JsonOptions),
+                _payloadService.Serialize(scenarioResult.CalculationTrace),
                 historyTime,
                 cancellationToken);
             historyTime = historyTime.AddMilliseconds(1);
@@ -324,7 +320,7 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
 
         if (!string.IsNullOrWhiteSpace(scenarioResult.ReportJson))
         {
-            await SaveScenarioArtifactAsync(
+            await _artifactPersistenceService.SaveScenarioArtifactAsync(
                 scenarioResult.ScenarioId,
                 EngineeringCalculationArtifactKind.ReportJson,
                 "application/json",
@@ -335,11 +331,11 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
         }
         else if (scenarioResult.EngineeringReport is not null)
         {
-            await SaveScenarioArtifactAsync(
+            await _artifactPersistenceService.SaveScenarioArtifactAsync(
                 scenarioResult.ScenarioId,
                 EngineeringCalculationArtifactKind.ReportJson,
                 "application/json",
-                JsonSerializer.Serialize(scenarioResult.EngineeringReport, JsonOptions),
+                _payloadService.Serialize(scenarioResult.EngineeringReport),
                 historyTime,
                 cancellationToken);
             historyTime = historyTime.AddMilliseconds(1);
@@ -347,7 +343,7 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
 
         if (!string.IsNullOrWhiteSpace(scenarioResult.ReportMarkdown))
         {
-            await SaveScenarioArtifactAsync(
+            await _artifactPersistenceService.SaveScenarioArtifactAsync(
                 scenarioResult.ScenarioId,
                 EngineeringCalculationArtifactKind.ReportMarkdown,
                 "text/markdown",
@@ -431,354 +427,9 @@ public sealed class EngineeringWorkflowPersistenceService : IEngineeringWorkflow
             ProjectId: projectId,
             EventKind: eventKind,
             Message: message,
-            DiagnosticsJson: JsonSerializer.Serialize(SortAndDistinctDiagnostics(diagnostics), JsonOptions),
+            DiagnosticsJson: _payloadService.Serialize(_payloadService.SortAndDistinctDiagnostics(diagnostics)),
             CreatedAtUtc: timestampUtc);
 
         await _historyRepository.AppendAsync(entry, cancellationToken);
     }
-
-    private async Task SaveScenarioArtifactAsync(
-        string scenarioId,
-        EngineeringCalculationArtifactKind artifactKind,
-        string contentType,
-        string content,
-        DateTimeOffset timestampUtc,
-        CancellationToken cancellationToken)
-    {
-        var limitedContent = ApplyPayloadLimit(
-            $"scenario-artifact-{artifactKind}",
-            content,
-            _payloadLimits.ArtifactContentMaxBytes,
-            contentType);
-        var bytes = Encoding.UTF8.GetBytes(limitedContent.Content);
-        var artifact = new EngineeringCalculationArtifactRecordDto(
-            ArtifactId: $"{scenarioId}:{artifactKind}",
-            ScenarioId: scenarioId,
-            ArtifactKind: artifactKind,
-            ContentType: contentType,
-            Content: limitedContent.Content,
-            CreatedAtUtc: timestampUtc,
-            SizeBytes: bytes.Length,
-            ChecksumSha256: Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant());
-
-        await _artifactRepository.SaveAsync(artifact, cancellationToken);
-    }
-
-    private ScenarioRecordBuildResult BuildScenarioRecord(
-        EngineeringCalculationScenarioRequestDto scenarioRequest,
-        EngineeringCalculationScenarioResultDto scenarioResult,
-        IReadOnlyList<EngineeringWorkflowDiagnosticDto> diagnostics,
-        DateTimeOffset createdAtUtc,
-        DateTimeOffset? startedAtUtc,
-        DateTimeOffset? completedAtUtc)
-    {
-        var mutableDiagnostics = diagnostics.ToList();
-        var requestJsonPayload = ApplyPayloadLimit(
-            "scenario-request-json",
-            JsonSerializer.Serialize(scenarioRequest, JsonOptions),
-            _payloadLimits.RequestJsonMaxBytes,
-            contentType: "application/json");
-        if (requestJsonPayload.WasTruncated)
-        {
-            mutableDiagnostics.Add(CreatePayloadDiagnostic(
-                code: "WORKFLOW_REQUEST_JSON_TRUNCATED",
-                message: $"Scenario request payload exceeded `{_payloadLimits.RequestJsonMaxBytes}` bytes and was truncated for persistence.",
-                sourceStep: "Review",
-                targetField: "requestJson"));
-        }
-
-        var summary = new SortedDictionary<string, object?>(StringComparer.Ordinal)
-        {
-            ["scenarioId"] = scenarioResult.ScenarioId,
-            ["status"] = scenarioResult.Status.ToString(),
-            ["executed"] = scenarioResult.Executed,
-            ["executedModules"] = scenarioResult.ExecutedModules.Order(StringComparer.Ordinal).ToArray(),
-            ["skippedModules"] = scenarioResult.SkippedModules.Order(StringComparer.Ordinal).ToArray(),
-            ["unavailableModules"] = scenarioResult.UnavailableModules.Order(StringComparer.Ordinal).ToArray(),
-            ["moduleSummaries"] = scenarioResult.ModuleSummaries,
-            ["timings"] = scenarioResult.Timings.OrderBy(item => item.ModuleKind, StringComparer.Ordinal).ToArray()
-        };
-
-        var resultSummaryPayload = ApplyPayloadLimit(
-            "scenario-result-summary-json",
-            JsonSerializer.Serialize(summary, JsonOptions),
-            _payloadLimits.ResultSummaryJsonMaxBytes,
-            contentType: "application/json");
-        if (resultSummaryPayload.WasTruncated)
-        {
-            mutableDiagnostics.Add(CreatePayloadDiagnostic(
-                code: "WORKFLOW_RESULT_SUMMARY_JSON_TRUNCATED",
-                message: $"Scenario result summary payload exceeded `{_payloadLimits.ResultSummaryJsonMaxBytes}` bytes and was truncated for persistence.",
-                sourceStep: "Review",
-                targetField: "resultSummaryJson"));
-        }
-
-        var normalizedDiagnostics = SortAndDistinctDiagnostics(mutableDiagnostics);
-        var diagnosticsJsonPayload = ApplyPayloadLimit(
-            "scenario-diagnostics-json",
-            JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
-            _payloadLimits.DiagnosticsJsonMaxBytes,
-            contentType: "application/json");
-        if (diagnosticsJsonPayload.WasTruncated)
-        {
-            normalizedDiagnostics = SortAndDistinctDiagnostics(normalizedDiagnostics.Append(CreatePayloadDiagnostic(
-                code: "WORKFLOW_DIAGNOSTICS_JSON_TRUNCATED",
-                message: $"Scenario diagnostics payload exceeded `{_payloadLimits.DiagnosticsJsonMaxBytes}` bytes and was truncated for persistence.",
-                sourceStep: "Validation",
-                targetField: "diagnosticsJson")));
-            diagnosticsJsonPayload = ApplyPayloadLimit(
-                "scenario-diagnostics-json",
-                JsonSerializer.Serialize(normalizedDiagnostics, JsonOptions),
-                _payloadLimits.DiagnosticsJsonMaxBytes,
-                contentType: "application/json");
-        }
-
-        var durationMilliseconds = scenarioResult.Timings.Sum(item => item.DurationMilliseconds);
-        var projectId = scenarioRequest.ProjectId ?? scenarioRequest.State.ProjectId;
-
-        return new ScenarioRecordBuildResult(
-            Record: new EngineeringCalculationScenarioRecordDto(
-            ScenarioId: scenarioResult.ScenarioId,
-            ProjectId: projectId,
-            BuildingId: scenarioRequest.BuildingId ?? scenarioRequest.State.BuildingId,
-            ScenarioKind: scenarioRequest.ScenarioKind,
-            ExecutionMode: scenarioRequest.ExecutionMode,
-            Status: scenarioResult.Status,
-            RequestJson: requestJsonPayload.Content,
-            ResultSummaryJson: resultSummaryPayload.Content,
-            CreatedAtUtc: createdAtUtc,
-            StartedAtUtc: startedAtUtc,
-            CompletedAtUtc: completedAtUtc,
-            DurationMilliseconds: durationMilliseconds > 0.0 ? durationMilliseconds : null,
-            DiagnosticsJson: diagnosticsJsonPayload.Content),
-            Diagnostics: normalizedDiagnostics);
-    }
-
-    private PayloadContent SerializeStatePayload(
-        EngineeringWorkflowStateDto state,
-        IReadOnlyList<EngineeringWorkflowDiagnosticDto> normalizedDiagnostics)
-    {
-        var serializedState = JsonSerializer.Serialize(state, JsonOptions);
-        if (!_payloadLimits.Enabled || Utf8ByteCount(serializedState) <= _payloadLimits.StateJsonMaxBytes)
-        {
-            return new PayloadContent(serializedState, normalizedDiagnostics, WasTruncated: false, OriginalBytes: Utf8ByteCount(serializedState), StoredBytes: Utf8ByteCount(serializedState));
-        }
-
-        var truncationDiagnostic = CreatePayloadDiagnostic(
-            code: "WORKFLOW_STATE_JSON_TRUNCATED",
-            message: $"Workflow state payload exceeded `{_payloadLimits.StateJsonMaxBytes}` bytes and was compacted for persistence.",
-            sourceStep: "Validation",
-            targetField: "workflowStateJson");
-        var compactDiagnostics = SortAndDistinctDiagnostics(normalizedDiagnostics.Append(truncationDiagnostic));
-        var compactState = state with
-        {
-            Zones = [],
-            Boundaries = [],
-            Diagnostics = compactDiagnostics,
-            Assumptions = SortAndDistinctAssumptions(
-                state.Assumptions.Append("Workflow state snapshot was compacted by persistence payload limits.")),
-            Links = [],
-            CalculationTraceSummary = null,
-            ReportSummary = null,
-            VentilationSettings = state.VentilationSettings with { Warnings = [] },
-            Metadata = new SortedDictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["payloadStateJsonTruncated"] = "true",
-                ["payloadTruncationMarker"] = _payloadLimits.TruncationMarker
-            }
-        };
-
-        var compactSerializedState = JsonSerializer.Serialize(compactState, JsonOptions);
-        if (Utf8ByteCount(compactSerializedState) > _payloadLimits.StateJsonMaxBytes)
-        {
-            var hardLimitedPayload = ApplyPayloadLimit(
-                "workflow-state-json-fallback",
-                compactSerializedState,
-                _payloadLimits.StateJsonMaxBytes,
-                contentType: "application/json");
-            return new PayloadContent(
-                hardLimitedPayload.Content,
-                compactDiagnostics,
-                WasTruncated: true,
-                OriginalBytes: Utf8ByteCount(serializedState),
-                StoredBytes: hardLimitedPayload.StoredBytes);
-        }
-
-        return new PayloadContent(
-            compactSerializedState,
-            compactDiagnostics,
-            WasTruncated: true,
-            OriginalBytes: Utf8ByteCount(serializedState),
-            StoredBytes: Utf8ByteCount(compactSerializedState));
-    }
-
-    private PayloadContent ApplyPayloadLimit(
-        string payloadName,
-        string content,
-        int maxBytes,
-        string contentType)
-    {
-        var originalBytes = Utf8ByteCount(content);
-        if (!_payloadLimits.Enabled || originalBytes <= maxBytes)
-        {
-            return new PayloadContent(content, [], WasTruncated: false, OriginalBytes: originalBytes, StoredBytes: originalBytes);
-        }
-
-        if (string.Equals(contentType, "application/json", StringComparison.OrdinalIgnoreCase))
-        {
-            var previewBudget = Math.Max(16, maxBytes / 3);
-            string envelopeJson;
-            do
-            {
-                var envelope = new SortedDictionary<string, object?>(StringComparer.Ordinal)
-                {
-                    ["truncated"] = true,
-                    ["payloadName"] = payloadName,
-                    ["marker"] = _payloadLimits.TruncationMarker,
-                    ["maxBytes"] = maxBytes,
-                    ["originalBytes"] = originalBytes,
-                    ["preview"] = TruncateUtf8WithMarker(content, previewBudget)
-                };
-                envelopeJson = JsonSerializer.Serialize(envelope, JsonOptions);
-                previewBudget = Math.Max(8, previewBudget / 2);
-            }
-            while (Utf8ByteCount(envelopeJson) > maxBytes && previewBudget > 8);
-
-            if (Utf8ByteCount(envelopeJson) > maxBytes)
-            {
-                envelopeJson = TruncateUtf8WithMarker(envelopeJson, maxBytes);
-            }
-
-            return new PayloadContent(
-                envelopeJson,
-                [],
-                WasTruncated: true,
-                OriginalBytes: originalBytes,
-                StoredBytes: Utf8ByteCount(envelopeJson));
-        }
-
-        var truncated = TruncateUtf8WithMarker(content, maxBytes);
-        return new PayloadContent(
-            truncated,
-            [],
-            WasTruncated: true,
-            OriginalBytes: originalBytes,
-            StoredBytes: Utf8ByteCount(truncated));
-    }
-
-    private EngineeringWorkflowDiagnosticDto CreatePayloadDiagnostic(
-        string code,
-        string message,
-        string sourceStep,
-        string targetField)
-    {
-        return new EngineeringWorkflowDiagnosticDto(
-            Severity: "warning",
-            Code: code,
-            Message: message,
-            SourceStep: sourceStep,
-            SourceModule: "Persistence",
-            SuggestedCorrection: "Reduce payload size via compact detail level or request narrower report/trace scope.",
-            TargetField: targetField);
-    }
-
-    private static int Utf8ByteCount(string value) => Encoding.UTF8.GetByteCount(value);
-
-    private string TruncateUtf8WithMarker(string value, int maxBytes)
-    {
-        if (maxBytes <= 0)
-        {
-            return string.Empty;
-        }
-
-        var marker = _payloadLimits.TruncationMarker;
-        var markerBytes = Utf8ByteCount(marker);
-        if (markerBytes >= maxBytes)
-        {
-            return marker[..Math.Min(marker.Length, maxBytes)];
-        }
-
-        var budget = maxBytes - markerBytes;
-        var runeBuffer = new StringBuilder();
-        var consumedBytes = 0;
-        foreach (var rune in value.EnumerateRunes())
-        {
-            var runeBytes = Utf8ByteCount(rune.ToString());
-            if (consumedBytes + runeBytes > budget)
-            {
-                break;
-            }
-
-            runeBuffer.Append(rune.ToString());
-            consumedBytes += runeBytes;
-        }
-
-        return string.Concat(runeBuffer.ToString(), marker);
-    }
-
-    private static IReadOnlyList<string> SortAndDistinctAssumptions(IEnumerable<string> assumptions)
-    {
-        return assumptions
-            .Where(item => !string.IsNullOrWhiteSpace(item))
-            .Distinct(StringComparer.Ordinal)
-            .OrderBy(item => item, StringComparer.Ordinal)
-            .ToArray();
-    }
-
-    private static EngineeringWorkflowStateDto? DeserializeWorkflowState(string rawJson)
-    {
-        try
-        {
-            return JsonSerializer.Deserialize<EngineeringWorkflowStateDto>(rawJson, JsonOptions);
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
-
-    private static IReadOnlyList<EngineeringWorkflowDiagnosticDto> SortAndDistinctDiagnostics(
-        IEnumerable<EngineeringWorkflowDiagnosticDto> diagnostics)
-    {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-
-        return diagnostics
-            .OrderByDescending(item => SeverityRank(item.Severity))
-            .ThenBy(item => item.SourceStep, StringComparer.Ordinal)
-            .ThenBy(item => item.Code, StringComparer.Ordinal)
-            .ThenBy(item => item.Message, StringComparer.Ordinal)
-            .Where(item => seen.Add($"{item.SourceStep}|{item.Code}|{item.Message}|{item.TargetField}"))
-            .ToArray();
-    }
-
-    private static int SeverityRank(string severity)
-    {
-        if (severity.Equals("error", StringComparison.OrdinalIgnoreCase))
-        {
-            return 4;
-        }
-
-        if (severity.Equals("warning", StringComparison.OrdinalIgnoreCase))
-        {
-            return 3;
-        }
-
-        if (severity.Equals("assumption", StringComparison.OrdinalIgnoreCase))
-        {
-            return 2;
-        }
-
-        return 1;
-    }
-
-    private sealed record ScenarioRecordBuildResult(
-        EngineeringCalculationScenarioRecordDto Record,
-        IReadOnlyList<EngineeringWorkflowDiagnosticDto> Diagnostics);
-
-    private sealed record PayloadContent(
-        string Content,
-        IReadOnlyList<EngineeringWorkflowDiagnosticDto> Diagnostics,
-        bool WasTruncated,
-        int OriginalBytes,
-        int StoredBytes);
 }

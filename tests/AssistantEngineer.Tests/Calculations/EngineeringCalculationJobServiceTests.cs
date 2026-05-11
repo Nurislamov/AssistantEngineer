@@ -73,6 +73,26 @@ public class EngineeringCalculationJobServiceTests
         Assert.Equal(EngineeringCalculationJobStatus.Running, skipped!.Status);
         Assert.Equal(0, fixture.Runner.InvocationCount);
     }
+
+    [Fact]
+    public async Task EngineeringCalculationJobExecuteClaimedSkipsWhenJobIsNotRunning()
+    {
+        var fixture = CreateFixture();
+        fixture.Runner.ResultFactory = request => CreateScenarioResult(request.ScenarioId, EngineeringCalculationExecutionStatus.Completed);
+        await fixture.Service.CreateOrRunJobAsync(
+            CreateJobRequest("job-not-running", "scenario-not-running", EngineeringCalculationJobExecutionMode.Queued),
+            CancellationToken.None);
+
+        var skipped = await fixture.Service.ExecuteClaimedJobAsync(
+            "job-not-running",
+            "worker-a",
+            CancellationToken.None);
+
+        Assert.NotNull(skipped);
+        Assert.Equal(EngineeringCalculationJobStatus.Queued, skipped!.Status);
+        Assert.Equal(0, fixture.Runner.InvocationCount);
+    }
+
     [Fact]
     public async Task EngineeringCalculationJobSynchronousExecutesRunnerAndStoresScenarioArtifacts()
     {
