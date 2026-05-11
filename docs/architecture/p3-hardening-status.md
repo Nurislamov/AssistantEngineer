@@ -7,6 +7,7 @@ P3-02 introduces durable idempotency foundation for heavy engineering workflow s
 P3-03 introduces workflow snapshot bulk loading for workflow-state input assembly.
 P3-04 introduces in-memory workflow persistence synchronization cleanup without public global SyncRoot locking.
 P3-05 introduces ISO52016 interface naming normalization from `IIso52016*` to `ISo52016*`.
+P3-06 introduces frontend browser-level E2E smoke baseline using Playwright with mocked workflow API routes.
 
 This is a production-hardening foundation step and does not change engineering calculation physics.
 
@@ -87,6 +88,15 @@ This is a production-hardening foundation step and does not change engineering c
 - Added architecture guards to prevent reintroduction of `IIso52016` identifiers and filenames.
 - Preserved existing runtime behavior and engineering calculation outputs (naming-only cleanup).
 
+## Implemented in P3-06
+
+- Added Playwright test infrastructure in frontend package (`@playwright/test`, config, and scripts).
+- Added browser-level smoke tests:
+  - app boot and workflow-shell render,
+  - workflow run happy-path with deterministic mocked API responses.
+- Kept Vitest/RTL as existing unit/component baseline; Playwright is a separate E2E smoke gate.
+- Kept E2E tests backend-independent by mocking workflow endpoints through Playwright route interception.
+
 ## Safety boundary
 
 - No new engineering formulas.
@@ -108,5 +118,8 @@ This is a production-hardening foundation step and does not change engineering c
 - large-scale performance benchmarking on production-size datasets,
 - global exactly-once execution guarantees across distributed transactions,
 - full audit/security model for job infrastructure.
+- full frontend E2E coverage across all pages and failure modes,
+- real backend end-to-end integration for frontend smoke tests,
+- visual regression matrix and cross-browser matrix expansion.
 
 These remain future hardening steps.

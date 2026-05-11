@@ -168,10 +168,14 @@ public class P2HardeningStatusGuardTests
         var packageJson = File.ReadAllText(packageJsonPath);
         Assert.Contains("\"test\"", packageJson, StringComparison.Ordinal);
         Assert.Contains("vitest", packageJson, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\"test:e2e\"", packageJson, StringComparison.Ordinal);
+        Assert.Contains("@playwright/test", packageJson, StringComparison.OrdinalIgnoreCase);
 
         Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src", "test", "setup.ts")));
         Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src", "entities", "engineering-workflow", "api", "engineeringWorkflowClient.test.ts")));
         Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src", "widgets", "engineering-workflow", "ui", "WorkflowDiagnosticsPanel.test.tsx")));
+        Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "playwright.config.ts")));
+        Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "tests", "e2e", "engineering-workflow.smoke.spec.ts")));
     }
 
     [Fact]
@@ -191,6 +195,7 @@ public class P2HardeningStatusGuardTests
         Assert.Contains("P3-03", content, StringComparison.Ordinal);
         Assert.Contains("P3-04", content, StringComparison.Ordinal);
         Assert.Contains("P3-05", content, StringComparison.Ordinal);
+        Assert.Contains("P3-06", content, StringComparison.Ordinal);
         Assert.Contains("TryClaimQueuedJobAsync", content, StringComparison.Ordinal);
         Assert.Contains("LeaseExpiresAtUtc", content, StringComparison.Ordinal);
         Assert.Contains("durable idempotency", content, StringComparison.OrdinalIgnoreCase);
@@ -199,6 +204,7 @@ public class P2HardeningStatusGuardTests
         Assert.Contains("N+1", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("SyncRoot", content, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ISo52016", content, StringComparison.Ordinal);
+        Assert.Contains("Playwright", content, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

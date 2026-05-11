@@ -40,3 +40,6 @@ artifacts/iso52016/physical-selection-application-integration-hardening/
 *.db
 *.db-shm
 *.db-wal
+playwright-report/
+test-results/
+blob-report/
