@@ -169,6 +169,49 @@ public class Iso52016PhysicalSurfaceModelBuilderTests
     }
 
     [Fact]
+    public void Build_SurfaceExpandedPath_PreservesDeterministicNodeAndBoundaryOrdering()
+    {
+        var result = _builder.Build(
+            new Iso52016PhysicalRoomModelRequest(
+                HourlyInputProfile: CreateInputProfile(),
+                Surfaces: new[]
+                {
+                    CreateSurface("alpha", Iso52016PhysicalSurfaceBoundaryType.Outdoor, 10),
+                    CreateSurface("beta", Iso52016PhysicalSurfaceBoundaryType.Ground, 20),
+                    CreateSurface("gamma", Iso52016PhysicalSurfaceBoundaryType.AdjacentConditioned, 8)
+                }));
+
+        Assert.True(result.IsSuccess, result.IsFailure ? result.Error : string.Empty);
+
+        var request = result.Value;
+        var nodeIds = request.Nodes.Select(item => item.NodeId).ToArray();
+        var boundaryIds = request.BoundaryConductances.Select(item => item.BoundaryId).ToArray();
+
+        Assert.Equal(
+            new[]
+            {
+                "air",
+                "surface:alpha",
+                "mass:alpha",
+                "surface:beta",
+                "mass:beta",
+                "surface:gamma",
+                "mass:gamma"
+            },
+            nodeIds);
+
+        Assert.Equal(
+            new[]
+            {
+                "outdoor",
+                "ground",
+                "adjacent-conditioned-zone",
+                "ventilation-air"
+            },
+            boundaryIds);
+    }
+
+    [Fact]
     public void Build_WithoutSurfaces_KeepsStep01ThreeNodeFallback()
     {
         var result = _builder.Build(

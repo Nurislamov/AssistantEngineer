@@ -11,6 +11,8 @@ P3-06 introduces frontend browser-level E2E smoke baseline using Playwright with
 P3-07 introduces hotspot refactor phase 1 for workflow persistence payload/artifact responsibilities.
 P3-08 introduces hotspot refactor phase 2 for engineering calculation job lifecycle orchestration.
 P3-09 introduces hotspot refactor phase 3 for engineering report builder decomposition.
+P3-10 introduces frontend workflow shell hotspot decomposition with extracted hook and focused view components.
+P3-11 introduces ISO 52016 physical room model builder hotspot decomposition into focused physical input/mapping components.
 
 This is a production-hardening foundation step and does not change engineering calculation physics.
 
@@ -145,6 +147,40 @@ This is a production-hardening foundation step and does not change engineering c
   - formatting helper deterministic behavior,
   - hotspot size/facade architecture guard.
 
+## Implemented in P3-10
+
+- Decomposed `EngineeringWorkflowShell.tsx` into focused frontend components without changing backend routes:
+  - `useEngineeringWorkflowShell` (workflow UI state/actions orchestration),
+  - `EngineeringWorkflowStepContent` (step-specific content rendering),
+  - `engineeringWorkflowShellViewModel` (pure view-model helpers).
+- Kept `EngineeringWorkflowShell` as a feature facade/container.
+- Preserved workflow UX behavior for:
+  - loading/error/query state handling,
+  - run/prepare/report actions,
+  - diagnostics, trace, report preview, scenario history, and job panel rendering.
+- Added frontend tests for:
+  - shell loading/error/render-action regression,
+  - extracted hook behavior,
+  - extracted view-model helper behavior.
+- Kept Vitest/RTL and Playwright smoke coverage green after decomposition.
+
+## Implemented in P3-11
+
+- Decomposed `Iso52016PhysicalRoomModelBuilder` into focused physical-model components while preserving its facade entrypoint:
+  - `Iso52016PhysicalRoomModelValidation`
+  - `Iso52016PhysicalRoomModelMapping`
+  - `Iso52016PhysicalThreeNodeRequestBuilder`
+  - `Iso52016PhysicalSurfaceExpandedRequestBuilder`
+  - `Iso52016PhysicalRoomModelRequestFactory`
+- Preserved deterministic physical model assembly behavior for:
+  - aggregated three-node fallback path,
+  - explicit surface-expanded path,
+  - operation-profile ventilation and gain split mapping,
+  - boundary condition mapping and fallback temperature selection,
+  - validation/default/fraction guard behavior.
+- Added architecture guard coverage to keep `Iso52016PhysicalRoomModelBuilder` as a thin orchestration facade and prevent regression to god-builder size.
+- No solver behavior changes and no calculation physics updates; this is internal decomposition only.
+
 ## Safety boundary
 
 - No new engineering formulas.
@@ -179,5 +215,8 @@ This is a production-hardening foundation step and does not change engineering c
 - no report schema redesign or new report format family,
 - no visual/PDF report rendering subsystem redesign,
 - no object-storage migration for report artifacts.
+- no broad frontend redesign or routing rewrite,
+- no full browser E2E matrix expansion,
+- no backend API contract change for workflow shell decomposition.
 
 These remain future hardening steps.
