@@ -1,15 +1,15 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016WindowSolarGainProfileBuilder : IIso52016WindowSolarGainProfileBuilder
+public sealed class Iso52016WindowSolarGainProfileBuilder : ISo52016WindowSolarGainProfileBuilder
 {
-    private readonly IIso52016WindowSolarGainCalculator _calculator;
+    private readonly ISo52016WindowSolarGainCalculator _calculator;
 
     public Iso52016WindowSolarGainProfileBuilder(
-        IIso52016WindowSolarGainCalculator calculator)
+        ISo52016WindowSolarGainCalculator calculator)
     {
         _calculator = calculator;
     }

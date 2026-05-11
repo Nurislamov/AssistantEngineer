@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 
@@ -57,7 +58,7 @@ public class EngineeringWorkflowP1InputSnapshotGuardTests
     }
 
     [Fact]
-    public void InputSnapshotBuilderIsTemporaryBoundaryForPerRoomQueriesUntilRepositoryBatchingExists()
+    public void InputSnapshotBuilderUsesBulkWorkflowInputQueryWithoutPerRoomNPlusOneCalls()
     {
         var path = Path.Combine(
             TestPaths.RepoRoot,
@@ -70,9 +71,35 @@ public class EngineeringWorkflowP1InputSnapshotGuardTests
             "EngineeringWorkflowInputSnapshotBuilder.cs");
         var source = File.ReadAllText(path);
 
-        Assert.Contains("GetRoomWallsAsync", source, StringComparison.Ordinal);
-        Assert.Contains("GetRoomWindowsAsync", source, StringComparison.Ordinal);
-        Assert.Contains("GetRoomVentilationParametersAsync", source, StringComparison.Ordinal);
-        Assert.Contains("GetRoomGroundContactAsync", source, StringComparison.Ordinal);
+        Assert.Contains("GetEngineeringWorkflowBulkInputAsync", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("GetRoomWallsAsync", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("GetRoomWindowsAsync", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("GetRoomVentilationParametersAsync", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("GetRoomGroundContactAsync", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("foreach (var room", source, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RoomRepositoryContractAndEfImplementationExposeBulkWorkflowInputReader()
+    {
+        var contractMethod = typeof(IRoomRepository).GetMethod(
+            "ListWithEngineeringInputsByBuildingIdAsync",
+            new[] { typeof(int), typeof(CancellationToken) });
+        Assert.NotNull(contractMethod);
+
+        var repositoryPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Infrastructure",
+            "Persistence",
+            "Repositories",
+            "RoomRepository.cs");
+
+        var source = File.ReadAllText(repositoryPath);
+        Assert.Contains("ListWithEngineeringInputsByBuildingIdAsync", source, StringComparison.Ordinal);
+        Assert.Contains(".Include(room => room.Windows)", source, StringComparison.Ordinal);
+        Assert.Contains(".Include(room => room.Walls)", source, StringComparison.Ordinal);
+        Assert.Contains(".Include(room => room.VentilationParameters)", source, StringComparison.Ordinal);
     }
 }

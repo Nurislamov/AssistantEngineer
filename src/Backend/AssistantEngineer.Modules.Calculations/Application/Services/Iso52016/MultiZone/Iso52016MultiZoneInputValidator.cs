@@ -5,7 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Standards;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
 
-public sealed class Iso52016MultiZoneInputValidator : IIso52016MultiZoneInputValidator
+public sealed class Iso52016MultiZoneInputValidator : ISo52016MultiZoneInputValidator
 {
     private static readonly HashSet<string> SupportedClaimFlags = new(StringComparer.OrdinalIgnoreCase)
     {

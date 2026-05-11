@@ -5,14 +5,14 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
-public sealed class Iso52016PhysicalRoomEnergySimulationService : IIso52016PhysicalRoomEnergySimulationService
+public sealed class Iso52016PhysicalRoomEnergySimulationService : ISo52016PhysicalRoomEnergySimulationService
 {
-    private readonly IIso52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
-    private readonly IIso52016MatrixHourlySolver _matrixHourlySolver;
+    private readonly ISo52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
+    private readonly ISo52016MatrixHourlySolver _matrixHourlySolver;
 
     public Iso52016PhysicalRoomEnergySimulationService(
-        IIso52016PhysicalRoomModelBuilder physicalRoomModelBuilder,
-        IIso52016MatrixHourlySolver matrixHourlySolver)
+        ISo52016PhysicalRoomModelBuilder physicalRoomModelBuilder,
+        ISo52016MatrixHourlySolver matrixHourlySolver)
     {
         _physicalRoomModelBuilder = physicalRoomModelBuilder;
         _matrixHourlySolver = matrixHourlySolver;

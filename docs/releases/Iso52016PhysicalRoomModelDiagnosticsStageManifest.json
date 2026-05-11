@@ -21,7 +21,7 @@
     "Not ASHRAE Standard 140 benchmark-grade claim."
   ],
   "implementationFiles": [
-    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelDiagnosticsBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomModelDiagnosticsBuilder.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsProfile.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelHourlyDiagnostics.cs",
     "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs",

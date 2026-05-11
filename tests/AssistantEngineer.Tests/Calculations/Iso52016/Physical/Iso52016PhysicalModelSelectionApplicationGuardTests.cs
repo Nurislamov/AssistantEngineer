@@ -66,9 +66,9 @@ public class Iso52016PhysicalModelSelectionApplicationGuardTests
 
         var service = File.ReadAllText(servicePath);
 
-        Assert.Contains("IIso52016MatrixReducedRoomModelBuilder", service);
-        Assert.Contains("IIso52016PhysicalRoomModelBuilder", service);
-        Assert.Contains("IIso52016MatrixHourlySolver", service);
+        Assert.Contains("ISo52016MatrixReducedRoomModelBuilder", service);
+        Assert.Contains("ISo52016PhysicalRoomModelBuilder", service);
+        Assert.Contains("ISo52016MatrixHourlySolver", service);
         Assert.Contains("ReducedMatrix", service);
         Assert.Contains("PhysicalNodeModel", service);
         Assert.DoesNotContain("new Iso52016MatrixHourlySolver(", service, StringComparison.OrdinalIgnoreCase);

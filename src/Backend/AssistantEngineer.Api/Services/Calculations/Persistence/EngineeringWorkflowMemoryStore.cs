@@ -1,36 +1,21 @@
 using AssistantEngineer.Api.Contracts.Calculations;
+using System.Collections.Concurrent;
 
 namespace AssistantEngineer.Api.Services.Calculations.Persistence;
 
 public sealed class EngineeringWorkflowMemoryStore
 {
-    public object SyncRoot { get; } = new();
+    public ConcurrentDictionary<int, EngineeringProjectRecordDto> Projects { get; } = new();
 
-    public Dictionary<int, EngineeringProjectRecordDto> Projects { get; } = [];
+    public ConcurrentDictionary<string, EngineeringWorkflowStateRecordDto> WorkflowStatesById { get; } = new(StringComparer.Ordinal);
 
-    public Dictionary<string, EngineeringWorkflowStateRecordDto> WorkflowStatesById { get; } = [];
+    public ConcurrentDictionary<string, EngineeringCalculationScenarioRecordDto> ScenariosById { get; } = new(StringComparer.Ordinal);
 
-    public Dictionary<int, List<string>> WorkflowStateIdsByProjectId { get; } = [];
+    public ConcurrentDictionary<string, EngineeringCalculationArtifactRecordDto> ArtifactsById { get; } = new(StringComparer.Ordinal);
 
-    public Dictionary<string, EngineeringCalculationScenarioRecordDto> ScenariosById { get; } = [];
+    public ConcurrentDictionary<string, EngineeringScenarioHistoryEntryDto> HistoryById { get; } = new(StringComparer.Ordinal);
 
-    public Dictionary<int, List<string>> ScenarioIdsByProjectId { get; } = [];
+    public ConcurrentDictionary<string, EngineeringCalculationJobRecordDto> JobsById { get; } = new(StringComparer.Ordinal);
 
-    public Dictionary<string, EngineeringCalculationArtifactRecordDto> ArtifactsById { get; } = [];
-
-    public Dictionary<string, List<string>> ArtifactIdsByScenarioId { get; } = [];
-
-    public Dictionary<string, EngineeringScenarioHistoryEntryDto> HistoryById { get; } = [];
-
-    public Dictionary<string, List<string>> HistoryIdsByScenarioId { get; } = [];
-
-    public Dictionary<int, List<string>> HistoryIdsByProjectId { get; } = [];
-
-    public Dictionary<string, EngineeringCalculationJobRecordDto> JobsById { get; } = [];
-
-    public Dictionary<int, List<string>> JobIdsByProjectId { get; } = [];
-
-    public Dictionary<string, EngineeringCalculationJobEventRecordDto> JobEventsById { get; } = [];
-
-    public Dictionary<string, List<string>> JobEventIdsByJobId { get; } = [];
+    public ConcurrentDictionary<string, EngineeringCalculationJobEventRecordDto> JobEventsById { get; } = new(StringComparer.Ordinal);
 }

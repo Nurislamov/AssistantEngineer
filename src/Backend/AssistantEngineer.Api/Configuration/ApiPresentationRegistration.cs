@@ -35,7 +35,8 @@ internal static class ApiPresentationRegistration
                 configuration.GetSection(EngineeringCalculationJobWorkerOptions.SectionName).Bind(options);
             })
             .Validate(options => options.PollIntervalSeconds > 0, "Engineering calculation job worker poll interval must be positive.")
-            .Validate(options => options.BatchSize > 0, "Engineering calculation job worker batch size must be positive.");
+            .Validate(options => options.BatchSize > 0, "Engineering calculation job worker batch size must be positive.")
+            .Validate(options => options.LeaseDurationSeconds > 0, "Engineering calculation job worker lease duration must be positive.");
         services.AddHostedService<EngineeringCalculationJobWorker>();
 
         services.AddControllers();

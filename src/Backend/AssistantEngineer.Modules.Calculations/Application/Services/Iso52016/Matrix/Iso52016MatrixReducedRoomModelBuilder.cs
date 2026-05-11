@@ -5,7 +5,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016MatrixReducedRoomModelBuilder : IIso52016MatrixReducedRoomModelBuilder
+public sealed class Iso52016MatrixReducedRoomModelBuilder : ISo52016MatrixReducedRoomModelBuilder
 {
     public Result<Iso52016MatrixHourlySolverRequest> Build(
         Iso52016MatrixReducedRoomModelRequest request)

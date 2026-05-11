@@ -19,9 +19,9 @@ The guard tests inspect the selection contracts and service source to ensure:
 - `ReducedMatrix` and `PhysicalNodeModel` remain visible strategy names;
 - `Iso52016PhysicalModelSelectionRequest` defaults to `ReducedMatrix`;
 - `Iso52016PhysicalModelSelectionService` depends on:
-  - `IIso52016MatrixReducedRoomModelBuilder`;
-  - `IIso52016PhysicalRoomModelBuilder`;
-  - `IIso52016MatrixHourlySolver`;
+  - `ISo52016MatrixReducedRoomModelBuilder`;
+  - `ISo52016PhysicalRoomModelBuilder`;
+  - `ISo52016MatrixHourlySolver`;
 - the service does not instantiate a new Matrix solver directly;
 - the Matrix all-verification script exposes this stage for discoverability.
 

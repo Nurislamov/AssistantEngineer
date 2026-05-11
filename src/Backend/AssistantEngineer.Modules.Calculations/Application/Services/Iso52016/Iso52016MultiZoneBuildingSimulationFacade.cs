@@ -4,12 +4,12 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Mult
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016MultiZoneBuildingSimulationFacade : IIso52016MultiZoneBuildingSimulationFacade
+public sealed class Iso52016MultiZoneBuildingSimulationFacade : ISo52016MultiZoneBuildingSimulationFacade
 {
-    private readonly IIso52016MultiZoneEnergySimulationService _service;
+    private readonly ISo52016MultiZoneEnergySimulationService _service;
 
     public Iso52016MultiZoneBuildingSimulationFacade(
-        IIso52016MultiZoneEnergySimulationService service)
+        ISo52016MultiZoneEnergySimulationService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

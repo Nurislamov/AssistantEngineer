@@ -7,6 +7,8 @@ namespace AssistantEngineer.Api.Services.Calculations;
 
 public sealed class EngineeringCalculationJobService : IEngineeringCalculationJobService
 {
+    private static readonly TimeSpan DefaultDirectClaimLease = TimeSpan.FromMinutes(5);
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -118,11 +120,49 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             warnings,
             diagnostics,
             timestamp.AddMilliseconds(2),
+            persistRunningState: true,
             cancellationToken);
     }
 
     public async Task<EngineeringCalculationJobResultDto?> ExecuteQueuedJobAsync(
         string jobId,
+        CancellationToken cancellationToken)
+    {
+        var claimedJob = await _jobRepository.TryClaimQueuedJobAsync(
+            jobId,
+            workerId: "direct-queued-executor",
+            leaseDuration: DefaultDirectClaimLease,
+            cancellationToken);
+
+        if (claimedJob is null)
+        {
+            var existing = await _jobRepository.GetByIdAsync(jobId, cancellationToken);
+            if (existing is null)
+            {
+                return null;
+            }
+
+            var existingDiagnostics = DeserializeDiagnostics(existing.DiagnosticsJson);
+            _logger.LogInformation(
+                "Engineering queued job execution skipped because queued claim failed. JobId={JobId}, Status={Status}, ClaimedByWorkerId={ClaimedByWorkerId}",
+                existing.JobId,
+                existing.Status,
+                existing.ClaimedByWorkerId ?? "n/a");
+            return await BuildJobResultAsync(
+                existing,
+                DeserializeScenarioResult(existing.ResultSummaryJson),
+                existingDiagnostics,
+                assumptions: [],
+                warnings: [],
+                cancellationToken);
+        }
+
+        return await ExecuteClaimedJobAsync(claimedJob.JobId, "direct-queued-executor", cancellationToken);
+    }
+
+    public async Task<EngineeringCalculationJobResultDto?> ExecuteClaimedJobAsync(
+        string jobId,
+        string workerId,
         CancellationToken cancellationToken)
     {
         var job = await _jobRepository.GetByIdAsync(jobId, cancellationToken);
@@ -158,12 +198,28 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             return await BuildJobResultAsync(job, null, SortAndDistinctDiagnostics(diagnostics), [], [], cancellationToken);
         }
 
-        if (job.Status is not (EngineeringCalculationJobStatus.Queued or EngineeringCalculationJobStatus.RetryScheduled))
+        if (job.Status is not EngineeringCalculationJobStatus.Running)
         {
             _logger.LogInformation(
-                "Engineering queued job execution skipped because state is not queued. JobId={JobId}, Status={Status}",
+                "Engineering queued job execution skipped because state is not running. JobId={JobId}, Status={Status}",
                 job.JobId,
                 job.Status);
+            return await BuildJobResultAsync(
+                job,
+                DeserializeScenarioResult(job.ResultSummaryJson),
+                diagnostics,
+                assumptions: [],
+                warnings: [],
+                cancellationToken);
+        }
+
+        if (!string.Equals(job.ClaimedByWorkerId, workerId, StringComparison.Ordinal))
+        {
+            _logger.LogInformation(
+                "Engineering queued job execution skipped because running claim owner differs. JobId={JobId}, ClaimedByWorkerId={ClaimedByWorkerId}, RequestedWorkerId={RequestedWorkerId}",
+                job.JobId,
+                job.ClaimedByWorkerId ?? "n/a",
+                workerId);
             return await BuildJobResultAsync(
                 job,
                 DeserializeScenarioResult(job.ResultSummaryJson),
@@ -192,6 +248,17 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             return await BuildJobResultAsync(job, null, diagnostics, [], [], cancellationToken);
         }
 
+        var startedAt = job.StartedAtUtc ?? DateTimeOffset.UtcNow;
+        await AppendEventAsync(
+            job,
+            EngineeringCalculationJobStatus.Running,
+            "Calculation job started.",
+            null,
+            job.ProgressPercent,
+            diagnostics,
+            startedAt,
+            cancellationToken);
+
         var assumptions = new List<string>
         {
             "Queued job was picked up by the background worker; execution still uses the existing scenario runner."
@@ -204,7 +271,8 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
             assumptions,
             warnings,
             diagnostics,
-            DateTimeOffset.UtcNow,
+            startedAt,
+            persistRunningState: false,
             cancellationToken);
     }
 
@@ -350,18 +418,23 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         List<string> warnings,
         List<EngineeringWorkflowDiagnosticDto> diagnostics,
         DateTimeOffset startedAt,
+        bool persistRunningState,
         CancellationToken cancellationToken)
     {
-        job = job with
+        if (persistRunningState)
         {
-            Status = EngineeringCalculationJobStatus.Running,
-            ProgressPercent = 25,
-            CurrentStep = "Running",
-            StartedAtUtc = startedAt,
-            UpdatedAtUtc = startedAt
-        };
-        job = await _jobRepository.UpdateAsync(job, cancellationToken);
-        await AppendEventAsync(job, EngineeringCalculationJobStatus.Running, "Calculation job started.", null, job.ProgressPercent, diagnostics, startedAt, cancellationToken);
+            job = job with
+            {
+                Status = EngineeringCalculationJobStatus.Running,
+                ProgressPercent = 25,
+                CurrentStep = "Running",
+                StartedAtUtc = startedAt,
+                UpdatedAtUtc = startedAt
+            };
+            job = await _jobRepository.UpdateAsync(job, cancellationToken);
+            await AppendEventAsync(job, EngineeringCalculationJobStatus.Running, "Calculation job started.", null, job.ProgressPercent, diagnostics, startedAt, cancellationToken);
+        }
+
         _logger.LogInformation(
             "Engineering calculation job started. JobId={JobId}, ScenarioId={ScenarioId}, ProjectId={ProjectId}",
             job.JobId,

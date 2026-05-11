@@ -8,7 +8,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016WindowSolarGainCalculator : IIso52016WindowSolarGainCalculator
+public sealed class Iso52016WindowSolarGainCalculator : ISo52016WindowSolarGainCalculator
 {
     private readonly WindowSolarGainEngine _engine;
 

@@ -180,7 +180,7 @@ public class Iso52016AnnualDiagnosticsVisibilityTests
             0.0;
     }
 
-    private sealed class DiagnosticWeatherSolarContextBuilder : IIso52016WeatherSolarContextBuilder
+    private sealed class DiagnosticWeatherSolarContextBuilder : ISo52016WeatherSolarContextBuilder
     {
         public Result<Iso52016WeatherSolarContext> Build(
             Iso52016WeatherSolarContextRequest request)

@@ -11,6 +11,8 @@ namespace AssistantEngineer.Tests.Persistence;
 public class EngineeringWorkflowPersistenceMigrationTests
 {
     private const string InitialMigrationId = EngineeringWorkflowPersistenceDatabaseInitializer.InitialMigrationId;
+    private const string ClaimLeaseMigrationId = "20260511000100_AddEngineeringJobClaimLeaseMetadata";
+    private const string IdempotencyRecordsMigrationId = "20260511000200_AddEngineeringWorkflowIdempotencyRecords";
 
     [Fact]
     public void WorkflowPersistenceInitializerUsesMigrationsInsteadOfEnsureCreated()
@@ -70,6 +72,57 @@ public class EngineeringWorkflowPersistenceMigrationTests
     }
 
     [Fact]
+    public void WorkflowPersistenceHasClaimLeaseMigrationForQueuedJobAtomicity()
+    {
+        var path = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Api",
+            "Services",
+            "Calculations",
+            "Persistence",
+            "Durable",
+            "Migrations",
+            "20260511000100_AddEngineeringJobClaimLeaseMetadata.cs");
+
+        Assert.True(File.Exists(path), $"Claim/lease workflow persistence migration is missing: {path}");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains($"[Migration(\"{ClaimLeaseMigrationId}\")]", content, StringComparison.Ordinal);
+        Assert.Contains("engineering_workflow_jobs", content, StringComparison.Ordinal);
+        Assert.Contains("ClaimedByWorkerId", content, StringComparison.Ordinal);
+        Assert.Contains("ClaimedAtUtc", content, StringComparison.Ordinal);
+        Assert.Contains("LeaseExpiresAtUtc", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void WorkflowPersistenceHasIdempotencyRecordsMigration()
+    {
+        var path = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Api",
+            "Services",
+            "Calculations",
+            "Persistence",
+            "Durable",
+            "Migrations",
+            "20260511000200_AddEngineeringWorkflowIdempotencyRecords.cs");
+
+        Assert.True(File.Exists(path), $"Idempotency workflow persistence migration is missing: {path}");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains($"[Migration(\"{IdempotencyRecordsMigrationId}\")]", content, StringComparison.Ordinal);
+        Assert.Contains("engineering_workflow_idempotency_records", content, StringComparison.Ordinal);
+        Assert.Contains("Scope", content, StringComparison.Ordinal);
+        Assert.Contains("IdempotencyKey", content, StringComparison.Ordinal);
+        Assert.Contains("RequestFingerprint", content, StringComparison.Ordinal);
+        Assert.Contains("IX_engineering_workflow_idempotency_records_Scope_IdempotencyKey", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void SqliteProviderAppliesInitialMigrationOnStartup()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"assistant-engineer-workflow-migration-{Guid.NewGuid():N}.db");
@@ -90,6 +143,8 @@ public class EngineeringWorkflowPersistenceMigrationTests
             var migrations = ReadMigrationHistory(dbPath);
 
             Assert.Contains(InitialMigrationId, migrations);
+            Assert.Contains(ClaimLeaseMigrationId, migrations);
+            Assert.Contains(IdempotencyRecordsMigrationId, migrations);
         }
         finally
         {
@@ -128,6 +183,8 @@ public class EngineeringWorkflowPersistenceMigrationTests
             var migrations = ReadMigrationHistory(dbPath);
 
             Assert.Contains(InitialMigrationId, migrations);
+            Assert.Contains(ClaimLeaseMigrationId, migrations);
+            Assert.Contains(IdempotencyRecordsMigrationId, migrations);
         }
         finally
         {

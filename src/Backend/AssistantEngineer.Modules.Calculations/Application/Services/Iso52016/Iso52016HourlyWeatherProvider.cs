@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
@@ -14,7 +14,7 @@ internal sealed class Iso52016HourlyWeatherProvider
 {
     private readonly IAnnualClimateDataProvider _climateDataProvider;
     private readonly IGroundTemperatureService _groundTemperatureService;
-    private readonly IIso52016WeatherSolarContextBuilder? _weatherSolarContextBuilder;
+    private readonly ISo52016WeatherSolarContextBuilder? _weatherSolarContextBuilder;
     private readonly Iso52016EnergyNeedOptions _options;
     private readonly ILogger _logger;
 
@@ -22,7 +22,7 @@ internal sealed class Iso52016HourlyWeatherProvider
         IAnnualClimateDataProvider climateDataProvider,
         IGroundTemperatureService groundTemperatureService,
         Iso52016EnergyNeedOptions options,
-        IIso52016WeatherSolarContextBuilder? weatherSolarContextBuilder = null,
+        ISo52016WeatherSolarContextBuilder? weatherSolarContextBuilder = null,
         ILogger? logger = null)
     {
         _climateDataProvider = climateDataProvider;

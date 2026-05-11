@@ -35,7 +35,7 @@ public class Iso52016ClimateDataValidationTests
         Assert.Equal(1, provider.HasClimateDataCallCount);
     }
 
-    private sealed class CountingReferenceDataProvider : IIso52016ReferenceDataProvider
+    private sealed class CountingReferenceDataProvider : ISo52016ReferenceDataProvider
     {
         private readonly bool _hasClimateData;
 

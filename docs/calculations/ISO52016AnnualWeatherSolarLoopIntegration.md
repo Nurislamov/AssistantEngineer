@@ -5,7 +5,7 @@ Stage 4 wires the ISO 52016 weather/solar context into the annual hourly steady-
 ## Closed scope
 
 - `Iso52016HourlyWeatherContext` carries an optional `Iso52016WeatherSolarContext`.
-- `Iso52016HourlyWeatherProvider` can build that context through `IIso52016WeatherSolarContextBuilder`.
+- `Iso52016HourlyWeatherProvider` can build that context through `ISo52016WeatherSolarContextBuilder`.
 - `Iso52016HourlySteadyStateCalculator` passes `weatherContext.WeatherSolarContext?.GetHour(weather.HourOfYear)` into `Iso52016HourlyHeatBalanceCalculator`.
 - The legacy `ISolarRadiationService` path remains available when the weather/solar context is not provided.
 

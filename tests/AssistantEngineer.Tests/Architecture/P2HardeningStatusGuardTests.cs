@@ -173,4 +173,47 @@ public class P2HardeningStatusGuardTests
         Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src", "entities", "engineering-workflow", "api", "engineeringWorkflowClient.test.ts")));
         Assert.True(File.Exists(Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src", "widgets", "engineering-workflow", "ui", "WorkflowDiagnosticsPanel.test.tsx")));
     }
+
+    [Fact]
+    public void P3QueuedWorkerAtomicClaimStatusDocExists()
+    {
+        var path = Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "architecture",
+            "p3-hardening-status.md");
+
+        Assert.True(File.Exists(path), $"P3 hardening status doc must exist: {path}");
+
+        var content = File.ReadAllText(path);
+        Assert.Contains("P3-01", content, StringComparison.Ordinal);
+        Assert.Contains("P3-02", content, StringComparison.Ordinal);
+        Assert.Contains("P3-03", content, StringComparison.Ordinal);
+        Assert.Contains("P3-04", content, StringComparison.Ordinal);
+        Assert.Contains("P3-05", content, StringComparison.Ordinal);
+        Assert.Contains("TryClaimQueuedJobAsync", content, StringComparison.Ordinal);
+        Assert.Contains("LeaseExpiresAtUtc", content, StringComparison.Ordinal);
+        Assert.Contains("durable idempotency", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Scope, IdempotencyKey", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("bulk", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("N+1", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("SyncRoot", content, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ISo52016", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void IdempotencyRegistrationSupportsDurableAndInMemoryProviders()
+    {
+        var registrationPath = Path.Combine(
+            TestPaths.ApiProjectPath,
+            "Services",
+            "Calculations",
+            "Idempotency",
+            "EngineeringIdempotencyServiceRegistration.cs");
+
+        var content = File.ReadAllText(registrationPath);
+        Assert.Contains("EngineeringWorkflowPersistenceProvider.SQLite", content, StringComparison.Ordinal);
+        Assert.Contains("EfEngineeringIdempotencyService", content, StringComparison.Ordinal);
+        Assert.Contains("InMemoryEngineeringIdempotencyService", content, StringComparison.Ordinal);
+    }
 }

@@ -4,14 +4,14 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016BuildingDomainSimulationFacade : IIso52016BuildingDomainSimulationFacade
+public sealed class Iso52016BuildingDomainSimulationFacade : ISo52016BuildingDomainSimulationFacade
 {
-    private readonly IIso52016BuildingRoomCollector _roomCollector;
-    private readonly IIso52016BuildingSimulationFacade _buildingSimulationFacade;
+    private readonly ISo52016BuildingRoomCollector _roomCollector;
+    private readonly ISo52016BuildingSimulationFacade _buildingSimulationFacade;
 
     public Iso52016BuildingDomainSimulationFacade(
-        IIso52016BuildingRoomCollector roomCollector,
-        IIso52016BuildingSimulationFacade buildingSimulationFacade)
+        ISo52016BuildingRoomCollector roomCollector,
+        ISo52016BuildingSimulationFacade buildingSimulationFacade)
     {
         _roomCollector = roomCollector;
         _buildingSimulationFacade = buildingSimulationFacade;

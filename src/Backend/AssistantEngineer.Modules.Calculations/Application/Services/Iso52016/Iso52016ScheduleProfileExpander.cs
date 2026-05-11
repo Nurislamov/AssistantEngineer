@@ -1,9 +1,9 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Schedules;
+using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016ScheduleProfileExpander : IIso52016ScheduleProfileExpander
+public sealed class Iso52016ScheduleProfileExpander : ISo52016ScheduleProfileExpander
 {
     public IReadOnlyList<double> ExpandToAnnualProfile(
         HourlySchedule? schedule,

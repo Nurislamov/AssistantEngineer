@@ -1,10 +1,10 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016BuildingRoomCollector : IIso52016BuildingRoomCollector
+public sealed class Iso52016BuildingRoomCollector : ISo52016BuildingRoomCollector
 {
     public Result<IReadOnlyList<Room>> CollectRooms(
         Building building)

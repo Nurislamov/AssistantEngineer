@@ -1,11 +1,11 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.WeatherSolar;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class PeriodicIso52016GroundBoundaryTemperatureProvider : IIso52016GroundBoundaryTemperatureProvider
+public sealed class PeriodicIso52016GroundBoundaryTemperatureProvider : ISo52016GroundBoundaryTemperatureProvider
 {
     private const double DaysPerYear = 365.0;
 

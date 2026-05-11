@@ -44,7 +44,7 @@ public class Iso52016PhysicalModelSelectionStageTraceabilityTests
         RegistryContainsStageFile(
             "AE-ISO52016-002-STEP-10",
             "requiredSourceFiles",
-            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs");
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalModelSelectionService.cs");
         RegistryContainsStageFile(
             "AE-ISO52016-002-STEP-10",
             "requiredTestFiles",

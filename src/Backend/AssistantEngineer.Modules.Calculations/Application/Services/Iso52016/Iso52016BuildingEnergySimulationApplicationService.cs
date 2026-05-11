@@ -8,17 +8,17 @@ using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016BuildingEnergySimulationApplicationService : IIso52016BuildingEnergySimulationApplicationService
+public sealed class Iso52016BuildingEnergySimulationApplicationService : ISo52016BuildingEnergySimulationApplicationService
 {
     private readonly IBuildingRepository _buildings;
     private readonly IAnnualClimateDataProvider _annualClimateData;
-    private readonly IIso52016BuildingDomainSimulationFacade _buildingSimulationFacade;
+    private readonly ISo52016BuildingDomainSimulationFacade _buildingSimulationFacade;
     private readonly Iso52016EnergyNeedOptions _options;
 
     public Iso52016BuildingEnergySimulationApplicationService(
         IBuildingRepository buildings,
         IAnnualClimateDataProvider annualClimateData,
-        IIso52016BuildingDomainSimulationFacade buildingSimulationFacade,
+        ISo52016BuildingDomainSimulationFacade buildingSimulationFacade,
         IOptions<Iso52016EnergyNeedOptions> options)
     {
         _buildings = buildings;

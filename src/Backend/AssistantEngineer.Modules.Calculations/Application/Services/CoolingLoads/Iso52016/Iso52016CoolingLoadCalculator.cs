@@ -20,7 +20,7 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoa
 public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationStrategy
 {
     private readonly Iso52016CoolingLoadOptions _options;
-    private readonly IIso52016ReferenceDataProvider _referenceDataProvider;
+    private readonly ISo52016ReferenceDataProvider _referenceDataProvider;
     private readonly IHourlyProfileAggregator _profileAggregator;
     private readonly WindowSolarGainEngine _windowSolarGains;
     private readonly TransmissionHeatTransferEngine _transmissionHeatTransfer;
@@ -29,7 +29,7 @@ public sealed class Iso52016CoolingLoadCalculator : IRoomCoolingLoadCalculationS
 
     public Iso52016CoolingLoadCalculator(
         IOptions<Iso52016CoolingLoadOptions> options,
-        IIso52016ReferenceDataProvider referenceDataProvider,
+        ISo52016ReferenceDataProvider referenceDataProvider,
         IHourlyProfileAggregator profileAggregator,
         WindowSolarGainEngine? windowSolarGains = null,
         TransmissionHeatTransferEngine? transmissionHeatTransfer = null,

@@ -60,6 +60,7 @@ public static class DependencyInjection
         services.AddScoped<BuildingAutocorrectionPlanner>();
         services.AddScoped<BuildingModelValidationService>();
         services.AddScoped<BuildingModelAutocorrectionService>();
+        services.AddScoped<EngineeringWorkflowBulkInputQueryService>();
 
         services.AddScoped<FloorCommandService>();
         services.AddScoped<FloorQueryService>();

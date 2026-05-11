@@ -1,4 +1,4 @@
-﻿{
+{
   "registryId": "AE-ISO52016-VERIFICATION-REGISTRY",
   "title": "ISO52016 Matrix and Physical verification registry",
   "owner": "tools/AssistantEngineer.Tools.Iso52016Verification",
@@ -385,7 +385,7 @@
         "docs/calculations/Iso52016PhysicalNodeModelStage.md"
       ],
       "requiredSourceFiles": [
-        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomModelBuilder.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelRequest.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs"
       ],
@@ -542,7 +542,7 @@
         "docs/calculations/Iso52016PhysicalRoomSimulationServiceStage.md"
       ],
       "requiredSourceFiles": [
-        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomEnergySimulationService.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationService.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomEnergySimulationResult.cs"
       ],
@@ -582,7 +582,7 @@
         "docs/calculations/Iso52016PhysicalRoomModelDiagnosticsStage.md"
       ],
       "requiredSourceFiles": [
-        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomModelDiagnosticsBuilder.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsProfile.cs"
       ],
@@ -736,7 +736,7 @@
         "docs/calculations/Iso52016PhysicalModelSelectionStage.md"
       ],
       "requiredSourceFiles": [
-        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalModelSelectionService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalModelSelectionService.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalModelSelectionService.cs",
         "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalModelSelectionRequest.cs"
       ],

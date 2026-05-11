@@ -83,7 +83,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<En12831HeatingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IRoomHeatingLoadCalculator>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingHeatingLoadCalculator>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IIso52016ReferenceDataProvider>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ISo52016ReferenceDataProvider>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<ISolarRadiationService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IWindowShadingService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IVentilationHeatTransferCalculator>(services, ServiceLifetime.Scoped);
@@ -139,7 +139,7 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<Iso52016ConstructionAssemblyCalculator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<Iso52016ConstructionAssemblyApplicationAdapter>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<IAdjacentUnconditionedZoneTemperatureCalculator>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<IIso52016MultiZoneNormalizedInputBuilder>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ISo52016MultiZoneNormalizedInputBuilder>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EngineeringStageManifestRegistryProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<EngineeringStageManifestRegistryValidator>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<EngineeringClaimBoundaryScanner>(services, ServiceLifetime.Singleton);

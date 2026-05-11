@@ -7,7 +7,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Topology;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
 
-public sealed class Iso52016MultiZoneNormalizedInputBuilder : IIso52016MultiZoneNormalizedInputBuilder
+public sealed class Iso52016MultiZoneNormalizedInputBuilder : ISo52016MultiZoneNormalizedInputBuilder
 {
     private static readonly IReadOnlyList<string> DefaultClaimFlags =
     [

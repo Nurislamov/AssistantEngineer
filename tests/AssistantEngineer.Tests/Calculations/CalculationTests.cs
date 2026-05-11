@@ -213,7 +213,7 @@ public class CalculationTests
         Assert.Equal(138.58, result.TransmissionHeatLossW);
     }
 
-    private sealed class FixedIso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
+    private sealed class FixedIso52016ReferenceDataProvider : ISo52016ReferenceDataProvider
     {
         private readonly IReadOnlyList<double> _outdoorTemperatureProfile;
 

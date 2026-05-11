@@ -9,4 +9,10 @@ public sealed class EngineeringCalculationJobWorkerOptions
     public int PollIntervalSeconds { get; set; } = 5;
 
     public int BatchSize { get; set; } = 3;
+
+    public int LeaseDurationSeconds { get; set; } = 300;
+
+    public string? WorkerId { get; set; }
+
+    public bool StaleRunningJobRecoveryEnabled { get; set; } = false;
 }

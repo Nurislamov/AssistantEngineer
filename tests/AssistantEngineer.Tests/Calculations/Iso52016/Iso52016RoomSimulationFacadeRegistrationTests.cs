@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations;
+using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +20,7 @@ public class Iso52016RoomSimulationFacadeRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016RoomSimulationFacade));
+            service.ServiceType == typeof(ISo52016RoomSimulationFacade));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);

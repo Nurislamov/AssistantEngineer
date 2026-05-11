@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations;
+using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Solar;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.WeatherSolar;
@@ -33,7 +33,7 @@ public class Iso52016ProductionSolarPathRegistrationTests
         var profileBuilder = services.LastOrDefault(service =>
             service.ServiceType == typeof(IAnnualWeatherSolarProfileBuilder));
         var contextBuilder = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016WeatherSolarContextBuilder));
+            service.ServiceType == typeof(ISo52016WeatherSolarContextBuilder));
 
         Assert.NotNull(profileBuilder);
         Assert.Equal(typeof(AnnualWeatherSolarProfileBuilder), profileBuilder.ImplementationType);
@@ -68,11 +68,11 @@ public class Iso52016ProductionSolarPathRegistrationTests
             "Iso52016",
             "Iso52016HourlyWeatherProvider.cs"));
 
-        Assert.Contains("IIso52016WeatherSolarContextBuilder? weatherSolarContextBuilder", steadyStateCalculator, StringComparison.Ordinal);
+        Assert.Contains("ISo52016WeatherSolarContextBuilder? weatherSolarContextBuilder", steadyStateCalculator, StringComparison.Ordinal);
         Assert.Contains("weatherSolarContextBuilder", steadyStateCalculator, StringComparison.Ordinal);
         Assert.Contains("WeatherSolarContext?.GetHour(weather.HourOfYear)", steadyStateCalculator, StringComparison.Ordinal);
 
-        Assert.Contains("IIso52016WeatherSolarContextBuilder? weatherSolarContextBuilder", weatherProvider, StringComparison.Ordinal);
+        Assert.Contains("ISo52016WeatherSolarContextBuilder? weatherSolarContextBuilder", weatherProvider, StringComparison.Ordinal);
         Assert.Contains("BuildWeatherSolarContext", weatherProvider, StringComparison.Ordinal);
         Assert.Contains("new Iso52016WeatherSolarContextRequest", weatherProvider, StringComparison.Ordinal);
     }

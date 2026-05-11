@@ -10,6 +10,10 @@ public interface IEngineeringCalculationJobService
     Task<EngineeringCalculationJobResultDto?> ExecuteQueuedJobAsync(
         string jobId,
         CancellationToken cancellationToken);
+    Task<EngineeringCalculationJobResultDto?> ExecuteClaimedJobAsync(
+        string jobId,
+        string workerId,
+        CancellationToken cancellationToken);
 
     Task<EngineeringCalculationJobResultDto?> GetJobAsync(
         string jobId,

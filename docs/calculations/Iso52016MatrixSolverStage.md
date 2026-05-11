@@ -20,7 +20,7 @@ The implementation adds a separate ISO 52016 Matrix path instead of silently rep
 
 Main pieces:
 
-- `IIso52016MatrixHourlySolver` / `Iso52016MatrixHourlySolver`
+- `ISo52016MatrixHourlySolver` / `Iso52016MatrixHourlySolver`
 - V2 node, conductance, boundary and hourly profile contracts
 - Internal gain reference data provider
 - Adjacent unconditioned zone temperature solver

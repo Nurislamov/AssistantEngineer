@@ -39,7 +39,7 @@ public sealed class Iso52016HourlySteadyStateCalculator
         IGroundTemperatureService? groundTemperatureService = null,
         IGroundHeatTransferService? groundHeatTransferService = null,
         ILogger<Iso52016HourlySteadyStateCalculator>? logger = null,
-        IIso52016WeatherSolarContextBuilder? weatherSolarContextBuilder = null)
+        ISo52016WeatherSolarContextBuilder? weatherSolarContextBuilder = null)
     {
         var resolvedOptions = options?.Value ?? new Iso52016EnergyNeedOptions();
         var resolvedProfileOptions = profileOptions?.Value ?? new En16798ProfileOptions();

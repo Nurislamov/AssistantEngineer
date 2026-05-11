@@ -23,7 +23,7 @@ The previous simplified room heat-balance solver was removed from dependency inj
 
 Removed implementation guards:
 
-- `IIso52016RoomHeatBalanceSolver`
+- `ISo52016RoomHeatBalanceSolver`
 - `Iso52016RoomHeatBalanceSolver`
 - `Iso52016RoomHeatBalanceRequest`
 - old heat-balance solver registration

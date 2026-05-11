@@ -9,7 +9,7 @@
                       "AE-ISO52016-001"
                   ],
     "implementationFiles":  [
-                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomModelBuilder.cs",
+                                "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomModelBuilder.cs",
                                 "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalRoomModelRequest.cs",
                                 "src/Backend/AssistantEngineer.Modules.Calculations/Application/Contracts/Iso52016/Physical/Iso52016PhysicalNodeModelOptions.cs",
                                 "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs"

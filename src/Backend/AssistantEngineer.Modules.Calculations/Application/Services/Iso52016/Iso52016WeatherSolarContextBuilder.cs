@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Weather;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.WeatherSolar;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
@@ -9,7 +9,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarContextBuilder
+public sealed class Iso52016WeatherSolarContextBuilder : ISo52016WeatherSolarContextBuilder
 {
     private static readonly Iso52016GroundBoundaryTemperatureOptions DefaultGroundBoundaryOptions =
         new(
@@ -17,12 +17,12 @@ public sealed class Iso52016WeatherSolarContextBuilder : IIso52016WeatherSolarCo
 
     private readonly IAnnualWeatherDataNormalizer _weatherDataNormalizer;
     private readonly IAnnualWeatherSolarProfileBuilder _weatherSolarProfileBuilder;
-    private readonly IIso52016GroundBoundaryTemperatureProvider _groundBoundaryTemperatureProvider;
+    private readonly ISo52016GroundBoundaryTemperatureProvider _groundBoundaryTemperatureProvider;
 
     public Iso52016WeatherSolarContextBuilder(
         IAnnualWeatherDataNormalizer weatherDataNormalizer,
         IAnnualWeatherSolarProfileBuilder weatherSolarProfileBuilder,
-        IIso52016GroundBoundaryTemperatureProvider groundBoundaryTemperatureProvider)
+        ISo52016GroundBoundaryTemperatureProvider groundBoundaryTemperatureProvider)
     {
         _weatherDataNormalizer = weatherDataNormalizer;
         _weatherSolarProfileBuilder = weatherSolarProfileBuilder;

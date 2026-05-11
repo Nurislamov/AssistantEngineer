@@ -905,6 +905,13 @@ public class EnergyCalculationPipelineServiceTests
                 ? _building.Floors.SelectMany(floor => floor.Rooms).ToList()
                 : []);
 
+        Task<IReadOnlyList<Room>> IRoomRepository.ListWithEngineeringInputsByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Room>>(_building.Id == buildingId
+                ? _building.Floors.SelectMany(floor => floor.Rooms).ToList()
+                : []);
+
         public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
             Task.FromResult(FindRoom(id) is not null);
 

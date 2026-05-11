@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using AssistantEngineer.Api.Services.Calculations.Persistence;
 
 namespace AssistantEngineer.Api.Services.Calculations.Idempotency;
 
@@ -15,7 +16,13 @@ public static class EngineeringIdempotencyServiceRegistration
             .Validate(options => options.MaxEntries > 0, "Engineering idempotency max entries must be positive.")
             .Validate(options => options.MaxCachedResponseBytes > 0, "Engineering idempotency max cached response bytes must be positive.");
 
-        services.AddSingleton<IEngineeringIdempotencyService, InMemoryEngineeringIdempotencyService>();
+        services.AddSingleton<IEngineeringIdempotencyService>(serviceProvider =>
+        {
+            var persistenceOptions = serviceProvider.GetRequiredService<IOptions<EngineeringWorkflowPersistenceOptions>>().Value;
+            return persistenceOptions.Provider == EngineeringWorkflowPersistenceProvider.SQLite
+                ? ActivatorUtilities.CreateInstance<EfEngineeringIdempotencyService>(serviceProvider)
+                : ActivatorUtilities.CreateInstance<InMemoryEngineeringIdempotencyService>(serviceProvider);
+        });
 
         return services;
     }

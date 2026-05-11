@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
@@ -6,7 +6,7 @@ using AssistantEngineer.SharedKernel.ValueObjects;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016RoomWindowSolarGainInputMapper : IIso52016RoomWindowSolarGainInputMapper
+public sealed class Iso52016RoomWindowSolarGainInputMapper : ISo52016RoomWindowSolarGainInputMapper
 {
     public Result<IReadOnlyList<Iso52016WindowSolarGainInput>> Map(
         Room room,

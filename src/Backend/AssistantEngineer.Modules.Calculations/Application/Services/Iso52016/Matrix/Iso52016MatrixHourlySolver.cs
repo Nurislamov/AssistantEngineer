@@ -4,7 +4,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016MatrixHourlySolver : IIso52016MatrixHourlySolver
+public sealed class Iso52016MatrixHourlySolver : ISo52016MatrixHourlySolver
 {
     private const double MinimumPositive = 0.000000001;
     private const double UnitHvacLoadW = 1.0;

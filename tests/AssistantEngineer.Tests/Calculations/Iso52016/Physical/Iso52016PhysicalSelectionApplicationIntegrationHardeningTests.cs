@@ -85,9 +85,9 @@ public class Iso52016PhysicalSelectionApplicationIntegrationHardeningTests
         Assert.Contains("ReducedMatrix", strategyText);
         Assert.Contains("PhysicalNodeModel", strategyText);
         Assert.Contains("ReducedMatrix", requestText);
-        Assert.Contains("IIso52016MatrixReducedRoomModelBuilder", serviceText);
-        Assert.Contains("IIso52016PhysicalRoomModelBuilder", serviceText);
-        Assert.Contains("IIso52016MatrixHourlySolver", serviceText);
+        Assert.Contains("ISo52016MatrixReducedRoomModelBuilder", serviceText);
+        Assert.Contains("ISo52016PhysicalRoomModelBuilder", serviceText);
+        Assert.Contains("ISo52016MatrixHourlySolver", serviceText);
         Assert.Contains("PhysicalNodeModel", serviceText);
     }
 

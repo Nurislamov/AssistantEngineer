@@ -20,6 +20,7 @@ public class EngineeringCalculationJobWorkerP1GuardTests
 
         Assert.DoesNotContain("CALCULATION_JOB_WORKER_NOT_ENABLED", source, StringComparison.Ordinal);
         Assert.Contains("ExecuteQueuedJobAsync", source, StringComparison.Ordinal);
+        Assert.Contains("ExecuteClaimedJobAsync", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -27,6 +28,11 @@ public class EngineeringCalculationJobWorkerP1GuardTests
     {
         Assert.Contains(
             nameof(IEngineeringCalculationJobRepository.ListQueuedAsync),
+            typeof(IEngineeringCalculationJobRepository)
+                .GetMethods()
+                .Select(method => method.Name));
+        Assert.Contains(
+            nameof(IEngineeringCalculationJobRepository.TryClaimQueuedJobAsync),
             typeof(IEngineeringCalculationJobRepository)
                 .GetMethods()
                 .Select(method => method.Name));
@@ -49,6 +55,7 @@ public class EngineeringCalculationJobWorkerP1GuardTests
 
         Assert.Contains("IServiceScopeFactory", source, StringComparison.Ordinal);
         Assert.Contains("ListQueuedAsync", source, StringComparison.Ordinal);
-        Assert.Contains("ExecuteQueuedJobAsync", source, StringComparison.Ordinal);
+        Assert.Contains("TryClaimQueuedJobAsync", source, StringComparison.Ordinal);
+        Assert.Contains("ExecuteClaimedJobAsync", source, StringComparison.Ordinal);
     }
 }

@@ -72,6 +72,19 @@ internal sealed class RoomRepository : IRoomRepository
             .OrderBy(room => room.Id)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Room>> ListWithEngineeringInputsByBuildingIdAsync(
+        int buildingId,
+        CancellationToken cancellationToken = default) =>
+        await _context.Rooms
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Where(room => room.Floor.BuildingId == buildingId)
+            .Include(room => room.Windows)
+            .Include(room => room.Walls)
+            .Include(room => room.VentilationParameters)
+            .OrderBy(room => room.Id)
+            .ToListAsync(cancellationToken);
+
     public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
         await _context.Rooms.AnyAsync(room => room.Id == id, cancellationToken);
 

@@ -20,7 +20,7 @@ public class Iso52016MatrixIntegrationRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016MatrixReducedRoomModelBuilder));
+            service.ServiceType == typeof(ISo52016MatrixReducedRoomModelBuilder));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);
@@ -39,7 +39,7 @@ public class Iso52016MatrixIntegrationRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016MatrixRoomEnergySimulationService));
+            service.ServiceType == typeof(ISo52016MatrixRoomEnergySimulationService));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);

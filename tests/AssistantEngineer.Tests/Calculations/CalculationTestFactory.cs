@@ -47,7 +47,7 @@ internal static class CalculationTestFactory
             Options.Create(new Iso52016CoolingLoadOptions()),
             new MemoryCache(new MemoryCacheOptions()));
 
-    private sealed class TestIso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
+    private sealed class TestIso52016ReferenceDataProvider : ISo52016ReferenceDataProvider
     {
         private readonly bool _hasClimateData;
 

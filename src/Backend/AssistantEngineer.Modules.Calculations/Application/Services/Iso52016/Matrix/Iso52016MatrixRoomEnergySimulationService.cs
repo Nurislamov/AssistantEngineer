@@ -6,20 +6,20 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016MatrixRoomEnergySimulationService : IIso52016MatrixRoomEnergySimulationService
+public sealed class Iso52016MatrixRoomEnergySimulationService : ISo52016MatrixRoomEnergySimulationService
 {
-    private readonly IIso52016RoomSolarGainProfileBuilder _solarGainProfileBuilder;
-    private readonly IIso52016RoomInternalGainProfileBuilder _internalGainProfileBuilder;
-    private readonly IIso52016RoomHourlyInputProfileBuilder _hourlyInputProfileBuilder;
-    private readonly IIso52016MatrixReducedRoomModelBuilder _reducedRoomModelBuilder;
-    private readonly IIso52016MatrixHourlySolver _hourlySolver;
+    private readonly ISo52016RoomSolarGainProfileBuilder _solarGainProfileBuilder;
+    private readonly ISo52016RoomInternalGainProfileBuilder _internalGainProfileBuilder;
+    private readonly ISo52016RoomHourlyInputProfileBuilder _hourlyInputProfileBuilder;
+    private readonly ISo52016MatrixReducedRoomModelBuilder _reducedRoomModelBuilder;
+    private readonly ISo52016MatrixHourlySolver _hourlySolver;
 
     public Iso52016MatrixRoomEnergySimulationService(
-        IIso52016RoomSolarGainProfileBuilder solarGainProfileBuilder,
-        IIso52016RoomInternalGainProfileBuilder internalGainProfileBuilder,
-        IIso52016RoomHourlyInputProfileBuilder hourlyInputProfileBuilder,
-        IIso52016MatrixReducedRoomModelBuilder reducedRoomModelBuilder,
-        IIso52016MatrixHourlySolver hourlySolver)
+        ISo52016RoomSolarGainProfileBuilder solarGainProfileBuilder,
+        ISo52016RoomInternalGainProfileBuilder internalGainProfileBuilder,
+        ISo52016RoomHourlyInputProfileBuilder hourlyInputProfileBuilder,
+        ISo52016MatrixReducedRoomModelBuilder reducedRoomModelBuilder,
+        ISo52016MatrixHourlySolver hourlySolver)
     {
         _solarGainProfileBuilder = solarGainProfileBuilder;
         _internalGainProfileBuilder = internalGainProfileBuilder;

@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations;
+using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +20,7 @@ public class Iso52016WindowSolarGainRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016WindowSolarGainCalculator));
+            service.ServiceType == typeof(ISo52016WindowSolarGainCalculator));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);
@@ -39,7 +39,7 @@ public class Iso52016WindowSolarGainRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016WindowSolarGainProfileBuilder));
+            service.ServiceType == typeof(ISo52016WindowSolarGainProfileBuilder));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);

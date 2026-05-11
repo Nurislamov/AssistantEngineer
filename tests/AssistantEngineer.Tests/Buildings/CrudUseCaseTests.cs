@@ -352,6 +352,11 @@ public class CrudUseCaseTests
         public Task<IReadOnlyList<Room>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<Room>>(_floor.BuildingId == buildingId ? [_room] : []);
 
+        public Task<IReadOnlyList<Room>> ListWithEngineeringInputsByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Room>>(_floor.BuildingId == buildingId ? [_room] : []);
+
         public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
             Task.FromResult(_room.Id == id);
 

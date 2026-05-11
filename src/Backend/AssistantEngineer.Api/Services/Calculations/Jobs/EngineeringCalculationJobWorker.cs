@@ -8,6 +8,7 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IOptions<EngineeringCalculationJobWorkerOptions> _options;
     private readonly ILogger<EngineeringCalculationJobWorker> _logger;
+    private readonly string _workerId;
 
     public EngineeringCalculationJobWorker(
         IServiceScopeFactory scopeFactory,
@@ -17,6 +18,7 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
         _scopeFactory = scopeFactory;
         _options = options;
         _logger = logger;
+        _workerId = ResolveWorkerId(options.Value.WorkerId);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,7 +29,7 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
             return;
         }
 
-        _logger.LogInformation("Engineering calculation job worker started.");
+        _logger.LogInformation("Engineering calculation job worker started. WorkerId={WorkerId}", _workerId);
         while (!stoppingToken.IsCancellationRequested)
         {
             await ProcessBatchAsync(stoppingToken);
@@ -40,6 +42,7 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
         using var scope = _scopeFactory.CreateScope();
         var jobRepository = scope.ServiceProvider.GetRequiredService<IEngineeringCalculationJobRepository>();
         var jobService = scope.ServiceProvider.GetRequiredService<IEngineeringCalculationJobService>();
+        var leaseDuration = TimeSpan.FromSeconds(Math.Max(1, _options.Value.LeaseDurationSeconds));
 
         var jobs = await jobRepository.ListQueuedAsync(Math.Max(1, _options.Value.BatchSize), cancellationToken);
         var processed = 0;
@@ -49,12 +52,27 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                var result = await jobService.ExecuteQueuedJobAsync(job.JobId, cancellationToken);
+                var claimed = await jobRepository.TryClaimQueuedJobAsync(
+                    job.JobId,
+                    _workerId,
+                    leaseDuration,
+                    cancellationToken);
+                if (claimed is null)
+                {
+                    _logger.LogDebug(
+                        "Engineering queued calculation job claim skipped because another worker already claimed it. JobId={JobId}, WorkerId={WorkerId}",
+                        job.JobId,
+                        _workerId);
+                    continue;
+                }
+
+                var result = await jobService.ExecuteClaimedJobAsync(job.JobId, _workerId, cancellationToken);
                 if (result is not null)
                 {
                     processed++;
                     _logger.LogInformation(
-                        "Engineering queued calculation job processed by worker. JobId={JobId}, Status={Status}, ProgressPercent={ProgressPercent}",
+                        "Engineering queued calculation job processed by worker. WorkerId={WorkerId}, JobId={JobId}, Status={Status}, ProgressPercent={ProgressPercent}",
+                        _workerId,
                         result.JobId,
                         result.Status,
                         result.ProgressPercent);
@@ -76,5 +94,15 @@ public sealed class EngineeringCalculationJobWorker : BackgroundService
         }
 
         return processed;
+    }
+
+    private static string ResolveWorkerId(string? configuredWorkerId)
+    {
+        if (!string.IsNullOrWhiteSpace(configuredWorkerId))
+        {
+            return configuredWorkerId.Trim();
+        }
+
+        return $"{Environment.MachineName}:{Environment.ProcessId}:{Guid.NewGuid():N}";
     }
 }

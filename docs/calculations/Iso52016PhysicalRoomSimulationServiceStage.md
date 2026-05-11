@@ -6,14 +6,14 @@ This stage adds an application-owned service adapter over the ISO52016-inspired 
 
 Step 05 keeps the existing Matrix solver and all earlier physical node model builder stages. It adds:
 
-- `IIso52016PhysicalRoomEnergySimulationService`;
+- `ISo52016PhysicalRoomEnergySimulationService`;
 - `Iso52016PhysicalRoomEnergySimulationService`;
 - `Iso52016PhysicalRoomEnergySimulationResult`.
 
 The service does not introduce a new solver. It performs the following deterministic pipeline:
 
 1. validate and build the physical room model into an `Iso52016MatrixHourlySolverRequest`;
-2. run the existing `IIso52016MatrixHourlySolver`;
+2. run the existing `ISo52016MatrixHourlySolver`;
 3. return the physical request, generated Matrix request and Matrix solver profile together for engineering traceability.
 
 ## Why this stage exists

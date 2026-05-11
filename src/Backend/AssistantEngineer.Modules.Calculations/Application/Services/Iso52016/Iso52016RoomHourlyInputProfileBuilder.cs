@@ -1,10 +1,10 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016RoomHourlyInputProfileBuilder : IIso52016RoomHourlyInputProfileBuilder
+public sealed class Iso52016RoomHourlyInputProfileBuilder : ISo52016RoomHourlyInputProfileBuilder
 {
     public Result<Iso52016RoomHourlyInputProfile> Build(
         Iso52016RoomHourlyInputProfileRequest request)

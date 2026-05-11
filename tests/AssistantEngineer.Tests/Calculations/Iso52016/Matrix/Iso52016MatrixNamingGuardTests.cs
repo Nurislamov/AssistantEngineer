@@ -14,7 +14,7 @@ public class Iso52016MatrixNamingGuardTests
                 .Select(File.ReadAllText));
 
         Assert.DoesNotContain("Iso52016" + "V2", sourceText);
-        Assert.DoesNotContain("IIso52016" + "V2", sourceText);
+        Assert.DoesNotContain("ISo52016" + "V2", sourceText);
         Assert.DoesNotContain(".Iso52016." + "V2", sourceText);
         Assert.DoesNotContain("V2Matrix", sourceText);
     }
@@ -31,7 +31,7 @@ public class Iso52016MatrixNamingGuardTests
                 .Select(File.ReadAllText));
 
         Assert.DoesNotContain("Iso52016" + "V2", testText);
-        Assert.DoesNotContain("IIso52016" + "V2", testText);
+        Assert.DoesNotContain("ISo52016" + "V2", testText);
         Assert.DoesNotContain(".Iso52016." + "V2", testText);
     }
 

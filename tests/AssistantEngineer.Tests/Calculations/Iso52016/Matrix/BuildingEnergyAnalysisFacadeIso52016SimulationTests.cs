@@ -43,7 +43,7 @@ public class BuildingEnergyAnalysisFacadeIso52016SimulationTests
         Assert.Equal(22.0, request.HeatBalanceOptions!.InitialIndoorTemperatureC, precision: 6);
     }
 
-    private sealed class Iso52016SimulationApplicationServiceSpy : IIso52016BuildingEnergySimulationApplicationService
+    private sealed class Iso52016SimulationApplicationServiceSpy : ISo52016BuildingEnergySimulationApplicationService
     {
         public Iso52016BuildingEnergySimulationApplicationRequest? LastRequest { get; private set; }
 

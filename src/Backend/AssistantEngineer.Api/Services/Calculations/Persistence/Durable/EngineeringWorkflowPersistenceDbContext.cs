@@ -24,6 +24,8 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
 
     public DbSet<EngineeringCalculationJobEventEntity> JobEvents => Set<EngineeringCalculationJobEventEntity>();
 
+    public DbSet<EngineeringWorkflowIdempotencyRecordEntity> IdempotencyRecords => Set<EngineeringWorkflowIdempotencyRecordEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<EngineeringProjectEntity>(entity =>
@@ -135,11 +137,13 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
             entity.Property(item => item.CurrentStep).HasMaxLength(128).IsRequired();
             entity.Property(item => item.DurationMs);
             entity.Property(item => item.CancellationRequested).IsRequired();
+            entity.Property(item => item.ClaimedByWorkerId).HasMaxLength(196);
             entity.HasIndex(item => item.ProjectId);
             entity.HasIndex(item => item.ScenarioId);
             entity.HasIndex(item => item.Status);
             entity.HasIndex(item => item.CreatedAtUtc);
             entity.HasIndex(item => item.UpdatedAtUtc);
+            entity.HasIndex(item => item.LeaseExpiresAtUtc);
             entity.HasOne(item => item.Project)
                 .WithMany()
                 .HasForeignKey(item => item.ProjectId)
@@ -169,6 +173,23 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
                 .WithMany(item => item.Events)
                 .HasForeignKey(item => item.JobId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<EngineeringWorkflowIdempotencyRecordEntity>(entity =>
+        {
+            entity.ToTable("engineering_workflow_idempotency_records");
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Scope).HasMaxLength(256).IsRequired();
+            entity.Property(item => item.IdempotencyKey).HasMaxLength(256).IsRequired();
+            entity.Property(item => item.RequestFingerprint).HasMaxLength(128).IsRequired();
+            entity.Property(item => item.Status).HasMaxLength(32).IsRequired();
+            entity.Property(item => item.ResponseJson).HasColumnType("TEXT");
+            entity.Property(item => item.ResponseReferenceId).HasMaxLength(196);
+            entity.Property(item => item.FailureReason).HasMaxLength(2048);
+            entity.HasIndex(item => new { item.Scope, item.IdempotencyKey }).IsUnique();
+            entity.HasIndex(item => item.ExpiresAtUtc);
+            entity.HasIndex(item => item.UpdatedAtUtc);
+            entity.HasIndex(item => item.CreatedAtUtc);
         });
 
         base.OnModelCreating(modelBuilder);

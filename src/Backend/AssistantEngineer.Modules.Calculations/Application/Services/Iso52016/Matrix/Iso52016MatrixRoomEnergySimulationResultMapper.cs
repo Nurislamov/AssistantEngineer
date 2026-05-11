@@ -5,7 +5,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016MatrixRoomEnergySimulationResultMapper : IIso52016MatrixRoomEnergySimulationResultMapper
+public sealed class Iso52016MatrixRoomEnergySimulationResultMapper : ISo52016MatrixRoomEnergySimulationResultMapper
 {
     public Result<Iso52016RoomEnergySimulationResult> Map(
         Iso52016MatrixRoomEnergySimulationResult source)

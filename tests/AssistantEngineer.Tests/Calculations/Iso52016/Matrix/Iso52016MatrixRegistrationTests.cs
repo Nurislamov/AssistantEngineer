@@ -18,9 +18,9 @@ public class Iso52016MatrixRegistrationTests
 
         services.AddCalculationsModule(configuration);
 
-        AssertScoped<IIso52016MatrixHourlySolver, Iso52016MatrixHourlySolver>(services);
-        AssertScoped<IIso52016InternalGainReferenceDataProvider, Iso52016InternalGainReferenceDataProvider>(services);
-        AssertScoped<IIso52016AdjacentUnconditionedZoneTemperatureSolver, Iso52016AdjacentUnconditionedZoneTemperatureSolver>(services);
+        AssertScoped<ISo52016MatrixHourlySolver, Iso52016MatrixHourlySolver>(services);
+        AssertScoped<ISo52016InternalGainReferenceDataProvider, Iso52016InternalGainReferenceDataProvider>(services);
+        AssertScoped<ISo52016AdjacentUnconditionedZoneTemperatureSolver, Iso52016AdjacentUnconditionedZoneTemperatureSolver>(services);
     }
 
     private static void AssertScoped<TService, TImplementation>(IServiceCollection services)

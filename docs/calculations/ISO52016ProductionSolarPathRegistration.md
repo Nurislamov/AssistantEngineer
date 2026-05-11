@@ -6,7 +6,7 @@ Stage 8 closes the production DI gap for the ISO 52010/Perez -> ISO 52016 weathe
 
 - `ISurfaceIrradianceCalculator` is registered as `PerezAnisotropicSurfaceIrradianceCalculator` by default.
 - `IAnnualWeatherSolarProfileBuilder` remains registered for annual weather/solar profile construction.
-- `IIso52016WeatherSolarContextBuilder` remains registered for ISO 52016 weather-solar context construction.
+- `ISo52016WeatherSolarContextBuilder` remains registered for ISO 52016 weather-solar context construction.
 - `Iso52016HourlySteadyStateCalculator` receives the optional weather-solar context builder through DI.
 - Annual hourly ISO 52016 runs can therefore use the production weather-solar context path instead of silently falling back to legacy radiation.
 

@@ -15,34 +15,25 @@ public sealed class InMemoryEngineeringProjectRepository : IEngineeringProjectRe
         EngineeringProjectRecordDto project,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.Projects[project.ProjectId] = project;
-            return Task.FromResult(project);
-        }
+        _store.Projects.AddOrUpdate(project.ProjectId, project, (_, _) => project);
+        return Task.FromResult(project);
     }
 
     public Task<EngineeringProjectRecordDto?> GetByIdAsync(
         int projectId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.Projects.TryGetValue(projectId, out var project);
-            return Task.FromResult(project);
-        }
+        _store.Projects.TryGetValue(projectId, out var project);
+        return Task.FromResult(project);
     }
 
     public Task<IReadOnlyList<EngineeringProjectRecordDto>> ListAsync(
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            var items = _store.Projects.Values
-                .OrderBy(item => item.ProjectId)
-                .ToArray();
-            return Task.FromResult<IReadOnlyList<EngineeringProjectRecordDto>>(items);
-        }
+        var items = _store.Projects.Values
+            .OrderBy(item => item.ProjectId)
+            .ToArray();
+        return Task.FromResult<IReadOnlyList<EngineeringProjectRecordDto>>(items);
     }
 
     public Task<EngineeringProjectRecordDto?> UpdateMetadataAsync(
@@ -50,23 +41,20 @@ public sealed class InMemoryEngineeringProjectRepository : IEngineeringProjectRe
         IReadOnlyDictionary<string, string> metadata,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
+        if (!_store.Projects.TryGetValue(projectId, out var existing))
         {
-            if (!_store.Projects.TryGetValue(projectId, out var existing))
-            {
-                return Task.FromResult<EngineeringProjectRecordDto?>(null);
-            }
-
-            var updated = existing with
-            {
-                MetadataJson = metadata
-                    .OrderBy(item => item.Key, StringComparer.Ordinal)
-                    .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal),
-                UpdatedAtUtc = DateTimeOffset.UtcNow
-            };
-
-            _store.Projects[projectId] = updated;
-            return Task.FromResult<EngineeringProjectRecordDto?>(updated);
+            return Task.FromResult<EngineeringProjectRecordDto?>(null);
         }
+
+        var updated = existing with
+        {
+            MetadataJson = metadata
+                .OrderBy(item => item.Key, StringComparer.Ordinal)
+                .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal),
+            UpdatedAtUtc = DateTimeOffset.UtcNow
+        };
+
+        _store.Projects.AddOrUpdate(projectId, updated, (_, _) => updated);
+        return Task.FromResult<EngineeringProjectRecordDto?>(updated);
     }
 }

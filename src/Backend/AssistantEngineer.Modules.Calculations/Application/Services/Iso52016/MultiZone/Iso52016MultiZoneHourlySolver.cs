@@ -5,7 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Standards;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
 
-public sealed class Iso52016MultiZoneHourlySolver : IIso52016MultiZoneHourlySolver
+public sealed class Iso52016MultiZoneHourlySolver : ISo52016MultiZoneHourlySolver
 {
     private const double SecondsPerHour = 3600.0;
     private const double MinimumPivot = 1e-9;

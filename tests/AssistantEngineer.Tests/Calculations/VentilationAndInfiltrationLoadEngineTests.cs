@@ -293,7 +293,7 @@ public class VentilationAndInfiltrationLoadEngineTests
             AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
             DiagnosticsContext: "Ventilation test");
 
-    private sealed class ConstantIso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
+    private sealed class ConstantIso52016ReferenceDataProvider : ISo52016ReferenceDataProvider
     {
         private readonly double _outdoorTemperatureC;
 

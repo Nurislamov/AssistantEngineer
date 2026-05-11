@@ -20,7 +20,7 @@ public class Iso52016PhysicalIntegrationRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016PhysicalRoomModelBuilder));
+            service.ServiceType == typeof(ISo52016PhysicalRoomModelBuilder));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);

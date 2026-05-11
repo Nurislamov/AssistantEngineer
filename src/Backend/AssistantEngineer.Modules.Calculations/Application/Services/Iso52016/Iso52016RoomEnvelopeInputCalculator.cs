@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016RoomEnvelopeInputCalculator : IIso52016RoomEnvelopeInputCalculator
+public sealed class Iso52016RoomEnvelopeInputCalculator : ISo52016RoomEnvelopeInputCalculator
 {
     private readonly Iso52016ConstructionOptions _constructionOptions;
     private readonly Iso52016ConstructionAssemblyCalculator? _constructionAssemblyCalculator;

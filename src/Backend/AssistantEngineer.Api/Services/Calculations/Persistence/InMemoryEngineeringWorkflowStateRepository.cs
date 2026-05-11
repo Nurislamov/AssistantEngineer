@@ -15,75 +15,43 @@ public sealed class InMemoryEngineeringWorkflowStateRepository : IEngineeringWor
         EngineeringWorkflowStateRecordDto state,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.WorkflowStatesById[state.WorkflowStateId] = state;
-
-            if (!_store.WorkflowStateIdsByProjectId.TryGetValue(state.ProjectId, out var ids))
-            {
-                ids = [];
-                _store.WorkflowStateIdsByProjectId[state.ProjectId] = ids;
-            }
-
-            if (!ids.Contains(state.WorkflowStateId, StringComparer.Ordinal))
-            {
-                ids.Add(state.WorkflowStateId);
-            }
-
-            return Task.FromResult(state);
-        }
+        _store.WorkflowStatesById.AddOrUpdate(state.WorkflowStateId, state, (_, _) => state);
+        return Task.FromResult(state);
     }
 
     public Task<EngineeringWorkflowStateRecordDto?> GetLatestByProjectIdAsync(
         int projectId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            if (!_store.WorkflowStateIdsByProjectId.TryGetValue(projectId, out var ids) || ids.Count == 0)
-            {
-                return Task.FromResult<EngineeringWorkflowStateRecordDto?>(null);
-            }
+        var latest = _store.WorkflowStatesById.Values
+            .Where(item => item.ProjectId == projectId)
+            .OrderByDescending(item => item.Version)
+            .ThenByDescending(item => item.UpdatedAtUtc)
+            .ThenBy(item => item.WorkflowStateId, StringComparer.Ordinal)
+            .FirstOrDefault();
 
-            var latest = ids
-                .Select(id => _store.WorkflowStatesById[id])
-                .OrderByDescending(item => item.Version)
-                .ThenByDescending(item => item.UpdatedAtUtc)
-                .FirstOrDefault();
-
-            return Task.FromResult(latest);
-        }
+        return Task.FromResult(latest);
     }
 
     public Task<EngineeringWorkflowStateRecordDto?> GetByIdAsync(
         string workflowStateId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.WorkflowStatesById.TryGetValue(workflowStateId, out var state);
-            return Task.FromResult(state);
-        }
+        _store.WorkflowStatesById.TryGetValue(workflowStateId, out var state);
+        return Task.FromResult(state);
     }
 
     public Task<IReadOnlyList<EngineeringWorkflowStateRecordDto>> ListVersionsByProjectIdAsync(
         int projectId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            if (!_store.WorkflowStateIdsByProjectId.TryGetValue(projectId, out var ids))
-            {
-                return Task.FromResult<IReadOnlyList<EngineeringWorkflowStateRecordDto>>([]);
-            }
+        var states = _store.WorkflowStatesById.Values
+            .Where(item => item.ProjectId == projectId)
+            .OrderByDescending(item => item.Version)
+            .ThenByDescending(item => item.UpdatedAtUtc)
+            .ThenBy(item => item.WorkflowStateId, StringComparer.Ordinal)
+            .ToArray();
 
-            var states = ids
-                .Select(id => _store.WorkflowStatesById[id])
-                .OrderByDescending(item => item.Version)
-                .ThenByDescending(item => item.UpdatedAtUtc)
-                .ToArray();
-
-            return Task.FromResult<IReadOnlyList<EngineeringWorkflowStateRecordDto>>(states);
-        }
+        return Task.FromResult<IReadOnlyList<EngineeringWorkflowStateRecordDto>>(states);
     }
 }

@@ -4,16 +4,16 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016BuildingSimulationFacade : IIso52016BuildingSimulationFacade
+public sealed class Iso52016BuildingSimulationFacade : ISo52016BuildingSimulationFacade
 {
-    private readonly IIso52016WeatherSolarContextBuilder _weatherSolarContextBuilder;
-    private readonly IIso52016RoomEnergySimulationRequestBuilder _roomSimulationRequestBuilder;
-    private readonly IIso52016RoomEnergySimulationService _roomSimulationService;
+    private readonly ISo52016WeatherSolarContextBuilder _weatherSolarContextBuilder;
+    private readonly ISo52016RoomEnergySimulationRequestBuilder _roomSimulationRequestBuilder;
+    private readonly ISo52016RoomEnergySimulationService _roomSimulationService;
 
     public Iso52016BuildingSimulationFacade(
-        IIso52016WeatherSolarContextBuilder weatherSolarContextBuilder,
-        IIso52016RoomEnergySimulationRequestBuilder roomSimulationRequestBuilder,
-        IIso52016RoomEnergySimulationService roomSimulationService)
+        ISo52016WeatherSolarContextBuilder weatherSolarContextBuilder,
+        ISo52016RoomEnergySimulationRequestBuilder roomSimulationRequestBuilder,
+        ISo52016RoomEnergySimulationService roomSimulationService)
     {
         _weatherSolarContextBuilder = weatherSolarContextBuilder;
         _roomSimulationRequestBuilder = roomSimulationRequestBuilder;

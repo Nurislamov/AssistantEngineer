@@ -16,7 +16,7 @@ Stage 9 verifies that the normal production composition root reaches the ISO 520
 
 ## Why this matters
 
-Registration tests can prove that services are listed in DI, but they do not prove the runtime constructor graph actually passes `IIso52016WeatherSolarContextBuilder` into the annual calculation path.
+Registration tests can prove that services are listed in DI, but they do not prove the runtime constructor graph actually passes `ISo52016WeatherSolarContextBuilder` into the annual calculation path.
 
 This smoke test closes that gap.
 

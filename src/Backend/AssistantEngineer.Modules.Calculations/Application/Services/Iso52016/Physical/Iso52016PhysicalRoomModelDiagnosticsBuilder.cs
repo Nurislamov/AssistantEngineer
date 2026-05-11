@@ -1,16 +1,16 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
-public sealed class Iso52016PhysicalRoomModelDiagnosticsBuilder : IIso52016PhysicalRoomModelDiagnosticsBuilder
+public sealed class Iso52016PhysicalRoomModelDiagnosticsBuilder : ISo52016PhysicalRoomModelDiagnosticsBuilder
 {
-    private readonly IIso52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
+    private readonly ISo52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
 
     public Iso52016PhysicalRoomModelDiagnosticsBuilder(
-        IIso52016PhysicalRoomModelBuilder physicalRoomModelBuilder)
+        ISo52016PhysicalRoomModelBuilder physicalRoomModelBuilder)
     {
         _physicalRoomModelBuilder = physicalRoomModelBuilder;
     }

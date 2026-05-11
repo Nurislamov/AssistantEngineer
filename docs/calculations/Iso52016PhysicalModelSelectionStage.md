@@ -9,7 +9,7 @@ Step 10 keeps the existing Matrix solver and the existing reduced Matrix behavio
 - `Iso52016PhysicalModelSelectionStrategy`;
 - `Iso52016PhysicalModelSelectionRequest`;
 - `Iso52016PhysicalModelSelectionResult`;
-- `IIso52016PhysicalModelSelectionService`;
+- `ISo52016PhysicalModelSelectionService`;
 - `Iso52016PhysicalModelSelectionService`.
 
 The service selects between:

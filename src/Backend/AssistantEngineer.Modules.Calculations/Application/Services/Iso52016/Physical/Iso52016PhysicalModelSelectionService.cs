@@ -6,16 +6,16 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
-public sealed class Iso52016PhysicalModelSelectionService : IIso52016PhysicalModelSelectionService
+public sealed class Iso52016PhysicalModelSelectionService : ISo52016PhysicalModelSelectionService
 {
-    private readonly IIso52016MatrixReducedRoomModelBuilder _reducedRoomModelBuilder;
-    private readonly IIso52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
-    private readonly IIso52016MatrixHourlySolver _matrixHourlySolver;
+    private readonly ISo52016MatrixReducedRoomModelBuilder _reducedRoomModelBuilder;
+    private readonly ISo52016PhysicalRoomModelBuilder _physicalRoomModelBuilder;
+    private readonly ISo52016MatrixHourlySolver _matrixHourlySolver;
 
     public Iso52016PhysicalModelSelectionService(
-        IIso52016MatrixReducedRoomModelBuilder reducedRoomModelBuilder,
-        IIso52016PhysicalRoomModelBuilder physicalRoomModelBuilder,
-        IIso52016MatrixHourlySolver matrixHourlySolver)
+        ISo52016MatrixReducedRoomModelBuilder reducedRoomModelBuilder,
+        ISo52016PhysicalRoomModelBuilder physicalRoomModelBuilder,
+        ISo52016MatrixHourlySolver matrixHourlySolver)
     {
         _reducedRoomModelBuilder = reducedRoomModelBuilder;
         _physicalRoomModelBuilder = physicalRoomModelBuilder;

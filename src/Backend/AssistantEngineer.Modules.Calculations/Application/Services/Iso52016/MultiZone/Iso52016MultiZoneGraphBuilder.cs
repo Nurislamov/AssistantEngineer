@@ -5,12 +5,12 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Standards;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.MultiZone;
 
-public sealed class Iso52016MultiZoneGraphBuilder : IIso52016MultiZoneGraphBuilder
+public sealed class Iso52016MultiZoneGraphBuilder : ISo52016MultiZoneGraphBuilder
 {
-    private readonly IIso52016MultiZoneInputValidator _validator;
+    private readonly ISo52016MultiZoneInputValidator _validator;
 
     public Iso52016MultiZoneGraphBuilder(
-        IIso52016MultiZoneInputValidator validator)
+        ISo52016MultiZoneInputValidator validator)
     {
         _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     }

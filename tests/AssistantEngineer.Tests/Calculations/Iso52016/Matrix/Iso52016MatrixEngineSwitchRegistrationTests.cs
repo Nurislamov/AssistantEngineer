@@ -20,7 +20,7 @@ public class Iso52016MatrixEngineSwitchRegistrationTests
         services.AddCalculationsModule(configuration);
 
         var descriptor = services.LastOrDefault(service =>
-            service.ServiceType == typeof(IIso52016MatrixRoomEnergySimulationResultMapper));
+            service.ServiceType == typeof(ISo52016MatrixRoomEnergySimulationResultMapper));
 
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Scoped, descriptor.Lifetime);

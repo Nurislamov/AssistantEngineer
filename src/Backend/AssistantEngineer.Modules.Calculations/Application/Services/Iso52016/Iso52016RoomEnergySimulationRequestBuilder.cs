@@ -1,19 +1,19 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016RoomEnergySimulationRequestBuilder : IIso52016RoomEnergySimulationRequestBuilder
+public sealed class Iso52016RoomEnergySimulationRequestBuilder : ISo52016RoomEnergySimulationRequestBuilder
 {
-    private readonly IIso52016RoomWindowSolarGainInputMapper _windowMapper;
-    private readonly IIso52016RoomEnvelopeInputCalculator _envelopeInputCalculator;
-    private readonly IIso52016ScheduleProfileExpander _scheduleProfileExpander;
+    private readonly ISo52016RoomWindowSolarGainInputMapper _windowMapper;
+    private readonly ISo52016RoomEnvelopeInputCalculator _envelopeInputCalculator;
+    private readonly ISo52016ScheduleProfileExpander _scheduleProfileExpander;
 
     public Iso52016RoomEnergySimulationRequestBuilder(
-        IIso52016RoomWindowSolarGainInputMapper windowMapper,
-        IIso52016RoomEnvelopeInputCalculator envelopeInputCalculator,
-        IIso52016ScheduleProfileExpander scheduleProfileExpander)
+        ISo52016RoomWindowSolarGainInputMapper windowMapper,
+        ISo52016RoomEnvelopeInputCalculator envelopeInputCalculator,
+        ISo52016ScheduleProfileExpander scheduleProfileExpander)
     {
         _windowMapper = windowMapper;
         _envelopeInputCalculator = envelopeInputCalculator;

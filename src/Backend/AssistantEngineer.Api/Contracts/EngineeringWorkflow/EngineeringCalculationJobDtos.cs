@@ -96,7 +96,10 @@ public sealed record EngineeringCalculationJobRecordDto(
     DateTimeOffset UpdatedAtUtc,
     double? DurationMilliseconds,
     int RetryCount,
-    bool CancellationRequested);
+    bool CancellationRequested,
+    string? ClaimedByWorkerId = null,
+    DateTimeOffset? ClaimedAtUtc = null,
+    DateTimeOffset? LeaseExpiresAtUtc = null);
 
 public sealed record EngineeringCalculationJobEventRecordDto(
     string EventId,

@@ -11,22 +11,22 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 /// this service now always routes through the Matrix node solver and maps the result to the existing
 /// public room energy simulation contract.
 /// </summary>
-public sealed class Iso52016RoomEnergySimulationService : IIso52016RoomEnergySimulationService
+public sealed class Iso52016RoomEnergySimulationService : ISo52016RoomEnergySimulationService
 {
-    private readonly IIso52016RoomSolarGainProfileBuilder _solarGainProfileBuilder;
-    private readonly IIso52016RoomInternalGainProfileBuilder _internalGainProfileBuilder;
-    private readonly IIso52016RoomHourlyInputProfileBuilder _hourlyInputProfileBuilder;
-    private readonly IIso52016MatrixReducedRoomModelBuilder _matrixModelBuilder;
-    private readonly IIso52016MatrixHourlySolver _matrixSolver;
-    private readonly IIso52016MatrixRoomEnergySimulationResultMapper _matrixResultMapper;
+    private readonly ISo52016RoomSolarGainProfileBuilder _solarGainProfileBuilder;
+    private readonly ISo52016RoomInternalGainProfileBuilder _internalGainProfileBuilder;
+    private readonly ISo52016RoomHourlyInputProfileBuilder _hourlyInputProfileBuilder;
+    private readonly ISo52016MatrixReducedRoomModelBuilder _matrixModelBuilder;
+    private readonly ISo52016MatrixHourlySolver _matrixSolver;
+    private readonly ISo52016MatrixRoomEnergySimulationResultMapper _matrixResultMapper;
 
     public Iso52016RoomEnergySimulationService(
-        IIso52016RoomSolarGainProfileBuilder solarGainProfileBuilder,
-        IIso52016RoomInternalGainProfileBuilder internalGainProfileBuilder,
-        IIso52016RoomHourlyInputProfileBuilder hourlyInputProfileBuilder,
-        IIso52016MatrixReducedRoomModelBuilder matrixModelBuilder,
-        IIso52016MatrixHourlySolver matrixSolver,
-        IIso52016MatrixRoomEnergySimulationResultMapper matrixResultMapper)
+        ISo52016RoomSolarGainProfileBuilder solarGainProfileBuilder,
+        ISo52016RoomInternalGainProfileBuilder internalGainProfileBuilder,
+        ISo52016RoomHourlyInputProfileBuilder hourlyInputProfileBuilder,
+        ISo52016MatrixReducedRoomModelBuilder matrixModelBuilder,
+        ISo52016MatrixHourlySolver matrixSolver,
+        ISo52016MatrixRoomEnergySimulationResultMapper matrixResultMapper)
     {
         _solarGainProfileBuilder = solarGainProfileBuilder;
         _internalGainProfileBuilder = internalGainProfileBuilder;

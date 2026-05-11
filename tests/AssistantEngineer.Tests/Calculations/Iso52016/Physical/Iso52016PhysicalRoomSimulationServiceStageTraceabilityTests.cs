@@ -42,7 +42,7 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
         RegistryContainsStageFile(
             "AE-ISO52016-002-STEP-05",
             "requiredSourceFiles",
-            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/IIso52016PhysicalRoomEnergySimulationService.cs");
+            "src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Iso52016/Physical/ISo52016PhysicalRoomEnergySimulationService.cs");
         RegistryContainsStageFile(
             "AE-ISO52016-002-STEP-05",
             "requiredSourceFiles",
@@ -103,7 +103,7 @@ public class Iso52016PhysicalRoomSimulationServiceStageTraceabilityTests
 
         var registration = File.ReadAllText(registrationPath);
 
-        Assert.Contains("IIso52016PhysicalRoomEnergySimulationService", registration);
+        Assert.Contains("ISo52016PhysicalRoomEnergySimulationService", registration);
         Assert.Contains("Iso52016PhysicalRoomEnergySimulationService", registration);
     }
 

@@ -131,6 +131,11 @@ public class HeatingLoadValidationTests
         public Task<IReadOnlyList<Room>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<IReadOnlyList<Room>> ListWithEngineeringInputsByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 

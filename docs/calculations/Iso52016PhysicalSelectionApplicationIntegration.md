@@ -20,7 +20,7 @@ The stage expects the selection contracts and service to remain discoverable und
 - `Iso52016PhysicalModelSelectionStrategy`
 - `Iso52016PhysicalModelSelectionRequest`
 - `Iso52016PhysicalModelSelectionResult`
-- `IIso52016PhysicalModelSelectionService`
+- `ISo52016PhysicalModelSelectionService`
 - `Iso52016PhysicalModelSelectionService`
 
 ## Claim boundary

@@ -9,7 +9,7 @@
       "description": "Node/matrix hourly solver for room/zone sensible heating and cooling need.",
       "implementationGuards": [
         "Iso52016MatrixHourlySolver",
-        "IIso52016MatrixHourlySolver",
+        "ISo52016MatrixHourlySolver",
         "Iso52016MatrixReducedRoomModelBuilder",
         "Iso52016MatrixRoomEnergySimulationService",
         "Iso52016MatrixRoomEnergySimulationResultMapper",

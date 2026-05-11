@@ -39,6 +39,10 @@ public interface IBuildingsFacade
         int id,
         CancellationToken cancellationToken);
 
+    Task<Result<EngineeringWorkflowBulkInputResponse>> GetEngineeringWorkflowBulkInputAsync(
+        int buildingId,
+        CancellationToken cancellationToken);
+
     Task<Result<BuildingResponse>> UpdateBuildingAsync(
         int id,
         UpdateBuildingRequest request,

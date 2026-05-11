@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Buildings.Domain.Climate;
+using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
@@ -146,7 +146,7 @@ public class Iso52016HourlySteadyStateWeatherSolarContextIntegrationTests
             0.0;
     }
 
-    private sealed class SyntheticWeatherSolarContextBuilder : IIso52016WeatherSolarContextBuilder
+    private sealed class SyntheticWeatherSolarContextBuilder : ISo52016WeatherSolarContextBuilder
     {
         public Result<Iso52016WeatherSolarContext> Build(
             Iso52016WeatherSolarContextRequest request)

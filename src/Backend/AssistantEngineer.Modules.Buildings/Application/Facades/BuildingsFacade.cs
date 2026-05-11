@@ -20,6 +20,7 @@ public sealed class BuildingsFacade : IBuildingsFacade
     private readonly BuildingCalculationReadinessService _buildingReadiness;
     private readonly BuildingModelValidationService _buildingValidation;
     private readonly BuildingModelAutocorrectionService _buildingAutocorrection;
+    private readonly EngineeringWorkflowBulkInputQueryService _workflowBulkInputQuery;
     private readonly FloorCommandService _floorCommand;
     private readonly FloorQueryService _floorQuery;
     private readonly RoomCommandService _roomCommand;
@@ -42,6 +43,7 @@ public sealed class BuildingsFacade : IBuildingsFacade
         BuildingCalculationReadinessService buildingReadiness,
         BuildingModelValidationService buildingValidation,
         BuildingModelAutocorrectionService buildingAutocorrection,
+        EngineeringWorkflowBulkInputQueryService workflowBulkInputQuery,
         FloorCommandService floorCommand,
         FloorQueryService floorQuery,
         RoomCommandService roomCommand,
@@ -63,6 +65,7 @@ public sealed class BuildingsFacade : IBuildingsFacade
         _buildingReadiness = buildingReadiness;
         _buildingValidation = buildingValidation;
         _buildingAutocorrection = buildingAutocorrection;
+        _workflowBulkInputQuery = workflowBulkInputQuery;
         _floorCommand = floorCommand;
         _floorQuery = floorQuery;
         _roomCommand = roomCommand;
@@ -117,6 +120,11 @@ public sealed class BuildingsFacade : IBuildingsFacade
         int id,
         CancellationToken cancellationToken) =>
         _buildingQuery.GetByIdAsync(id, cancellationToken);
+
+    public Task<Result<EngineeringWorkflowBulkInputResponse>> GetEngineeringWorkflowBulkInputAsync(
+        int buildingId,
+        CancellationToken cancellationToken) =>
+        _workflowBulkInputQuery.GetByBuildingIdAsync(buildingId, cancellationToken);
 
     public Task<Result<BuildingResponse>> UpdateBuildingAsync(
         int id,

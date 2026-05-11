@@ -56,6 +56,14 @@ Core DTO families:
 - report export request/response.
 - calculation job request/result/event/progress lifecycle payloads.
 
+## Workflow snapshot loading baseline
+
+Workflow state snapshot assembly uses a bulk-loading boundary for room engineering inputs.
+
+For selected building context, workflow snapshot path loads room input data in grouped/bulk form (rooms, walls, windows, ventilation presence, ground-contact presence) instead of per-room N+1 query loops.
+
+This hardening step changes orchestration data loading only and does not add or modify engineering calculation physics.
+
 ## Validation behavior
 
 Validation endpoint performs deterministic workflow-level checks and diagnostics aggregation.
@@ -98,11 +106,15 @@ Scope baseline:
 
 Foundation limitation:
 
-- idempotency store is in-memory and local-node only (not distributed, not durable across restarts).
+- idempotency store uses durable SQLite persistence when workflow persistence provider is SQLite.
+- in-memory idempotency store remains available for development/testing provider modes.
+- distributed/global exactly-once semantics remain future work.
 
 ## Job lifecycle behavior
 
 `jobs` endpoints provide persisted lifecycle (`Created`, `Queued`, `Running`, terminal statuses, cancellation request/cancelled states) over the existing scenario runner.
+
+Queued execution uses an atomic repository claim (`Queued/RetryScheduled -> Running`) with worker lease metadata to prevent the same queued job from being executed twice across competing worker instances.
 
 Synchronous mode executes scenario runner in-process and persists job progress/events.
 
@@ -158,7 +170,8 @@ Frontend `EngineeringWorkflowClient` uses these endpoints in `api` mode.
 - API foundation may execute available modules partially and report skipped modules with diagnostics.
 - API persistence foundation may be in-memory depending on current deployment wiring.
 - API persistence durable mode can run on SQLite foundation provider and should not be interpreted as production-certified durability.
-- Idempotency baseline is in-memory and local-node only; distributed or durable idempotency store is future work.
+- Idempotency baseline now includes a durable SQLite-backed store when SQLite workflow persistence is enabled.
+- Distributed/global exactly-once idempotency guarantees remain future work.
 - Workflow API is not a compliance certificate.
 - Reports summarize current internal engineering calculations only.
 - Trace explains internal calculation chain only.

@@ -142,6 +142,100 @@ public class EngineeringWorkflowPersistenceFoundationTests
         Assert.Equal("false", persisted.Metadata["durablePersistenceEnabled"]);
     }
 
+    [Fact]
+    public async Task InMemoryScenarioAndHistoryRepositoriesHandleConcurrentAppendsWithoutLosingRecords()
+    {
+        var store = new EngineeringWorkflowMemoryStore();
+        var scenarioRepository = new InMemoryEngineeringCalculationScenarioRepository(store);
+        var historyRepository = new InMemoryEngineeringScenarioHistoryRepository(store);
+        var createdAtUtc = DateTimeOffset.Parse("2026-05-10T00:00:00Z");
+
+        var scenarioWrites = Enumerable.Range(0, 40)
+            .Select(index =>
+                scenarioRepository.CreateAsync(
+                    new EngineeringCalculationScenarioRecordDto(
+                        ScenarioId: $"scenario-concurrent-{index:D3}",
+                        ProjectId: 77,
+                        BuildingId: 700,
+                        ScenarioKind: EngineeringCalculationScenarioKind.ValidationOnly,
+                        ExecutionMode: EngineeringCalculationExecutionMode.ValidateOnly,
+                        Status: EngineeringCalculationExecutionStatus.Prepared,
+                        RequestJson: "{}",
+                        ResultSummaryJson: "{}",
+                        CreatedAtUtc: createdAtUtc.AddSeconds(index % 5),
+                        StartedAtUtc: null,
+                        CompletedAtUtc: null,
+                        DurationMilliseconds: null,
+                        DiagnosticsJson: "[]"),
+                    CancellationToken.None))
+            .ToArray();
+
+        var historyWrites = Enumerable.Range(0, 40)
+            .Select(index =>
+                historyRepository.AppendAsync(
+                    new EngineeringScenarioHistoryEntryDto(
+                        EventId: $"history-concurrent-{index:D3}",
+                        ScenarioId: "scenario-history-concurrent",
+                        ProjectId: 77,
+                        EventKind: EngineeringScenarioHistoryEventKind.ModuleCompleted,
+                        Message: "Concurrent history event",
+                        DiagnosticsJson: "[]",
+                        CreatedAtUtc: createdAtUtc.AddSeconds(index % 3)),
+                    CancellationToken.None))
+            .ToArray();
+
+        await Task.WhenAll(scenarioWrites);
+        await Task.WhenAll(historyWrites);
+
+        var scenarios = await scenarioRepository.ListByProjectIdAsync(77, CancellationToken.None);
+        Assert.Equal(40, scenarios.Count);
+        Assert.Equal(
+            scenarios
+                .OrderByDescending(item => item.CreatedAtUtc)
+                .ThenBy(item => item.ScenarioId, StringComparer.Ordinal)
+                .Select(item => item.ScenarioId)
+                .ToArray(),
+            scenarios.Select(item => item.ScenarioId).ToArray());
+
+        var history = await historyRepository.ListByProjectIdAsync(77, CancellationToken.None);
+        Assert.Equal(40, history.Count);
+        Assert.Equal(
+            history
+                .OrderBy(item => item.CreatedAtUtc)
+                .ThenBy(item => item.EventId, StringComparer.Ordinal)
+                .Select(item => item.EventId)
+                .ToArray(),
+            history.Select(item => item.EventId).ToArray());
+    }
+
+    [Fact]
+    public async Task InMemoryArtifactListReturnsSnapshotThatDoesNotMutateRepositoryState()
+    {
+        var store = new EngineeringWorkflowMemoryStore();
+        var repository = new InMemoryEngineeringCalculationArtifactRepository(store);
+        var createdAtUtc = DateTimeOffset.Parse("2026-05-10T00:00:00Z");
+
+        await repository.SaveAsync(
+            new EngineeringCalculationArtifactRecordDto(
+                ArtifactId: "artifact-01",
+                ScenarioId: "scenario-copy",
+                ArtifactKind: EngineeringCalculationArtifactKind.ReportJson,
+                ContentType: "application/json",
+                Content: "{}",
+                CreatedAtUtc: createdAtUtc,
+                SizeBytes: 2,
+                ChecksumSha256: "x"),
+            CancellationToken.None);
+
+        var firstRead = await repository.ListByScenarioIdAsync("scenario-copy", CancellationToken.None);
+        var mutableCopy = firstRead.ToList();
+        mutableCopy.Clear();
+
+        var secondRead = await repository.ListByScenarioIdAsync("scenario-copy", CancellationToken.None);
+        Assert.Single(secondRead);
+        Assert.Equal("artifact-01", secondRead[0].ArtifactId);
+    }
+
     private static EngineeringWorkflowPersistenceService CreateService()
     {
         var store = new EngineeringWorkflowMemoryStore();

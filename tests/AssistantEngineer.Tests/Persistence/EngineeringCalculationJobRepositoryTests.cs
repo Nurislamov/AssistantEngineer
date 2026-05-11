@@ -176,4 +176,201 @@ public class EngineeringCalculationJobRepositoryTests
 
         Assert.Equal(new[] { "job-older", "job-newer" }, queued.Select(item => item.JobId).ToArray());
     }
+
+    [Fact]
+    public async Task InMemoryRepositoryClaimsQueuedJobExactlyOnceAndWritesLeaseMetadata()
+    {
+        var repository = new InMemoryEngineeringCalculationJobRepository(new EngineeringWorkflowMemoryStore());
+        var queued = CreateJob("job-claim-memory", "scenario-claim-memory", DateTimeOffset.Parse("2026-05-10T00:00:00Z"));
+        await repository.CreateAsync(queued, CancellationToken.None);
+
+        var firstClaim = await repository.TryClaimQueuedJobAsync(
+            "job-claim-memory",
+            "worker-a",
+            TimeSpan.FromSeconds(120),
+            CancellationToken.None);
+        var secondClaim = await repository.TryClaimQueuedJobAsync(
+            "job-claim-memory",
+            "worker-b",
+            TimeSpan.FromSeconds(120),
+            CancellationToken.None);
+
+        Assert.NotNull(firstClaim);
+        Assert.Equal(EngineeringCalculationJobStatus.Running, firstClaim!.Status);
+        Assert.Equal("worker-a", firstClaim.ClaimedByWorkerId);
+        Assert.NotNull(firstClaim.ClaimedAtUtc);
+        Assert.NotNull(firstClaim.LeaseExpiresAtUtc);
+        Assert.True(firstClaim.LeaseExpiresAtUtc > firstClaim.ClaimedAtUtc);
+        Assert.Null(secondClaim);
+    }
+
+    [Fact]
+    public async Task InMemoryRepositoryDoesNotClaimNonQueuedJobs()
+    {
+        var repository = new InMemoryEngineeringCalculationJobRepository(new EngineeringWorkflowMemoryStore());
+        var completed = CreateJob("job-complete-memory", "scenario-complete-memory", DateTimeOffset.Parse("2026-05-10T00:00:00Z")) with
+        {
+            Status = EngineeringCalculationJobStatus.Completed,
+            CurrentStep = "Completed",
+            ProgressPercent = 100
+        };
+        await repository.CreateAsync(completed, CancellationToken.None);
+
+        var claim = await repository.TryClaimQueuedJobAsync(
+            completed.JobId,
+            "worker-a",
+            TimeSpan.FromSeconds(120),
+            CancellationToken.None);
+
+        Assert.Null(claim);
+    }
+
+    [Fact]
+    public async Task SqliteRepositoryClaimsQueuedJobExactlyOnceAndProtectsAgainstDoubleClaim()
+    {
+        var now = DateTimeOffset.Parse("2026-05-10T00:00:00Z");
+        await using var harness = await SqliteHarness.CreateAsync();
+        await SeedProjectAndScenarioAsync(harness.DbContext, now, "scenario-claim-sqlite");
+        var repository = new EfEngineeringCalculationJobRepository(harness.DbContext);
+        await repository.CreateAsync(CreateJob("job-claim-sqlite", "scenario-claim-sqlite", now), CancellationToken.None);
+
+        var firstClaim = await repository.TryClaimQueuedJobAsync(
+            "job-claim-sqlite",
+            "worker-a",
+            TimeSpan.FromSeconds(180),
+            CancellationToken.None);
+        var secondClaim = await repository.TryClaimQueuedJobAsync(
+            "job-claim-sqlite",
+            "worker-b",
+            TimeSpan.FromSeconds(180),
+            CancellationToken.None);
+
+        Assert.NotNull(firstClaim);
+        Assert.Equal(EngineeringCalculationJobStatus.Running, firstClaim!.Status);
+        Assert.Equal("worker-a", firstClaim.ClaimedByWorkerId);
+        Assert.NotNull(firstClaim.ClaimedAtUtc);
+        Assert.NotNull(firstClaim.LeaseExpiresAtUtc);
+        Assert.True(firstClaim.LeaseExpiresAtUtc > firstClaim.ClaimedAtUtc);
+        Assert.Null(secondClaim);
+    }
+
+    [Fact]
+    public async Task SqliteRepositoryDoesNotClaimNonQueuedJobs()
+    {
+        var now = DateTimeOffset.Parse("2026-05-10T00:00:00Z");
+        await using var harness = await SqliteHarness.CreateAsync();
+        await SeedProjectAndScenarioAsync(harness.DbContext, now, "scenario-running-sqlite");
+        var repository = new EfEngineeringCalculationJobRepository(harness.DbContext);
+        var running = CreateJob("job-running-sqlite", "scenario-running-sqlite", now) with
+        {
+            Status = EngineeringCalculationJobStatus.Running,
+            CurrentStep = "Running",
+            ProgressPercent = 25
+        };
+        await repository.CreateAsync(running, CancellationToken.None);
+
+        var claim = await repository.TryClaimQueuedJobAsync(
+            "job-running-sqlite",
+            "worker-a",
+            TimeSpan.FromSeconds(180),
+            CancellationToken.None);
+
+        Assert.Null(claim);
+    }
+
+    [Fact]
+    public async Task InMemoryRepositoryConcurrentClaimAllowsExactlyOneWinner()
+    {
+        var repository = new InMemoryEngineeringCalculationJobRepository(new EngineeringWorkflowMemoryStore());
+        var queued = CreateJob("job-claim-concurrent", "scenario-claim-concurrent", DateTimeOffset.Parse("2026-05-10T00:00:00Z"));
+        await repository.CreateAsync(queued, CancellationToken.None);
+
+        var first = repository.TryClaimQueuedJobAsync(
+            queued.JobId,
+            "worker-concurrent-a",
+            TimeSpan.FromSeconds(120),
+            CancellationToken.None);
+        var second = repository.TryClaimQueuedJobAsync(
+            queued.JobId,
+            "worker-concurrent-b",
+            TimeSpan.FromSeconds(120),
+            CancellationToken.None);
+
+        var claims = await Task.WhenAll(first, second);
+        var successfulClaims = claims.Where(claim => claim is not null).ToArray();
+
+        Assert.Single(successfulClaims);
+        var winner = successfulClaims[0]!;
+        Assert.Equal(EngineeringCalculationJobStatus.Running, winner.Status);
+        Assert.Contains(winner.ClaimedByWorkerId, new[] { "worker-concurrent-a", "worker-concurrent-b" });
+
+        var persisted = await repository.GetByIdAsync(queued.JobId, CancellationToken.None);
+        Assert.NotNull(persisted);
+        Assert.Equal(EngineeringCalculationJobStatus.Running, persisted!.Status);
+        Assert.Equal(winner.ClaimedByWorkerId, persisted.ClaimedByWorkerId);
+        Assert.Equal(winner.ClaimedAtUtc, persisted.ClaimedAtUtc);
+        Assert.Equal(winner.LeaseExpiresAtUtc, persisted.LeaseExpiresAtUtc);
+    }
+
+    [Fact]
+    public async Task InMemoryJobEventRepositoryConcurrentAppendPreservesAllEventsAndDeterministicOrdering()
+    {
+        var store = new EngineeringWorkflowMemoryStore();
+        var repository = new InMemoryEngineeringCalculationJobEventRepository(store);
+        var createdAtUtc = DateTimeOffset.Parse("2026-05-10T00:00:00Z");
+
+        var writes = Enumerable.Range(0, 64)
+            .Select(index => repository.AppendAsync(
+                CreateEvent(
+                    $"event-concurrent-{index:D3}",
+                    "job-concurrent",
+                    "scenario-concurrent",
+                    createdAtUtc.AddSeconds(index % 4),
+                    EngineeringCalculationJobStatus.Running,
+                    progress: index),
+                CancellationToken.None))
+            .ToArray();
+
+        await Task.WhenAll(writes);
+
+        var listed = await repository.ListByJobIdAsync("job-concurrent", CancellationToken.None);
+        Assert.Equal(64, listed.Count);
+        Assert.Equal(
+            listed
+                .OrderBy(item => item.CreatedAtUtc)
+                .ThenBy(item => item.EventId, StringComparer.Ordinal)
+                .Select(item => item.EventId)
+                .ToArray(),
+            listed.Select(item => item.EventId).ToArray());
+    }
+
+    private static async Task SeedProjectAndScenarioAsync(
+        EngineeringWorkflowPersistenceDbContext context,
+        DateTimeOffset createdAtUtc,
+        string scenarioId)
+    {
+        var projects = new EfEngineeringProjectRepository(context);
+        await projects.UpsertAsync(
+            new EngineeringProjectRecordDto(
+                ProjectId: 42,
+                ProjectName: "Project 42",
+                Description: null,
+                CreatedAtUtc: createdAtUtc,
+                UpdatedAtUtc: createdAtUtc,
+                Status: EngineeringProjectRecordStatus.Active,
+                MetadataJson: null),
+            CancellationToken.None);
+
+        await context.Scenarios.AddAsync(new EngineeringCalculationScenarioEntity
+        {
+            Id = scenarioId,
+            ProjectId = 42,
+            ScenarioKind = EngineeringCalculationScenarioKind.FullEngineeringCore.ToString(),
+            ExecutionMode = EngineeringCalculationExecutionMode.ExecuteAvailableModules.ToString(),
+            Status = EngineeringCalculationExecutionStatus.Prepared.ToString(),
+            RequestJson = "{}",
+            CreatedAtUtc = createdAtUtc
+        });
+        await context.SaveChangesAsync();
+    }
 }

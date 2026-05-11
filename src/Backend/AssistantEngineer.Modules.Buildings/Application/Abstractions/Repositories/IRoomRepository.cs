@@ -20,6 +20,10 @@ public interface IRoomRepository
 
     Task<IReadOnlyList<Room>> ListByBuildingIdAsync(int buildingId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Room>> ListWithEngineeringInputsByBuildingIdAsync(
+        int buildingId,
+        CancellationToken cancellationToken = default);
+
     Task<bool> ExistsAsync(int id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Window>> ListWindowsAsync(int roomId, CancellationToken cancellationToken = default);

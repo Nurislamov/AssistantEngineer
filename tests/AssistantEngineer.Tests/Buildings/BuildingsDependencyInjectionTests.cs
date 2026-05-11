@@ -21,6 +21,7 @@ public class BuildingsDependencyInjectionTests
 
         AssertServiceLifetime<BuildingCalculationReadinessService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<BuildingArchetypeService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<EngineeringWorkflowBulkInputQueryService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<EpwAnnualClimateDataImportService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IValidateOptions<BuildingArchetypeCatalogOptions>>(services, ServiceLifetime.Singleton);

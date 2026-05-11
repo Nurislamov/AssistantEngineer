@@ -47,6 +47,32 @@ public class EngineeringCalculationJobServiceTests
         Assert.Contains(completed.HistoryEvents, item => item.Status == EngineeringCalculationJobStatus.Completed);
         Assert.NotEmpty(completed.PersistedArtifactReferences);
     }
+
+    [Fact]
+    public async Task EngineeringCalculationJobExecuteClaimedSkipsWhenWorkerDoesNotOwnClaim()
+    {
+        var fixture = CreateFixture();
+        fixture.Runner.ResultFactory = request => CreateScenarioResult(request.ScenarioId, EngineeringCalculationExecutionStatus.Completed);
+        await fixture.Service.CreateOrRunJobAsync(
+            CreateJobRequest("job-claim-mismatch", "scenario-claim-mismatch", EngineeringCalculationJobExecutionMode.Queued),
+            CancellationToken.None);
+
+        var claimedByWorkerA = await fixture.JobRepository.TryClaimQueuedJobAsync(
+            "job-claim-mismatch",
+            "worker-a",
+            TimeSpan.FromSeconds(180),
+            CancellationToken.None);
+        Assert.NotNull(claimedByWorkerA);
+
+        var skipped = await fixture.Service.ExecuteClaimedJobAsync(
+            "job-claim-mismatch",
+            "worker-b",
+            CancellationToken.None);
+
+        Assert.NotNull(skipped);
+        Assert.Equal(EngineeringCalculationJobStatus.Running, skipped!.Status);
+        Assert.Equal(0, fixture.Runner.InvocationCount);
+    }
     [Fact]
     public async Task EngineeringCalculationJobSynchronousExecutesRunnerAndStoresScenarioArtifacts()
     {
@@ -128,7 +154,7 @@ public class EngineeringCalculationJobServiceTests
             jobEventRepository,
             NullLogger<EngineeringCalculationJobService>.Instance);
 
-        return new Fixture(service, runner);
+        return new Fixture(service, runner, jobRepository);
     }
 
     private static EngineeringCalculationJobRequestDto CreateJobRequest(
@@ -246,7 +272,8 @@ public class EngineeringCalculationJobServiceTests
 
     private sealed record Fixture(
         EngineeringCalculationJobService Service,
-        RunnerStub Runner);
+        RunnerStub Runner,
+        InMemoryEngineeringCalculationJobRepository JobRepository);
 
     private sealed class RunnerStub : IEngineeringCalculationScenarioRunner
     {

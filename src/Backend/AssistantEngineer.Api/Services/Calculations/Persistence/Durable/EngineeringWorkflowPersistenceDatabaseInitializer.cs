@@ -8,6 +8,8 @@ namespace AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 public sealed class EngineeringWorkflowPersistenceDatabaseInitializer
 {
     public const string InitialMigrationId = "20260510000100_InitialEngineeringWorkflowPersistence";
+    public const string JobClaimLeaseMigrationId = "20260511000100_AddEngineeringJobClaimLeaseMetadata";
+    public const string IdempotencyRecordsMigrationId = "20260511000200_AddEngineeringWorkflowIdempotencyRecords";
     private const string InitialMigrationProductVersion = "10.0.6";
 
     private readonly EngineeringWorkflowPersistenceOptions _options;
@@ -57,15 +59,28 @@ public sealed class EngineeringWorkflowPersistenceDatabaseInitializer
                     "CREATE TABLE IF NOT EXISTS \"__EFMigrationsHistory\" (\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL);");
             }
 
-            if (MigrationHistoryContains(connection, InitialMigrationId))
-            {
-                return;
-            }
-
             dbContext.Database.ExecuteSqlRaw(
                 "INSERT OR IGNORE INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({0}, {1});",
                 InitialMigrationId,
                 InitialMigrationProductVersion);
+
+            if (SqliteColumnExists(connection, "engineering_workflow_jobs", "ClaimedByWorkerId") &&
+                SqliteColumnExists(connection, "engineering_workflow_jobs", "ClaimedAtUtc") &&
+                SqliteColumnExists(connection, "engineering_workflow_jobs", "LeaseExpiresAtUtc"))
+            {
+                dbContext.Database.ExecuteSqlRaw(
+                    "INSERT OR IGNORE INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({0}, {1});",
+                    JobClaimLeaseMigrationId,
+                    InitialMigrationProductVersion);
+            }
+
+            if (SqliteObjectExists(connection, "table", "engineering_workflow_idempotency_records"))
+            {
+                dbContext.Database.ExecuteSqlRaw(
+                    "INSERT OR IGNORE INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({0}, {1});",
+                    IdempotencyRecordsMigrationId,
+                    InitialMigrationProductVersion);
+            }
         }
         finally
         {
@@ -94,16 +109,21 @@ public sealed class EngineeringWorkflowPersistenceDatabaseInitializer
         return Convert.ToInt32(command.ExecuteScalar()) > 0;
     }
 
-    private static bool MigrationHistoryContains(DbConnection connection, string migrationId)
+    private static bool SqliteColumnExists(DbConnection connection, string tableName, string columnName)
     {
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT COUNT(1) FROM \"__EFMigrationsHistory\" WHERE \"MigrationId\" = $migrationId";
+        command.CommandText = $"PRAGMA table_info(\"{tableName}\")";
 
-        var migrationParameter = command.CreateParameter();
-        migrationParameter.ParameterName = "$migrationId";
-        migrationParameter.Value = migrationId;
-        command.Parameters.Add(migrationParameter);
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var name = reader.GetString(1);
+            if (name.Equals(columnName, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
 
-        return Convert.ToInt32(command.ExecuteScalar()) > 0;
+        return false;
     }
 }

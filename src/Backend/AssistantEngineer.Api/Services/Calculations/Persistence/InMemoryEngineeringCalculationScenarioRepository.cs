@@ -15,98 +15,49 @@ public sealed class InMemoryEngineeringCalculationScenarioRepository : IEngineer
         EngineeringCalculationScenarioRecordDto scenario,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.ScenariosById[scenario.ScenarioId] = scenario;
-
-            if (!_store.ScenarioIdsByProjectId.TryGetValue(scenario.ProjectId, out var ids))
-            {
-                ids = [];
-                _store.ScenarioIdsByProjectId[scenario.ProjectId] = ids;
-            }
-
-            if (!ids.Contains(scenario.ScenarioId, StringComparer.Ordinal))
-            {
-                ids.Add(scenario.ScenarioId);
-            }
-
-            return Task.FromResult(scenario);
-        }
+        _store.ScenariosById.AddOrUpdate(scenario.ScenarioId, scenario, (_, _) => scenario);
+        return Task.FromResult(scenario);
     }
 
     public Task<EngineeringCalculationScenarioRecordDto> UpdateAsync(
         EngineeringCalculationScenarioRecordDto scenario,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.ScenariosById[scenario.ScenarioId] = scenario;
-
-            if (!_store.ScenarioIdsByProjectId.TryGetValue(scenario.ProjectId, out var ids))
-            {
-                ids = [];
-                _store.ScenarioIdsByProjectId[scenario.ProjectId] = ids;
-            }
-
-            if (!ids.Contains(scenario.ScenarioId, StringComparer.Ordinal))
-            {
-                ids.Add(scenario.ScenarioId);
-            }
-
-            return Task.FromResult(scenario);
-        }
+        _store.ScenariosById.AddOrUpdate(scenario.ScenarioId, scenario, (_, _) => scenario);
+        return Task.FromResult(scenario);
     }
 
     public Task<EngineeringCalculationScenarioRecordDto?> GetByIdAsync(
         string scenarioId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.ScenariosById.TryGetValue(scenarioId, out var scenario);
-            return Task.FromResult(scenario);
-        }
+        _store.ScenariosById.TryGetValue(scenarioId, out var scenario);
+        return Task.FromResult(scenario);
     }
 
     public Task<IReadOnlyList<EngineeringCalculationScenarioRecordDto>> ListByProjectIdAsync(
         int projectId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            if (!_store.ScenarioIdsByProjectId.TryGetValue(projectId, out var ids))
-            {
-                return Task.FromResult<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>([]);
-            }
+        var scenarios = _store.ScenariosById.Values
+            .Where(item => item.ProjectId == projectId)
+            .OrderByDescending(item => item.CreatedAtUtc)
+            .ThenBy(item => item.ScenarioId, StringComparer.Ordinal)
+            .ToArray();
 
-            var scenarios = ids
-                .Select(id => _store.ScenariosById[id])
-                .OrderByDescending(item => item.CreatedAtUtc)
-                .ThenBy(item => item.ScenarioId, StringComparer.Ordinal)
-                .ToArray();
-
-            return Task.FromResult<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>(scenarios);
-        }
+        return Task.FromResult<IReadOnlyList<EngineeringCalculationScenarioRecordDto>>(scenarios);
     }
 
     public Task<EngineeringCalculationScenarioRecordDto?> GetLatestByProjectIdAsync(
         int projectId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            if (!_store.ScenarioIdsByProjectId.TryGetValue(projectId, out var ids) || ids.Count == 0)
-            {
-                return Task.FromResult<EngineeringCalculationScenarioRecordDto?>(null);
-            }
+        var scenario = _store.ScenariosById.Values
+            .Where(item => item.ProjectId == projectId)
+            .OrderByDescending(item => item.CreatedAtUtc)
+            .ThenBy(item => item.ScenarioId, StringComparer.Ordinal)
+            .FirstOrDefault();
 
-            var scenario = ids
-                .Select(id => _store.ScenariosById[id])
-                .OrderByDescending(item => item.CreatedAtUtc)
-                .ThenBy(item => item.ScenarioId, StringComparer.Ordinal)
-                .FirstOrDefault();
-
-            return Task.FromResult(scenario);
-        }
+        return Task.FromResult(scenario);
     }
 }

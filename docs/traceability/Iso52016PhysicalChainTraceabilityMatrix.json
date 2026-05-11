@@ -7,7 +7,7 @@
       "id": "AE-ISO52016-002-STEP-01",
       "name": "Physical node model builder",
       "implementation": [
-        "IIso52016PhysicalRoomModelBuilder",
+        "ISo52016PhysicalRoomModelBuilder",
         "Iso52016PhysicalRoomModelBuilder",
         "Iso52016PhysicalNodeModelOptions",
         "Iso52016PhysicalRoomModelRequest"
@@ -58,7 +58,7 @@
       "id": "AE-ISO52016-002-STEP-05",
       "name": "Physical room simulation service adapter",
       "implementation": [
-        "IIso52016PhysicalRoomEnergySimulationService",
+        "ISo52016PhysicalRoomEnergySimulationService",
         "Iso52016PhysicalRoomEnergySimulationService",
         "Iso52016PhysicalRoomEnergySimulationResult"
       ],
@@ -71,7 +71,7 @@
       "id": "AE-ISO52016-002-STEP-06",
       "name": "Physical model diagnostics",
       "implementation": [
-        "IIso52016PhysicalRoomModelDiagnosticsBuilder",
+        "ISo52016PhysicalRoomModelDiagnosticsBuilder",
         "Iso52016PhysicalRoomModelDiagnosticsBuilder",
         "Iso52016PhysicalRoomModelDiagnosticsProfile"
       ],
@@ -115,7 +115,7 @@
       "id": "AE-ISO52016-002-STEP-10",
       "name": "Physical model selection adapter",
       "implementation": [
-        "IIso52016PhysicalModelSelectionService",
+        "ISo52016PhysicalModelSelectionService",
         "Iso52016PhysicalModelSelectionService",
         "Iso52016PhysicalModelSelectionStrategy"
       ],

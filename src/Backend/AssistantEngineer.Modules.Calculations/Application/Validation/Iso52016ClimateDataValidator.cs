@@ -19,13 +19,13 @@ public sealed class Iso52016ClimateDataValidator
         AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
     };
 
-    private readonly IIso52016ReferenceDataProvider _referenceDataProvider;
+    private readonly ISo52016ReferenceDataProvider _referenceDataProvider;
     private readonly Iso52016CoolingLoadOptions _options;
     private readonly IMemoryCache _cache;
     private readonly ILogger<Iso52016ClimateDataValidator> _logger;
 
     public Iso52016ClimateDataValidator(
-        IIso52016ReferenceDataProvider referenceDataProvider,
+        ISo52016ReferenceDataProvider referenceDataProvider,
         IOptions<Iso52016CoolingLoadOptions> options,
         IMemoryCache cache,
         ILogger<Iso52016ClimateDataValidator>? logger = null)

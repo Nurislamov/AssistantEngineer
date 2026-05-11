@@ -6,7 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
 
-public sealed class Iso52016ReferenceDataProvider : IIso52016ReferenceDataProvider
+public sealed class Iso52016ReferenceDataProvider : ISo52016ReferenceDataProvider
 {
     private static readonly IReadOnlyDictionary<CardinalDirection, IReadOnlyList<double>> DefaultSolarRadiationProfiles =
         GetDefaultSolarRadiationProfiles();

@@ -163,6 +163,12 @@ public sealed class EngineeringCalculationJobEntity
 
     public bool CancellationRequested { get; set; }
 
+    public string? ClaimedByWorkerId { get; set; }
+
+    public DateTimeOffset? ClaimedAtUtc { get; set; }
+
+    public DateTimeOffset? LeaseExpiresAtUtc { get; set; }
+
     public EngineeringProjectEntity? Project { get; set; }
 
     public EngineeringCalculationScenarioEntity? Scenario { get; set; }
@@ -193,4 +199,31 @@ public sealed class EngineeringCalculationJobEventEntity
     public DateTimeOffset CreatedAtUtc { get; set; }
 
     public EngineeringCalculationJobEntity? Job { get; set; }
+}
+
+public sealed class EngineeringWorkflowIdempotencyRecordEntity
+{
+    public long Id { get; set; }
+
+    public string Scope { get; set; } = string.Empty;
+
+    public string IdempotencyKey { get; set; } = string.Empty;
+
+    public string RequestFingerprint { get; set; } = string.Empty;
+
+    public string Status { get; set; } = string.Empty;
+
+    public string? ResponseJson { get; set; }
+
+    public string? ResponseReferenceId { get; set; }
+
+    public DateTimeOffset CreatedAtUtc { get; set; }
+
+    public DateTimeOffset UpdatedAtUtc { get; set; }
+
+    public DateTimeOffset ExpiresAtUtc { get; set; }
+
+    public DateTimeOffset? CompletedAtUtc { get; set; }
+
+    public string? FailureReason { get; set; }
 }

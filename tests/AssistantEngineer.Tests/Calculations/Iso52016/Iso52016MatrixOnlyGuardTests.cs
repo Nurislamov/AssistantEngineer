@@ -96,7 +96,7 @@ public class Iso52016MatrixOnlyGuardTests
 
 
 
-        Assert.DoesNotContain("IIso52016RoomHeatBalanceSolver", sourceText);
+        Assert.DoesNotContain("ISo52016RoomHeatBalanceSolver", sourceText);
 
 
         Assert.DoesNotContain("Iso52016RoomHeatBalanceSolver", sourceText);

@@ -83,39 +83,30 @@ public sealed class EngineeringWorkflowInputSnapshotBuilder : IEngineeringWorkfl
             weatherYear,
             cancellationToken);
 
+        EngineeringWorkflowBulkInputResponse? bulkInput = null;
+        if (roomsResult.IsSuccess)
+        {
+            var bulkInputResult = await _buildings.GetEngineeringWorkflowBulkInputAsync(
+                selectedBuildingId.Value,
+                cancellationToken);
+
+            if (bulkInputResult.IsSuccess)
+            {
+                bulkInput = bulkInputResult.Value;
+            }
+        }
+
         var walls = new List<WallResponse>();
         var windows = new List<WindowResponse>();
         var ventilationConfiguredRoomCount = 0;
         var groundConfiguredRoomCount = 0;
 
-        if (roomsResult.IsSuccess)
+        if (bulkInput is not null)
         {
-            foreach (var room in roomsResult.Value)
-            {
-                var roomWalls = await _buildings.GetRoomWallsAsync(room.Id, cancellationToken);
-                if (roomWalls.IsSuccess)
-                {
-                    walls.AddRange(roomWalls.Value);
-                }
-
-                var roomWindows = await _buildings.GetRoomWindowsAsync(room.Id, cancellationToken);
-                if (roomWindows.IsSuccess)
-                {
-                    windows.AddRange(roomWindows.Value);
-                }
-
-                var roomVentilation = await _buildings.GetRoomVentilationParametersAsync(room.Id, cancellationToken);
-                if (roomVentilation.IsSuccess)
-                {
-                    ventilationConfiguredRoomCount++;
-                }
-
-                var roomGround = await _buildings.GetRoomGroundContactAsync(room.Id, cancellationToken);
-                if (roomGround.IsSuccess)
-                {
-                    groundConfiguredRoomCount++;
-                }
-            }
+            walls.AddRange(bulkInput.Walls);
+            windows.AddRange(bulkInput.Windows);
+            ventilationConfiguredRoomCount = bulkInput.VentilationConfiguredRoomCount;
+            groundConfiguredRoomCount = bulkInput.GroundConfiguredRoomCount;
         }
 
         return new EngineeringWorkflowInputSnapshot(

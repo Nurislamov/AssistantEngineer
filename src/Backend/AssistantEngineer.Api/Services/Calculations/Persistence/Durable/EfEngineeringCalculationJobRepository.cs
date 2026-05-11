@@ -51,6 +51,9 @@ public sealed class EfEngineeringCalculationJobRepository : IEngineeringCalculat
             entity.DurationMs = job.DurationMilliseconds;
             entity.RetryCount = job.RetryCount;
             entity.CancellationRequested = job.CancellationRequested;
+            entity.ClaimedByWorkerId = job.ClaimedByWorkerId;
+            entity.ClaimedAtUtc = job.ClaimedAtUtc;
+            entity.LeaseExpiresAtUtc = job.LeaseExpiresAtUtc;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -76,6 +79,46 @@ public sealed class EfEngineeringCalculationJobRepository : IEngineeringCalculat
             .ToArrayAsync(cancellationToken);
 
         return entities.Select(Map).ToArray();
+    }
+
+    public async Task<EngineeringCalculationJobRecordDto?> TryClaimQueuedJobAsync(
+        string jobId,
+        string workerId,
+        TimeSpan leaseDuration,
+        CancellationToken cancellationToken)
+    {
+        var claimedAt = DateTimeOffset.UtcNow;
+        var leaseExpiresAt = claimedAt.Add(leaseDuration);
+        var running = EngineeringCalculationJobStatus.Running.ToString();
+        var queued = EngineeringCalculationJobStatus.Queued.ToString();
+        var retryScheduled = EngineeringCalculationJobStatus.RetryScheduled.ToString();
+
+        var rowsAffected = await _context.Jobs
+            .Where(item =>
+                item.Id == jobId &&
+                !item.CancellationRequested &&
+                (item.Status == queued || item.Status == retryScheduled))
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(item => item.Status, running)
+                .SetProperty(item => item.ProgressPercent, item => item.ProgressPercent < 25 ? 25 : item.ProgressPercent)
+                .SetProperty(item => item.CurrentStep, "Running")
+                .SetProperty(item => item.StartedAtUtc, item => item.StartedAtUtc ?? claimedAt)
+                .SetProperty(item => item.UpdatedAtUtc, claimedAt)
+                .SetProperty(item => item.ClaimedByWorkerId, workerId)
+                .SetProperty(item => item.ClaimedAtUtc, claimedAt)
+                .SetProperty(item => item.LeaseExpiresAtUtc, leaseExpiresAt),
+                cancellationToken);
+
+        if (rowsAffected != 1)
+        {
+            return null;
+        }
+
+        var claimed = await _context.Jobs
+            .AsNoTracking()
+            .SingleAsync(item => item.Id == jobId, cancellationToken);
+
+        return Map(claimed);
     }
 
     public async Task<EngineeringCalculationJobRecordDto?> GetByIdAsync(
@@ -124,7 +167,10 @@ public sealed class EfEngineeringCalculationJobRepository : IEngineeringCalculat
             UpdatedAtUtc = source.UpdatedAtUtc,
             DurationMs = source.DurationMilliseconds,
             RetryCount = source.RetryCount,
-            CancellationRequested = source.CancellationRequested
+            CancellationRequested = source.CancellationRequested,
+            ClaimedByWorkerId = source.ClaimedByWorkerId,
+            ClaimedAtUtc = source.ClaimedAtUtc,
+            LeaseExpiresAtUtc = source.LeaseExpiresAtUtc
         };
     }
 
@@ -155,6 +201,9 @@ public sealed class EfEngineeringCalculationJobRepository : IEngineeringCalculat
             UpdatedAtUtc: entity.UpdatedAtUtc,
             DurationMilliseconds: entity.DurationMs,
             RetryCount: entity.RetryCount,
-            CancellationRequested: entity.CancellationRequested);
+            CancellationRequested: entity.CancellationRequested,
+            ClaimedByWorkerId: entity.ClaimedByWorkerId,
+            ClaimedAtUtc: entity.ClaimedAtUtc,
+            LeaseExpiresAtUtc: entity.LeaseExpiresAtUtc);
     }
 }

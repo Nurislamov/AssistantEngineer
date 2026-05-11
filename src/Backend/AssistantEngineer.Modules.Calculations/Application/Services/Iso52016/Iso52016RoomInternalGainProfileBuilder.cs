@@ -7,7 +7,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 
-public sealed class Iso52016RoomInternalGainProfileBuilder : IIso52016RoomInternalGainProfileBuilder
+public sealed class Iso52016RoomInternalGainProfileBuilder : ISo52016RoomInternalGainProfileBuilder
 {
     private readonly InternalGainEngine _internalGainEngine;
 

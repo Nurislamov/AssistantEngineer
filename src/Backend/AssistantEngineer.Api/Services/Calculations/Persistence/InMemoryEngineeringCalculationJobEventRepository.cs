@@ -15,42 +15,20 @@ public sealed class InMemoryEngineeringCalculationJobEventRepository : IEngineer
         EngineeringCalculationJobEventRecordDto jobEvent,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            _store.JobEventsById[jobEvent.EventId] = jobEvent;
-            if (!_store.JobEventIdsByJobId.TryGetValue(jobEvent.JobId, out var ids))
-            {
-                ids = [];
-                _store.JobEventIdsByJobId[jobEvent.JobId] = ids;
-            }
-
-            if (!ids.Contains(jobEvent.EventId, StringComparer.Ordinal))
-            {
-                ids.Add(jobEvent.EventId);
-            }
-
-            return Task.FromResult(jobEvent);
-        }
+        _store.JobEventsById.AddOrUpdate(jobEvent.EventId, jobEvent, (_, _) => jobEvent);
+        return Task.FromResult(jobEvent);
     }
 
     public Task<IReadOnlyList<EngineeringCalculationJobEventRecordDto>> ListByJobIdAsync(
         string jobId,
         CancellationToken cancellationToken)
     {
-        lock (_store.SyncRoot)
-        {
-            if (!_store.JobEventIdsByJobId.TryGetValue(jobId, out var ids))
-            {
-                return Task.FromResult<IReadOnlyList<EngineeringCalculationJobEventRecordDto>>([]);
-            }
+        var events = _store.JobEventsById.Values
+            .Where(item => item.JobId.Equals(jobId, StringComparison.Ordinal))
+            .OrderBy(item => item.CreatedAtUtc)
+            .ThenBy(item => item.EventId, StringComparer.Ordinal)
+            .ToArray();
 
-            var events = ids
-                .Select(id => _store.JobEventsById[id])
-                .OrderBy(item => item.CreatedAtUtc)
-                .ThenBy(item => item.EventId, StringComparer.Ordinal)
-                .ToArray();
-
-            return Task.FromResult<IReadOnlyList<EngineeringCalculationJobEventRecordDto>>(events);
-        }
+        return Task.FromResult<IReadOnlyList<EngineeringCalculationJobEventRecordDto>>(events);
     }
 }

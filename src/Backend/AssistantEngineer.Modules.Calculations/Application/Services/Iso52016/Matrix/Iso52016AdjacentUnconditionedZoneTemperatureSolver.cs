@@ -4,7 +4,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016AdjacentUnconditionedZoneTemperatureSolver : IIso52016AdjacentUnconditionedZoneTemperatureSolver
+public sealed class Iso52016AdjacentUnconditionedZoneTemperatureSolver : ISo52016AdjacentUnconditionedZoneTemperatureSolver
 {
     public Result<Iso52016AdjacentUnconditionedZoneTemperatureResult> Solve(
         Iso52016AdjacentUnconditionedZoneTemperatureRequest request)

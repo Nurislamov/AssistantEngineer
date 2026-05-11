@@ -15,6 +15,12 @@ public interface IEngineeringCalculationJobRepository
         int maxCount,
         CancellationToken cancellationToken);
 
+    Task<EngineeringCalculationJobRecordDto?> TryClaimQueuedJobAsync(
+        string jobId,
+        string workerId,
+        TimeSpan leaseDuration,
+        CancellationToken cancellationToken);
+
     Task<EngineeringCalculationJobRecordDto?> GetByIdAsync(
         string jobId,
         CancellationToken cancellationToken);

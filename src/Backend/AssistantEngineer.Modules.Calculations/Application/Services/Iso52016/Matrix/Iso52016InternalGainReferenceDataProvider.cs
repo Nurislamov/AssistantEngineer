@@ -4,7 +4,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Matrix;
 
-public sealed class Iso52016InternalGainReferenceDataProvider : IIso52016InternalGainReferenceDataProvider
+public sealed class Iso52016InternalGainReferenceDataProvider : ISo52016InternalGainReferenceDataProvider
 {
     private const string SourceNote = "Seed data for ISO 52016-style sensible internal gains. Replace with national annex, project schedule or verified reference table when available.";
 

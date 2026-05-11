@@ -963,6 +963,88 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task EngineeringWorkflowSqliteProviderPersistsIdempotencyAcrossFactoryRestart()
+    {
+        var dbPath = Path.Combine(Path.GetTempPath(), $"assistant-engineer-stage12-idempotency-{Guid.NewGuid():N}.db");
+        try
+        {
+            var overrides = new Dictionary<string, string?>
+            {
+                ["EngineeringWorkflowPersistence:Provider"] = "SQLite",
+                ["EngineeringWorkflowPersistence:EnsureCreatedOnStartup"] = "true",
+                ["EngineeringWorkflowPersistence:SqliteConnectionString"] = $"Data Source={dbPath};Cache=Shared;Mode=ReadWriteCreate"
+            };
+
+            EngineeringCalculationScenarioRequestDto request;
+            string firstScenarioId;
+
+            await using (var firstFactory = new AssistantEngineerApiFactory(overrides))
+            {
+                var firstClient = firstFactory.CreateClient();
+                var stateResponse = await firstClient.GetAsync("/api/v1/engineering-workflow/0/state?buildingId=0");
+                stateResponse.EnsureSuccessStatusCode();
+                var state = await stateResponse.Content.ReadFromJsonAsync<EngineeringWorkflowStateDto>();
+                Assert.NotNull(state);
+
+                request = new EngineeringCalculationScenarioRequestDto(
+                    ScenarioId: "scenario-idempotency-sqlite-restart",
+                    ProjectId: state.ProjectId,
+                    BuildingId: state.BuildingId,
+                    ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
+                    ExecutionMode: EngineeringCalculationExecutionMode.ExecuteAvailableModules,
+                    State: state,
+                    RequestedModules: state.AvailableModules,
+                    DetailLevel: "Summary",
+                    IncludeTrace: false,
+                    IncludeReport: false,
+                    ReportFormats: ["Json"],
+                    DeterministicTimestampUtc: null,
+                    DiagnosticsMode: "Deterministic");
+
+                using var firstMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/engineering-workflow/run-calculation")
+                {
+                    Content = JsonContent.Create(request)
+                };
+                firstMessage.Headers.Add("Idempotency-Key", "idempotency-sqlite-restart-001");
+                var firstResponse = await firstClient.SendAsync(firstMessage);
+                await EnsureSuccessWithBodyAsync(firstResponse);
+                var firstPayload = await firstResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+                Assert.NotNull(firstPayload);
+                firstScenarioId = firstPayload.ScenarioId;
+            }
+
+            await using (var secondFactory = new AssistantEngineerApiFactory(overrides))
+            {
+                var secondClient = secondFactory.CreateClient();
+                using var secondMessage = new HttpRequestMessage(HttpMethod.Post, "/api/v1/engineering-workflow/run-calculation")
+                {
+                    Content = JsonContent.Create(request)
+                };
+                secondMessage.Headers.Add("Idempotency-Key", "idempotency-sqlite-restart-001");
+                var secondResponse = await secondClient.SendAsync(secondMessage);
+                await EnsureSuccessWithBodyAsync(secondResponse);
+                var secondPayload = await secondResponse.Content.ReadFromJsonAsync<EngineeringCalculationScenarioResultDto>();
+                Assert.NotNull(secondPayload);
+                Assert.Equal(firstScenarioId, secondPayload.ScenarioId);
+            }
+        }
+        finally
+        {
+            if (File.Exists(dbPath))
+            {
+                try
+                {
+                    File.Delete(dbPath);
+                }
+                catch (IOException)
+                {
+                    // SQLite file cleanup is best-effort for integration tests.
+                }
+            }
+        }
+    }
+
+    [Fact]
     public async Task EngineeringCalculationScenarioValidateOnlyModeDoesNotExecuteModules()
     {
         await using var factory = new AssistantEngineerApiFactory();
@@ -1319,6 +1401,12 @@ public class ApiIntegrationTests
             Task.FromResult(_rooms);
 
         public Task<IReadOnlyList<Room>> ListByBuildingIdAsync(
+            int buildingId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Room>>(
+                _rooms.Where(room => room.Floor.BuildingId == buildingId).ToArray());
+
+        public Task<IReadOnlyList<Room>> ListWithEngineeringInputsByBuildingIdAsync(
             int buildingId,
             CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<Room>>(

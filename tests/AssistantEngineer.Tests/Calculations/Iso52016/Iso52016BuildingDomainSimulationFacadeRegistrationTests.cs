@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations;
+using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +19,8 @@ public class Iso52016BuildingDomainSimulationFacadeRegistrationTests
 
         services.AddCalculationsModule(configuration);
 
-        AssertRegistered<IIso52016BuildingRoomCollector, Iso52016BuildingRoomCollector>(services);
-        AssertRegistered<IIso52016BuildingDomainSimulationFacade, Iso52016BuildingDomainSimulationFacade>(services);
+        AssertRegistered<ISo52016BuildingRoomCollector, Iso52016BuildingRoomCollector>(services);
+        AssertRegistered<ISo52016BuildingDomainSimulationFacade, Iso52016BuildingDomainSimulationFacade>(services);
     }
 
     private static void AssertRegistered<TService, TImplementation>(

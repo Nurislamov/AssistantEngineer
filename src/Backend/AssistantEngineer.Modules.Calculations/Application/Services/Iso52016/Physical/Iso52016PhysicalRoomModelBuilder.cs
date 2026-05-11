@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.Physical;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Matrix;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Iso52016.Physical;
@@ -6,7 +6,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Physical;
 
-public sealed class Iso52016PhysicalRoomModelBuilder : IIso52016PhysicalRoomModelBuilder
+public sealed class Iso52016PhysicalRoomModelBuilder : ISo52016PhysicalRoomModelBuilder
 {
     private const double FractionTolerance = 1e-9;
 

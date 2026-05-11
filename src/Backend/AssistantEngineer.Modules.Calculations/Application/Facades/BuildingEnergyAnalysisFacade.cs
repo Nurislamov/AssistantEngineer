@@ -12,11 +12,11 @@ namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 public sealed class BuildingEnergyAnalysisFacade : IBuildingEnergyAnalysisFacade
 {
     private readonly BuildingPerformanceService _performance;
-    private readonly IIso52016BuildingEnergySimulationApplicationService _iso52016Simulation;
+    private readonly ISo52016BuildingEnergySimulationApplicationService _iso52016Simulation;
 
     public BuildingEnergyAnalysisFacade(
         BuildingPerformanceService performance,
-        IIso52016BuildingEnergySimulationApplicationService iso52016Simulation)
+        ISo52016BuildingEnergySimulationApplicationService iso52016Simulation)
     {
         _performance = performance;
         _iso52016Simulation = iso52016Simulation;
