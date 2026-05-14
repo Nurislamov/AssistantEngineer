@@ -6,6 +6,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
@@ -38,7 +39,7 @@ using System.Globalization;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
-public sealed partial class EnergyCalculationPipelineService
+public sealed partial class EnergyCalculationPipelineService : IEnergyCalculationPipeline
 {
     private const string RoomPipelineMethod = "Standard-Based Calculation / Application Room Load Pipeline";
     private const string AggregationPipelineMethod = "Standard-Based Calculation / Application Load Aggregation Pipeline";
@@ -51,27 +52,23 @@ public sealed partial class EnergyCalculationPipelineService
     private readonly RoomLoadCalculationEngine _roomLoadEngine;
     private readonly LoadAggregationEngine _aggregationEngine;
     private readonly AnnualEnergyBalanceEngine _annualEnergyEngine;
-    private readonly EquipmentSizingEngine _equipmentSizingEngine;
     private readonly IBuildingEnergyCalculator _legacyEnergyCalculator;
     private readonly ICoolingLoadReferenceData _coolingReferenceData;
-    private readonly ICoolingEquipmentCatalogSizingProvider? _equipmentCatalogSizingProvider;
     private readonly IAnnualClimateDataProvider? _annualClimateDataProvider;
     private readonly IGroundTemperatureService? _groundTemperatureService;
     private readonly ISolarRadiationService? _solarRadiationService;
     private readonly CoolingLoadCalculationOptions _coolingOptions;
     private readonly En12831HeatingLoadOptions _heatingOptions;
     private readonly Iso52016EnergyNeedOptions _energyNeedOptions;
-    private readonly SystemEnergyOptions _systemEnergyOptions;
     private readonly ILogger<EnergyCalculationPipelineService> _logger;
     private readonly EnergyCalculationPipelineClimateContextBuilder _climateContextBuilder;
     private readonly EnergyCalculationPipelineAnnualInputAdapter _annualInputAdapter;
     private readonly EnergyCalculationPipelineRoomContextResolver _roomContextResolver;
     private readonly EnergyCalculationPipelineAggregationRoomAssembler _aggregationRoomAssembler;
-    private readonly EnergyCalculationPipelineEquipmentSizingOrchestrator _equipmentSizingOrchestrator;
+    private readonly IEquipmentSizingCalculationUseCase _equipmentSizingCalculationUseCase;
+    private readonly ISystemEnergyHandoffUseCase _systemEnergyHandoffUseCase;
     private readonly EnergyCalculationPipelineDiagnosticsPolicy _diagnosticsPolicy;
     private readonly EnergyCalculationPipelineBuildingHeatingResultAssembler _buildingHeatingResultAssembler;
-    private readonly SystemEnergyEngine? _systemEnergyEngine;
-    private readonly SystemEnergyUsefulEnergyHandoffBuilder? _systemEnergyHandoffBuilder;
 
     public EnergyCalculationPipelineService(
         IRoomRepository rooms,
@@ -81,20 +78,17 @@ public sealed partial class EnergyCalculationPipelineService
         RoomLoadCalculationEngine roomLoadEngine,
         LoadAggregationEngine aggregationEngine,
         AnnualEnergyBalanceEngine annualEnergyEngine,
-        EquipmentSizingEngine equipmentSizingEngine,
+        IEquipmentSizingCalculationUseCase equipmentSizingCalculationUseCase,
+        ISystemEnergyHandoffUseCase systemEnergyHandoffUseCase,
         IBuildingEnergyCalculator legacyEnergyCalculator,
         ICoolingLoadReferenceData coolingReferenceData,
         IOptions<CoolingLoadCalculationOptions> coolingOptions,
         IOptions<En12831HeatingLoadOptions> heatingOptions,
         TimeProvider timeProvider,
-        ICoolingEquipmentCatalogSizingProvider? equipmentCatalogSizingProvider = null,
         IAnnualClimateDataProvider? annualClimateDataProvider = null,
         IGroundTemperatureService? groundTemperatureService = null,
         ISolarRadiationService? solarRadiationService = null,
         IOptions<Iso52016EnergyNeedOptions>? energyNeedOptions = null,
-        SystemEnergyEngine? systemEnergyEngine = null,
-        SystemEnergyUsefulEnergyHandoffBuilder? systemEnergyHandoffBuilder = null,
-        IOptions<SystemEnergyOptions>? systemEnergyOptions = null,
         ILogger<EnergyCalculationPipelineService>? logger = null)
     {
         _rooms = rooms;
@@ -104,19 +98,16 @@ public sealed partial class EnergyCalculationPipelineService
         _roomLoadEngine = roomLoadEngine;
         _aggregationEngine = aggregationEngine;
         _annualEnergyEngine = annualEnergyEngine;
-        _equipmentSizingEngine = equipmentSizingEngine;
+        _equipmentSizingCalculationUseCase = equipmentSizingCalculationUseCase;
+        _systemEnergyHandoffUseCase = systemEnergyHandoffUseCase;
         _legacyEnergyCalculator = legacyEnergyCalculator;
         _coolingReferenceData = coolingReferenceData;
         _coolingOptions = coolingOptions.Value;
         _heatingOptions = heatingOptions.Value;
         _energyNeedOptions = energyNeedOptions?.Value ?? new Iso52016EnergyNeedOptions();
-        _equipmentCatalogSizingProvider = equipmentCatalogSizingProvider;
         _annualClimateDataProvider = annualClimateDataProvider;
         _groundTemperatureService = groundTemperatureService;
         _solarRadiationService = solarRadiationService;
-        _systemEnergyEngine = systemEnergyEngine;
-        _systemEnergyHandoffBuilder = systemEnergyHandoffBuilder;
-        _systemEnergyOptions = systemEnergyOptions?.Value ?? new SystemEnergyOptions();
         _logger = logger ?? NullLogger<EnergyCalculationPipelineService>.Instance;
         _climateContextBuilder = new EnergyCalculationPipelineClimateContextBuilder(
             _annualClimateDataProvider,
@@ -129,7 +120,6 @@ public sealed partial class EnergyCalculationPipelineService
             _solarRadiationService,
             _energyNeedOptions);
         _aggregationRoomAssembler = new EnergyCalculationPipelineAggregationRoomAssembler();
-        _equipmentSizingOrchestrator = new EnergyCalculationPipelineEquipmentSizingOrchestrator(_equipmentSizingEngine);
         _diagnosticsPolicy = new EnergyCalculationPipelineDiagnosticsPolicy();
         _buildingHeatingResultAssembler = new EnergyCalculationPipelineBuildingHeatingResultAssembler(_diagnosticsPolicy);
     }
@@ -373,78 +363,26 @@ public sealed partial class EnergyCalculationPipelineService
         CoolingLoadCalculationMethod coolingMethod = CoolingLoadCalculationMethod.Iso52016,
         HeatingLoadCalculationMethod heatingMethod = HeatingLoadCalculationMethod.En12831,
         DomesticHotWaterEn15316Handoff? dhwHandoff = null,
-        CancellationToken cancellationToken = default)
-    {
-        if (_systemEnergyEngine is null || _systemEnergyHandoffBuilder is null)
-        {
-            return Result<SystemEnergyHandoffResult>.Validation(
-                "System-energy handoff services are not configured.");
-        }
-
-        if (!_systemEnergyOptions.UseEn15316InspiredChain ||
-            !_systemEnergyOptions.UseEn15316CircuitLevelCalculator)
-        {
-            return Result<SystemEnergyHandoffResult>.Validation(
-                "System-energy circuit-level handoff requires explicit opt-in in Calculations:SystemEnergy options.");
-        }
-
-        var usefulResult = await CalculateBuildingEnergyBalanceAsync(
+        CancellationToken cancellationToken = default) =>
+        await _systemEnergyHandoffUseCase.CalculateBuildingSystemEnergyFromUsefulDemandAsync(
             buildingId,
             coolingMethod,
             heatingMethod,
+            dhwHandoff,
             cancellationToken);
-        if (usefulResult.IsFailure)
-            return Result<SystemEnergyHandoffResult>.Failure(usefulResult);
-
-        var handoff = _systemEnergyHandoffBuilder.Build(usefulResult.Value, _systemEnergyOptions, dhwHandoff);
-        var systemResult = _systemEnergyEngine.Calculate(handoff.SystemEnergyInput);
-        if (systemResult.IsFailure)
-            return Result<SystemEnergyHandoffResult>.Failure(systemResult);
-
-        return Result<SystemEnergyHandoffResult>.Success(
-            handoff with { SystemEnergyResult = systemResult.Value });
-    }
 
     public async Task<Result<EquipmentSizingResult>> CalculateRoomEquipmentSizingAsync(
         int roomId,
         string systemType,
         string unitType,
         CoolingLoadCalculationMethod method = CoolingLoadCalculationMethod.Simplified,
-        CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(systemType))
-            return Result<EquipmentSizingResult>.Validation("System type is required.");
-
-        if (string.IsNullOrWhiteSpace(unitType))
-            return Result<EquipmentSizingResult>.Validation("Unit type is required.");
-
-        if (_equipmentCatalogSizingProvider is null)
-            return Result<EquipmentSizingResult>.Validation("Equipment catalog sizing provider is not configured.");
-
-        var room = await _rooms.GetForCalculationAsync(roomId, cancellationToken);
-        if (room is null)
-            return Result<EquipmentSizingResult>.NotFound($"Room with id {roomId} not found.");
-
-        var preferences = await GetPreferencesAsync(room.Floor.Building.ProjectId, cancellationToken);
-        var climateContext = await _climateContextBuilder.BuildClimateContextAsync(room.Floor.Building, cancellationToken);
-        var load = CalculateRoomLoad(
-            room,
-            preferences,
-            climateContext,
-            requestedMethod: method.ToString());
-        var roomFailure = _diagnosticsPolicy.TryMapRoomLoadFailureOrValidation<EquipmentSizingResult>(load);
-        if (roomFailure is not null)
-            return roomFailure;
-
-        return await _equipmentSizingOrchestrator.CalculateForRoomAsync(
-            room,
-            load.Value,
-            preferences,
+        CancellationToken cancellationToken = default) =>
+        await _equipmentSizingCalculationUseCase.CalculateRoomEquipmentSizingAsync(
+            roomId,
             systemType,
             unitType,
-            _equipmentCatalogSizingProvider,
+            method,
             cancellationToken);
-    }
 
     private async Task<CalculationPreferences> GetPreferencesAsync(
         int projectId,

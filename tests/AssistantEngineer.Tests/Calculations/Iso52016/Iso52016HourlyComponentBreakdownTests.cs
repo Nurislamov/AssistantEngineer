@@ -18,6 +18,27 @@ namespace AssistantEngineer.Tests.Calculations.Iso52016;
 public class Iso52016HourlyComponentBreakdownTests
 {
     [Fact]
+    public void HeatBalanceCalculator_ThrowsWhenCancellationAlreadyRequested()
+    {
+        var room = CreateRoomWithEnvelope();
+        var weather = CreateWeather(hourOfYear: 10, outdoorTemperatureC: -5);
+        var calculator = CreateCalculator();
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        Assert.Throws<OperationCanceledException>(() =>
+            calculator.CalculateZoneHourEnergyNeed(
+                new Iso52016ThermalZoneGroup("Zone A", [room]),
+                CreateZoneState(room, heatingSetpointC: 20, coolingSetpointC: 26),
+                weather,
+                new Dictionary<int, double> { [room.Id] = 0 },
+                new Dictionary<int, string> { [room.Id] = "Zone A" },
+                preferences: null,
+                cts.Token,
+                groundBoundaryTemperatureC: 12));
+    }
+
+    [Fact]
     public void HeatBalanceCalculator_ReturnsRoomHourlyComponentBreakdown()
     {
         var room = CreateRoomWithEnvelope();
@@ -260,6 +281,81 @@ public class Iso52016HourlyComponentBreakdownTests
         Assert.Equal(-30, hour.NaturalVentilationBalanceW, precision: 6);
         Assert.Equal(-85, hour.VentilationBalanceW, precision: 6);
         Assert.Equal(-25, hour.InfiltrationBalanceW, precision: 6);
+    }
+
+    [Fact]
+    public void HeatBalanceCalculator_PreservesRoomResultOrderingAndDeterministicZoneAggregation()
+    {
+        var building = CreateBuilding();
+        var floor = building.AddFloor("Floor 1").Value;
+        var roomA = floor.AddRoom(
+            "Room A",
+            Area.FromSquareMeters(20).Value,
+            3,
+            Temperature.FromCelsius(20).Value,
+            peopleCount: 2,
+            equipmentLoad: Power.FromWatts(500).Value,
+            lightingLoad: Power.FromWatts(300).Value,
+            type: RoomType.Office).Value;
+        var roomB = floor.AddRoom(
+            "Room B",
+            Area.FromSquareMeters(30).Value,
+            3,
+            Temperature.FromCelsius(21).Value,
+            peopleCount: 1,
+            equipmentLoad: Power.FromWatts(350).Value,
+            lightingLoad: Power.FromWatts(250).Value,
+            type: RoomType.Office).Value;
+
+        Assert.True(roomA.AddWall(
+            Area.FromSquareMeters(12).Value,
+            ThermalTransmittance.FromValue(0.4).Value,
+            CardinalDirection.South,
+            WallBoundaryType.External).IsSuccess);
+        Assert.True(roomB.AddWall(
+            Area.FromSquareMeters(18).Value,
+            ThermalTransmittance.FromValue(0.45).Value,
+            CardinalDirection.East,
+            WallBoundaryType.External).IsSuccess);
+
+        var weather = CreateWeather(hourOfYear: 10, outdoorTemperatureC: -5);
+        var calculator = CreateCalculator(new FixedVentilationHeatTransferCalculator(
+            mechanicalWPerK: 5,
+            infiltrationWPerK: 1), new FixedNaturalVentilationAirflowService(2));
+
+        var result = calculator.CalculateZoneHourEnergyNeed(
+            new Iso52016ThermalZoneGroup("Zone A", [roomA, roomB]),
+            new Iso52016ThermalZoneState(
+                FloorAreaM2: roomA.Area.SquareMeters + roomB.Area.SquareMeters,
+                VolumeM3: roomA.CalculateVolume() + roomB.CalculateVolume(),
+                OutdoorBoundaryHeatTransferCoefficientWPerK: 0,
+                GroundBoundaryHeatTransferCoefficientWPerK: 0,
+                VentilationHeatTransferCoefficientWPerK: 0,
+                ThermalCapacityJPerK: 6_000_000,
+                HeatingSetpointC: 20,
+                CoolingSetpointC: 26),
+            weather,
+            new Dictionary<int, double>
+            {
+                [roomA.Id] = 0,
+                [roomB.Id] = 0
+            },
+            new Dictionary<int, string>
+            {
+                [roomA.Id] = "Zone A",
+                [roomB.Id] = "Zone A"
+            },
+            preferences: null,
+            CancellationToken.None,
+            groundBoundaryTemperatureC: 12);
+
+        Assert.Equal([roomA.Id, roomB.Id], result.Rooms.Select(roomResult => roomResult.RoomId).ToArray());
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.HeatingLoadW), result.Hour.HeatingLoadW, precision: 6);
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.CoolingLoadW), result.Hour.CoolingLoadW, precision: 6);
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.TransmissionW), result.Hour.TransmissionW, precision: 6);
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.VentilationW), result.Hour.VentilationW, precision: 6);
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.InfiltrationW), result.Hour.InfiltrationW, precision: 6);
+        Assert.Equal(result.Rooms.Sum(roomResult => roomResult.Hour.GroundW), result.Hour.GroundW, precision: 6);
     }
 
     private static Iso52016HourlyHeatBalanceCalculator CreateCalculator(

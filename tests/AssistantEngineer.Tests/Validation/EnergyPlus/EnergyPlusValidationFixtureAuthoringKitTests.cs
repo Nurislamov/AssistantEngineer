@@ -219,7 +219,7 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
         Assert.Contains("AssistantEngineer.Tools.EngineeringCoreVerification.csproj", wrapper, StringComparison.Ordinal);
         Assert.Contains("dotnet run --project", wrapper, StringComparison.Ordinal);
 
-        var tool = File.ReadAllText(VerificationToolProgramPath);
+        var tool = ReadVerificationToolSourceBundle();
 
         Assert.Contains("EnergyPlusValidationFixtureAuthoringKitTests", tool, StringComparison.Ordinal);
     }
@@ -289,5 +289,18 @@ public class EnergyPlusValidationFixtureAuthoringKitTests
             "tools",
             "AssistantEngineer.Tools.EngineeringCoreVerification",
             "Program.cs");
+
+    private static string VerificationToolCommandRouterPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EngineeringCoreVerification",
+            "EngineeringCoreVerificationCommandRouter.cs");
+
+    private static string ReadVerificationToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(VerificationToolProgramPath),
+            File.ReadAllText(VerificationToolCommandRouterPath));
 }
 

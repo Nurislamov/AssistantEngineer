@@ -115,4 +115,79 @@ public sealed class EngineeringReportSectionBuildersTests
         Assert.Equal(EngineeringReportSectionKind.CalculationTraceAppendix, sections[0].SectionKind);
         Assert.Single(sections[0].Tables[0].Rows);
     }
+
+    [Fact]
+    public void MetadataSectionBuilder_PreservesMetadataKeysAndStandardMetadataRows()
+    {
+        var request = EngineeringReportTestData.CreateMinimalRequest() with
+        {
+            Metadata = new Dictionary<string, string>
+            {
+                ["z_key"] = "z",
+                ["a_key"] = "a"
+            }
+        };
+
+        var section = _sectionBuilder.BuildMetadataSection(
+            request,
+            generatedAt: EngineeringReportTestData.FixedTimestamp,
+            schemaVersion: "1.0",
+            order: 99);
+
+        var keys = section.KeyValues.Select(item => item.Key).ToArray();
+        Assert.Equal("a_key", keys[0]);
+        Assert.Equal("z_key", keys[1]);
+        Assert.Contains(section.KeyValues, item => item.Key == "generated_utc");
+        Assert.Contains(section.KeyValues, item => item.Key == "schema_version");
+    }
+
+    [Fact]
+    public void SystemEnergySectionBuilder_PreservesSectionOrderingAndDiagnostics()
+    {
+        var request = EngineeringReportTestData.CreateSystemEnergyRequest();
+        var sections = new List<EngineeringReportSection>();
+        var assumptions = new List<string>();
+        var diagnostics = new List<EngineeringReportDiagnostic>();
+        var summaries = new List<EngineeringReportValue>();
+        var order = 10;
+
+        _sectionBuilder.BuildSystemEnergySections(
+            request,
+            sections,
+            assumptions,
+            diagnostics,
+            summaries,
+            ref order);
+
+        Assert.Equal(3, sections.Count);
+        Assert.Equal(["system-energy", "final-energy", "primary-energy-carbon"], sections.Select(item => item.SectionId).ToArray());
+        Assert.Equal([11, 12, 13], sections.Select(item => item.Order).ToArray());
+        Assert.Contains(diagnostics, item => item.Code == "AE-SYS-FACTOR-FALLBACK");
+    }
+
+    [Fact]
+    public void ModuleSectionBuilder_MissingSystemEnergyDataAddsMissingDataDiagnostic()
+    {
+        var request = EngineeringReportTestData.CreateSystemEnergyRequest() with
+        {
+            SystemEnergySummary = null
+        };
+
+        var sections = new List<EngineeringReportSection>();
+        var assumptions = new List<string>();
+        var diagnostics = new List<EngineeringReportDiagnostic>();
+        var summaries = new List<EngineeringReportValue>();
+        var order = 0;
+
+        _sectionBuilder.BuildSystemEnergySections(
+            request,
+            sections,
+            assumptions,
+            diagnostics,
+            summaries,
+            ref order);
+
+        Assert.Empty(sections);
+        Assert.Contains(diagnostics, item => item.Code == "AE-REPORT-SECTION-DATA-MISSING");
+    }
 }

@@ -162,6 +162,42 @@ public class VentilationAndInfiltrationLoadEngineTests
     }
 
     [Fact]
+    public void MissingInfiltrationAndNaturalInputsProduceExpectedDiagnosticsInStableOrder()
+    {
+        var result = Calculate(CreateInput(
+            indoorTemperatureC: 20,
+            outdoorTemperatureC: -5,
+            mechanicalAirflowM3PerHour: 100));
+
+        var codes = result.Diagnostics.Select(diagnostic => diagnostic.Code).ToArray();
+        var infiltrationIndex = Array.IndexOf(codes, "Ventilation.NoInfiltrationAirflow");
+        var naturalIndex = Array.IndexOf(codes, "Ventilation.NoNaturalVentilationAirflow");
+
+        Assert.True(infiltrationIndex >= 0);
+        Assert.True(naturalIndex >= 0);
+        Assert.True(infiltrationIndex < naturalIndex);
+    }
+
+    [Fact]
+    public void MechanicalAirflowFromPerPersonAndPerAreaInputsIsSummed()
+    {
+        var result = Calculate(new VentilationAndInfiltrationLoadInput(
+            RoomId: 101,
+            AreaM2: 40,
+            VolumeM3: 100,
+            OccupancyPeople: 2,
+            IndoorTemperatureC: 20,
+            OutdoorTemperatureC: -5,
+            AirflowPerPersonLps: 10.0,
+            AirflowPerAreaLpsM2: 0.25,
+            AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
+            AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
+            DiagnosticsContext: "Ventilation test"));
+
+        Assert.Equal(108.0, result.MechanicalVentilation.AirflowM3PerHour, 6);
+    }
+
+    [Fact]
     public void EnhancedNaturalVentilationResult_IsUsedWhenProvided()
     {
         var enhanced = new Iso16798NaturalVentilationResult(

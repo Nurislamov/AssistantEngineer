@@ -15,6 +15,7 @@ Primary production path for load endpoints:
 - `src/Backend/AssistantEngineer.Api/Controllers/Calculations/FloorLoadCalculationsController.cs`
 - `src/Backend/AssistantEngineer.Api/Controllers/Calculations/RoomLoadCalculationsController.cs`
 - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Facades/LoadCalculationsFacade.cs`
+- `src/Backend/AssistantEngineer.Modules.Calculations/Application/Abstractions/Pipeline/IEnergyCalculationPipeline.cs`
 - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineService.cs`
 
 ISO52016 simulation path (separate API lane):
@@ -24,12 +25,10 @@ ISO52016 simulation path (separate API lane):
 
 ## Compatibility / legacy path
 
-Confirmed direct usages from repository scan (`rg` across `src` + `tests`, 2026-05-07):
+Confirmed direct usages from repository scan (`rg` across `src` + `tests`, 2026-05-13):
 
-| Service | Confirmed source usage | Confirmed test usage | Classification |
-|---|---|---|---|
-| `RoomCalculationService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, DI lifetime test | compatibility legacy service |
-| `BuildingHeatingLoadService` | DI registration only (`LoadCalculationRegistration`) | `HeatingLoadValidationTests`, `BuildingHeatingReportDataServiceTests` (stub usage), DI lifetime test | compatibility bridge (heating/report test lane) |
+- No remaining compatibility legacy load services in `src`.
+- Load endpoints remain facade/pipeline-driven.
 
 Retired in Phase 5:
 - `BuildingEnergyBalanceService` (implementation deleted; DI registration removed; backend source reintroduction guard added).
@@ -40,14 +39,18 @@ Retired in Phase 6:
 Retired in Phase 7:
 - `BuildingCoolingLoadService` (compatibility test dependency migrated to active facade/pipeline path, DI registration removed, implementation deleted, backend source reintroduction guard extended).
 
+Retired in Phase 8:
+- `RoomCalculationService` (compatibility validation test migrated to active facade/pipeline path, DI registration removed, implementation deleted, backend source reintroduction guard extended).
+
+Retired in Phase 9:
+- `BuildingHeatingLoadService` (heating/report compatibility test dependencies migrated to active facade/pipeline path, DI registration removed, implementation deleted, backend source reintroduction guard extended).
+
 Important production-path confirmation:
 - First-party load controllers call `ILoadCalculationsFacade`.
-- `LoadCalculationsFacade` calls `EnergyCalculationPipelineService`.
-- No direct controller/facade dependency on the legacy services above was found.
-- Architecture guard enforces that remaining legacy service references stay fenced to:
-  - compatibility service definitions (`Application/Services/Buildings|Rooms/*CalculationService.cs`),
-  - composition registrations (`Composition/LoadCalculationRegistration.cs`).
-- Separate guard blocks reintroduction of retired `BuildingEnergyBalanceService`, `FloorCalculationService`, and `BuildingCoolingLoadService` into backend source.
+- `LoadCalculationsFacade` depends on `IEnergyCalculationPipeline`.
+- `IEnergyCalculationPipeline` resolves to `EnergyCalculationPipelineService` in composition.
+- No direct controller/facade dependency on retired legacy load services was found.
+- Separate guard blocks reintroduction of retired legacy load services into backend source.
 
 Preview services (active, do not classify as removable legacy):
 - `NaturalVentilationPreviewService` is used by `RoomVentilationController` through `VentilationAnalysisFacade`.
@@ -55,98 +58,42 @@ Preview services (active, do not classify as removable legacy):
 
 ## Deprecated candidates
 
-Safe deprecation candidates (documentation-level in current pass):
-- `RoomCalculationService`
-
-Current deprecation marker strategy:
-- Documentation-level markers in service XML remarks.
-- `[Obsolete]` is intentionally not used yet because warnings-as-errors policy can break build for existing DI/test references.
-
-Conditional candidate (next wave only after migration checks):
-- `BuildingHeatingLoadService`
-- Reason: no first-party controller path dependency was found, but report-lane tests and stubs still use it.
+- No immediate legacy-load retirement candidates remain in this inventory scope.
 
 ## Do not remove yet
 
 Keep for now:
 - `EnergyCalculationPipelineService` (active production orchestrator for load endpoints; out of scope for removal).
-- `BuildingHeatingLoadService` (still referenced by heating/report compatibility tests).
 - `NaturalVentilationPreviewService` and `GroundTemperatureProfilePreviewService` (active endpoints).
-- Any service with explicit compatibility tests that still define accepted behavior.
+- Any service with explicit active endpoint ownership and no approved replacement path.
 
 ## Migration notes
 
 Confirmed migration recommendation:
-1. Freeze legacy services as compatibility-only (done with documentation markers in class remarks).
-2. Add/keep architecture tests proving controllers and facade remain pipeline-driven.
-3. Move remaining internal consumers (if discovered later) to `ILoadCalculationsFacade` / `EnergyCalculationPipelineService`.
-4. Remove DI registrations only after zero runtime consumers and updated tests.
-5. Remove implementation files only after DI removal and targeted compatibility test migration.
+1. Keep load calculation entrypoints on `ILoadCalculationsFacade` and `IEnergyCalculationPipeline`.
+2. Keep architecture guards proving controllers and facades stay pipeline-driven.
+3. Keep removing compatibility-only services only after test/report coverage is migrated to active path.
+4. Keep reintroduction guards updated when a service is retired.
 
 Replacement path:
-- Building/Floor/Room/Balance calculations: `ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`.
+- Building/Floor/Room/Balance calculations: `ILoadCalculationsFacade` -> `IEnergyCalculationPipeline` -> `EnergyCalculationPipelineService`.
 - Annual energy simulation/analysis lane: `IBuildingEnergyAnalysisFacade` + annual-energy adapters where applicable.
-- Reporting lane: `BuildingHeatingReportCalculationService` -> `ILoadCalculationsFacade` (already aligned).
+- Reporting lane: report calculation services consume `ILoadCalculationsFacade`.
 
 Safe removal conditions (must all be true):
 - No registrations in composition roots.
 - No references in controllers/facades/reporting services.
 - No compatibility tests relying on constructors/behavior.
-- Full `dotnet build` and `dotnet test` pass after removal.
+- Full `dotnet build`, `dotnet test`, and engineering-core release-ready verification pass after removal.
 
-Tests covering old behavior (keep while migration is incomplete):
+Tests covering active behavior:
 - `tests/AssistantEngineer.Tests/Calculations/HeatingLoadValidationTests.cs`
-- `tests/AssistantEngineer.Tests/Calculations/CalculationsDependencyInjectionTests.cs`
 - `tests/AssistantEngineer.Tests/Calculations/EnergyCalculationPipelineServiceTests.cs`
 - `tests/AssistantEngineer.Tests/Reporting/BuildingHeatingReportDataServiceTests.cs`
-- `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs` (fencing guard for legacy references and production constructor dependencies)
-
-Phase 3 retirement preparation:
-- `docs/architecture/calculation-legacy-retirement-plan.md` provides per-service removal gates, risk levels, and proposed PR sequence.
-- No legacy services or DI registrations were removed in this phase.
-
-Phase 4 pilot analysis:
-- Re-scan confirmed open gates before pilot retirement execution.
-
-Phase 5 pilot result:
-- Selected candidate: `BuildingEnergyBalanceService` (priority #1).
-- Retirement completed with single-service scope only.
-- Removed:
-  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingEnergyBalanceService.cs`,
-  - DI registration in `Composition/EnergyAnalysisRegistration.cs`.
-- Remaining compatibility legacy services:
-  - `BuildingCoolingLoadService`,
-  - `RoomCalculationService`,
-  - `BuildingHeatingLoadService`.
-
-Phase 6 pilot result:
-- Selected candidate: `FloorCalculationService`.
-- Replacement floor-path coverage confirmed through active pipeline path (`EnergyCalculationPipelineServiceTests`) without legacy service dependency.
-- Retirement completed with single-service scope only.
-- Removed:
-  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Floors/FloorCalculationService.cs`,
-  - DI registration in `Composition/LoadCalculationRegistration.cs`.
-- Remaining compatibility legacy services:
-  - `BuildingCoolingLoadService`,
-  - `RoomCalculationService`,
-  - `BuildingHeatingLoadService`.
-
-Phase 7 pilot result:
-- Selected candidate: `BuildingCoolingLoadService`.
-- Replacement building-cooling behavior coverage migrated to active path (`ILoadCalculationsFacade` -> `EnergyCalculationPipelineService`) in `EnergyCalculationPipelineServiceTests`.
-- Retirement completed with single-service scope only.
-- Removed:
-  - `src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingCoolingLoadService.cs`,
-  - DI registration in `Composition/LoadCalculationRegistration.cs`.
-- Remaining compatibility legacy services:
-  - `RoomCalculationService`,
-  - `BuildingHeatingLoadService`.
+- `tests/AssistantEngineer.Tests/Architecture/LegacyCalculationServiceDependencyGuardTests.cs`
 
 ## Risk notes
 
 Current risks:
 - Hidden third-party/internal direct DI usage cannot be ruled out from first-party repository scan alone.
-- Removing compatibility services now can break compatibility tests even if production controllers are unaffected.
-- `RoomCalculationService` still has direct compatibility test instantiation dependency.
-- `BuildingHeatingLoadService` remains coupled to report-lane compatibility tests.
 - `EnergyCalculationPipelineService` remains a large orchestration component; migration should remain incremental.

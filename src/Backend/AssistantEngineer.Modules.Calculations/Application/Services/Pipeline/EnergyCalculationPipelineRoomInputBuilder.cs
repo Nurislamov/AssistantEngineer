@@ -1,4 +1,6 @@
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Calculations;
+using AssistantEngineer.Modules.Buildings.Application.Mappers;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -47,11 +49,14 @@ public sealed partial class EnergyCalculationPipelineService
         PipelineClimateContext climateContext,
         string? requestedMethod = null)
     {
-        if (room.Floor.Building.ClimateZone is null)
+        var roomSnapshot = room.ToCalculationInputSnapshot();
+
+        if (roomSnapshot.Climate is null)
             return Result<RoomLoadCalculationResult>.Validation("Building climate zone is required for Standard-Based Calculation room load calculation.");
 
         var input = BuildRoomLoadInput(
             room,
+            roomSnapshot,
             preferences,
             climateContext,
             requestedMethod);
@@ -89,15 +94,17 @@ public sealed partial class EnergyCalculationPipelineService
     }
 
 
-    private InternalGainInput CreateInternalGainInput(Room room) =>
+    private InternalGainInput CreateInternalGainInput(
+        Room room,
+        RoomCalculationInputSnapshot roomSnapshot) =>
         new(
-            RoomId: room.Id,
-            AreaM2: room.Area.SquareMeters,
-            OccupancyPeople: room.PeopleCount,
+            RoomId: roomSnapshot.RoomId,
+            AreaM2: roomSnapshot.AreaM2,
+            OccupancyPeople: roomSnapshot.PeopleCount,
             SensibleGainPerPersonW: _coolingReferenceData.GetPeopleHeatGainW(room.Type),
-            EquipmentLoadW: room.EquipmentLoad.Watts,
-            LightingLoadW: room.LightingLoad.Watts,
-            DiagnosticsContext: $"Room {room.Id} application internal gains");
+            EquipmentLoadW: roomSnapshot.EquipmentLoadW,
+            LightingLoadW: roomSnapshot.LightingLoadW,
+            DiagnosticsContext: $"Room {roomSnapshot.RoomId} application internal gains");
 
 
     private static double Round(double value) =>
@@ -105,6 +112,7 @@ public sealed partial class EnergyCalculationPipelineService
 
     private VentilationAndInfiltrationLoadInput CreateVentilationInput(
             Room room,
+            RoomCalculationInputSnapshot roomSnapshot,
             CalculationPreferences preferences,
             double indoorTemperatureC,
             double outdoorTemperatureC,
@@ -114,7 +122,7 @@ public sealed partial class EnergyCalculationPipelineService
             var deltaT = isHeating
                 ? Math.Max(indoorTemperatureC - outdoorTemperatureC, 0)
                 : Math.Max(outdoorTemperatureC - indoorTemperatureC, 0);
-            var ventilation = room.VentilationParameters;
+            var ventilation = roomSnapshot.Ventilation;
             var defaultAch = preferences.Iso52016DefaultAirChangesPerHour;
             var effectiveVentilation = EnergyCalculationPipelineResultMapper.ResolveEffectiveVentilationAssumption(
                 room,
@@ -138,7 +146,7 @@ public sealed partial class EnergyCalculationPipelineService
                             Round(effectiveVentilation.EffectiveMechanicalAirflowM3PerHour),
                             Round(effectiveVentilation.EffectiveInfiltrationAirChangesPerHour),
                             Round(effectiveVentilation.EffectiveInfiltrationAirflowM3PerHour)),
-                    $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
+                    $"Room {roomSnapshot.RoomId} application {(isHeating ? "heating" : "cooling")} ventilation"));
             }
             else
             {
@@ -152,14 +160,14 @@ public sealed partial class EnergyCalculationPipelineService
                         Round(effectiveVentilation.EffectiveMechanicalAirflowM3PerHour),
                         Round(effectiveVentilation.EffectiveInfiltrationAirChangesPerHour),
                         Round(effectiveVentilation.EffectiveInfiltrationAirflowM3PerHour)),
-                    $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation"));
+                    $"Room {roomSnapshot.RoomId} application {(isHeating ? "heating" : "cooling")} ventilation"));
             }
     
             return new VentilationAndInfiltrationLoadInput(
-                RoomId: room.Id,
-                AreaM2: room.Area.SquareMeters,
-                VolumeM3: room.CalculateVolume(),
-                OccupancyPeople: room.PeopleCount,
+                RoomId: roomSnapshot.RoomId,
+                AreaM2: roomSnapshot.AreaM2,
+                VolumeM3: roomSnapshot.VolumeM3,
+                OccupancyPeople: roomSnapshot.PeopleCount,
                 IndoorTemperatureC: indoorTemperatureC,
                 OutdoorTemperatureC: outdoorTemperatureC,
                 AirChangesPerHour: effectiveVentilation.EffectiveAirChangesPerHour,
@@ -167,21 +175,22 @@ public sealed partial class EnergyCalculationPipelineService
                 HeatRecoveryEfficiency: ventilation?.HeatRecoveryEfficiency ?? 0,
                 AirDensityKgPerM3: AirPhysicalConstants.AirDensityKgPerM3,
                 AirSpecificHeatJPerKgK: AirPhysicalConstants.AirSpecificHeatJPerKgK,
-                DiagnosticsContext: $"Room {room.Id} application {(isHeating ? "heating" : "cooling")} ventilation");
+                DiagnosticsContext: $"Room {roomSnapshot.RoomId} application {(isHeating ? "heating" : "cooling")} ventilation");
         }
 
     private RoomLoadCalculationInput BuildRoomLoadInput(
             Room room,
+            RoomCalculationInputSnapshot roomSnapshot,
             CalculationPreferences preferences,
             PipelineClimateContext climateContext,
             string? requestedMethod)
         {
-            var indoor = room.IndoorTemperature.Celsius;
-            var heatingOutdoor = room.Floor.Building.ClimateZone?.WinterDesignTemperature.Celsius ??
-                room.OutdoorTemperatureOverride?.Celsius ??
+            var indoor = roomSnapshot.IndoorTemperatureC;
+            var heatingOutdoor = roomSnapshot.Climate?.WinterDesignTemperatureC ??
+                roomSnapshot.OutdoorTemperatureOverrideC ??
                 _heatingOptions.DefaultOutdoorHeatingDesignTemperatureC;
-            var coolingOutdoor = room.OutdoorTemperatureOverride?.Celsius ??
-                room.Floor.Building.ClimateZone?.SummerDesignTemperature.Celsius ??
+            var coolingOutdoor = roomSnapshot.OutdoorTemperatureOverrideC ??
+                roomSnapshot.Climate?.SummerDesignTemperatureC ??
                 _coolingOptions.DefaultOutdoorCoolingDesignTemperatureC;
             var diagnostics = new List<CalculationDiagnostic>();
             var assumptions = new List<string>();
@@ -211,11 +220,11 @@ public sealed partial class EnergyCalculationPipelineService
             assumptions.AddRange(solarContext.Assumptions);
     
             return new RoomLoadCalculationInput(
-                RoomId: room.Id,
+                RoomId: roomSnapshot.RoomId,
                 RoomCode: null,
-                RoomName: room.Name,
-                AreaM2: room.Area.SquareMeters,
-                VolumeM3: room.CalculateVolume(),
+                RoomName: roomSnapshot.RoomName,
+                AreaM2: roomSnapshot.AreaM2,
+                VolumeM3: roomSnapshot.VolumeM3,
                 HeatingSetpointC: indoor,
                 CoolingSetpointC: indoor,
                 OutdoorDesignHeatingTemperatureC: heatingOutdoor,
@@ -225,6 +234,7 @@ public sealed partial class EnergyCalculationPipelineService
                 WindowSolarGains: CreateSolarInput(room, solarContext.IrradianceByWindowId),
                 HeatingVentilationAndInfiltration: CreateVentilationInput(
                     room,
+                    roomSnapshot,
                     preferences,
                     indoor,
                     heatingOutdoor,
@@ -232,14 +242,15 @@ public sealed partial class EnergyCalculationPipelineService
                     diagnostics),
                 CoolingVentilationAndInfiltration: CreateVentilationInput(
                     room,
+                    roomSnapshot,
                     preferences,
                     indoor,
                     coolingOutdoor,
                     isHeating: false,
                     diagnostics),
-                InternalGains: CreateInternalGainInput(room),
+                InternalGains: CreateInternalGainInput(room, roomSnapshot),
                 ApplicationDiagnostics: diagnostics,
                 ApplicationAssumptions: assumptions,
-                DiagnosticsContext: $"Room {room.Id} application load pipeline");
+                DiagnosticsContext: $"Room {roomSnapshot.RoomId} application load pipeline");
         }
 }

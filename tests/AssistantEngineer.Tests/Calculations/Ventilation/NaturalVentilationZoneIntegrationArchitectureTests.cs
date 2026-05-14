@@ -14,7 +14,11 @@ public sealed class NaturalVentilationZoneIntegrationArchitectureTests
             .Where(path =>
                 path.EndsWith("NaturalVentilationZoneIntegrationValidator.cs", StringComparison.Ordinal) ||
                 path.EndsWith("NaturalVentilationHourlyInputBuilder.cs", StringComparison.Ordinal) ||
-                path.EndsWith("NaturalVentilationZoneLoadCalculator.cs", StringComparison.Ordinal))
+                path.EndsWith("NaturalVentilationZoneLoadCalculator.cs", StringComparison.Ordinal) ||
+                path.EndsWith("NaturalVentilationZoneInputNormalizer.cs", StringComparison.Ordinal) ||
+                path.EndsWith("NaturalVentilationZoneResultAggregator.cs", StringComparison.Ordinal) ||
+                path.EndsWith("NaturalVentilationZoneDiagnosticsBuilder.cs", StringComparison.Ordinal) ||
+                path.EndsWith("NaturalVentilationScenarioEvaluator.cs", StringComparison.Ordinal))
             .ToArray();
 
         Assert.NotEmpty(filteredFiles);

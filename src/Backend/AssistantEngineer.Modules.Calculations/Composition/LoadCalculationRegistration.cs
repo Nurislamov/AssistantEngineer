@@ -1,13 +1,12 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
+using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads.Simplified;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Services.RoomLoads;
-using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Transmission;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -28,8 +27,12 @@ internal static class LoadCalculationRegistration
         services.AddScoped<IAggregateLoadCalculator, AggregateCalculator>();
         services.TryAddSingleton<LoadAggregationEngine>();
 
-        services.AddScoped<RoomCalculationService>();
+        services.AddScoped<IEquipmentSizingCalculationUseCase, EquipmentSizingCalculationUseCase>();
+        services.AddScoped<ISystemEnergyHandoffUsefulDemandProvider, PipelineSystemEnergyHandoffUsefulDemandProvider>();
+        services.AddScoped<ISystemEnergyHandoffUseCase, SystemEnergyHandoffUseCase>();
         services.AddScoped<EnergyCalculationPipelineService>();
+        services.AddScoped<IEnergyCalculationPipeline>(sp =>
+            sp.GetRequiredService<EnergyCalculationPipelineService>());
 
         return services;
     }
@@ -48,8 +51,7 @@ internal static class LoadCalculationRegistration
         services.AddScoped<IBuildingHeatingLoadCalculator>(sp =>
             sp.GetRequiredService<En12831HeatingLoadCalculator>());
 
-        services.AddScoped<BuildingHeatingLoadService>();
-
         return services;
     }
 }
+

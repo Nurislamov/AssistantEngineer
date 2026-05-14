@@ -199,6 +199,43 @@ public sealed class ThermalZoneBoundaryCalculatorTests
     }
 
     [Fact]
+    public void AdjacentConditionedMissingReferences_PreservesDiagnosticsOrder()
+    {
+        var calculator = CreateCalculator();
+        var topology = CreateSingleBoundaryTopology(
+            ThermalBoundaryKind.AdjacentConditionedZone,
+            "S-ADJ-MISSING",
+            area: 8.0,
+            uValue: 0.3);
+
+        var result = calculator.Calculate(new ThermalZoneBoundaryCalculationInput(
+            Topology: topology,
+            ZoneAirTemperaturesCelsius: null,
+            AdjacentUnconditionedTemperaturesCelsius: null,
+            OutdoorTemperatureCelsius: null,
+            GroundTemperatureCelsius: null,
+            DisclosureOverride: null));
+
+        var orderedCodes = result.Diagnostics
+            .Where(diagnostic =>
+                diagnostic.Code is "Topology.Resolver.AdjacentConditionedMissingReference" or
+                "AE-ZONES-ADJACENT-ZONE-TEMPERATURE-MISSING" or
+                "AE-ZONES-SOURCE-ZONE-TEMPERATURE-MISSING")
+            .Select(diagnostic => diagnostic.Code)
+            .ToArray();
+
+        var firstResolver = Array.IndexOf(orderedCodes, "Topology.Resolver.AdjacentConditionedMissingReference");
+        var firstAdjacentMissing = Array.IndexOf(orderedCodes, "AE-ZONES-ADJACENT-ZONE-TEMPERATURE-MISSING");
+        var firstSourceMissing = Array.IndexOf(orderedCodes, "AE-ZONES-SOURCE-ZONE-TEMPERATURE-MISSING");
+
+        Assert.True(firstResolver >= 0, "Resolver diagnostic is missing.");
+        Assert.True(firstAdjacentMissing >= 0, "Adjacent-conditioned diagnostic is missing.");
+        Assert.True(firstSourceMissing >= 0, "Source-zone diagnostic is missing.");
+        Assert.True(firstResolver < firstAdjacentMissing, "Resolver diagnostic must appear before adjacent-conditioned diagnostic.");
+        Assert.True(firstAdjacentMissing < firstSourceMissing, "Adjacent-conditioned diagnostic must appear before source-zone diagnostic.");
+    }
+
+    [Fact]
     public void NonPositiveAreaProducesDiagnosticAndNoCoefficient()
     {
         var calculator = CreateCalculator();

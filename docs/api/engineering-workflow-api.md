@@ -43,7 +43,7 @@ List endpoints use paged response envelopes:
 
 Workflow DTO contracts are defined in:
 
-- `src/Backend/AssistantEngineer.Api/Contracts/EngineeringWorkflow/EngineeringWorkflowDtos.cs`
+- `src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Contracts/EngineeringWorkflow/EngineeringWorkflowDtos.cs`
 
 Core DTO families:
 

@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\src\Backend\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
     <ProjectReference Include="..\..\src\Backend\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Backend\AssistantEngineer.Api\AssistantEngineer.Api.csproj" />
+    <ProjectReference Include="..\..\tools\AssistantEngineer.Tools.EngineeringCoreVerification\AssistantEngineer.Tools.EngineeringCoreVerification.csproj" />
   </ItemGroup>
 
   <ItemGroup>

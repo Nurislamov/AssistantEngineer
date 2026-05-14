@@ -11,6 +11,10 @@ public class EngineeringCoreVerificationToolArchitectureTests
         {
             ToolProjectPath,
             ToolProgramPath,
+            ToolCommandRouterPath,
+            ToolReportWriterPath,
+            ToolFileSystemPath,
+            ToolProcessRunnerPath,
             ToolReadmePath,
             ArchitectureDocPath,
             WrapperScriptPath
@@ -25,7 +29,7 @@ public class EngineeringCoreVerificationToolArchitectureTests
     [Fact]
     public void EngineeringCoreVerificationToolOwnsVerificationSequence()
     {
-        var content = File.ReadAllText(ToolProgramPath);
+        var content = ReadToolSourceBundle();
 
         var requiredPhrases = new[]
         {
@@ -94,6 +98,18 @@ public class EngineeringCoreVerificationToolArchitectureTests
     private static string ToolProgramPath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "Program.cs");
 
+    private static string ToolCommandRouterPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "EngineeringCoreVerificationCommandRouter.cs");
+
+    private static string ToolReportWriterPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "EngineeringCoreVerificationReportWriter.cs");
+
+    private static string ToolFileSystemPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "EngineeringCoreVerificationFileSystem.cs");
+
+    private static string ToolProcessRunnerPath =>
+        Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "EngineeringCoreVerificationProcessRunner.cs");
+
     private static string ToolReadmePath =>
         Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EngineeringCoreVerification", "README.md");
 
@@ -102,4 +118,13 @@ public class EngineeringCoreVerificationToolArchitectureTests
 
     private static string WrapperScriptPath =>
         Path.Combine(TestPaths.RepoRoot, "scripts", "engineering-core", "verify-engineering-core-v1.ps1");
+
+    private static string ReadToolSourceBundle() =>
+        string.Join(
+            Environment.NewLine,
+            File.ReadAllText(ToolProgramPath),
+            File.ReadAllText(ToolCommandRouterPath),
+            File.ReadAllText(ToolReportWriterPath),
+            File.ReadAllText(ToolFileSystemPath),
+            File.ReadAllText(ToolProcessRunnerPath));
 }

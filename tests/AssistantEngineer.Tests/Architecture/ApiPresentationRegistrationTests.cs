@@ -108,6 +108,18 @@ AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
             services,
             ServiceLifetime.Scoped);
 
+        AssertServiceLifetime<EngineeringCalculationJobPayloadCodec>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<EngineeringCalculationJobStatusTransitionPolicy>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<EngineeringCalculationJobEventRecorder>(
+            services,
+            ServiceLifetime.Scoped);
+
         AssertServiceLifetime<IEngineeringCalculationJobService>(
             services,
             ServiceLifetime.Scoped);

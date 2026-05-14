@@ -20,6 +20,7 @@
         <ProjectReference Include="..\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
+        <ProjectReference Include="..\AssistantEngineer.Modules.EngineeringWorkflow\AssistantEngineer.Modules.EngineeringWorkflow.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Infrastructure\AssistantEngineer.Infrastructure.csproj" />
     </ItemGroup>
 

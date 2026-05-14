@@ -37,6 +37,10 @@ artifacts/iso52016/application-integration-hardening/
 artifacts/iso52016/physical-chain/
 artifacts/iso52016/physical-scenario-anchors/
 artifacts/iso52016/physical-selection-application-integration-hardening/
+
+# Performance benchmark campaign outputs (opt-in tooling artifacts)
+artifacts/performance/
+BenchmarkDotNet.Artifacts/
 *.db
 *.db-shm
 *.db-wal

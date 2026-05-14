@@ -10,6 +10,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.AnnualEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
@@ -140,6 +141,12 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Contains(
             floorHeating.Value.Diagnostics,
             diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
+        Assert.Contains(
+            buildingCooling.Value.Diagnostics,
+            diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
+        Assert.Contains(
+            buildingHeating.Value.Diagnostics,
+            diagnostic => diagnostic.Code == "CalculationMethod.ApiCompatibility");
         Assert.Equal(roomCooling.Sum(room => room.CoolingLoadW), buildingCooling.Value.CoolingLoadW, precision: 2);
         Assert.Equal(roomHeating.Sum(room => room.HeatingLoadW), buildingHeating.Value.HeatingLoadW, precision: 2);
         Assert.Equal(roomCooling.Sum(room => room.CoolingLoadW), floorCooling.Value.CoolingLoadW, precision: 2);
@@ -161,6 +168,62 @@ public class EnergyCalculationPipelineServiceTests
         Assert.Equal(ResultErrorType.NotFound, heating.ErrorType);
         Assert.Contains("Floor with id -999 not found", cooling.Error, StringComparison.Ordinal);
         Assert.Contains("Floor with id -999 not found", heating.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task RoomPublicMethodsReturnNotFoundWhenRoomDoesNotExist()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var roomLoad = await service.CalculateRoomLoadAsync(roomId: -999);
+        var cooling = await service.CalculateRoomCoolingLoadAsync(roomId: -999);
+        var heating = await service.CalculateRoomHeatingLoadAsync(roomId: -999);
+
+        Assert.True(roomLoad.IsFailure);
+        Assert.True(cooling.IsFailure);
+        Assert.True(heating.IsFailure);
+        Assert.Equal(ResultErrorType.NotFound, roomLoad.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, cooling.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, heating.ErrorType);
+        Assert.Contains("Room with id -999 not found", roomLoad.Error, StringComparison.Ordinal);
+        Assert.Contains("Room with id -999 not found", cooling.Error, StringComparison.Ordinal);
+        Assert.Contains("Room with id -999 not found", heating.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task RoomLoadBaseMethodReturnsSuccessAndDiagnostics()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var result = await service.CalculateRoomLoadAsync(roomId: 1);
+
+        Assert.True(result.IsSuccess, result.Error);
+        Assert.Equal(1, result.Value.RoomId);
+        Assert.Equal(1750, result.Value.HeatingLoadW, precision: 2);
+        Assert.Equal(2000, result.Value.CoolingLoadW, precision: 2);
+        Assert.Contains("Standard-Based Calculation", result.Value.CalculationMethod, StringComparison.Ordinal);
+        Assert.False(string.IsNullOrWhiteSpace(result.Value.CalculationVersion));
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SolarGains.ReferenceByOrientationFallback");
+    }
+
+    [Fact]
+    public async Task FloorLoadReturnsValidationWhenClimateZoneIsMissing()
+    {
+        var building = CreateDeterministicBuilding(hasClimateZone: false);
+        var service = CreateService(building);
+
+        var cooling = await service.CalculateFloorCoolingLoadAsync(floorId: 11);
+        var heating = await service.CalculateFloorHeatingLoadAsync(floorId: 11);
+
+        Assert.True(cooling.IsFailure);
+        Assert.True(heating.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, cooling.ErrorType);
+        Assert.Equal(ResultErrorType.Validation, heating.ErrorType);
+        Assert.Contains("climate zone", cooling.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("climate zone", heating.Error, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -400,6 +463,8 @@ public class EnergyCalculationPipelineServiceTests
             entry.Carrier == En15316EnergyCarrier.Electricity);
         Assert.NotNull(result.Value.DomesticHotWaterHandoff);
         Assert.NotNull(result.Value.SystemEnergyResult);
+        Assert.Contains(result.Value.Diagnostics, diagnostic =>
+            diagnostic.Code == "SystemEnergy.Handoff.Built");
     }
 
     [Fact]
@@ -600,6 +665,134 @@ public class EnergyCalculationPipelineServiceTests
     }
 
     [Fact]
+    public async Task BuildingPublicMethodsReturnNotFoundWhenBuildingDoesNotExist()
+    {
+        var building = CreateDeterministicBuilding();
+        var options = new SystemEnergyOptions
+        {
+            UseEn15316InspiredChain = true,
+            UseEn15316CircuitLevelCalculator = true
+        };
+        var service = CreateService(building, systemEnergyOptions: options);
+
+        var cooling = await service.CalculateBuildingCoolingLoadAsync(buildingId: -999);
+        var heating = await service.CalculateBuildingHeatingLoadAsync(buildingId: -999);
+        var energyBalance = await service.CalculateBuildingEnergyBalanceAsync(buildingId: -999);
+        var handoff = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(buildingId: -999);
+
+        Assert.True(cooling.IsFailure);
+        Assert.True(heating.IsFailure);
+        Assert.True(energyBalance.IsFailure);
+        Assert.True(handoff.IsFailure);
+        Assert.Equal(ResultErrorType.NotFound, cooling.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, heating.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, energyBalance.ErrorType);
+        Assert.Equal(ResultErrorType.NotFound, handoff.ErrorType);
+        Assert.Contains("Building with id -999 not found", cooling.Error, StringComparison.Ordinal);
+        Assert.Contains("Building with id -999 not found", heating.Error, StringComparison.Ordinal);
+        Assert.Contains("Building with id -999 not found", energyBalance.Error, StringComparison.Ordinal);
+        Assert.Contains("Building with id -999 not found", handoff.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task BuildingEnergyBalanceReturnsValidationWhenClimateZoneIsMissing()
+    {
+        var building = CreateDeterministicBuilding(hasClimateZone: false);
+        var service = CreateService(building);
+
+        var result = await service.CalculateBuildingEnergyBalanceAsync(building.Id);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("climate zone", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SystemEnergyHandoffReturnsValidationWhenServicesAreNotConfigured()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(
+            building,
+            configureSystemEnergyServices: false);
+
+        var result = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(building.Id);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("not configured", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SystemEnergyHandoffReturnsValidationWhenCircuitLevelOptionsAreDisabled()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building, systemEnergyOptions: new SystemEnergyOptions());
+
+        var result = await service.CalculateBuildingSystemEnergyFromUsefulDemandAsync(building.Id);
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("requires explicit opt-in", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RoomEquipmentSizingValidatesRequiredSystemTypeAndUnitType()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var missingSystemType = await service.CalculateRoomEquipmentSizingAsync(
+            roomId: 1,
+            systemType: " ",
+            unitType: "Wall");
+        var missingUnitType = await service.CalculateRoomEquipmentSizingAsync(
+            roomId: 1,
+            systemType: "DX",
+            unitType: "");
+
+        Assert.True(missingSystemType.IsFailure);
+        Assert.True(missingUnitType.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, missingSystemType.ErrorType);
+        Assert.Equal(ResultErrorType.Validation, missingUnitType.ErrorType);
+        Assert.Contains("System type is required", missingSystemType.Error, StringComparison.Ordinal);
+        Assert.Contains("Unit type is required", missingUnitType.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task RoomEquipmentSizingReturnsValidationWhenCatalogProviderIsNotConfigured()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(
+            building,
+            includeCatalogSizingProvider: false);
+
+        var result = await service.CalculateRoomEquipmentSizingAsync(
+            roomId: 1,
+            systemType: "DX",
+            unitType: "Wall");
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.Validation, result.ErrorType);
+        Assert.Contains("provider is not configured", result.Error, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task RoomEquipmentSizingReturnsNotFoundWhenRoomDoesNotExist()
+    {
+        var building = CreateDeterministicBuilding();
+        var service = CreateService(building);
+
+        var result = await service.CalculateRoomEquipmentSizingAsync(
+            roomId: -999,
+            systemType: "DX",
+            unitType: "Wall");
+
+        Assert.True(result.IsFailure);
+        Assert.Equal(ResultErrorType.NotFound, result.ErrorType);
+        Assert.Contains("Room with id -999 not found", result.Error, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task MissingCriticalClimateInputsReturnValidation()
     {
         var building = CreateDeterministicBuilding(hasClimateZone: false);
@@ -620,22 +813,50 @@ public class EnergyCalculationPipelineServiceTests
         ISolarRadiationService? solarRadiationService = null,
         CalculationPreferences? preferences = null,
         IBuildingEnergyCalculator? energyCalculator = null,
-        SystemEnergyOptions? systemEnergyOptions = null)
+        SystemEnergyOptions? systemEnergyOptions = null,
+        bool configureSystemEnergyServices = true,
+        bool includeCatalogSizingProvider = true)
     {
         var repository = new BuildingGraphRepositoryStub(building, preferences);
         var timeProvider = new FixedTimeProvider(FixedNow);
         var options = systemEnergyOptions ?? new SystemEnergyOptions();
         var referenceData = new En15316SystemEnergyReferenceDataProvider();
-        var systemEnergyEngine = new SystemEnergyEngine(
-            Options.Create(options),
-            new En15316SystemEnergyChainCalculator(referenceData),
-            new En15316SystemEnergyApplicationAdapter(),
-            new En15316HeatingSystemCircuitCalculator(
-                new En15316HeatingSystemInputValidator(),
-                referenceData));
-        var handoffBuilder = new SystemEnergyUsefulEnergyHandoffBuilder(referenceData);
+        var systemEnergyEngine = configureSystemEnergyServices
+            ? new SystemEnergyEngine(
+                Options.Create(options),
+                new En15316SystemEnergyChainCalculator(referenceData),
+                new En15316SystemEnergyApplicationAdapter(),
+                new En15316HeatingSystemCircuitCalculator(
+                    new En15316HeatingSystemInputValidator(),
+                    referenceData))
+            : null;
+        var handoffBuilder = configureSystemEnergyServices
+            ? new SystemEnergyUsefulEnergyHandoffBuilder(referenceData)
+            : null;
+        var sizingCatalog = includeCatalogSizingProvider
+            ? catalog ?? new FakeCatalogSizingProvider([])
+            : null;
+        var equipmentSizingUseCase = new EquipmentSizingCalculationUseCase(
+            repository,
+            repository,
+            new RoomLoadCalculationEngine(timeProvider: timeProvider),
+            new EquipmentSizingEngine(timeProvider),
+            new CoolingLoadReferenceData(),
+            Options.Create(new CoolingLoadCalculationOptions()),
+            Options.Create(new En12831HeatingLoadOptions()),
+            sizingCatalog,
+            annualClimateDataProvider,
+            groundTemperatureService,
+            solarRadiationService,
+            Options.Create(new Iso52016EnergyNeedOptions()));
+        var usefulDemandProvider = new DeferredUsefulDemandProvider();
+        var systemHandoffUseCase = new SystemEnergyHandoffUseCase(
+            usefulDemandProvider,
+            systemEnergyEngine,
+            handoffBuilder,
+            Options.Create(options));
 
-        return new EnergyCalculationPipelineService(
+        var service = new EnergyCalculationPipelineService(
             repository,
             repository,
             repository,
@@ -643,20 +864,23 @@ public class EnergyCalculationPipelineServiceTests
             new RoomLoadCalculationEngine(timeProvider: timeProvider),
             new LoadAggregationEngine(timeProvider),
             new AnnualEnergyBalanceEngine(timeProvider),
-            new EquipmentSizingEngine(timeProvider),
+            equipmentSizingUseCase,
+            systemHandoffUseCase,
             energyCalculator ?? new FixedBuildingEnergyCalculator(),
             new CoolingLoadReferenceData(),
             Options.Create(new CoolingLoadCalculationOptions()),
             Options.Create(new En12831HeatingLoadOptions()),
             timeProvider,
-            catalog ?? new FakeCatalogSizingProvider([]),
             annualClimateDataProvider,
             groundTemperatureService,
             solarRadiationService,
             Options.Create(new Iso52016EnergyNeedOptions()),
-            systemEnergyEngine,
-            handoffBuilder,
-            Options.Create(options));
+            logger: null);
+
+        usefulDemandProvider.UsefulDemandFactory = (buildingId, cooling, heating, ct) =>
+            service.CalculateBuildingEnergyBalanceAsync(buildingId, cooling, heating, ct);
+
+        return service;
     }
 
     private static Building CreateDeterministicBuilding(
@@ -1105,5 +1329,24 @@ public class EnergyCalculationPipelineServiceTests
             int dayOfYear,
             int hour) =>
             _irradianceWPerM2;
+    }
+
+    private sealed class DeferredUsefulDemandProvider : ISystemEnergyHandoffUsefulDemandProvider
+    {
+        public Func<int, CoolingLoadCalculationMethod, HeatingLoadCalculationMethod, CancellationToken, Task<Result<BuildingEnergyBalanceResult>>>? UsefulDemandFactory { get; set; }
+
+        public Task<Result<BuildingEnergyBalanceResult>> CalculateUsefulDemandAsync(
+            int buildingId,
+            CoolingLoadCalculationMethod coolingMethod,
+            HeatingLoadCalculationMethod heatingMethod,
+            CancellationToken cancellationToken)
+        {
+            if (UsefulDemandFactory is null)
+            {
+                throw new InvalidOperationException("UsefulDemandFactory is not configured.");
+            }
+
+            return UsefulDemandFactory(buildingId, coolingMethod, heatingMethod, cancellationToken);
+        }
     }
 }

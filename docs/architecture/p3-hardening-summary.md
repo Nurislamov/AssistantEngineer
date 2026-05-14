@@ -13,7 +13,7 @@ It is a governance/status artifact and not a certification statement.
 | P3-02 | Durable idempotency store | Done | Durable idempotency table/index/service/tests for replay/conflict and restart behavior |
 | P3-03 | Workflow snapshot bulk API | Done | Bulk snapshot input boundary and removal of snapshot-builder N+1 path |
 | P3-04 | InMemory SyncRoot cleanup | Done | `SyncRoot` removal and concurrency guards for workflow in-memory repositories |
-| P3-05 | ISO52016 interface naming cleanup | Done | `IIso52016*` removal and `ISo52016*` guard coverage |
+| P3-05 | ISO52016 interface naming cleanup | Done | `IIso52016*` removal, `ISo52016*` guard coverage, and `docs/architecture/naming-conventions.md` |
 | P3-06 | Frontend E2E smoke baseline | Done | Playwright smoke setup plus mocked workflow API smoke scenarios |
 | P3-07 | Workflow persistence hotspot refactor | Done | `EngineeringWorkflowPersistenceService` decomposition and guard tests |
 | P3-08 | Job service hotspot refactor | Done | `EngineeringCalculationJobService` decomposition and lifecycle guards |
@@ -52,6 +52,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\engineering-core\v
 
 ## Remaining P4 Candidates
 
+- ISO52016 hourly core hotspot decomposition is in progress with non-numeric helper extraction; numeric kernel remains intentionally preserved.
+- Thermal zone boundary hotspot decomposition is in progress with helper extraction for classification/resolution/diagnostics/aggregation while preserving existing boundary semantics.
+- Ventilation hotspots decomposition is in progress with extracted scenario evaluators, input normalizers, and diagnostics builders while preserving EN16798-inspired and default-assumption behavior.
+- Reporting section-builder hotspot decomposition is in progress with focused section-family builders and deterministic ordering/metadata/missing-data diagnostic guards.
+- EnergyPlus exporter hotspot decomposition is in progress with section-builder extraction and deterministic IDF ordering/hash guards; exporter remains benchmark/export helper only with no exact EnergyPlus numerical equivalence claim.
 - Distributed stale-lease recovery for queued jobs.
 - Dead-letter queue and advanced retry/backoff scheduler.
 - Distributed or durable multi-node idempotency acceleration.

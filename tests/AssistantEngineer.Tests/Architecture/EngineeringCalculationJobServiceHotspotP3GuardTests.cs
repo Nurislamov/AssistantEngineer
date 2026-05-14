@@ -33,9 +33,16 @@ public class EngineeringCalculationJobServiceHotspotP3GuardTests
             "Services",
             "Calculations",
             "Jobs");
+        var moduleJobsPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
+            "Jobs");
 
-        Assert.True(File.Exists(Path.Combine(jobsPath, "EngineeringCalculationJobStatusTransitionPolicy.cs")));
-        Assert.True(File.Exists(Path.Combine(jobsPath, "EngineeringCalculationJobEventRecorder.cs")));
+        Assert.True(File.Exists(Path.Combine(moduleJobsPath, "EngineeringCalculationJobStatusTransitionPolicy.cs")));
+        Assert.True(File.Exists(Path.Combine(moduleJobsPath, "EngineeringCalculationJobEventRecorder.cs")));
         Assert.True(File.Exists(Path.Combine(jobsPath, "EngineeringCalculationJobExecutionOrchestrator.cs")));
 
         var source = File.ReadAllText(servicePath);

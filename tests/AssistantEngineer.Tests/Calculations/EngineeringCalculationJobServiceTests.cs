@@ -166,12 +166,18 @@ public class EngineeringCalculationJobServiceTests
             {
                 Provider = EngineeringWorkflowPersistenceProvider.InMemory
             }));
+        var payloadCodec = new EngineeringCalculationJobPayloadCodec();
+        var statusTransitionPolicy = new EngineeringCalculationJobStatusTransitionPolicy();
+        var eventRecorder = new EngineeringCalculationJobEventRecorder(jobEventRepository, payloadCodec);
 
         var service = new EngineeringCalculationJobService(
             runner,
             workflowPersistence,
             jobRepository,
             jobEventRepository,
+            payloadCodec,
+            statusTransitionPolicy,
+            eventRecorder,
             NullLogger<EngineeringCalculationJobService>.Instance);
 
         return new Fixture(service, runner, jobRepository);

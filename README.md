@@ -37,6 +37,8 @@ Important constraints:
 - ClosedXML belongs only in `AssistantEngineer.Infrastructure.Integrations.Reports`.
 - Equipment selection must not depend on Buildings or Calculations implementation internals.
 
+Architecture naming conventions are documented in `docs/architecture/naming-conventions.md`.
+
 ## Validation Position
 
 AssistantEngineer implements calculation logic directly in C# using standard-based engineering methods, including EN ISO 52010, EN ISO 52016, EN 16798, EN 12831-3, EN 15316, and ISO 13370. Validation is handled through analytical reference cases, internal engineering anchors, EnergyPlus comparison workflows, and ASHRAE 140 / BESTEST-style validation anchors where applicable.

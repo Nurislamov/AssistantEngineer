@@ -4,7 +4,7 @@ using AssistantEngineer.Api.Contracts.Calculations;
 
 namespace AssistantEngineer.Api.Services.Calculations;
 
-internal sealed class EngineeringCalculationJobPayloadCodec
+public sealed class EngineeringCalculationJobPayloadCodec
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

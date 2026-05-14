@@ -1,5 +1,4 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation.Iso16798;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 using AssistantEngineer.SharedKernel.Primitives;
 
@@ -7,33 +6,18 @@ namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilatio
 
 public sealed class VentilationAndInfiltrationLoadEngine
 {
-    private const double MinimumTemperatureC = -100.0;
-    private const double MaximumTemperatureC = 100.0;
-
     public Result<VentilationAndInfiltrationLoadResult> Calculate(
         VentilationAndInfiltrationLoadInput input)
     {
         if (input is null)
             return Result<VentilationAndInfiltrationLoadResult>.Validation("Ventilation and infiltration load input is required.");
 
-        var diagnostics = Validate(input);
+        var diagnostics = VentilationInputNormalizer.Validate(input);
+        var normalization = VentilationInputNormalizer.ResolveAirConstants(input, diagnostics);
 
-        var airDensity = input.AirDensityKgPerM3 ?? AirPhysicalConstants.AirDensityKgPerM3;
-        var airSpecificHeat = input.AirSpecificHeatJPerKgK ?? AirPhysicalConstants.AirSpecificHeatJPerKgK;
-
-        if (!input.AirDensityKgPerM3.HasValue ||
-            !input.AirSpecificHeatJPerKgK.HasValue)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "Ventilation.AirConstantsUsed",
-                $"Air constants used: density {airDensity} kg/m3, specific heat {airSpecificHeat} J/(kg K).",
-                input.DiagnosticsContext));
-        }
-
-        var mechanicalAirflow = ResolveMechanicalAirflow(input, diagnostics);
-        var infiltrationAirflow = ResolveInfiltrationAirflow(input, diagnostics);
-        var naturalAirflow = ResolveNaturalVentilationAirflow(input, diagnostics);
+        var mechanicalAirflow = MechanicalVentilationScenarioEvaluator.Evaluate(input, diagnostics);
+        var infiltrationAirflow = InfiltrationScenarioEvaluator.Evaluate(input, diagnostics);
+        var naturalAirflow = NaturalVentilationScenarioEvaluator.Evaluate(input, diagnostics);
 
         if (diagnostics.Any(diagnostic =>
                 diagnostic.Severity == CalculationDiagnosticSeverity.Error))
@@ -41,8 +25,8 @@ public sealed class VentilationAndInfiltrationLoadEngine
             return Result<VentilationAndInfiltrationLoadResult>.Success(
                 CreateResult(
                     input,
-                    airDensity,
-                    airSpecificHeat,
+                    normalization.AirDensityKgPerM3,
+                    normalization.AirSpecificHeatJPerKgK,
                     MechanicalVentilationLoadResultZero(input.HeatRecoveryEfficiency ?? 0),
                     InfiltrationLoadResultZero(),
                     NaturalVentilationLoadResultZero(),
@@ -51,28 +35,28 @@ public sealed class VentilationAndInfiltrationLoadEngine
 
         var mechanical = CalculateMechanical(
             input,
-            airDensity,
-            airSpecificHeat,
+            normalization.AirDensityKgPerM3,
+            normalization.AirSpecificHeatJPerKgK,
             mechanicalAirflow);
 
         var infiltration = CalculateInfiltration(
             input,
-            airDensity,
-            airSpecificHeat,
+            normalization.AirDensityKgPerM3,
+            normalization.AirSpecificHeatJPerKgK,
             infiltrationAirflow);
 
         var natural = CalculateNaturalVentilation(
             input,
-            airDensity,
-            airSpecificHeat,
+            normalization.AirDensityKgPerM3,
+            normalization.AirSpecificHeatJPerKgK,
             naturalAirflow.Airflow,
             naturalAirflow.EnhancedResult);
 
         return Result<VentilationAndInfiltrationLoadResult>.Success(
             CreateResult(
                 input,
-                airDensity,
-                airSpecificHeat,
+                normalization.AirDensityKgPerM3,
+                normalization.AirSpecificHeatJPerKgK,
                 mechanical,
                 infiltration,
                 natural,
@@ -118,7 +102,7 @@ public sealed class VentilationAndInfiltrationLoadEngine
         VentilationAndInfiltrationLoadInput input,
         double airDensity,
         double airSpecificHeat,
-        AirflowResult airflow)
+        VentilationAirflowResult airflow)
     {
         var loads = CalculateHeatingCoolingLoads(
             input,
@@ -143,7 +127,7 @@ public sealed class VentilationAndInfiltrationLoadEngine
         VentilationAndInfiltrationLoadInput input,
         double airDensity,
         double airSpecificHeat,
-        AirflowResult airflow)
+        VentilationAirflowResult airflow)
     {
         var loads = CalculateHeatingCoolingLoads(
             input,
@@ -163,8 +147,8 @@ public sealed class VentilationAndInfiltrationLoadEngine
         VentilationAndInfiltrationLoadInput input,
         double airDensity,
         double airSpecificHeat,
-        AirflowResult airflow,
-        Iso16798NaturalVentilationResult? enhancedResult)
+        VentilationAirflowResult airflow,
+        Contracts.Ventilation.Iso16798.Iso16798NaturalVentilationResult? enhancedResult)
     {
         var loads = CalculateHeatingCoolingLoads(
             input,
@@ -210,373 +194,6 @@ public sealed class VentilationAndInfiltrationLoadEngine
             airflowLoadPerK * deltaCooling);
     }
 
-    private static AirflowResult ResolveMechanicalAirflow(
-        VentilationAndInfiltrationLoadInput input,
-        List<CalculationDiagnostic> diagnostics)
-    {
-        var airflowM3PerHour = 0.0;
-        var hasMechanicalInput = false;
-
-        AddM3PerHour(
-            input.MechanicalAirflowM3PerHour,
-            "Ventilation.MechanicalAirflowM3PerHour",
-            ref airflowM3PerHour,
-            ref hasMechanicalInput,
-            diagnostics,
-            input.DiagnosticsContext);
-
-        AddLitersPerSecond(
-            input.AirflowLitersPerSecond,
-            "Ventilation.AirflowLitersPerSecond",
-            ref airflowM3PerHour,
-            ref hasMechanicalInput,
-            diagnostics,
-            input.DiagnosticsContext);
-
-        if (input.AirflowPerPersonLps.HasValue)
-        {
-            var lps = AirflowNormalizer.AirflowPerPersonToLitersPerSecond(
-                input.AirflowPerPersonLps.Value,
-                input.OccupancyPeople);
-
-            AddConvertedLitersPerSecond(
-                lps,
-                "Ventilation.AirflowPerPerson",
-                ref airflowM3PerHour,
-                ref hasMechanicalInput,
-                diagnostics,
-                input.DiagnosticsContext);
-        }
-
-        if (input.AirflowPerAreaLpsM2.HasValue)
-        {
-            var lps = AirflowNormalizer.AirflowPerAreaToLitersPerSecond(
-                input.AirflowPerAreaLpsM2.Value,
-                input.AreaM2);
-
-            AddConvertedLitersPerSecond(
-                lps,
-                "Ventilation.AirflowPerArea",
-                ref airflowM3PerHour,
-                ref hasMechanicalInput,
-                diagnostics,
-                input.DiagnosticsContext);
-        }
-
-        if (input.AirChangesPerHour.HasValue)
-        {
-            var m3PerHour = AirflowNormalizer.AirChangesPerHourToM3PerHour(
-                input.VolumeM3,
-                input.AirChangesPerHour.Value);
-
-            AddConvertedM3PerHour(
-                m3PerHour,
-                "Ventilation.AirChangesPerHour",
-                ref airflowM3PerHour,
-                ref hasMechanicalInput,
-                diagnostics,
-                input.DiagnosticsContext);
-        }
-
-        if (!hasMechanicalInput)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Warning,
-                "Ventilation.NoMechanicalAirflow",
-                "No mechanical ventilation airflow was supplied; mechanical ventilation load is zero.",
-                input.DiagnosticsContext));
-        }
-
-        airflowM3PerHour *= input.ScheduleFactor;
-
-        return CreateAirflowResult(
-            input.VolumeM3,
-            airflowM3PerHour);
-    }
-
-    private static AirflowResult ResolveInfiltrationAirflow(
-        VentilationAndInfiltrationLoadInput input,
-        List<CalculationDiagnostic> diagnostics)
-    {
-        var airflowM3PerHour = 0.0;
-        var hasInfiltrationInput = false;
-
-        AddM3PerHour(
-            input.InfiltrationAirflowM3PerHour,
-            "Ventilation.InfiltrationAirflowM3PerHour",
-            ref airflowM3PerHour,
-            ref hasInfiltrationInput,
-            diagnostics,
-            input.DiagnosticsContext);
-
-        if (input.InfiltrationAirChangesPerHour.HasValue)
-        {
-            var m3PerHour = AirflowNormalizer.AirChangesPerHourToM3PerHour(
-                input.VolumeM3,
-                input.InfiltrationAirChangesPerHour.Value);
-
-            AddConvertedM3PerHour(
-                m3PerHour,
-                "Ventilation.InfiltrationAirChangesPerHour",
-                ref airflowM3PerHour,
-                ref hasInfiltrationInput,
-                diagnostics,
-                input.DiagnosticsContext);
-        }
-
-        if (!hasInfiltrationInput)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Warning,
-                "Ventilation.NoInfiltrationAirflow",
-                "No infiltration airflow was supplied; no infiltration load is assumed.",
-                input.DiagnosticsContext));
-        }
-
-        return CreateAirflowResult(
-            input.VolumeM3,
-            airflowM3PerHour);
-    }
-
-    private static NaturalAirflowResolution ResolveNaturalVentilationAirflow(
-        VentilationAndInfiltrationLoadInput input,
-        List<CalculationDiagnostic> diagnostics)
-    {
-        if (input.NaturalVentilationEnhancedResult is not null)
-        {
-            var enhancedAirflowM3PerHour = Math.Max(0.0, input.NaturalVentilationEnhancedResult.AirflowM3PerHour);
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "Ventilation.NaturalVentilationEnhancedResultUsed",
-                $"Enhanced EN16798-style standard-based natural ventilation result used with branch '{input.NaturalVentilationEnhancedResult.SelectedBranch}'.",
-                input.DiagnosticsContext));
-
-            return new NaturalAirflowResolution(
-                CreateAirflowResult(input.VolumeM3, enhancedAirflowM3PerHour),
-                input.NaturalVentilationEnhancedResult);
-        }
-
-        var airflowM3PerHour = 0.0;
-        var hasNaturalInput = false;
-
-        AddM3PerHour(
-            input.NaturalVentilationAirflowM3PerHour,
-            "Ventilation.NaturalVentilationAirflowM3PerHour",
-            ref airflowM3PerHour,
-            ref hasNaturalInput,
-            diagnostics,
-            input.DiagnosticsContext);
-
-        if (!hasNaturalInput)
-        {
-            diagnostics.Add(new CalculationDiagnostic(
-                CalculationDiagnosticSeverity.Info,
-                "Ventilation.NoNaturalVentilationAirflow",
-                "No natural ventilation airflow was supplied; natural ventilation load is zero.",
-                input.DiagnosticsContext));
-        }
-
-        return new NaturalAirflowResolution(
-            CreateAirflowResult(
-                input.VolumeM3,
-                airflowM3PerHour),
-            null);
-    }
-
-    private static AirflowResult CreateAirflowResult(
-        double roomVolumeM3,
-        double airflowM3PerHour)
-    {
-        var airflowM3PerSecond = AirflowNormalizer.M3PerHourToM3PerSecond(
-            Math.Max(airflowM3PerHour, 0.0)).Value;
-
-        var airChangesPerHour = roomVolumeM3 > 0
-            ? airflowM3PerHour / roomVolumeM3
-            : 0.0;
-
-        return new AirflowResult(
-            airflowM3PerHour,
-            airflowM3PerSecond,
-            airChangesPerHour);
-    }
-
-    private static List<CalculationDiagnostic> Validate(
-        VentilationAndInfiltrationLoadInput input)
-    {
-        var diagnostics = new List<CalculationDiagnostic>();
-
-        if (input.AreaM2 <= 0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidArea",
-                "Room area must be greater than zero.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.VolumeM3 <= 0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidVolume",
-                "Room volume must be greater than zero.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.OccupancyPeople < 0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidOccupancy",
-                "People count cannot be negative.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.IndoorTemperatureC is < MinimumTemperatureC or > MaximumTemperatureC)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidIndoorTemperature",
-                "Indoor temperature is outside the supported calculation range.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.OutdoorTemperatureC is < MinimumTemperatureC or > MaximumTemperatureC)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidOutdoorTemperature",
-                "Outdoor temperature is outside the supported calculation range.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.HeatRecoveryEfficiency is < 0.0 or > 1.0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidHeatRecoveryEfficiency",
-                "Heat recovery efficiency must be between 0 and 1.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.ScheduleFactor is < 0.0 or > 1.0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidScheduleFactor",
-                "Schedule factor must be between 0 and 1.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.AirDensityKgPerM3 is <= 0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidAirDensity",
-                "Air density must be greater than zero.",
-                input.DiagnosticsContext));
-        }
-
-        if (input.AirSpecificHeatJPerKgK is <= 0)
-        {
-            diagnostics.Add(Error(
-                "Ventilation.InvalidAirSpecificHeat",
-                "Air specific heat must be greater than zero.",
-                input.DiagnosticsContext));
-        }
-
-        return diagnostics;
-    }
-
-    private static void AddM3PerHour(
-        double? airflowM3PerHour,
-        string code,
-        ref double totalAirflowM3PerHour,
-        ref bool hasInput,
-        List<CalculationDiagnostic> diagnostics,
-        string? context)
-    {
-        if (!airflowM3PerHour.HasValue)
-            return;
-
-        if (airflowM3PerHour.Value < 0)
-        {
-            diagnostics.Add(Error(
-                code,
-                "Airflow cannot be negative.",
-                context));
-
-            return;
-        }
-
-        totalAirflowM3PerHour += airflowM3PerHour.Value;
-        hasInput = true;
-    }
-
-    private static void AddLitersPerSecond(
-        double? airflowLitersPerSecond,
-        string code,
-        ref double totalAirflowM3PerHour,
-        ref bool hasInput,
-        List<CalculationDiagnostic> diagnostics,
-        string? context)
-    {
-        if (!airflowLitersPerSecond.HasValue)
-            return;
-
-        var m3PerHour = AirflowNormalizer.LitersPerSecondToM3PerHour(
-            airflowLitersPerSecond.Value);
-
-        AddConvertedM3PerHour(
-            m3PerHour,
-            code,
-            ref totalAirflowM3PerHour,
-            ref hasInput,
-            diagnostics,
-            context);
-    }
-
-    private static void AddConvertedLitersPerSecond(
-        Result<double> airflowLitersPerSecond,
-        string code,
-        ref double totalAirflowM3PerHour,
-        ref bool hasInput,
-        List<CalculationDiagnostic> diagnostics,
-        string? context)
-    {
-        if (airflowLitersPerSecond.IsFailure)
-        {
-            diagnostics.Add(Error(
-                code,
-                airflowLitersPerSecond.Error,
-                context));
-
-            return;
-        }
-
-        AddLitersPerSecond(
-            airflowLitersPerSecond.Value,
-            code,
-            ref totalAirflowM3PerHour,
-            ref hasInput,
-            diagnostics,
-            context);
-    }
-
-    private static void AddConvertedM3PerHour(
-        Result<double> airflowM3PerHour,
-        string code,
-        ref double totalAirflowM3PerHour,
-        ref bool hasInput,
-        List<CalculationDiagnostic> diagnostics,
-        string? context)
-    {
-        if (airflowM3PerHour.IsFailure)
-        {
-            diagnostics.Add(Error(
-                code,
-                airflowM3PerHour.Error,
-                context));
-
-            return;
-        }
-
-        totalAirflowM3PerHour += airflowM3PerHour.Value;
-        hasInput = true;
-    }
-
     private static MechanicalVentilationLoadResult MechanicalVentilationLoadResultZero(
         double heatRecoveryEfficiency) =>
         new(
@@ -603,28 +220,9 @@ public sealed class VentilationAndInfiltrationLoadEngine
             HeatingLoadW: 0,
             CoolingLoadW: 0);
 
-    private static CalculationDiagnostic Error(
-        string code,
-        string message,
-        string? context) =>
-        new(
-            CalculationDiagnosticSeverity.Error,
-            code,
-            message,
-            context);
-
     private static double Round(
         double value) =>
         Math.Round(value, 6, MidpointRounding.AwayFromZero);
-
-    private sealed record AirflowResult(
-        double AirflowM3PerHour,
-        double AirflowM3PerSecond,
-        double AirChangesPerHour);
-
-    private sealed record NaturalAirflowResolution(
-        AirflowResult Airflow,
-        Iso16798NaturalVentilationResult? EnhancedResult);
 
     private sealed record HeatingCoolingLoad(
         double HeatingLoadW,

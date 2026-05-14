@@ -1,5 +1,4 @@
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads.En12831;
 using AssistantEngineer.Modules.Buildings.Domain.Schedules;

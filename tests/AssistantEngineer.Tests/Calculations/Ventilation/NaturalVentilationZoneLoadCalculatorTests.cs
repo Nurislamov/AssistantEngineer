@@ -106,6 +106,30 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
     }
 
     [Fact]
+    public void ScheduledAirflowModeWithNoOperableOpeningsPreservesZeroFallbackDiagnostic()
+    {
+        var baseInput = CreateInput(
+            topology: CreateTopology([CreateRoom("R1", volume: 100.0)]),
+            openings: [CreateOpening("O1", roomId: "R1") with { IsOperable = false }],
+            rules: [CreateRule("Rule-1", openingId: "O1", roomId: "R1")],
+            environments:
+            [
+                CreateEnvironment(hour: 0, roomId: "R1") with
+                {
+                    PrescribedAirflowCubicMetersPerSecond = 0.2
+                }
+            ]);
+
+        var input = baseInput with { FlowConfiguration = NaturalVentilationFlowConfiguration.ScheduledAirflow };
+
+        var result = _calculator.Calculate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-NO-OPENINGS");
+        var zone = Assert.Single(result.HourlyZones);
+        Assert.Equal(0.0, zone.TotalAirflowCubicMetersPerSecond, 6);
+    }
+
+    [Fact]
     public void CalculatesHveFromMassFlowAndCp()
     {
         var input = CreateInput(
@@ -137,6 +161,42 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
         var result = _calculator.Calculate(input);
 
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-AIR-CP-DEFAULTED");
+    }
+
+    [Fact]
+    public void DefaultsAirDensityWithDiagnostic()
+    {
+        var input = CreateInput(
+            topology: CreateTopology([CreateRoom("R1", volume: 100.0)]),
+            openings: [CreateOpening("O1", roomId: "R1")],
+            rules: [CreateRule("Rule-1", openingId: "O1", roomId: "R1")],
+            environments: [CreateEnvironment(hour: 0, roomId: "R1") with { AirDensityKgPerCubicMeter = null }],
+            defaultAirDensityKgPerCubicMeter: null);
+
+        var result = _calculator.Calculate(input);
+
+        Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Code == "AE-VENT-ZONE-AIR-DENSITY-DEFAULTED");
+    }
+
+    [Fact]
+    public void OpeningDiagnosticsOrderIsPreservedForCalculatedLoad()
+    {
+        var input = CreateInput(
+            topology: CreateTopology([CreateRoom("R1", volume: 100.0)]),
+            openings: [CreateOpening("O1", roomId: "R1")],
+            rules: [CreateRule("Rule-1", openingId: "O1", roomId: "R1")],
+            environments: [CreateEnvironment(hour: 0, roomId: "R1")]);
+
+        var result = _calculator.Calculate(input);
+
+        var opening = Assert.Single(result.HourlyZones.SelectMany(zone => zone.Rooms).SelectMany(room => room.Openings));
+        var openingCodes = opening.Diagnostics.Select(diagnostic => diagnostic.Code).ToArray();
+        var hveIndex = Array.IndexOf(openingCodes, "AE-VENT-ZONE-HVE-CALCULATED");
+        var loadIndex = Array.IndexOf(openingCodes, "AE-VENT-ZONE-SENSIBLE-LOAD-CALCULATED");
+
+        Assert.True(hveIndex >= 0);
+        Assert.True(loadIndex >= 0);
+        Assert.True(hveIndex < loadIndex);
     }
 
     [Fact]
@@ -308,6 +368,7 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
         IReadOnlyList<NaturalVentilationOpeningGeometry> openings,
         IReadOnlyList<NaturalVentilationOpeningControlRule> rules,
         IReadOnlyList<NaturalVentilationHourlyZoneEnvironment> environments,
+        double? defaultAirDensityKgPerCubicMeter = 1.2,
         double? defaultAirSpecificHeatJPerKgKelvin = 1005.0,
         StandardCalculationDisclosure? disclosureOverride = null) =>
         new(
@@ -317,7 +378,7 @@ public sealed class NaturalVentilationZoneLoadCalculatorTests
             ControlRules: rules,
             HourlyEnvironments: environments,
             FlowConfiguration: NaturalVentilationFlowConfiguration.WindOnly,
-            DefaultAirDensityKgPerCubicMeter: 1.2,
+            DefaultAirDensityKgPerCubicMeter: defaultAirDensityKgPerCubicMeter,
             DefaultAirSpecificHeatJPerKgKelvin: defaultAirSpecificHeatJPerKgKelvin,
             DisclosureOverride: disclosureOverride,
             Source: "UnitTest",

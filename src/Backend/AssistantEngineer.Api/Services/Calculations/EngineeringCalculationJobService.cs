@@ -22,6 +22,9 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         IEngineeringWorkflowPersistenceService workflowPersistenceService,
         IEngineeringCalculationJobRepository jobRepository,
         IEngineeringCalculationJobEventRepository jobEventRepository,
+        EngineeringCalculationJobPayloadCodec payloadCodec,
+        EngineeringCalculationJobStatusTransitionPolicy statusTransitionPolicy,
+        EngineeringCalculationJobEventRecorder eventRecorder,
         ILogger<EngineeringCalculationJobService> logger)
     {
         _workflowPersistenceService = workflowPersistenceService;
@@ -29,9 +32,9 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
         _jobEventRepository = jobEventRepository;
         _logger = logger;
 
-        _payloadCodec = new EngineeringCalculationJobPayloadCodec();
-        _statusTransitionPolicy = new EngineeringCalculationJobStatusTransitionPolicy();
-        _eventRecorder = new EngineeringCalculationJobEventRecorder(_jobEventRepository, _payloadCodec);
+        _payloadCodec = payloadCodec;
+        _statusTransitionPolicy = statusTransitionPolicy;
+        _eventRecorder = eventRecorder;
         _executionOrchestrator = new EngineeringCalculationJobExecutionOrchestrator(
             scenarioRunner,
             _workflowPersistenceService,

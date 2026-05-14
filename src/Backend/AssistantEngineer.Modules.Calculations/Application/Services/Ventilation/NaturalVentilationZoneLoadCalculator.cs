@@ -2,15 +2,12 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Standards;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Standards;
-using AssistantEngineer.Modules.Calculations.Application.Contracts.Topology;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Ventilation;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 
 public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZoneLoadCalculator
 {
-    private const double DefaultAirSpecificHeatJPerKgKelvin = 1005.0;
-
     private static readonly IReadOnlyList<string> RequiredForbiddenClaims =
     [
         "Full ISO compliance",
@@ -49,21 +46,7 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
         var validation = _validator.Validate(input);
         diagnostics.AddRange(validation.Diagnostics);
 
-        var controlContexts = input.HourlyEnvironments
-            .Select(environment => new NaturalVentilationHourlyControlContext(
-                HourIndex: environment.HourIndex,
-                IndoorTemperatureCelsius: environment.IndoorTemperatureCelsius,
-                OutdoorTemperatureCelsius: environment.OutdoorTemperatureCelsius,
-                WindSpeedMetersPerSecond: environment.WindSpeedMetersPerSecond,
-                OccupancyFraction: environment.OccupancyFraction,
-                ScheduleFraction: environment.ScheduleFraction,
-                IsNightHour: environment.IsNightHour,
-                RoomId: environment.RoomId,
-                ZoneId: environment.ZoneId,
-                Diagnostics: environment.Diagnostics,
-                HeatingModeActive: environment.HeatingModeActive,
-                CoolingModeActive: environment.CoolingModeActive))
-            .ToArray();
+        var controlContexts = NaturalVentilationZoneInputNormalizer.BuildControlContexts(input.HourlyEnvironments);
 
         var controlEvaluation = _controlEvaluator.Evaluate(
             new NaturalVentilationControlEvaluationInput(
@@ -78,7 +61,7 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
         {
             var operationsForHour = controlEvaluation.Operations
                 .Where(operation => operation.HourIndex == environment.HourIndex)
-                .Where(operation => MatchesEnvironment(operation, environment))
+                .Where(operation => NaturalVentilationZoneInputNormalizer.MatchesEnvironment(operation, environment))
                 .ToArray();
 
             var hourlyInput = _hourlyInputBuilder.BuildHourlyAirflowInput(input, environment, operationsForHour);
@@ -91,26 +74,17 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
                     opening => opening.OpeningFraction.GetValueOrDefault(0.0),
                     StringComparer.Ordinal);
 
-            var cp = ResolveAirSpecificHeat(input, environment, diagnostics, environment.HourIndex);
-            var density = ResolveAirDensity(input, environment, diagnostics, environment.HourIndex);
+            var cp = NaturalVentilationZoneInputNormalizer.ResolveAirSpecificHeat(input, environment, diagnostics, environment.HourIndex);
+            var density = NaturalVentilationZoneInputNormalizer.ResolveAirDensity(input, environment, diagnostics, environment.HourIndex);
             var deltaTemperature = environment.IndoorTemperatureCelsius - environment.OutdoorTemperatureCelsius;
 
-            IReadOnlyList<NaturalVentilationOpeningResult> hourlyOpeningResults;
-            if (input.FlowConfiguration is NaturalVentilationFlowConfiguration.ScheduledAirflow or NaturalVentilationFlowConfiguration.CustomAirflow)
-            {
-                hourlyOpeningResults = BuildPrescribedOpeningResults(
-                    input,
-                    hourlyInput,
-                    environment,
-                    density,
-                    diagnostics);
-            }
-            else
-            {
-                var airflowResult = _airflowCalculator.Calculate(hourlyInput);
-                diagnostics.AddRange(airflowResult.Diagnostics);
-                hourlyOpeningResults = airflowResult.Openings;
-            }
+            var hourlyOpeningResults = NaturalVentilationScenarioEvaluator.Evaluate(
+                input,
+                hourlyInput,
+                environment,
+                density,
+                diagnostics,
+                _airflowCalculator);
 
             foreach (var opening in hourlyOpeningResults)
             {
@@ -124,10 +98,10 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
                 var hve = airflowKgPerS * cp;
                 var sensibleLoad = hve * deltaTemperature;
 
-                openingDiagnostics.Add(CreateInfo(
+                openingDiagnostics.Add(NaturalVentilationZoneDiagnosticsBuilder.Info(
                     "AE-VENT-ZONE-HVE-CALCULATED",
                     $"Opening '{opening.OpeningId}' hour {environment.HourIndex} ventilation heat transfer coefficient was calculated."));
-                openingDiagnostics.Add(CreateInfo(
+                openingDiagnostics.Add(NaturalVentilationZoneDiagnosticsBuilder.Info(
                     "AE-VENT-ZONE-SENSIBLE-LOAD-CALCULATED",
                     $"Opening '{opening.OpeningId}' hour {environment.HourIndex} sensible ventilation load was calculated."));
 
@@ -149,204 +123,22 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
                     Diagnostics: openingDiagnostics));
             }
 
-            diagnostics.Add(CreateInfo(
+            diagnostics.Add(NaturalVentilationZoneDiagnosticsBuilder.Info(
                 "AE-VENT-ZONE-HOURLY-RESULT-CALCULATED",
                 $"Natural ventilation hourly result was calculated for hour {environment.HourIndex}."));
         }
 
         diagnostics.AddRange(openingResults.SelectMany(result => result.Diagnostics));
 
-        var roomsById = input.Topology.Rooms
-            .Where(room => !string.IsNullOrWhiteSpace(room.RoomId))
-            .ToDictionary(room => room.RoomId, room => room, StringComparer.Ordinal);
-
-        var roomResults = new List<NaturalVentilationHourlyRoomResult>();
-        foreach (var roomGroup in openingResults
-                     .Where(opening => !string.IsNullOrWhiteSpace(opening.RoomId))
-                     .GroupBy(opening => new { opening.HourIndex, RoomId = opening.RoomId! }))
-        {
-            var roomDiagnostics = new List<StandardCalculationDiagnostic>();
-            var roomOpenings = roomGroup.ToArray();
-            var zoneId = roomOpenings.Select(opening => opening.ZoneId).FirstOrDefault(zone => !string.IsNullOrWhiteSpace(zone));
-
-            var totalM3PerS = roomOpenings.Sum(opening => opening.AirflowCubicMetersPerSecond);
-            var totalM3PerH = roomOpenings.Sum(opening => opening.AirflowCubicMetersPerHour);
-            var totalKgPerS = roomOpenings.Sum(opening => opening.AirflowKilogramsPerSecond);
-            var totalHve = roomOpenings.Sum(opening => opening.VentilationHeatTransferCoefficientWPerKelvin ?? 0.0);
-            var totalLoad = roomOpenings.Sum(opening => opening.SensibleVentilationLoadWatts ?? 0.0);
-
-            double? ach = null;
-            if (roomsById.TryGetValue(roomGroup.Key.RoomId, out var room) &&
-                room.VolumeCubicMeters is > 0.0)
-            {
-                ach = totalM3PerH / room.VolumeCubicMeters.Value;
-                roomDiagnostics.Add(CreateInfo(
-                    "AE-VENT-ZONE-ACH-CALCULATED",
-                    $"Room '{room.RoomId}' ACH was calculated for hour {roomGroup.Key.HourIndex}."));
-            }
-            else
-            {
-                roomDiagnostics.Add(CreateWarning(
-                    "AE-VENT-ZONE-VOLUME-MISSING",
-                    $"Room '{roomGroup.Key.RoomId}' has missing/non-positive volume; ACH is unavailable."));
-            }
-
-            roomResults.Add(new NaturalVentilationHourlyRoomResult(
-                HourIndex: roomGroup.Key.HourIndex,
-                RoomId: roomGroup.Key.RoomId,
-                ZoneId: zoneId,
-                TotalAirflowCubicMetersPerSecond: totalM3PerS,
-                TotalAirflowCubicMetersPerHour: totalM3PerH,
-                TotalAirflowKilogramsPerSecond: totalKgPerS,
-                AirChangesPerHour: ach,
-                VentilationHeatTransferCoefficientWPerKelvin: totalHve,
-                SensibleVentilationLoadWatts: totalLoad,
-                Openings: roomOpenings,
-                Diagnostics: roomDiagnostics));
-        }
-
+        var roomAggregation = NaturalVentilationZoneResultAggregator.BuildRoomResults(input, openingResults);
+        var roomResults = roomAggregation.RoomResults;
         diagnostics.AddRange(roomResults.SelectMany(result => result.Diagnostics));
 
-        var unassignedOpenings = openingResults
-            .Where(opening => string.IsNullOrWhiteSpace(opening.RoomId) && string.IsNullOrWhiteSpace(opening.ZoneId))
-            .OrderBy(opening => opening.HourIndex)
-            .ThenBy(opening => opening.OpeningId, StringComparer.Ordinal)
-            .ToArray();
-
-        var unassignedRooms = roomResults
-            .Where(room => string.IsNullOrWhiteSpace(room.ZoneId))
-            .OrderBy(room => room.HourIndex)
-            .ThenBy(room => room.RoomId, StringComparer.Ordinal)
-            .ToArray();
-
-        var zoneIds = new HashSet<string>(
-            input.Topology.Zones
-                .Select(zone => zone.ZoneId)
-                .Where(zoneId => !string.IsNullOrWhiteSpace(zoneId)),
-            StringComparer.Ordinal);
-        foreach (var room in roomResults.Where(room => !string.IsNullOrWhiteSpace(room.ZoneId)))
-        {
-            zoneIds.Add(room.ZoneId!);
-        }
-        foreach (var opening in openingResults.Where(opening => !string.IsNullOrWhiteSpace(opening.ZoneId)))
-        {
-            zoneIds.Add(opening.ZoneId!);
-        }
-
-        var hourlyZones = new List<NaturalVentilationHourlyZoneResult>();
-        foreach (var zoneId in zoneIds)
-        {
-            var zoneRoomVolumes = input.Topology.Rooms
-                .Where(room => string.Equals(room.ZoneId, zoneId, StringComparison.Ordinal))
-                .Select(room => room.VolumeCubicMeters ?? 0.0)
-                .Where(volume => volume > 0.0)
-                .ToArray();
-            var zoneVolume = zoneRoomVolumes.Sum();
-
-            var hours = roomResults
-                .Where(room => string.Equals(room.ZoneId, zoneId, StringComparison.Ordinal))
-                .Select(room => room.HourIndex)
-                .Union(openingResults
-                    .Where(opening => string.IsNullOrWhiteSpace(opening.RoomId) &&
-                                      string.Equals(opening.ZoneId, zoneId, StringComparison.Ordinal))
-                    .Select(opening => opening.HourIndex))
-                .Distinct()
-                .OrderBy(hour => hour)
-                .ToArray();
-
-            foreach (var hour in hours)
-            {
-                var zoneDiagnostics = new List<StandardCalculationDiagnostic>();
-                var rooms = roomResults
-                    .Where(room => room.HourIndex == hour &&
-                                   string.Equals(room.ZoneId, zoneId, StringComparison.Ordinal))
-                    .ToArray();
-                var zoneUnassignedOpenings = openingResults
-                    .Where(opening => opening.HourIndex == hour &&
-                                      string.IsNullOrWhiteSpace(opening.RoomId) &&
-                                      string.Equals(opening.ZoneId, zoneId, StringComparison.Ordinal))
-                    .ToArray();
-
-                var totalM3PerS = rooms.Sum(room => room.TotalAirflowCubicMetersPerSecond) +
-                                  zoneUnassignedOpenings.Sum(opening => opening.AirflowCubicMetersPerSecond);
-                var totalM3PerH = rooms.Sum(room => room.TotalAirflowCubicMetersPerHour) +
-                                  zoneUnassignedOpenings.Sum(opening => opening.AirflowCubicMetersPerHour);
-                var totalKgPerS = rooms.Sum(room => room.TotalAirflowKilogramsPerSecond) +
-                                  zoneUnassignedOpenings.Sum(opening => opening.AirflowKilogramsPerSecond);
-                var totalHve = rooms.Sum(room => room.VentilationHeatTransferCoefficientWPerKelvin) +
-                               zoneUnassignedOpenings.Sum(opening => opening.VentilationHeatTransferCoefficientWPerKelvin ?? 0.0);
-                var totalLoad = rooms.Sum(room => room.SensibleVentilationLoadWatts) +
-                                zoneUnassignedOpenings.Sum(opening => opening.SensibleVentilationLoadWatts ?? 0.0);
-
-                double? ach = null;
-                if (zoneVolume > 0.0)
-                {
-                    ach = totalM3PerH / zoneVolume;
-                }
-                else
-                {
-                    zoneDiagnostics.Add(CreateWarning(
-                        "AE-VENT-ZONE-VOLUME-MISSING",
-                        $"Zone '{zoneId}' has missing/non-positive volume; ACH is unavailable at hour {hour}."));
-                }
-
-                hourlyZones.Add(new NaturalVentilationHourlyZoneResult(
-                    HourIndex: hour,
-                    ZoneId: zoneId,
-                    TotalAirflowCubicMetersPerSecond: totalM3PerS,
-                    TotalAirflowCubicMetersPerHour: totalM3PerH,
-                    TotalAirflowKilogramsPerSecond: totalKgPerS,
-                    AirChangesPerHour: ach,
-                    VentilationHeatTransferCoefficientWPerKelvin: totalHve,
-                    SensibleVentilationLoadWatts: totalLoad,
-                    Rooms: rooms,
-                    UnassignedOpenings: zoneUnassignedOpenings,
-                    Diagnostics: zoneDiagnostics));
-            }
-        }
-
-        hourlyZones = hourlyZones
-            .OrderBy(zone => zone.HourIndex)
-            .ThenBy(zone => zone.ZoneId, StringComparer.Ordinal)
-            .ToList();
-        diagnostics.AddRange(hourlyZones.SelectMany(zone => zone.Diagnostics));
-
-        var zoneAirflowProfiles = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal);
-        var zoneHveProfiles = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal);
-        var zoneLoadProfiles = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal);
-        var zoneAchProfiles = new Dictionary<string, IReadOnlyList<double>>(StringComparer.Ordinal);
-
-        foreach (var zoneGroup in hourlyZones.GroupBy(zone => zone.ZoneId, StringComparer.Ordinal))
-        {
-            var zoneHourly = zoneGroup
-                .OrderBy(result => result.HourIndex)
-                .ToArray();
-
-            zoneAirflowProfiles[zoneGroup.Key] = zoneHourly
-                .Select(result => result.TotalAirflowCubicMetersPerHour)
-                .ToArray();
-            zoneHveProfiles[zoneGroup.Key] = zoneHourly
-                .Select(result => result.VentilationHeatTransferCoefficientWPerKelvin)
-                .ToArray();
-            zoneLoadProfiles[zoneGroup.Key] = zoneHourly
-                .Select(result => result.SensibleVentilationLoadWatts)
-                .ToArray();
-            zoneAchProfiles[zoneGroup.Key] = zoneHourly
-                .Select(result => result.AirChangesPerHour ?? 0.0)
-                .ToArray();
-
-            var profileLength = zoneHourly.Length;
-            if (profileLength != 24 && profileLength != 8760)
-            {
-                diagnostics.Add(CreateWarning(
-                    "AE-VENT-ZONE-PROFILE-LENGTH-NONSTANDARD",
-                    $"Zone '{zoneGroup.Key}' has nonstandard profile length {profileLength}."));
-            }
-        }
-
-        diagnostics.Add(CreateInfo(
-            "AE-VENT-ZONE-PROFILE-BUILT",
-            $"Zone profiles were built for {zoneAirflowProfiles.Count} zone(s)."));
+        var zoneAggregation = NaturalVentilationZoneResultAggregator.BuildZoneResultsAndProfiles(
+            input,
+            openingResults,
+            roomResults,
+            diagnostics);
 
         var disclosure = MergeDisclosure(
             _disclosureFactory.CreateNaturalVentilationEn16798Disclosure(),
@@ -355,180 +147,15 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
 
         return new NaturalVentilationZoneIntegrationResult(
             CalculationId: input.CalculationId,
-            HourlyZones: hourlyZones,
-            UnassignedRooms: unassignedRooms,
-            UnassignedOpenings: unassignedOpenings,
-            ZoneAirflowCubicMetersPerHourProfiles: zoneAirflowProfiles,
-            ZoneVentilationHeatTransferCoefficientProfilesWPerKelvin: zoneHveProfiles,
-            ZoneSensibleVentilationLoadProfilesWatts: zoneLoadProfiles,
-            ZoneAirChangesPerHourProfiles: zoneAchProfiles,
+            HourlyZones: zoneAggregation.HourlyZones,
+            UnassignedRooms: roomAggregation.UnassignedRooms,
+            UnassignedOpenings: roomAggregation.UnassignedOpenings,
+            ZoneAirflowCubicMetersPerHourProfiles: zoneAggregation.ZoneAirflowProfiles,
+            ZoneVentilationHeatTransferCoefficientProfilesWPerKelvin: zoneAggregation.ZoneHveProfiles,
+            ZoneSensibleVentilationLoadProfilesWatts: zoneAggregation.ZoneLoadProfiles,
+            ZoneAirChangesPerHourProfiles: zoneAggregation.ZoneAchProfiles,
             Disclosure: disclosure,
             Diagnostics: diagnostics);
-    }
-
-    private static bool MatchesEnvironment(
-        NaturalVentilationOpeningOperationResult operation,
-        NaturalVentilationHourlyZoneEnvironment environment)
-    {
-        if (!string.IsNullOrWhiteSpace(environment.RoomId))
-        {
-            if (!string.IsNullOrWhiteSpace(operation.RoomId) &&
-                !string.Equals(operation.RoomId, environment.RoomId, StringComparison.Ordinal))
-            {
-                return false;
-            }
-        }
-        else if (!string.IsNullOrWhiteSpace(operation.RoomId))
-        {
-            return false;
-        }
-
-        if (!string.IsNullOrWhiteSpace(environment.ZoneId))
-        {
-            if (!string.IsNullOrWhiteSpace(operation.ZoneId) &&
-                !string.Equals(operation.ZoneId, environment.ZoneId, StringComparison.Ordinal))
-            {
-                return false;
-            }
-        }
-        else if (!string.IsNullOrWhiteSpace(operation.ZoneId))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static double ResolveAirSpecificHeat(
-        NaturalVentilationZoneIntegrationInput input,
-        NaturalVentilationHourlyZoneEnvironment environment,
-        ICollection<StandardCalculationDiagnostic> diagnostics,
-        int hourIndex)
-    {
-        if (environment.AirSpecificHeatJPerKgKelvin is > 0.0)
-            return environment.AirSpecificHeatJPerKgKelvin.Value;
-
-        if (input.DefaultAirSpecificHeatJPerKgKelvin is > 0.0)
-            return input.DefaultAirSpecificHeatJPerKgKelvin.Value;
-
-        diagnostics.Add(CreateInfo(
-            "AE-VENT-ZONE-AIR-CP-DEFAULTED",
-            $"Air specific heat defaulted to {DefaultAirSpecificHeatJPerKgKelvin:F1} J/(kg.K) at hour {hourIndex}."));
-        return DefaultAirSpecificHeatJPerKgKelvin;
-    }
-
-    private static double ResolveAirDensity(
-        NaturalVentilationZoneIntegrationInput input,
-        NaturalVentilationHourlyZoneEnvironment environment,
-        ICollection<StandardCalculationDiagnostic> diagnostics,
-        int hourIndex)
-    {
-        if (environment.AirDensityKgPerCubicMeter is > 0.0)
-            return environment.AirDensityKgPerCubicMeter.Value;
-
-        if (input.DefaultAirDensityKgPerCubicMeter is > 0.0)
-            return input.DefaultAirDensityKgPerCubicMeter.Value;
-
-        const double defaultDensity = 1.204;
-        diagnostics.Add(CreateInfo(
-            "AE-VENT-ZONE-AIR-DENSITY-DEFAULTED",
-            $"Air density defaulted to {defaultDensity:F3} kg/m3 at hour {hourIndex}."));
-        return defaultDensity;
-    }
-
-    private static IReadOnlyList<NaturalVentilationOpeningResult> BuildPrescribedOpeningResults(
-        NaturalVentilationZoneIntegrationInput input,
-        NaturalVentilationCalculationInput hourlyInput,
-        NaturalVentilationHourlyZoneEnvironment environment,
-        double density,
-        ICollection<StandardCalculationDiagnostic> diagnostics)
-    {
-        var prescribedAirflow = Math.Max(0.0, environment.PrescribedAirflowCubicMetersPerSecond ?? 0.0);
-        if (prescribedAirflow <= 0.0)
-        {
-            diagnostics.Add(CreateInfo(
-                "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-ZERO",
-                $"Flow configuration '{input.FlowConfiguration}' used prescribed airflow mode with zero airflow at hour {environment.HourIndex}."));
-        }
-
-        var openings = hourlyInput.Openings
-            .Where(opening => opening.IsOperable != false)
-            .ToArray();
-
-        if (openings.Length == 0 || prescribedAirflow <= 0.0)
-        {
-            if (openings.Length == 0)
-            {
-                diagnostics.Add(CreateInfo(
-                    "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-NO-OPENINGS",
-                    $"Flow configuration '{input.FlowConfiguration}' has no operable openings at hour {environment.HourIndex}; airflow is set to zero."));
-            }
-
-            return hourlyInput.Openings.Select(opening => new NaturalVentilationOpeningResult(
-                OpeningId: opening.OpeningId,
-                RoomId: opening.RoomId,
-                ZoneId: opening.ZoneId,
-                SurfaceId: opening.SurfaceId,
-                EffectiveOpeningAreaSquareMeters: Math.Max(0.0, opening.OpeningAreaSquareMeters * (opening.OpeningFraction ?? 0.0)),
-                DischargeCoefficient: opening.DischargeCoefficient ?? 0.0,
-                WindPressureDifferencePa: null,
-                StackPressureDifferencePa: null,
-                CombinedPressureDifferencePa: null,
-                AirflowCubicMetersPerSecond: 0.0,
-                AirflowCubicMetersPerHour: 0.0,
-                AirflowKilogramsPerSecond: 0.0,
-                Diagnostics:
-                [
-                    CreateInfo(
-                        "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-OPENING-CLOSED",
-                        $"Opening '{opening.OpeningId}' has zero airflow in prescribed airflow mode.")
-                ])).ToArray();
-        }
-
-        var totalWeight = openings.Sum(opening => Math.Max(0.0, opening.OpeningFraction ?? 0.0));
-        if (totalWeight <= 0.0)
-        {
-            diagnostics.Add(CreateInfo(
-                "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-NO-OPEN-FRACTION",
-                $"Flow configuration '{input.FlowConfiguration}' has no open fractions at hour {environment.HourIndex}; airflow is set to zero."));
-            return BuildPrescribedOpeningResults(
-                input,
-                hourlyInput,
-                environment with { PrescribedAirflowCubicMetersPerSecond = 0.0 },
-                density,
-                diagnostics);
-        }
-
-        diagnostics.Add(CreateInfo(
-            "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-USED",
-            $"Flow configuration '{input.FlowConfiguration}' used prescribed airflow mode at hour {environment.HourIndex}."));
-
-        return hourlyInput.Openings.Select(opening =>
-        {
-            var weight = Math.Max(0.0, opening.OpeningFraction ?? 0.0);
-            var openingAirflowM3PerS = prescribedAirflow * (weight / totalWeight);
-            var openingAirflowM3PerH = openingAirflowM3PerS * 3600.0;
-            var openingAirflowKgPerS = openingAirflowM3PerS * density;
-            return new NaturalVentilationOpeningResult(
-                OpeningId: opening.OpeningId,
-                RoomId: opening.RoomId,
-                ZoneId: opening.ZoneId,
-                SurfaceId: opening.SurfaceId,
-                EffectiveOpeningAreaSquareMeters: Math.Max(0.0, opening.OpeningAreaSquareMeters * (opening.OpeningFraction ?? 0.0)),
-                DischargeCoefficient: opening.DischargeCoefficient ?? 0.0,
-                WindPressureDifferencePa: null,
-                StackPressureDifferencePa: null,
-                CombinedPressureDifferencePa: null,
-                AirflowCubicMetersPerSecond: openingAirflowM3PerS,
-                AirflowCubicMetersPerHour: openingAirflowM3PerH,
-                AirflowKilogramsPerSecond: openingAirflowKgPerS,
-                Diagnostics:
-                [
-                    CreateInfo(
-                        "AE-VENT-ZONE-PRESCRIBED-AIRFLOW-OPENING-DISTRIBUTED",
-                        $"Opening '{opening.OpeningId}' received a deterministic share of prescribed airflow.")
-                ]);
-        }).ToArray();
     }
 
     private static StandardCalculationDisclosure MergeDisclosure(
@@ -569,7 +196,7 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
 
         if (removedAllowedClaims.Count > 0)
         {
-            diagnostics.Add(CreateWarning(
+            diagnostics.Add(NaturalVentilationZoneDiagnosticsBuilder.Warning(
                 "AE-VENT-DISCLOSURE-OVERRIDE-SANITIZED",
                 $"Disclosure override removed forbidden allowed-claim entries: {string.Join(", ", removedAllowedClaims)}."));
         }
@@ -588,24 +215,4 @@ public sealed class NaturalVentilationZoneLoadCalculator : INaturalVentilationZo
             ClaimBoundary = mergedBoundary
         };
     }
-
-    private static StandardCalculationDiagnostic CreateInfo(
-        string code,
-        string message) =>
-        NaturalVentilationDiagnosticsFactory.Create(
-            CalculationDiagnosticSeverity.Info,
-            code,
-            message,
-            StandardCalculationStage.Aggregation,
-            "NaturalVentilationZoneLoadCalculator");
-
-    private static StandardCalculationDiagnostic CreateWarning(
-        string code,
-        string message) =>
-        NaturalVentilationDiagnosticsFactory.Create(
-            CalculationDiagnosticSeverity.Warning,
-            code,
-            message,
-            StandardCalculationStage.Aggregation,
-            "NaturalVentilationZoneLoadCalculator");
 }

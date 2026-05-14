@@ -1,18 +1,12 @@
 using AssistantEngineer.Api;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
-using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
-using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 
 namespace AssistantEngineer.Tests.Architecture;
 
 public class LegacyCalculationServiceDependencyGuardTests
 {
-    private static readonly HashSet<Type> LegacyCalculationServiceTypes =
-    [
-        typeof(RoomCalculationService),
-        typeof(BuildingHeatingLoadService)
-    ];
+    private static readonly HashSet<Type> LegacyCalculationServiceTypes = [];
 
     [Fact]
     public void FirstPartyControllers_DoNotDirectlyDependOnLegacyCalculationServices()
@@ -57,12 +51,30 @@ public class LegacyCalculationServiceDependencyGuardTests
     }
 
     [Fact]
-    public void LoadCalculationsFacade_UsesPipelineAsActiveProductionPath()
+    public void LoadCalculationsFacade_DependsOnPipelineAbstraction()
     {
         var constructor = Assert.Single(typeof(LoadCalculationsFacade).GetConstructors());
         var parameter = Assert.Single(constructor.GetParameters());
 
-        Assert.Equal(typeof(EnergyCalculationPipelineService), parameter.ParameterType);
+        Assert.Equal(typeof(IEnergyCalculationPipeline), parameter.ParameterType);
+    }
+
+    [Fact]
+    public void LoadCalculationsFacade_SourceDoesNotDependOnConcretePipelineService()
+    {
+        var sourcePath = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.Calculations",
+            "Application",
+            "Facades",
+            "LoadCalculationsFacade.cs");
+
+        var source = File.ReadAllText(sourcePath);
+
+        Assert.Contains("IEnergyCalculationPipeline", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnergyCalculationPipelineService", source, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -72,7 +84,9 @@ public class LegacyCalculationServiceDependencyGuardTests
         {
             "BuildingEnergyBalanceService",
             "FloorCalculationService",
-            "BuildingCoolingLoadService"
+            "BuildingCoolingLoadService",
+            "RoomCalculationService",
+            "BuildingHeatingLoadService"
         };
 
         var sourceFiles = Directory.GetFiles(
@@ -107,19 +121,7 @@ public class LegacyCalculationServiceDependencyGuardTests
     [Fact]
     public void LegacyCalculationServices_AreReferencedOnlyInCompatibilityDefinitionsAndCompositionRoots()
     {
-        var allowedPathsByTypeName = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal)
-        {
-            ["RoomCalculationService"] =
-            [
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Rooms/RoomCalculationService.cs"),
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
-            ],
-            ["BuildingHeatingLoadService"] =
-            [
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Buildings/BuildingHeatingLoadService.cs"),
-                NormalizePath("src/Backend/AssistantEngineer.Modules.Calculations/Composition/LoadCalculationRegistration.cs")
-            ]
-        };
+        var allowedPathsByTypeName = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
 
         var sourceFiles = Directory.GetFiles(
                 Path.Combine(TestPaths.RepoRoot, "src", "Backend"),

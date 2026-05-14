@@ -73,6 +73,9 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationScenarioResultBuilder, EngineeringCalculationScenarioResultBuilder>();
         services.AddScoped<IEngineeringCalculationScenarioRequestValidator, EngineeringCalculationScenarioRequestValidator>();
         services.AddScoped<IEngineeringCalculationScenarioRunner, EngineeringCalculationScenarioRunner>();
+        services.AddScoped<EngineeringCalculationJobPayloadCodec>();
+        services.AddScoped<EngineeringCalculationJobStatusTransitionPolicy>();
+        services.AddScoped<EngineeringCalculationJobEventRecorder>();
         services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions

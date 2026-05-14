@@ -8,7 +8,7 @@ using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 
-public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
+public sealed partial class EnergyPlusModelExporter : IEnergyPlusModelExporter
 {
     private const string AlwaysOnSchedule = "AE_Always_On";
     private const string HeatingSetpointSchedule = "AE_Heating_Setpoint";
@@ -62,8 +62,8 @@ public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
         var rooms = GetRooms(building).ToArray();
         var constructions = new ConstructionRegistry(builder);
 
-        AppendHeader(builder, building);
-        AppendSchedules(builder, rooms);
+        EnergyPlusHeaderSectionBuilder.Append(builder, building);
+        EnergyPlusScheduleSectionBuilder.Append(builder, rooms);
 
         var placements = CreateRoomPlacements(building);
         foreach (var placement in placements)
@@ -72,77 +72,25 @@ public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
             var geometry = placement.Geometry;
 
             var zoneName = GetZoneName(room);
-            AppendZone(builder, zoneName);
-            AppendRoomSurfaces(builder, placement, placements, zoneName, constructions);
-            AppendRoomWindows(builder, room, geometry, zoneName, constructions);
-            AppendInternalLoads(builder, room, zoneName);
-            AppendVentilation(builder, room, zoneName);
-            AppendIdealLoadsSystem(builder, zoneName);
+            EnergyPlusGeometrySectionBuilder.Append(builder, placement, placements, zoneName, constructions);
+            EnergyPlusWindowSectionBuilder.Append(builder, room, geometry, zoneName, constructions);
+            EnergyPlusInternalGainsSectionBuilder.Append(builder, room, zoneName);
+            EnergyPlusVentilationInfiltrationSectionBuilder.Append(builder, room, zoneName);
+            EnergyPlusIdealLoadsSectionBuilder.Append(builder, zoneName);
         }
 
-        AppendOutputs(builder);
+        EnergyPlusOutputSectionBuilder.Append(builder);
         return builder.ToString();
     }
 
     private static void AppendHeader(StringBuilder builder, Building building)
-    {
-        AppendObject(builder, "Version", "24.1");
-        AppendObject(builder, "SimulationControl", "Yes", "Yes", "No", "Yes", "Yes");
-        AppendObject(builder, "Timestep", "4");
-        AppendObject(
-            builder,
-            "Building",
-            SafeName(building.Name),
-            "0.0",
-            "Suburbs",
-            "0.04",
-            "0.4",
-            "FullExterior",
-            "25",
-            "6");
-        AppendObject(builder, "GlobalGeometryRules", "UpperLeftCorner", "CounterClockWise", "World");
-        AppendObject(builder, "RunPeriod", "Annual", "1", "1", string.Empty, "12", "31", "Tuesday", "Yes", "Yes", "No", "Yes", "Yes");
-
-        AppendObject(builder, "ScheduleTypeLimits", "Fraction", "0", "1", "Continuous");
-        AppendObject(builder, "ScheduleTypeLimits", "Temperature", "-60", "200", "Continuous", "Temperature");
-        AppendObject(builder, "ScheduleTypeLimits", "Any Number");
-
-        AppendObject(builder, "Material:NoMass", "AE_Generic_Floor_Material", "Rough", "2.0");
-        AppendObject(builder, "Construction", "AE_Generic_Floor", "AE_Generic_Floor_Material");
-        AppendObject(builder, "Material:NoMass", "AE_Generic_Roof_Material", "Rough", "3.0");
-        AppendObject(builder, "Construction", "AE_Generic_Roof", "AE_Generic_Roof_Material");
-    }
+        => EnergyPlusHeaderSectionBuilder.Append(builder, building);
 
     private static void AppendSchedules(StringBuilder builder, IReadOnlyCollection<Room> rooms)
-    {
-        AppendCompactSchedule(builder, AlwaysOnSchedule, "Fraction", ["Until: 24:00", "1.0"]);
-        AppendCompactSchedule(builder, HeatingSetpointSchedule, "Temperature", ["Until: 24:00", "20.0"]);
-        AppendCompactSchedule(builder, CoolingSetpointSchedule, "Temperature", ["Until: 24:00", "26.0"]);
-        AppendCompactSchedule(builder, ActivitySchedule, "Any Number", ["Until: 24:00", "120.0"]);
-
-        foreach (var room in rooms)
-        {
-            AppendHourlySchedule(builder, GetScheduleName(room, "Occupancy"), room.OccupancySchedule?.Factors);
-            AppendHourlySchedule(builder, GetScheduleName(room, "Equipment"), room.EquipmentSchedule?.Factors);
-            AppendHourlySchedule(builder, GetScheduleName(room, "Lighting"), room.LightingSchedule?.Factors);
-        }
-    }
+        => EnergyPlusScheduleSectionBuilder.Append(builder, rooms);
 
     private static void AppendZone(StringBuilder builder, string zoneName)
-    {
-        AppendObject(
-            builder,
-            "Zone",
-            zoneName,
-            "0",
-            "0",
-            "0",
-            "0",
-            "1",
-            "1",
-            "autocalculate",
-            "autocalculate");
-    }
+        => EnergyPlusGeometrySectionBuilder.AppendZone(builder, zoneName);
 
     private static void AppendRoomSurfaces(
         StringBuilder builder,
@@ -150,38 +98,12 @@ public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
         IReadOnlyList<RoomPlacement> allPlacements,
         string zoneName,
         ConstructionRegistry constructions)
-    {
-        var room = placement.Room;
-        var geometry = placement.Geometry;
-        AppendSurface(
+        => EnergyPlusGeometrySectionBuilder.AppendRoomSurfaces(
             builder,
-            $"{zoneName}_Floor",
-            "Floor",
-            "AE_Generic_Floor",
+            placement,
+            allPlacements,
             zoneName,
-            "Ground",
-            string.Empty,
-            "NoSun",
-            "NoWind",
-            geometry.FloorVertices);
-
-        AppendSurface(
-            builder,
-            $"{zoneName}_Roof",
-            "Roof",
-            "AE_Generic_Roof",
-            zoneName,
-            "Outdoors",
-            string.Empty,
-            "SunExposed",
-            "WindExposed",
-            geometry.RoofVertices);
-
-        AppendWallSurface(builder, placement, allPlacements, zoneName, CardinalDirection.North, geometry.NorthWallVertices, constructions);
-        AppendWallSurface(builder, placement, allPlacements, zoneName, CardinalDirection.East, geometry.EastWallVertices, constructions);
-        AppendWallSurface(builder, placement, allPlacements, zoneName, CardinalDirection.South, geometry.SouthWallVertices, constructions);
-        AppendWallSurface(builder, placement, allPlacements, zoneName, CardinalDirection.West, geometry.WestWallVertices, constructions);
-    }
+            constructions);
 
     private static void AppendWallSurface(
         StringBuilder builder,
@@ -191,27 +113,14 @@ public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
         CardinalDirection direction,
         IReadOnlyList<Point3d> vertices,
         ConstructionRegistry constructions)
-    {
-        var room = placement.Room;
-        var wall = FindWall(room, direction);
-        var adjacentSurface = wall?.IsExternal == true
-            ? null
-            : FindAdjacentSurfaceName(placement, direction, allPlacements);
-        var isExternal = adjacentSurface is null && (wall?.IsExternal ?? true);
-        var constructionName = constructions.GetWallConstruction(wall);
-
-        AppendSurface(
+        => EnergyPlusGeometrySectionBuilder.AppendWallSurface(
             builder,
-            GetWallSurfaceName(zoneName, direction),
-            "Wall",
-            constructionName,
+            placement,
+            allPlacements,
             zoneName,
-            adjacentSurface is not null ? "Surface" : isExternal ? "Outdoors" : "Adiabatic",
-            adjacentSurface ?? string.Empty,
-            isExternal ? "SunExposed" : "NoSun",
-            isExternal ? "WindExposed" : "NoWind",
-            vertices);
-    }
+            direction,
+            vertices,
+            constructions);
 
     private static void AppendRoomWindows(
         StringBuilder builder,
@@ -219,213 +128,24 @@ public sealed class EnergyPlusModelExporter : IEnergyPlusModelExporter
         RoomGeometry geometry,
         string zoneName,
         ConstructionRegistry constructions)
-    {
-        var windowsByDirection = room.Windows
-            .GroupBy(window => NormalizeDirection(window.Orientation))
-            .ToDictionary(group => group.Key, group => group.ToArray());
-
-        foreach (var (direction, windows) in windowsByDirection)
-        {
-            for (var i = 0; i < windows.Length; i++)
-            {
-                var window = windows[i];
-                var constructionName = constructions.GetWindowConstruction(window);
-                var vertices = geometry.GetWindowVertices(direction, window.Area.SquareMeters, i, windows.Length);
-
-                AppendObject(
-                    builder,
-                    "FenestrationSurface:Detailed",
-                    $"{zoneName}_Window_{direction}_{i + 1}",
-                    "Window",
-                    constructionName,
-                    GetWallSurfaceName(zoneName, direction),
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    "1",
-                    vertices.Count.ToString(CultureInfo.InvariantCulture),
-                    FormatPoint(vertices[0]),
-                    FormatPoint(vertices[1]),
-                    FormatPoint(vertices[2]),
-                    FormatPoint(vertices[3]));
-            }
-        }
-    }
+        => EnergyPlusWindowSectionBuilder.Append(
+            builder,
+            room,
+            geometry,
+            zoneName,
+            constructions);
 
     private static void AppendInternalLoads(StringBuilder builder, Room room, string zoneName)
-    {
-        if (room.PeopleCount > 0)
-        {
-            AppendObject(
-                builder,
-                "People",
-                $"{zoneName}_People",
-                zoneName,
-                GetScheduleName(room, "Occupancy"),
-                "People",
-                F(room.PeopleCount),
-                string.Empty,
-                string.Empty,
-                "0.3",
-                "Autocalculate",
-                ActivitySchedule);
-        }
-
-        if (room.LightingLoad.Watts > 0)
-        {
-            AppendObject(
-                builder,
-                "Lights",
-                $"{zoneName}_Lights",
-                zoneName,
-                GetScheduleName(room, "Lighting"),
-                "LightingLevel",
-                F(room.LightingLoad.Watts),
-                string.Empty,
-                string.Empty,
-                "0",
-                "0.6",
-                "0.2",
-                "1.0",
-                "General");
-        }
-
-        if (room.EquipmentLoad.Watts > 0)
-        {
-            AppendObject(
-                builder,
-                "ElectricEquipment",
-                $"{zoneName}_Equipment",
-                zoneName,
-                GetScheduleName(room, "Equipment"),
-                "EquipmentLevel",
-                F(room.EquipmentLoad.Watts),
-                string.Empty,
-                string.Empty,
-                "0",
-                "0.3",
-                "0",
-                "General");
-        }
-    }
+        => EnergyPlusInternalGainsSectionBuilder.Append(builder, room, zoneName);
 
     private static void AppendVentilation(StringBuilder builder, Room room, string zoneName)
-    {
-        var airChangesPerHour = room.VentilationParameters?.AirChangesPerHour ?? 0;
-        if (airChangesPerHour <= 0)
-            return;
-
-        AppendObject(
-            builder,
-            "ZoneInfiltration:DesignFlowRate",
-            $"{zoneName}_Ventilation",
-            zoneName,
-            AlwaysOnSchedule,
-            "AirChanges/Hour",
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            F(airChangesPerHour),
-            "1",
-            "0",
-            "0",
-            "0");
-    }
+        => EnergyPlusVentilationInfiltrationSectionBuilder.Append(builder, room, zoneName);
 
     private static void AppendIdealLoadsSystem(StringBuilder builder, string zoneName)
-    {
-        AppendObject(
-            builder,
-            "ZoneControl:Thermostat",
-            $"{zoneName}_Thermostat",
-            zoneName,
-            AlwaysOnSchedule,
-            "ThermostatSetpoint:DualSetpoint",
-            $"{zoneName}_Dual_Setpoint");
-
-        AppendObject(
-            builder,
-            "ThermostatSetpoint:DualSetpoint",
-            $"{zoneName}_Dual_Setpoint",
-            HeatingSetpointSchedule,
-            CoolingSetpointSchedule);
-
-        AppendObject(
-            builder,
-            "Sizing:Zone",
-            zoneName,
-            "SupplyAirTemperature",
-            "14",
-            "SupplyAirTemperature",
-            "50",
-            "0.008",
-            "0.008",
-            "DesignDay",
-            "0",
-            "0",
-            "DesignDay",
-            "0",
-            "0");
-
-        AppendObject(
-            builder,
-            "ZoneHVAC:EquipmentConnections",
-            zoneName,
-            $"{zoneName}_Equipment",
-            $"{zoneName}_Inlets",
-            string.Empty,
-            $"{zoneName}_Air_Node",
-            $"{zoneName}_Return_Node");
-
-        AppendObject(
-            builder,
-            "ZoneHVAC:EquipmentList",
-            $"{zoneName}_Equipment",
-            "SequentialLoad",
-            "ZoneHVAC:IdealLoadsAirSystem",
-            $"{zoneName}_Ideal_Loads",
-            "1",
-            "1",
-            "1",
-            "1");
-
-        AppendObject(builder, "NodeList", $"{zoneName}_Inlets", $"{zoneName}_Supply_Inlet");
-
-        AppendObject(
-            builder,
-            "ZoneHVAC:IdealLoadsAirSystem",
-            $"{zoneName}_Ideal_Loads",
-            AlwaysOnSchedule,
-            $"{zoneName}_Supply_Inlet",
-            string.Empty,
-            string.Empty,
-            "50",
-            "13",
-            "0.0156",
-            "0.0077",
-            "NoLimit",
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            "NoLimit",
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty,
-            string.Empty);
-    }
+        => EnergyPlusIdealLoadsSectionBuilder.Append(builder, zoneName);
 
     private static void AppendOutputs(StringBuilder builder)
-    {
-        AppendObject(builder, "Output:Variable", "*", "Zone Ideal Loads Supply Air Total Cooling Energy", "Hourly");
-        AppendObject(builder, "Output:Variable", "*", "Zone Ideal Loads Supply Air Total Heating Energy", "Hourly");
-        AppendObject(builder, "Output:Meter", "Electricity:Facility", "Hourly");
-        AppendObject(builder, "Output:Meter", "Heating:EnergyTransfer", "Hourly");
-        AppendObject(builder, "Output:Meter", "Cooling:EnergyTransfer", "Hourly");
-    }
+        => EnergyPlusOutputSectionBuilder.Append(builder);
 
     private static void AppendSurface(
         StringBuilder builder,

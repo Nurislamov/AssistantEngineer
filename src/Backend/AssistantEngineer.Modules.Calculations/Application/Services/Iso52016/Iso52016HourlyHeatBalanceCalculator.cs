@@ -73,48 +73,20 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
         double? groundBoundaryTemperatureC = null,
         Iso52016HourlyWeatherSolarRecord? weatherSolarHour = null)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        Iso52016HourlyHeatBalanceValidation.ThrowIfCancelled(cancellationToken);
 
-        var rooms = zone.Rooms;
-        var hourOfYear = weather.HourOfYear;
-        var hourOfDay = hourOfYear % 24;
-        var dayOfYear = hourOfYear / 24 + 1;
+        var normalized = Iso52016HourlyHeatBalanceRequestNormalizer.Normalize(
+            zone,
+            state,
+            weather,
+            annualProfileOptions,
+            _options,
+            _hourlyProfiles,
+            GetOccupancyFactor);
 
-        Dictionary<int, RoomHourlyProfileSnapshot>? annualSnapshots = null;
-        if (annualProfileOptions?.UseAnnualProfiles == true)
-        {
-            annualSnapshots = rooms.ToDictionary(
-                room => room.Id,
-                room => _hourlyProfiles.GetRoomHourlyMultipliers(
-                    room,
-                    hourOfYear,
-                    annualProfileOptions));
-        }
+        var roomResults = new List<Iso52016RoomHourResult>(normalized.Rooms.Count);
 
-        var occupiedScheduleFactor = Iso52016HourlyCalculatorMath.WeightedAverage(
-            rooms,
-            room =>
-            {
-                if (annualSnapshots is not null &&
-                    annualSnapshots.TryGetValue(room.Id, out var snapshot))
-                {
-                    return snapshot.Occupancy;
-                }
-
-                return GetOccupancyFactor(room, hourOfDay);
-            });
-
-        var heatingSetpoint = occupiedScheduleFactor > 0
-            ? state.HeatingSetpointC
-            : _options.DefaultHeatingSetbackC;
-
-        var coolingSetpoint = occupiedScheduleFactor > 0
-            ? state.CoolingSetpointC
-            : _options.DefaultCoolingSetbackC;
-
-        var roomResults = new List<Iso52016RoomHourResult>(rooms.Count);
-
-        foreach (var room in rooms)
+        foreach (var room in normalized.Rooms)
         {
             var previousRoomTemperature = previousRoomTemperatures.TryGetValue(room.Id, out var previousTemp)
                 ? previousTemp
@@ -122,27 +94,33 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             RoomHourlyProfileSnapshot? profileSnapshot = null;
 
-            if (annualSnapshots is not null)
-                annualSnapshots.TryGetValue(room.Id, out profileSnapshot);
+            if (normalized.AnnualSnapshots is not null)
+                normalized.AnnualSnapshots.TryGetValue(room.Id, out profileSnapshot);
 
             var internalGains = GetHourlyInternalGain(
                 room,
-                hourOfDay,
+                normalized.HourOfDay,
                 annualProfileOptions,
                 profileSnapshot);
 
-            var solarGains = GetHourlySolarGain(room, weather, dayOfYear, hourOfDay, preferences, weatherSolarHour);
+            var solarGains = GetHourlySolarGain(
+                room,
+                weather,
+                normalized.DayOfYear,
+                normalized.HourOfDay,
+                preferences,
+                weatherSolarHour);
 
             var ventilationComponents = GetHourlyVentilationComponentsForRoom(
                 room,
-                heatingSetpoint,
+                normalized.HeatingSetpointC,
                 weather.DryBulbTemperature,
                 weather.WindSpeedMPerS ?? 0,
-                hourOfDay);
+                normalized.HourOfDay);
 
             var adjacent = CalculateAdjacentBoundaryContributionForRoom(
                 room,
-                heatingSetpoint,
+                normalized.HeatingSetpointC,
                 weather.DryBulbTemperature,
                 previousRoomTemperatures,
                 roomZoneMap);
@@ -155,7 +133,7 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
 
             var groundBoundaryReferenceTemperature = CalculateGroundBoundaryReferenceTemperature(
                 groundBoundary,
-                heatingSetpoint,
+                normalized.HeatingSetpointC,
                 weather.DryBulbTemperature,
                 groundTemperature);
 
@@ -186,23 +164,23 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             var coolingLoad = 0.0;
             var operativeTemperature = freeFloatingTemperature;
 
-            if (freeFloatingTemperature < heatingSetpoint)
+            if (freeFloatingTemperature < normalized.HeatingSetpointC)
             {
                 heatingLoad = Math.Max(
                     0,
-                    heatingSetpoint * (thermalCapacityPerHour + totalHeatTransfer) - baseBalance);
+                    normalized.HeatingSetpointC * (thermalCapacityPerHour + totalHeatTransfer) - baseBalance);
 
                 heatingLoad *= preferences?.HeatingSafetyFactor ?? 1.0;
-                operativeTemperature = heatingSetpoint;
+                operativeTemperature = normalized.HeatingSetpointC;
             }
-            else if (freeFloatingTemperature > coolingSetpoint)
+            else if (freeFloatingTemperature > normalized.CoolingSetpointC)
             {
                 coolingLoad = Math.Max(
                     0,
-                    baseBalance - coolingSetpoint * (thermalCapacityPerHour + totalHeatTransfer));
+                    baseBalance - normalized.CoolingSetpointC * (thermalCapacityPerHour + totalHeatTransfer));
 
                 coolingLoad *= preferences?.CoolingSafetyFactor ?? 1.0;
-                operativeTemperature = coolingSetpoint;
+                operativeTemperature = normalized.CoolingSetpointC;
             }
 
             var operativeGroundBoundaryReferenceTemperature = CalculateGroundBoundaryReferenceTemperature(
@@ -230,86 +208,29 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
             var groundBalanceW =
                 groundUa * (operativeGroundBoundaryReferenceTemperature - operativeTemperature);
 
-            roomResults.Add(new Iso52016RoomHourResult(
-                room.Id,
-                new Iso52016RoomHourlyEnergyNeed(
-                    RoomId: room.Id,
-                    RoomName: room.Name,
-                    ZoneName: zone.Name,
-                    HourOfYear: hourOfYear,
-                    Month: Iso52016HourlyCalculatorMath.GetMonth(hourOfYear),
-                    HeatingLoadW: Iso52016HourlyCalculatorMath.Round(heatingLoad),
-                    CoolingLoadW: Iso52016HourlyCalculatorMath.Round(coolingLoad),
-                    OperativeTemperatureC: Iso52016HourlyCalculatorMath.Round(operativeTemperature),
-                    OutdoorTemperatureC: Iso52016HourlyCalculatorMath.Round(weather.DryBulbTemperature),
-                    InternalGainsW: Iso52016HourlyCalculatorMath.Round(internalGains),
-                    SolarGainsW: Iso52016HourlyCalculatorMath.Round(solarGains),
-                    TransmissionW: Iso52016HourlyCalculatorMath.Round(transmissionW),
-                    VentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.TotalVentilationW),
-                    InfiltrationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.InfiltrationW),
-                    GroundW: Iso52016HourlyCalculatorMath.Round(groundW),
-                    TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(transmissionBalanceW),
-                    VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.TotalVentilationBalanceW),
-                    InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.InfiltrationBalanceW),
-                    GroundBalanceW: Iso52016HourlyCalculatorMath.Round(groundBalanceW),
-                    MechanicalVentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.MechanicalVentilationW),
-                    NaturalVentilationW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.NaturalVentilationW),
-                    MechanicalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.MechanicalVentilationBalanceW),
-                    NaturalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(ventilationComponentLoads.NaturalVentilationBalanceW))));
+            roomResults.Add(Iso52016HourlyHeatBalanceResultAssembler.BuildRoomResult(
+                room,
+                zone.Name,
+                normalized.HourOfYear,
+                weather,
+                heatingLoad,
+                coolingLoad,
+                operativeTemperature,
+                internalGains,
+                solarGains,
+                transmissionW,
+                ventilationComponentLoads,
+                groundW,
+                transmissionBalanceW,
+                groundBalanceW));
         }
 
-        var zoneHeating = roomResults.Sum(x => x.Hour.HeatingLoadW);
-        var zoneCooling = roomResults.Sum(x => x.Hour.CoolingLoadW);
-        var zoneInternal = roomResults.Sum(x => x.Hour.InternalGainsW);
-        var zoneSolar = roomResults.Sum(x => x.Hour.SolarGainsW);
-        var zoneTransmission = roomResults.Sum(x => x.Hour.TransmissionW);
-        var zoneVentilation = roomResults.Sum(x => x.Hour.VentilationW);
-        var zoneMechanicalVentilation = roomResults.Sum(x => x.Hour.MechanicalVentilationW);
-        var zoneNaturalVentilation = roomResults.Sum(x => x.Hour.NaturalVentilationW);
-        var zoneInfiltration = roomResults.Sum(x => x.Hour.InfiltrationW);
-        var zoneGround = roomResults.Sum(x => x.Hour.GroundW);
-
-        var zoneTransmissionBalance = roomResults.Sum(x => x.Hour.TransmissionBalanceW);
-        var zoneVentilationBalance = roomResults.Sum(x => x.Hour.VentilationBalanceW);
-        var zoneMechanicalVentilationBalance = roomResults.Sum(x => x.Hour.MechanicalVentilationBalanceW);
-        var zoneNaturalVentilationBalance = roomResults.Sum(x => x.Hour.NaturalVentilationBalanceW);
-        var zoneInfiltrationBalance = roomResults.Sum(x => x.Hour.InfiltrationBalanceW);
-        var zoneGroundBalance = roomResults.Sum(x => x.Hour.GroundBalanceW);
-
-        var totalArea = rooms.Sum(room => room.Area.SquareMeters);
-        var zoneOperative = totalArea > 0
-            ? rooms.Join(
-                    roomResults,
-                    room => room.Id,
-                    result => result.RoomId,
-                    (room, result) => room.Area.SquareMeters * result.Hour.OperativeTemperatureC)
-                .Sum() / totalArea
-            : roomResults.Average(x => x.Hour.OperativeTemperatureC);
-
-        return new Iso52016ZoneHourResult(
+        return Iso52016HourlyHeatBalanceResultAssembler.BuildZoneResult(
             zone.Name,
-            new Iso52016HourlyEnergyNeed(
-                HourOfYear: hourOfYear,
-                Month: Iso52016HourlyCalculatorMath.GetMonth(hourOfYear),
-                HeatingLoadW: Iso52016HourlyCalculatorMath.Round(zoneHeating),
-                CoolingLoadW: Iso52016HourlyCalculatorMath.Round(zoneCooling),
-                OperativeTemperatureC: Iso52016HourlyCalculatorMath.Round(zoneOperative),
-                OutdoorTemperatureC: Iso52016HourlyCalculatorMath.Round(weather.DryBulbTemperature),
-                InternalGainsW: Iso52016HourlyCalculatorMath.Round(zoneInternal),
-                SolarGainsW: Iso52016HourlyCalculatorMath.Round(zoneSolar),
-                TransmissionW: Iso52016HourlyCalculatorMath.Round(zoneTransmission),
-                VentilationW: Iso52016HourlyCalculatorMath.Round(zoneVentilation),
-                InfiltrationW: Iso52016HourlyCalculatorMath.Round(zoneInfiltration),
-                GroundW: Iso52016HourlyCalculatorMath.Round(zoneGround),
-                TransmissionBalanceW: Iso52016HourlyCalculatorMath.Round(zoneTransmissionBalance),
-                VentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneVentilationBalance),
-                InfiltrationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneInfiltrationBalance),
-                GroundBalanceW: Iso52016HourlyCalculatorMath.Round(zoneGroundBalance),
-                MechanicalVentilationW: Iso52016HourlyCalculatorMath.Round(zoneMechanicalVentilation),
-                NaturalVentilationW: Iso52016HourlyCalculatorMath.Round(zoneNaturalVentilation),
-                MechanicalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneMechanicalVentilationBalance),
-                NaturalVentilationBalanceW: Iso52016HourlyCalculatorMath.Round(zoneNaturalVentilationBalance)),
-            roomResults);
+            normalized.Rooms,
+            roomResults,
+            normalized.HourOfYear,
+            weather);
     }
 
     private double GetHourlySolarGain(
@@ -337,7 +258,10 @@ internal sealed class Iso52016HourlyHeatBalanceCalculator
                         fixedShadingFactor: GetSolarUtilizationFactor(preferences),
                         hourIndex: weather.HourOfYear,
                         isNight: weatherSolarHour.SolarAltitudeDegrees <= 0,
-                        diagnosticsContext: $"ISO 52016 hour {weather.HourOfYear} {surface.SurfaceCode} window {window.Id}"));
+                        diagnosticsContext: Iso52016HourlyHeatBalanceDiagnosticsBuilder.BuildSolarWindowContext(
+                            weather.HourOfYear,
+                            surface.SurfaceCode,
+                            window.Id)));
 
                 return componentSolar.Value.SolarGainW;
             }

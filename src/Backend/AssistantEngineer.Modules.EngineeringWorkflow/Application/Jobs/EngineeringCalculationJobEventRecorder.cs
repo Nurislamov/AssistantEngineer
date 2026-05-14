@@ -3,7 +3,7 @@ using AssistantEngineer.Api.Services.Calculations.Persistence;
 
 namespace AssistantEngineer.Api.Services.Calculations;
 
-internal sealed class EngineeringCalculationJobEventRecorder
+public sealed class EngineeringCalculationJobEventRecorder
 {
     private readonly IEngineeringCalculationJobEventRepository _jobEventRepository;
     private readonly EngineeringCalculationJobPayloadCodec _payloadCodec;

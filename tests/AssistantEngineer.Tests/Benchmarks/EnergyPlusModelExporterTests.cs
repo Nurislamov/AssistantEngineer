@@ -6,6 +6,8 @@ using AssistantEngineer.SharedKernel.Primitives;
 using AssistantEngineer.SharedKernel.ValueObjects;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AssistantEngineer.Tests;
 
@@ -160,6 +162,86 @@ public class EnergyPlusModelExporterTests
         }
     }
 
+    [Fact]
+    public async Task ExportAsyncGeneratedModelIsDeterministicForSameBuilding()
+    {
+        var tempDirectory = CreateTempDirectory();
+        try
+        {
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var exporter = new EnergyPlusModelExporter(artifacts);
+            var building = CreateBuilding();
+
+            var firstExport = await exporter.ExportAsync(building, "deterministic-1");
+            var secondExport = await exporter.ExportAsync(building, "deterministic-2");
+
+            Assert.True(firstExport.IsSuccess, firstExport.Error);
+            Assert.True(secondExport.IsSuccess, secondExport.Error);
+
+            var firstArtifact = artifacts.GetModelArtifact(firstExport.Value.ModelArtifactId);
+            var secondArtifact = artifacts.GetModelArtifact(secondExport.Value.ModelArtifactId);
+            Assert.True(firstArtifact.IsSuccess, firstArtifact.Error);
+            Assert.True(secondArtifact.IsSuccess, secondArtifact.Error);
+
+            var firstContent = await File.ReadAllTextAsync(firstArtifact.Value.FileSystemPath);
+            var secondContent = await File.ReadAllTextAsync(secondArtifact.Value.FileSystemPath);
+
+            Assert.Equal(firstContent, secondContent);
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task ExportAsyncGeneratedModelKeepsCriticalSectionOrderingAndBaselineHash()
+    {
+        var tempDirectory = CreateTempDirectory();
+        try
+        {
+            var artifacts = CreateArtifactStore(tempDirectory);
+            var exporter = new EnergyPlusModelExporter(artifacts);
+            var building = CreateBuilding();
+
+            var export = await exporter.ExportAsync(building, "ordering");
+            Assert.True(export.IsSuccess, export.Error);
+
+            var artifact = artifacts.GetModelArtifact(export.Value.ModelArtifactId);
+            Assert.True(artifact.IsSuccess, artifact.Error);
+
+            var content = await File.ReadAllTextAsync(artifact.Value.FileSystemPath);
+
+            var versionIndex = content.IndexOf("Version,", StringComparison.Ordinal);
+            var scheduleIndex = content.IndexOf("Schedule:Compact,", StringComparison.Ordinal);
+            var zoneIndex = content.IndexOf("Zone,", StringComparison.Ordinal);
+            var surfaceIndex = content.IndexOf("BuildingSurface:Detailed,", StringComparison.Ordinal);
+            var windowIndex = content.IndexOf("FenestrationSurface:Detailed,", StringComparison.Ordinal);
+            var peopleIndex = content.IndexOf("People,", StringComparison.Ordinal);
+            var ventilationIndex = content.IndexOf("ZoneInfiltration:DesignFlowRate,", StringComparison.Ordinal);
+            var idealLoadsIndex = content.IndexOf("ZoneHVAC:IdealLoadsAirSystem,", StringComparison.Ordinal);
+            var outputIndex = content.IndexOf("Output:Variable,", StringComparison.Ordinal);
+
+            Assert.True(versionIndex >= 0);
+            Assert.True(scheduleIndex > versionIndex);
+            Assert.True(zoneIndex > scheduleIndex);
+            Assert.True(surfaceIndex > zoneIndex);
+            Assert.True(windowIndex > surfaceIndex);
+            Assert.True(peopleIndex > windowIndex);
+            Assert.True(ventilationIndex > peopleIndex);
+            Assert.True(idealLoadsIndex > ventilationIndex);
+            Assert.True(outputIndex > idealLoadsIndex);
+
+            var hash = ComputeSha256(content);
+            Assert.Equal(64, hash.Length);
+            Assert.StartsWith("9BF679500B6C09AC80C98DE647FFB62D0FDDF0785", hash, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, recursive: true);
+        }
+    }
+
     private static Building CreateBuilding()
     {
         var project = DomainInvariantTests.CreateProject("EnergyPlus project");
@@ -208,4 +290,10 @@ public class EnergyPlusModelExporterTests
 
     private static LocalEnergyPlusArtifactStore CreateArtifactStore(string rootDirectory) =>
         new(Options.Create(new EnergyPlusBenchmarkOptions { ArtifactRootDirectory = rootDirectory }));
+
+    private static string ComputeSha256(string value)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value));
+        return Convert.ToHexString(bytes);
+    }
 }

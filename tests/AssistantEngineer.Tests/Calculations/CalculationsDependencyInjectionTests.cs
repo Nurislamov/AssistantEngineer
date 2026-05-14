@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Ground;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Iso52016.MultiZone;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.ReferenceData;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Standards;
@@ -16,7 +17,6 @@ using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Options;
 using AssistantEngineer.Modules.Calculations.Application.Services.Aggregation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Analytics;
-using AssistantEngineer.Modules.Calculations.Application.Services.Buildings;
 using AssistantEngineer.Modules.Calculations.Application.Services.Common.Profiles;
 using AssistantEngineer.Modules.Calculations.Application.Services.CoolingLoads;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingLoads;
@@ -25,8 +25,8 @@ using AssistantEngineer.Modules.Calculations.Application.Services.Governance;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016;
 using AssistantEngineer.Modules.Calculations.Application.Services.Iso52016.Construction;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
+using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Services.ReferenceData;
-using AssistantEngineer.Modules.Calculations.Application.Services.Rooms;
 using AssistantEngineer.Modules.Calculations.Application.Services.Validation.BuildingInput;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation;
 using AssistantEngineer.Modules.Calculations.Application.Services.Ventilation.Iso16798;
@@ -149,8 +149,9 @@ public class CalculationsDependencyInjectionTests
         AssertServiceLifetime<IEnergyCarrierFactorProvider>(services, ServiceLifetime.Singleton);
         AssertServiceLifetime<BuildingEnergyPerformanceSummaryService>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IBuildingEnergyCalculator>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<BuildingHeatingLoadService>(services, ServiceLifetime.Scoped);
-        AssertServiceLifetime<RoomCalculationService>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEquipmentSizingCalculationUseCase>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ISystemEnergyHandoffUseCase>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<IEnergyCalculationPipeline>(services, ServiceLifetime.Scoped);
 
         AssertServiceLifetime<ILoadCalculationsFacade>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IVentilationAnalysisFacade>(services, ServiceLifetime.Scoped);
@@ -283,6 +284,27 @@ public class CalculationsDependencyInjectionTests
         AssertSingleRegistration<IAggregateLoadCalculator>(services);
         AssertSingleRegistration<IRoomHeatingLoadCalculator>(services);
         AssertSingleRegistration<IBuildingHeatingLoadCalculator>(services);
+        AssertSingleRegistration<IEnergyCalculationPipeline>(services);
+        AssertSingleRegistration<ISystemEnergyHandoffUseCase>(services);
+    }
+
+    [Fact]
+    public void AddCalculationsModuleRegistersPipelineAbstractionToActiveConcreteImplementation()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder().Build();
+
+        services.AddCalculationsModule(configuration);
+
+        var abstractionDescriptor = services.Single(service =>
+            service.ServiceType == typeof(IEnergyCalculationPipeline));
+
+        var concreteDescriptor = services.Single(service =>
+            service.ServiceType == typeof(EnergyCalculationPipelineService));
+
+        Assert.Equal(ServiceLifetime.Scoped, abstractionDescriptor.Lifetime);
+        Assert.NotNull(abstractionDescriptor.ImplementationFactory);
+        Assert.Equal(ServiceLifetime.Scoped, concreteDescriptor.Lifetime);
     }
 
     private static void AssertServiceLifetime<TService>(

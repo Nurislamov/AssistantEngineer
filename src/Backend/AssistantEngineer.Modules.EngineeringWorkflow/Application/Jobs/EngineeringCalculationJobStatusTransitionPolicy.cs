@@ -2,7 +2,7 @@ using AssistantEngineer.Api.Contracts.Calculations;
 
 namespace AssistantEngineer.Api.Services.Calculations;
 
-internal sealed class EngineeringCalculationJobStatusTransitionPolicy
+public sealed class EngineeringCalculationJobStatusTransitionPolicy
 {
     public EngineeringCalculationJobRecordDto MoveToQueued(
         EngineeringCalculationJobRecordDto job,

@@ -1,18 +1,18 @@
 using AssistantEngineer.Modules.Buildings.Application.Mappers;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.Pipeline;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.EquipmentSizing;
 using AssistantEngineer.Modules.Calculations.Application.Mappers;
-using AssistantEngineer.Modules.Calculations.Application.Services.Pipeline;
 using AssistantEngineer.SharedKernel.Primitives;
 
 namespace AssistantEngineer.Modules.Calculations.Application.Facades;
 
 public sealed class LoadCalculationsFacade : ILoadCalculationsFacade
 {
-    private readonly EnergyCalculationPipelineService _pipeline;
+    private readonly IEnergyCalculationPipeline _pipeline;
 
-    public LoadCalculationsFacade(EnergyCalculationPipelineService pipeline)
+    public LoadCalculationsFacade(IEnergyCalculationPipeline pipeline)
     {
         _pipeline = pipeline;
     }

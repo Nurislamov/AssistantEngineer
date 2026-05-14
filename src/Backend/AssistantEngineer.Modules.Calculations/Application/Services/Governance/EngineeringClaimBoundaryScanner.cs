@@ -22,8 +22,11 @@ public sealed class EngineeringClaimBoundaryScanner
         "EN 15316 validated",
         "validated against StandardReference",
         "validated against EnergyPlus",
+        "exact EnergyPlus equivalence",
+        "exact EnergyPlus numerical equivalence",
         "StandardReference equivalence",
         "EnergyPlus comparison workflow",
+        "ASHRAE 140 " + "validated",
         "ASHRAE 140 / BESTEST-style validated",
         "ASHRAE 140 covered",
         "ExternalReferenceCovered",
@@ -90,7 +93,7 @@ public sealed class EngineeringClaimBoundaryScanner
                     if (!line.Contains(token, StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    if (IsAllowedNegatedContext(line, previousLine, token, negations))
+                    if (IsAllowedNegatedContext(lines, index, line, previousLine, token, negations))
                         continue;
 
                     diagnostics.Add(new EngineeringGovernanceCheckDiagnostic(
@@ -129,6 +132,8 @@ public sealed class EngineeringClaimBoundaryScanner
     }
 
     private static bool IsAllowedNegatedContext(
+        IReadOnlyList<string> lines,
+        int lineIndex,
         string line,
         string previousLine,
         string token,
@@ -136,6 +141,9 @@ public sealed class EngineeringClaimBoundaryScanner
     {
         var normalized = line.ToLowerInvariant();
         var normalizedPrevious = previousLine.ToLowerInvariant();
+
+        if (IsNonClaimsContext(lines, lineIndex))
+            return true;
 
         if (string.Equals(token, "certified", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(token, "external certification", StringComparison.OrdinalIgnoreCase))
@@ -171,6 +179,30 @@ public sealed class EngineeringClaimBoundaryScanner
             normalizedLine.Contains("incorrect examples", StringComparison.OrdinalIgnoreCase) ||
             normalizedLine.Contains(": no", StringComparison.OrdinalIgnoreCase) ||
             normalizedLine.Contains("= no", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsNonClaimsContext(IReadOnlyList<string> lines, int lineIndex)
+    {
+        const int contextWindow = 8;
+        var from = Math.Max(0, lineIndex - contextWindow);
+
+        for (var i = lineIndex; i >= from; i--)
+        {
+            var normalized = lines[i].ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(normalized))
+                continue;
+
+            if (normalized.Contains("does not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("do not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("must not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("should not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("non-claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("non claim", StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;
     }
 
     private static IEnumerable<string> EnumerateScanFiles(string repositoryRoot)

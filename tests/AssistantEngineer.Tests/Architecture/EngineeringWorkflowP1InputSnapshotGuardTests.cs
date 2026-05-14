@@ -64,9 +64,8 @@ public class EngineeringWorkflowP1InputSnapshotGuardTests
             TestPaths.RepoRoot,
             "src",
             "Backend",
-            "AssistantEngineer.Api",
-            "Services",
-            "Calculations",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
             "Workflow",
             "EngineeringWorkflowInputSnapshotBuilder.cs");
         var source = File.ReadAllText(path);

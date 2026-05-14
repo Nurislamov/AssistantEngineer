@@ -4,7 +4,7 @@ public class EngineeringCoreV1WindowsCommandResolutionTests
 {
     [Theory]
     [InlineData("tools/AssistantEngineer.Tools.EngineeringCoreRelease/Program.cs")]
-    [InlineData("tools/AssistantEngineer.Tools.EngineeringCoreVerification/Program.cs")]
+    [InlineData("tools/AssistantEngineer.Tools.EngineeringCoreVerification/EngineeringCoreVerificationProcessRunner.cs")]
     public void EngineeringCoreTools_ResolveNpmToWindowsCommandShim(
         string relativePath)
     {

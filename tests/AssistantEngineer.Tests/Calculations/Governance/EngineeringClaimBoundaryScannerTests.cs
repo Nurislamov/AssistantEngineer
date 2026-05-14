@@ -82,6 +82,48 @@ public sealed class EngineeringClaimBoundaryScannerTests
         Assert.True(positiveResult.ErrorCount > 0);
     }
 
+    [Fact]
+    public void ForbiddenOverclaimPhrases_AreAllowedInNonClaimsContext()
+    {
+        var ashraeValidated = "ASHRAE 140 " + "validated";
+        var file = WriteTempFile(
+            "non-claims-context.md",
+            $"""
+            ## Required non-claims
+            This document does not claim:
+            - exact EnergyPlus numerical equivalence;
+            - {ashraeValidated};
+            - full ISO compliance;
+            - certified;
+            """);
+
+        var result = _scanner.ScanRepository(
+            repositoryRoot: TestPaths.RepoRoot,
+            explicitFiles: [file]);
+
+        Assert.Equal(0, result.ErrorCount);
+    }
+
+    [Fact]
+    public void ForbiddenOverclaimPhrases_FailOutsideNonClaimsContext()
+    {
+        var ashraeValidated = "ASHRAE 140 " + "validated";
+        var file = WriteTempFile(
+            "positive-overclaims.md",
+            $"""
+            This release is exact EnergyPlus numerical equivalence.
+            {ashraeValidated}.
+            full ISO compliance.
+            certified.
+            """);
+
+        var result = _scanner.ScanRepository(
+            repositoryRoot: TestPaths.RepoRoot,
+            explicitFiles: [file]);
+
+        Assert.True(result.ErrorCount >= 4);
+    }
+
     private static string WriteTempFile(string fileName, string content)
     {
         var directory = Path.Combine(TestPaths.RepoRoot, "artifacts", "generated", "governance-tests");

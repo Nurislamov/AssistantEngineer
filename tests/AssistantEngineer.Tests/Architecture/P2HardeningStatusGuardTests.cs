@@ -106,9 +106,11 @@ public class P2HardeningStatusGuardTests
             "Calculations",
             "EngineeringCalculationJobService.cs"));
         var idempotencyService = File.ReadAllText(Path.Combine(
-            TestPaths.ApiProjectPath,
-            "Services",
-            "Calculations",
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
             "Idempotency",
             "InMemoryEngineeringIdempotencyService.cs"));
 
