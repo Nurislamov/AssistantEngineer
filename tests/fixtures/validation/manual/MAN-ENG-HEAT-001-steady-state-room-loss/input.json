@@ -1,0 +1,58 @@
+{
+  "caseId": "MAN-ENG-HEAT-001",
+  "name": "Steady-state single room heating loss",
+  "units": {
+    "length": "m",
+    "area": "m2",
+    "volume": "m3",
+    "temperature": "C",
+    "temperatureDifference": "K",
+    "uValue": "W/(m2*K)",
+    "heatLoad": "W"
+  },
+  "room": {
+    "lengthM": 5.0,
+    "widthM": 4.0,
+    "heightM": 3.0,
+    "floorAreaM2": 20.0,
+    "volumeM3": 60.0
+  },
+  "temperatures": {
+    "indoorDesignTemperatureC": 20.0,
+    "outdoorDesignTemperatureC": -5.0,
+    "deltaTK": 25.0
+  },
+  "envelope": {
+    "externalWall": {
+      "areaM2": 30.0,
+      "uValueWPerM2K": 0.4
+    },
+    "window": {
+      "areaM2": 4.0,
+      "uValueWPerM2K": 1.6
+    },
+    "roof": {
+      "areaM2": 20.0,
+      "uValueWPerM2K": 0.25
+    },
+    "floorGround": {
+      "included": false,
+      "areaM2": 0.0,
+      "uValueWPerM2K": 0.0
+    }
+  },
+  "ventilation": {
+    "airChangesPerHour": 0.5,
+    "volumeM3": 60.0,
+    "airflowM3PerHour": 30.0,
+    "sensibleCoefficient": 0.33
+  },
+  "exclusions": {
+    "internalGainsExcluded": true,
+    "solarGainsExcluded": true,
+    "groundBoundaryExcluded": true,
+    "latentLoadsExcluded": true,
+    "dynamicEffectsExcluded": true,
+    "adjacentRoomCouplingExcluded": true
+  }
+}

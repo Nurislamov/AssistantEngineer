@@ -1,0 +1,10 @@
+{
+  "caseId": "MAN-ENG-VENT-001",
+  "mechanicalVentilationAirflowM3PerH": 120.0,
+  "infiltrationAirflowM3PerH": 30.0,
+  "totalOutdoorAirflowM3PerH": 150.0,
+  "mechanicalVentilationSensibleLoadW": 1188.0,
+  "infiltrationSensibleLoadW": 297.0,
+  "totalVentilationInfiltrationSensibleLoadW": 1485.0,
+  "totalVentilationInfiltrationSensibleLoadKw": 1.485
+}

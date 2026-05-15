@@ -1,0 +1,18 @@
+{
+  "caseId": "MAN-ENG-DHW-001",
+  "title": "Simple domestic hot water demand",
+  "tier": "Tier1ManualEngineering",
+  "domain": "DomesticHotWater",
+  "status": "Active",
+  "source": "Independent manual derivation",
+  "version": 1,
+  "createdDate": "2026-05-14",
+  "nonClaims": [
+    "No ASHRAE 140 compliance claim",
+    "No exact EnergyPlus equivalence claim",
+    "No pyBuilding\u0045nergy parity claim",
+    "No full ISO/EN compliance claim",
+    "No ISO 12831-3 full validation claim",
+    "No EN 15316 full system-energy validation claim"
+  ]
+}

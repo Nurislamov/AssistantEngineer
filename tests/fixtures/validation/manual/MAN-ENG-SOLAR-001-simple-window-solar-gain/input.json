@@ -1,0 +1,18 @@
+{
+  "caseId": "MAN-ENG-SOLAR-001",
+  "windowAreaM2": 4.0,
+  "incidentSurfaceIrradianceWPerM2": 500.0,
+  "solarHeatGainCoefficient": 0.50,
+  "shadingFactor": 0.80,
+  "exclusions": {
+    "solarPositionCalculationExcluded": true,
+    "perezAnisotropicModelExcluded": true,
+    "diffuseDirectSplitExcluded": true,
+    "dynamicGlazingExcluded": true,
+    "thermalMassExcluded": true,
+    "internalGainsExcluded": true,
+    "transmissionLossExcluded": true,
+    "hvacResponseExcluded": true,
+    "weatherFileExcluded": true
+  }
+}

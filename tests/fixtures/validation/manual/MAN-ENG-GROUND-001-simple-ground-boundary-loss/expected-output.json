@@ -1,0 +1,10 @@
+{
+  "caseId": "MAN-ENG-GROUND-001",
+  "groundContactAreaM2": 50.0,
+  "equivalentGroundUValueWPerM2K": 0.30,
+  "indoorDesignTemperatureC": 20.0,
+  "effectiveGroundTemperatureC": 10.0,
+  "deltaTemperatureK": 10.0,
+  "groundBoundaryHeatLossW": 150.0,
+  "groundBoundaryHeatLossKw": 0.15
+}

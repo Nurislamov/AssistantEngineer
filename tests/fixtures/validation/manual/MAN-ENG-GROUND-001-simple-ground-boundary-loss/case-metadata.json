@@ -1,0 +1,18 @@
+{
+  "caseId": "MAN-ENG-GROUND-001",
+  "title": "Simple ground boundary steady heat loss",
+  "tier": "Tier1ManualEngineering",
+  "domain": "GroundBoundary",
+  "status": "Active",
+  "source": "Independent manual derivation",
+  "version": 1,
+  "createdDate": "2026-05-14",
+  "nonClaims": [
+    "No ASHRAE 140 compliance claim",
+    "No exact EnergyPlus equivalence claim",
+    "No pyBuilding\u0045nergy parity claim",
+    "No full ISO/EN compliance claim",
+    "No ISO 13370 full validation claim",
+    "No detailed ground coupling validation claim"
+  ]
+}

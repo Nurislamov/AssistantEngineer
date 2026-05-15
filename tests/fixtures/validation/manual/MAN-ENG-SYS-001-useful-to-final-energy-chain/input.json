@@ -1,0 +1,22 @@
+{
+  "caseId": "MAN-ENG-SYS-001",
+  "usefulThermalDemandKWh": 1000.0,
+  "distributionEfficiency": 0.95,
+  "generationEfficiency": 0.90,
+  "auxiliaryElectricityKWh": 25.0,
+  "fuelPrimaryEnergyFactor": 1.10,
+  "electricityPrimaryEnergyFactor": 2.50,
+  "exclusions": {
+    "partLoadCurvesExcluded": true,
+    "seasonalEfficiencyExcluded": true,
+    "storageLossesExcluded": true,
+    "controlLossesExcluded": true,
+    "emissionLossesExcluded": true,
+    "multipleGeneratorsExcluded": true,
+    "renewableFractionExcluded": true,
+    "heatPumpCopModelExcluded": true,
+    "en15316DetailedSubsystemMethodExcluded": true,
+    "distributionTemperatureLevelsExcluded": true,
+    "hourlyOperationProfileExcluded": true
+  }
+}

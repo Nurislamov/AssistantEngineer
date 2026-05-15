@@ -1,0 +1,13 @@
+{
+  "caseId": "MAN-ENG-HEAT-001",
+  "transmissionHeatLossW": 585.0,
+  "ventilationHeatLossW": 247.5,
+  "totalHeatingLoadW": 832.5,
+  "totalHeatingLoadKw": 0.8325,
+  "components": {
+    "wallHeatLossW": 300.0,
+    "windowHeatLossW": 160.0,
+    "roofHeatLossW": 125.0,
+    "airflowM3PerHour": 30.0
+  }
+}

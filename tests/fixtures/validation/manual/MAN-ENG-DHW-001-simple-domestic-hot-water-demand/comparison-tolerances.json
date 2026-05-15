@@ -1,0 +1,8 @@
+{
+  "caseId": "MAN-ENG-DHW-001",
+  "absoluteToleranceKWh": 0.000001,
+  "absoluteToleranceWh": 0.000001,
+  "absoluteToleranceW": 0.000001,
+  "relativeTolerance": 0.000001,
+  "rationale": "Exact arithmetic simple case; tolerances only account for floating-point representation."
+}

@@ -1,0 +1,6 @@
+{
+  "caseId": "MAN-ENG-SOLAR-001",
+  "absoluteToleranceW": 0.000001,
+  "relativeTolerance": 0.000001,
+  "rationale": "Exact arithmetic simple case; tolerances only account for floating-point representation."
+}

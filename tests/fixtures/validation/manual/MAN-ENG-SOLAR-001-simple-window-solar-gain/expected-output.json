@@ -1,0 +1,11 @@
+{
+  "caseId": "MAN-ENG-SOLAR-001",
+  "windowAreaM2": 4.0,
+  "incidentSurfaceIrradianceWPerM2": 500.0,
+  "solarHeatGainCoefficient": 0.50,
+  "shadingFactor": 0.80,
+  "unshadedSolarGainW": 1000.0,
+  "shadingReductionW": 200.0,
+  "netSolarGainW": 800.0,
+  "netSolarGainKw": 0.8
+}

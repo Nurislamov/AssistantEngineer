@@ -1,0 +1,16 @@
+{
+  "caseId": "MAN-ENG-VENT-001",
+  "title": "Ventilation and infiltration sensible heating load",
+  "tier": "Tier1ManualEngineering",
+  "domain": "VentilationInfiltration",
+  "status": "Active",
+  "source": "Independent manual derivation",
+  "version": 1,
+  "createdDate": "2026-05-14",
+  "nonClaims": [
+    "No ASHRAE 140 compliance claim",
+    "No exact EnergyPlus equivalence claim",
+    "No pyBuilding\u0045nergy parity claim",
+    "No full ISO/EN compliance claim"
+  ]
+}

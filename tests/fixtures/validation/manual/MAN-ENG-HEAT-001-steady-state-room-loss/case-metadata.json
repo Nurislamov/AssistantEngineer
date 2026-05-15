@@ -1,0 +1,16 @@
+{
+  "caseId": "MAN-ENG-HEAT-001",
+  "title": "Steady-state single room heating loss",
+  "tier": "Tier1ManualEngineering",
+  "domain": "HeatingLoad",
+  "status": "Active",
+  "source": "Independent manual derivation",
+  "createdDate": "2026-05-14",
+  "version": 1,
+  "nonClaims": [
+    "No ASHRAE 140 compliance claim",
+    "No exact EnergyPlus equivalence claim",
+    "No pyBuilding\u0045nergy parity claim",
+    "No full ISO/EN compliance claim"
+  ]
+}

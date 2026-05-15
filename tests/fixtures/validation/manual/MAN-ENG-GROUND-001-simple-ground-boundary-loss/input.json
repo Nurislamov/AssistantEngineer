@@ -1,0 +1,22 @@
+{
+  "caseId": "MAN-ENG-GROUND-001",
+  "groundContactAreaM2": 50.0,
+  "equivalentGroundUValueWPerM2K": 0.30,
+  "indoorDesignTemperatureC": 20.0,
+  "effectiveGroundTemperatureC": 10.0,
+  "exclusions": {
+    "iso13370PerimeterCalculationExcluded": true,
+    "detailedGroundCouplingExcluded": true,
+    "dynamicGroundTemperatureModelExcluded": true,
+    "monthlyGroundTemperatureProfileExcluded": true,
+    "thermalBridgeExcluded": true,
+    "adjacentRoomCouplingExcluded": true,
+    "solarGainsExcluded": true,
+    "internalGainsExcluded": true,
+    "ventilationExcluded": true,
+    "infiltrationExcluded": true,
+    "externalWallTransmissionExcluded": true,
+    "windowTransmissionExcluded": true,
+    "roofTransmissionExcluded": true
+  }
+}

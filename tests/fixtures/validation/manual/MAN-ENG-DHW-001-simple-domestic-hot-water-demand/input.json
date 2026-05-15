@@ -1,0 +1,20 @@
+{
+  "caseId": "MAN-ENG-DHW-001",
+  "dailyHotWaterVolumeL": 200.0,
+  "waterDensityKgPerL": 1.0,
+  "coldWaterTemperatureC": 10.0,
+  "hotWaterTemperatureC": 55.0,
+  "specificHeatCapacityKWhPerKgK": 0.001163,
+  "exclusions": {
+    "distributionLossesExcluded": true,
+    "storageLossesExcluded": true,
+    "circulationLossesExcluded": true,
+    "systemEfficiencyExcluded": true,
+    "heatRecoveryExcluded": true,
+    "monthlyProfileExcluded": true,
+    "annualProfileExcluded": true,
+    "peakSizingExcluded": true,
+    "en15316SystemChainExcluded": true,
+    "iso12831_3DetailedMethodExcluded": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "caseId": "MAN-ENG-DHW-001",
+  "dailyHotWaterVolumeL": 200.0,
+  "waterDensityKgPerL": 1.0,
+  "waterMassKgPerDay": 200.0,
+  "coldWaterTemperatureC": 10.0,
+  "hotWaterTemperatureC": 55.0,
+  "deltaTemperatureK": 45.0,
+  "specificHeatCapacityKWhPerKgK": 0.001163,
+  "dailyUsefulDhwEnergyKWh": 10.467,
+  "dailyUsefulDhwEnergyWh": 10467.0,
+  "averageDailyUsefulDhwPowerW": 436.125
+}

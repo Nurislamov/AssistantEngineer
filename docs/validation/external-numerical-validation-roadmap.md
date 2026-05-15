@@ -50,6 +50,15 @@ This roadmap does not change runtime calculations and does not change expected n
   - `MAN-ENG-<domain>-<case-id>`;
   - `tests/fixtures/validation/manual/<case-id>/` with `case-metadata.json`, `derivation.md`, `comparison-tolerances.json`.
 
+Current Tier 1 fixture baseline:
+
+- `MAN-ENG-HEAT-001` steady-state single room heating loss, fixture directory `tests/fixtures/validation/manual/MAN-ENG-HEAT-001-steady-state-room-loss/`.
+- `MAN-ENG-VENT-001` ventilation/infiltration sensible heating load, fixture directory `tests/fixtures/validation/manual/MAN-ENG-VENT-001-ventilation-infiltration-sensible-load/`.
+- `MAN-ENG-SOLAR-001` simple window solar heat gain, fixture directory `tests/fixtures/validation/manual/MAN-ENG-SOLAR-001-simple-window-solar-gain/`.
+- `MAN-ENG-GROUND-001` simple ground boundary steady heat loss, fixture directory `tests/fixtures/validation/manual/MAN-ENG-GROUND-001-simple-ground-boundary-loss/`.
+- `MAN-ENG-DHW-001` simple domestic hot water demand, fixture directory `tests/fixtures/validation/manual/MAN-ENG-DHW-001-simple-domestic-hot-water-demand/`.
+- `MAN-ENG-SYS-001` simple useful-to-final system energy chain, fixture directory `tests/fixtures/validation/manual/MAN-ENG-SYS-001-useful-to-final-energy-chain/`.
+
 ### Tier 2: Published Benchmark-Style Fixtures
 
 - Scope: publicly documented benchmark-style scenarios modeled as reproducible fixtures.

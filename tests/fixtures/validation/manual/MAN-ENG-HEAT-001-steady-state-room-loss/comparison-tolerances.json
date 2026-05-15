@@ -1,0 +1,6 @@
+{
+  "caseId": "MAN-ENG-HEAT-001",
+  "absoluteToleranceW": 0.000001,
+  "relativeTolerance": 0.000001,
+  "rationale": "Exact arithmetic simple case. Tolerances are only for floating-point representation."
+}

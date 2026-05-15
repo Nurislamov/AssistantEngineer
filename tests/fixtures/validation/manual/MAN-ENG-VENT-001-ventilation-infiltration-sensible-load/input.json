@@ -1,0 +1,25 @@
+{
+  "caseId": "MAN-ENG-VENT-001",
+  "name": "Ventilation and infiltration sensible heating load",
+  "indoorDesignTemperatureC": 20.0,
+  "outdoorDesignTemperatureC": -10.0,
+  "deltaTemperatureK": 30.0,
+  "roomVolumeM3": 150.0,
+  "mechanicalVentilationOutdoorAirflowM3PerH": 120.0,
+  "infiltrationAirChangesPerHour": 0.2,
+  "sensibleHeatCoefficientWhPerM3K": 0.33,
+  "heatRecovery": {
+    "heatRecoveryExcluded": true,
+    "heatRecoveryEfficiency": 0.0
+  },
+  "exclusions": {
+    "transmissionExcluded": true,
+    "solarGainsExcluded": true,
+    "internalGainsExcluded": true,
+    "latentLoadsExcluded": true,
+    "heatRecoveryExcluded": true,
+    "dynamicEffectsExcluded": true,
+    "groundBoundaryExcluded": true,
+    "adjacentRoomCouplingExcluded": true
+  }
+}
