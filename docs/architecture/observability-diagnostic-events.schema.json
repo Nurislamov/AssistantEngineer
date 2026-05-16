@@ -1,0 +1,31 @@
+{
+  "description": "Schema-like descriptor for observability diagnostic event registry.",
+  "requiredFields": [
+    "eventCode",
+    "category",
+    "defaultLogLevel",
+    "messageTemplate",
+    "requiredProperties",
+    "sensitivePayloadAllowed",
+    "description"
+  ],
+  "allowedCategories": [
+    "Workflow",
+    "Job",
+    "Calculation",
+    "InputQuality",
+    "Validation",
+    "ArtifactStorage",
+    "Persistence",
+    "Reporting",
+    "Governance"
+  ],
+  "allowedDefaultLogLevels": [
+    "Trace",
+    "Debug",
+    "Information",
+    "Warning",
+    "Error",
+    "Critical"
+  ]
+}

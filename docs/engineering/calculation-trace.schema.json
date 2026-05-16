@@ -1,0 +1,28 @@
+{
+  "schemaName": "EngineeringCalculationTraceDescriptor",
+  "description": "Schema-like descriptor for engineering explainability traces.",
+  "requiredRootFields": [
+    "traceId",
+    "scope",
+    "subjectType",
+    "calculationType",
+    "sections",
+    "assumptions",
+    "excludedEffects",
+    "diagnosticReferences"
+  ],
+  "sectionRequiredFields": [
+    "sectionId",
+    "title",
+    "category",
+    "lines"
+  ],
+  "lineRequiredFields": [
+    "lineId",
+    "label"
+  ],
+  "notes": [
+    "Trace metadata is optional.",
+    "Line formula and value are optional to support explanatory and reference-only lines."
+  ]
+}

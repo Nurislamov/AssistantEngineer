@@ -3,6 +3,10 @@
 ## Purpose
 
 This index tracks Tier 1 manual engineering validation fixtures with independent hand-derivation evidence.
+Tolerance governance reference: `docs/validation/validation-tolerance-policy.md`.
+P4-01 fixtures use strict exact-arithmetic tolerances declared per case.
+Engineering assumptions used by manual fixtures are tracked in `docs/engineering/engineering-assumptions-registry.md`.
+Manual fixture input/output property names should follow `docs/engineering/units-governance.md`.
 
 ## Active fixtures
 

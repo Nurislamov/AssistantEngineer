@@ -94,6 +94,7 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
             entity.Property(item => item.Checksum).HasMaxLength(256);
             entity.HasIndex(item => item.ScenarioId);
             entity.HasIndex(item => new { item.ScenarioId, item.ArtifactKind });
+            entity.HasIndex(item => new { item.ScenarioId, item.ArtifactKind, item.CreatedAtUtc, item.Id });
             entity.HasIndex(item => item.CreatedAtUtc);
             entity.HasOne(item => item.Scenario)
                 .WithMany(item => item.Artifacts)
@@ -144,6 +145,7 @@ public sealed class EngineeringWorkflowPersistenceDbContext : DbContext
             entity.HasIndex(item => item.CreatedAtUtc);
             entity.HasIndex(item => item.UpdatedAtUtc);
             entity.HasIndex(item => item.LeaseExpiresAtUtc);
+            entity.HasIndex(item => new { item.Status, item.CancellationRequested, item.QueuedAtUtc, item.CreatedAtUtc, item.Id });
             entity.HasOne(item => item.Project)
                 .WithMany()
                 .HasForeignKey(item => item.ProjectId)

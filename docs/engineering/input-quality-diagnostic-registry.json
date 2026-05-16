@@ -1,0 +1,156 @@
+{
+  "diagnostics": [
+    {
+      "code": "IQ-BLD-001",
+      "category": "CalculationReadiness",
+      "severity": "Blocking",
+      "messageTemplate": "Building with id {buildingId} not found.",
+      "recommendation": "Provide a valid building identifier.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-BLD-010",
+      "category": "CalculationReadiness",
+      "severity": "Blocking",
+      "messageTemplate": "Building has no floors.",
+      "recommendation": "Add at least one floor before running calculations.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-BLD-011",
+      "category": "CalculationReadiness",
+      "severity": "Blocking",
+      "messageTemplate": "Building has no rooms.",
+      "recommendation": "Add at least one room before running calculations.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-BLD-020",
+      "category": "Weather",
+      "severity": "Warning",
+      "messageTemplate": "Building climate zone/context is missing.",
+      "recommendation": "Assign a climate zone or equivalent climate context.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-BLD-030",
+      "category": "Ground",
+      "severity": "Warning",
+      "messageTemplate": "Ground-contact boundaries were found without explicit ground metadata.",
+      "recommendation": "Provide ground-contact metadata for affected rooms.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-001",
+      "category": "CalculationReadiness",
+      "severity": "Blocking",
+      "messageTemplate": "Room with id {roomId} not found.",
+      "recommendation": "Provide a valid room identifier.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-ROOM-010",
+      "category": "Geometry",
+      "severity": "Blocking",
+      "messageTemplate": "Room floor area must be positive.",
+      "recommendation": "Set room area to a value greater than 0.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-ROOM-011",
+      "category": "Geometry",
+      "severity": "Blocking",
+      "messageTemplate": "Room height must be positive.",
+      "recommendation": "Set room height to a value greater than 0.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-ROOM-012",
+      "category": "Geometry",
+      "severity": "Blocking",
+      "messageTemplate": "Room volume must be positive or derivable from area and height.",
+      "recommendation": "Provide valid area and height inputs.",
+      "blocking": true
+    },
+    {
+      "code": "IQ-ROOM-020",
+      "category": "Envelope",
+      "severity": "Warning",
+      "messageTemplate": "Room envelope input is missing: no walls or windows found.",
+      "recommendation": "Add envelope elements or document intentional exclusion.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-030",
+      "category": "Envelope",
+      "severity": "Warning",
+      "messageTemplate": "Window-to-floor area ratio is suspiciously high (> 0.8).",
+      "recommendation": "Verify glazing and floor area values.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-040",
+      "category": "Ventilation",
+      "severity": "Warning",
+      "messageTemplate": "Room ventilation configuration is missing and defaults may be used.",
+      "recommendation": "Provide explicit ventilation configuration or confirm defaults.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-041",
+      "category": "Ventilation",
+      "severity": "Error",
+      "messageTemplate": "Ventilation airflow inputs must not be negative.",
+      "recommendation": "Set ACH and infiltration ACH to non-negative values.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-050",
+      "category": "Envelope",
+      "severity": "Error",
+      "messageTemplate": "Envelope U-value must be positive.",
+      "recommendation": "Set positive U-values for relevant elements.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-051",
+      "category": "Envelope",
+      "severity": "Warning",
+      "messageTemplate": "Envelope U-value is suspiciously high (> 10 W/(m²·K)).",
+      "recommendation": "Review U-value data source and units.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-060",
+      "category": "Solar",
+      "severity": "Error",
+      "messageTemplate": "Window SHGC must be within the 0..1 range.",
+      "recommendation": "Set SHGC between 0 and 1.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ROOM-070",
+      "category": "Assumptions",
+      "severity": "Warning",
+      "messageTemplate": "Room indoor setpoint is missing and defaults may be used.",
+      "recommendation": "Provide explicit indoor setpoint or document fallback assumptions.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-ASSUMP-001",
+      "category": "Assumptions",
+      "severity": "Warning",
+      "messageTemplate": "Calculation preference defaults are in use because explicit preferences were not found.",
+      "recommendation": "Create project calculation preferences to make assumptions explicit.",
+      "blocking": false
+    },
+    {
+      "code": "IQ-UNITS-001",
+      "category": "Units",
+      "severity": "Info",
+      "messageTemplate": "Unit-bearing field requires explicit unit documentation.",
+      "recommendation": "Use unit-explicit field names and document units in fixtures/contracts.",
+      "blocking": false
+    }
+  ]
+}

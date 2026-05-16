@@ -6,10 +6,12 @@ using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWat
 using AssistantEngineer.Modules.Calculations.Application.Services.DomesticHotWater.Iso12831;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy.En15316;
 using AssistantEngineer.Modules.Calculations.Application.Services.HeatingSystems;
+using AssistantEngineer.Modules.Calculations.Application.Abstractions.InputQuality;
 using AssistantEngineer.Modules.Calculations.Application.Services.Performance;
 using AssistantEngineer.Modules.Calculations.Application.Services.Rollup;
 using AssistantEngineer.Modules.Calculations.Application.Services.SystemEnergy;
 using AssistantEngineer.Modules.Calculations.Application.Services.Governance;
+using AssistantEngineer.Modules.Calculations.Application.Services.InputQuality;
 using AssistantEngineer.Modules.Calculations.Application.Services.Validation.BuildingInput;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -49,6 +51,7 @@ internal static class EnergyAnalysisRegistration
         services.AddSingleton<EngineeringCoreV2ReleaseReadinessService>();
         services.AddSingleton<SystemEnergyEngine>();
         services.AddScoped<BuildingInputValidationService>();
+        services.AddScoped<IEngineeringInputQualityService, EngineeringInputQualityService>();
 
         services.AddScoped<BuildingEnergyPerformanceSummaryService>();
         services.AddScoped<BuildingPerformanceService>();

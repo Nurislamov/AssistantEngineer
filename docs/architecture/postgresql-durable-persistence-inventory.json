@@ -1,0 +1,382 @@
+{
+  "version": 1,
+  "generatedBy": "manual audit",
+  "lastReviewedDate": "2026-05-14",
+  "dbContexts": [
+    {
+      "name": "AppDbContext",
+      "projectPath": "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+      "providerSupport": [
+        "PostgreSQL"
+      ],
+      "migrationPath": "src/Backend/AssistantEngineer.Infrastructure/Persistence/Migrations",
+      "mainTablesOrEntities": [
+        "Projects",
+        "Buildings",
+        "Floors",
+        "Rooms",
+        "Windows",
+        "Walls",
+        "ClimateZones",
+        "ClimateData",
+        "AnnualClimateData",
+        "AnnualHourlyData",
+        "CalculationPreferences",
+        "ThermalZones"
+      ],
+      "productionReadinessNote": "PostgreSQL provider is configured via UseNpgsql. PostgreSQL workflow-level smoke verification is partial and needs explicit opt-in hardening."
+    },
+    {
+      "name": "EngineeringWorkflowPersistenceDbContext",
+      "projectPath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
+      "providerSupport": [
+        "SQLite"
+      ],
+      "migrationPath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/Migrations",
+      "mainTablesOrEntities": [
+        "engineering_workflow_projects",
+        "engineering_workflow_states",
+        "engineering_workflow_scenarios",
+        "engineering_workflow_artifacts",
+        "engineering_workflow_history_entries",
+        "engineering_workflow_jobs",
+        "engineering_workflow_job_events",
+        "engineering_workflow_idempotency_records"
+      ],
+      "productionReadinessNote": "Durable workflow persistence provider is SQLite. PostgreSQL parity for this context is UnknownNeedsAudit."
+    }
+  ],
+  "repositories": [
+    {
+      "name": "Infrastructure core repositories (Project/Building/Floor/Room/Climate/Preferences/Equipment)",
+      "responsibility": "Core domain persistence and read models",
+      "provider": "PostgreSQL",
+      "transactionBehavior": "Per-operation SaveChangesAsync; no global transaction orchestration in standard repository methods",
+      "knownRisks": [
+        "Cross-repository transaction boundaries are service-layer dependent and need explicit multi-step hardening review."
+      ]
+    },
+    {
+      "name": "EfEngineeringWorkflowStateRepository",
+      "responsibility": "Durable workflow state records",
+      "provider": "SQLite",
+      "transactionBehavior": "Per-operation SaveChangesAsync",
+      "knownRisks": [
+        "No explicit transaction envelope with artifact/history writes."
+      ]
+    },
+    {
+      "name": "EfEngineeringCalculationScenarioRepository",
+      "responsibility": "Durable scenario records",
+      "provider": "SQLite",
+      "transactionBehavior": "Per-operation SaveChangesAsync",
+      "knownRisks": [
+        "Potential partial persistence when subsequent artifact/history writes fail."
+      ]
+    },
+    {
+      "name": "EfEngineeringCalculationArtifactRepository",
+      "responsibility": "Durable scenario artifact records",
+      "provider": "SQLite",
+      "transactionBehavior": "Per-operation SaveChangesAsync",
+      "knownRisks": [
+        "Artifact content currently persisted as text payload; large artifact strategy is transitional."
+      ]
+    },
+    {
+      "name": "EfEngineeringCalculationJobRepository",
+      "responsibility": "Durable workflow job queue and claims",
+      "provider": "SQLite",
+      "transactionBehavior": "Conditional ExecuteUpdateAsync for claim; SaveChangesAsync for create/update",
+      "knownRisks": [
+        "Queue semantics rely on SQLite behavior; PostgreSQL path for this context is UnknownNeedsAudit."
+      ]
+    },
+    {
+      "name": "EfEngineeringCalculationJobEventRepository",
+      "responsibility": "Durable job event log",
+      "provider": "SQLite",
+      "transactionBehavior": "Per-operation SaveChangesAsync",
+      "knownRisks": [
+        "Event persistence may diverge from job status persistence across separate operations."
+      ]
+    },
+    {
+      "name": "EfEngineeringIdempotencyService",
+      "responsibility": "Durable idempotency reserve/replay/complete lifecycle",
+      "provider": "SQLite",
+      "transactionBehavior": "Unique index + insert/update conflict handling; ExecuteUpdateAsync in completion path",
+      "knownRisks": [
+        "Durable idempotency currently bound to SQLite provider context."
+      ]
+    },
+    {
+      "name": "IEngineeringArtifactStorage implementations",
+      "responsibility": "Large artifact abstraction (descriptor + content)",
+      "provider": "InMemory/FileSystem",
+      "transactionBehavior": "Provider-local atomicity only",
+      "knownRisks": [
+        "Not integrated with existing workflow persistence path yet.",
+        "FileSystem provider is local-only and not distributed object storage."
+      ]
+    }
+  ],
+  "migrations": [
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260418063333_InitialCreate",
+      "purpose": "Initial infrastructure schema",
+      "risk": "Medium",
+      "notes": "Baseline domain tables"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260418181228_AddUniqueIndexes",
+      "purpose": "Add uniqueness and index hardening",
+      "risk": "Medium",
+      "notes": "Adds unique constraints for projects/buildings/floors/rooms/catalog identity"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260419102140_AddCalculationDomainData",
+      "purpose": "Calculation domain data persistence",
+      "risk": "Medium",
+      "notes": "Domain expansion"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260419110759_AddClimateDataEntities",
+      "purpose": "Climate data entities",
+      "risk": "Medium",
+      "notes": "Data volume sensitivity"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260419115418_AddThermalZones",
+      "purpose": "Thermal zone persistence",
+      "risk": "Medium",
+      "notes": "Zone topology support"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260419171128_ReplaceThermalZoneRoomIdsJsonbWithJoinTable",
+      "purpose": "Normalize zone-room relation",
+      "risk": "High",
+      "notes": "Data-shape migration from jsonb to join table"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260419184716_AddAnnualClimateData",
+      "purpose": "Add annual climate data",
+      "risk": "Medium",
+      "notes": "Annual dataset persistence"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260420142023_AddWindowShadingParameters",
+      "purpose": "Add window shading fields",
+      "risk": "Low",
+      "notes": "Additive"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260420142908_AddExpandedHourlyWeatherData",
+      "purpose": "Expand hourly weather data",
+      "risk": "Medium",
+      "notes": "Volume and query performance sensitivity"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260420143359_AddInfiltrationVentilationParameters",
+      "purpose": "Add ventilation/infiltration data",
+      "risk": "Medium",
+      "notes": "Input model expansion"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260420150036_AddIso52016CalculationPreferences",
+      "purpose": "ISO52016 preferences persistence",
+      "risk": "Medium",
+      "notes": "Preference fallback behavior impact"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260421172802_RenameRoomOutdoorTemperatureToOverride",
+      "purpose": "Semantic rename",
+      "risk": "Medium",
+      "notes": "Mapping compatibility"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260429013955_AddRoomGroundContactMetadata",
+      "purpose": "Ground contact metadata",
+      "risk": "Medium",
+      "notes": "Ground boundary semantics support"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "migrationIdOrName": "20260501160136_SplitHourlyClimateData",
+      "purpose": "Split hourly climate data storage",
+      "risk": "High",
+      "notes": "Transform-heavy migration"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "migrationIdOrName": "20260510000100_InitialEngineeringWorkflowPersistence",
+      "purpose": "Initial workflow durable persistence schema",
+      "risk": "Medium",
+      "notes": "SQLite durable baseline"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "migrationIdOrName": "20260511000100_AddEngineeringJobClaimLeaseMetadata",
+      "purpose": "Lease claim metadata for jobs",
+      "risk": "Medium",
+      "notes": "Adds claim/lease columns and index"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "migrationIdOrName": "20260511000200_AddEngineeringWorkflowIdempotencyRecords",
+      "purpose": "Durable idempotency table",
+      "risk": "Medium",
+      "notes": "Adds unique scope/key constraint"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "migrationIdOrName": "20260515000100_AddEngineeringWorkflowQueuedJobAndArtifactLookupIndexes",
+      "purpose": "Add lookup indexes for queued job polling and artifact latest-record reads",
+      "risk": "Low",
+      "notes": "Additive non-destructive index hardening for existing durable query paths"
+    }
+  ],
+  "indexesAndConstraints": [
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_states",
+      "indexOrConstraint": "IX_engineering_workflow_states_ProjectId_Version (unique)",
+      "purpose": "Version uniqueness per project",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_idempotency_records",
+      "indexOrConstraint": "IX_engineering_workflow_idempotency_records_Scope_IdempotencyKey (unique)",
+      "purpose": "Idempotency uniqueness guarantee",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_jobs",
+      "indexOrConstraint": "IX_engineering_workflow_jobs_LeaseExpiresAtUtc",
+      "purpose": "Lease expiration lookup",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_jobs",
+      "indexOrConstraint": "IX_engineering_workflow_jobs_Status",
+      "purpose": "Queue polling/status filtering",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_artifacts",
+      "indexOrConstraint": "IX_engineering_workflow_artifacts_ScenarioId_ArtifactKind",
+      "purpose": "Artifact lookup by scenario and kind",
+      "requiredForCorrectness": true,
+      "status": "Present (non-unique)"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_artifacts",
+      "indexOrConstraint": "IX_engineering_workflow_artifacts_ScenarioId_ArtifactKind_CreatedAtUtc_Id",
+      "purpose": "Deterministic latest artifact lookup by scenario/kind with CreatedAtUtc+Id ordering",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "EngineeringWorkflowPersistenceDbContext",
+      "tableOrEntity": "engineering_workflow_jobs",
+      "indexOrConstraint": "IX_engineering_workflow_jobs_Status_CancellationRequested_QueuedAtUtc_CreatedAtUtc_Id",
+      "purpose": "Queued/retry polling and deterministic claim candidate ordering",
+      "requiredForCorrectness": true,
+      "status": "Present"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "tableOrEntity": "Projects",
+      "indexOrConstraint": "IX_Projects_Name (unique)",
+      "purpose": "Project name uniqueness",
+      "requiredForCorrectness": false,
+      "status": "Present"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "tableOrEntity": "Buildings",
+      "indexOrConstraint": "IX_Buildings_ProjectId_Name (unique)",
+      "purpose": "Building name uniqueness per project",
+      "requiredForCorrectness": false,
+      "status": "Present"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "tableOrEntity": "Floors",
+      "indexOrConstraint": "IX_Floors_BuildingId_Name (unique)",
+      "purpose": "Floor name uniqueness per building",
+      "requiredForCorrectness": false,
+      "status": "Present"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "tableOrEntity": "Rooms",
+      "indexOrConstraint": "IX_Rooms_FloorId_Name (unique)",
+      "purpose": "Room name uniqueness per floor",
+      "requiredForCorrectness": false,
+      "status": "Present"
+    },
+    {
+      "dbContext": "AppDbContext",
+      "tableOrEntity": "EquipmentCatalogItems",
+      "indexOrConstraint": "IX_EquipmentCatalogItems_CatalogIdentity (unique composite)",
+      "purpose": "Catalog entry identity uniqueness",
+      "requiredForCorrectness": false,
+      "status": "Present"
+    }
+  ],
+  "knownRisks": [
+    {
+      "riskId": "RISK-WF-PROVIDER-INMEMORY-DEFAULT",
+      "title": "Workflow durable provider defaults to InMemory in appsettings.json",
+      "severity": "High",
+      "note": "Default runtime config currently resolves EngineeringWorkflowPersistence provider as InMemory unless overridden."
+    },
+    {
+      "riskId": "RISK-WF-SQLITE-POSTGRES-GAP",
+      "title": "Workflow durable persistence is SQLite-only",
+      "severity": "High",
+      "note": "Workflow/job/idempotency durable path has no PostgreSQL provider implementation in current codebase."
+    },
+    {
+      "riskId": "RISK-WF-CROSS-AGGREGATE-TRANSACTION-BOUNDARY",
+      "title": "Scenario/state/artifact/history persistence occurs in multiple operations",
+      "severity": "Medium",
+      "note": "No explicit transaction envelope across all related records in workflow persistence service."
+    },
+    {
+      "riskId": "RISK-WF-BLOB-IN-DB-PAYLOAD-PRESSURE",
+      "title": "Large artifact/report/trace payload pressure on DB text columns",
+      "severity": "Medium",
+      "note": "Payload truncation guardrails exist, but P4-07 artifact storage abstraction is not wired into workflow persistence flow yet."
+    },
+    {
+      "riskId": "RISK-POSTGRES-SMOKE-COVERAGE-PARTIAL",
+      "title": "PostgreSQL integration smoke coverage is partial",
+      "severity": "Medium",
+      "note": "Current tests emphasize provider-neutral and SQLite workflow durable scenarios; opt-in PostgreSQL persistence smoke campaign is pending."
+    }
+  ]
+}

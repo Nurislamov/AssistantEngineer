@@ -5,6 +5,7 @@
 Define a staged external numerical validation backlog for AssistantEngineer without overclaiming compliance, parity, or certification.
 
 This roadmap does not change runtime calculations and does not change expected numerical values.
+Tier comparison tolerances are governed by `docs/validation/validation-tolerance-policy.md`.
 
 ## Claim Boundaries
 

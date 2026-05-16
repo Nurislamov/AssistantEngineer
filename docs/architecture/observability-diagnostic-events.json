@@ -1,0 +1,272 @@
+[
+  {
+    "eventCode": "OBS-WF-001",
+    "category": "Workflow",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Engineering workflow state loaded for {WorkflowId}.",
+    "requiredProperties": ["correlationId", "workflowId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Workflow state load completed."
+  },
+  {
+    "eventCode": "OBS-WF-002",
+    "category": "Workflow",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Workflow scenario execution started for {ScenarioId}.",
+    "requiredProperties": ["correlationId", "workflowId", "scenarioId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Scenario execution start event."
+  },
+  {
+    "eventCode": "OBS-WF-003",
+    "category": "Workflow",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Workflow scenario execution completed for {ScenarioId}.",
+    "requiredProperties": ["correlationId", "workflowId", "scenarioId", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Scenario execution completion event."
+  },
+  {
+    "eventCode": "OBS-WF-004",
+    "category": "Workflow",
+    "defaultLogLevel": "Error",
+    "messageTemplate": "Workflow scenario execution failed for {ScenarioId}.",
+    "requiredProperties": ["correlationId", "workflowId", "scenarioId", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Scenario execution failure event."
+  },
+  {
+    "eventCode": "OBS-JOB-001",
+    "category": "Job",
+    "defaultLogLevel": "Debug",
+    "messageTemplate": "Job claim attempted for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job claim attempt event."
+  },
+  {
+    "eventCode": "OBS-JOB-002",
+    "category": "Job",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Job claim succeeded for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId", "workflowId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job claim success event."
+  },
+  {
+    "eventCode": "OBS-JOB-003",
+    "category": "Job",
+    "defaultLogLevel": "Debug",
+    "messageTemplate": "Job claim skipped for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job claim skip or already-claimed event."
+  },
+  {
+    "eventCode": "OBS-JOB-004",
+    "category": "Job",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Job execution started for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId", "scenarioId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job execution start event."
+  },
+  {
+    "eventCode": "OBS-JOB-005",
+    "category": "Job",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Job execution completed for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId", "durationMs", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job execution completion event."
+  },
+  {
+    "eventCode": "OBS-JOB-006",
+    "category": "Job",
+    "defaultLogLevel": "Error",
+    "messageTemplate": "Job execution failed for {JobId}.",
+    "requiredProperties": ["correlationId", "jobId", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Job execution failure event."
+  },
+  {
+    "eventCode": "OBS-CALC-001",
+    "category": "Calculation",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Calculation started for {CalculationType}.",
+    "requiredProperties": ["correlationId", "calculationType"],
+    "sensitivePayloadAllowed": false,
+    "description": "Calculation start event."
+  },
+  {
+    "eventCode": "OBS-CALC-002",
+    "category": "Calculation",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Calculation completed for {CalculationType}.",
+    "requiredProperties": ["correlationId", "calculationType", "durationMs", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Calculation completion event."
+  },
+  {
+    "eventCode": "OBS-CALC-003",
+    "category": "Calculation",
+    "defaultLogLevel": "Warning",
+    "messageTemplate": "Calculation validation failed for {CalculationType}.",
+    "requiredProperties": ["correlationId", "calculationType", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Calculation validation failure event."
+  },
+  {
+    "eventCode": "OBS-CALC-004",
+    "category": "Calculation",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Calculation diagnostics emitted for {CalculationType}.",
+    "requiredProperties": ["correlationId", "calculationType", "diagnosticCount"],
+    "sensitivePayloadAllowed": false,
+    "description": "Calculation diagnostics emission event."
+  },
+  {
+    "eventCode": "OBS-IQ-001",
+    "category": "InputQuality",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Input quality check started for {SubjectType} {SubjectId}.",
+    "requiredProperties": ["correlationId", "subjectType", "subjectId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Input quality check start event."
+  },
+  {
+    "eventCode": "OBS-IQ-002",
+    "category": "InputQuality",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Input quality check completed for {SubjectType} {SubjectId}.",
+    "requiredProperties": ["correlationId", "subjectType", "subjectId", "diagnosticCount", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Input quality check completion event."
+  },
+  {
+    "eventCode": "OBS-IQ-003",
+    "category": "InputQuality",
+    "defaultLogLevel": "Warning",
+    "messageTemplate": "Input quality blocking issue detected for {SubjectType} {SubjectId}.",
+    "requiredProperties": ["correlationId", "subjectType", "subjectId", "diagnosticCount"],
+    "sensitivePayloadAllowed": false,
+    "description": "Input quality blocking issue event."
+  },
+  {
+    "eventCode": "OBS-ART-001",
+    "category": "ArtifactStorage",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Artifact write started for kind {ArtifactKind}.",
+    "requiredProperties": ["correlationId", "artifactId", "artifactKind", "storageProvider"],
+    "sensitivePayloadAllowed": false,
+    "description": "Artifact write start event."
+  },
+  {
+    "eventCode": "OBS-ART-002",
+    "category": "ArtifactStorage",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Artifact write completed for {ArtifactId}.",
+    "requiredProperties": ["correlationId", "artifactId", "artifactKind", "sizeBytes", "sha256", "storageProvider"],
+    "sensitivePayloadAllowed": false,
+    "description": "Artifact write completion event."
+  },
+  {
+    "eventCode": "OBS-ART-003",
+    "category": "ArtifactStorage",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Artifact read completed for {ArtifactId}.",
+    "requiredProperties": ["correlationId", "artifactId", "sizeBytes", "storageProvider"],
+    "sensitivePayloadAllowed": false,
+    "description": "Artifact read completion event."
+  },
+  {
+    "eventCode": "OBS-ART-004",
+    "category": "ArtifactStorage",
+    "defaultLogLevel": "Error",
+    "messageTemplate": "Artifact integrity check failed for {ArtifactId}.",
+    "requiredProperties": ["correlationId", "artifactId", "sha256", "storageProvider"],
+    "sensitivePayloadAllowed": false,
+    "description": "Artifact integrity check failure event."
+  },
+  {
+    "eventCode": "OBS-ART-005",
+    "category": "ArtifactStorage",
+    "defaultLogLevel": "Warning",
+    "messageTemplate": "Artifact size limit exceeded for kind {ArtifactKind}.",
+    "requiredProperties": ["correlationId", "artifactKind", "sizeBytes", "storageProvider"],
+    "sensitivePayloadAllowed": false,
+    "description": "Artifact write rejected due to size limit."
+  },
+  {
+    "eventCode": "OBS-PER-001",
+    "category": "Persistence",
+    "defaultLogLevel": "Debug",
+    "messageTemplate": "Durable persistence operation started for {OperationName}.",
+    "requiredProperties": ["correlationId", "operationName"],
+    "sensitivePayloadAllowed": false,
+    "description": "Durable persistence operation start event."
+  },
+  {
+    "eventCode": "OBS-PER-002",
+    "category": "Persistence",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Durable persistence operation completed for {OperationName}.",
+    "requiredProperties": ["correlationId", "operationName", "durationMs", "resultStatus"],
+    "sensitivePayloadAllowed": false,
+    "description": "Durable persistence operation completion event."
+  },
+  {
+    "eventCode": "OBS-PER-003",
+    "category": "Persistence",
+    "defaultLogLevel": "Warning",
+    "messageTemplate": "Durable persistence conflict detected for {OperationName}.",
+    "requiredProperties": ["correlationId", "operationName", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Durable persistence conflict event."
+  },
+  {
+    "eventCode": "OBS-PER-004",
+    "category": "Persistence",
+    "defaultLogLevel": "Error",
+    "messageTemplate": "Durable persistence operation failed for {OperationName}.",
+    "requiredProperties": ["correlationId", "operationName", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Durable persistence failure event."
+  },
+  {
+    "eventCode": "OBS-VAL-001",
+    "category": "Validation",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Manual validation fixture checked for {ValidationCaseId}.",
+    "requiredProperties": ["correlationId", "validationCaseId"],
+    "sensitivePayloadAllowed": false,
+    "description": "Manual validation fixture check event."
+  },
+  {
+    "eventCode": "OBS-VAL-002",
+    "category": "Validation",
+    "defaultLogLevel": "Warning",
+    "messageTemplate": "Validation tolerance comparison failed for {ValidationCaseId}.",
+    "requiredProperties": ["correlationId", "validationCaseId", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Validation tolerance mismatch event."
+  },
+  {
+    "eventCode": "OBS-GOV-001",
+    "category": "Governance",
+    "defaultLogLevel": "Information",
+    "messageTemplate": "Governance guard executed: {GuardName}.",
+    "requiredProperties": ["correlationId", "guardName"],
+    "sensitivePayloadAllowed": false,
+    "description": "Governance guard execution event."
+  },
+  {
+    "eventCode": "OBS-GOV-002",
+    "category": "Governance",
+    "defaultLogLevel": "Error",
+    "messageTemplate": "Governance guard failed: {GuardName}.",
+    "requiredProperties": ["correlationId", "guardName", "errorCode"],
+    "sensitivePayloadAllowed": false,
+    "description": "Governance guard failure event."
+  }
+]

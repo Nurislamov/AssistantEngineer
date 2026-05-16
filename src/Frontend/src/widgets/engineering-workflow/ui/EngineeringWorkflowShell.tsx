@@ -1,7 +1,6 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
   Alert,
-  Box,
   Button,
   Chip,
   Divider,
@@ -11,10 +10,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { EngineeringTrustOverviewPanel } from "@/entities/engineering-workflow/ui/trust/EngineeringTrustOverviewPanel";
 import type { WorkflowStepKind, WorkflowStepStatus } from "@/entities/engineering-workflow/types";
 import { DataCard } from "@/shared/ui/DataCard";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { QueryState } from "@/shared/ui/QueryState";
+import { useEngineeringWorkflowTrustOverview } from "../model/useEngineeringWorkflowTrustOverview";
 import { useEngineeringWorkflowShell } from "../model/useEngineeringWorkflowShell";
 import { stepLabel } from "../model/engineeringWorkflowShellViewModel";
 import { CalculationTracePanel } from "./CalculationTracePanel";
@@ -47,6 +48,11 @@ const orderedSteps: WorkflowStepKind[] = [
 
 export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringWorkflowShellProps): JSX.Element {
   const vm = useEngineeringWorkflowShell(projectId, buildingId);
+  const trustOverview = useEngineeringWorkflowTrustOverview({
+    workflowState: vm.workflow.state,
+    diagnostics: vm.allDiagnostics,
+    traceSummary: vm.traceSummary,
+  });
 
   return (
     <Stack spacing={2}>
@@ -156,9 +162,10 @@ export function EngineeringWorkflowShell({ projectId, buildingId }: EngineeringW
               />
             </Stack>
 
-            <Box sx={{ width: { xs: "100%", lg: 420 } }}>
+            <Stack spacing={2} sx={{ width: { xs: "100%", lg: 420 } }}>
               <WorkflowDiagnosticsPanel diagnostics={vm.allDiagnostics} onSelectStep={vm.setSelectedStep} />
-            </Box>
+              <EngineeringTrustOverviewPanel model={trustOverview} />
+            </Stack>
           </Stack>
         </>
       ) : (

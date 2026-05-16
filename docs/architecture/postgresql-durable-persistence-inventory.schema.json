@@ -1,0 +1,49 @@
+{
+  "schemaId": "postgresql-durable-persistence-inventory-v1",
+  "description": "Schema-like descriptor for PostgreSQL durable persistence hardening inventory.",
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "dbContexts",
+    "repositories",
+    "migrations",
+    "indexesAndConstraints",
+    "knownRisks"
+  ],
+  "dbContextRequiredFields": [
+    "name",
+    "projectPath",
+    "providerSupport",
+    "migrationPath",
+    "mainTablesOrEntities",
+    "productionReadinessNote"
+  ],
+  "repositoryRequiredFields": [
+    "name",
+    "responsibility",
+    "provider",
+    "transactionBehavior",
+    "knownRisks"
+  ],
+  "migrationRequiredFields": [
+    "dbContext",
+    "migrationIdOrName",
+    "purpose",
+    "risk",
+    "notes"
+  ],
+  "indexConstraintRequiredFields": [
+    "dbContext",
+    "tableOrEntity",
+    "indexOrConstraint",
+    "purpose",
+    "requiredForCorrectness",
+    "status"
+  ],
+  "knownRiskRequiredFields": [
+    "riskId",
+    "title",
+    "severity",
+    "note"
+  ]
+}

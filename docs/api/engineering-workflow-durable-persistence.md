@@ -5,6 +5,7 @@
 Stage 12 adds durable persistence foundation for engineering workflow/project/scenario records while preserving Stage 11 API contracts and in-memory fallback behavior.
 
 Persistence layer remains orchestration storage only and does not execute engineering physics.
+PostgreSQL durable hardening inventory/policy baseline is tracked in `docs/architecture/postgresql-durable-persistence-hardening.md`.
 
 ## Provider model
 

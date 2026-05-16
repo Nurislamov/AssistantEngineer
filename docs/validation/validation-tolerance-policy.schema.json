@@ -1,0 +1,33 @@
+{
+  "policyId": "AssistantEngineer.ValidationTolerancePolicy.v1",
+  "description": "Machine-readable summary of required tolerance descriptor fields for validation fixtures.",
+  "requiredFields": [
+    "relativeFloor",
+    "relativeTolerance",
+    "absoluteTolerances",
+    "rationale"
+  ],
+  "fieldDescriptors": {
+    "relativeFloor": {
+      "type": "number",
+      "minimum": 0.0,
+      "recommendedValue": 1e-9,
+      "notes": "Used in relativeError denominator floor to avoid near-zero instability."
+    },
+    "relativeTolerance": {
+      "type": "number",
+      "minimum": 0.0,
+      "notes": "Relative tolerance threshold for metric comparison."
+    },
+    "absoluteTolerances": {
+      "type": "object",
+      "additionalPropertiesType": "number",
+      "notes": "Per-unit or per-metric absolute tolerances."
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "notes": "Human-readable explanation of tolerance selection."
+    }
+  }
+}

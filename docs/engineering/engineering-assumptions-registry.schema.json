@@ -1,0 +1,32 @@
+﻿{
+  "schemaId": "AssistantEngineer.EngineeringAssumptionsRegistry.SchemaLike.v1",
+  "description": "Schema-like descriptor for engineering assumptions registry records.",
+  "requiredFields": [
+    "assumptionId",
+    "category",
+    "name",
+    "value",
+    "unit",
+    "status",
+    "source",
+    "usageArea",
+    "rationale",
+    "risk",
+    "owner",
+    "lastReviewedDate"
+  ],
+  "optionalFields": [
+    "codeReference",
+    "fixtureReference"
+  ],
+  "allowedStatuses": [
+    "ActiveDefault",
+    "ValidationOnly",
+    "Candidate",
+    "Deprecated",
+    "UnknownNeedsAudit"
+  ],
+  "ownerConstraint": {
+    "requiredValue": "Engineering"
+  }
+}

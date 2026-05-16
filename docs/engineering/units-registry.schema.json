@@ -1,0 +1,20 @@
+﻿{
+  "schemaId": "AssistantEngineer.UnitsRegistry.SchemaLike.v1",
+  "description": "Schema-like descriptor for units registry entries.",
+  "requiredFields": [
+    "unitId",
+    "symbol",
+    "quantity",
+    "canonical",
+    "allowedPropertySuffixes",
+    "description"
+  ],
+  "fieldTypes": {
+    "unitId": "string",
+    "symbol": "string",
+    "quantity": "string",
+    "canonical": "boolean",
+    "allowedPropertySuffixes": "string[]",
+    "description": "string"
+  }
+}

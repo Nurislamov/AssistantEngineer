@@ -13,6 +13,7 @@ public class EngineeringWorkflowPersistenceMigrationTests
     private const string InitialMigrationId = EngineeringWorkflowPersistenceDatabaseInitializer.InitialMigrationId;
     private const string ClaimLeaseMigrationId = "20260511000100_AddEngineeringJobClaimLeaseMetadata";
     private const string IdempotencyRecordsMigrationId = "20260511000200_AddEngineeringWorkflowIdempotencyRecords";
+    private const string LookupIndexesMigrationId = "20260515000100_AddEngineeringWorkflowQueuedJobAndArtifactLookupIndexes";
 
     [Fact]
     public void WorkflowPersistenceInitializerUsesMigrationsInsteadOfEnsureCreated()
@@ -123,6 +124,29 @@ public class EngineeringWorkflowPersistenceMigrationTests
     }
 
     [Fact]
+    public void WorkflowPersistenceHasLookupIndexesMigrationForQueuedJobsAndArtifacts()
+    {
+        var path = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Api",
+            "Services",
+            "Calculations",
+            "Persistence",
+            "Durable",
+            "Migrations",
+            "20260515000100_AddEngineeringWorkflowQueuedJobAndArtifactLookupIndexes.cs");
+
+        Assert.True(File.Exists(path), $"Lookup index migration is missing: {path}");
+        var content = File.ReadAllText(path);
+
+        Assert.Contains($"[Migration(\"{LookupIndexesMigrationId}\")]", content, StringComparison.Ordinal);
+        Assert.Contains("IX_engineering_workflow_jobs_Status_CancellationRequested_QueuedAtUtc_CreatedAtUtc_Id", content, StringComparison.Ordinal);
+        Assert.Contains("IX_engineering_workflow_artifacts_ScenarioId_ArtifactKind_CreatedAtUtc_Id", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void SqliteProviderAppliesInitialMigrationOnStartup()
     {
         var dbPath = Path.Combine(Path.GetTempPath(), $"assistant-engineer-workflow-migration-{Guid.NewGuid():N}.db");
@@ -145,6 +169,7 @@ public class EngineeringWorkflowPersistenceMigrationTests
             Assert.Contains(InitialMigrationId, migrations);
             Assert.Contains(ClaimLeaseMigrationId, migrations);
             Assert.Contains(IdempotencyRecordsMigrationId, migrations);
+            Assert.Contains(LookupIndexesMigrationId, migrations);
         }
         finally
         {
@@ -185,6 +210,7 @@ public class EngineeringWorkflowPersistenceMigrationTests
             Assert.Contains(InitialMigrationId, migrations);
             Assert.Contains(ClaimLeaseMigrationId, migrations);
             Assert.Contains(IdempotencyRecordsMigrationId, migrations);
+            Assert.Contains(LookupIndexesMigrationId, migrations);
         }
         finally
         {

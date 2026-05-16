@@ -13,6 +13,7 @@ riderModule.iml
 TestResults/
 coverage/
 artifacts/
+artifacts/engineering/
 generated/
 node_modules/
 dist/

@@ -1,0 +1,25 @@
+{
+  "schemaId": "engineering-artifact-descriptor-v1",
+  "description": "Schema-like descriptor for engineering artifact metadata contracts.",
+  "requiredFields": [
+    "artifactId",
+    "artifactKind",
+    "scope",
+    "contentType",
+    "sizeBytes",
+    "sha256",
+    "storageProvider",
+    "storageKey",
+    "createdAtUtc"
+  ],
+  "optionalFields": [
+    "subjectType",
+    "subjectId",
+    "metadata"
+  ],
+  "notes": [
+    "artifactId must be stable and provider-safe.",
+    "sha256 is lowercase hex checksum of stored content bytes.",
+    "storageProvider and storageKey identify where payload bytes are persisted."
+  ]
+}

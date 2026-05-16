@@ -10,6 +10,7 @@ internal static class CalculationTraceRegistration
         this IServiceCollection services)
     {
         services.AddTransient<ICalculationTraceBuilder, CalculationTraceBuilder>();
+        services.AddSingleton<IEngineeringCalculationTraceBuilder, EngineeringCalculationTraceBuilder>();
         services.AddSingleton<ICalculationTraceSanitizer, CalculationTraceSanitizer>();
         services.AddSingleton<ICalculationTraceJsonExporter, CalculationTraceJsonExporter>();
         services.AddSingleton<ICalculationTraceDiagnosticMapper, CalculationTraceDiagnosticMapper>();

@@ -87,6 +87,7 @@ src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016ScheduleProfileExpander.cs
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/SolarRadiationService.cs
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/WindowShadingService.cs
+src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InputQuality/EngineeringInputQualityService.cs
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Performance/BuildingEnergyPerformanceSummaryService.cs
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Performance/BuildingPerformanceService.cs
 src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Pipeline/EnergyCalculationPipelineAggregationExecutor.cs

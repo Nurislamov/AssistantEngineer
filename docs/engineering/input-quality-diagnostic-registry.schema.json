@@ -1,0 +1,28 @@
+{
+  "schemaName": "InputQualityDiagnosticRegistryDescriptor",
+  "description": "Schema-like descriptor for docs/engineering/input-quality-diagnostic-registry.json.",
+  "rootProperty": "diagnostics",
+  "entryType": "object",
+  "requiredFields": [
+    "code",
+    "category",
+    "severity",
+    "messageTemplate",
+    "recommendation",
+    "blocking"
+  ],
+  "allowedSeverities": [
+    "Info",
+    "Warning",
+    "Error",
+    "Blocking"
+  ],
+  "fieldDescriptors": {
+    "code": "Stable diagnostic code identifier.",
+    "category": "Input quality category.",
+    "severity": "Diagnostic severity level.",
+    "messageTemplate": "Human-readable diagnostic template.",
+    "recommendation": "Actionable recommendation for remediation.",
+    "blocking": "True when the diagnostic blocks calculation readiness."
+  }
+}

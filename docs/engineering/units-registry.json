@@ -1,0 +1,173 @@
+﻿{
+  "registryId": "AssistantEngineer.UnitsRegistry.v1",
+  "units": [
+    {
+      "unitId": "UNIT-POWER-W",
+      "symbol": "W",
+      "quantity": "Power",
+      "canonical": true,
+      "allowedPropertySuffixes": ["W"],
+      "description": "Watt, canonical unit for instantaneous power quantities."
+    },
+    {
+      "unitId": "UNIT-POWER-KW",
+      "symbol": "kW",
+      "quantity": "Power",
+      "canonical": true,
+      "allowedPropertySuffixes": ["Kw", "KW", "kW"],
+      "description": "Kilowatt for power reporting and user-facing load summaries."
+    },
+    {
+      "unitId": "UNIT-ENERGY-WH",
+      "symbol": "Wh",
+      "quantity": "Energy",
+      "canonical": true,
+      "allowedPropertySuffixes": ["Wh"],
+      "description": "Watt-hour for energy totals where Wh precision is required."
+    },
+    {
+      "unitId": "UNIT-ENERGY-KWH",
+      "symbol": "kWh",
+      "quantity": "Energy",
+      "canonical": true,
+      "allowedPropertySuffixes": ["KWh", "kWh"],
+      "description": "Kilowatt-hour for daily/annual energy and system-energy summaries."
+    },
+    {
+      "unitId": "UNIT-TEMPERATURE-C",
+      "symbol": "°C",
+      "quantity": "Temperature",
+      "canonical": true,
+      "allowedPropertySuffixes": ["C"],
+      "description": "Absolute Celsius temperature."
+    },
+    {
+      "unitId": "UNIT-TEMPERATURE-DELTA-K",
+      "symbol": "K",
+      "quantity": "TemperatureDifference",
+      "canonical": true,
+      "allowedPropertySuffixes": ["K"],
+      "description": "Temperature difference in Kelvin."
+    },
+    {
+      "unitId": "UNIT-LENGTH-M",
+      "symbol": "m",
+      "quantity": "Length",
+      "canonical": true,
+      "allowedPropertySuffixes": ["M"],
+      "description": "Length in meters."
+    },
+    {
+      "unitId": "UNIT-AREA-M2",
+      "symbol": "m²",
+      "quantity": "Area",
+      "canonical": true,
+      "allowedPropertySuffixes": ["M2"],
+      "description": "Area in square meters."
+    },
+    {
+      "unitId": "UNIT-VOLUME-M3",
+      "symbol": "m³",
+      "quantity": "Volume",
+      "canonical": true,
+      "allowedPropertySuffixes": ["M3"],
+      "description": "Volume in cubic meters."
+    },
+    {
+      "unitId": "UNIT-AIRFLOW-M3-PER-H",
+      "symbol": "m³/h",
+      "quantity": "Airflow",
+      "canonical": true,
+      "allowedPropertySuffixes": ["M3PerH"],
+      "description": "Airflow in cubic meters per hour."
+    },
+    {
+      "unitId": "UNIT-AIRCHANGE-ACH",
+      "symbol": "ACH",
+      "quantity": "AirChangeRate",
+      "canonical": true,
+      "allowedPropertySuffixes": ["Ach", "ACH"],
+      "description": "Air changes per hour."
+    },
+    {
+      "unitId": "UNIT-UVALUE-W-PER-M2K",
+      "symbol": "W/(m²·K)",
+      "quantity": "ThermalTransmittance",
+      "canonical": true,
+      "allowedPropertySuffixes": ["WPerM2K"],
+      "description": "Thermal transmittance U-value."
+    },
+    {
+      "unitId": "UNIT-IRRADIANCE-W-PER-M2",
+      "symbol": "W/m²",
+      "quantity": "SolarIrradiance",
+      "canonical": true,
+      "allowedPropertySuffixes": ["WPerM2"],
+      "description": "Incident solar irradiance on a surface."
+    },
+    {
+      "unitId": "UNIT-SPECIFIC-HEAT-KWH-PER-KGK",
+      "symbol": "kWh/(kg·K)",
+      "quantity": "SpecificHeatCapacity",
+      "canonical": true,
+      "allowedPropertySuffixes": ["KWhPerKgK"],
+      "description": "Specific heat capacity for mass-based energy calculations."
+    },
+    {
+      "unitId": "UNIT-AIR-SENSIBLE-COEFFICIENT-WH-PER-M3K",
+      "symbol": "Wh/(m³·K)",
+      "quantity": "AirSensibleCoefficient",
+      "canonical": true,
+      "allowedPropertySuffixes": ["WhPerM3K"],
+      "description": "Simplified air sensible coefficient used when explicitly declared."
+    },
+    {
+      "unitId": "UNIT-DENSITY-KG-PER-L",
+      "symbol": "kg/L",
+      "quantity": "Density",
+      "canonical": true,
+      "allowedPropertySuffixes": ["KgPerL"],
+      "description": "Density in kilograms per liter."
+    },
+    {
+      "unitId": "UNIT-DENSITY-KG-PER-M3",
+      "symbol": "kg/m³",
+      "quantity": "Density",
+      "canonical": true,
+      "allowedPropertySuffixes": ["KgPerM3"],
+      "description": "Density in kilograms per cubic meter."
+    },
+    {
+      "unitId": "UNIT-DIMENSIONLESS-EFFICIENCY",
+      "symbol": "dimensionless",
+      "quantity": "Efficiency",
+      "canonical": true,
+      "allowedPropertySuffixes": ["Efficiency"],
+      "description": "Dimensionless efficiency ratio."
+    },
+    {
+      "unitId": "UNIT-DIMENSIONLESS-SHGC",
+      "symbol": "dimensionless",
+      "quantity": "SolarHeatGainCoefficient",
+      "canonical": true,
+      "allowedPropertySuffixes": ["Shgc", "SHGC"],
+      "description": "Dimensionless solar heat gain coefficient."
+    },
+    {
+      "unitId": "UNIT-DIMENSIONLESS-SHADING-FACTOR",
+      "symbol": "dimensionless",
+      "quantity": "ShadingFactor",
+      "canonical": true,
+      "allowedPropertySuffixes": ["ShadingFactor"],
+      "description": "Dimensionless shading factor multiplier."
+    },
+    {
+      "unitId": "UNIT-DIMENSIONLESS-PRIMARY-ENERGY-FACTOR",
+      "symbol": "dimensionless",
+      "quantity": "PrimaryEnergyFactor",
+      "canonical": true,
+      "allowedPropertySuffixes": ["PrimaryEnergyFactor"],
+      "description": "Dimensionless primary energy conversion factor."
+    }
+  ]
+}
