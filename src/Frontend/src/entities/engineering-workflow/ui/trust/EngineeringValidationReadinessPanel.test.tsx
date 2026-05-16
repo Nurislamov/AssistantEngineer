@@ -23,6 +23,8 @@ describe("EngineeringValidationReadinessPanel", () => {
     expect(screen.getByText("Units governance")).toBeInTheDocument();
     expect(screen.getByText("Input quality checks")).toBeInTheDocument();
     expect(screen.getByText("Trace explainability foundation")).toBeInTheDocument();
+    expect(screen.getByText("Security/Auth readiness")).toBeInTheDocument();
+    expect(screen.getByText("- Auth shell foundation available.")).toBeInTheDocument();
   });
 
   it("renders required non-claims", () => {

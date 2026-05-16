@@ -82,7 +82,12 @@ public class ApiKeyAuthenticationIntegrationTests
                     ["EnergyPlus:ExecutablePath"] = "energyplus",
                     ["Authentication:ApiKey:Enabled"] = _enabled ? "true" : "false",
                     ["Authentication:ApiKey:HeaderName"] = HeaderName,
-                    ["Authentication:ApiKey:Key"] = _apiKey
+                    ["Authentication:ApiKey:Key"] = _apiKey,
+                    ["ApiAuthentication:Enabled"] = "true",
+                    ["ApiAuthentication:AllowAnonymousInDevelopment"] = "false",
+                    ["ApiAuthentication:ApiKeyHeaderName"] = HeaderName,
+                    ["ApiAuthentication:EnableApiKeyAuthentication"] = "true",
+                    ["ApiAuthentication:EnableJwtBearerAuthentication"] = "false"
                 };
 
                 configuration.AddInMemoryCollection(values);

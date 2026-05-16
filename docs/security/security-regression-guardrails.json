@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-14",
+  "guardrails": [
+    {
+      "guardrailId": "SEC-GUARD-ROUTE-INVENTORY",
+      "title": "API route protection inventory must stay current",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "ApiEndpointProtectionInventoryGuardTests",
+      "risk": "Sensitive/public endpoint changes can drift without governance visibility.",
+      "notes": "Controller inventory and status model are validated against source controllers and explicit allowlist."
+    },
+    {
+      "guardrailId": "SEC-GUARD-DEV-ENDPOINT",
+      "title": "Development/demo endpoints must remain environment-gated",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "DevelopmentEndpointSecurityGuardTests",
+      "risk": "Development or demo routes can be exposed in production.",
+      "notes": "Suspicious controller names require IsDevelopment or explicit allowlist reason."
+    },
+    {
+      "guardrailId": "SEC-GUARD-SECRET-LOGGING",
+      "title": "High-confidence secret logging patterns are blocked",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "SecretLoggingSecurityGuardTests",
+      "risk": "Credentials and secret material can leak through logs/source.",
+      "notes": "High-confidence logger/console patterns are blocked; safe policy docs and sanitizers are excluded."
+    },
+    {
+      "guardrailId": "SEC-GUARD-AUTH-DEFAULTS",
+      "title": "Authentication defaults preserve compatibility and avoid secret hardcoding",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "ApiAuthenticationDefaultsGuardTests",
+      "risk": "Accidental forced-login rollout or leaked static API keys in config.",
+      "notes": "Checks appsettings defaults and authentication boundary documentation consistency."
+    },
+    {
+      "guardrailId": "SEC-GUARD-RATE-LIMIT-DEFAULTS",
+      "title": "Rate-limiting defaults remain compatibility-safe and key-safe",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "ApiRateLimitingDefaultsGuardTests",
+      "risk": "Accidental throttling rollout or raw API key use in limiter partitioning.",
+      "notes": "Validates defaults, non-claims, and fingerprint-vs-raw-key behavior."
+    },
+    {
+      "guardrailId": "SEC-GUARD-AUDIT-SANITIZATION",
+      "title": "Audit metadata sanitization and payload-safe event registry are enforced",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "AuditLogSecurityGuardTests",
+      "risk": "Audit trail can leak secret or full payload data.",
+      "notes": "Checks sanitizer behavior and registry allowPayload policy."
+    },
+    {
+      "guardrailId": "SEC-GUARD-INMEMORY-PRODUCTION",
+      "title": "InMemory provider production risk must be explicit and controlled",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "InMemoryProductionProviderGuardTests",
+      "risk": "Accidental production reliance on non-durable providers.",
+      "notes": "Allows transitional InMemory defaults only when explicitly documented as non-durable in security inventory."
+    },
+    {
+      "guardrailId": "SEC-GUARD-FALSE-CLAIMS",
+      "title": "False security/compliance claims are blocked in docs",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "SecurityFalseClaimsGuardTests",
+      "risk": "Overclaiming security/compliance can mislead users and reviewers.",
+      "notes": "Forbidden positive claims are blocked outside non-claim/future/roadmap contexts."
+    },
+    {
+      "guardrailId": "SEC-GUARD-FRONTEND-SECRETS",
+      "title": "Frontend source must not hardcode real tokens/API keys",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "FrontendSecretsGuardTests",
+      "risk": "Client-side secret material leakage and insecure token handling.",
+      "notes": "High-confidence hardcoded token/key patterns are blocked in frontend source."
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No external identity provider integration claim.",
+    "No certified/certification claim.",
+    "No claim that all API endpoints are protected yet."
+  ]
+}

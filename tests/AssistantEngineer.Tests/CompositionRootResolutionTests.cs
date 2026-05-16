@@ -3,6 +3,7 @@ using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Facades;
@@ -77,6 +78,8 @@ public class CompositionRootResolutionTests
         services.AddScoped<EngineeringCalculationJobStatusTransitionPolicy>();
         services.AddScoped<EngineeringCalculationJobEventRecorder>();
         services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
+        services.AddScoped<IAssistantEngineerAuthorizationService, AllowAllAuthorizationService>();
+        services.AddScoped<IProtectedEndpointAuthorizationGate, AllowAllProtectedEndpointAuthorizationGate>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions
         {
@@ -129,4 +132,76 @@ public class CompositionRootResolutionTests
                 typeof(ControllerBase).IsAssignableFrom(type))
             .OrderBy(type => type.FullName, StringComparer.Ordinal)
             .ToArray();
+
+    private sealed class AllowAllAuthorizationService : IAssistantEngineerAuthorizationService
+    {
+        public AssistantEngineerAuthorizationDecision AuthorizePilotPermission(string requiredPermission) =>
+            AssistantEngineerAuthorizationDecision.Allowed;
+    }
+
+    private sealed class AllowAllProtectedEndpointAuthorizationGate : IProtectedEndpointAuthorizationGate
+    {
+        public Task<ProtectedEndpointAuthorizationDecision> RequirePermissionAsync(
+            AssistantEngineer.Modules.Identity.Domain.Enums.Permission permission,
+            CancellationToken cancellationToken)
+        {
+            _ = permission;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireProjectPermissionAsync(
+            int projectId,
+            AssistantEngineer.Modules.Identity.Domain.Enums.Permission permission,
+            CancellationToken cancellationToken)
+        {
+            _ = projectId;
+            _ = permission;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireBuildingPermissionAsync(
+            int buildingId,
+            AssistantEngineer.Modules.Identity.Domain.Enums.Permission permission,
+            CancellationToken cancellationToken)
+        {
+            _ = buildingId;
+            _ = permission;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireWorkflowPermissionAsync(
+            AssistantEngineer.Modules.Identity.Domain.Enums.Permission permission,
+            string? workflowId,
+            int? projectId,
+            int? buildingId,
+            CancellationToken cancellationToken)
+        {
+            _ = permission;
+            _ = workflowId;
+            _ = projectId;
+            _ = buildingId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireCalculationPermissionAsync(
+            AssistantEngineer.Modules.Identity.Domain.Enums.Permission permission,
+            int? projectId,
+            int? buildingId,
+            int? floorId,
+            int? roomId,
+            CancellationToken cancellationToken)
+        {
+            _ = permission;
+            _ = projectId;
+            _ = buildingId;
+            _ = floorId;
+            _ = roomId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+    }
 }

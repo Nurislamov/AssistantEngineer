@@ -4,6 +4,8 @@
 
 This policy defines structured logging, diagnostic event taxonomy, correlation identifiers, and safe observability rules for engineering workflow execution and supporting services.
 
+Security audit logging is a separate concern and is governed by `docs/security/audit-log-foundation.md`.
+
 ## Scope
 
 This policy covers:

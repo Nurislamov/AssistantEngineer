@@ -1,0 +1,3 @@
+# Suspicious development/debug/demo controller files that are intentionally excluded
+# from hard environment-gating checks. Format: relative/path/to/File.cs
+# Keep empty unless there is a reviewed exception with documented reason.

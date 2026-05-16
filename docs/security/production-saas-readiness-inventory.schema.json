@@ -1,0 +1,38 @@
+{
+  "name": "production-saas-readiness-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "areas",
+    "p5Roadmap",
+    "nonClaims"
+  ],
+  "areaRequiredFields": [
+    "area",
+    "currentStatus",
+    "evidence",
+    "risk",
+    "recommendedAction"
+  ],
+  "roadmapRequiredFields": [
+    "item",
+    "title",
+    "status",
+    "risk"
+  ],
+  "allowedRoadmapItems": [
+    "P5-01",
+    "P5-02",
+    "P5-03",
+    "P5-04",
+    "P5-05",
+    "P5-06",
+    "P5-07",
+    "P5-08"
+  ],
+  "statusNotes": {
+    "planned": "Planned work item for staged P5 rollout.",
+    "unknownNeedsAudit": "Use UnknownNeedsAudit when evidence is incomplete."
+  }
+}

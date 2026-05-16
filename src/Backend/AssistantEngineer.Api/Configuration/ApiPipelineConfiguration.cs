@@ -1,3 +1,4 @@
+using AssistantEngineer.Api.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -18,6 +19,7 @@ internal static class ApiPipelineConfiguration
         app.UseCors(ApiHardeningRegistration.DefaultCorsPolicyName);
         app.UseRequestTimeouts();
         app.UseAuthentication();
+        app.UseApiAuthenticationBoundary();
         app.UseAuthorization();
         app.UseRateLimiter();
 

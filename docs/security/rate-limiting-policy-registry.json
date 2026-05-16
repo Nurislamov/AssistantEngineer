@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-14",
+  "defaultMode": "CompatibilityDisabled",
+  "partitionPriority": [
+    "OrganizationId",
+    "UserId",
+    "ApiKeyFingerprint",
+    "IpAddress",
+    "AnonymousUnknown"
+  ],
+  "endpointCategories": [
+    {
+      "category": "PublicRead",
+      "anonymousLimitPerMinute": 120,
+      "authenticatedUserLimitPerMinute": 600,
+      "organizationLimitPerMinute": 600,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ReferenceData",
+      "anonymousLimitPerMinute": 120,
+      "authenticatedUserLimitPerMinute": 600,
+      "organizationLimitPerMinute": 600,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ProjectRead",
+      "anonymousLimitPerMinute": 30,
+      "authenticatedUserLimitPerMinute": 300,
+      "organizationLimitPerMinute": 600,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ProjectWrite",
+      "anonymousLimitPerMinute": 10,
+      "authenticatedUserLimitPerMinute": 120,
+      "organizationLimitPerMinute": 300,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "BuildingRead",
+      "anonymousLimitPerMinute": 30,
+      "authenticatedUserLimitPerMinute": 300,
+      "organizationLimitPerMinute": 600,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "BuildingWrite",
+      "anonymousLimitPerMinute": 10,
+      "authenticatedUserLimitPerMinute": 120,
+      "organizationLimitPerMinute": 300,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "WorkflowRead",
+      "anonymousLimitPerMinute": 30,
+      "authenticatedUserLimitPerMinute": 180,
+      "organizationLimitPerMinute": 360,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "WorkflowExecute",
+      "anonymousLimitPerMinute": 5,
+      "authenticatedUserLimitPerMinute": 30,
+      "organizationLimitPerMinute": 120,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "CalculationRun",
+      "anonymousLimitPerMinute": 10,
+      "authenticatedUserLimitPerMinute": 60,
+      "organizationLimitPerMinute": 300,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ReportGenerate",
+      "anonymousLimitPerMinute": 5,
+      "authenticatedUserLimitPerMinute": 20,
+      "organizationLimitPerMinute": 60,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ArtifactRead",
+      "anonymousLimitPerMinute": 15,
+      "authenticatedUserLimitPerMinute": 120,
+      "organizationLimitPerMinute": 240,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "ArtifactWrite",
+      "anonymousLimitPerMinute": 5,
+      "authenticatedUserLimitPerMinute": 60,
+      "organizationLimitPerMinute": 180,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    },
+    {
+      "category": "Administration",
+      "anonymousLimitPerMinute": 5,
+      "authenticatedUserLimitPerMinute": 60,
+      "organizationLimitPerMinute": 120,
+      "enabledByDefault": false,
+      "notes": "Initial recommendation only."
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full distributed rate limiting claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No external Redis/distributed limiter integration claim.",
+    "No certified/certification claim."
+  ]
+}

@@ -1,9 +1,11 @@
 using System.Threading.RateLimiting;
+using AssistantEngineer.Api.Security.RateLimiting;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using SecurityApiRateLimitingOptions = AssistantEngineer.Api.Options.Security.ApiRateLimitingOptions;
 
 namespace AssistantEngineer.Api.Configuration;
 
@@ -30,7 +32,23 @@ internal static class ApiHardeningRegistration
             .Validate(options => options.RateLimiting.HeavyWindowSeconds > 0, "API hardening heavy rate limiting window must be positive.")
             .ValidateOnStart();
 
+        builder.Services
+            .AddOptions<SecurityApiRateLimitingOptions>()
+            .Bind(builder.Configuration.GetSection(SecurityApiRateLimitingOptions.SectionName))
+            .Validate(options => !string.IsNullOrWhiteSpace(options.DefaultPolicyName), "API rate limiting default policy name must be configured.")
+            .Validate(options => options.AnonymousPublicReadLimitPerMinute > 0, "Anonymous public read limit must be positive.")
+            .Validate(options => options.AnonymousCalculationRunLimitPerMinute > 0, "Anonymous calculation run limit must be positive.")
+            .Validate(options => options.AuthenticatedCalculationRunLimitPerMinute > 0, "Authenticated calculation run limit must be positive.")
+            .Validate(options => options.OrganizationCalculationRunLimitPerMinute > 0, "Organization calculation run limit must be positive.")
+            .Validate(options => options.WorkflowExecuteLimitPerMinute > 0, "Workflow execute limit must be positive.")
+            .Validate(options => options.ReportGenerateLimitPerMinute > 0, "Report generate limit must be positive.")
+            .ValidateOnStart();
+
+        builder.Services.AddScoped<IRateLimitPartitionKeyProvider, DefaultRateLimitPartitionKeyProvider>();
+        builder.Services.AddScoped<IEndpointRateLimitCategoryResolver, DefaultEndpointRateLimitCategoryResolver>();
+
         var options = ResolveApiHardeningOptions(builder.Configuration);
+        var apiRateLimitingOptions = ResolveApiRateLimitingOptions(builder.Configuration);
 
         builder.Services.AddCors(cors =>
         {
@@ -83,9 +101,37 @@ internal static class ApiHardeningRegistration
 
             rateLimiter.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
-                var partitionKey = ResolveRateLimitPartitionKey(context);
+                if (apiRateLimitingOptions.Enabled)
+                {
+                    var partitionProvider = context.RequestServices.GetService<IRateLimitPartitionKeyProvider>();
+                    var categoryResolver = context.RequestServices.GetService<IEndpointRateLimitCategoryResolver>();
+
+                    if (partitionProvider is not null && categoryResolver is not null)
+                    {
+                        var partitionKey = partitionProvider.GetPartitionKey(context);
+                        var category = categoryResolver.ResolveCategory(context);
+                        var permitLimit = ResolveRateLimitPermitLimit(
+                            apiRateLimitingOptions,
+                            options,
+                            category,
+                            partitionKey.PartitionType);
+
+                        return RateLimitPartition.GetFixedWindowLimiter(
+                            $"{category}:{partitionKey.PartitionType}:{partitionKey.PartitionValue}",
+                            _ => new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = permitLimit,
+                                Window = TimeSpan.FromSeconds(options.RateLimiting.WindowSeconds),
+                                QueueLimit = options.RateLimiting.QueueLimit,
+                                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                                AutoReplenishment = options.RateLimiting.AutoReplenishment
+                            });
+                    }
+                }
+
+                var fallbackPartitionKey = ResolveRateLimitPartitionKey(context);
                 return RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey,
+                    fallbackPartitionKey,
                     _ => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = options.RateLimiting.PermitLimit,
@@ -153,6 +199,80 @@ internal static class ApiHardeningRegistration
             .ToArray();
 
         return options;
+    }
+
+    private static SecurityApiRateLimitingOptions ResolveApiRateLimitingOptions(IConfiguration configuration)
+    {
+        var options = new SecurityApiRateLimitingOptions();
+        configuration.GetSection(SecurityApiRateLimitingOptions.SectionName).Bind(options);
+        if (string.IsNullOrWhiteSpace(options.DefaultPolicyName))
+        {
+            options.DefaultPolicyName = "AssistantEngineerDefault";
+        }
+
+        return options;
+    }
+
+    private static int ResolveRateLimitPermitLimit(
+        SecurityApiRateLimitingOptions apiRateLimitingOptions,
+        ApiHardeningOptions hardeningOptions,
+        string category,
+        string partitionType)
+    {
+        return category switch
+        {
+            EndpointRateLimitCategories.WorkflowExecute => apiRateLimitingOptions.WorkflowExecuteLimitPerMinute,
+            EndpointRateLimitCategories.CalculationRun => ResolveCalculationRunLimit(apiRateLimitingOptions, partitionType),
+            EndpointRateLimitCategories.ReportGenerate => apiRateLimitingOptions.ReportGenerateLimitPerMinute,
+            EndpointRateLimitCategories.ReferenceData => ResolvePublicReadLimit(
+                apiRateLimitingOptions,
+                hardeningOptions,
+                partitionType),
+            EndpointRateLimitCategories.PublicRead => ResolvePublicReadLimit(
+                apiRateLimitingOptions,
+                hardeningOptions,
+                partitionType),
+            _ => hardeningOptions.RateLimiting.PermitLimit
+        };
+    }
+
+    private static int ResolveCalculationRunLimit(
+        SecurityApiRateLimitingOptions options,
+        string partitionType)
+    {
+        if (string.Equals(partitionType, RateLimitPartitionTypes.OrganizationId, StringComparison.Ordinal))
+        {
+            return options.OrganizationCalculationRunLimitPerMinute;
+        }
+
+        if (string.Equals(partitionType, RateLimitPartitionTypes.UserId, StringComparison.Ordinal))
+        {
+            return options.AuthenticatedCalculationRunLimitPerMinute;
+        }
+
+        if (string.Equals(partitionType, RateLimitPartitionTypes.ApiKeyFingerprint, StringComparison.Ordinal))
+        {
+            return options.AuthenticatedCalculationRunLimitPerMinute;
+        }
+
+        return options.AnonymousCalculationRunLimitPerMinute;
+    }
+
+    private static int ResolvePublicReadLimit(
+        SecurityApiRateLimitingOptions options,
+        ApiHardeningOptions hardeningOptions,
+        string partitionType)
+    {
+        if (string.Equals(partitionType, RateLimitPartitionTypes.OrganizationId, StringComparison.Ordinal) ||
+            string.Equals(partitionType, RateLimitPartitionTypes.UserId, StringComparison.Ordinal) ||
+            string.Equals(partitionType, RateLimitPartitionTypes.ApiKeyFingerprint, StringComparison.Ordinal))
+        {
+            return Math.Max(
+                hardeningOptions.RateLimiting.PermitLimit,
+                options.AuthenticatedCalculationRunLimitPerMinute);
+        }
+
+        return options.AnonymousPublicReadLimitPerMinute;
     }
 
     private static string ResolveRateLimitPartitionKey(HttpContext context)

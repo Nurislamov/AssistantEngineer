@@ -8,6 +8,8 @@ using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Extensions.Http;
 using AssistantEngineer.Api.Extensions.Results;
 using AssistantEngineer.Api.Querying.Buildings;
+using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Modules.Identity.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers.Buildings;
@@ -18,11 +20,14 @@ namespace AssistantEngineer.Api.Controllers.Buildings;
 public class BuildingsController : ControllerBase
 {
     private readonly IBuildingsFacade _buildings;
+    private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
 
     public BuildingsController(
-        IBuildingsFacade buildings)
+        IBuildingsFacade buildings,
+        IProtectedEndpointAuthorizationGate authorizationGate)
     {
         _buildings = buildings;
+        _authorizationGate = authorizationGate;
     }
 
     [HttpPost("~/api/v{version:apiVersion}/projects/{projectId:int}/buildings")]
@@ -31,6 +36,15 @@ public class BuildingsController : ControllerBase
         [FromBody] CreateBuildingRequest request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            projectId,
+            Permission.BuildingsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.CreateBuildingAsync(
             projectId,
             request,
@@ -47,6 +61,15 @@ public class BuildingsController : ControllerBase
         [FromBody] CreateBuildingFromArchetypeRequest request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            projectId,
+            Permission.BuildingsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.CreateBuildingFromArchetypeAsync(
             projectId,
             request,
@@ -60,6 +83,15 @@ public class BuildingsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireBuildingPermissionAsync(
+            id,
+            Permission.BuildingsRead,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.GetBuildingByIdAsync(
             id,
             cancellationToken);
@@ -73,6 +105,15 @@ public class BuildingsController : ControllerBase
         [FromBody] UpdateBuildingRequest request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireBuildingPermissionAsync(
+            id,
+            Permission.BuildingsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.UpdateBuildingAsync(
             id,
             request,
@@ -86,6 +127,15 @@ public class BuildingsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireBuildingPermissionAsync(
+            id,
+            Permission.BuildingsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.DeleteBuildingAsync(
             id,
             cancellationToken);
@@ -99,6 +149,15 @@ public class BuildingsController : ControllerBase
         [FromQuery] BuildingListQueryParameters query,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            projectId,
+            Permission.BuildingsRead,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.GetBuildingsByProjectAsync(
             projectId,
             cancellationToken);
@@ -123,5 +182,16 @@ public class BuildingsController : ControllerBase
                 items.SortBy(descending, building => building.ClimateZoneName)
                     .ThenByStable(descending, building => building.Id)
         };
+
+    private ActionResult ToActionResult(ProtectedEndpointAuthorizationDecision decision)
+    {
+        return decision.Outcome switch
+        {
+            ProtectedEndpointAuthorizationOutcome.Unauthorized => Unauthorized(),
+            ProtectedEndpointAuthorizationOutcome.Forbidden => Forbid(),
+            ProtectedEndpointAuthorizationOutcome.NotFound => NotFound(),
+            _ => Ok()
+        };
+    }
 }
 

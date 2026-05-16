@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { ProtectedContent } from "@/entities/auth/ui/ProtectedContent";
 import { AppLayout } from "@/app/layouts/AppLayout";
 import { paths } from "@/app/router/paths";
 import { BuildingDetailsPage } from "@/pages/building-details/ui/BuildingDetailsPage";
@@ -15,7 +16,16 @@ export function AppRouter(): JSX.Element {
       <Route element={<AppLayout />}>
         <Route path={paths.dashboard} element={<DashboardPage />} />
         <Route path={paths.buildings} element={<BuildingsPage />} />
-        <Route path={paths.engineeringWorkflow} element={<EngineeringWorkflowPage />} />
+        <Route
+          path={paths.engineeringWorkflow}
+          element={(
+            <ProtectedContent
+              requirement={{ permission: "WorkflowsRead", resourceType: "Workflow" }}
+            >
+              <EngineeringWorkflowPage />
+            </ProtectedContent>
+          )}
+        />
         <Route path={paths.calculations} element={<CalculationResultsPage />} />
         <Route path={paths.reports} element={<ReportsPage />} />
         <Route path="/buildings/:buildingId" element={<BuildingDetailsPage />} />

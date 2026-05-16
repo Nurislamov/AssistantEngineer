@@ -56,6 +56,24 @@ export function EngineeringValidationReadinessPanel({
 
         <Stack spacing={0.5}>
           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+            Security/Auth readiness
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            - Auth shell foundation available.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            - External provider not connected.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            - Tenant isolation enforcement pending.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            - Route authorization rollout pending.
+          </Typography>
+        </Stack>
+
+        <Stack spacing={0.5}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
             Non-claims
           </Typography>
           {readiness.nonClaims.map((line) => (

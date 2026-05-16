@@ -144,6 +144,7 @@ describe("EngineeringWorkflowShell", () => {
     expect(screen.getByText("Workflow steps")).toBeInTheDocument();
     expect(screen.getByText("Validation diagnostics")).toBeInTheDocument();
     expect(screen.getByText("Engineering trust overview")).toBeInTheDocument();
+    expect(screen.getByText("Security/Auth readiness")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Run available modules" }));
     expect(vm.runAvailableModules).toHaveBeenCalled();

@@ -2,6 +2,7 @@ using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,8 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowSubmissionService), dependencies);
-        Assert.Equal(10, dependencies.Length);
+        Assert.Contains(typeof(IProtectedEndpointAuthorizationGate), dependencies);
+        Assert.Equal(11, dependencies.Length);
     }
 
     [Fact]

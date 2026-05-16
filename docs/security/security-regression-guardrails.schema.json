@@ -1,0 +1,30 @@
+{
+  "name": "security-regression-guardrails",
+  "version": 1,
+  "description": "Schema-like descriptor for security regression guardrail registry.",
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "guardrails",
+    "nonClaims"
+  ],
+  "guardrailRequiredFields": [
+    "guardrailId",
+    "title",
+    "status",
+    "enforcement",
+    "risk",
+    "notes"
+  ],
+  "allowedStatus": [
+    "Active",
+    "Planned",
+    "DocumentedOnly",
+    "Deprecated"
+  ],
+  "allowedEnforcement": [
+    "AutomatedTest",
+    "ManualReview",
+    "DocumentedOnly"
+  ]
+}

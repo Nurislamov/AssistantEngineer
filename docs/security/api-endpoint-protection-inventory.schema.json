@@ -1,0 +1,27 @@
+{
+  "name": "api-endpoint-protection-inventory",
+  "version": 1,
+  "description": "Schema-like descriptor for API endpoint protection rollout inventory.",
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "endpoints"
+  ],
+  "endpointRequiredFields": [
+    "controller",
+    "routePattern",
+    "currentAuthStatus",
+    "targetPolicy",
+    "rolloutStage",
+    "risk",
+    "notes"
+  ],
+  "allowedCurrentAuthStatus": [
+    "PublicAllowed",
+    "DevelopmentOnly",
+    "AuthPlanned",
+    "AuthPilot",
+    "Protected",
+    "UnknownNeedsAudit"
+  ]
+}

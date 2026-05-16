@@ -7,7 +7,9 @@ using AssistantEngineer.Api.Querying.Projects;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
+using AssistantEngineer.Modules.Identity.Domain.Enums;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +35,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringCalculationJobService _jobService;
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
     private readonly IEngineeringWorkflowSubmissionService _workflowSubmissionService;
+    private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
 
     public EngineeringWorkflowController(
         IEngineeringWorkflowStateBuilder stateBuilder,
@@ -44,7 +47,8 @@ public sealed class EngineeringWorkflowController : ControllerBase
         IEngineeringCalculationScenarioRunner scenarioRunner,
         IEngineeringCalculationJobService jobService,
         IEngineeringWorkflowPersistenceService workflowPersistence,
-        IEngineeringWorkflowSubmissionService workflowSubmissionService)
+        IEngineeringWorkflowSubmissionService workflowSubmissionService,
+        IProtectedEndpointAuthorizationGate authorizationGate)
     {
         _stateBuilder = stateBuilder;
         _workflowDiagnostics = workflowDiagnostics;
@@ -56,6 +60,7 @@ public sealed class EngineeringWorkflowController : ControllerBase
         _jobService = jobService;
         _workflowPersistence = workflowPersistence;
         _workflowSubmissionService = workflowSubmissionService;
+        _authorizationGate = authorizationGate;
     }
 
     [HttpGet("{projectId:int}/state")]
@@ -119,6 +124,17 @@ public sealed class EngineeringWorkflowController : ControllerBase
         [FromBody] EngineeringWorkflowCalculationPreparationRequestDto request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireWorkflowPermissionAsync(
+            Permission.WorkflowsExecute,
+            workflowId: null,
+            projectId: request.State.ProjectId,
+            buildingId: request.State.BuildingId,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToAuthorizationActionResult(authorizationDecision);
+        }
+
         var scenarioRequest = new EngineeringCalculationScenarioRequestDto(
             ScenarioId: $"wf-prep-{request.State.ProjectId}-{request.State.BuildingId?.ToString() ?? "none"}",
             ProjectId: request.State.ProjectId,
@@ -186,6 +202,17 @@ public sealed class EngineeringWorkflowController : ControllerBase
         [FromHeader(Name = IdempotencyHeaderName)] string? idempotencyKey,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireWorkflowPermissionAsync(
+            Permission.WorkflowsExecute,
+            workflowId: request.ScenarioId,
+            projectId: request.ProjectId,
+            buildingId: request.BuildingId,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToAuthorizationActionResult(authorizationDecision);
+        }
+
         var outcome = await _workflowSubmissionService.RunCalculationAsync(request, idempotencyKey, cancellationToken);
         if (outcome.IsConflict)
         {
@@ -207,6 +234,17 @@ public sealed class EngineeringWorkflowController : ControllerBase
         [FromHeader(Name = IdempotencyHeaderName)] string? idempotencyKey,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireWorkflowPermissionAsync(
+            Permission.WorkflowsExecute,
+            workflowId: request.JobId,
+            projectId: request.ProjectId,
+            buildingId: null,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToAuthorizationActionResult(authorizationDecision);
+        }
+
         if (request.ProjectId < 0)
         {
             return BadRequest(new
@@ -261,6 +299,17 @@ public sealed class EngineeringWorkflowController : ControllerBase
         string jobId,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireWorkflowPermissionAsync(
+            Permission.WorkflowsExecute,
+            workflowId: jobId,
+            projectId: null,
+            buildingId: null,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToAuthorizationActionResult(authorizationDecision);
+        }
+
         var result = await _jobService.CancelJobAsync(jobId, cancellationToken);
         if (result is null)
         {
@@ -441,4 +490,13 @@ public sealed class EngineeringWorkflowController : ControllerBase
             PageSize = pageSize
         };
     }
+
+    private ActionResult ToAuthorizationActionResult(ProtectedEndpointAuthorizationDecision decision) =>
+        decision.Outcome switch
+        {
+            ProtectedEndpointAuthorizationOutcome.Unauthorized => Unauthorized(),
+            ProtectedEndpointAuthorizationOutcome.Forbidden => Forbid(),
+            ProtectedEndpointAuthorizationOutcome.NotFound => NotFound(),
+            _ => Ok()
+        };
 }

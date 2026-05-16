@@ -1,5 +1,7 @@
 import { appConfig } from "@/shared/config/env";
 import type { ApiErrorPayload, ProblemDetails } from "@/shared/types/api";
+import { createAuthHeaders } from "@/entities/auth/model/authHeaders";
+import type { AuthStateViewModel } from "@/entities/auth/model/authTypes";
 
 type QueryValue = string | number | boolean | null | undefined;
 
@@ -8,6 +10,7 @@ interface RequestOptions {
   body?: unknown;
   query?: Record<string, QueryValue>;
   headers?: Record<string, string>;
+  authState?: AuthStateViewModel;
   signal?: AbortSignal;
 }
 
@@ -59,12 +62,17 @@ export async function apiRequest<TResponse>(
   path: string,
   options: RequestOptions = {},
 ): Promise<TResponse> {
+  const authHeaders = options.authState
+    ? createAuthHeaders(options.authState)
+    : {};
+
   const response = await fetch(buildUrl(path, options.query), {
     method: options.method ?? "GET",
     signal: options.signal,
     headers: {
       Accept: "application/json",
       ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...authHeaders,
       ...(options.headers ?? {}),
     },
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
@@ -82,11 +90,16 @@ export async function apiRequest<TResponse>(
 }
 
 export async function apiBlob(path: string, options: RequestOptions = {}): Promise<Blob> {
+  const authHeaders = options.authState
+    ? createAuthHeaders(options.authState)
+    : {};
+
   const response = await fetch(buildUrl(path, options.query), {
     method: options.method ?? "GET",
     signal: options.signal,
     headers: {
       Accept: "application/octet-stream",
+      ...authHeaders,
     },
   });
 

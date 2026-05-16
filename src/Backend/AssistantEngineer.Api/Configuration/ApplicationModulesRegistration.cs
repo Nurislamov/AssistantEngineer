@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.EngineeringWorkflow;
 using AssistantEngineer.Modules.Equipment;
+using AssistantEngineer.Modules.Identity;
 using AssistantEngineer.Modules.Reporting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,6 +23,7 @@ internal static class ApplicationModulesRegistration
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddEngineeringWorkflowModule(configuration);
+        services.AddIdentityModule(configuration);
 
         return services;
     }

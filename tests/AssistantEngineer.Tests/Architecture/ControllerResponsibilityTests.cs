@@ -2,6 +2,7 @@
 using AssistantEngineer.Api.Controllers.Buildings;
 using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Controllers.Equipment;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Equipment.Application.Facades;
@@ -52,19 +53,30 @@ public class ControllerResponsibilityTests
     [Fact]
     public void CrudControllersDependOnlyOnBuildingsFacade()
     {
-        var crudControllerTypes = new[]
+        var expectedDependencies = new Dictionary<Type, Type[]>
         {
-            typeof(BuildingsController),
-            typeof(FloorsController),
-            typeof(RoomsController)
+            [typeof(BuildingsController)] =
+            [
+                typeof(IBuildingsFacade),
+                typeof(IProtectedEndpointAuthorizationGate)
+            ],
+            [typeof(FloorsController)] = [typeof(IBuildingsFacade)],
+            [typeof(RoomsController)] = [typeof(IBuildingsFacade)]
         };
 
-        foreach (var controllerType in crudControllerTypes)
+        foreach (var entry in expectedDependencies)
         {
-            var constructor = Assert.Single(controllerType.GetConstructors());
-            var parameter = Assert.Single(constructor.GetParameters());
+            var constructor = Assert.Single(entry.Key.GetConstructors());
+            var actual = constructor.GetParameters()
+                .Select(parameter => parameter.ParameterType)
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .ToArray();
 
-            Assert.Equal(typeof(IBuildingsFacade), parameter.ParameterType);
+            var expected = entry.Value
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .ToArray();
+
+            Assert.Equal(expected, actual);
         }
     }
 
@@ -81,9 +93,18 @@ public class ControllerResponsibilityTests
         foreach (var controllerType in loadControllerTypes)
         {
             var constructor = Assert.Single(controllerType.GetConstructors());
-            var parameter = Assert.Single(constructor.GetParameters());
+            var dependencies = constructor.GetParameters()
+                .Select(parameter => parameter.ParameterType)
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .ToArray();
 
-            Assert.Equal(typeof(ILoadCalculationsFacade), parameter.ParameterType);
+            Assert.Equal(
+                new[]
+                {
+                    typeof(ILoadCalculationsFacade),
+                    typeof(IProtectedEndpointAuthorizationGate)
+                }.OrderBy(type => type.FullName, StringComparer.Ordinal),
+                dependencies);
         }
     }
 

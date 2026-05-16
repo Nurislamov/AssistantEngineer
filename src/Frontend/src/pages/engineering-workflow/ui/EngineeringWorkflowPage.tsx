@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useBuildings, useProjects } from "@/entities/building/model/useBuildingsQueries";
+import { AuthStatusBanner } from "@/entities/auth/ui/AuthStatusBanner";
 import { useProjectSelection } from "@/features/projects/project-selection/model/ProjectSelectionProvider";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { PageContainer } from "@/shared/ui/PageContainer";
@@ -50,6 +51,8 @@ export function EngineeringWorkflowPage(): JSX.Element {
         <Alert severity="info">
           Frontend workflow is an internal engineering foundation. It aggregates backend contracts and does not execute calculation physics in browser.
         </Alert>
+
+        <AuthStatusBanner />
 
         <QueryState
           isLoading={projectsQuery.isLoading || buildingsQuery.isLoading}

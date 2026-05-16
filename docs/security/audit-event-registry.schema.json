@@ -1,0 +1,36 @@
+{
+  "schemaName": "AuditEventRegistryDescriptor",
+  "requiredFields": [
+    "eventType",
+    "category",
+    "defaultOutcome",
+    "messageTemplate",
+    "requiredIdentifiers",
+    "allowPayload",
+    "description"
+  ],
+  "allowedCategories": [
+    "Authentication",
+    "Authorization",
+    "Project",
+    "Building",
+    "Workflow",
+    "Calculation",
+    "Report",
+    "Artifact",
+    "Administration",
+    "Security",
+    "System"
+  ],
+  "allowedOutcomes": [
+    "Succeeded",
+    "Failed",
+    "Denied",
+    "Skipped",
+    "Unknown"
+  ],
+  "notes": [
+    "Audit registry entries are declarative and must not include secrets or payload contents.",
+    "Event types should remain stable for downstream governance and SIEM mapping."
+  ]
+}

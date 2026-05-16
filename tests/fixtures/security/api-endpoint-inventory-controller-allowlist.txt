@@ -1,0 +1,3 @@
+# One controller name per line (without .cs suffix) for temporary exclusion from
+# api-endpoint-protection inventory coverage checks.
+# Keep this file minimal and include a reason comment above each entry when used.

@@ -1,0 +1,21 @@
+{
+  "name": "rate-limiting-policy-registry",
+  "version": 1,
+  "description": "Schema-like descriptor for staged API rate limiting foundation policy registry.",
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "defaultMode",
+    "partitionPriority",
+    "endpointCategories",
+    "nonClaims"
+  ],
+  "endpointCategoryRequiredFields": [
+    "category",
+    "anonymousLimitPerMinute",
+    "authenticatedUserLimitPerMinute",
+    "organizationLimitPerMinute",
+    "enabledByDefault",
+    "notes"
+  ]
+}

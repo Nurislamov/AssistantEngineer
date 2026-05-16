@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-14",
+  "areas": [
+    {
+      "area": "Authentication",
+      "currentStatus": "ApiKey authentication and fallback policy exist with P5-03 authentication-boundary foundation (options, principal context, validator abstraction). Development compatibility remains available.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs",
+        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs",
+        "src/Backend/AssistantEngineer.Api/Security/Authentication/ApiAuthenticationBoundaryMiddleware.cs",
+        "src/Backend/AssistantEngineer.Api/Options/Security/ApiAuthenticationOptions.cs",
+        "src/Backend/AssistantEngineer.Api/appsettings.json",
+        "src/Backend/AssistantEngineer.Api/appsettings.Development.json",
+        "tests/AssistantEngineer.Tests/Api/ApiKeyAuthenticationIntegrationTests.cs",
+        "docs/security/api-authentication-boundary.md"
+      ],
+      "risk": "Authentication boundary is in place, but route authorization and tenant-scoped enforcement are not rolled out yet.",
+      "recommendedAction": "P5-04/P5-08: wire authorization policies and add tenant isolation regression coverage."
+    },
+    {
+      "area": "Authorization",
+      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, and P5-12 adds controlled execution pilot checks for selected workflow/calculation endpoints.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs",
+        "docs/security/protected-endpoint-pilot-rollout.md",
+        "docs/security/protected-read-endpoints-rollout.md",
+        "docs/security/protected-write-endpoints-rollout.md",
+        "docs/security/protected-execution-endpoints-rollout.md"
+      ],
+      "risk": "Report generation, artifact operations, workflow-id ownership mapping completion, and full tenant-isolation enforcement remain staged protection risks.",
+      "recommendedAction": "P5-next: extend controlled rollout to report/artifact endpoint groups with ownership/scope checks and deeper tenant enforcement."
+    },
+    {
+      "area": "API keys",
+      "currentStatus": "Single API key settings model without per-principal scope model.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationSettings.cs",
+        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
+      ],
+      "risk": "Shared API key blast radius and limited accountability.",
+      "recommendedAction": "P5-03: add principal-scoped key model and lifecycle controls."
+    },
+    {
+      "area": "Users",
+      "currentStatus": "UnknownNeedsAudit: user domain entity not present in core runtime DbContexts.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
+      ],
+      "risk": "No ownership/identity anchor for authorization and audit.",
+      "recommendedAction": "P5-01: create identity domain skeleton."
+    },
+    {
+      "area": "Organizations/Tenants",
+      "currentStatus": "UnknownNeedsAudit: no organization/tenant persistence model in current runtime DbContexts.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
+      ],
+      "risk": "No first-class tenant boundary for SaaS isolation.",
+      "recommendedAction": "P5-01/P5-02: define organization and membership model."
+    },
+    {
+      "area": "Project ownership",
+      "currentStatus": "Projects exist without persisted owner/tenant fields; P5-02 policy/contracts foundation now exists for project/building/workflow scoping.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
+        "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Access/ProjectTenantAccessPolicy.cs",
+        "docs/security/project-tenant-scoping-model.md"
+      ],
+      "risk": "Route-level enforcement and persisted ownership columns are not active yet; id-based access remains possible without P5-04 authorization wiring.",
+      "recommendedAction": "P5-04: wire policy checks into endpoint authorization and ownership-scoped query paths."
+    },
+    {
+      "area": "Tenant isolation",
+      "currentStatus": "UnknownNeedsAudit: tenant identifiers are still absent in main persistence contexts; P5-02 policy models legacy/unscoped transition.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
+        "docs/security/project-tenant-scoping-model.md"
+      ],
+      "risk": "Potential cross-tenant data access remains until tenant ownership persistence and route authorization are enforced.",
+      "recommendedAction": "P5-03/P5-04/P5-08: enforce principal-scoped access rules, tenant-aware persistence boundaries, and isolation regression tests."
+    },
+    {
+      "area": "Audit log",
+      "currentStatus": "Audit event contracts, in-memory append-only writer, metadata sanitizer, and audit registry foundation are implemented; durable storage is still pending.",
+      "evidence": [
+        "docs/security/audit-log-foundation.md",
+        "docs/security/audit-event-registry.json",
+        "src/Backend/AssistantEngineer.Modules.Identity/Application/Abstractions/IAuditLogWriter.cs",
+        "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Audit/InMemoryAuditLogWriter.cs",
+        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
+      ],
+      "risk": "In-memory provider is not durable and does not provide production retention guarantees.",
+      "recommendedAction": "P5-05B/P5-06: add durable audit persistence provider, retention policy, and controlled query surface."
+    },
+    {
+      "area": "Rate limiting",
+      "currentStatus": "Global and heavy rate limits exist. P5-06 foundation adds principal-aware partitioning model (organization/user/API-key fingerprint/IP) plus endpoint-category policy registry with compatibility-disabled defaults.",
+      "evidence": [
+        "docs/security/rate-limiting-foundation.md",
+        "docs/security/rate-limiting-policy-registry.json",
+        "src/Backend/AssistantEngineer.Api/Configuration/ApiHardeningRegistration.cs",
+        "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultRateLimitPartitionKeyProvider.cs",
+        "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultEndpointRateLimitCategoryResolver.cs",
+        "tests/AssistantEngineer.Tests/Api/RateLimitPartitionKeyProviderTests.cs",
+        "tests/AssistantEngineer.Tests/Api/EndpointRateLimitCategoryResolverTests.cs"
+      ],
+      "risk": "Distributed rate limiting and production quota management are not implemented yet.",
+      "recommendedAction": "P5-next: add distributed limiter backend, plan quotas, and multi-node consistency controls."
+    },
+    {
+      "area": "Dev-only endpoints",
+      "currentStatus": "Development demo-data route is explicitly gated by development environment check.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs"
+      ],
+      "risk": "Future development endpoints may be exposed if gating is omitted.",
+      "recommendedAction": "Keep and extend environment-gating guard tests."
+    },
+    {
+      "area": "Swagger/OpenAPI",
+      "currentStatus": "OpenAPI endpoint mapping is development-only in pipeline.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/Configuration/ApiPipelineConfiguration.cs"
+      ],
+      "risk": "Operational misconfiguration can expose API metadata unexpectedly.",
+      "recommendedAction": "P5-03: define explicit production OpenAPI exposure rules."
+    },
+    {
+      "area": "Secrets/configuration",
+      "currentStatus": "API key is configuration-driven; hardcoded key values are not present in tracked appsettings defaults.",
+      "evidence": [
+        "src/Backend/AssistantEngineer.Api/appsettings.json",
+        "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs"
+      ],
+      "risk": "Secret lifecycle and rotation controls are not yet formalized.",
+      "recommendedAction": "P5-03/P5-05: codify secret handling, rotation, and audit controls."
+    },
+    {
+      "area": "Observability/security logs",
+      "currentStatus": "Structured diagnostics policy exists with event taxonomy; security-focused audit log boundary is partial.",
+      "evidence": [
+        "docs/architecture/observability-diagnostics-policy.md",
+        "docs/architecture/observability-diagnostic-events.json"
+      ],
+      "risk": "Security event analysis coverage is incomplete without principal/tenant context enrichment.",
+      "recommendedAction": "P5-05/P5-06: enrich principal metadata and audit events."
+    },
+    {
+      "area": "Frontend auth state",
+      "currentStatus": "Frontend auth-shell foundation is implemented with auth state/principal/organization models, protected content wrapper, and unauthorized/forbidden UX states. Default compatibility keeps local anonymous flows non-breaking.",
+      "evidence": [
+        "docs/frontend/frontend-auth-shell-foundation.md",
+        "src/Frontend/src/app/providers/AppProviders.tsx",
+        "src/Frontend/src/app/router/AppRouter.tsx",
+        "src/Frontend/src/entities/auth/model/authTypes.ts",
+        "src/Frontend/src/entities/auth/model/AuthContext.tsx",
+        "src/Frontend/src/entities/auth/ui/ProtectedContent.tsx",
+        "src/Frontend/src/shared/api/httpClient.ts",
+        "src/Frontend/src/pages/engineering-workflow/ui/EngineeringWorkflowPage.tsx"
+      ],
+      "risk": "Real login/provider integration and tenant-aware navigation are still pending.",
+      "recommendedAction": "P5-next: connect frontend auth shell to backend principal/auth endpoints and add provider/session lifecycle."
+    }
+  ],
+  "p5Roadmap": [
+    {
+      "item": "P5-01",
+      "title": "Identity domain skeleton",
+      "status": "Implemented",
+      "risk": "Incorrect identity boundary can block later authorization rollout."
+    },
+    {
+      "item": "P5-02",
+      "title": "Project ownership and tenant scoping model",
+      "status": "Implemented",
+      "risk": "Foundation contracts/policy exist, but route authorization and DB-level tenant enforcement remain future work."
+    },
+    {
+      "item": "P5-03",
+      "title": "API authentication boundary",
+      "status": "Implemented",
+      "risk": "Foundation is implemented; broad route-level authorization remains pending and must be rolled out safely."
+    },
+    {
+      "item": "P5-04",
+      "title": "Authorization policies",
+      "status": "Implemented",
+      "risk": "Policy and rollout documentation exists, but broad route-level authorization enforcement is still staged."
+    },
+    {
+      "item": "P5-05",
+      "title": "Audit log",
+      "status": "Implemented",
+      "risk": "Foundation is in place; durable persistence, retention controls, and privileged query access remain future work."
+    },
+    {
+      "item": "P5-06",
+      "title": "Rate limiting by principal",
+      "status": "Implemented",
+      "risk": "Foundation is implemented; distributed quotas and production abuse controls remain future work."
+    },
+    {
+      "item": "P5-07",
+      "title": "Frontend auth shell",
+      "status": "Implemented",
+      "risk": "Foundation is implemented; real provider login and tenant-aware route UX remain future work."
+    },
+    {
+      "item": "P5-08",
+      "title": "Security regression tests",
+      "status": "Implemented",
+      "risk": "Governance guardrails are implemented; deeper tenant-isolation and production auth integration tests remain future work."
+    },
+    {
+      "item": "P5-09",
+      "title": "Protected endpoint pilot rollout",
+      "status": "Implemented",
+      "risk": "Pilot protection is limited to a low-risk endpoint group; broad route authorization rollout remains future work."
+    },
+    {
+      "item": "P5-10",
+      "title": "Protected read endpoints rollout",
+      "status": "Implemented",
+      "risk": "Read-only pilot is implemented for selected Projects/Buildings endpoints; write/execute endpoints remain unprotected in this stage."
+    },
+    {
+      "item": "P5-11",
+      "title": "Protected write endpoints rollout",
+      "status": "Implemented",
+      "risk": "Write pilot is implemented for selected Projects/Buildings endpoints; workflow/calculation/report/artifact protections remain future rollout stages."
+    },
+    {
+      "item": "P5-12",
+      "title": "Protected workflow/calculation execution rollout",
+      "status": "Implemented",
+      "risk": "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and full tenant isolation remain future rollout stages."
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No claim that API keys are complete user authentication.",
+    "No external identity provider integration claim.",
+    "No certified/certification claim."
+  ]
+}

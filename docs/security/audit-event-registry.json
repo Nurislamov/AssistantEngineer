@@ -1,0 +1,209 @@
+[
+  {
+    "eventType": "AUD-AUTH-001",
+    "category": "Authentication",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Authentication succeeded for the provided credentials.",
+    "requiredIdentifiers": ["correlationId", "requestId"],
+    "allowPayload": false,
+    "description": "Authentication was successful."
+  },
+  {
+    "eventType": "AUD-AUTH-002",
+    "category": "Authentication",
+    "defaultOutcome": "Failed",
+    "messageTemplate": "Authentication failed for the provided credentials.",
+    "requiredIdentifiers": ["correlationId", "requestId"],
+    "allowPayload": false,
+    "description": "Authentication failed."
+  },
+  {
+    "eventType": "AUD-AUTHZ-001",
+    "category": "Authorization",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Authorization succeeded for {resourceType}/{resourceId}.",
+    "requiredIdentifiers": ["userId", "organizationId", "resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Authorization requirement was satisfied."
+  },
+  {
+    "eventType": "AUD-AUTHZ-002",
+    "category": "Authorization",
+    "defaultOutcome": "Denied",
+    "messageTemplate": "Authorization denied for {resourceType}/{resourceId}.",
+    "requiredIdentifiers": ["userId", "organizationId", "resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Authorization requirement was not satisfied."
+  },
+  {
+    "eventType": "AUD-PROJ-001",
+    "category": "Project",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Project {resourceId} created.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Project creation event."
+  },
+  {
+    "eventType": "AUD-PROJ-002",
+    "category": "Project",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Project {resourceId} updated.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Project update event."
+  },
+  {
+    "eventType": "AUD-PROJ-003",
+    "category": "Project",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Project {resourceId} deleted.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Project deletion event."
+  },
+  {
+    "eventType": "AUD-BLD-001",
+    "category": "Building",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Building {resourceId} created.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Building creation event."
+  },
+  {
+    "eventType": "AUD-BLD-002",
+    "category": "Building",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Building {resourceId} updated.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Building update event."
+  },
+  {
+    "eventType": "AUD-BLD-003",
+    "category": "Building",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Building {resourceId} deleted.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Building deletion event."
+  },
+  {
+    "eventType": "AUD-WF-001",
+    "category": "Workflow",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Workflow execution started for {resourceId}.",
+    "requiredIdentifiers": ["workflowId", "correlationId"],
+    "allowPayload": false,
+    "description": "Workflow execution started."
+  },
+  {
+    "eventType": "AUD-WF-002",
+    "category": "Workflow",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Workflow execution completed for {resourceId}.",
+    "requiredIdentifiers": ["workflowId", "correlationId"],
+    "allowPayload": false,
+    "description": "Workflow execution completed."
+  },
+  {
+    "eventType": "AUD-WF-003",
+    "category": "Workflow",
+    "defaultOutcome": "Failed",
+    "messageTemplate": "Workflow execution failed for {resourceId}.",
+    "requiredIdentifiers": ["workflowId", "correlationId"],
+    "allowPayload": false,
+    "description": "Workflow execution failed."
+  },
+  {
+    "eventType": "AUD-CALC-001",
+    "category": "Calculation",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Calculation started for {resourceType}/{resourceId}.",
+    "requiredIdentifiers": ["resourceType", "resourceId", "correlationId"],
+    "allowPayload": false,
+    "description": "Calculation run started."
+  },
+  {
+    "eventType": "AUD-CALC-002",
+    "category": "Calculation",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Calculation completed for {resourceType}/{resourceId}.",
+    "requiredIdentifiers": ["resourceType", "resourceId", "correlationId"],
+    "allowPayload": false,
+    "description": "Calculation run completed."
+  },
+  {
+    "eventType": "AUD-CALC-003",
+    "category": "Calculation",
+    "defaultOutcome": "Failed",
+    "messageTemplate": "Calculation failed for {resourceType}/{resourceId}.",
+    "requiredIdentifiers": ["resourceType", "resourceId", "correlationId"],
+    "allowPayload": false,
+    "description": "Calculation run failed."
+  },
+  {
+    "eventType": "AUD-REP-001",
+    "category": "Report",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Report generated for {resourceId}.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Report generation event."
+  },
+  {
+    "eventType": "AUD-REP-002",
+    "category": "Report",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Report viewed or exported for {resourceId}.",
+    "requiredIdentifiers": ["resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Report view or export event."
+  },
+  {
+    "eventType": "AUD-ART-001",
+    "category": "Artifact",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Artifact written for {artifactId}.",
+    "requiredIdentifiers": ["artifactId", "resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Artifact write event."
+  },
+  {
+    "eventType": "AUD-ART-002",
+    "category": "Artifact",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Artifact read for {artifactId}.",
+    "requiredIdentifiers": ["artifactId", "resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Artifact read event."
+  },
+  {
+    "eventType": "AUD-ART-003",
+    "category": "Artifact",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Artifact deleted for {artifactId}.",
+    "requiredIdentifiers": ["artifactId", "resourceType", "resourceId"],
+    "allowPayload": false,
+    "description": "Artifact deletion event."
+  },
+  {
+    "eventType": "AUD-ADM-001",
+    "category": "Administration",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Organization membership changed for user and tenant scope.",
+    "requiredIdentifiers": ["userId", "organizationId"],
+    "allowPayload": false,
+    "description": "Organization membership change event."
+  },
+  {
+    "eventType": "AUD-ADM-002",
+    "category": "Administration",
+    "defaultOutcome": "Succeeded",
+    "messageTemplate": "Role changed for user and tenant scope.",
+    "requiredIdentifiers": ["userId", "organizationId"],
+    "allowPayload": false,
+    "description": "Role change event."
+  }
+]

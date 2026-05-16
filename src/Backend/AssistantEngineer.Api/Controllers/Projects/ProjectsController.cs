@@ -7,6 +7,8 @@ using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Extensions.Http;
 using AssistantEngineer.Api.Extensions.Results;
 using AssistantEngineer.Api.Querying.Projects;
+using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Modules.Identity.Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssistantEngineer.Api.Controllers.Projects;
@@ -28,11 +30,14 @@ public class ProjectsController : ControllerBase
         };
 
     private readonly IBuildingsFacade _buildings;
+    private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
 
     public ProjectsController(
-        IBuildingsFacade buildings)
+        IBuildingsFacade buildings,
+        IProtectedEndpointAuthorizationGate authorizationGate)
     {
         _buildings = buildings;
+        _authorizationGate = authorizationGate;
     }
 
     [HttpPost]
@@ -40,6 +45,14 @@ public class ProjectsController : ControllerBase
         [FromBody] CreateProjectRequest request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequirePermissionAsync(
+            Permission.ProjectsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.CreateProjectAsync(
             request,
             cancellationToken);
@@ -54,6 +67,14 @@ public class ProjectsController : ControllerBase
         [FromQuery] CollectionQueryParameters query,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequirePermissionAsync(
+            Permission.ProjectsRead,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.GetProjectsAsync(
             cancellationToken);
 
@@ -68,6 +89,15 @@ public class ProjectsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            id,
+            Permission.ProjectsRead,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.GetProjectByIdAsync(
             id,
             cancellationToken);
@@ -81,6 +111,15 @@ public class ProjectsController : ControllerBase
         [FromBody] UpdateProjectRequest request,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            id,
+            Permission.ProjectsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.UpdateProjectAsync(
             id,
             request,
@@ -94,10 +133,30 @@ public class ProjectsController : ControllerBase
         int id,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireProjectPermissionAsync(
+            id,
+            Permission.ProjectsWrite,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _buildings.DeleteProjectAsync(
             id,
             cancellationToken);
 
         return result.ToNoContentResult(this);
+    }
+
+    private ActionResult ToActionResult(ProtectedEndpointAuthorizationDecision decision)
+    {
+        return decision.Outcome switch
+        {
+            ProtectedEndpointAuthorizationOutcome.Unauthorized => Unauthorized(),
+            ProtectedEndpointAuthorizationOutcome.Forbidden => Forbid(),
+            ProtectedEndpointAuthorizationOutcome.NotFound => NotFound(),
+            _ => Ok()
+        };
     }
 }

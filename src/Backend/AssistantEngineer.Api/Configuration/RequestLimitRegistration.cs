@@ -58,7 +58,7 @@ internal static class RequestLimitRegistration
         if (failures.Count > 0)
         {
             throw new OptionsValidationException(
-                Options.DefaultName,
+                Microsoft.Extensions.Options.Options.DefaultName,
                 typeof(RequestLimitOptions),
                 failures);
         }
