@@ -38,6 +38,26 @@ public sealed class EndpointRateLimitCategoryResolverTests
     }
 
     [Fact]
+    public void ArtifactsGetPath_ResolvesToArtifactRead()
+    {
+        var context = CreateContext("GET", "/api/v1/engineering-workflow/scenarios/abc/artifacts");
+
+        var category = _resolver.ResolveCategory(context);
+
+        Assert.Equal(EndpointRateLimitCategories.ArtifactRead, category);
+    }
+
+    [Fact]
+    public void ArtifactsWritePath_ResolvesToArtifactWrite()
+    {
+        var context = CreateContext("POST", "/api/v1/engineering-workflow/scenarios/abc/artifacts");
+
+        var category = _resolver.ResolveCategory(context);
+
+        Assert.Equal(EndpointRateLimitCategories.ArtifactWrite, category);
+    }
+
+    [Fact]
     public void ReferencePath_ResolvesToReferenceData()
     {
         var context = CreateContext("GET", "/api/v1/reference-data/climate-zones");

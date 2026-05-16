@@ -119,6 +119,21 @@ Route inventory guardrails are tracked in `docs/security/security-regression-gua
 - Report/artifact endpoint groups remain outside P5-12 scope.
 - Detailed rollout notes and test matrix: `docs/security/protected-execution-endpoints-rollout.md`.
 
+## P5-13 protected report/artifact rollout result
+
+- Controlled report/artifact pilot protection is implemented for selected report controllers and workflow report/trace/artifact-read endpoints.
+- Rollout enforcement is option-gated by:
+  - `ApiAuthorization:Enabled`;
+  - `ApiAuthorization:EnableReportArtifactEndpointProtectionPilot`;
+  - `ApiAuthorization:RequireReportReadAuthorization`;
+  - `ApiAuthorization:RequireReportWriteAuthorization`;
+  - `ApiAuthorization:RequireArtifactReadAuthorization`;
+  - `ApiAuthorization:RequireArtifactWriteAuthorization`.
+- `ReportsRead` is used for report/artifact read access in this stage.
+- `ReportsWrite` is used for workflow report generation/export in this stage.
+- Public artifact write/delete endpoints are not exposed and remain deferred.
+- Detailed rollout notes and test matrix: `docs/security/protected-report-artifact-endpoints-rollout.md`.
+
 ## Audit relationship
 
 - Authorization decisions should emit audit events through `docs/security/audit-log-foundation.md` when safe.

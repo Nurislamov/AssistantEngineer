@@ -18,6 +18,14 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(options.EnableWriteEndpointProtectionPilot);
         Assert.False(options.RequireProjectWriteAuthorization);
         Assert.False(options.RequireBuildingWriteAuthorization);
+        Assert.False(options.EnableExecutionEndpointProtectionPilot);
+        Assert.False(options.RequireWorkflowExecuteAuthorization);
+        Assert.False(options.RequireCalculationRunAuthorization);
+        Assert.False(options.EnableReportArtifactEndpointProtectionPilot);
+        Assert.False(options.RequireReportReadAuthorization);
+        Assert.False(options.RequireReportWriteAuthorization);
+        Assert.False(options.RequireArtifactReadAuthorization);
+        Assert.False(options.RequireArtifactWriteAuthorization);
         Assert.False(options.ReturnNotFoundForTenantMismatch);
         Assert.True(options.AllowAnonymousInDevelopment);
     }
@@ -39,6 +47,14 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(productionSection.GetProperty("EnableWriteEndpointProtectionPilot").GetBoolean());
         Assert.False(productionSection.GetProperty("RequireProjectWriteAuthorization").GetBoolean());
         Assert.False(productionSection.GetProperty("RequireBuildingWriteAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("EnableExecutionEndpointProtectionPilot").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireWorkflowExecuteAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireCalculationRunAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("EnableReportArtifactEndpointProtectionPilot").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireReportReadAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireReportWriteAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireArtifactReadAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireArtifactWriteAuthorization").GetBoolean());
         Assert.False(productionSection.GetProperty("ReturnNotFoundForTenantMismatch").GetBoolean());
         Assert.True(productionSection.GetProperty("AllowAnonymousInDevelopment").GetBoolean());
 
@@ -50,6 +66,14 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(developmentSection.GetProperty("EnableWriteEndpointProtectionPilot").GetBoolean());
         Assert.False(developmentSection.GetProperty("RequireProjectWriteAuthorization").GetBoolean());
         Assert.False(developmentSection.GetProperty("RequireBuildingWriteAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("EnableExecutionEndpointProtectionPilot").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireWorkflowExecuteAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireCalculationRunAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("EnableReportArtifactEndpointProtectionPilot").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireReportReadAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireReportWriteAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireArtifactReadAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireArtifactWriteAuthorization").GetBoolean());
         Assert.False(developmentSection.GetProperty("ReturnNotFoundForTenantMismatch").GetBoolean());
         Assert.True(developmentSection.GetProperty("AllowAnonymousInDevelopment").GetBoolean());
     }

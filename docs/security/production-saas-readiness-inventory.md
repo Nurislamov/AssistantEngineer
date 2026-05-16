@@ -36,7 +36,7 @@ This inventory covers:
 | Area | Current status | Evidence/path | Risk | Recommended P5 action |
 | --- | --- | --- | --- | --- |
 | Authentication | API key authentication middleware exists; fallback/default policy requires authenticated principal, but dev/testing can run with API key disabled. | `src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs`, `src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs`, `src/Backend/AssistantEngineer.Api/appsettings.json`, `src/Backend/AssistantEngineer.Api/appsettings.Development.json`, `tests/AssistantEngineer.Tests/Api/ApiKeyAuthenticationIntegrationTests.cs` | Environment drift can leave sensitive endpoints effectively open in non-production environments. | P5-03: define production auth mode matrix and harden environment defaults. |
-| Authorization | Broad resource-level authorization is still staged; P5-09 protects development demo-data pilot, P5-10 adds read-only pilot, P5-11 adds controlled write pilot, and P5-12 adds controlled execution pilot for selected workflow/calculation routes. | `src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs`, `docs/security/protected-endpoint-pilot-rollout.md`, `docs/security/protected-read-endpoints-rollout.md`, `docs/security/protected-write-endpoints-rollout.md`, `docs/security/protected-execution-endpoints-rollout.md` | Report generation, artifact operations, and full tenant-isolation enforcement remain future protection rollouts. | P5-12 implemented as execution pilot for selected workflow/calculation endpoint groups; continue staged rollout for report/artifact routes. |
+| Authorization | Broad resource-level authorization is still staged; P5-09 protects development demo-data pilot, P5-10 adds read-only pilot, P5-11 adds controlled write pilot, P5-12 adds controlled execution pilot, and P5-13 adds controlled report/artifact pilot protection. | `src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs`, `src/Backend/AssistantEngineer.Api/Controllers/Reports/BuildingCoolingReportsController.cs`, `docs/security/protected-endpoint-pilot-rollout.md`, `docs/security/protected-read-endpoints-rollout.md`, `docs/security/protected-write-endpoints-rollout.md`, `docs/security/protected-execution-endpoints-rollout.md`, `docs/security/protected-report-artifact-endpoints-rollout.md` | Workflow read/history endpoints and full tenant-isolation enforcement remain future protection rollouts. | P5-13 implemented as report/artifact pilot for selected endpoint groups; continue staged rollout for workflow history and deeper tenant isolation tests. |
 | API keys | Single shared API key model; no per-user/per-org key ownership, scope, rotation metadata, or revocation list. | `src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationSettings.cs`, `src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs` | Shared secret increases blast radius and prevents accountability. | P5-03: introduce principal-bound API credentials and scope model. |
 | Users | No user entity/domain model in runtime persistence. | `src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs`, `src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs` | No identity ownership model for audit, authorization, and tenancy. | P5-01: add user domain skeleton and contracts. |
 | Organizations/Tenants | No organization/tenant entities or membership model. | `src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs`, `src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs` | No first-class tenant boundary; multi-tenant readiness is incomplete. | P5-01/P5-02: add organization/membership skeleton and tenancy plan. |
@@ -136,6 +136,10 @@ Target SaaS model introduces:
   - controlled authorization pilot for selected workflow execution and calculation run endpoints;
   - integration/unit tests for 401/403/404/success-path behavior and compatibility-default mode.
   - status: Implemented (execution pilot only) via `docs/security/protected-execution-endpoints-rollout.md`.
+- P5-13 Protected report/artifact endpoints rollout:
+  - controlled authorization pilot for selected report/export/trace/artifact-read endpoints;
+  - integration/unit tests for 401/403/404/success-path behavior and compatibility-default mode.
+  - status: Implemented (report/artifact pilot only) via `docs/security/protected-report-artifact-endpoints-rollout.md`.
 
 P5-01 status note:
 
@@ -194,3 +198,9 @@ P5-12 status note:
 - Execution pilot authorization is introduced for selected workflow execution and load-calculation endpoints behind `ApiAuthorization:EnableExecutionEndpointProtectionPilot`.
 - Default compatibility remains unchanged.
 - Report generation, artifact operations, workflow-id ownership mapping completion, and full tenant isolation remain future work.
+
+P5-13 status note:
+
+- Report/artifact pilot authorization is introduced for selected report/export/trace/artifact-read endpoints behind `ApiAuthorization:EnableReportArtifactEndpointProtectionPilot`.
+- Default compatibility remains unchanged.
+- Workflow read/history endpoint rollout and complete tenant-boundary enforcement remain future work.

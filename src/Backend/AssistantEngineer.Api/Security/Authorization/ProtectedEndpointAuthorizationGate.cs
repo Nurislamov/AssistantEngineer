@@ -263,6 +263,72 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         return ProtectedEndpointAuthorizationDecision.Allowed;
     }
 
+    public Task<ProtectedEndpointAuthorizationDecision> RequireReportReadPermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        CancellationToken cancellationToken)
+    {
+        return RequireReportArtifactPermissionAsync(
+            Permission.ReportsRead,
+            IsReportReadProtectionRequired,
+            projectId,
+            buildingId,
+            workflowId,
+            artifactId: null,
+            cancellationToken);
+    }
+
+    public Task<ProtectedEndpointAuthorizationDecision> RequireReportWritePermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        CancellationToken cancellationToken)
+    {
+        return RequireReportArtifactPermissionAsync(
+            Permission.ReportsWrite,
+            IsReportWriteProtectionRequired,
+            projectId,
+            buildingId,
+            workflowId,
+            artifactId: null,
+            cancellationToken);
+    }
+
+    public Task<ProtectedEndpointAuthorizationDecision> RequireArtifactReadPermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        string? artifactId,
+        CancellationToken cancellationToken)
+    {
+        return RequireReportArtifactPermissionAsync(
+            Permission.ReportsRead,
+            IsArtifactReadProtectionRequired,
+            projectId,
+            buildingId,
+            workflowId,
+            artifactId,
+            cancellationToken);
+    }
+
+    public Task<ProtectedEndpointAuthorizationDecision> RequireArtifactWritePermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        string? artifactId,
+        CancellationToken cancellationToken)
+    {
+        return RequireReportArtifactPermissionAsync(
+            Permission.ReportsWrite,
+            IsArtifactWriteProtectionRequired,
+            projectId,
+            buildingId,
+            workflowId,
+            artifactId,
+            cancellationToken);
+    }
+
     private bool CanBypassDevelopmentAnonymous(ApiAuthorizationOptions options)
     {
         return _environment.IsDevelopment() && options.AllowAnonymousInDevelopment;
@@ -351,6 +417,102 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         return options.Enabled &&
                options.EnableExecutionEndpointProtectionPilot &&
                options.RequireCalculationRunAuthorization;
+    }
+
+    private static bool IsReportReadProtectionRequired(ApiAuthorizationOptions options)
+    {
+        return options.Enabled &&
+               options.EnableReportArtifactEndpointProtectionPilot &&
+               options.RequireReportReadAuthorization;
+    }
+
+    private static bool IsReportWriteProtectionRequired(ApiAuthorizationOptions options)
+    {
+        return options.Enabled &&
+               options.EnableReportArtifactEndpointProtectionPilot &&
+               options.RequireReportWriteAuthorization;
+    }
+
+    private static bool IsArtifactReadProtectionRequired(ApiAuthorizationOptions options)
+    {
+        return options.Enabled &&
+               options.EnableReportArtifactEndpointProtectionPilot &&
+               options.RequireArtifactReadAuthorization;
+    }
+
+    private static bool IsArtifactWriteProtectionRequired(ApiAuthorizationOptions options)
+    {
+        return options.Enabled &&
+               options.EnableReportArtifactEndpointProtectionPilot &&
+               options.RequireArtifactWriteAuthorization;
+    }
+
+    private async Task<ProtectedEndpointAuthorizationDecision> RequireReportArtifactPermissionAsync(
+        Permission permission,
+        Func<ApiAuthorizationOptions, bool> isProtectionRequired,
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        string? artifactId,
+        CancellationToken cancellationToken)
+    {
+        var options = _optionsMonitor.CurrentValue;
+        if (!isProtectionRequired(options))
+        {
+            return ProtectedEndpointAuthorizationDecision.Allowed;
+        }
+
+        if (CanBypassDevelopmentAnonymous(options))
+        {
+            return ProtectedEndpointAuthorizationDecision.Allowed;
+        }
+
+        var principal = _principalProvider.GetCurrentPrincipal();
+        if (!principal.IsAuthenticated)
+        {
+            return ProtectedEndpointAuthorizationDecision.Unauthorized;
+        }
+
+        if (!HasPermission(principal, permission))
+        {
+            return ProtectedEndpointAuthorizationDecision.Forbidden;
+        }
+
+        if (!string.IsNullOrWhiteSpace(workflowId))
+        {
+            var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
+            if (workflowScope is not null)
+            {
+                var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
+                if (_accessPolicy.CanAccessWorkflow(principalContext, workflowScope, permission))
+                {
+                    return ProtectedEndpointAuthorizationDecision.Allowed;
+                }
+
+                _logger.LogInformation(
+                    "Report/artifact authorization denied for principal. WorkflowId={WorkflowId}, ArtifactId={ArtifactId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
+                    workflowId,
+                    artifactId,
+                    permission,
+                    options.ReturnNotFoundForTenantMismatch);
+
+                return options.ReturnNotFoundForTenantMismatch
+                    ? ProtectedEndpointAuthorizationDecision.NotFound
+                    : ProtectedEndpointAuthorizationDecision.Forbidden;
+            }
+        }
+
+        if (buildingId.HasValue)
+        {
+            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, permission, options, cancellationToken);
+        }
+
+        if (projectId.HasValue)
+        {
+            return await AuthorizeProjectScopeAsync(principal, projectId.Value, permission, options, cancellationToken);
+        }
+
+        return ProtectedEndpointAuthorizationDecision.Allowed;
     }
 
     private async Task<ProtectedEndpointAuthorizationDecision> AuthorizeProjectScopeAsync(

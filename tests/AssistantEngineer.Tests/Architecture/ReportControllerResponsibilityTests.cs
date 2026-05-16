@@ -1,5 +1,6 @@
-﻿using AssistantEngineer.Api.Controllers.Buildings;
+using AssistantEngineer.Api.Controllers.Buildings;
 using AssistantEngineer.Api.Controllers.Reports;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Modules.Reporting.Application.Facades;
 
 namespace AssistantEngineer.Tests.Architecture;
@@ -9,19 +10,25 @@ public class ReportControllerResponsibilityTests
     [Fact]
     public void CoolingReportControllerDependsOnlyOnCoolingReportsFacade()
     {
-        AssertControllerHasSingleDependency<BuildingCoolingReportsController, IBuildingCoolingReportsFacade>();
+        AssertControllerHasDependencies<BuildingCoolingReportsController>(
+            typeof(IBuildingCoolingReportsFacade),
+            typeof(IProtectedEndpointAuthorizationGate));
     }
 
     [Fact]
     public void HeatingReportControllerDependsOnlyOnHeatingReportsFacade()
     {
-        AssertControllerHasSingleDependency<BuildingHeatingReportsController, IBuildingHeatingReportsFacade>();
+        AssertControllerHasDependencies<BuildingHeatingReportsController>(
+            typeof(IBuildingHeatingReportsFacade),
+            typeof(IProtectedEndpointAuthorizationGate));
     }
 
     [Fact]
     public void EnergyBalanceReportControllerDependsOnlyOnEnergyBalanceReportsFacade()
     {
-        AssertControllerHasSingleDependency<BuildingEnergyBalanceReportsController, IBuildingEnergyBalanceReportsFacade>();
+        AssertControllerHasDependencies<BuildingEnergyBalanceReportsController>(
+            typeof(IBuildingEnergyBalanceReportsFacade),
+            typeof(IProtectedEndpointAuthorizationGate));
     }
 
     [Fact]
@@ -38,11 +45,17 @@ public class ReportControllerResponsibilityTests
         Assert.Null(controller);
     }
 
-    private static void AssertControllerHasSingleDependency<TController, TDependency>()
+    private static void AssertControllerHasDependencies<TController>(params Type[] expectedDependencies)
     {
         var constructor = Assert.Single(typeof(TController).GetConstructors());
-        var parameter = Assert.Single(constructor.GetParameters());
+        var actual = constructor.GetParameters()
+            .Select(parameter => parameter.ParameterType)
+            .OrderBy(type => type.FullName, StringComparer.Ordinal)
+            .ToArray();
+        var expected = expectedDependencies
+            .OrderBy(type => type.FullName, StringComparer.Ordinal)
+            .ToArray();
 
-        Assert.Equal(typeof(TDependency), parameter.ParameterType);
+        Assert.Equal(expected, actual);
     }
 }

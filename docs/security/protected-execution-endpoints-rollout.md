@@ -127,6 +127,7 @@ Default local/dev behavior remains compatible until execution rollout flags are 
 
 ## Next rollout candidates
 
+- P5-13 controlled report/artifact rollout (`docs/security/protected-report-artifact-endpoints-rollout.md`).
 - Report generate/export authorization (`ReportsWrite`) with read/write separation.
 - Artifact management authorization (`ArtifactRead`/`ArtifactWrite`) with ownership checks.
 - Workflow-history and execution-read endpoints (`WorkflowsRead`) with scoped ownership enforcement.

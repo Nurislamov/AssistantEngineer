@@ -8,6 +8,13 @@ public sealed class DefaultEndpointRateLimitCategoryResolver : IEndpointRateLimi
         var normalizedPath = path.ToLowerInvariant();
         var method = httpContext.Request.Method;
 
+        if (normalizedPath.Contains("/artifacts", StringComparison.Ordinal))
+        {
+            return HttpMethods.IsGet(method)
+                ? EndpointRateLimitCategories.ArtifactRead
+                : EndpointRateLimitCategories.ArtifactWrite;
+        }
+
         if (normalizedPath.Contains("workflow", StringComparison.Ordinal) &&
             (normalizedPath.Contains("/run", StringComparison.Ordinal) ||
              normalizedPath.Contains("/execute", StringComparison.Ordinal)))
@@ -28,13 +35,6 @@ public sealed class DefaultEndpointRateLimitCategoryResolver : IEndpointRateLimi
         if (normalizedPath.Contains("/reports", StringComparison.Ordinal))
         {
             return EndpointRateLimitCategories.ReportGenerate;
-        }
-
-        if (normalizedPath.Contains("/artifacts", StringComparison.Ordinal))
-        {
-            return HttpMethods.IsGet(method)
-                ? EndpointRateLimitCategories.ArtifactRead
-                : EndpointRateLimitCategories.ArtifactWrite;
         }
 
         if (normalizedPath.Contains("/reference", StringComparison.Ordinal))

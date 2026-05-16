@@ -26,6 +26,16 @@ public sealed class ApiAuthorizationOptions
 
     public bool RequireCalculationRunAuthorization { get; set; } = false;
 
+    public bool EnableReportArtifactEndpointProtectionPilot { get; set; } = false;
+
+    public bool RequireReportReadAuthorization { get; set; } = false;
+
+    public bool RequireReportWriteAuthorization { get; set; } = false;
+
+    public bool RequireArtifactReadAuthorization { get; set; } = false;
+
+    public bool RequireArtifactWriteAuthorization { get; set; } = false;
+
     public bool ReturnNotFoundForTenantMismatch { get; set; } = false;
 
     public bool AllowAnonymousInDevelopment { get; set; } = true;

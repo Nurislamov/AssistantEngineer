@@ -63,6 +63,11 @@ public class P2HardeningStatusGuardTests
             "Controllers",
             "Calculations",
             "EngineeringWorkflowController.cs");
+        var reportArtifactControllerPath = Path.Combine(
+            TestPaths.ApiProjectPath,
+            "Controllers",
+            "Calculations",
+            "EngineeringWorkflowController.ReportArtifact.cs");
         var submissionServicePath = Path.Combine(
             TestPaths.ApiProjectPath,
             "Services",
@@ -70,7 +75,7 @@ public class P2HardeningStatusGuardTests
             "Workflow",
             "EngineeringWorkflowSubmissionService.cs");
 
-        var text = File.ReadAllText(controllerPath);
+        var text = File.ReadAllText(controllerPath) + Environment.NewLine + File.ReadAllText(reportArtifactControllerPath);
         var submissionText = File.ReadAllText(submissionServicePath);
 
         Assert.Contains("[EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]", text, StringComparison.Ordinal);

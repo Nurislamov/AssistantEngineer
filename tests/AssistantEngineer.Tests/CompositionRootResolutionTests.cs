@@ -203,5 +203,61 @@ public class CompositionRootResolutionTests
             _ = cancellationToken;
             return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
         }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireReportReadPermissionAsync(
+            int? projectId,
+            int? buildingId,
+            string? workflowId,
+            CancellationToken cancellationToken)
+        {
+            _ = projectId;
+            _ = buildingId;
+            _ = workflowId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireReportWritePermissionAsync(
+            int? projectId,
+            int? buildingId,
+            string? workflowId,
+            CancellationToken cancellationToken)
+        {
+            _ = projectId;
+            _ = buildingId;
+            _ = workflowId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireArtifactReadPermissionAsync(
+            int? projectId,
+            int? buildingId,
+            string? workflowId,
+            string? artifactId,
+            CancellationToken cancellationToken)
+        {
+            _ = projectId;
+            _ = buildingId;
+            _ = workflowId;
+            _ = artifactId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireArtifactWritePermissionAsync(
+            int? projectId,
+            int? buildingId,
+            string? workflowId,
+            string? artifactId,
+            CancellationToken cancellationToken)
+        {
+            _ = projectId;
+            _ = buildingId;
+            _ = workflowId;
+            _ = artifactId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
     }
 }

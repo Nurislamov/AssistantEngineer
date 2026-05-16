@@ -32,4 +32,30 @@ public interface IProtectedEndpointAuthorizationGate
         int? floorId,
         int? roomId,
         CancellationToken cancellationToken);
+
+    Task<ProtectedEndpointAuthorizationDecision> RequireReportReadPermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        CancellationToken cancellationToken);
+
+    Task<ProtectedEndpointAuthorizationDecision> RequireReportWritePermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        CancellationToken cancellationToken);
+
+    Task<ProtectedEndpointAuthorizationDecision> RequireArtifactReadPermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        string? artifactId,
+        CancellationToken cancellationToken);
+
+    Task<ProtectedEndpointAuthorizationDecision> RequireArtifactWritePermissionAsync(
+        int? projectId,
+        int? buildingId,
+        string? workflowId,
+        string? artifactId,
+        CancellationToken cancellationToken);
 }

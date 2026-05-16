@@ -53,6 +53,7 @@ Guardrails cover:
 - Route inventory guardrails also track P5-10 read-pilot entries for `ProjectsController`/`BuildingsController` read endpoints and prevent unnoticed drift between protected and unprotected route groups.
 - Route inventory guardrails also track P5-11 write-pilot entries for `ProjectsController`/`BuildingsController` write endpoints to prevent accidental unprotected mutating routes.
 - Route inventory guardrails also track P5-12 execution-pilot entries for workflow/calculation endpoints so execution protection changes require inventory updates.
+- Route inventory guardrails also track P5-13 report/artifact pilot entries so report/export/artifact route protections cannot drift without inventory updates.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).

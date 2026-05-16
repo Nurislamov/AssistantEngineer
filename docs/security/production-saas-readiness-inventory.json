@@ -20,20 +20,22 @@
     },
     {
       "area": "Authorization",
-      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, and P5-12 adds controlled execution pilot checks for selected workflow/calculation endpoints.",
+      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, and P5-13 adds controlled report/artifact pilot checks.",
       "evidence": [
         "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs",
+        "src/Backend/AssistantEngineer.Api/Controllers/Reports/BuildingCoolingReportsController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs",
         "docs/security/protected-endpoint-pilot-rollout.md",
         "docs/security/protected-read-endpoints-rollout.md",
         "docs/security/protected-write-endpoints-rollout.md",
-        "docs/security/protected-execution-endpoints-rollout.md"
+        "docs/security/protected-execution-endpoints-rollout.md",
+        "docs/security/protected-report-artifact-endpoints-rollout.md"
       ],
-      "risk": "Report generation, artifact operations, workflow-id ownership mapping completion, and full tenant-isolation enforcement remain staged protection risks.",
-      "recommendedAction": "P5-next: extend controlled rollout to report/artifact endpoint groups with ownership/scope checks and deeper tenant enforcement."
+      "risk": "Workflow read/history endpoint rollout and full tenant-isolation enforcement remain staged protection risks.",
+      "recommendedAction": "P5-next: extend controlled rollout to workflow read/history groups with ownership/scope checks and deeper tenant enforcement."
     },
     {
       "area": "API keys",
@@ -243,6 +245,12 @@
       "title": "Protected workflow/calculation execution rollout",
       "status": "Implemented",
       "risk": "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and full tenant isolation remain future rollout stages."
+    },
+    {
+      "item": "P5-13",
+      "title": "Protected report/artifact endpoints rollout",
+      "status": "Implemented",
+      "risk": "Report/artifact pilot is implemented for selected endpoints; workflow read/history endpoints and full tenant isolation remain future rollout stages."
     }
   ],
   "nonClaims": [

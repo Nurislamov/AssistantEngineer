@@ -106,6 +106,7 @@ Allowed outcomes:
 - Authorization rollout (`docs/security/authorization-policy-rollout.md`) may emit `Denied` and `Succeeded` audit events.
 - Authorization failure responses should not disclose tenant mismatch details in audit metadata beyond safe codes.
 - P5-12 execution rollout (`docs/security/protected-execution-endpoints-rollout.md`) keeps explicit execution authorization/start audit emission as staged future work to avoid coupling regressions.
+- P5-13 report/artifact rollout (`docs/security/protected-report-artifact-endpoints-rollout.md`) keeps explicit report/artifact authorization event emission as staged future work in order to preserve low-risk rollout behavior.
 
 ## Relationship to observability
 

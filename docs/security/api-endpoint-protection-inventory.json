@@ -327,6 +327,60 @@
       "notes": "Protected by workflow execution gate; workflow-id ownership mapping remains staged for future rollout."
     },
     {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/trace-preview [POST]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Trace preview can expose scoped workflow/report diagnostic content.",
+      "notes": "Protected when ApiAuthorizationOptions.EnableReportArtifactEndpointProtectionPilot and RequireReportReadAuthorization are true."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/report [POST]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsWrite",
+      "rolloutStage": "P5-13",
+      "risk": "Workflow report generation produces output artifacts and should require staged report-write authorization.",
+      "notes": "Protected when report/artifact pilot and RequireReportWriteAuthorization are enabled."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/report/export/json [POST]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsWrite",
+      "rolloutStage": "P5-13",
+      "risk": "Report export endpoints can expose scoped engineering outputs and require controlled authorization.",
+      "notes": "Protected by report-write gate in P5-13 rollout."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/report/export/markdown [POST]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsWrite",
+      "rolloutStage": "P5-13",
+      "risk": "Markdown export can disclose scoped workflow report results without explicit authorization.",
+      "notes": "Protected by report-write gate in P5-13 rollout."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId}/artifacts [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Artifact list endpoints can reveal workflow outputs and should not remain public in protected environments.",
+      "notes": "Uses artifact-read gate with workflow/project/building scope fallback; workflow ownership descriptor mapping remains staged."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind} [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Artifact-by-kind endpoint can expose scoped artifact content and needs explicit read authorization.",
+      "notes": "Protected by artifact-read gate under report/artifact pilot flags."
+    },
+    {
       "controller": "EngineeringCoreStatusController",
       "routePattern": "api/v{version:apiVersion}/calculations/engineering-core",
       "currentAuthStatus": "PublicAllowed",
@@ -462,6 +516,24 @@
       "notes": "Read-only protection stage candidate."
     },
     {
+      "controller": "BuildingCoolingReportsController",
+      "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/cooling [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Cooling report read endpoints can expose scoped building diagnostics.",
+      "notes": "Protected when report/artifact pilot and RequireReportReadAuthorization are enabled."
+    },
+    {
+      "controller": "BuildingCoolingReportsController",
+      "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/cooling/excel [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Cooling report export endpoint can expose scoped engineering output without staged report-read authorization.",
+      "notes": "Protected by report-read gate using building scope in P5-13 rollout."
+    },
+    {
       "controller": "BuildingEnergyBalanceReportsController",
       "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/energy-balance",
       "currentAuthStatus": "AuthPlanned",
@@ -471,6 +543,15 @@
       "notes": "Read-only report protection stage."
     },
     {
+      "controller": "BuildingEnergyBalanceReportsController",
+      "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/energy-balance/excel [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Energy-balance export endpoints can expose scoped report outputs if not protected.",
+      "notes": "Protected by report-read gate in controlled report/artifact rollout."
+    },
+    {
       "controller": "BuildingHeatingReportsController",
       "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/heating",
       "currentAuthStatus": "AuthPlanned",
@@ -478,6 +559,15 @@
       "rolloutStage": "P5-04B",
       "risk": "Heating report endpoints require scoped read authorization.",
       "notes": "Read-only report protection stage."
+    },
+    {
+      "controller": "BuildingHeatingReportsController",
+      "routePattern": "api/v{version:apiVersion}/reports/buildings/{buildingId:int}/heating [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "risk": "Heating report read endpoint can disclose scoped engineering report data.",
+      "notes": "Protected when report/artifact pilot and RequireReportReadAuthorization are enabled."
     }
   ]
 }

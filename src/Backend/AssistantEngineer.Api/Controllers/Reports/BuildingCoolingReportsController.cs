@@ -1,4 +1,5 @@
-﻿using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Modules.Calculations.Application.Contracts.Common;
+using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 using AssistantEngineer.Modules.Reporting.Application.Facades;
 using Asp.Versioning;
@@ -17,11 +18,14 @@ public sealed class BuildingCoolingReportsController : ControllerBase
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     private readonly IBuildingCoolingReportsFacade _reports;
+    private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
 
     public BuildingCoolingReportsController(
-        IBuildingCoolingReportsFacade reports)
+        IBuildingCoolingReportsFacade reports,
+        IProtectedEndpointAuthorizationGate authorizationGate)
     {
         _reports = reports;
+        _authorizationGate = authorizationGate;
     }
 
     [HttpGet]
@@ -33,6 +37,16 @@ public sealed class BuildingCoolingReportsController : ControllerBase
         [FromQuery] string? unitType,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireReportReadPermissionAsync(
+            projectId: null,
+            buildingId: buildingId,
+            workflowId: null,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _reports.BuildCoolingReportAsync(
             buildingId,
             method,
@@ -52,6 +66,16 @@ public sealed class BuildingCoolingReportsController : ControllerBase
         [FromQuery] string? unitType,
         CancellationToken cancellationToken)
     {
+        var authorizationDecision = await _authorizationGate.RequireReportReadPermissionAsync(
+            projectId: null,
+            buildingId: buildingId,
+            workflowId: null,
+            cancellationToken);
+        if (!authorizationDecision.IsAllowed)
+        {
+            return ToActionResult(authorizationDecision);
+        }
+
         var result = await _reports.GenerateCoolingReportExcelAsync(
             buildingId,
             method,
@@ -60,12 +84,24 @@ public sealed class BuildingCoolingReportsController : ControllerBase
             cancellationToken);
 
         if (result.IsFailure)
+        {
             return result.ToFailureResult(this);
+        }
 
         return File(
             result.Value,
             ExcelContentType,
             $"building-{buildingId}-cooling-report.xlsx");
     }
-}
 
+    private ActionResult ToActionResult(ProtectedEndpointAuthorizationDecision decision)
+    {
+        return decision.Outcome switch
+        {
+            ProtectedEndpointAuthorizationOutcome.Unauthorized => Unauthorized(),
+            ProtectedEndpointAuthorizationOutcome.Forbidden => Forbid(),
+            ProtectedEndpointAuthorizationOutcome.NotFound => NotFound(),
+            _ => Ok()
+        };
+    }
+}

@@ -20,7 +20,7 @@ namespace AssistantEngineer.Api.Controllers.Calculations;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/engineering-workflow")]
-public sealed class EngineeringWorkflowController : ControllerBase
+public sealed partial class EngineeringWorkflowController : ControllerBase
 {
     private const string IdempotencyHeaderName = "Idempotency-Key";
     private const int WorkflowListMaxPageSize = 200;
@@ -365,115 +365,6 @@ public sealed class EngineeringWorkflowController : ControllerBase
         return Ok(scenarios
             .ApplyProjectListQuery(query)
             .ToPagedResponse(NormalizeWorkflowListQuery(query)));
-    }
-
-    [HttpGet("scenarios/{scenarioId}/artifacts")]
-    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationArtifactRecordDto>>> GetScenarioArtifacts(
-        string scenarioId,
-        CancellationToken cancellationToken)
-    {
-        var artifacts = await _workflowPersistence.ListScenarioArtifactsAsync(scenarioId, cancellationToken);
-        return Ok(artifacts);
-    }
-
-    [HttpGet("scenarios/{scenarioId}/artifacts/{artifactKind}")]
-    public async Task<ActionResult<EngineeringCalculationArtifactRecordDto>> GetScenarioArtifactByKind(
-        string scenarioId,
-        string artifactKind,
-        CancellationToken cancellationToken)
-    {
-        if (!Enum.TryParse<EngineeringCalculationArtifactKind>(artifactKind, true, out var parsedKind))
-        {
-            return BadRequest(new
-            {
-                scenarioId,
-                artifactKind,
-                code = "WORKFLOW_ARTIFACT_KIND_INVALID",
-                message = "Artifact kind is invalid for workflow persistence endpoint."
-            });
-        }
-
-        var artifact = await _workflowPersistence.GetScenarioArtifactAsync(
-            scenarioId,
-            parsedKind,
-            cancellationToken);
-
-        if (artifact is null)
-        {
-            return NotFound(new
-            {
-                scenarioId,
-                artifactKind = parsedKind.ToString(),
-                code = "WORKFLOW_ARTIFACT_NOT_FOUND",
-                message = "Scenario artifact was not found in workflow persistence foundation store."
-            });
-        }
-
-        return Ok(artifact);
-    }
-
-    [HttpPost("trace-preview")]
-    public ActionResult<EngineeringWorkflowTracePreviewResponseDto> TracePreview(
-        [FromBody] EngineeringWorkflowTracePreviewRequestDto request)
-    {
-        var detailLevel = _tracePreviewService.ParseDetailLevel(request.DetailLevel);
-        var diagnostics = _workflowDiagnostics.ValidateState(request.State);
-
-        var trace = _tracePreviewService.BuildTraceDocument(request.State, detailLevel, diagnostics);
-        var summary = _tracePreviewService.BuildTraceSummary(trace, request.DetailLevel);
-
-        return Ok(new EngineeringWorkflowTracePreviewResponseDto(
-            TraceDocument: trace,
-            TraceSummary: summary,
-            Diagnostics: diagnostics));
-    }
-
-    [HttpPost("report")]
-    public ActionResult<EngineeringWorkflowReportResponseDto> GenerateReport(
-        [FromBody] EngineeringWorkflowReportRequestDto request)
-    {
-        var diagnostics = _workflowDiagnostics.ValidateState(request.State);
-        var reportDocument = _reportPreviewService.BuildReportDocument(request, diagnostics);
-        var preview = _reportPreviewService.BuildReportPreview(reportDocument);
-
-        return Ok(new EngineeringWorkflowReportResponseDto(
-            ReportDocument: reportDocument,
-            Preview: preview,
-            Diagnostics: diagnostics));
-    }
-
-    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
-    [HttpPost("report/export/json")]
-    public ActionResult<EngineeringWorkflowReportExportResponseDto> ExportReportJson(
-        [FromBody] EngineeringWorkflowReportExportRequestDto request)
-    {
-        var diagnostics = _workflowDiagnostics.ValidateState(request.Request.State);
-        var reportDocument = _reportPreviewService.BuildReportDocument(request.Request, diagnostics);
-        var content = _reportJsonExporter.Export(reportDocument, indented: true);
-
-        return Ok(new EngineeringWorkflowReportExportResponseDto(
-            Format: "Json",
-            Content: content,
-            SchemaVersion: reportDocument.SchemaVersion,
-            ReportId: reportDocument.ReportId,
-            Diagnostics: diagnostics));
-    }
-
-    [EnableRateLimiting(ApiHardeningRegistration.EngineeringHeavyPolicyName)]
-    [HttpPost("report/export/markdown")]
-    public ActionResult<EngineeringWorkflowReportExportResponseDto> ExportReportMarkdown(
-        [FromBody] EngineeringWorkflowReportExportRequestDto request)
-    {
-        var diagnostics = _workflowDiagnostics.ValidateState(request.Request.State);
-        var reportDocument = _reportPreviewService.BuildReportDocument(request.Request, diagnostics);
-        var content = _reportMarkdownExporter.Export(reportDocument);
-
-        return Ok(new EngineeringWorkflowReportExportResponseDto(
-            Format: "Markdown",
-            Content: content,
-            SchemaVersion: reportDocument.SchemaVersion,
-            ReportId: reportDocument.ReportId,
-            Diagnostics: diagnostics));
     }
 
     private static CollectionQueryParameters NormalizeWorkflowListQuery(CollectionQueryParameters query)

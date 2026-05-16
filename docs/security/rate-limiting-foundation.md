@@ -106,3 +106,4 @@ Suggested initial policy values (recommendations, not certification claims):
 
 Rate-limiting default and partition-key regression guardrails are tracked in `docs/security/security-regression-guardrails.md`.
 P5-12 execution-endpoint authorization rollout aligns workflow/calculation protected routes with `WorkflowExecute` and `CalculationRun` category governance (`docs/security/protected-execution-endpoints-rollout.md`).
+P5-13 report/artifact authorization rollout aligns protected report/artifact routes with `ReportGenerate`, `ArtifactRead`, and `ArtifactWrite` category governance (`docs/security/protected-report-artifact-endpoints-rollout.md`).
