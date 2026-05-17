@@ -197,6 +197,15 @@ public sealed class WorkflowTenantScopedReadService : IWorkflowTenantScopedReadS
         var workflowScope = await resolveScope(cancellationToken);
         if (workflowScope is not null)
         {
+            var strictScopeResult = EnforceStrictOrganizationRequirement(
+                context,
+                workflowScope.OrganizationId,
+                WorkflowResourceNotFoundMessage);
+            if (strictScopeResult is not null)
+            {
+                return strictScopeResult;
+            }
+
             var decision = _policy.CanReadResource(
                 context,
                 workflowScope.OrganizationId,
@@ -215,6 +224,15 @@ public sealed class WorkflowTenantScopedReadService : IWorkflowTenantScopedReadS
         var projectScope = await _projectScopeResolver.ResolveProjectScopeAsync(fallbackProjectId, cancellationToken);
         if (projectScope is not null)
         {
+            var strictScopeResult = EnforceStrictOrganizationRequirement(
+                context,
+                projectScope.OrganizationId,
+                WorkflowResourceNotFoundMessage);
+            if (strictScopeResult is not null)
+            {
+                return strictScopeResult;
+            }
+
             var fallbackProjectDecision = _policy.CanReadResource(
                 context,
                 projectScope.OrganizationId,
@@ -250,6 +268,21 @@ public sealed class WorkflowTenantScopedReadService : IWorkflowTenantScopedReadS
             compatibilityDecision,
             notFoundResourceMessage: WorkflowResourceNotFoundMessage,
             fallbackDeniedMessage: $"Workflow fallback scope denied for {identifier}.");
+    }
+
+    private static Result? EnforceStrictOrganizationRequirement(
+        TenantQueryContext context,
+        int? organizationId,
+        string notFoundResourceMessage)
+    {
+        if (!context.StrictTenantMatch || organizationId.HasValue)
+        {
+            return null;
+        }
+
+        return context.ReturnNotFoundForTenantMismatch
+            ? Result.NotFound(notFoundResourceMessage)
+            : Result.Failure(TenantQueryFailureReasons.MissingOrganization);
     }
 
     private async Task<Result> AuthorizeProjectAsync(

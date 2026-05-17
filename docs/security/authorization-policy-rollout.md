@@ -199,6 +199,15 @@ Route inventory guardrails are tracked in `docs/security/security-regression-gua
 - P5-16D does not add global EF query filters, database row-level security, ownership backfill, or external identity provider integration.
 - Detailed notes: `docs/security/workflow-tenant-aware-read-integration.md`.
 
+## P5-17 workflow ownership metadata coverage result
+
+- P5-17 adds explicit workflow/scenario/job ownership metadata inventory documentation in markdown and machine-readable JSON/schema form.
+- `DefaultWorkflowAccessScopeResolver` treats invalid/missing ownership identifiers as unresolved scope and prioritizes scenario linkage metadata for job scope derivation.
+- Workflow tenant-scoped read strict mode denies unresolved ownership metadata paths; compatibility mode remains explicit option-controlled.
+- No ownership backfill is performed in this step.
+- P5-17 does not add global EF query filters, database row-level security, or external identity provider integration.
+- Detailed notes: `docs/security/workflow-ownership-metadata-coverage.md`.
+
 ## Audit relationship
 
 - Authorization decisions should emit audit events through `docs/security/audit-log-foundation.md` when safe.

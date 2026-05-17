@@ -5,6 +5,7 @@
 This document records P5-14 controlled rollout of workflow read/history endpoint protection without global route lock-down.
 
 P5-16D tenant-aware workflow query/controller integration builds on this rollout: `docs/security/workflow-tenant-aware-read-integration.md`.
+P5-17 metadata coverage hardening for workflow/scenario/job ownership is documented in `docs/security/workflow-ownership-metadata-coverage.md`.
 
 ## Scope
 

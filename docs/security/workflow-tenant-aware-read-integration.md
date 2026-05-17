@@ -89,6 +89,7 @@ Workflow tenant-aware read resolution uses:
 - job metadata (`Job.ProjectId`, `Job.ScenarioId`) where available.
 
 No hidden ownership is invented when metadata cannot be resolved.
+P5-17 documents metadata coverage and resolver completeness in `docs/security/workflow-ownership-metadata-coverage.md`.
 
 ## Anti-enumeration behavior
 
@@ -123,6 +124,7 @@ P5-16D adds explicit tenant-aware workflow query service integration behind thos
 - Workflow metadata paths that cannot resolve ownership still use staged safe behavior:
   - strict mode denies when tenant scope cannot be proven;
   - compatibility fallback can allow unscoped transition behavior only when explicit options permit.
+- Metadata coverage is improved in P5-17, but workflow-id-only ownership paths and legacy records without resolvable linkage remain partial.
 - No global EF query filters.
 - No database row-level security.
 - No ownership backfill.
@@ -131,6 +133,6 @@ P5-16D adds explicit tenant-aware workflow query service integration behind thos
 
 ## Next steps
 
-- P5-17: harden workflow/scenario/job metadata completeness and backfill strategy.
+- P5-17: harden workflow/scenario/job metadata completeness and reduce unresolved fallback paths (`docs/security/workflow-ownership-metadata-coverage.md`).
 - P6: ownership backfill execution plan and validation.
 - P6: evaluate persistence-layer/global query enforcement only after metadata and backfill readiness is proven.

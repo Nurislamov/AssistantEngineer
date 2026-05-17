@@ -20,7 +20,7 @@
     },
     {
       "area": "Authorization",
-      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, and P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic.",
+      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic, and P5-17 hardens workflow ownership metadata coverage inventory/resolver behavior.",
       "evidence": [
         "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
@@ -38,10 +38,11 @@
         "docs/security/persistence-backed-tenant-ownership-fields.md",
         "docs/security/tenant-aware-query-isolation-services.md",
         "docs/security/tenant-aware-read-controller-integration.md",
-        "docs/security/workflow-tenant-aware-read-integration.md"
+        "docs/security/workflow-tenant-aware-read-integration.md",
+        "docs/security/workflow-ownership-metadata-coverage.md"
       ],
       "risk": "Dedicated artifact write/delete route protection, ownership backfill, metadata-incomplete workflow ownership paths, global query filters, database row-level security, and external identity provider integration remain staged protection risks.",
-      "recommendedAction": "P5-17/P6: harden workflow metadata ownership completeness and ownership backfill, then evaluate stricter persistence-layer isolation planning."
+      "recommendedAction": "P6: execute ownership backfill, then evaluate stricter persistence-layer isolation planning."
     },
     {
       "area": "API keys",
@@ -75,7 +76,7 @@
     },
     {
       "area": "Project ownership",
-      "currentStatus": "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, and P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available.",
+      "currentStatus": "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available, and P5-17 adds explicit workflow ownership metadata coverage inventory.",
       "evidence": [
         "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
@@ -86,16 +87,17 @@
         "docs/security/tenant-aware-query-isolation-services.md",
         "docs/security/tenant-aware-read-controller-integration.md",
         "docs/security/workflow-tenant-aware-read-integration.md",
+        "docs/security/workflow-ownership-metadata-coverage.md",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
       ],
       "risk": "Legacy projects can remain unscoped until ownership backfill is completed; workflow metadata ownership coverage remains partial for some historical paths.",
-      "recommendedAction": "P5-17/P6: complete workflow metadata ownership readiness and ownership backfill planning."
+      "recommendedAction": "P6: execute ownership backfill and close remaining metadata partial paths."
     },
     {
       "area": "Tenant isolation",
-      "currentStatus": "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C and workflow/scenario/job protected read paths are integrated in P5-16D, but global tenant query filters and database row-level security are not enabled.",
+      "currentStatus": "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C, workflow/scenario/job protected read paths are integrated in P5-16D, and workflow ownership metadata coverage is inventoried/hardened in P5-17, but global tenant query filters and database row-level security are not enabled.",
       "evidence": [
         "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
         "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
@@ -105,12 +107,13 @@
         "docs/security/tenant-aware-query-isolation-services.md",
         "docs/security/tenant-aware-read-controller-integration.md",
         "docs/security/workflow-tenant-aware-read-integration.md",
+        "docs/security/workflow-ownership-metadata-coverage.md",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
         "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
       ],
       "risk": "Potential cross-tenant data access remains in metadata-incomplete workflow query paths until ownership backfill, row-level/query-level enforcement, and external identity integration are implemented.",
-      "recommendedAction": "P5-17/P6: harden workflow metadata completeness and backfill; evaluate global filters only after that readiness is proven."
+      "recommendedAction": "P6: ownership backfill and deeper persistence-layer tenant enforcement planning."
     },
     {
       "area": "Audit log",
@@ -309,6 +312,12 @@
       "title": "Workflow tenant-aware read integration",
       "status": "Implemented",
       "risk": "Protected workflow/scenario/job read-history paths now use workflow tenant-aware query integration behind rollout options; metadata-incomplete paths, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
+    },
+    {
+      "item": "P5-17",
+      "title": "Workflow ownership metadata coverage",
+      "status": "Implemented",
+      "risk": "Workflow/scenario/job metadata coverage inventory and resolver hardening are implemented; ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
     }
   ],
   "nonClaims": [

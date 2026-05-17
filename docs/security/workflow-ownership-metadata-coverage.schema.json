@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantEngineer workflow ownership metadata coverage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "metadataRecords",
+    "resolverCoverage",
+    "nonClaims"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lastReviewedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "metadataRecords": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordType",
+          "storagePath",
+          "hasWorkflowId",
+          "hasScenarioId",
+          "hasJobId",
+          "hasProjectId",
+          "hasBuildingId",
+          "tenantScopeCoverage",
+          "resolverPath",
+          "knownLimitation"
+        ],
+        "properties": {
+          "recordType": {
+            "type": "string"
+          },
+          "storagePath": {
+            "type": "string"
+          },
+          "hasWorkflowId": {
+            "type": "boolean"
+          },
+          "hasScenarioId": {
+            "type": "boolean"
+          },
+          "hasJobId": {
+            "type": "boolean"
+          },
+          "hasProjectId": {
+            "type": "boolean"
+          },
+          "hasBuildingId": {
+            "type": "boolean"
+          },
+          "tenantScopeCoverage": {
+            "type": "string",
+            "enum": [
+              "Complete",
+              "Partial",
+              "Missing",
+              "UnknownNeedsAudit"
+            ]
+          },
+          "resolverPath": {
+            "type": "string"
+          },
+          "knownLimitation": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "resolverCoverage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resolverMethod",
+          "sourceMetadata",
+          "coverage",
+          "fallbackBehavior"
+        ],
+        "properties": {
+          "resolverMethod": {
+            "type": "string"
+          },
+          "sourceMetadata": {
+            "type": "string"
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "Complete",
+              "Partial",
+              "Missing",
+              "UnknownNeedsAudit"
+            ]
+          },
+          "fallbackBehavior": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "nonClaims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

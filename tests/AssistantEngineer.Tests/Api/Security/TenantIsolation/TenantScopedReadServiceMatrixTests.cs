@@ -109,12 +109,18 @@ public sealed class TenantScopedReadServiceMatrixTests
         var crossTenantState = await service.GetWorkflowStateForTenantAsync(TenantBProjectId, null, WorkflowReadContext(), CancellationToken.None);
         var scenario = await service.GetScenarioForTenantAsync(scenarioId, WorkflowReadContext(), CancellationToken.None);
         var job = await service.GetJobForTenantAsync(JobId, WorkflowReadContext(), CancellationToken.None);
+        var jobEvents = await service.GetJobEventsForTenantAsync(JobId, WorkflowReadContext(), CancellationToken.None);
+        var scenariosForProject = await service.ListScenariosForProjectForTenantAsync(TenantAProjectId, WorkflowReadContext(), CancellationToken.None);
+        var jobsForProject = await service.ListJobsForProjectForTenantAsync(TenantAProjectId, WorkflowReadContext(), CancellationToken.None);
 
         Assert.True(sameTenantState.IsSuccess);
         Assert.True(crossTenantState.IsFailure);
         Assert.Equal(TenantQueryFailureReasons.TenantMismatch, crossTenantState.Error);
         Assert.True(scenario.IsSuccess);
         Assert.True(job.IsSuccess);
+        Assert.True(jobEvents.IsSuccess);
+        Assert.True(scenariosForProject.IsSuccess);
+        Assert.True(jobsForProject.IsSuccess);
     }
 
     private static Project CreateProject(int id, string name, int? organizationId)
@@ -434,7 +440,19 @@ public sealed class TenantScopedReadServiceMatrixTests
         public Task<IReadOnlyList<EngineeringCalculationJobEventDto>> ListJobEventsAsync(string jobId, CancellationToken cancellationToken)
         {
             _ = cancellationToken;
-            return Task.FromResult<IReadOnlyList<EngineeringCalculationJobEventDto>>(Array.Empty<EngineeringCalculationJobEventDto>());
+            return Task.FromResult<IReadOnlyList<EngineeringCalculationJobEventDto>>(
+            [
+                new EngineeringCalculationJobEventDto(
+                    EventId: $"{jobId}-event",
+                    JobId: jobId,
+                    ScenarioId: "matrix-scenario-a",
+                    Status: EngineeringCalculationJobStatus.Completed,
+                    Message: "Completed",
+                    ModuleKind: null,
+                    ProgressPercent: 100,
+                    Diagnostics: [],
+                    CreatedAtUtc: DateTimeOffset.UtcNow)
+            ]);
         }
 
         public Task<EngineeringCalculationJobResultDto> CreateOrRunJobAsync(EngineeringCalculationJobRequestDto request, CancellationToken cancellationToken) => throw new NotSupportedException();

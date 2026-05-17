@@ -155,6 +155,7 @@
       "rolloutStage": "P5-14+P5-16D",
       "controllerIntegration": "P5-16D",
       "tenantAwareQueryService": true,
+      "metadataCoverage": "Partial",
       "sameTenantExpected": "Success",
       "missingPermissionExpected": "Forbidden",
       "crossTenantExpected": "ForbiddenOrNotFoundByOption",
@@ -163,7 +164,9 @@
         "TenantIsolationAuthorizationGateMatrixTests",
         "TenantIsolationProtectedEndpointSmokeTests",
         "ProtectedWorkflowReadEndpointsPilotTests",
-        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests",
+        "DefaultWorkflowAccessScopeResolverMetadataCoverageTests",
+        "WorkflowTenantScopedReadServiceMetadataCoverageTests"
       ],
       "knownLimitations": [
         "Workflow tenant-aware read integration remains rollout-option gated and default-disabled.",
@@ -258,6 +261,7 @@
       "rolloutStage": "P5-14+P5-16D",
       "controllerIntegration": "P5-16D",
       "tenantAwareQueryService": true,
+      "metadataCoverage": "Partial",
       "sameTenantExpected": "Success",
       "missingPermissionExpected": "Forbidden",
       "crossTenantExpected": "ForbiddenOrNotFoundByOption",
@@ -265,7 +269,8 @@
       "coveredByTests": [
         "TenantIsolationAuthorizationGateMatrixTests",
         "ProtectedWorkflowReadEndpointsPilotTests",
-        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests",
+        "WorkflowTenantScopedReadServiceMetadataCoverageTests"
       ],
       "knownLimitations": [
         "Scenario tenant scope depends on persisted scenario/workflow/project metadata coverage."
@@ -277,6 +282,7 @@
       "rolloutStage": "P5-14+P5-16D",
       "controllerIntegration": "P5-16D",
       "tenantAwareQueryService": true,
+      "metadataCoverage": "Partial",
       "sameTenantExpected": "Success",
       "missingPermissionExpected": "Forbidden",
       "crossTenantExpected": "ForbiddenOrNotFoundByOption",
@@ -284,7 +290,8 @@
       "coveredByTests": [
         "TenantIsolationAuthorizationGateMatrixTests",
         "ProtectedWorkflowReadEndpointsPilotTests",
-        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests",
+        "WorkflowTenantScopedReadServiceMetadataCoverageTests"
       ],
       "knownLimitations": [
         "Job tenant scope depends on workflow/job/project metadata availability."
@@ -296,6 +303,7 @@
       "rolloutStage": "P5-14+P5-16D",
       "controllerIntegration": "P5-16D",
       "tenantAwareQueryService": true,
+      "metadataCoverage": "Partial",
       "sameTenantExpected": "Success",
       "missingPermissionExpected": "Forbidden",
       "crossTenantExpected": "ForbiddenOrNotFoundByOption",
@@ -303,7 +311,8 @@
       "coveredByTests": [
         "TenantIsolationAuthorizationGateMatrixTests",
         "ProtectedWorkflowReadEndpointsPilotTests",
-        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests",
+        "WorkflowTenantScopedReadServiceMetadataCoverageTests"
       ],
       "knownLimitations": [
         "Job event access inherits job scope resolution and metadata completeness."
@@ -348,7 +357,8 @@
     {
       "group": "WorkflowTenantScopedReadService",
       "permission": "WorkflowsRead",
-      "rolloutStage": "P5-16D",
+      "rolloutStage": "P5-16D+P5-17",
+      "metadataCoverage": "Partial",
       "sameTenantExpected": "Success",
       "missingPermissionExpected": "Forbidden",
       "crossTenantExpected": "FailureOrNotFoundByOption",
@@ -356,10 +366,12 @@
       "coveredByTests": [
         "TenantScopedReadServiceMatrixTests",
         "WorkflowTenantScopedReadServiceTests",
-        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+        "WorkflowTenantScopedReadServiceMetadataCoverageTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests",
+        "DefaultWorkflowAccessScopeResolverMetadataCoverageTests"
       ],
       "knownLimitations": [
-        "Metadata-incomplete workflow paths still rely on staged strict/compatibility fallback behavior.",
+        "Metadata-incomplete workflow paths still rely on staged strict/compatibility fallback behavior; coverage details are tracked in workflow-ownership-metadata-coverage.json.",
         "P5-16D does not introduce global EF query filters, DB row-level security, or ownership backfill."
       ]
     }

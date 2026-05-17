@@ -127,6 +127,15 @@
       "testName": "P5WorkflowTenantAwareReadIntegrationGovernanceTests",
       "risk": "Workflow read/history tenant-aware integration can drift from staged rollout constraints or overclaim full isolation.",
       "notes": "Validates P5-16D documentation, workflow matrix metadata, readiness inventory linkage, and DI registration for workflow tenant-aware read service."
+    },
+    {
+      "guardrailId": "SEC-GUARD-WORKFLOW-OWNERSHIP-METADATA-COVERAGE",
+      "title": "Workflow ownership metadata coverage claims must stay evidence-based and documented",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5WorkflowOwnershipMetadataCoverageGovernanceTests",
+      "risk": "Workflow/scenario/job ownership coverage claims can overstate completeness or drift from resolver/test reality.",
+      "notes": "Validates P5-17 metadata coverage docs/json/schema, workflow matrix metadataCoverage fields, and readiness inventory linkage."
     }
   ],
   "nonClaims": [

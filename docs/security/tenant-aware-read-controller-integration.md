@@ -108,6 +108,6 @@ Behavior:
 
 ## Next steps
 
-- P5-16D: evaluate controlled workflow tenant-aware query integration after metadata ownership coverage hardening.
+- P5-17: harden workflow/scenario/job ownership metadata coverage (`docs/security/workflow-ownership-metadata-coverage.md`).
 - P6: plan ownership backfill execution and validation.
 - P6: evaluate persistence-layer query enforcement options only after backfill and expanded integration coverage.

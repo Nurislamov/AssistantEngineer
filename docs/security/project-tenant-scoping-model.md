@@ -46,6 +46,7 @@ Organization/Tenant
 - P5-16B adds explicit tenant-aware query isolation services (`docs/security/tenant-aware-query-isolation-services.md`) that can read Projects/Buildings through persisted ownership without enabling global filters.
 - P5-16C allows protected Project/Building read controllers to consume these tenant-aware query services (`docs/security/tenant-aware-read-controller-integration.md`) when rollout options are enabled.
 - P5-16D extends this controller-integration pattern to protected workflow read/history routes by deriving tenant scope from workflow/project/building metadata where available (`docs/security/workflow-tenant-aware-read-integration.md`).
+- P5-17 inventories workflow/scenario/job ownership metadata completeness and resolver coverage (`docs/security/workflow-ownership-metadata-coverage.md`).
 
 ## Building scoping model
 
@@ -60,6 +61,7 @@ Organization/Tenant
 - Workflow access follows the same tenant and permission checks.
 - Workflow resources remain policy-addressable even before route-level enforcement.
 - P5-16D workflow read integration uses workflow/project/building metadata resolution in a controlled staged query path; metadata-incomplete paths remain strict/compatibility-option controlled.
+- P5-17 hardens resolver behavior for metadata gaps by treating invalid/missing ownership identifiers as unresolved scope.
 
 ## Legacy unscoped resource migration
 
@@ -103,3 +105,4 @@ Organization/Tenant
 - P5-16A: persisted Project ownership foundation (`docs/security/persistence-backed-tenant-ownership-fields.md`).
 - P5-16B: explicit tenant-aware Project/Building query isolation services (`docs/security/tenant-aware-query-isolation-services.md`).
 - P5-16D: workflow tenant-aware read integration for protected workflow read/history routes (`docs/security/workflow-tenant-aware-read-integration.md`).
+- P5-17: workflow ownership metadata coverage inventory and hardening (`docs/security/workflow-ownership-metadata-coverage.md`).

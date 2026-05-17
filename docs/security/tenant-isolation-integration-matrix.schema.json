@@ -112,6 +112,15 @@
           "tenantAwareQueryService": {
             "type": "boolean"
           },
+          "metadataCoverage": {
+            "type": "string",
+            "enum": [
+              "Complete",
+              "Partial",
+              "Missing",
+              "UnknownNeedsAudit"
+            ]
+          },
           "sameTenantExpected": {
             "type": "string"
           },

@@ -44,6 +44,7 @@ Guardrails cover:
 - `SEC-GUARD-TENANT-QUERY-ISOLATION`
 - `SEC-GUARD-TENANT-READ-CONTROLLER-INTEGRATION`
 - `SEC-GUARD-WORKFLOW-TENANT-READ-INTEGRATION`
+- `SEC-GUARD-WORKFLOW-OWNERSHIP-METADATA-COVERAGE`
 
 ## Enforcement model
 
@@ -65,6 +66,7 @@ Guardrails cover:
 - Tenant-aware query isolation guardrails verify `docs/security/tenant-aware-query-isolation-services.md`, `TenantQueryIsolationPolicyTests`, `ProjectTenantScopedReadServiceTests`, `BuildingTenantScopedReadServiceTests`, and `TenantScopedReadServiceMatrixTests`.
 - Tenant-aware read controller integration guardrails verify `docs/security/tenant-aware-read-controller-integration.md`, Project/Building matrix metadata in `docs/security/tenant-isolation-integration-matrix.json`, and `ProtectedReadControllersTenantScopedQueryIntegrationTests`.
 - Workflow tenant-aware read integration guardrails verify `docs/security/workflow-tenant-aware-read-integration.md`, workflow matrix metadata in `docs/security/tenant-isolation-integration-matrix.json`, and `ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests`.
+- Workflow ownership metadata coverage guardrails verify `docs/security/workflow-ownership-metadata-coverage.md`, `docs/security/workflow-ownership-metadata-coverage.json`, and workflow metadata coverage fields in `docs/security/tenant-isolation-integration-matrix.json`.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).

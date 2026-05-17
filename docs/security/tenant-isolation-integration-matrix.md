@@ -21,6 +21,7 @@ The matrix covers:
 - P5-16B query isolation service matrix introduced in `docs/security/tenant-aware-query-isolation-services.md`.
 - P5-16C protected Project/Building read controller integration introduced in `docs/security/tenant-aware-read-controller-integration.md`.
 - P5-16D protected workflow read/history tenant-aware integration introduced in `docs/security/workflow-tenant-aware-read-integration.md`.
+- P5-17 workflow/scenario/job metadata coverage inventory introduced in `docs/security/workflow-ownership-metadata-coverage.md`.
 
 ## Non-claims
 
@@ -67,7 +68,7 @@ Limited principal:
 
 P5-16A note: project ownership can now be represented by persisted nullable `Project.OrganizationId` and `Project.OwnerUserId` fields. Building and workflow scopes derive tenant ownership through Project where route metadata makes that safe.
 
-P5-16B/P5-16C/P5-16D note: explicit tenant-scoped read services now cover Project/Building and controlled workflow read/history query paths. Workflow metadata-incomplete paths remain staged and option-controlled.
+P5-16B/P5-16C/P5-16D/P5-17 note: explicit tenant-scoped read services now cover Project/Building and controlled workflow read/history query paths. Metadata coverage for workflow groups is now explicitly tracked as complete/partial in machine-readable inventory documents.
 
 ## Expected behavior matrix
 
@@ -113,3 +114,4 @@ For each protected group:
 - P5-16A adds Project ownership fields, but global query filters and database row-level security remain future work.
 - Project/Building protected read controller integration uses tenant-aware query services only when protected-read rollout is enabled.
 - Workflow tenant-aware read integration is enabled for protected workflow read/history paths, but metadata-incomplete workflow/scenario/job ownership resolution remains staged and compatibility-option controlled.
+- Workflow metadata coverage is not uniformly complete across all legacy paths; see `docs/security/workflow-ownership-metadata-coverage.md`.

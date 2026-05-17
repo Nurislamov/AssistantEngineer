@@ -106,16 +106,22 @@ public sealed class DefaultWorkflowAccessScopeResolver : IWorkflowAccessScopeRes
             return null;
         }
 
+        int? resolvedProjectId = job.ProjectId;
         int? buildingId = null;
         if (!string.IsNullOrWhiteSpace(job.ScenarioId))
         {
             var scenario = await _workflowPersistence.GetScenarioAsync(job.ScenarioId, cancellationToken);
+            if (scenario is not null)
+            {
+                resolvedProjectId = scenario.ProjectId;
+            }
+
             buildingId = scenario?.BuildingId;
         }
 
         return await BuildScopeAsync(
             workflowId: jobId,
-            projectId: job.ProjectId,
+            projectId: resolvedProjectId,
             buildingId: buildingId,
             cancellationToken);
     }
@@ -126,6 +132,9 @@ public sealed class DefaultWorkflowAccessScopeResolver : IWorkflowAccessScopeRes
         int? buildingId,
         CancellationToken cancellationToken)
     {
+        projectId = NormalizeIdentifier(projectId);
+        buildingId = NormalizeIdentifier(buildingId);
+
         if (projectId is null && buildingId is null)
         {
             return null;
@@ -168,5 +177,15 @@ public sealed class DefaultWorkflowAccessScopeResolver : IWorkflowAccessScopeRes
             ownerUserId: ownerUserId,
             isTenantScoped: isTenantScoped,
             tenantScope: tenantScope);
+    }
+
+    private static int? NormalizeIdentifier(int? value)
+    {
+        if (!value.HasValue || value.Value <= 0)
+        {
+            return null;
+        }
+
+        return value.Value;
     }
 }

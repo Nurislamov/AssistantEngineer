@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-17",
+  "metadataRecords": [
+    {
+      "recordType": "WorkflowState",
+      "storagePath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowStateEntity",
+      "hasWorkflowId": false,
+      "hasScenarioId": false,
+      "hasJobId": false,
+      "hasProjectId": true,
+      "hasBuildingId": true,
+      "tenantScopeCoverage": "Complete",
+      "resolverPath": "GetWorkflowStateForTenantAsync -> project scope authorization + persisted workflow state by project/building",
+      "knownLimitation": "No persisted WorkflowId ownership field; scope is project-centric for state reads."
+    },
+    {
+      "recordType": "ScenarioRecord",
+      "storagePath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringCalculationScenarioEntity",
+      "hasWorkflowId": false,
+      "hasScenarioId": true,
+      "hasJobId": false,
+      "hasProjectId": true,
+      "hasBuildingId": true,
+      "tenantScopeCoverage": "Complete",
+      "resolverPath": "ResolveScenarioScopeAsync -> scenario metadata -> building/project scope resolver",
+      "knownLimitation": "No dedicated persisted WorkflowId column on scenario records in P5-17."
+    },
+    {
+      "recordType": "JobRecord",
+      "storagePath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringCalculationJobEntity",
+      "hasWorkflowId": false,
+      "hasScenarioId": true,
+      "hasJobId": true,
+      "hasProjectId": true,
+      "hasBuildingId": false,
+      "tenantScopeCoverage": "Partial",
+      "resolverPath": "ResolveJobScopeAsync -> scenario linkage (preferred) -> job project scope fallback",
+      "knownLimitation": "Building ownership is indirect via scenario metadata; missing scenario linkage keeps partial coverage."
+    },
+    {
+      "recordType": "JobEventRecord",
+      "storagePath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringCalculationJobEventEntity",
+      "hasWorkflowId": false,
+      "hasScenarioId": true,
+      "hasJobId": true,
+      "hasProjectId": true,
+      "hasBuildingId": false,
+      "tenantScopeCoverage": "Partial",
+      "resolverPath": "GetJobEventsForTenantAsync -> job authorization scope -> list events by job id",
+      "knownLimitation": "Events inherit job metadata coverage and do not persist building/workflow ownership columns."
+    },
+    {
+      "recordType": "ScenarioHistoryRecord",
+      "storagePath": "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringScenarioHistoryEntity",
+      "hasWorkflowId": false,
+      "hasScenarioId": true,
+      "hasJobId": false,
+      "hasProjectId": true,
+      "hasBuildingId": false,
+      "tenantScopeCoverage": "Partial",
+      "resolverPath": "Scenario history ownership derives from scenario/project linkage",
+      "knownLimitation": "No persisted BuildingId/WorkflowId on history events."
+    }
+  ],
+  "resolverCoverage": [
+    {
+      "resolverMethod": "ResolveWorkflowScopeAsync",
+      "sourceMetadata": "workflow identifier lookup by scenario id first, then job id",
+      "coverage": "Partial",
+      "fallbackBehavior": "Returns null when no scenario/job ownership metadata can prove scope."
+    },
+    {
+      "resolverMethod": "ResolveScenarioScopeAsync",
+      "sourceMetadata": "scenario.ProjectId + scenario.BuildingId",
+      "coverage": "Complete",
+      "fallbackBehavior": "Uses project/building access resolvers; returns null for invalid or missing ownership metadata."
+    },
+    {
+      "resolverMethod": "ResolveJobScopeAsync",
+      "sourceMetadata": "job.ScenarioId (preferred), scenario.ProjectId/BuildingId, job.ProjectId fallback",
+      "coverage": "Partial",
+      "fallbackBehavior": "Falls back to project scope when scenario linkage is unavailable; returns null when ownership metadata is missing."
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No ownership backfill claim.",
+    "No external identity provider integration claim.",
+    "No certified/certification claim."
+  ]
+}

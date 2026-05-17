@@ -82,6 +82,7 @@ Building ownership is derived from the parent `Project.OrganizationId`; P5-16B d
 P5-16D introduces `IWorkflowTenantScopedReadService` and controlled workflow read/history controller integration (`docs/security/workflow-tenant-aware-read-integration.md`).
 
 Workflow query resolution uses existing workflow scope resolver metadata and falls back to persisted project ownership scope when available. Metadata-incomplete paths remain staged and compatibility-option controlled.
+P5-17 hardens metadata coverage inventory and resolver behavior details in `docs/security/workflow-ownership-metadata-coverage.md`.
 
 ## Legacy unscoped resources
 
@@ -124,7 +125,7 @@ Global `HasQueryFilter` is intentionally not enabled because:
 
 ## Known limitations
 
-- Workflow metadata coverage is still partially staged for some historical/incomplete paths.
+- Workflow metadata coverage is still partially staged for some historical/incomplete paths; see `docs/security/workflow-ownership-metadata-coverage.md`.
 - Global EF query filters are not enabled.
 - Database row-level security is not implemented.
 - Ownership backfill is not implemented.
