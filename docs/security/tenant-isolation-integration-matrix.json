@@ -1,0 +1,376 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-17",
+  "actors": [
+    {
+      "name": "TenantA",
+      "organizationId": 1001,
+      "userId": 2001,
+      "permissions": [
+        "ProjectsRead",
+        "ProjectsWrite",
+        "BuildingsRead",
+        "BuildingsWrite",
+        "WorkflowsRead",
+        "WorkflowsExecute",
+        "ReportsRead",
+        "ReportsWrite"
+      ]
+    },
+    {
+      "name": "TenantB",
+      "organizationId": 1002,
+      "userId": 2002,
+      "permissions": [
+        "ProjectsRead",
+        "ProjectsWrite",
+        "BuildingsRead",
+        "BuildingsWrite",
+        "WorkflowsRead",
+        "WorkflowsExecute",
+        "ReportsRead",
+        "ReportsWrite"
+      ]
+    },
+    {
+      "name": "Anonymous",
+      "organizationId": null,
+      "userId": null,
+      "permissions": []
+    },
+    {
+      "name": "LimitedPrincipal",
+      "organizationId": 1001,
+      "userId": 2001,
+      "permissions": [
+        "VariesByTestWithoutRequiredPermission"
+      ]
+    }
+  ],
+  "resourceFamilies": [
+    {
+      "name": "ProjectA",
+      "tenant": "TenantA",
+      "scope": "Project"
+    },
+    {
+      "name": "BuildingA",
+      "tenant": "TenantA",
+      "scope": "ProjectA/Building"
+    },
+    {
+      "name": "WorkflowA",
+      "tenant": "TenantA",
+      "scope": "ProjectA/BuildingA/Workflow"
+    },
+    {
+      "name": "ScenarioA",
+      "tenant": "TenantA",
+      "scope": "WorkflowA/Scenario"
+    },
+    {
+      "name": "JobA",
+      "tenant": "TenantA",
+      "scope": "WorkflowA/Job"
+    },
+    {
+      "name": "ReportA",
+      "tenant": "TenantA",
+      "scope": "WorkflowA or BuildingA report output"
+    },
+    {
+      "name": "ArtifactA",
+      "tenant": "TenantA",
+      "scope": "WorkflowA or ReportA artifact output"
+    }
+  ],
+  "endpointGroups": [
+    {
+      "group": "ProjectsRead",
+      "permission": "ProjectsRead",
+      "rolloutStage": "P5-10",
+      "controllerIntegration": "P5-16C",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedReadEndpointsPilotTests",
+        "ProtectedReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "ProjectsWrite",
+      "permission": "ProjectsWrite",
+      "rolloutStage": "P5-11",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedWriteEndpointsPilotTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "BuildingsRead",
+      "permission": "BuildingsRead",
+      "rolloutStage": "P5-10",
+      "controllerIntegration": "P5-16C",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedReadEndpointsPilotTests",
+        "ProtectedReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "BuildingsWrite",
+      "permission": "BuildingsWrite",
+      "rolloutStage": "P5-11",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedWriteEndpointsPilotTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "WorkflowsRead",
+      "permission": "WorkflowsRead",
+      "rolloutStage": "P5-14+P5-16D",
+      "controllerIntegration": "P5-16D",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedWorkflowReadEndpointsPilotTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": [
+        "Workflow tenant-aware read integration remains rollout-option gated and default-disabled.",
+        "Metadata-incomplete workflow paths remain staged and strict/compatibility-option controlled."
+      ]
+    },
+    {
+      "group": "WorkflowsExecute",
+      "permission": "WorkflowsExecute",
+      "rolloutStage": "P5-12",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedExecutionEndpointsPilotTests"
+      ],
+      "knownLimitations": [
+        "Workflow-id ownership resolution still uses staged fallback when durable workflow metadata is incomplete.",
+        "P5-16A provides persisted Project ownership source where workflow metadata includes ProjectId or BuildingId."
+      ]
+    },
+    {
+      "group": "CalculationRun",
+      "permission": "WorkflowsExecute",
+      "rolloutStage": "P5-12",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedExecutionEndpointsPilotTests"
+      ],
+      "knownLimitations": [
+        "CalculationRun uses WorkflowsExecute until a dedicated calculation permission is introduced.",
+        "Building/project calculation scope can inherit persisted Project ownership when resolver metadata is available."
+      ]
+    },
+    {
+      "group": "ReportsRead",
+      "permission": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "TenantIsolationProtectedEndpointSmokeTests",
+        "ProtectedReportArtifactEndpointsPilotTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "ReportsWrite",
+      "permission": "ReportsWrite",
+      "rolloutStage": "P5-13",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedReportArtifactEndpointsPilotTests"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "group": "ArtifactRead",
+      "permission": "ReportsRead",
+      "rolloutStage": "P5-13",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedReportArtifactEndpointsPilotTests"
+      ],
+      "knownLimitations": [
+        "Dedicated ArtifactRead permission is not introduced; ReportsRead is used for report artifacts.",
+        "Dedicated public artifact write/delete endpoints are not exposed yet."
+      ]
+    },
+    {
+      "group": "WorkflowScenarioRead",
+      "permission": "WorkflowsRead",
+      "rolloutStage": "P5-14+P5-16D",
+      "controllerIntegration": "P5-16D",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedWorkflowReadEndpointsPilotTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": [
+        "Scenario tenant scope depends on persisted scenario/workflow/project metadata coverage."
+      ]
+    },
+    {
+      "group": "WorkflowJobRead",
+      "permission": "WorkflowsRead",
+      "rolloutStage": "P5-14+P5-16D",
+      "controllerIntegration": "P5-16D",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedWorkflowReadEndpointsPilotTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": [
+        "Job tenant scope depends on workflow/job/project metadata availability."
+      ]
+    },
+    {
+      "group": "WorkflowJobEventsRead",
+      "permission": "WorkflowsRead",
+      "rolloutStage": "P5-14+P5-16D",
+      "controllerIntegration": "P5-16D",
+      "tenantAwareQueryService": true,
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "ForbiddenOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantIsolationAuthorizationGateMatrixTests",
+        "ProtectedWorkflowReadEndpointsPilotTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": [
+        "Job event access inherits job scope resolution and metadata completeness."
+      ]
+    },
+    {
+      "group": "ProjectTenantScopedReadService",
+      "permission": "ProjectsRead",
+      "rolloutStage": "P5-16B",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "FailureOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantQueryIsolationPolicyTests",
+        "ProjectTenantScopedReadServiceTests",
+        "TenantScopedReadServiceMatrixTests"
+      ],
+      "knownLimitations": [
+        "Controller integration for protected read routes is introduced in P5-16C only and remains rollout-option gated.",
+        "Legacy unscoped projects remain transition-compatible and are excluded from tenant lists by default."
+      ]
+    },
+    {
+      "group": "BuildingTenantScopedReadService",
+      "permission": "BuildingsRead",
+      "rolloutStage": "P5-16B",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "FailureOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantQueryIsolationPolicyTests",
+        "BuildingTenantScopedReadServiceTests",
+        "TenantScopedReadServiceMatrixTests"
+      ],
+      "knownLimitations": [
+        "Controller integration for protected read routes is introduced in P5-16C only and remains rollout-option gated.",
+        "Building tenant scope derives from parent Project.OrganizationId."
+      ]
+    },
+    {
+      "group": "WorkflowTenantScopedReadService",
+      "permission": "WorkflowsRead",
+      "rolloutStage": "P5-16D",
+      "sameTenantExpected": "Success",
+      "missingPermissionExpected": "Forbidden",
+      "crossTenantExpected": "FailureOrNotFoundByOption",
+      "anonymousExpected": "Unauthorized",
+      "coveredByTests": [
+        "TenantScopedReadServiceMatrixTests",
+        "WorkflowTenantScopedReadServiceTests",
+        "ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests"
+      ],
+      "knownLimitations": [
+        "Metadata-incomplete workflow paths still rely on staged strict/compatibility fallback behavior.",
+        "P5-16D does not introduce global EF query filters, DB row-level security, or ownership backfill."
+      ]
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No external identity provider integration claim.",
+    "No certified/certification claim.",
+    "No global EF query filter claim."
+  ]
+}

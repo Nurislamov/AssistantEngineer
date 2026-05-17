@@ -15,6 +15,7 @@ This rollout covers:
 - workflow artifact read endpoints (`/engineering-workflow/scenarios/{scenarioId}/artifacts*`).
 
 This rollout does not introduce new public artifact endpoints.
+Workflow read/history route protection is handled separately in P5-14 (`docs/security/protected-workflow-read-history-rollout.md`).
 
 ## Non-claims
 
@@ -113,7 +114,7 @@ Compatibility-safe defaults remain:
 ## What remains unprotected
 
 - Dedicated artifact write/delete API route enforcement (no public endpoints yet).
-- Workflow read/history endpoint group broad rollout.
+- Workflow read/history group is handled in separate rollout (`docs/security/protected-workflow-read-history-rollout.md`).
 - Complete tenant-boundary enforcement at query/persistence layers.
 - Full workflow/artifact ownership descriptor coverage for anti-enumeration behavior.
 
@@ -123,3 +124,8 @@ Compatibility-safe defaults remain:
 - Dedicated artifact write/delete endpoint protection if/when API exposure is introduced.
 - Deeper tenant-isolation integration tests across report/artifact and workflow history paths.
 - Optional durable audit emission for report/artifact authorization events.
+
+P5-15 tenant isolation note:
+
+- Cross-tenant expectations for `ReportsRead`, `ReportsWrite`, and report-artifact read paths are tracked in `docs/security/tenant-isolation-integration-matrix.md`.
+- Dedicated public artifact write/delete endpoints remain deferred until such endpoints exist.

@@ -337,6 +337,24 @@ public sealed class ProtectedEndpointAuthorizationGateWriteTests
             _ = cancellationToken;
             return Task.FromResult(_scope);
         }
+
+        public Task<WorkflowAccessScope?> ResolveScenarioScopeAsync(
+            string scenarioId,
+            CancellationToken cancellationToken)
+        {
+            _ = scenarioId;
+            _ = cancellationToken;
+            return Task.FromResult(_scope);
+        }
+
+        public Task<WorkflowAccessScope?> ResolveJobScopeAsync(
+            string jobId,
+            CancellationToken cancellationToken)
+        {
+            _ = jobId;
+            _ = cancellationToken;
+            return Task.FromResult(_scope);
+        }
     }
 
     private sealed class StaticOptionsMonitor<T> : IOptionsMonitor<T> where T : class

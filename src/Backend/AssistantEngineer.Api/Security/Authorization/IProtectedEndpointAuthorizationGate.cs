@@ -58,4 +58,12 @@ public interface IProtectedEndpointAuthorizationGate
         string? workflowId,
         string? artifactId,
         CancellationToken cancellationToken);
+
+    Task<ProtectedEndpointAuthorizationDecision> RequireWorkflowReadPermissionAsync(
+        string? workflowId,
+        string? scenarioId,
+        string? jobId,
+        int? projectId,
+        int? buildingId,
+        CancellationToken cancellationToken);
 }

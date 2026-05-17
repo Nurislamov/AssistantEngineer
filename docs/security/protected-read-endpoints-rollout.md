@@ -112,3 +112,8 @@ P5-11 follow-up note:
 
 - P5-11 introduces controlled write-endpoint rollout for selected `Projects`/`Buildings` create/update/delete actions.
 - See `docs/security/protected-write-endpoints-rollout.md` for write-policy behavior and test coverage.
+
+P5-15 tenant isolation note:
+
+- Cross-tenant expectations for `ProjectsRead` and `BuildingsRead` are tracked in `docs/security/tenant-isolation-integration-matrix.md`.
+- P5-15 adds matrix tests for same-tenant, missing-permission, anonymous, and tenant-mismatch behavior without changing read endpoint defaults.

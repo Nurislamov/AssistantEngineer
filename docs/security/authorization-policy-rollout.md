@@ -134,6 +134,71 @@ Route inventory guardrails are tracked in `docs/security/security-regression-gua
 - Public artifact write/delete endpoints are not exposed and remain deferred.
 - Detailed rollout notes and test matrix: `docs/security/protected-report-artifact-endpoints-rollout.md`.
 
+## P5-14 protected workflow read/history rollout result
+
+- Controlled workflow read/history pilot protection is implemented for selected read endpoints in `EngineeringWorkflowController`:
+  - workflow state read;
+  - scenario read/list;
+  - job status/events/list.
+- Rollout enforcement is option-gated by:
+  - `ApiAuthorization:Enabled`;
+  - `ApiAuthorization:EnableWorkflowReadEndpointProtectionPilot`;
+  - `ApiAuthorization:RequireWorkflowReadAuthorization`.
+- Workflow read policy requires `WorkflowsRead` in this stage.
+- Anti-enumeration behavior for tenant mismatch uses:
+  - `ApiAuthorization:ReturnNotFoundForWorkflowTenantMismatch` (workflow-read specific);
+  - fallback to `ApiAuthorization:ReturnNotFoundForTenantMismatch`.
+- P5-12 execution (`WorkflowsExecute`) and P5-13 report/artifact policies remain separate and are not downgraded by P5-14.
+- Detailed rollout notes and test matrix: `docs/security/protected-workflow-read-history-rollout.md`.
+
+## P5-15 tenant isolation integration matrix result
+
+- P5-15 adds a cross-tenant integration matrix for protected endpoint groups already covered by P5-10 through P5-14.
+- Matrix actors use Tenant A (`organizationId=1001`), Tenant B (`organizationId=1002`), anonymous, and limited principals.
+- Expected behavior is standardized across protected groups:
+  - same tenant with required permission proceeds to success or the endpoint's existing non-authorization status;
+  - missing permission returns `403`;
+  - anonymous access returns `401`;
+  - cross-tenant access returns `403` or `404` according to anti-enumeration options.
+- Matrix coverage is documented in `docs/security/tenant-isolation-integration-matrix.md` and machine-readable in `docs/security/tenant-isolation-integration-matrix.json`.
+- P5-15 does not add database row-level security, a new identity provider, or a claim that tenant-boundary enforcement is finished.
+
+## P5-16A persistence-backed tenant ownership result
+
+- P5-16A adds nullable `Project.OrganizationId` and `Project.OwnerUserId` fields as a persistence-backed ownership foundation.
+- Project/building/workflow scope resolvers can now use persisted Project ownership where metadata is available.
+- The migration `AddProjectTenantOwnershipFields` adds nullable columns and indexes only; it performs no data backfill and introduces no destructive operation.
+- P5-16A does not add global query filters, database row-level security, new route protection, or external identity provider integration.
+- Detailed notes: `docs/security/persistence-backed-tenant-ownership-fields.md`.
+
+## P5-16B tenant-aware query isolation services result
+
+- P5-16B adds explicit tenant query context, query decision, and query isolation policy contracts.
+- `IProjectTenantScopedReadService` and `IBuildingTenantScopedReadService` provide foundation-only tenant-scoped read helpers using persisted `Project.OrganizationId`.
+- Project list queries exclude other tenants and exclude legacy unscoped projects by default unless explicit transition opt-in is supplied.
+- Building queries derive tenant scope from the parent Project and do not duplicate tenant columns.
+- Controllers are not switched to these services in this stage, and no public route/API behavior changes are introduced.
+- P5-16B does not add global EF query filters, database row-level security, ownership backfill, or external identity provider integration.
+- Detailed notes: `docs/security/tenant-aware-query-isolation-services.md`.
+
+## P5-16C tenant-aware read controller integration result
+
+- P5-16C integrates tenant-aware query services into protected Project/Building read controller actions.
+- Integration is controlled by existing P5-10 protected-read options and preserves compatibility defaults when protection is disabled.
+- No public route or DTO contract changes are introduced.
+- Workflow tenant-aware query controller integration remains staged.
+- P5-16C does not add global EF query filters, database row-level security, ownership backfill, or external identity provider integration.
+- Detailed notes: `docs/security/tenant-aware-read-controller-integration.md`.
+
+## P5-16D workflow tenant-aware read integration result
+
+- P5-16D introduces `IWorkflowTenantScopedReadService` and integrates protected workflow read/history controller actions behind existing P5-14 workflow-read rollout options.
+- Workflow state/scenario/job read paths use tenant-aware query decisions based on workflow scope resolver metadata and persisted project ownership fallback where available.
+- Cross-tenant anti-enumeration remains `403/404` option-controlled through workflow/global not-found mismatch options.
+- Default compatibility remains unchanged when workflow-read rollout options are disabled.
+- P5-16D does not add global EF query filters, database row-level security, ownership backfill, or external identity provider integration.
+- Detailed notes: `docs/security/workflow-tenant-aware-read-integration.md`.
+
 ## Audit relationship
 
 - Authorization decisions should emit audit events through `docs/security/audit-log-foundation.md` when safe.

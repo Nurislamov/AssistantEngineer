@@ -107,6 +107,7 @@ Allowed outcomes:
 - Authorization failure responses should not disclose tenant mismatch details in audit metadata beyond safe codes.
 - P5-12 execution rollout (`docs/security/protected-execution-endpoints-rollout.md`) keeps explicit execution authorization/start audit emission as staged future work to avoid coupling regressions.
 - P5-13 report/artifact rollout (`docs/security/protected-report-artifact-endpoints-rollout.md`) keeps explicit report/artifact authorization event emission as staged future work in order to preserve low-risk rollout behavior.
+- P5-14 workflow read/history rollout (`docs/security/protected-workflow-read-history-rollout.md`) keeps explicit workflow-read denial audit emission staged as future work to avoid regression risk while route guardrails stabilize.
 
 ## Relationship to observability
 

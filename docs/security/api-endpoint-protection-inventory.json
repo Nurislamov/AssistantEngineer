@@ -328,6 +328,60 @@
     },
     {
       "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/state [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Workflow state endpoint can expose scoped diagnostics/history context.",
+      "notes": "Protected when EnableWorkflowReadEndpointProtectionPilot and RequireWorkflowReadAuthorization are true."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId} [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Scenario read endpoint can expose scoped workflow execution history.",
+      "notes": "Uses workflow/scenario scope resolution with project/building fallback in workflow-read pilot mode."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/scenarios [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Project scenario list can enumerate scoped workflow history.",
+      "notes": "Protected by project-scoped workflow-read gate in P5-14."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/jobs/{jobId} [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Job status endpoint can expose scoped lifecycle, diagnostics, and artifact references.",
+      "notes": "Uses job/scope resolution and anti-enumeration response behavior controlled by workflow-read options."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/jobs/{jobId}/events [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Job events endpoint can expose scoped workflow history traces.",
+      "notes": "Protected by workflow-read gate with job-id plus project-scope fallback."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "routePattern": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/jobs [GET]",
+      "currentAuthStatus": "AuthPilot",
+      "targetPolicy": "WorkflowsRead",
+      "rolloutStage": "P5-14",
+      "risk": "Project job list can reveal scoped execution activity and timing data.",
+      "notes": "Protected by project-scoped workflow-read gate in P5-14."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
       "routePattern": "api/v{version:apiVersion}/engineering-workflow/trace-preview [POST]",
       "currentAuthStatus": "AuthPilot",
       "targetPolicy": "ReportsRead",

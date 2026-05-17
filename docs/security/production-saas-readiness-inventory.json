@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewedDate": "2026-05-14",
+  "lastReviewedDate": "2026-05-17",
   "areas": [
     {
       "area": "Authentication",
@@ -20,7 +20,7 @@
     },
     {
       "area": "Authorization",
-      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, and P5-13 adds controlled report/artifact pilot checks.",
+      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, and P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic.",
       "evidence": [
         "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
@@ -32,10 +32,16 @@
         "docs/security/protected-read-endpoints-rollout.md",
         "docs/security/protected-write-endpoints-rollout.md",
         "docs/security/protected-execution-endpoints-rollout.md",
-        "docs/security/protected-report-artifact-endpoints-rollout.md"
+        "docs/security/protected-report-artifact-endpoints-rollout.md",
+        "docs/security/protected-workflow-read-history-rollout.md",
+        "docs/security/tenant-isolation-integration-matrix.md",
+        "docs/security/persistence-backed-tenant-ownership-fields.md",
+        "docs/security/tenant-aware-query-isolation-services.md",
+        "docs/security/tenant-aware-read-controller-integration.md",
+        "docs/security/workflow-tenant-aware-read-integration.md"
       ],
-      "risk": "Workflow read/history endpoint rollout and full tenant-isolation enforcement remain staged protection risks.",
-      "recommendedAction": "P5-next: extend controlled rollout to workflow read/history groups with ownership/scope checks and deeper tenant enforcement."
+      "risk": "Dedicated artifact write/delete route protection, ownership backfill, metadata-incomplete workflow ownership paths, global query filters, database row-level security, and external identity provider integration remain staged protection risks.",
+      "recommendedAction": "P5-17/P6: harden workflow metadata ownership completeness and ownership backfill, then evaluate stricter persistence-layer isolation planning."
     },
     {
       "area": "API keys",
@@ -69,26 +75,42 @@
     },
     {
       "area": "Project ownership",
-      "currentStatus": "Projects exist without persisted owner/tenant fields; P5-02 policy/contracts foundation now exists for project/building/workflow scoping.",
+      "currentStatus": "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, and P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available.",
       "evidence": [
         "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
         "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
         "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Access/ProjectTenantAccessPolicy.cs",
-        "docs/security/project-tenant-scoping-model.md"
+        "src/Backend/AssistantEngineer.Infrastructure/Persistence/Migrations/20260517102600_AddProjectTenantOwnershipFields.cs",
+        "docs/security/project-tenant-scoping-model.md",
+        "docs/security/persistence-backed-tenant-ownership-fields.md",
+        "docs/security/tenant-aware-query-isolation-services.md",
+        "docs/security/tenant-aware-read-controller-integration.md",
+        "docs/security/workflow-tenant-aware-read-integration.md",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
       ],
-      "risk": "Route-level enforcement and persisted ownership columns are not active yet; id-based access remains possible without P5-04 authorization wiring.",
-      "recommendedAction": "P5-04: wire policy checks into endpoint authorization and ownership-scoped query paths."
+      "risk": "Legacy projects can remain unscoped until ownership backfill is completed; workflow metadata ownership coverage remains partial for some historical paths.",
+      "recommendedAction": "P5-17/P6: complete workflow metadata ownership readiness and ownership backfill planning."
     },
     {
       "area": "Tenant isolation",
-      "currentStatus": "UnknownNeedsAudit: tenant identifiers are still absent in main persistence contexts; P5-02 policy models legacy/unscoped transition.",
+      "currentStatus": "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C and workflow/scenario/job protected read paths are integrated in P5-16D, but global tenant query filters and database row-level security are not enabled.",
       "evidence": [
         "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
         "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
-        "docs/security/project-tenant-scoping-model.md"
+        "docs/security/project-tenant-scoping-model.md",
+        "docs/security/tenant-isolation-integration-matrix.md",
+        "docs/security/persistence-backed-tenant-ownership-fields.md",
+        "docs/security/tenant-aware-query-isolation-services.md",
+        "docs/security/tenant-aware-read-controller-integration.md",
+        "docs/security/workflow-tenant-aware-read-integration.md",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
+        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
       ],
-      "risk": "Potential cross-tenant data access remains until tenant ownership persistence and route authorization are enforced.",
-      "recommendedAction": "P5-03/P5-04/P5-08: enforce principal-scoped access rules, tenant-aware persistence boundaries, and isolation regression tests."
+      "risk": "Potential cross-tenant data access remains in metadata-incomplete workflow query paths until ownership backfill, row-level/query-level enforcement, and external identity integration are implemented.",
+      "recommendedAction": "P5-17/P6: harden workflow metadata completeness and backfill; evaluate global filters only after that readiness is proven."
     },
     {
       "area": "Audit log",
@@ -244,13 +266,49 @@
       "item": "P5-12",
       "title": "Protected workflow/calculation execution rollout",
       "status": "Implemented",
-      "risk": "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and full tenant isolation remain future rollout stages."
+      "risk": "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and tenant-boundary enforcement remain future rollout stages."
     },
     {
       "item": "P5-13",
       "title": "Protected report/artifact endpoints rollout",
       "status": "Implemented",
-      "risk": "Report/artifact pilot is implemented for selected endpoints; workflow read/history endpoints and full tenant isolation remain future rollout stages."
+      "risk": "Report/artifact pilot is implemented for selected endpoints; workflow read/history endpoints and tenant-boundary enforcement remain future rollout stages."
+    },
+    {
+      "item": "P5-14",
+      "title": "Protected workflow read/history endpoints rollout",
+      "status": "Implemented",
+      "risk": "Workflow read/history pilot is implemented for selected endpoints; dedicated artifact write/delete protection and tenant-boundary enforcement remain future rollout stages."
+    },
+    {
+      "item": "P5-15",
+      "title": "Tenant isolation integration matrix",
+      "status": "Implemented",
+      "risk": "Cross-tenant matrix coverage is implemented for protected endpoint groups; DB row-level security, query isolation, ownership backfill, and external identity provider integration remain future work."
+    },
+    {
+      "item": "P5-16A",
+      "title": "Persistence-backed tenant ownership fields",
+      "status": "Implemented",
+      "risk": "Nullable Project ownership fields are implemented as a persistence foundation; global query filters, database row-level security, ownership backfill, and external identity provider integration remain future work."
+    },
+    {
+      "item": "P5-16B",
+      "title": "Tenant-aware query isolation services",
+      "status": "Implemented",
+      "risk": "Project/Building tenant-scoped read services are implemented as a foundation; controllers, global query filters, DB row-level security, ownership backfill, and workflow metadata query isolation remain future work."
+    },
+    {
+      "item": "P5-16C",
+      "title": "Tenant-aware read controller integration",
+      "status": "Implemented",
+      "risk": "Protected Project/Building read controllers now use tenant-aware query services behind rollout options; workflow query integration, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
+    },
+    {
+      "item": "P5-16D",
+      "title": "Workflow tenant-aware read integration",
+      "status": "Implemented",
+      "risk": "Protected workflow/scenario/job read-history paths now use workflow tenant-aware query integration behind rollout options; metadata-incomplete paths, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
     }
   ],
   "nonClaims": [

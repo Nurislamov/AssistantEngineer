@@ -1,15 +1,21 @@
-﻿using AssistantEngineer.Api.Contracts.Common;
-using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
-using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
-using AssistantEngineer.Modules.Buildings.Application.Facades;
-using Asp.Versioning;
+using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Extensions.Http;
 using AssistantEngineer.Api.Extensions.Results;
+using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Querying.Projects;
 using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Api.Security.TenantIsolation;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Requests;
+using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
+using AssistantEngineer.Modules.Buildings.Application.Facades;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
 using AssistantEngineer.Modules.Identity.Domain.Enums;
+using AssistantEngineer.SharedKernel.Primitives;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Controllers.Projects;
 
@@ -31,13 +37,22 @@ public class ProjectsController : ControllerBase
 
     private readonly IBuildingsFacade _buildings;
     private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
+    private readonly IProjectTenantScopedReadService _projectTenantScopedReads;
+    private readonly ITenantQueryContextFactory _tenantQueryContextFactory;
+    private readonly IOptionsMonitor<ApiAuthorizationOptions> _authorizationOptions;
 
     public ProjectsController(
         IBuildingsFacade buildings,
-        IProtectedEndpointAuthorizationGate authorizationGate)
+        IProtectedEndpointAuthorizationGate authorizationGate,
+        IProjectTenantScopedReadService projectTenantScopedReads,
+        ITenantQueryContextFactory tenantQueryContextFactory,
+        IOptionsMonitor<ApiAuthorizationOptions> authorizationOptions)
     {
         _buildings = buildings;
         _authorizationGate = authorizationGate;
+        _projectTenantScopedReads = projectTenantScopedReads;
+        _tenantQueryContextFactory = tenantQueryContextFactory;
+        _authorizationOptions = authorizationOptions;
     }
 
     [HttpPost]
@@ -75,6 +90,27 @@ public class ProjectsController : ControllerBase
             return ToActionResult(authorizationDecision);
         }
 
+        if (ShouldUseTenantScopedProjectReads())
+        {
+            var tenantContext = _tenantQueryContextFactory.CreateCurrent();
+            var scopedResult = await _projectTenantScopedReads.ListProjectsForTenantAsync(
+                tenantContext,
+                cancellationToken);
+            if (scopedResult.IsFailure)
+            {
+                return ToTenantScopedReadFailureResult(scopedResult, tenantContext);
+            }
+
+            var mapped = scopedResult.Value
+                .Select(MapProject)
+                .ToList();
+
+            return Result<List<ProjectResponse>>.Success(mapped).ToPagedOkResult(
+                this,
+                query,
+                items => items.ApplyProjectListQuery(query));
+        }
+
         var result = await _buildings.GetProjectsAsync(
             cancellationToken);
 
@@ -96,6 +132,27 @@ public class ProjectsController : ControllerBase
         if (!authorizationDecision.IsAllowed)
         {
             return ToActionResult(authorizationDecision);
+        }
+
+        if (ShouldUseTenantScopedProjectReads())
+        {
+            var tenantContext = _tenantQueryContextFactory.CreateCurrent(includeUnscopedResourcesInTenantLists: false);
+            var scopedResult = await _projectTenantScopedReads.GetProjectForTenantAsync(
+                id,
+                tenantContext,
+                cancellationToken);
+            if (scopedResult.IsFailure)
+            {
+                return ToTenantScopedReadFailureResult(scopedResult, tenantContext);
+            }
+
+            var project = scopedResult.Value;
+            if (project is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(MapProject(project));
         }
 
         var result = await _buildings.GetProjectByIdAsync(
@@ -159,4 +216,38 @@ public class ProjectsController : ControllerBase
             _ => Ok()
         };
     }
+
+    private bool ShouldUseTenantScopedProjectReads()
+    {
+        var options = _authorizationOptions.CurrentValue;
+        return options.RequiresProtectedReadAuthorization(Permission.ProjectsRead);
+    }
+
+    private ActionResult ToTenantScopedReadFailureResult(
+        Result result,
+        TenantQueryContext context)
+    {
+        if (result.ErrorType == ResultErrorType.NotFound)
+        {
+            return NotFound();
+        }
+
+        return result.Error switch
+        {
+            TenantQueryFailureReasons.Unauthenticated => Unauthorized(),
+            TenantQueryFailureReasons.MissingPermission => Forbid(),
+            TenantQueryFailureReasons.TenantMismatch or
+                TenantQueryFailureReasons.MissingOrganization or
+                TenantQueryFailureReasons.UnscopedResourceDenied =>
+                context.ReturnNotFoundForTenantMismatch ? NotFound() : Forbid(),
+            _ => Forbid()
+        };
+    }
+
+    private static ProjectResponse MapProject(Project project) =>
+        new()
+        {
+            Id = project.Id,
+            Name = project.Name
+        };
 }

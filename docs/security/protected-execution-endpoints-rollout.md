@@ -37,6 +37,7 @@ This rollout covers:
 - `BuildingLoadCalculationsController`, `FloorLoadCalculationsController`, and `RoomLoadCalculationsController` execution endpoints.
 
 Report generation/export and artifact read/write endpoints are intentionally outside P5-12 scope.
+Workflow read/history protection is intentionally handled in a separate P5-14 rollout (`docs/security/protected-workflow-read-history-rollout.md`).
 
 ## Workflow execution policy
 
@@ -70,7 +71,7 @@ Report generation/export and artifact read/write endpoints are intentionally out
   - `IWorkflowAccessScopeResolver`;
   - `IFloorAccessScopeResolver`;
   - `IRoomAccessScopeResolver`.
-- `DefaultWorkflowAccessScopeResolver` currently returns `null` and documents that workflow-id to owner mapping is still a staged TODO.
+- `DefaultWorkflowAccessScopeResolver` resolves workflow scope through scenario/job metadata when available and falls back to project/building scope checks when tenant metadata is incomplete.
 - `DefaultFloorAccessScopeResolver` and `DefaultRoomAccessScopeResolver` map floor/room resources to building/project scope via existing repositories.
 - This step provides route-level gate enforcement, not full query-level tenant filtering.
 
@@ -132,3 +133,8 @@ Default local/dev behavior remains compatible until execution rollout flags are 
 - Artifact management authorization (`ArtifactRead`/`ArtifactWrite`) with ownership checks.
 - Workflow-history and execution-read endpoints (`WorkflowsRead`) with scoped ownership enforcement.
 - Deeper query-level tenant filtering and durable authorization/audit observability integration.
+
+P5-15 tenant isolation note:
+
+- Cross-tenant expectations for `WorkflowsExecute` and calculation execution are tracked in `docs/security/tenant-isolation-integration-matrix.md`.
+- P5-15 adds matrix coverage for same-tenant execution, missing execute permission, anonymous requests, and tenant mismatch anti-enumeration behavior.

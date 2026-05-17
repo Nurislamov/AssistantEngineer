@@ -2,12 +2,15 @@
 using AssistantEngineer.Api.Controllers.Buildings;
 using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Controllers.Equipment;
+using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Api.Security.TenantIsolation;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Equipment.Application.Facades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Architecture;
 
@@ -58,7 +61,10 @@ public class ControllerResponsibilityTests
             [typeof(BuildingsController)] =
             [
                 typeof(IBuildingsFacade),
-                typeof(IProtectedEndpointAuthorizationGate)
+                typeof(IProtectedEndpointAuthorizationGate),
+                typeof(IBuildingTenantScopedReadService),
+                typeof(ITenantQueryContextFactory),
+                typeof(IOptionsMonitor<ApiAuthorizationOptions>)
             ],
             [typeof(FloorsController)] = [typeof(IBuildingsFacade)],
             [typeof(RoomsController)] = [typeof(IBuildingsFacade)]

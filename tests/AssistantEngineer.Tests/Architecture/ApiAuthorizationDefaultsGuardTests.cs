@@ -26,6 +26,9 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(options.RequireReportWriteAuthorization);
         Assert.False(options.RequireArtifactReadAuthorization);
         Assert.False(options.RequireArtifactWriteAuthorization);
+        Assert.False(options.EnableWorkflowReadEndpointProtectionPilot);
+        Assert.False(options.RequireWorkflowReadAuthorization);
+        Assert.False(options.ReturnNotFoundForWorkflowTenantMismatch);
         Assert.False(options.ReturnNotFoundForTenantMismatch);
         Assert.True(options.AllowAnonymousInDevelopment);
     }
@@ -55,6 +58,9 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(productionSection.GetProperty("RequireReportWriteAuthorization").GetBoolean());
         Assert.False(productionSection.GetProperty("RequireArtifactReadAuthorization").GetBoolean());
         Assert.False(productionSection.GetProperty("RequireArtifactWriteAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("EnableWorkflowReadEndpointProtectionPilot").GetBoolean());
+        Assert.False(productionSection.GetProperty("RequireWorkflowReadAuthorization").GetBoolean());
+        Assert.False(productionSection.GetProperty("ReturnNotFoundForWorkflowTenantMismatch").GetBoolean());
         Assert.False(productionSection.GetProperty("ReturnNotFoundForTenantMismatch").GetBoolean());
         Assert.True(productionSection.GetProperty("AllowAnonymousInDevelopment").GetBoolean());
 
@@ -74,6 +80,9 @@ public sealed class ApiAuthorizationDefaultsGuardTests
         Assert.False(developmentSection.GetProperty("RequireReportWriteAuthorization").GetBoolean());
         Assert.False(developmentSection.GetProperty("RequireArtifactReadAuthorization").GetBoolean());
         Assert.False(developmentSection.GetProperty("RequireArtifactWriteAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("EnableWorkflowReadEndpointProtectionPilot").GetBoolean());
+        Assert.False(developmentSection.GetProperty("RequireWorkflowReadAuthorization").GetBoolean());
+        Assert.False(developmentSection.GetProperty("ReturnNotFoundForWorkflowTenantMismatch").GetBoolean());
         Assert.False(developmentSection.GetProperty("ReturnNotFoundForTenantMismatch").GetBoolean());
         Assert.True(developmentSection.GetProperty("AllowAnonymousInDevelopment").GetBoolean());
     }

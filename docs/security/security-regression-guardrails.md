@@ -39,6 +39,11 @@ Guardrails cover:
 - `SEC-GUARD-INMEMORY-PRODUCTION`
 - `SEC-GUARD-FALSE-CLAIMS`
 - `SEC-GUARD-FRONTEND-SECRETS`
+- `SEC-GUARD-TENANT-ISOLATION-MATRIX`
+- `SEC-GUARD-PERSISTED-TENANT-OWNERSHIP`
+- `SEC-GUARD-TENANT-QUERY-ISOLATION`
+- `SEC-GUARD-TENANT-READ-CONTROLLER-INTEGRATION`
+- `SEC-GUARD-WORKFLOW-TENANT-READ-INTEGRATION`
 
 ## Enforcement model
 
@@ -54,6 +59,12 @@ Guardrails cover:
 - Route inventory guardrails also track P5-11 write-pilot entries for `ProjectsController`/`BuildingsController` write endpoints to prevent accidental unprotected mutating routes.
 - Route inventory guardrails also track P5-12 execution-pilot entries for workflow/calculation endpoints so execution protection changes require inventory updates.
 - Route inventory guardrails also track P5-13 report/artifact pilot entries so report/export/artifact route protections cannot drift without inventory updates.
+- Route inventory guardrails also track P5-14 workflow read/history pilot entries so workflow state/scenario/job read protections cannot drift without explicit inventory updates.
+- Tenant isolation matrix guardrails track cross-tenant expectations in `docs/security/tenant-isolation-integration-matrix.md` and verify representative P5-10 through P5-14 endpoint groups via `TenantIsolationAuthorizationGateMatrixTests`, `TenantIsolationProtectedEndpointSmokeTests`, `TenantIsolationAntiEnumerationTests`, and `TenantIsolationEndpointInventoryCoverageTests`.
+- Persistence-backed ownership guardrails verify `docs/security/persistence-backed-tenant-ownership-fields.md`, the append-only `AddProjectTenantOwnershipFields` migration, and model snapshot ownership fields via `P5PersistenceBackedTenantOwnershipGovernanceTests`.
+- Tenant-aware query isolation guardrails verify `docs/security/tenant-aware-query-isolation-services.md`, `TenantQueryIsolationPolicyTests`, `ProjectTenantScopedReadServiceTests`, `BuildingTenantScopedReadServiceTests`, and `TenantScopedReadServiceMatrixTests`.
+- Tenant-aware read controller integration guardrails verify `docs/security/tenant-aware-read-controller-integration.md`, Project/Building matrix metadata in `docs/security/tenant-isolation-integration-matrix.json`, and `ProtectedReadControllersTenantScopedQueryIntegrationTests`.
+- Workflow tenant-aware read integration guardrails verify `docs/security/workflow-tenant-aware-read-integration.md`, workflow matrix metadata in `docs/security/tenant-isolation-integration-matrix.json`, and `ProtectedWorkflowReadControllersTenantScopedQueryIntegrationTests`.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).
@@ -66,7 +77,7 @@ Guardrails cover:
 ## Future guardrails
 
 - Real anonymous/protected endpoint integration tests after staged route protection rollout.
-- Tenant isolation integration and cross-tenant regression tests.
+- Deeper tenant isolation tests after persistence-layer ownership fields and row-level query filters are introduced.
 - API-key persistence lifecycle and rotation regression tests.
 - Distributed rate-limiting integration tests.
 - Durable audit storage retention and tamper-evidence regression tests.

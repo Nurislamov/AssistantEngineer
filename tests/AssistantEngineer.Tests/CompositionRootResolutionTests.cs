@@ -4,6 +4,10 @@ using AssistantEngineer.Api.Services.Calculations.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Api.Security.Authentication;
+using AssistantEngineer.Api.Security.TenantIsolation;
+using AssistantEngineer.Modules.Buildings.Domain.Entities;
+using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
 using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Modules.Benchmarks;
 using AssistantEngineer.Modules.Benchmarks.Application.Facades;
@@ -80,6 +84,10 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationJobService, EngineeringCalculationJobService>();
         services.AddScoped<IAssistantEngineerAuthorizationService, AllowAllAuthorizationService>();
         services.AddScoped<IProtectedEndpointAuthorizationGate, AllowAllProtectedEndpointAuthorizationGate>();
+        services.AddScoped<IProjectTenantScopedReadService, StubProjectTenantScopedReadService>();
+        services.AddScoped<IBuildingTenantScopedReadService, StubBuildingTenantScopedReadService>();
+        services.AddScoped<IWorkflowTenantScopedReadService, StubWorkflowTenantScopedReadService>();
+        services.AddScoped<ITenantQueryContextFactory, StubTenantQueryContextFactory>();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions
         {
@@ -258,6 +266,190 @@ public class CompositionRootResolutionTests
             _ = artifactId;
             _ = cancellationToken;
             return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+
+        public Task<ProtectedEndpointAuthorizationDecision> RequireWorkflowReadPermissionAsync(
+            string? workflowId,
+            string? scenarioId,
+            string? jobId,
+            int? projectId,
+            int? buildingId,
+            CancellationToken cancellationToken)
+        {
+            _ = workflowId;
+            _ = scenarioId;
+            _ = jobId;
+            _ = projectId;
+            _ = buildingId;
+            _ = cancellationToken;
+            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+        }
+    }
+
+    private sealed class StubProjectTenantScopedReadService : IProjectTenantScopedReadService
+    {
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<Project?>> GetProjectForTenantAsync(
+            int projectId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = projectId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(AssistantEngineer.SharedKernel.Primitives.Result<Project?>.NotFound("Not used in composition-root test."));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<Project>>> ListProjectsForTenantAsync(
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<Project>>.Success(Array.Empty<Project>()));
+        }
+    }
+
+    private sealed class StubBuildingTenantScopedReadService : IBuildingTenantScopedReadService
+    {
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<Building?>> GetBuildingForTenantAsync(
+            int buildingId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = buildingId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(AssistantEngineer.SharedKernel.Primitives.Result<Building?>.NotFound("Not used in composition-root test."));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<Building>>> ListBuildingsForProjectForTenantAsync(
+            int projectId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = projectId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<Building>>.Success(Array.Empty<Building>()));
+        }
+    }
+
+    private sealed class StubTenantQueryContextFactory : ITenantQueryContextFactory
+    {
+        public TenantQueryContext CreateCurrent(
+            bool? includeUnscopedResourcesInTenantLists = null,
+            bool? returnNotFoundForTenantMismatch = null)
+        {
+            _ = returnNotFoundForTenantMismatch;
+            var includeUnscoped = includeUnscopedResourcesInTenantLists ?? false;
+            return CreateAnonymous(includeUnscoped);
+        }
+
+        public TenantQueryContext CreateFromPrincipal(
+            AuthenticatedPrincipal principal,
+            bool? includeUnscopedResourcesInTenantLists = null,
+            bool? returnNotFoundForTenantMismatch = null)
+        {
+            _ = principal;
+            _ = returnNotFoundForTenantMismatch;
+            var includeUnscoped = includeUnscopedResourcesInTenantLists ?? false;
+            return CreateAnonymous(includeUnscoped);
+        }
+
+        private static TenantQueryContext CreateAnonymous(bool includeUnscopedResourcesInTenantLists)
+        {
+            return new TenantQueryContext(
+                UserId: null,
+                OrganizationId: null,
+                IsAuthenticated: false,
+                Permissions: new HashSet<string>(StringComparer.OrdinalIgnoreCase),
+                AllowUnscopedResourcesDuringTransition: false,
+                StrictTenantMatch: true,
+                ReturnNotFoundForTenantMismatch: false,
+                IncludeUnscopedResourcesInTenantLists: includeUnscopedResourcesInTenantLists);
+        }
+    }
+
+    private sealed class StubWorkflowTenantScopedReadService : IWorkflowTenantScopedReadService
+    {
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<WorkflowTenantScopedStateReadResult>> GetWorkflowStateForTenantAsync(
+            int projectId,
+            int? buildingId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = projectId;
+            _ = buildingId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<WorkflowTenantScopedStateReadResult>.Success(
+                    new WorkflowTenantScopedStateReadResult(null)));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>> GetScenarioForTenantAsync(
+            string scenarioId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = scenarioId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>.NotFound(
+                    "Not used in composition-root test."));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>>> ListScenariosForProjectForTenantAsync(
+            int projectId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = projectId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>>.Success(
+                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>()));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>> GetJobForTenantAsync(
+            string jobId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = jobId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>.NotFound(
+                    "Not used in composition-root test."));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>>> GetJobEventsForTenantAsync(
+            string jobId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = jobId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>>.Success(
+                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>()));
+        }
+
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>>> ListJobsForProjectForTenantAsync(
+            int projectId,
+            TenantQueryContext context,
+            CancellationToken cancellationToken = default)
+        {
+            _ = projectId;
+            _ = context;
+            _ = cancellationToken;
+            return Task.FromResult(
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>>.Success(
+                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>()));
         }
     }
 }

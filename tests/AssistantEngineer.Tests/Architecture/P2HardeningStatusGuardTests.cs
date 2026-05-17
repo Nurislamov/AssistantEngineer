@@ -29,13 +29,18 @@ public class P2HardeningStatusGuardTests
     [Fact]
     public void EngineeringWorkflowListEndpointsArePaged()
     {
-        var controllerPath = Path.Combine(
+        var controllerBasePath = Path.Combine(
             TestPaths.ApiProjectPath,
             "Controllers",
             "Calculations",
             "EngineeringWorkflowController.cs");
+        var controllerReadHistoryPath = Path.Combine(
+            TestPaths.ApiProjectPath,
+            "Controllers",
+            "Calculations",
+            "EngineeringWorkflowController.ReadHistory.cs");
 
-        var text = File.ReadAllText(controllerPath);
+        var text = File.ReadAllText(controllerBasePath) + Environment.NewLine + File.ReadAllText(controllerReadHistoryPath);
 
         Assert.Contains("PagedResponse<EngineeringCalculationJobResultDto>", text, StringComparison.Ordinal);
         Assert.Contains("ListProjectJobs(", text, StringComparison.Ordinal);

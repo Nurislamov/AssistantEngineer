@@ -7,10 +7,14 @@ namespace AssistantEngineer.Api.Security.Authorization;
 public sealed class DefaultBuildingReadAccessScopeResolver : IBuildingReadAccessScopeResolver
 {
     private readonly IBuildingRepository _buildings;
+    private readonly IProjectReadAccessScopeResolver _projectScopeResolver;
 
-    public DefaultBuildingReadAccessScopeResolver(IBuildingRepository buildings)
+    public DefaultBuildingReadAccessScopeResolver(
+        IBuildingRepository buildings,
+        IProjectReadAccessScopeResolver projectScopeResolver)
     {
         _buildings = buildings;
+        _projectScopeResolver = projectScopeResolver;
     }
 
     public async Task<BuildingAccessScope?> ResolveBuildingScopeAsync(
@@ -27,11 +31,16 @@ public sealed class DefaultBuildingReadAccessScopeResolver : IBuildingReadAccess
             return null;
         }
 
+        var projectScope = await _projectScopeResolver.ResolveProjectScopeAsync(
+            building.ProjectId,
+            cancellationToken);
+
         return ProjectTenantAccessScopeFactory.CreateBuildingScope(
             buildingId: building.Id,
             projectId: building.ProjectId,
-            organizationId: null,
-            ownerUserId: null,
-            isTenantScoped: false);
+            organizationId: projectScope?.OrganizationId,
+            ownerUserId: projectScope?.OwnerUserId,
+            isTenantScoped: projectScope?.IsTenantScoped ?? false,
+            tenantScope: projectScope?.TenantScope);
     }
 }

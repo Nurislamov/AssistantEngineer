@@ -58,6 +58,26 @@ public sealed class EndpointRateLimitCategoryResolverTests
     }
 
     [Fact]
+    public void WorkflowReadStatePath_ResolvesToWorkflowRead()
+    {
+        var context = CreateContext("GET", "/api/v1/engineering-workflow/1/state");
+
+        var category = _resolver.ResolveCategory(context);
+
+        Assert.Equal(EndpointRateLimitCategories.WorkflowRead, category);
+    }
+
+    [Fact]
+    public void WorkflowReadScenarioPath_ResolvesToWorkflowRead()
+    {
+        var context = CreateContext("GET", "/api/v1/engineering-workflow/scenarios/sample");
+
+        var category = _resolver.ResolveCategory(context);
+
+        Assert.Equal(EndpointRateLimitCategories.WorkflowRead, category);
+    }
+
+    [Fact]
     public void ReferencePath_ResolvesToReferenceData()
     {
         var context = CreateContext("GET", "/api/v1/reference-data/climate-zones");

@@ -270,10 +270,22 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<int?>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OwnerUserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("OrganizationId", "Id");
 
                     b.ToTable("Projects", (string)null);
                 });
@@ -599,7 +611,7 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("AssistantEngineer.Modules.Buildings.Domain.Climate.WeatherRecord", "WeatherRecord", b1 =>
+                    b.OwnsOne("AssistantEngineer.Modules.Buildings.Domain.Climate.WeatherRecord", "Weather", b1 =>
                         {
                             b1.Property<int>("AnnualHourlyDataId")
                                 .HasColumnType("integer");
@@ -658,7 +670,7 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
 
                     b.Navigation("AnnualClimateData");
 
-                    b.Navigation("WeatherRecord")
+                    b.Navigation("Weather")
                         .IsRequired();
                 });
 
@@ -724,7 +736,7 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("AssistantEngineer.Modules.Buildings.Domain.Climate.WeatherRecord", "WeatherRecord", b1 =>
+                    b.OwnsOne("AssistantEngineer.Modules.Buildings.Domain.Climate.WeatherRecord", "Weather", b1 =>
                         {
                             b1.Property<int>("DesignDayHourlyDataId")
                                 .HasColumnType("integer");
@@ -783,7 +795,7 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
 
                     b.Navigation("ClimateData");
 
-                    b.Navigation("WeatherRecord")
+                    b.Navigation("Weather")
                         .IsRequired();
                 });
 

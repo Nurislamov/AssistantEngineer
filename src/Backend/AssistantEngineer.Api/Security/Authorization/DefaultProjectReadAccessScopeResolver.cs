@@ -28,8 +28,11 @@ public sealed class DefaultProjectReadAccessScopeResolver : IProjectReadAccessSc
 
         return ProjectTenantAccessScopeFactory.CreateProjectScope(
             projectId: project.Id,
-            organizationId: null,
-            ownerUserId: null,
-            isTenantScoped: false);
+            organizationId: project.OrganizationId,
+            ownerUserId: project.OwnerUserId,
+            isTenantScoped: project.IsTenantScoped,
+            tenantScope: project.OrganizationId.HasValue
+                ? new TenantScope(project.OrganizationId.Value, $"org-{project.OrganizationId.Value}", IsActive: true)
+                : null);
     }
 }

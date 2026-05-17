@@ -42,18 +42,24 @@ Organization/Tenant
 - Ownership metadata is modeled as optional in this phase to support legacy datasets.
 - Policy checks use principal context, required permission, tenant identifier, and legacy options.
 - Principal context is supplied by the API authentication boundary defined in `docs/security/api-authentication-boundary.md`.
+- P5-16A persists nullable `Project.OrganizationId` and `Project.OwnerUserId` as transition ownership fields (`docs/security/persistence-backed-tenant-ownership-fields.md`).
+- P5-16B adds explicit tenant-aware query isolation services (`docs/security/tenant-aware-query-isolation-services.md`) that can read Projects/Buildings through persisted ownership without enabling global filters.
+- P5-16C allows protected Project/Building read controllers to consume these tenant-aware query services (`docs/security/tenant-aware-read-controller-integration.md`) when rollout options are enabled.
+- P5-16D extends this controller-integration pattern to protected workflow read/history routes by deriving tenant scope from workflow/project/building metadata where available (`docs/security/workflow-tenant-aware-read-integration.md`).
 
 ## Building scoping model
 
 - `BuildingAccessScope` carries `BuildingId`, `ProjectId`, and optional ownership metadata.
 - Building access is evaluated with the same tenant/permission rules used for projects.
 - Buildings conceptually inherit tenant boundary from project ownership.
+- P5-16A keeps tenant ownership centralized on Project; building scope derives `OrganizationId`/`OwnerUserId` from the parent Project resolver.
 
 ## Workflow scoping model
 
 - `WorkflowAccessScope` carries workflow identity and optional `ProjectId`/`BuildingId` mapping.
 - Workflow access follows the same tenant and permission checks.
 - Workflow resources remain policy-addressable even before route-level enforcement.
+- P5-16D workflow read integration uses workflow/project/building metadata resolution in a controlled staged query path; metadata-incomplete paths remain strict/compatibility-option controlled.
 
 ## Legacy unscoped resource migration
 
@@ -75,9 +81,10 @@ Organization/Tenant
 
 ## Schema status
 
-- P5-02 introduces policy/contracts only.
-- No Project/Building database schema changes are applied in this step.
-- Ownership columns and migration changes are intentionally deferred to a targeted follow-up once route policy rollout order is finalized.
+- P5-02 introduced policy/contracts only.
+- P5-16A adds nullable Project ownership fields and append-only migration foundation.
+- P5-16B adds explicit Project/Building query isolation services as a foundation.
+- No global query filters or database row-level security are applied in these steps.
 
 ## What is intentionally not enforced yet
 
@@ -92,3 +99,7 @@ Organization/Tenant
 - P5-03: authentication boundary strategy and principal propagation.
 - P5-04: staged route-level authorization policies using project/building/workflow scopes.
 - P5-08: security regression tests for tenant isolation and anonymous access boundaries.
+- P5-15: cross-tenant integration matrix for protected endpoint rollout expectations (`docs/security/tenant-isolation-integration-matrix.md`).
+- P5-16A: persisted Project ownership foundation (`docs/security/persistence-backed-tenant-ownership-fields.md`).
+- P5-16B: explicit tenant-aware Project/Building query isolation services (`docs/security/tenant-aware-query-isolation-services.md`).
+- P5-16D: workflow tenant-aware read integration for protected workflow read/history routes (`docs/security/workflow-tenant-aware-read-integration.md`).

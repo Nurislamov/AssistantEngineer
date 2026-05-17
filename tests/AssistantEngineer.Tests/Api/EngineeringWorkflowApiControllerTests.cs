@@ -1,12 +1,15 @@
 using AssistantEngineer.Api.Controllers.Calculations;
+using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Api.Security.TenantIsolation;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Api;
 
@@ -47,7 +50,10 @@ public class EngineeringWorkflowApiControllerTests
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowSubmissionService), dependencies);
         Assert.Contains(typeof(IProtectedEndpointAuthorizationGate), dependencies);
-        Assert.Equal(11, dependencies.Length);
+        Assert.Contains(typeof(IWorkflowTenantScopedReadService), dependencies);
+        Assert.Contains(typeof(ITenantQueryContextFactory), dependencies);
+        Assert.Contains(typeof(IOptionsMonitor<ApiAuthorizationOptions>), dependencies);
+        Assert.Equal(14, dependencies.Length);
     }
 
     [Fact]

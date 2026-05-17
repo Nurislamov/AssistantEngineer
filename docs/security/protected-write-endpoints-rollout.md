@@ -112,3 +112,8 @@ Defaults keep local/dev behavior compatible unless rollout flags are explicitly 
 - Calculation run endpoints (`WorkflowsExecute`) with scoped authorization + rate-limit coordination.
 - Report generate/export endpoints (`ReportsWrite`) with read/write separation.
 - Artifact management endpoints with explicit ownership/scope enforcement.
+
+P5-15 tenant isolation note:
+
+- Cross-tenant expectations for `ProjectsWrite` and `BuildingsWrite` are tracked in `docs/security/tenant-isolation-integration-matrix.md`.
+- P5-15 adds matrix tests for write gate decisions while preserving compatibility-disabled defaults.

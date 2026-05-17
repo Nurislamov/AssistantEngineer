@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.Identity.Application.Services.Access;
 using AssistantEngineer.Modules.Identity.Application.Services;
 using AssistantEngineer.Modules.Identity.Application.Abstractions;
+using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
 using AssistantEngineer.Modules.Identity.Application.Services.Audit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,6 +80,7 @@ internal static class IdentityModuleRegistration
 
         services.AddSingleton<OrganizationPermissionPolicy>();
         services.AddSingleton<ProjectTenantAccessPolicy>();
+        services.AddSingleton<ITenantQueryIsolationPolicy, TenantQueryIsolationPolicy>();
         services.AddSingleton<AuditMetadataSanitizer>();
         services.AddSingleton<AuditEventFactory>();
         services.AddSingleton<IAuditLogWriter, InMemoryAuditLogWriter>();

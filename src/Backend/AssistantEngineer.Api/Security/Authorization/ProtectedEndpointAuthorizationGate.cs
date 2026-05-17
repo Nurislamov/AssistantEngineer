@@ -167,21 +167,11 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
             var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
             if (workflowScope is not null)
             {
-                var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
-                if (_accessPolicy.CanAccessWorkflow(principalContext, workflowScope, permission))
+                var workflowScopeDecision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId: null);
+                if (workflowScopeDecision.HasValue)
                 {
-                    return ProtectedEndpointAuthorizationDecision.Allowed;
+                    return workflowScopeDecision.Value;
                 }
-
-                _logger.LogInformation(
-                    "Workflow authorization denied for principal. WorkflowId={WorkflowId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
-                    workflowId,
-                    permission,
-                    options.ReturnNotFoundForTenantMismatch);
-
-                return options.ReturnNotFoundForTenantMismatch
-                    ? ProtectedEndpointAuthorizationDecision.NotFound
-                    : ProtectedEndpointAuthorizationDecision.Forbidden;
             }
         }
 
@@ -329,6 +319,62 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
             cancellationToken);
     }
 
+    public async Task<ProtectedEndpointAuthorizationDecision> RequireWorkflowReadPermissionAsync(
+        string? workflowId,
+        string? scenarioId,
+        string? jobId,
+        int? projectId,
+        int? buildingId,
+        CancellationToken cancellationToken)
+    {
+        var options = _optionsMonitor.CurrentValue;
+        if (!IsWorkflowReadProtectionRequired(options))
+        {
+            return ProtectedEndpointAuthorizationDecision.Allowed;
+        }
+
+        if (CanBypassDevelopmentAnonymous(options))
+        {
+            return ProtectedEndpointAuthorizationDecision.Allowed;
+        }
+
+        var principal = _principalProvider.GetCurrentPrincipal();
+        if (!principal.IsAuthenticated)
+        {
+            return ProtectedEndpointAuthorizationDecision.Unauthorized;
+        }
+
+        if (!HasPermission(principal, Permission.WorkflowsRead))
+        {
+            return ProtectedEndpointAuthorizationDecision.Forbidden;
+        }
+
+        var scopeDecision = await AuthorizeWorkflowScopeByAnyIdentifierAsync(
+            principal,
+            Permission.WorkflowsRead,
+            options,
+            workflowId,
+            scenarioId,
+            jobId,
+            cancellationToken);
+        if (scopeDecision.HasValue)
+        {
+            return scopeDecision.Value;
+        }
+
+        if (buildingId.HasValue)
+        {
+            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, Permission.WorkflowsRead, options, cancellationToken);
+        }
+
+        if (projectId.HasValue)
+        {
+            return await AuthorizeProjectScopeAsync(principal, projectId.Value, Permission.WorkflowsRead, options, cancellationToken);
+        }
+
+        return ProtectedEndpointAuthorizationDecision.Allowed;
+    }
+
     private bool CanBypassDevelopmentAnonymous(ApiAuthorizationOptions options)
     {
         return _environment.IsDevelopment() && options.AllowAnonymousInDevelopment;
@@ -419,6 +465,13 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
                options.RequireCalculationRunAuthorization;
     }
 
+    private static bool IsWorkflowReadProtectionRequired(ApiAuthorizationOptions options)
+    {
+        return options.Enabled &&
+               options.EnableWorkflowReadEndpointProtectionPilot &&
+               options.RequireWorkflowReadAuthorization;
+    }
+
     private static bool IsReportReadProtectionRequired(ApiAuthorizationOptions options)
     {
         return options.Enabled &&
@@ -483,22 +536,11 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
             var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
             if (workflowScope is not null)
             {
-                var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
-                if (_accessPolicy.CanAccessWorkflow(principalContext, workflowScope, permission))
+                var workflowScopeDecision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId);
+                if (workflowScopeDecision.HasValue)
                 {
-                    return ProtectedEndpointAuthorizationDecision.Allowed;
+                    return workflowScopeDecision.Value;
                 }
-
-                _logger.LogInformation(
-                    "Report/artifact authorization denied for principal. WorkflowId={WorkflowId}, ArtifactId={ArtifactId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
-                    workflowId,
-                    artifactId,
-                    permission,
-                    options.ReturnNotFoundForTenantMismatch);
-
-                return options.ReturnNotFoundForTenantMismatch
-                    ? ProtectedEndpointAuthorizationDecision.NotFound
-                    : ProtectedEndpointAuthorizationDecision.Forbidden;
             }
         }
 
@@ -513,6 +555,93 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         }
 
         return ProtectedEndpointAuthorizationDecision.Allowed;
+    }
+
+    private async Task<ProtectedEndpointAuthorizationDecision?> AuthorizeWorkflowScopeByAnyIdentifierAsync(
+        AuthenticatedPrincipal principal,
+        Permission permission,
+        ApiAuthorizationOptions options,
+        string? workflowId,
+        string? scenarioId,
+        string? jobId,
+        CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(workflowId))
+        {
+            var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
+            if (workflowScope is not null)
+            {
+                var decision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId: null);
+                if (decision.HasValue)
+                {
+                    return decision.Value;
+                }
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(scenarioId))
+        {
+            var scenarioScope = await _workflowScopeResolver.ResolveScenarioScopeAsync(scenarioId, cancellationToken);
+            if (scenarioScope is not null)
+            {
+                var decision = AuthorizeResolvedWorkflowScope(principal, scenarioScope, permission, options, scenarioId, artifactId: null);
+                if (decision.HasValue)
+                {
+                    return decision.Value;
+                }
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(jobId))
+        {
+            var jobScope = await _workflowScopeResolver.ResolveJobScopeAsync(jobId, cancellationToken);
+            if (jobScope is not null)
+            {
+                var decision = AuthorizeResolvedWorkflowScope(principal, jobScope, permission, options, jobId, artifactId: null);
+                if (decision.HasValue)
+                {
+                    return decision.Value;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private ProtectedEndpointAuthorizationDecision? AuthorizeResolvedWorkflowScope(
+        AuthenticatedPrincipal principal,
+        WorkflowAccessScope workflowScope,
+        Permission permission,
+        ApiAuthorizationOptions options,
+        string workflowIdentifier,
+        string? artifactId)
+    {
+        var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
+        if (_accessPolicy.CanAccessWorkflow(principalContext, workflowScope, permission))
+        {
+            return ProtectedEndpointAuthorizationDecision.Allowed;
+        }
+
+        if (workflowScope.OrganizationId is null && !workflowScope.IsTenantScoped)
+        {
+            return null;
+        }
+
+        _logger.LogInformation(
+            "Workflow authorization denied for principal. WorkflowId={WorkflowId}, ArtifactId={ArtifactId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
+            workflowIdentifier,
+            artifactId,
+            permission,
+            ShouldReturnNotFoundForWorkflowTenantMismatch(options));
+
+        return ShouldReturnNotFoundForWorkflowTenantMismatch(options)
+            ? ProtectedEndpointAuthorizationDecision.NotFound
+            : ProtectedEndpointAuthorizationDecision.Forbidden;
+    }
+
+    private static bool ShouldReturnNotFoundForWorkflowTenantMismatch(ApiAuthorizationOptions options)
+    {
+        return options.ReturnNotFoundForWorkflowTenantMismatch || options.ReturnNotFoundForTenantMismatch;
     }
 
     private async Task<ProtectedEndpointAuthorizationDecision> AuthorizeProjectScopeAsync(

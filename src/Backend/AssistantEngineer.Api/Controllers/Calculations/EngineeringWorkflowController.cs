@@ -3,17 +3,21 @@ using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Contracts.Calculations;
 using AssistantEngineer.Api.Extensions.Collections;
+using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Querying.Projects;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Api.Security.Authorization;
+using AssistantEngineer.Api.Security.TenantIsolation;
+using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Identity.Domain.Enums;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Controllers.Calculations;
 
@@ -36,6 +40,9 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
     private readonly IEngineeringWorkflowSubmissionService _workflowSubmissionService;
     private readonly IProtectedEndpointAuthorizationGate _authorizationGate;
+    private readonly IWorkflowTenantScopedReadService _workflowTenantScopedReads;
+    private readonly ITenantQueryContextFactory _tenantQueryContextFactory;
+    private readonly IOptionsMonitor<ApiAuthorizationOptions> _authorizationOptions;
 
     public EngineeringWorkflowController(
         IEngineeringWorkflowStateBuilder stateBuilder,
@@ -48,7 +55,10 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         IEngineeringCalculationJobService jobService,
         IEngineeringWorkflowPersistenceService workflowPersistence,
         IEngineeringWorkflowSubmissionService workflowSubmissionService,
-        IProtectedEndpointAuthorizationGate authorizationGate)
+        IProtectedEndpointAuthorizationGate authorizationGate,
+        IWorkflowTenantScopedReadService workflowTenantScopedReads,
+        ITenantQueryContextFactory tenantQueryContextFactory,
+        IOptionsMonitor<ApiAuthorizationOptions> authorizationOptions)
     {
         _stateBuilder = stateBuilder;
         _workflowDiagnostics = workflowDiagnostics;
@@ -61,41 +71,9 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         _workflowPersistence = workflowPersistence;
         _workflowSubmissionService = workflowSubmissionService;
         _authorizationGate = authorizationGate;
-    }
-
-    [HttpGet("{projectId:int}/state")]
-    public async Task<ActionResult<EngineeringWorkflowStateDto>> GetWorkflowState(
-        int projectId,
-        [FromQuery] int? buildingId,
-        CancellationToken cancellationToken)
-    {
-        var persistedState = await _workflowPersistence.GetLatestWorkflowStateAsync(
-            projectId,
-            buildingId,
-            cancellationToken);
-
-        if (persistedState is not null)
-        {
-            return Ok(persistedState);
-        }
-
-        EngineeringWorkflowStateDto state;
-
-        try
-        {
-            state = await _stateBuilder.BuildWorkflowStateAsync(projectId, buildingId, cancellationToken);
-            state = _workflowDiagnostics.AddMissingPersistedStateDiagnostic(state, _workflowPersistence.GetProviderInfo());
-            await _workflowPersistence.SaveWorkflowStateAsync(state, state.Diagnostics, cancellationToken);
-        }
-        catch (Exception exception)
-        {
-            state = _stateBuilder.BuildInfrastructureFallbackState(
-                projectId,
-                buildingId,
-                $"Workflow persistence source is unavailable: {exception.Message}");
-        }
-
-        return Ok(state);
+        _workflowTenantScopedReads = workflowTenantScopedReads;
+        _tenantQueryContextFactory = tenantQueryContextFactory;
+        _authorizationOptions = authorizationOptions;
     }
 
     [HttpPost("validate")]
@@ -266,34 +244,6 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         return Ok(outcome.Payload);
     }
 
-    [HttpGet("jobs/{jobId}")]
-    public async Task<ActionResult<EngineeringCalculationJobResultDto>> GetJob(
-        string jobId,
-        CancellationToken cancellationToken)
-    {
-        var result = await _jobService.GetJobAsync(jobId, cancellationToken);
-        if (result is null)
-        {
-            return NotFound(new
-            {
-                jobId,
-                code = "CALCULATION_JOB_NOT_FOUND",
-                message = "Calculation job was not found in workflow persistence store."
-            });
-        }
-
-        return Ok(result);
-    }
-
-    [HttpGet("jobs/{jobId}/events")]
-    public async Task<ActionResult<IReadOnlyList<EngineeringCalculationJobEventDto>>> GetJobEvents(
-        string jobId,
-        CancellationToken cancellationToken)
-    {
-        var events = await _jobService.ListJobEventsAsync(jobId, cancellationToken);
-        return Ok(events);
-    }
-
     [HttpPost("jobs/{jobId}/cancel")]
     public async Task<ActionResult<EngineeringCalculationJobResultDto>> CancelJob(
         string jobId,
@@ -324,49 +274,6 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{projectId:int}/jobs")]
-    public async Task<ActionResult<PagedResponse<EngineeringCalculationJobResultDto>>> ListProjectJobs(
-        int projectId,
-        [FromQuery] CollectionQueryParameters query,
-        CancellationToken cancellationToken)
-    {
-        var jobs = await _jobService.ListProjectJobsAsync(projectId, cancellationToken);
-        return Ok(jobs
-            .ApplyProjectListQuery(query)
-            .ToPagedResponse(NormalizeWorkflowListQuery(query)));
-    }
-
-    [HttpGet("scenarios/{scenarioId}")]
-    public async Task<ActionResult<EngineeringCalculationScenarioRecordDto>> GetScenarioResult(
-        string scenarioId,
-        CancellationToken cancellationToken)
-    {
-        var scenario = await _workflowPersistence.GetScenarioAsync(scenarioId, cancellationToken);
-        if (scenario is null)
-        {
-            return NotFound(new
-            {
-                scenarioId,
-                code = "WORKFLOW_SCENARIO_NOT_FOUND",
-                message = "Scenario record was not found in workflow persistence foundation store."
-            });
-        }
-
-        return Ok(scenario);
-    }
-
-    [HttpGet("{projectId:int}/scenarios")]
-    public async Task<ActionResult<PagedResponse<EngineeringCalculationScenarioRecordDto>>> GetProjectScenarios(
-        int projectId,
-        [FromQuery] CollectionQueryParameters query,
-        CancellationToken cancellationToken)
-    {
-        var scenarios = await _workflowPersistence.ListProjectScenariosAsync(projectId, cancellationToken);
-        return Ok(scenarios
-            .ApplyProjectListQuery(query)
-            .ToPagedResponse(NormalizeWorkflowListQuery(query)));
-    }
-
     private static CollectionQueryParameters NormalizeWorkflowListQuery(CollectionQueryParameters query)
     {
         var page = query.GetPage();
@@ -390,4 +297,18 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
             ProtectedEndpointAuthorizationOutcome.NotFound => NotFound(),
             _ => Ok()
         };
+
+    private bool ShouldUseTenantScopedWorkflowReads()
+    {
+        var options = _authorizationOptions.CurrentValue;
+        return options.RequiresProtectedWorkflowReadAuthorization();
+    }
+
+    private TenantQueryContext CreateWorkflowTenantContext(bool includeUnscopedResourcesInTenantLists)
+    {
+        var options = _authorizationOptions.CurrentValue;
+        return _tenantQueryContextFactory.CreateCurrent(
+            includeUnscopedResourcesInTenantLists: includeUnscopedResourcesInTenantLists,
+            returnNotFoundForTenantMismatch: options.ShouldReturnNotFoundForWorkflowTenantMismatch());
+    }
 }

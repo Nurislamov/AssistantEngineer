@@ -36,6 +36,12 @@ public sealed class ApiAuthorizationOptions
 
     public bool RequireArtifactWriteAuthorization { get; set; } = false;
 
+    public bool EnableWorkflowReadEndpointProtectionPilot { get; set; } = false;
+
+    public bool RequireWorkflowReadAuthorization { get; set; } = false;
+
+    public bool ReturnNotFoundForWorkflowTenantMismatch { get; set; } = false;
+
     public bool ReturnNotFoundForTenantMismatch { get; set; } = false;
 
     public bool AllowAnonymousInDevelopment { get; set; } = true;

@@ -8,6 +8,8 @@ public class Project
 {
     public int Id { get; private set; }
     public string Name { get; private set; } = string.Empty;
+    public int? OrganizationId { get; private set; }
+    public int? OwnerUserId { get; private set; }
     public CalculationPreferences? Preferences { get; private set; }
 
     private readonly List<Building> _buildings = new();
@@ -36,6 +38,26 @@ public class Project
         Name = nameResult.Value;
         return Result.Success();
     }
+
+    public Result AssignOrganization(int organizationId)
+    {
+        if (organizationId <= 0)
+            return Result.Validation("Organization id must be positive.");
+
+        OrganizationId = organizationId;
+        return Result.Success();
+    }
+
+    public Result AssignOwnerUser(int ownerUserId)
+    {
+        if (ownerUserId <= 0)
+            return Result.Validation("Owner user id must be positive.");
+
+        OwnerUserId = ownerUserId;
+        return Result.Success();
+    }
+
+    public bool IsTenantScoped => OrganizationId.HasValue;
 
     public Result AddBuilding(Building building)
     {

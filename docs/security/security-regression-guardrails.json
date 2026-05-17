@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewedDate": "2026-05-14",
+  "lastReviewedDate": "2026-05-17",
   "guardrails": [
     {
       "guardrailId": "SEC-GUARD-ROUTE-INVENTORY",
@@ -82,6 +82,51 @@
       "testName": "FrontendSecretsGuardTests",
       "risk": "Client-side secret material leakage and insecure token handling.",
       "notes": "High-confidence hardcoded token/key patterns are blocked in frontend source."
+    },
+    {
+      "guardrailId": "SEC-GUARD-TENANT-ISOLATION-MATRIX",
+      "title": "Tenant isolation matrix must stay aligned with protected endpoint rollout",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5TenantIsolationIntegrationMatrixGovernanceTests",
+      "risk": "Cross-tenant expectations can drift from staged protected endpoint behavior.",
+      "notes": "Validates tenant-isolation-integration-matrix.md/json/schema plus endpoint inventory and test coverage references."
+    },
+    {
+      "guardrailId": "SEC-GUARD-PERSISTED-TENANT-OWNERSHIP",
+      "title": "Persistence-backed ownership migrations must stay append-only and documented",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5PersistenceBackedTenantOwnershipGovernanceTests",
+      "risk": "Tenant ownership schema changes can become destructive or overclaim isolation guarantees.",
+      "notes": "Validates P5-16A documentation, roadmap inventory, migration safety, and model snapshot fields."
+    },
+    {
+      "guardrailId": "SEC-GUARD-TENANT-QUERY-ISOLATION",
+      "title": "Tenant-aware query isolation services must remain explicit and documented",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5TenantAwareQueryIsolationGovernanceTests",
+      "risk": "Query isolation services can drift into hidden global filtering or overclaim full tenant isolation.",
+      "notes": "Validates P5-16B documentation, service contracts, production inventory, and no global EF query filter/full-isolation claims."
+    },
+    {
+      "guardrailId": "SEC-GUARD-TENANT-READ-CONTROLLER-INTEGRATION",
+      "title": "Tenant-aware read controller integration must stay rollout-gated and documented",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5TenantAwareReadControllerIntegrationGovernanceTests",
+      "risk": "Controller-level tenant-aware read integration can drift from staged rollout constraints or overclaim full isolation.",
+      "notes": "Validates P5-16C documentation, matrix metadata for ProjectsRead/BuildingsRead, and readiness inventory references while keeping workflow integration staged."
+    },
+    {
+      "guardrailId": "SEC-GUARD-WORKFLOW-TENANT-READ-INTEGRATION",
+      "title": "Workflow tenant-aware read integration must stay rollout-gated and documented",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P5WorkflowTenantAwareReadIntegrationGovernanceTests",
+      "risk": "Workflow read/history tenant-aware integration can drift from staged rollout constraints or overclaim full isolation.",
+      "notes": "Validates P5-16D documentation, workflow matrix metadata, readiness inventory linkage, and DI registration for workflow tenant-aware read service."
     }
   ],
   "nonClaims": [

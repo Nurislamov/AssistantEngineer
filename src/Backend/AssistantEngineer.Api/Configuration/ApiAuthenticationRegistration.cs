@@ -2,6 +2,7 @@ using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Api.Security.Authentication;
 using AssistantEngineer.Api.Security.ApiKey;
+using AssistantEngineer.Api.Security.TenantIsolation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
@@ -89,6 +90,10 @@ internal static class ApiAuthenticationRegistration
         services.AddScoped<IRoomAccessScopeResolver, DefaultRoomAccessScopeResolver>();
         services.AddScoped<IWorkflowAccessScopeResolver, DefaultWorkflowAccessScopeResolver>();
         services.AddScoped<IProtectedEndpointAuthorizationGate, ProtectedEndpointAuthorizationGate>();
+        services.AddScoped<IProjectTenantScopedReadService, ProjectTenantScopedReadService>();
+        services.AddScoped<IBuildingTenantScopedReadService, BuildingTenantScopedReadService>();
+        services.AddScoped<IWorkflowTenantScopedReadService, WorkflowTenantScopedReadService>();
+        services.AddScoped<ITenantQueryContextFactory, TenantQueryContextFactory>();
         services.AddSingleton<IApiKeyValidator, ConfiguredApiKeyValidator>();
 
         services
