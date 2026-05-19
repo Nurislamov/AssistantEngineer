@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantEngineer ownership backfill apply-mode design descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "applyEnabled",
+    "backfillExecution",
+    "requiredPreconditions",
+    "confirmationPhrase",
+    "requiredEvidenceArtifacts",
+    "batchPolicy",
+    "idempotencyRules",
+    "rollbackEvidenceRequirements",
+    "nonClaims"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lastReviewedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "stage": {
+      "type": "string",
+      "const": "P6-04"
+    },
+    "applyEnabled": {
+      "type": "boolean"
+    },
+    "backfillExecution": {
+      "type": "boolean"
+    },
+    "requiredPreconditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "confirmationPhrase": {
+      "type": "string"
+    },
+    "requiredEvidenceArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "batchPolicy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "defaultBatchSize",
+        "transactionScope",
+        "stopOnFirstBatchError",
+        "skipAlreadyConverged",
+        "skipAmbiguous",
+        "skipUnresolved",
+        "requiresApplySummary"
+      ]
+    },
+    "idempotencyRules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "rollbackEvidenceRequirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "nonClaims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  }
+}

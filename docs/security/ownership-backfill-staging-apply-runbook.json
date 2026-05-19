@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-10",
+  "stagingApplyEnabled": false,
+  "productionApplyEnabled": false,
+  "backfillExecution": false,
+  "environmentRequirements": [
+    "DedicatedStagingDatabase",
+    "StagingProductionSeparation",
+    "NoConnectionStringInArtifacts",
+    "BackupBeforeApply",
+    "RestoreProcedureVerified",
+    "SchemaVersionMatch",
+    "NoPendingMigrationsWithoutPolicyException",
+    "StagingDataSnapshotRecorded"
+  ],
+  "operatorRequirements": [
+    "NamedOperator",
+    "OperatorNotSoleApprover",
+    "StagingOnlyCredentials",
+    "NoProductionCredentials",
+    "SecretFreeCommandTranscript",
+    "ApplyInputHashReferenceRequired"
+  ],
+  "requiredEvidence": [
+    "DryRunSummary",
+    "EvidenceValidationGateResult",
+    "ApplyPlanArtifact",
+    "PlanHash",
+    "PlanSignoffArtifact",
+    "ApplyReadinessGateResult",
+    "ApplyInputHash",
+    "PreviousValuesSnapshot",
+    "StagingBackupReference",
+    "RollbackRehearsalPlan",
+    "ChangeRequestId"
+  ],
+  "acceptanceCriteria": [
+    "ReadinessGatePassed",
+    "ApplyInputHashMatchesChangeRequest",
+    "FutureApplyFailedRecordsZero",
+    "PostApplyDryRunBelowThreshold",
+    "TenantIsolationMatrixPasses",
+    "RouteSecurityRegressionPasses",
+    "RollbackEvidenceComplete",
+    "NoUnexpectedDtoApiRuntimeChanges",
+    "NoSecretOrPayloadLeakage"
+  ],
+  "failureCategories": [
+    "EvidenceMismatch",
+    "HashMismatch",
+    "UnresolvedAboveThreshold",
+    "AmbiguousRecords",
+    "SchemaMismatch",
+    "RollbackReadinessFailure",
+    "TestRegression"
+  ],
+  "promotionCriteria": [
+    "StagingAccepted",
+    "StagingEvidenceArchived",
+    "ProductionDryRunEvidenceSeparate",
+    "ProductionChangeRequestReferencesProductionApplyInputHash",
+    "ProductionApprovalsRenewed"
+  ],
+  "nonClaims": [
+    "No staging apply execution claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

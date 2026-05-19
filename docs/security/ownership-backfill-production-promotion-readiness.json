@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-13",
+  "productionApplyEnabled": false,
+  "stagingApplyEnabled": false,
+  "backfillExecution": false,
+  "requiredStagingEvidence": [
+    "StagingAcceptanceAccepted",
+    "StagingRunHash",
+    "StagingApplyInputHash",
+    "StagingChangeId",
+    "StagingOperatorId",
+    "StagingEvidenceArchiveReference",
+    "StagingSignoffValidAtExecutionTime",
+    "StagingFailedRecordsZero",
+    "StagingRollbackEvidenceComplete"
+  ],
+  "requiredProductionEvidence": [
+    "ProductionDryRunSummary",
+    "ProductionEvidenceGatePassed",
+    "ProductionApplyPlan",
+    "ProductionPlanHash",
+    "ProductionSignoff",
+    "ProductionReadinessPassed",
+    "ProductionApplyInputHash",
+    "ProductionPreviousValuesComplete",
+    "ProductionBackupRestoreReadiness",
+    "ProductionRollbackReadiness",
+    "ProductionChangeRequestId"
+  ],
+  "crossEnvironmentSeparationRules": [
+    "StagingApplyInputHashMustNotEqualProductionApplyInputHashByDefault",
+    "ProductionDryRunMustUseProductionDataset",
+    "ProductionSignoffMustBeSeparateFromStagingSignoff",
+    "ProductionReadinessMustBeSeparateFromStagingReadiness",
+    "ProductionBackupReferenceMustBeProductionSpecific",
+    "ProductionChangeRequestIdMustBeProductionSpecific",
+    "NoStagingConnectionReferenceInProductionArtifacts",
+    "NoProductionConnectionStringInAnyArtifact"
+  ],
+  "ttlPolicy": {
+    "stagingAcceptanceHours": 72,
+    "productionSignoffHours": 24,
+    "requireReapprovalOnArtifactChange": true,
+    "requireReapprovalOnSchemaOrMigrationChange": true
+  },
+  "promotionDecisionStatuses": [
+    "NotReady",
+    "ReadyForProductionApproval",
+    "Rejected",
+    "Expired"
+  ],
+  "goCriteria": [
+    "StagingAccepted",
+    "ProductionEvidenceChainComplete",
+    "ProductionApplyInputHashApproved",
+    "ProductionBackupRestoreVerified",
+    "ProductionPreviousValuesComplete",
+    "ProductionRollbackReadinessComplete",
+    "TenantIsolationAndRegressionReferencesPassPolicy",
+    "NoSecretOrPayloadLeakage",
+    "ApprovalsValidAndNonExpired"
+  ],
+  "noGoCriteria": [
+    "StagingAcceptanceMissingExpiredOrRejected",
+    "ProductionApplyInputHashMissingOrMismatch",
+    "ProductionUnresolvedAboveThreshold",
+    "AmbiguousOwnershipUnresolved",
+    "BackupMissing",
+    "RollbackEvidenceIncomplete",
+    "RegressionFailure",
+    "TenantIsolationMatrixFailure",
+    "SchemaOrMigrationMismatch",
+    "ApprovalsMissingOrExpired",
+    "EvidenceContainsSecrets"
+  ],
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No production ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

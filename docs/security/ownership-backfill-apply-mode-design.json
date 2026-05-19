@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-04",
+  "applyEnabled": false,
+  "backfillExecution": false,
+  "requiredPreconditions": [
+    "apply command invoked explicitly",
+    "--enable-apply supplied",
+    "--evidence supplied",
+    "--gate-result supplied",
+    "gate result Passed=true",
+    "dry-run summary mode is DryRun",
+    "unresolved thresholds passed",
+    "ambiguous records count within threshold",
+    "previous-values snapshot output configured",
+    "database provider supplied",
+    "connection string supplied",
+    "migration/version compatibility check passed",
+    "Project.OrganizationId column exists",
+    "no unexpected pending migrations unless policy allows",
+    "confirmation phrase supplied exactly"
+  ],
+  "confirmationPhrase": "I_UNDERSTAND_THIS_WRITES_OWNERSHIP_METADATA",
+  "requiredEvidenceArtifacts": [
+    "ownership-backfill-dry-run-summary-{runId}.json",
+    "ownership-backfill-unresolved-records-{runId}.json",
+    "ownership-backfill-previous-values-{runId}.json",
+    "ownership-backfill-evidence-gate-result-{runId}.json"
+  ],
+  "batchPolicy": {
+    "defaultBatchSize": 500,
+    "transactionScope": "PerBatch",
+    "stopOnFirstBatchError": true,
+    "skipAlreadyConverged": true,
+    "skipAmbiguous": true,
+    "skipUnresolved": true,
+    "requiresApplySummary": true
+  },
+  "idempotencyRules": [
+    "identity key is record identity plus proposed ownership hash",
+    "repeated apply with same evidence is no-op for converged records",
+    "conflicting current values are skipped and reported"
+  ],
+  "rollbackEvidenceRequirements": [
+    "previous-values snapshot emitted before updates",
+    "snapshot contains previous and proposed ownership fields",
+    "rollback remains separate command and separately gated"
+  ],
+  "nonClaims": [
+    "No ownership backfill execution claim.",
+    "No apply mode enabled claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

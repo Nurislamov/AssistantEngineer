@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantEngineer ownership backfill strategy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "mode",
+    "backfillExecution",
+    "sourceOfTruthHierarchy",
+    "dryRunMetrics",
+    "safetyChecks",
+    "governanceGates",
+    "nonClaims"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lastReviewedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "backfillExecution": {
+      "type": "boolean"
+    },
+    "sourceOfTruthHierarchy": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordType",
+          "rules"
+        ],
+        "properties": {
+          "recordType": {
+            "type": "string"
+          },
+          "rules": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "dryRunMetrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "safetyChecks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "governanceGates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "nonClaims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

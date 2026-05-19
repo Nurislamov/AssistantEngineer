@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-00",
+  "mode": "StrategyOnly",
+  "backfillExecution": false,
+  "sourceOfTruthHierarchy": [
+    {
+      "recordType": "Project",
+      "rules": [
+        "Project.OrganizationId when already set",
+        "Future manual/admin assignment",
+        "Trusted project ownership mapping file when provided",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "Building",
+      "rules": [
+        "Parent Project.OrganizationId",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "WorkflowState",
+      "rules": [
+        "ProjectId -> Project.OrganizationId",
+        "BuildingId -> Building -> Project.OrganizationId",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "Scenario",
+      "rules": [
+        "Scenario.ProjectId -> Project.OrganizationId",
+        "Scenario.BuildingId -> Building -> Project.OrganizationId",
+        "Scenario.WorkflowId -> workflow state ownership when metadata path exists",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "Job",
+      "rules": [
+        "Job.ScenarioId -> Scenario ownership",
+        "Job.ProjectId -> Project.OrganizationId",
+        "Job.BuildingId if present -> Building -> Project ownership",
+        "Job.WorkflowId if present -> workflow state ownership",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "JobEvent",
+      "rules": [
+        "JobId -> Job ownership",
+        "ScenarioId -> Scenario ownership",
+        "ProjectId -> Project ownership",
+        "Otherwise unresolved"
+      ]
+    },
+    {
+      "recordType": "ScenarioHistory",
+      "rules": [
+        "ScenarioId -> Scenario ownership",
+        "ProjectId if present -> Project ownership",
+        "Otherwise unresolved"
+      ]
+    }
+  ],
+  "dryRunMetrics": [
+    "totalProjects",
+    "unscopedProjects",
+    "scopedProjects",
+    "unresolvedProjects",
+    "totalWorkflowStates",
+    "workflowStatesWithResolvableOwnership",
+    "workflowStatesUnresolved",
+    "totalScenarios",
+    "scenariosWithResolvableOwnership",
+    "scenariosUnresolved",
+    "totalJobs",
+    "jobsWithResolvableOwnership",
+    "jobsUnresolved",
+    "totalJobEvents",
+    "jobEventsWithResolvableOwnership",
+    "jobEventsUnresolved",
+    "totalScenarioHistoryRecords",
+    "scenarioHistoryWithResolvableOwnership",
+    "scenarioHistoryUnresolved",
+    "totalRecordsScanned",
+    "totalRecordsResolvable",
+    "totalRecordsUnresolved",
+    "unresolvedByReason"
+  ],
+  "safetyChecks": [
+    "Apply mode requires explicit Apply=true or --apply",
+    "Apply-mode design requires dry-run evidence input plus successful validate-evidence gate result",
+    "Evidence gates fail when unresolved rate exceeds threshold",
+    "Evidence gates fail when ambiguous ownership is detected",
+    "Apply mode fails when required schema/migration baseline is missing",
+    "Apply mode fails when Project.OrganizationId column is unavailable",
+    "Summary-only logging with no payload/secret output"
+  ],
+  "governanceGates": [
+    "Dry-run evidence exists",
+    "Evidence-gate result exists and is passing",
+    "Unresolved rate below approved threshold",
+    "Tenant isolation matrix tests pass",
+    "Protected route authorization tests pass",
+    "Security regression guardrails pass",
+    "No full tenant isolation claim before all gates pass"
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No SOC 2 / ISO 27001 compliance claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No ownership backfill execution claim.",
+    "No external identity provider integration claim.",
+    "No certified/certification claim."
+  ]
+}
+

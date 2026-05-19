@@ -99,6 +99,7 @@ No foreign keys are added in this step to avoid cross-module persistence couplin
 ## Next steps
 
 - P5-16B/P6: continue controlled query isolation rollout from `docs/security/tenant-aware-query-isolation-services.md`.
-- Add controlled backfill tooling for legacy project ownership.
+- P6-00: strategy-only ownership backfill planning and evidence model (`docs/security/ownership-backfill-strategy.md`, `docs/security/ownership-backfill-evidence-model.md`).
+- Add controlled backfill tooling for legacy project ownership after P6-00 governance gates.
 - Add durable organization/user persistence and lifecycle once identity provider integration is selected.
 - Add deeper workflow/report/artifact scope tests after metadata coverage is expanded.

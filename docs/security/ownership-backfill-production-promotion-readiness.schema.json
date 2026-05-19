@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assistantengineer.local/docs/security/ownership-backfill-production-promotion-readiness.schema.json",
+  "title": "OwnershipBackfillProductionPromotionReadiness",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "productionApplyEnabled",
+    "stagingApplyEnabled",
+    "backfillExecution",
+    "requiredStagingEvidence",
+    "requiredProductionEvidence",
+    "crossEnvironmentSeparationRules",
+    "ttlPolicy",
+    "promotionDecisionStatuses",
+    "goCriteria",
+    "noGoCriteria",
+    "nonClaims"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lastReviewedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "stage": {
+      "type": "string",
+      "const": "P6-13"
+    },
+    "productionApplyEnabled": {
+      "type": "boolean"
+    },
+    "stagingApplyEnabled": {
+      "type": "boolean"
+    },
+    "backfillExecution": {
+      "type": "boolean"
+    },
+    "requiredStagingEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredProductionEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "crossEnvironmentSeparationRules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "ttlPolicy": {
+      "type": "object",
+      "required": [
+        "stagingAcceptanceHours",
+        "productionSignoffHours",
+        "requireReapprovalOnArtifactChange",
+        "requireReapprovalOnSchemaOrMigrationChange"
+      ],
+      "properties": {
+        "stagingAcceptanceHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "productionSignoffHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requireReapprovalOnArtifactChange": {
+          "type": "boolean"
+        },
+        "requireReapprovalOnSchemaOrMigrationChange": {
+          "type": "boolean"
+        }
+      }
+    },
+    "promotionDecisionStatuses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "goCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "noGoCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "nonClaims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

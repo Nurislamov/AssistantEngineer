@@ -168,6 +168,70 @@ Target SaaS model introduces:
   - workflow/scenario/job ownership metadata inventory (markdown + JSON + schema);
   - resolver and tenant-aware read strict-mode hardening for unresolved ownership metadata paths.
   - status: Implemented (metadata coverage hardening) via `docs/security/workflow-ownership-metadata-coverage.md`.
+- P6-00 Ownership backfill strategy/evidence model:
+  - strategy-only dry-run-first plan, safety policy, governance gates, and evidence artifacts;
+  - no backfill execution in this step.
+  - status: StrategyOnly via `docs/security/ownership-backfill-strategy.md` and `docs/security/ownership-backfill-evidence-model.md`.
+- P6-01 Ownership backfill dry-run tool skeleton:
+  - dry-run-only CLI foundation with no-data scanner and evidence writers for summary/unresolved/previous-values artifacts;
+  - apply mode remains unsupported and no backfill execution is performed.
+  - status: Implemented via `docs/security/ownership-backfill-dry-run-tool.md`.
+- P6-02 Ownership backfill database dry-run scanner:
+  - read-only SQLite/PostgreSQL scanner computes ownership coverage metrics and unresolved/ambiguous evidence;
+  - apply mode remains unsupported and no backfill execution is performed.
+  - status: Implemented via `docs/security/ownership-backfill-database-dry-run-scanner.md`.
+- P6-03 Backfill evidence validation gates:
+  - `validate-evidence` command validates dry-run evidence structure, required metrics, unresolved thresholds, and ambiguous ownership policy;
+  - gate outputs are run-scoped JSON/Markdown artifacts, and apply mode remains unsupported.
+  - status: Implemented via `docs/security/ownership-backfill-evidence-validation-gates.md`.
+- P6-04 Apply mode design (disabled):
+  - apply-mode preconditions, confirmation phrase, and evidence contracts are documented in design artifacts;
+  - apply command path remains disabled and non-zero with no write execution.
+  - status: DesignOnly via `docs/security/ownership-backfill-apply-mode-design.md`.
+- P6-05 Apply plan generator (no-write):
+  - `plan-apply` generates deterministic apply-plan artifacts from passed dry-run evidence + passed gate result;
+  - apply mode remains disabled and no ownership metadata writes are performed.
+  - status: Implemented via `docs/security/ownership-backfill-apply-plan-generator.md`.
+- P6-06 Apply plan sign-off gate (no-write):
+  - `signoff-plan` validates deterministic plan hash, reviewer/ticket metadata, and writes sign-off governance artifacts;
+  - apply mode remains disabled and no ownership metadata writes are performed.
+  - status: Implemented via `docs/security/ownership-backfill-plan-signoff-gate.md`.
+- P6-07 Test-only apply executor rehearsal:
+  - test-only executor interfaces and in-memory/temp-store simulation validate batch/idempotency/conflict and previous-values behavior;
+  - production CLI apply remains disabled and no production DB writes are enabled.
+  - status: Implemented via `docs/security/ownership-backfill-test-only-apply-rehearsal.md`.
+- P6-08 Real apply enablement readiness checklist (no-write):
+  - `validate-apply-readiness` validates dry-run/gate/plan/sign-off/previous-values consistency, deterministic `ApplyInputHash`, sign-off TTL, and rollback-readiness evidence;
+  - apply mode remains disabled and no ownership metadata writes are performed.
+  - status: Implemented via `docs/security/ownership-backfill-apply-enablement-readiness.md`.
+- P6-09 Production apply enablement proposal (no-write):
+  - formal staging/production approval policy, go/no-go criteria, backup/rollback readiness requirements, and change-management template are documented;
+  - apply mode remains disabled and no ownership metadata writes are performed.
+  - status: ProposalOnly via `docs/security/ownership-backfill-production-apply-enablement-proposal.md`.
+- P6-10 Staging apply enablement design (no-write):
+  - staging-specific runbook/checklist governance, operator/environment policy, backup/rollback rehearsal requirements, and promotion criteria are documented;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: DesignOnly via `docs/security/ownership-backfill-staging-apply-runbook.md`.
+- P6-11 Staging apply executor design (no-write):
+  - staging-only executor contract, preflight checks, environment/schema/backup/hash-chain gates, and post-run evidence contract are documented;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: DesignOnly via `docs/security/ownership-backfill-staging-apply-executor-design.md`.
+- P6-12 Staging post-run evidence contract and acceptance validator (no-write):
+  - deterministic post-run evidence contract, `StagingRunHash`, and `validate-staging-acceptance` acceptance/rejection validator are documented;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: Implemented via `docs/security/ownership-backfill-staging-post-run-evidence.md`.
+- P6-13 Production promotion readiness proposal (no-write):
+  - formal production promotion readiness contract validates accepted staging evidence, separate production evidence chain, hash separation, and production change-request binding;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: ProposalOnly via `docs/security/ownership-backfill-production-promotion-readiness.md`.
+- P6-14 Manual write-path enablement decision framework (no-write):
+  - human-only decision packet/checklist/template governance binds approvals to `ProductionPromotionHash` and `ApplyInputHash` with TTL checks;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: ManualDecisionOnly via `docs/security/ownership-backfill-manual-write-path-enablement-decision.md`.
+- P6-15 Apply enablement architecture review (no-write):
+  - architecture invariants/checklist define no-wiring/no-secrets/no-destructive-sql boundaries and mandatory disabled-apply governance before any future code enablement;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: ArchitectureReviewOnly via `docs/security/ownership-backfill-apply-enablement-architecture-review.md`.
 
 P5-01 status note:
 
@@ -278,3 +342,125 @@ P5-17 status note:
 - Resolver logic now treats invalid or missing ownership identifiers as unresolved scope and uses scenario linkage metadata first for job scope.
 - No migration and no ownership backfill are performed in this step.
 - Global query filters, database row-level security, ownership backfill, and external identity provider integration remain future work.
+
+P6-00 status note:
+
+- Ownership backfill strategy and evidence model are documented with machine-readable descriptors.
+- Dry-run metrics, safety checks, and governance gates are defined.
+- No data backfill is executed in this step.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-01 status note:
+
+- Ownership backfill dry-run tool skeleton is implemented with dry-run-only behavior.
+- No-data mode is the only active scanner mode in this step.
+- Apply mode is explicitly rejected and no persistence writes are executed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-02 status note:
+
+- Database dry-run scanner is implemented for explicit SQLite/PostgreSQL connections.
+- Scanner remains read-only (`AsNoTracking`, no `SaveChanges`, no destructive SQL).
+- Unresolved and ambiguous ownership evidence is emitted through existing dry-run evidence artifacts.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-03 status note:
+
+- Evidence validation gates are implemented with pass/fail results and threshold policy defaults.
+- Ambiguous ownership fails by default and required record-type metrics are enforced.
+- Apply mode remains explicitly disabled and no persistence writes are executed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-04 status note:
+
+- Apply-mode design contracts and precondition validation models are introduced.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-05 status note:
+
+- Plan-only command generates deterministic plan artifacts and `PlanHash` from passed evidence.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-06 status note:
+
+- Plan sign-off command validates `PlanHash` and reviewer/ticket metadata and produces sign-off artifacts only.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-07 status note:
+
+- Test-only apply executor rehearsal validates batch execution, conflict handling, idempotency, and previous-values capture in controlled test stores.
+- Production CLI apply remains explicitly disabled and always non-zero in this stage.
+- No production DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-08 status note:
+
+- Apply-enablement readiness gate validates deterministic hash chain (`PlanHash` + sign-off hash + `ApplyInputHash`) and artifact consistency before any future enablement stage.
+- Sign-off TTL and previous-values completeness checks are enforced at readiness validation time.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-09 status note:
+
+- Production/staging apply enablement proposal is documented with mandatory approval policy and change-management fields.
+- `ApplyInputHash` is required as a change identifier in the proposed release process.
+- Backup/restore and rollback readiness are explicit go/no-go gates in the proposal.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-10 status note:
+
+- Staging apply runbook and staging acceptance checklist are documented as governance-only artifacts.
+- `ApplyInputHash` is mandatory in staging evidence chain and acceptance records.
+- Staging operator/environment separation, backup/restore readiness, rollback rehearsal, and promotion rules are explicit.
+- Apply command remains explicitly disabled and always non-zero in this stage.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-11 status note:
+
+- Staging executor contract and preflight validator design are introduced with staging-only environment guard requirements.
+- `validate-staging-preflight` can validate no-write preflight inputs, but no staging apply execution is enabled.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-12 status note:
+
+- Staging post-run evidence contract defines required artifact chain and deterministic `StagingRunHash`.
+- `validate-staging-acceptance` validates acceptance/rejection criteria in no-write mode only.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-13 status note:
+
+- Production promotion readiness proposal defines accepted staging evidence requirements and production-specific evidence-chain separation.
+- `validate-production-promotion` validates production promotion decision artifacts and deterministic `ProductionPromotionHash` in no-write mode only.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-14 status note:
+
+- Manual write-path enablement decision framework defines human-only approval packet, TTL/expiry checks, and go/no-go review criteria bound to `ProductionPromotionHash` and `ApplyInputHash`.
+- Manual decision artifacts are governance-only and cannot enable runtime apply behavior.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P6-15 status note:
+
+- Apply-enablement architecture review defines mandatory invariants (`ApplyDisabledInvariant`, `EnvironmentHardDenyInvariant`, hash-chain, rollback completeness, no-secrets/no-payload, and no production wiring) before any future code enablement stage.
+- Architecture review checklist artifacts are governance-only and cannot enable runtime apply behavior.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ownership Backfill Apply Enablement Architecture Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "productionApplyEnabled",
+    "stagingApplyEnabled",
+    "backfillExecution",
+    "codeWritePathEnabled",
+    "architectureInvariants",
+    "forbiddenArchitectureChanges",
+    "requiredReviewChecks",
+    "futureCodeEnablementCriteria",
+    "nonClaims"
+  ],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "lastReviewedDate": { "type": "string", "format": "date" },
+    "stage": { "type": "string", "const": "P6-15" },
+    "productionApplyEnabled": { "type": "boolean", "const": false },
+    "stagingApplyEnabled": { "type": "boolean", "const": false },
+    "backfillExecution": { "type": "boolean", "const": false },
+    "codeWritePathEnabled": { "type": "boolean", "const": false },
+    "architectureInvariants": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "forbiddenArchitectureChanges": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "requiredReviewChecks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "futureCodeEnablementCriteria": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "nonClaims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  }
+}

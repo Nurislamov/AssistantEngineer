@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-14",
+  "productionApplyEnabled": false,
+  "stagingApplyEnabled": false,
+  "backfillExecution": false,
+  "codeWritePathEnabled": false,
+  "requiredHashes": [
+    "ProductionPromotionHash",
+    "ApplyInputHash",
+    "PlanHash",
+    "StagingRunHash"
+  ],
+  "requiredApprovals": [
+    "EngineeringOwner",
+    "SecurityReviewer",
+    "DatabaseReleaseOwner",
+    "BusinessApplicationOwner"
+  ],
+  "decisionStatuses": [
+    "NotReady",
+    "Go",
+    "NoGo",
+    "Expired",
+    "Superseded"
+  ],
+  "goCriteria": [
+    "ValidateProductionPromotionReady",
+    "ProductionPromotionHashMatchesDecisionPacket",
+    "ApplyInputHashMatchesDecisionPacket",
+    "StagingAcceptanceValid",
+    "ProductionSignoffValid",
+    "BackupRestoreVerified",
+    "PreviousValuesComplete",
+    "RollbackOwnerConfirmed",
+    "TenantIsolationMatrixPassed",
+    "RouteAndSecurityRegressionPassed",
+    "NoSecretOrPayloadLeakage",
+    "ReleaseWindowApproved"
+  ],
+  "noGoCriteria": [
+    "HashMismatch",
+    "ExpiredSignoff",
+    "ExpiredStagingAcceptance",
+    "BackupMissing",
+    "RollbackOwnerMissing",
+    "PreviousValuesIncomplete",
+    "UnresolvedAboveThreshold",
+    "AmbiguousOwnershipUnresolved",
+    "FailedTests",
+    "EvidenceContainsSecrets",
+    "EnvironmentSeparationViolation"
+  ],
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No production ownership backfill execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

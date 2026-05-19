@@ -1,0 +1,18 @@
+{
+  "name": "ownership-backfill-staging-post-run-evidence",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "stagingApplyEnabled",
+    "productionApplyEnabled",
+    "backfillExecution",
+    "requiredPostRunEvidence",
+    "stagingRunHashInputs",
+    "acceptanceCriteria",
+    "rejectionCriteria",
+    "failureTaxonomy",
+    "nonClaims"
+  ]
+}

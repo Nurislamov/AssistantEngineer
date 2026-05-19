@@ -1,331 +1,446 @@
 {
-  "version": 1,
-  "lastReviewedDate": "2026-05-17",
-  "areas": [
-    {
-      "area": "Authentication",
-      "currentStatus": "ApiKey authentication and fallback policy exist with P5-03 authentication-boundary foundation (options, principal context, validator abstraction). Development compatibility remains available.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs",
-        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs",
-        "src/Backend/AssistantEngineer.Api/Security/Authentication/ApiAuthenticationBoundaryMiddleware.cs",
-        "src/Backend/AssistantEngineer.Api/Options/Security/ApiAuthenticationOptions.cs",
-        "src/Backend/AssistantEngineer.Api/appsettings.json",
-        "src/Backend/AssistantEngineer.Api/appsettings.Development.json",
-        "tests/AssistantEngineer.Tests/Api/ApiKeyAuthenticationIntegrationTests.cs",
-        "docs/security/api-authentication-boundary.md"
-      ],
-      "risk": "Authentication boundary is in place, but route authorization and tenant-scoped enforcement are not rolled out yet.",
-      "recommendedAction": "P5-04/P5-08: wire authorization policies and add tenant isolation regression coverage."
-    },
-    {
-      "area": "Authorization",
-      "currentStatus": "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic, and P5-17 hardens workflow ownership metadata coverage inventory/resolver behavior.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/Reports/BuildingCoolingReportsController.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs",
-        "docs/security/protected-endpoint-pilot-rollout.md",
-        "docs/security/protected-read-endpoints-rollout.md",
-        "docs/security/protected-write-endpoints-rollout.md",
-        "docs/security/protected-execution-endpoints-rollout.md",
-        "docs/security/protected-report-artifact-endpoints-rollout.md",
-        "docs/security/protected-workflow-read-history-rollout.md",
-        "docs/security/tenant-isolation-integration-matrix.md",
-        "docs/security/persistence-backed-tenant-ownership-fields.md",
-        "docs/security/tenant-aware-query-isolation-services.md",
-        "docs/security/tenant-aware-read-controller-integration.md",
-        "docs/security/workflow-tenant-aware-read-integration.md",
-        "docs/security/workflow-ownership-metadata-coverage.md"
-      ],
-      "risk": "Dedicated artifact write/delete route protection, ownership backfill, metadata-incomplete workflow ownership paths, global query filters, database row-level security, and external identity provider integration remain staged protection risks.",
-      "recommendedAction": "P6: execute ownership backfill, then evaluate stricter persistence-layer isolation planning."
-    },
-    {
-      "area": "API keys",
-      "currentStatus": "Single API key settings model without per-principal scope model.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationSettings.cs",
-        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
-      ],
-      "risk": "Shared API key blast radius and limited accountability.",
-      "recommendedAction": "P5-03: add principal-scoped key model and lifecycle controls."
-    },
-    {
-      "area": "Users",
-      "currentStatus": "UnknownNeedsAudit: user domain entity not present in core runtime DbContexts.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
-        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
-      ],
-      "risk": "No ownership/identity anchor for authorization and audit.",
-      "recommendedAction": "P5-01: create identity domain skeleton."
-    },
-    {
-      "area": "Organizations/Tenants",
-      "currentStatus": "UnknownNeedsAudit: no organization/tenant persistence model in current runtime DbContexts.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
-        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
-      ],
-      "risk": "No first-class tenant boundary for SaaS isolation.",
-      "recommendedAction": "P5-01/P5-02: define organization and membership model."
-    },
-    {
-      "area": "Project ownership",
-      "currentStatus": "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available, and P5-17 adds explicit workflow ownership metadata coverage inventory.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
-        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
-        "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Access/ProjectTenantAccessPolicy.cs",
-        "src/Backend/AssistantEngineer.Infrastructure/Persistence/Migrations/20260517102600_AddProjectTenantOwnershipFields.cs",
-        "docs/security/project-tenant-scoping-model.md",
-        "docs/security/persistence-backed-tenant-ownership-fields.md",
-        "docs/security/tenant-aware-query-isolation-services.md",
-        "docs/security/tenant-aware-read-controller-integration.md",
-        "docs/security/workflow-tenant-aware-read-integration.md",
-        "docs/security/workflow-ownership-metadata-coverage.md",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
-      ],
-      "risk": "Legacy projects can remain unscoped until ownership backfill is completed; workflow metadata ownership coverage remains partial for some historical paths.",
-      "recommendedAction": "P6: execute ownership backfill and close remaining metadata partial paths."
-    },
-    {
-      "area": "Tenant isolation",
-      "currentStatus": "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C, workflow/scenario/job protected read paths are integrated in P5-16D, and workflow ownership metadata coverage is inventoried/hardened in P5-17, but global tenant query filters and database row-level security are not enabled.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
-        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
-        "docs/security/project-tenant-scoping-model.md",
-        "docs/security/tenant-isolation-integration-matrix.md",
-        "docs/security/persistence-backed-tenant-ownership-fields.md",
-        "docs/security/tenant-aware-query-isolation-services.md",
-        "docs/security/tenant-aware-read-controller-integration.md",
-        "docs/security/workflow-tenant-aware-read-integration.md",
-        "docs/security/workflow-ownership-metadata-coverage.md",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
-        "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs"
-      ],
-      "risk": "Potential cross-tenant data access remains in metadata-incomplete workflow query paths until ownership backfill, row-level/query-level enforcement, and external identity integration are implemented.",
-      "recommendedAction": "P6: ownership backfill and deeper persistence-layer tenant enforcement planning."
-    },
-    {
-      "area": "Audit log",
-      "currentStatus": "Audit event contracts, in-memory append-only writer, metadata sanitizer, and audit registry foundation are implemented; durable storage is still pending.",
-      "evidence": [
-        "docs/security/audit-log-foundation.md",
-        "docs/security/audit-event-registry.json",
-        "src/Backend/AssistantEngineer.Modules.Identity/Application/Abstractions/IAuditLogWriter.cs",
-        "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Audit/InMemoryAuditLogWriter.cs",
-        "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
-      ],
-      "risk": "In-memory provider is not durable and does not provide production retention guarantees.",
-      "recommendedAction": "P5-05B/P5-06: add durable audit persistence provider, retention policy, and controlled query surface."
-    },
-    {
-      "area": "Rate limiting",
-      "currentStatus": "Global and heavy rate limits exist. P5-06 foundation adds principal-aware partitioning model (organization/user/API-key fingerprint/IP) plus endpoint-category policy registry with compatibility-disabled defaults.",
-      "evidence": [
-        "docs/security/rate-limiting-foundation.md",
-        "docs/security/rate-limiting-policy-registry.json",
-        "src/Backend/AssistantEngineer.Api/Configuration/ApiHardeningRegistration.cs",
-        "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultRateLimitPartitionKeyProvider.cs",
-        "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultEndpointRateLimitCategoryResolver.cs",
-        "tests/AssistantEngineer.Tests/Api/RateLimitPartitionKeyProviderTests.cs",
-        "tests/AssistantEngineer.Tests/Api/EndpointRateLimitCategoryResolverTests.cs"
-      ],
-      "risk": "Distributed rate limiting and production quota management are not implemented yet.",
-      "recommendedAction": "P5-next: add distributed limiter backend, plan quotas, and multi-node consistency controls."
-    },
-    {
-      "area": "Dev-only endpoints",
-      "currentStatus": "Development demo-data route is explicitly gated by development environment check.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs"
-      ],
-      "risk": "Future development endpoints may be exposed if gating is omitted.",
-      "recommendedAction": "Keep and extend environment-gating guard tests."
-    },
-    {
-      "area": "Swagger/OpenAPI",
-      "currentStatus": "OpenAPI endpoint mapping is development-only in pipeline.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/Configuration/ApiPipelineConfiguration.cs"
-      ],
-      "risk": "Operational misconfiguration can expose API metadata unexpectedly.",
-      "recommendedAction": "P5-03: define explicit production OpenAPI exposure rules."
-    },
-    {
-      "area": "Secrets/configuration",
-      "currentStatus": "API key is configuration-driven; hardcoded key values are not present in tracked appsettings defaults.",
-      "evidence": [
-        "src/Backend/AssistantEngineer.Api/appsettings.json",
-        "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs"
-      ],
-      "risk": "Secret lifecycle and rotation controls are not yet formalized.",
-      "recommendedAction": "P5-03/P5-05: codify secret handling, rotation, and audit controls."
-    },
-    {
-      "area": "Observability/security logs",
-      "currentStatus": "Structured diagnostics policy exists with event taxonomy; security-focused audit log boundary is partial.",
-      "evidence": [
-        "docs/architecture/observability-diagnostics-policy.md",
-        "docs/architecture/observability-diagnostic-events.json"
-      ],
-      "risk": "Security event analysis coverage is incomplete without principal/tenant context enrichment.",
-      "recommendedAction": "P5-05/P5-06: enrich principal metadata and audit events."
-    },
-    {
-      "area": "Frontend auth state",
-      "currentStatus": "Frontend auth-shell foundation is implemented with auth state/principal/organization models, protected content wrapper, and unauthorized/forbidden UX states. Default compatibility keeps local anonymous flows non-breaking.",
-      "evidence": [
-        "docs/frontend/frontend-auth-shell-foundation.md",
-        "src/Frontend/src/app/providers/AppProviders.tsx",
-        "src/Frontend/src/app/router/AppRouter.tsx",
-        "src/Frontend/src/entities/auth/model/authTypes.ts",
-        "src/Frontend/src/entities/auth/model/AuthContext.tsx",
-        "src/Frontend/src/entities/auth/ui/ProtectedContent.tsx",
-        "src/Frontend/src/shared/api/httpClient.ts",
-        "src/Frontend/src/pages/engineering-workflow/ui/EngineeringWorkflowPage.tsx"
-      ],
-      "risk": "Real login/provider integration and tenant-aware navigation are still pending.",
-      "recommendedAction": "P5-next: connect frontend auth shell to backend principal/auth endpoints and add provider/session lifecycle."
-    }
-  ],
-  "p5Roadmap": [
-    {
-      "item": "P5-01",
-      "title": "Identity domain skeleton",
-      "status": "Implemented",
-      "risk": "Incorrect identity boundary can block later authorization rollout."
-    },
-    {
-      "item": "P5-02",
-      "title": "Project ownership and tenant scoping model",
-      "status": "Implemented",
-      "risk": "Foundation contracts/policy exist, but route authorization and DB-level tenant enforcement remain future work."
-    },
-    {
-      "item": "P5-03",
-      "title": "API authentication boundary",
-      "status": "Implemented",
-      "risk": "Foundation is implemented; broad route-level authorization remains pending and must be rolled out safely."
-    },
-    {
-      "item": "P5-04",
-      "title": "Authorization policies",
-      "status": "Implemented",
-      "risk": "Policy and rollout documentation exists, but broad route-level authorization enforcement is still staged."
-    },
-    {
-      "item": "P5-05",
-      "title": "Audit log",
-      "status": "Implemented",
-      "risk": "Foundation is in place; durable persistence, retention controls, and privileged query access remain future work."
-    },
-    {
-      "item": "P5-06",
-      "title": "Rate limiting by principal",
-      "status": "Implemented",
-      "risk": "Foundation is implemented; distributed quotas and production abuse controls remain future work."
-    },
-    {
-      "item": "P5-07",
-      "title": "Frontend auth shell",
-      "status": "Implemented",
-      "risk": "Foundation is implemented; real provider login and tenant-aware route UX remain future work."
-    },
-    {
-      "item": "P5-08",
-      "title": "Security regression tests",
-      "status": "Implemented",
-      "risk": "Governance guardrails are implemented; deeper tenant-isolation and production auth integration tests remain future work."
-    },
-    {
-      "item": "P5-09",
-      "title": "Protected endpoint pilot rollout",
-      "status": "Implemented",
-      "risk": "Pilot protection is limited to a low-risk endpoint group; broad route authorization rollout remains future work."
-    },
-    {
-      "item": "P5-10",
-      "title": "Protected read endpoints rollout",
-      "status": "Implemented",
-      "risk": "Read-only pilot is implemented for selected Projects/Buildings endpoints; write/execute endpoints remain unprotected in this stage."
-    },
-    {
-      "item": "P5-11",
-      "title": "Protected write endpoints rollout",
-      "status": "Implemented",
-      "risk": "Write pilot is implemented for selected Projects/Buildings endpoints; workflow/calculation/report/artifact protections remain future rollout stages."
-    },
-    {
-      "item": "P5-12",
-      "title": "Protected workflow/calculation execution rollout",
-      "status": "Implemented",
-      "risk": "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and tenant-boundary enforcement remain future rollout stages."
-    },
-    {
-      "item": "P5-13",
-      "title": "Protected report/artifact endpoints rollout",
-      "status": "Implemented",
-      "risk": "Report/artifact pilot is implemented for selected endpoints; workflow read/history endpoints and tenant-boundary enforcement remain future rollout stages."
-    },
-    {
-      "item": "P5-14",
-      "title": "Protected workflow read/history endpoints rollout",
-      "status": "Implemented",
-      "risk": "Workflow read/history pilot is implemented for selected endpoints; dedicated artifact write/delete protection and tenant-boundary enforcement remain future rollout stages."
-    },
-    {
-      "item": "P5-15",
-      "title": "Tenant isolation integration matrix",
-      "status": "Implemented",
-      "risk": "Cross-tenant matrix coverage is implemented for protected endpoint groups; DB row-level security, query isolation, ownership backfill, and external identity provider integration remain future work."
-    },
-    {
-      "item": "P5-16A",
-      "title": "Persistence-backed tenant ownership fields",
-      "status": "Implemented",
-      "risk": "Nullable Project ownership fields are implemented as a persistence foundation; global query filters, database row-level security, ownership backfill, and external identity provider integration remain future work."
-    },
-    {
-      "item": "P5-16B",
-      "title": "Tenant-aware query isolation services",
-      "status": "Implemented",
-      "risk": "Project/Building tenant-scoped read services are implemented as a foundation; controllers, global query filters, DB row-level security, ownership backfill, and workflow metadata query isolation remain future work."
-    },
-    {
-      "item": "P5-16C",
-      "title": "Tenant-aware read controller integration",
-      "status": "Implemented",
-      "risk": "Protected Project/Building read controllers now use tenant-aware query services behind rollout options; workflow query integration, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
-    },
-    {
-      "item": "P5-16D",
-      "title": "Workflow tenant-aware read integration",
-      "status": "Implemented",
-      "risk": "Protected workflow/scenario/job read-history paths now use workflow tenant-aware query integration behind rollout options; metadata-incomplete paths, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
-    },
-    {
-      "item": "P5-17",
-      "title": "Workflow ownership metadata coverage",
-      "status": "Implemented",
-      "risk": "Workflow/scenario/job metadata coverage inventory and resolver hardening are implemented; ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
-    }
-  ],
-  "nonClaims": [
-    "No production security certification claim.",
-    "No SOC 2 / ISO 27001 compliance claim.",
-    "No full multi-tenant isolation claim yet.",
-    "No claim that API keys are complete user authentication.",
-    "No external identity provider integration claim.",
-    "No certified/certification claim."
-  ]
+    "version":  1,
+    "lastReviewedDate":  "2026-05-18",
+    "areas":  [
+                  {
+                      "area":  "Authentication",
+                      "currentStatus":  "ApiKey authentication and fallback policy exist with P5-03 authentication-boundary foundation (options, principal context, validator abstraction). Development compatibility remains available.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/Authentication/ApiAuthenticationBoundaryMiddleware.cs",
+                                       "src/Backend/AssistantEngineer.Api/Options/Security/ApiAuthenticationOptions.cs",
+                                       "src/Backend/AssistantEngineer.Api/appsettings.json",
+                                       "src/Backend/AssistantEngineer.Api/appsettings.Development.json",
+                                       "tests/AssistantEngineer.Tests/Api/ApiKeyAuthenticationIntegrationTests.cs",
+                                       "docs/security/api-authentication-boundary.md"
+                                   ],
+                      "risk":  "Authentication boundary is in place, but route authorization and tenant-scoped enforcement are not rolled out yet.",
+                      "recommendedAction":  "P5-04/P5-08: wire authorization policies and add tenant isolation regression coverage."
+                  },
+                  {
+                      "area":  "Authorization",
+                      "currentStatus":  "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic, P5-17 hardens workflow ownership metadata coverage inventory/resolver behavior, P6-00 defines ownership backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only ownership backfill tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates with unresolved-threshold policy, P6-04 adds apply-mode design and precondition contracts while keeping apply disabled, P6-05 adds no-write apply-plan generation from passed evidence, P6-06 adds no-write plan sign-off governance artifacts, P6-07 adds a test-only apply executor rehearsal while production apply remains disabled, P6-08 adds apply-enablement readiness validation artifacts while production apply remains disabled, P6-09 adds production apply enablement proposal controls while production apply remains disabled, P6-10 adds staging apply enablement runbook/checklist design while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract and acceptance validation governance while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal governance while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply remain disabled.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Calculations/BuildingLoadCalculationsController.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Reports/BuildingCoolingReportsController.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs",
+                                       "docs/security/protected-endpoint-pilot-rollout.md",
+                                       "docs/security/protected-read-endpoints-rollout.md",
+                                       "docs/security/protected-write-endpoints-rollout.md",
+                                       "docs/security/protected-execution-endpoints-rollout.md",
+                                       "docs/security/protected-report-artifact-endpoints-rollout.md",
+                                       "docs/security/protected-workflow-read-history-rollout.md",
+                                       "docs/security/tenant-isolation-integration-matrix.md",
+                                       "docs/security/persistence-backed-tenant-ownership-fields.md",
+                                       "docs/security/tenant-aware-query-isolation-services.md",
+                                       "docs/security/tenant-aware-read-controller-integration.md",
+                                       "docs/security/workflow-tenant-aware-read-integration.md",
+                                       "docs/security/workflow-ownership-metadata-coverage.md",
+                                       "docs/security/ownership-backfill-strategy.md",
+                                       "docs/security/ownership-backfill-evidence-model.md",
+                                       "docs/security/ownership-backfill-evidence-validation-gates.md",
+                                       "docs/security/ownership-backfill-apply-mode-design.md",
+                                       "docs/security/ownership-backfill-apply-plan-generator.md",
+                                       "docs/security/ownership-backfill-plan-signoff-gate.md",
+                                       "docs/security/ownership-backfill-test-only-apply-rehearsal.md",
+                                       "docs/security/ownership-backfill-apply-enablement-readiness.md",
+                                       "docs/security/ownership-backfill-staging-post-run-evidence.md",
+                                       "docs/security/ownership-backfill-production-promotion-readiness.md",
+                                       "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+                                   ],
+                      "risk":  "Dedicated artifact write/delete route protection, ownership backfill, metadata-incomplete workflow ownership paths, global query filters, database row-level security, and external identity provider integration remain staged protection risks.",
+                      "recommendedAction":  "P6: execute ownership backfill, then evaluate stricter persistence-layer isolation planning."
+                  },
+                  {
+                      "area":  "API keys",
+                      "currentStatus":  "Single API key settings model without per-principal scope model.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationSettings.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
+                                   ],
+                      "risk":  "Shared API key blast radius and limited accountability.",
+                      "recommendedAction":  "P5-03: add principal-scoped key model and lifecycle controls."
+                  },
+                  {
+                      "area":  "Users",
+                      "currentStatus":  "UnknownNeedsAudit: user domain entity not present in core runtime DbContexts.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+                                       "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
+                                   ],
+                      "risk":  "No ownership/identity anchor for authorization and audit.",
+                      "recommendedAction":  "P5-01: create identity domain skeleton."
+                  },
+                  {
+                      "area":  "Organizations/Tenants",
+                      "currentStatus":  "UnknownNeedsAudit: no organization/tenant persistence model in current runtime DbContexts.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+                                       "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs"
+                                   ],
+                      "risk":  "No first-class tenant boundary for SaaS isolation.",
+                      "recommendedAction":  "P5-01/P5-02: define organization and membership model."
+                  },
+                  {
+                      "area":  "Project ownership",
+                      "currentStatus":  "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available, P5-17 adds explicit workflow ownership metadata coverage inventory, P6-00 defines backfill strategy/evidence readiness, P6-01 adds a dry-run-only backfill tooling skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for dry-run artifacts, P6-04 defines apply-mode preconditions while keeping apply disabled, P6-05 adds deterministic plan generation from passed evidence without writes, P6-06 adds deterministic plan sign-off artifacts without writes, P6-07 adds test-only apply executor rehearsal coverage without enabling production apply, P6-08 adds hash-chain and rollback-readiness validation artifacts without enabling production apply, P6-09 adds production apply enablement proposal policy requirements while apply remains disabled, P6-10 adds staging runbook/checklist design requirements while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design requirements while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract/acceptance validation requirements while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal requirements while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision requirements while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review requirements while staging and production apply remain disabled.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
+                                       "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
+                                       "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Access/ProjectTenantAccessPolicy.cs",
+                                       "src/Backend/AssistantEngineer.Infrastructure/Persistence/Migrations/20260517102600_AddProjectTenantOwnershipFields.cs",
+                                       "docs/security/project-tenant-scoping-model.md",
+                                       "docs/security/persistence-backed-tenant-ownership-fields.md",
+                                       "docs/security/tenant-aware-query-isolation-services.md",
+                                       "docs/security/tenant-aware-read-controller-integration.md",
+                                       "docs/security/workflow-tenant-aware-read-integration.md",
+                                       "docs/security/workflow-ownership-metadata-coverage.md",
+                                       "docs/security/ownership-backfill-strategy.md",
+                                       "docs/security/ownership-backfill-staging-post-run-evidence.md",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs",
+                                       "docs/security/ownership-backfill-production-promotion-readiness.md",
+                                       "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+                                   ],
+                      "risk":  "Legacy projects can remain unscoped until ownership backfill is completed; workflow metadata ownership coverage remains partial for some historical paths.",
+                      "recommendedAction":  "P6: execute ownership backfill and close remaining metadata partial paths."
+                  },
+                  {
+                      "area":  "Tenant isolation",
+                      "currentStatus":  "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C, workflow/scenario/job protected read paths are integrated in P5-16D, workflow ownership metadata coverage is inventoried/hardened in P5-17, P6-00 defines backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only evidence tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for unresolved thresholds and ambiguity policy, P6-04 defines apply-mode contracts while keeping apply disabled, P6-05 adds plan-only deterministic apply-plan artifacts from passed evidence, P6-06 adds plan sign-off governance artifacts from plan evidence, P6-07 adds test-only apply rehearsal execution artifacts without enabling production apply, P6-08 adds apply-enablement readiness hash-chain and rollback-readiness validation artifacts while production apply stays disabled, P6-09 adds production apply enablement proposal governance while production apply stays disabled, P6-10 adds staging apply runbook/checklist governance while staging and production apply stay disabled, P6-11 adds staging executor contract/preflight governance while staging and production apply stay disabled, and P6-12 adds staging post-run evidence/acceptance governance while staging and production apply stay disabled, and P6-13 adds production promotion readiness governance while staging and production apply stay disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply stay disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply stay disabled; global tenant query filters and database row-level security are not enabled.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
+                                       "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
+                                       "docs/security/project-tenant-scoping-model.md",
+                                       "docs/security/tenant-isolation-integration-matrix.md",
+                                       "docs/security/persistence-backed-tenant-ownership-fields.md",
+                                       "docs/security/tenant-aware-query-isolation-services.md",
+                                       "docs/security/tenant-aware-read-controller-integration.md",
+                                       "docs/security/workflow-tenant-aware-read-integration.md",
+                                       "docs/security/workflow-ownership-metadata-coverage.md",
+                                       "docs/security/ownership-backfill-strategy.md",
+                                       "docs/security/ownership-backfill-staging-post-run-evidence.md",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/ProjectTenantScopedReadService.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/BuildingTenantScopedReadService.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/TenantIsolation/WorkflowTenantScopedReadService.cs",
+                                       "docs/security/ownership-backfill-production-promotion-readiness.md",
+                                       "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+                                   ],
+                      "risk":  "Potential cross-tenant data access remains in metadata-incomplete workflow query paths until ownership backfill, row-level/query-level enforcement, and external identity integration are implemented.",
+                      "recommendedAction":  "P6: ownership backfill and deeper persistence-layer tenant enforcement planning."
+                  },
+                  {
+                      "area":  "Audit log",
+                      "currentStatus":  "Audit event contracts, in-memory append-only writer, metadata sanitizer, and audit registry foundation are implemented; durable storage is still pending.",
+                      "evidence":  [
+                                       "docs/security/audit-log-foundation.md",
+                                       "docs/security/audit-event-registry.json",
+                                       "src/Backend/AssistantEngineer.Modules.Identity/Application/Abstractions/IAuditLogWriter.cs",
+                                       "src/Backend/AssistantEngineer.Modules.Identity/Application/Services/Audit/InMemoryAuditLogWriter.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/ApiKey/ApiKeyAuthenticationHandler.cs"
+                                   ],
+                      "risk":  "In-memory provider is not durable and does not provide production retention guarantees.",
+                      "recommendedAction":  "P5-05B/P5-06: add durable audit persistence provider, retention policy, and controlled query surface."
+                  },
+                  {
+                      "area":  "Rate limiting",
+                      "currentStatus":  "Global and heavy rate limits exist. P5-06 foundation adds principal-aware partitioning model (organization/user/API-key fingerprint/IP) plus endpoint-category policy registry with compatibility-disabled defaults.",
+                      "evidence":  [
+                                       "docs/security/rate-limiting-foundation.md",
+                                       "docs/security/rate-limiting-policy-registry.json",
+                                       "src/Backend/AssistantEngineer.Api/Configuration/ApiHardeningRegistration.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultRateLimitPartitionKeyProvider.cs",
+                                       "src/Backend/AssistantEngineer.Api/Security/RateLimiting/DefaultEndpointRateLimitCategoryResolver.cs",
+                                       "tests/AssistantEngineer.Tests/Api/RateLimitPartitionKeyProviderTests.cs",
+                                       "tests/AssistantEngineer.Tests/Api/EndpointRateLimitCategoryResolverTests.cs"
+                                   ],
+                      "risk":  "Distributed rate limiting and production quota management are not implemented yet.",
+                      "recommendedAction":  "P5-next: add distributed limiter backend, plan quotas, and multi-node consistency controls."
+                  },
+                  {
+                      "area":  "Dev-only endpoints",
+                      "currentStatus":  "Development demo-data route is explicitly gated by development environment check.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/Controllers/ReferenceData/DevelopmentDemoDataController.cs"
+                                   ],
+                      "risk":  "Future development endpoints may be exposed if gating is omitted.",
+                      "recommendedAction":  "Keep and extend environment-gating guard tests."
+                  },
+                  {
+                      "area":  "Swagger/OpenAPI",
+                      "currentStatus":  "OpenAPI endpoint mapping is development-only in pipeline.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/Configuration/ApiPipelineConfiguration.cs"
+                                   ],
+                      "risk":  "Operational misconfiguration can expose API metadata unexpectedly.",
+                      "recommendedAction":  "P5-03: define explicit production OpenAPI exposure rules."
+                  },
+                  {
+                      "area":  "Secrets/configuration",
+                      "currentStatus":  "API key is configuration-driven; hardcoded key values are not present in tracked appsettings defaults.",
+                      "evidence":  [
+                                       "src/Backend/AssistantEngineer.Api/appsettings.json",
+                                       "src/Backend/AssistantEngineer.Api/Configuration/ApiAuthenticationRegistration.cs"
+                                   ],
+                      "risk":  "Secret lifecycle and rotation controls are not yet formalized.",
+                      "recommendedAction":  "P5-03/P5-05: codify secret handling, rotation, and audit controls."
+                  },
+                  {
+                      "area":  "Observability/security logs",
+                      "currentStatus":  "Structured diagnostics policy exists with event taxonomy; security-focused audit log boundary is partial.",
+                      "evidence":  [
+                                       "docs/architecture/observability-diagnostics-policy.md",
+                                       "docs/architecture/observability-diagnostic-events.json"
+                                   ],
+                      "risk":  "Security event analysis coverage is incomplete without principal/tenant context enrichment.",
+                      "recommendedAction":  "P5-05/P5-06: enrich principal metadata and audit events."
+                  },
+                  {
+                      "area":  "Frontend auth state",
+                      "currentStatus":  "Frontend auth-shell foundation is implemented with auth state/principal/organization models, protected content wrapper, and unauthorized/forbidden UX states. Default compatibility keeps local anonymous flows non-breaking.",
+                      "evidence":  [
+                                       "docs/frontend/frontend-auth-shell-foundation.md",
+                                       "src/Frontend/src/app/providers/AppProviders.tsx",
+                                       "src/Frontend/src/app/router/AppRouter.tsx",
+                                       "src/Frontend/src/entities/auth/model/authTypes.ts",
+                                       "src/Frontend/src/entities/auth/model/AuthContext.tsx",
+                                       "src/Frontend/src/entities/auth/ui/ProtectedContent.tsx",
+                                       "src/Frontend/src/shared/api/httpClient.ts",
+                                       "src/Frontend/src/pages/engineering-workflow/ui/EngineeringWorkflowPage.tsx"
+                                   ],
+                      "risk":  "Real login/provider integration and tenant-aware navigation are still pending.",
+                      "recommendedAction":  "P5-next: connect frontend auth shell to backend principal/auth endpoints and add provider/session lifecycle."
+                  }
+              ],
+    "p5Roadmap":  [
+                      {
+                          "item":  "P5-01",
+                          "title":  "Identity domain skeleton",
+                          "status":  "Implemented",
+                          "risk":  "Incorrect identity boundary can block later authorization rollout."
+                      },
+                      {
+                          "item":  "P5-02",
+                          "title":  "Project ownership and tenant scoping model",
+                          "status":  "Implemented",
+                          "risk":  "Foundation contracts/policy exist, but route authorization and DB-level tenant enforcement remain future work."
+                      },
+                      {
+                          "item":  "P5-03",
+                          "title":  "API authentication boundary",
+                          "status":  "Implemented",
+                          "risk":  "Foundation is implemented; broad route-level authorization remains pending and must be rolled out safely."
+                      },
+                      {
+                          "item":  "P5-04",
+                          "title":  "Authorization policies",
+                          "status":  "Implemented",
+                          "risk":  "Policy and rollout documentation exists, but broad route-level authorization enforcement is still staged."
+                      },
+                      {
+                          "item":  "P5-05",
+                          "title":  "Audit log",
+                          "status":  "Implemented",
+                          "risk":  "Foundation is in place; durable persistence, retention controls, and privileged query access remain future work."
+                      },
+                      {
+                          "item":  "P5-06",
+                          "title":  "Rate limiting by principal",
+                          "status":  "Implemented",
+                          "risk":  "Foundation is implemented; distributed quotas and production abuse controls remain future work."
+                      },
+                      {
+                          "item":  "P5-07",
+                          "title":  "Frontend auth shell",
+                          "status":  "Implemented",
+                          "risk":  "Foundation is implemented; real provider login and tenant-aware route UX remain future work."
+                      },
+                      {
+                          "item":  "P5-08",
+                          "title":  "Security regression tests",
+                          "status":  "Implemented",
+                          "risk":  "Governance guardrails are implemented; deeper tenant-isolation and production auth integration tests remain future work."
+                      },
+                      {
+                          "item":  "P5-09",
+                          "title":  "Protected endpoint pilot rollout",
+                          "status":  "Implemented",
+                          "risk":  "Pilot protection is limited to a low-risk endpoint group; broad route authorization rollout remains future work."
+                      },
+                      {
+                          "item":  "P5-10",
+                          "title":  "Protected read endpoints rollout",
+                          "status":  "Implemented",
+                          "risk":  "Read-only pilot is implemented for selected Projects/Buildings endpoints; write/execute endpoints remain unprotected in this stage."
+                      },
+                      {
+                          "item":  "P5-11",
+                          "title":  "Protected write endpoints rollout",
+                          "status":  "Implemented",
+                          "risk":  "Write pilot is implemented for selected Projects/Buildings endpoints; workflow/calculation/report/artifact protections remain future rollout stages."
+                      },
+                      {
+                          "item":  "P5-12",
+                          "title":  "Protected workflow/calculation execution rollout",
+                          "status":  "Implemented",
+                          "risk":  "Execution pilot is implemented for selected workflow/calculation endpoints; report generation, artifact operations, and tenant-boundary enforcement remain future rollout stages."
+                      },
+                      {
+                          "item":  "P5-13",
+                          "title":  "Protected report/artifact endpoints rollout",
+                          "status":  "Implemented",
+                          "risk":  "Report/artifact pilot is implemented for selected endpoints; workflow read/history endpoints and tenant-boundary enforcement remain future rollout stages."
+                      },
+                      {
+                          "item":  "P5-14",
+                          "title":  "Protected workflow read/history endpoints rollout",
+                          "status":  "Implemented",
+                          "risk":  "Workflow read/history pilot is implemented for selected endpoints; dedicated artifact write/delete protection and tenant-boundary enforcement remain future rollout stages."
+                      },
+                      {
+                          "item":  "P5-15",
+                          "title":  "Tenant isolation integration matrix",
+                          "status":  "Implemented",
+                          "risk":  "Cross-tenant matrix coverage is implemented for protected endpoint groups; DB row-level security, query isolation, ownership backfill, and external identity provider integration remain future work."
+                      },
+                      {
+                          "item":  "P5-16A",
+                          "title":  "Persistence-backed tenant ownership fields",
+                          "status":  "Implemented",
+                          "risk":  "Nullable Project ownership fields are implemented as a persistence foundation; global query filters, database row-level security, ownership backfill, and external identity provider integration remain future work."
+                      },
+                      {
+                          "item":  "P5-16B",
+                          "title":  "Tenant-aware query isolation services",
+                          "status":  "Implemented",
+                          "risk":  "Project/Building tenant-scoped read services are implemented as a foundation; controllers, global query filters, DB row-level security, ownership backfill, and workflow metadata query isolation remain future work."
+                      },
+                      {
+                          "item":  "P5-16C",
+                          "title":  "Tenant-aware read controller integration",
+                          "status":  "Implemented",
+                          "risk":  "Protected Project/Building read controllers now use tenant-aware query services behind rollout options; workflow query integration, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
+                      },
+                      {
+                          "item":  "P5-16D",
+                          "title":  "Workflow tenant-aware read integration",
+                          "status":  "Implemented",
+                          "risk":  "Protected workflow/scenario/job read-history paths now use workflow tenant-aware query integration behind rollout options; metadata-incomplete paths, ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
+                      },
+                      {
+                          "item":  "P5-17",
+                          "title":  "Workflow ownership metadata coverage",
+                          "status":  "Implemented",
+                          "risk":  "Workflow/scenario/job metadata coverage inventory and resolver hardening are implemented; ownership backfill, global query filters, DB row-level security, and external identity provider integration remain future work."
+                      },
+                      {
+                          "item":  "P6-00",
+                          "title":  "Ownership backfill strategy and evidence model",
+                          "status":  "StrategyOnly",
+                          "risk":  "Strategy/evidence planning is in place, but no backfill execution has run yet; ownership gaps remain until later P6 apply stages."
+                      },
+                      {
+                          "item":  "P6-01",
+                          "title":  "Ownership backfill dry-run tool skeleton",
+                          "status":  "Implemented",
+                          "risk":  "Dry-run/no-data evidence tooling exists, but database-backed scanning and apply mode remain staged."
+                      },
+                      {
+                          "item":  "P6-02",
+                          "title":  "Ownership backfill database dry-run scanner",
+                          "status":  "Implemented",
+                          "risk":  "Read-only database scan is implemented, but apply mode, execution gates, and backfill writes remain staged."
+                      },
+                      {
+                          "item":  "P6-03",
+                          "title":  "Backfill evidence validation gates",
+                          "status":  "Implemented",
+                          "risk":  "Evidence validation gates are implemented, but apply mode remains disabled and no ownership backfill execution has run."
+                      },
+                      {
+                          "item":  "P6-04",
+                          "title":  "Apply mode design (disabled)",
+                          "status":  "DesignOnly",
+                          "risk":  "Apply-mode precondition contracts are defined, but apply execution is intentionally disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-05",
+                          "title":  "Apply plan generator (no-write)",
+                          "status":  "Implemented",
+                          "risk":  "Deterministic planning artifacts are generated from passed evidence, but apply execution remains disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-06",
+                          "title":  "Apply plan sign-off gate (no-write)",
+                          "status":  "Implemented",
+                          "risk":  "Signed plan governance artifacts are generated from plan evidence, but apply execution remains disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-07",
+                          "title":  "Test-only apply executor rehearsal",
+                          "status":  "Implemented",
+                          "risk":  "Test-only rehearsal validates batch/idempotency/conflict and previous-values behavior, but production apply remains disabled and no real ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-08",
+                          "title":  "Apply enablement readiness gate (still disabled)",
+                          "status":  "Implemented",
+                          "risk":  "Readiness validation improves hash-chain, signoff TTL, and rollback readiness assurance, but production apply remains disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-09",
+                          "title":  "Production apply enablement proposal (still disabled)",
+                          "status":  "ProposalOnly",
+                          "risk":  "Formal policy and change-management requirements are documented, but production apply remains disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-10",
+                          "title":  "Staging apply enablement design (still disabled)",
+                          "status":  "DesignOnly",
+                          "risk":  "Staging runbook/checklist governance is documented, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-11",
+                          "title":  "Staging apply executor design (still disabled)",
+                          "status":  "DesignOnly",
+                          "risk":  "Staging executor preflight/contract design is documented, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-12",
+                          "title":  "Staging post-run evidence contract and acceptance validator (still disabled)",
+                          "status":  "Implemented",
+                          "risk":  "Staging post-run acceptance governance is implemented in no-write mode, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-13",
+                          "title":  "Production promotion readiness proposal (still disabled)",
+                          "status":  "ProposalOnly",
+                          "risk":  "Production promotion readiness governance is defined, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-14",
+                          "title":  "Manual write-path enablement decision framework (still disabled)",
+                          "status":  "ManualDecisionOnly",
+                          "risk":  "Manual governance artifacts are defined, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P6-15",
+                          "title":  "Apply enablement architecture review (still no code enablement)",
+                          "status":  "ArchitectureReviewOnly",
+                          "risk":  "Architecture-review governance invariants and no-wiring checks are defined, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      }
+                  ],
+    "nonClaims":  [
+                      "No production security certification claim.",
+                      "No SOC 2 / ISO 27001 compliance claim.",
+                      "No full multi-tenant isolation claim yet.",
+                      "No claim that API keys are complete user authentication.",
+                      "No external identity provider integration claim.",
+                      "No certified/certification claim."
+                  ]
 }

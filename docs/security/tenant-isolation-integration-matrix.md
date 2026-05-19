@@ -22,6 +22,7 @@ The matrix covers:
 - P5-16C protected Project/Building read controller integration introduced in `docs/security/tenant-aware-read-controller-integration.md`.
 - P5-16D protected workflow read/history tenant-aware integration introduced in `docs/security/workflow-tenant-aware-read-integration.md`.
 - P5-17 workflow/scenario/job metadata coverage inventory introduced in `docs/security/workflow-ownership-metadata-coverage.md`.
+- P6-00 ownership backfill strategy/evidence planning introduced in `docs/security/ownership-backfill-strategy.md`.
 
 ## Non-claims
 
@@ -115,3 +116,4 @@ For each protected group:
 - Project/Building protected read controller integration uses tenant-aware query services only when protected-read rollout is enabled.
 - Workflow tenant-aware read integration is enabled for protected workflow read/history paths, but metadata-incomplete workflow/scenario/job ownership resolution remains staged and compatibility-option controlled.
 - Workflow metadata coverage is not uniformly complete across all legacy paths; see `docs/security/workflow-ownership-metadata-coverage.md`.
+- Backfill evidence gates are required before stricter persistence-level enforcement (global query filters or DB RLS) is evaluated; see `docs/security/ownership-backfill-strategy.md`.

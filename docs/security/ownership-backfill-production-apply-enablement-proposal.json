@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-09",
+  "applyEnabled": false,
+  "backfillExecution": false,
+  "requiredApprovals": [
+    "EngineeringOwner",
+    "SecurityReviewer",
+    "DatabaseReleaseOwner",
+    "BusinessApplicationOwner"
+  ],
+  "requiredEvidence": [
+    "DryRunSummary",
+    "EvidenceGatePassedResult",
+    "ApplyPlanArtifact",
+    "PlanHash",
+    "PlanSignoffArtifact",
+    "ApplyReadinessPassedResult",
+    "ApplyInputHash",
+    "PreviousValuesCompletenessEvidence",
+    "RollbackReadinessEvidence",
+    "SignedChangeRequest"
+  ],
+  "goCriteria": [
+    "ReadinessGatePassed",
+    "ApplyInputHashApproved",
+    "SignoffNotExpired",
+    "UnresolvedBelowThreshold",
+    "AmbiguousRecordsPolicySatisfied",
+    "PreviousValuesComplete",
+    "StagingEvidenceSuccessfulForProduction",
+    "BackupAndRestoreVerified",
+    "ReleaseWindowApproved"
+  ],
+  "noGoCriteria": [
+    "HashMismatch",
+    "ExpiredSignoff",
+    "MissingPreviousValues",
+    "UnresolvedAboveThreshold",
+    "AmbiguousOwnershipNotResolved",
+    "BackupMissing",
+    "RestoreUnverified",
+    "MigrationMismatch",
+    "PendingMigrationsUnaccountedFor",
+    "SecurityRegressionFailed",
+    "TenantIsolationMatrixFailed"
+  ],
+  "changeManagementFields": [
+    "ChangeId",
+    "Environment",
+    "RequestedBy",
+    "ReviewedBy",
+    "ApprovedBy",
+    "ApplyInputHash",
+    "PlanHash",
+    "SignoffId",
+    "ReadinessId",
+    "DryRunRunId",
+    "GateResultId",
+    "BackupReference",
+    "RollbackOwner",
+    "ScheduledWindow",
+    "GoNoGoDecision",
+    "Notes"
+  ],
+  "futureStages": [
+    "P6-10",
+    "P6-11",
+    "P6-12",
+    "P6-13",
+    "P6-14"
+  ],
+  "nonClaims": [
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

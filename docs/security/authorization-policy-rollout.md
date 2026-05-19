@@ -208,6 +208,13 @@ Route inventory guardrails are tracked in `docs/security/security-regression-gua
 - P5-17 does not add global EF query filters, database row-level security, or external identity provider integration.
 - Detailed notes: `docs/security/workflow-ownership-metadata-coverage.md`.
 
+## P6-00 ownership backfill readiness strategy note
+
+- P6-00 is strategy-only and defines dry-run-first ownership backfill planning, safety checks, governance gates, and evidence artifacts.
+- P6-00 does not execute data backfill and does not change runtime controller/query behavior.
+- Global query filters and database row-level security remain deferred until backfill evidence gates are met.
+- Detailed notes: `docs/security/ownership-backfill-strategy.md` and `docs/security/ownership-backfill-evidence-model.md`.
+
 ## Audit relationship
 
 - Authorization decisions should emit audit events through `docs/security/audit-log-foundation.md` when safe.

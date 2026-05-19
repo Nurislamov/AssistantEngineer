@@ -1,0 +1,19 @@
+{
+  "name": "ownership-backfill-staging-apply-runbook",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "stagingApplyEnabled",
+    "productionApplyEnabled",
+    "backfillExecution",
+    "environmentRequirements",
+    "operatorRequirements",
+    "requiredEvidence",
+    "acceptanceCriteria",
+    "failureCategories",
+    "promotionCriteria",
+    "nonClaims"
+  ]
+}

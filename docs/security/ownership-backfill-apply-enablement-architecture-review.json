@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-15",
+  "productionApplyEnabled": false,
+  "stagingApplyEnabled": false,
+  "backfillExecution": false,
+  "codeWritePathEnabled": false,
+  "architectureInvariants": [
+    "ApplyDisabledInvariant",
+    "EnvironmentHardDenyInvariant",
+    "HashChainInvariant",
+    "EvidenceCompletenessInvariant",
+    "RollbackCompletenessInvariant",
+    "NoSecretsInvariant",
+    "NoPayloadInvariant",
+    "NoDestructiveSqlInvariant",
+    "NoGlobalFilterInvariant",
+    "NoProductionWiringInvariant"
+  ],
+  "forbiddenArchitectureChanges": [
+    "WireCliApplyToProductionExecutor",
+    "UseProductionConnectionStringInTestOnlyExecutor",
+    "EnableSaveChangesInCliApplyPath",
+    "AddDestructiveRawSqlInBackfillTool",
+    "InferEnvironmentFromConnectionString",
+    "LogConnectionStringOrSecrets",
+    "AddGlobalQueryFiltersAsBackfillSideEffect",
+    "AddDbRlsAsBackfillSideEffect",
+    "BypassSignoffReadinessPromotionManualDecision"
+  ],
+  "requiredReviewChecks": [
+    "CliApplyDisabledRegressionPasses",
+    "NoProductionExecutorWiring",
+    "NoSaveChangesOutsideTestOnly",
+    "NoDestructiveSqlPatterns",
+    "NoConnectionStringLogging",
+    "HashChainValidationCoverage",
+    "ManualDecisionArtifactsPresent",
+    "ProductionPromotionValidatorPresent",
+    "StagingAcceptanceValidatorPresent",
+    "RollbackCompletenessChecksPresent",
+    "GeneratedArtifactsIgnored",
+    "ReleaseReadyVerificationPasses"
+  ],
+  "futureCodeEnablementCriteria": [
+    "P6-15 checklist accepted",
+    "Explicit code enablement proposal reviewed",
+    "Write-path diff scope reviewed",
+    "Staging-first enablement sequence reviewed",
+    "Production enablement reviewed as separate stage",
+    "Rollback command design reviewed",
+    "Audit logging design reviewed",
+    "Operator runbook reviewed"
+  ],
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No production ownership backfill execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

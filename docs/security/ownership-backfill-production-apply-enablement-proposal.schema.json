@@ -1,0 +1,22 @@
+{
+  "name": "ownership-backfill-production-apply-enablement-proposal",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "applyEnabled",
+    "backfillExecution",
+    "requiredApprovals",
+    "requiredEvidence",
+    "goCriteria",
+    "noGoCriteria",
+    "changeManagementFields",
+    "futureStages",
+    "nonClaims"
+  ],
+  "notes": [
+    "P6-09 is proposal-only and keeps apply disabled.",
+    "ApplyInputHash must be represented in requiredEvidence and changeManagementFields."
+  ]
+}

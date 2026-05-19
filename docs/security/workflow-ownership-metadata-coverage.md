@@ -3,6 +3,7 @@
 ## Purpose
 
 P5-17 hardens workflow/scenario/job tenant ownership metadata coverage for controlled tenant-aware workflow reads.
+P6-00 adds strategy-only ownership backfill planning in `docs/security/ownership-backfill-strategy.md`.
 
 ## Scope
 
@@ -95,6 +96,7 @@ No migration is added in P5-17.
 
 ## Next steps
 
-- P6: ownership backfill strategy and execution for historical workflow/scenario/job records.
+- P6-00: ownership backfill strategy and evidence model definitions (`docs/security/ownership-backfill-strategy.md`, `docs/security/ownership-backfill-evidence-model.md`).
+- P6: ownership backfill execution for historical workflow/scenario/job records after governance gates are met.
 - P6: re-evaluate metadata additions only where unresolved paths remain after backfill evidence.
 - P6: consider stronger persistence-layer enforcement only after metadata/backfill readiness is proven.

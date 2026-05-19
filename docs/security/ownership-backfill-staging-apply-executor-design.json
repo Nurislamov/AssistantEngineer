@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-18",
+  "stage": "P6-11",
+  "stagingApplyEnabled": false,
+  "productionApplyEnabled": false,
+  "backfillExecution": false,
+  "requiredEnvironment": "Staging",
+  "environmentGuardRules": [
+    "ExplicitEnvironmentParameterRequired",
+    "ProductionHardDenied",
+    "UnknownEnvironmentHardDenied",
+    "NoConnectionStringInference",
+    "NoConnectionStringLogging",
+    "AllowlistEnvironmentValidation"
+  ],
+  "preflightChecks": [
+    "DryRunEvidenceExists",
+    "EvidenceGatePassed",
+    "PlanGenerated",
+    "SignoffValidAndNotExpired",
+    "ReadinessGatePassed",
+    "ApplyInputHashMatchesArtifacts",
+    "SchemaVersionGatePassed",
+    "BackupRestoreGatePassed",
+    "RollbackEvidenceComplete",
+    "PendingMigrationsPolicySatisfied",
+    "OperatorIdentityValid",
+    "TranscriptRedactionEnabled"
+  ],
+  "schemaVersionChecks": [
+    "ExpectedMigrationSet",
+    "ProjectOrganizationIdColumnExists",
+    "ProjectOwnerUserIdColumnExists",
+    "WorkflowMetadataCoverageBaselineMatchesP5_17",
+    "NoUnknownPendingMigrationsWithoutApproval"
+  ],
+  "backupRestoreChecks": [
+    "BackupCompleted",
+    "RestoreRehearsalVerified",
+    "BackupOwnerRecorded",
+    "RestoreOwnerRecorded",
+    "BackupReferenceLinked",
+    "BackupTimestampBeforeApplyWindow"
+  ],
+  "postRunEvidence": [
+    "StagingApplyResultJson",
+    "StagingApplyResultMarkdown",
+    "StagingPostApplyDryRunSummary",
+    "StagingTenantIsolationReference",
+    "StagingRegressionReference",
+    "UpdatedUnresolvedMetrics",
+    "ChangedRecordsCount",
+    "SkippedRecordsCount",
+    "FailedRecordsCount",
+    "RollbackEvidenceReference"
+  ],
+  "nonClaims": [
+    "No staging apply execution claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantEngineer ownership backfill evidence schema descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "lastReviewedDate",
+    "requiredDefinitions",
+    "definitions"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "lastReviewedDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "requiredDefinitions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "dryRunSummary",
+          "applySummary",
+          "unresolvedRecord",
+          "previousValueSnapshot",
+          "gateResult"
+        ]
+      }
+    },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dryRunSummary",
+        "applySummary",
+        "unresolvedRecord",
+        "previousValueSnapshot",
+        "gateResult"
+      ],
+      "properties": {
+        "dryRunSummary": {
+          "type": "object",
+          "required": [
+            "runId",
+            "startedAtUtc",
+            "completedAtUtc",
+            "mode",
+            "totalRecordsScanned",
+            "totalRecordsResolvable",
+            "totalRecordsUnresolved",
+            "unresolvedByReason",
+            "recordTypeMetrics"
+          ]
+        },
+        "applySummary": {
+          "type": "object",
+          "required": [
+            "runId",
+            "startedAtUtc",
+            "completedAtUtc",
+            "mode",
+            "dryRunEvidenceRunId",
+            "totalRecordsEvaluated",
+            "totalRecordsUpdated",
+            "totalRecordsSkipped",
+            "totalRecordsFailed",
+            "unresolvedRate",
+            "thresholdPassed"
+          ]
+        },
+        "unresolvedRecord": {
+          "type": "object",
+          "required": [
+            "recordType",
+            "recordId",
+            "reason",
+            "candidateProjectId",
+            "candidateBuildingId",
+            "candidateOrganizationId"
+          ]
+        },
+        "previousValueSnapshot": {
+          "type": "object",
+          "required": [
+            "recordType",
+            "recordId",
+            "previousProjectId",
+            "previousBuildingId",
+            "previousOrganizationId",
+            "previousOwnerUserId"
+          ]
+        },
+        "gateResult": {
+          "type": "object",
+          "required": [
+            "passed",
+            "findings",
+            "metrics",
+            "summary"
+          ]
+        }
+      }
+    }
+  }
+}

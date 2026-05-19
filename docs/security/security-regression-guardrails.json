@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewedDate": "2026-05-17",
+  "lastReviewedDate": "2026-05-18",
   "guardrails": [
     {
       "guardrailId": "SEC-GUARD-ROUTE-INVENTORY",
@@ -136,6 +136,150 @@
       "testName": "P5WorkflowOwnershipMetadataCoverageGovernanceTests",
       "risk": "Workflow/scenario/job ownership coverage claims can overstate completeness or drift from resolver/test reality.",
       "notes": "Validates P5-17 metadata coverage docs/json/schema, workflow matrix metadataCoverage fields, and readiness inventory linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STRATEGY-EVIDENCE",
+      "title": "Ownership backfill strategy and evidence model must stay explicit before apply execution",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillStrategyGovernanceTests",
+      "risk": "Backfill execution readiness can drift without dry-run metrics, safety checks, and governance gate documentation.",
+      "notes": "Validates P6-00 strategy/evidence docs and schemas, strategy-only mode, non-claims, roadmap linkage, and no false backfill-complete claims."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-DRY-RUN-TOOL",
+      "title": "Ownership backfill dry-run tool must remain no-write and apply-disabled in P6-01",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillDryRunToolGovernanceTests",
+      "risk": "Dry-run tooling can accidentally drift into write behavior or overclaim execution readiness.",
+      "notes": "Validates tool project presence, apply rejection, no write-path indicators, artifact ignore rules, and P6-01 roadmap/guardrail linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-DATABASE-DRY-RUN",
+      "title": "Ownership backfill database dry-run scanner must remain read-only in P6-02",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillDatabaseDryRunScannerGovernanceTests",
+      "risk": "Database dry-run scanner can drift into write behavior or overclaim backfill execution readiness.",
+      "notes": "Validates scanner file presence, no SaveChanges/destructive SQL patterns in tool source, and P6-02 documentation/roadmap linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-EVIDENCE-GATES",
+      "title": "Ownership backfill evidence gates must enforce unresolved-threshold policy in P6-03",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillEvidenceGateGovernanceTests",
+      "risk": "Dry-run evidence can be accepted without consistent threshold/ambiguity validation, increasing future apply-mode risk.",
+      "notes": "Validates validate-evidence command docs, gate result artifact ignore rules, no-write constraints in tool source, and P6-03 inventory/strategy linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-DESIGN-DISABLED",
+      "title": "Ownership backfill apply-mode design must remain disabled and no-write in P6-04",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillApplyModeDesignGovernanceTests",
+      "risk": "Apply-mode scaffolding can drift into accidental write execution or overclaim backfill completion.",
+      "notes": "Validates apply design docs/json/schema, disabled apply CLI behavior, no SaveChanges/destructive SQL in tool source, and P6-04 inventory linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-ONLY",
+      "title": "Ownership backfill plan generator must remain plan-only and no-write in P6-05",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillApplyPlanGovernanceTests",
+      "risk": "Plan generation scaffolding can drift into accidental write execution or overclaim apply/backfill completion.",
+      "notes": "Validates plan-apply command presence, apply command disabled status, plan artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-05 inventory linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-SIGNOFF",
+      "title": "Ownership backfill plan sign-off gate must remain no-write and hash-bound in P6-06",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6OwnershipBackfillPlanSignoffGovernanceTests",
+      "risk": "Plan sign-off scaffolding can drift into weak hash validation, accidental write execution, or overclaim apply/backfill completion.",
+      "notes": "Validates signoff-plan command presence, plan hash/signoff governance linkage, signoff artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-06 inventory linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-TEST-ONLY-APPLY-REHEARSAL",
+      "title": "Ownership backfill test-only apply rehearsal must stay no-write and production-disabled in P6-07",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6TestOnlyApplyExecutorGovernanceTests",
+      "risk": "Test-only rehearsal scaffolding can drift into production write wiring or overclaim backfill execution readiness.",
+      "notes": "Validates test-only executor presence, CLI apply disabled status, rehearsal artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-07 inventory linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-READINESS",
+      "title": "Ownership backfill apply-enablement readiness gate must remain no-write and hash-chain consistent in P6-08",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6ApplyEnablementReadinessGovernanceTests",
+      "risk": "Readiness validation can drift from artifact-chain consistency and rollback evidence requirements, creating unsafe apply assumptions.",
+      "notes": "Validates validate-apply-readiness command presence, apply-readiness artifact ignore rules, hash-chain/readiness-link documentation, no SaveChanges/destructive SQL in tool source, and P6-08 inventory linkage while apply remains disabled."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-APPLY-PROPOSAL",
+      "title": "Ownership backfill production apply enablement proposal must remain policy-bound and no-write in P6-09",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6ProductionApplyEnablementProposalGovernanceTests",
+      "risk": "Production apply enablement can bypass evidence, approval, backup, rollback, and change-management policy requirements.",
+      "notes": "Validates proposal/template docs and descriptors, ApplyInputHash policy linkage, guardrail/inventory references, no false apply-enabled claims, and apply-disabled posture in P6-09."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-RUNBOOK",
+      "title": "Ownership backfill staging apply runbook must remain policy-bound and no-write in P6-10",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6StagingApplyEnablementDesignGovernanceTests",
+      "risk": "Staging apply enablement can bypass evidence, operator, backup, rollback, or promotion controls.",
+      "notes": "Validates staging runbook/checklist docs and descriptors, ApplyInputHash staging requirements, guardrail/inventory references, no false staging/prod apply-enabled claims, and apply-disabled posture in P6-10."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-EXECUTOR-DESIGN",
+      "title": "Ownership backfill staging apply executor design must remain no-write and disabled in P6-11",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6StagingApplyExecutorDesignGovernanceTests",
+      "risk": "Staging executor enablement can bypass environment, preflight, schema, backup, and rollback protections.",
+      "notes": "Validates staging executor design docs/json/schema, staging preflight command/contract presence, disabled executor behavior, no-write source constraints, and P6-11 roadmap linkage."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-POST-RUN-EVIDENCE-ACCEPTANCE",
+      "title": "Ownership backfill staging post-run evidence acceptance must remain no-write and disabled in P6-12",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6StagingPostRunEvidenceAcceptanceGovernanceTests",
+      "risk": "Staging post-run acceptance can drift from hash-chain, rollback, and evidence completeness requirements.",
+      "notes": "Validates staging post-run evidence docs/json/schema, validate-staging-acceptance command presence, acceptance artifact ignore rules, no-write source constraints, and P6-12 roadmap linkage while apply remains disabled."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-PROMOTION-READINESS",
+      "title": "Ownership backfill production promotion readiness must remain no-write and disabled in P6-13",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6ProductionPromotionReadinessGovernanceTests",
+      "risk": "Production promotion readiness can drift from cross-environment evidence separation, TTL/re-approval, and change-request binding requirements.",
+      "notes": "Validates production promotion readiness docs/json/schema, validate-production-promotion command presence, decision artifact ignore rules, no-write source constraints, and P6-13 roadmap linkage while apply remains disabled."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-MANUAL-WRITE-PATH-DECISION",
+      "title": "Ownership backfill manual write-path enablement decision must remain manual-only and no-write in P6-14",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6ManualWritePathEnablementDecisionGovernanceTests",
+      "risk": "Manual enablement decisions can drift from hash binding, approval, TTL, and no-write boundary requirements.",
+      "notes": "Validates manual write-path decision docs/json/schema/templates, required hash and approval bindings, inventory and guardrail linkage, and no false apply-enabled or backfill-executed claims."
+    },
+    {
+      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-ARCHITECTURE-REVIEW",
+      "title": "Ownership backfill apply enablement architecture review must remain no-write and no-wiring in P6-15",
+      "status": "Active",
+      "enforcement": "AutomatedTest",
+      "testName": "P6ApplyEnablementArchitectureReviewGovernanceTests",
+      "risk": "Future write-path changes can bypass disabled-apply boundary, environment hard-deny, hash-chain, rollback completeness, and no-secrets/no-destructive-sql invariants.",
+      "notes": "Validates P6-15 architecture review docs/json/schema/templates, required invariants/checks, inventory linkage, source-level no-wiring guards, and no false apply-enabled or backfill-executed claims."
     }
   ],
   "nonClaims": [
@@ -147,3 +291,4 @@
     "No claim that all API endpoints are protected yet."
   ]
 }
+

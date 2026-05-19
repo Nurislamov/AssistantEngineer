@@ -1,0 +1,19 @@
+{
+  "name": "ownership-backfill-staging-apply-executor-design",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "stagingApplyEnabled",
+    "productionApplyEnabled",
+    "backfillExecution",
+    "requiredEnvironment",
+    "environmentGuardRules",
+    "preflightChecks",
+    "schemaVersionChecks",
+    "backupRestoreChecks",
+    "postRunEvidence",
+    "nonClaims"
+  ]
+}
