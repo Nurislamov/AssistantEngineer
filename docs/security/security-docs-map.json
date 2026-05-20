@@ -1,0 +1,281 @@
+{
+    "version":  1,
+    "lastReviewedDate":  "2026-05-20",
+    "stage":  "P7-08",
+    "canonicalDocuments":  [
+                               {
+                                   "path":  "docs/security/security-release-boundary.md",
+                                   "title":  "Security release boundary",
+                                   "category":  "Canonical release boundary",
+                                   "canonicalRole":  "Canonical",
+                                   "status":  "Implemented",
+                                   "ownerArea":  "SecurityGovernance",
+                                   "dependsOn":  [
+
+                                                 ],
+                                   "supersedes":  [
+
+                                                  ],
+                                   "referencedBy":  [
+                                                        "docs/security/security-governance-index.md",
+                                                        "docs/security/post-p6-governance-audit.md"
+                                                    ],
+                                   "notes":  "Canonical enabled/disabled capability boundary."
+                               },
+                               {
+                                   "path":  "docs/security/security-governance-index.md",
+                                   "title":  "Security governance index",
+                                   "category":  "Audit/release readiness",
+                                   "canonicalRole":  "Canonical",
+                                   "status":  "Implemented",
+                                   "ownerArea":  "SecurityGovernance",
+                                   "dependsOn":  [
+                                                     "docs/security/security-governance-status-vocabulary.md"
+                                                 ],
+                                   "supersedes":  [
+
+                                                  ],
+                                   "referencedBy":  [
+                                                        "tests/AssistantEngineer.Tests/Architecture/P7SecurityGovernanceIndexNormalizationTests.cs"
+                                                    ],
+                                   "notes":  "Canonical document map for P5/P6/P7 security artifacts."
+                               },
+                               {
+                                   "path":  "docs/security/security-docs-map.md",
+                                   "title":  "Security docs map",
+                                   "category":  "Audit/release readiness",
+                                   "canonicalRole":  "Canonical",
+                                   "status":  "GovernanceOnly",
+                                   "ownerArea":  "SecurityGovernance",
+                                   "dependsOn":  [
+                                                     "docs/security/security-release-boundary.md",
+                                                     "docs/security/security-governance-index.md"
+                                                 ],
+                                   "supersedes":  [
+
+                                                  ],
+                                   "referencedBy":  [
+                                                        "docs/security/security-release-boundary.md",
+                                                        "docs/adr/ADR-0001-security-governance-boundary.md"
+                                                    ],
+                                   "notes":  "P7-07 canonical map of security/governance documentation roles."
+                               },
+                               {
+                                   "path":  "docs/adr/ADR-0001-security-governance-boundary.md",
+                                   "title":  "ADR-0001 security governance boundary",
+                                   "category":  "Architecture review",
+                                   "canonicalRole":  "Canonical",
+                                   "status":  "GovernanceOnly",
+                                   "ownerArea":  "SecurityArchitecture",
+                                   "dependsOn":  [
+                                                     "docs/security/security-release-boundary.md",
+                                                     "docs/security/post-p6-governance-audit.md"
+                                                 ],
+                                   "supersedes":  [
+
+                                                  ],
+                                   "referencedBy":  [
+                                                        "docs/adr/adr-index.md",
+                                                        "docs/security/security-docs-map.md"
+                                                    ],
+                                   "notes":  "Accepted decision record for disabled write-path boundary and governance posture."
+                               },
+                               {
+                                   "path":  "docs/adr/security-architecture-decision-matrix.md",
+                                   "title":  "Security architecture decision matrix",
+                                   "category":  "Architecture review",
+                                   "canonicalRole":  "Canonical",
+                                   "status":  "GovernanceOnly",
+                                   "ownerArea":  "SecurityArchitecture",
+                                   "dependsOn":  [
+                                                     "docs/adr/ADR-0001-security-governance-boundary.md",
+                                                     "docs/security/security-release-boundary.md"
+                                                 ],
+                                   "supersedes":  [
+
+                                                  ],
+                                   "referencedBy":  [
+                                                        "docs/adr/adr-index.md",
+                                                        "tests/AssistantEngineer.Tests/Architecture/P7SecurityArchitectureDecisionMatrixTests.cs"
+                                                    ],
+                                   "notes":  "P7-08 consolidated matrix for accepted/deferred/rejected architecture decisions and release-boundary flags."
+                               }
+                           ],
+    "stageEvidenceDocuments":  [
+                                   {
+                                       "path":  "docs/security/api-endpoint-protection-inventory.md",
+                                       "title":  "API endpoint protection inventory",
+                                       "category":  "Route protection",
+                                       "canonicalRole":  "StageEvidence",
+                                       "status":  "GovernanceOnly",
+                                       "ownerArea":  "ApiSecurity",
+                                       "dependsOn":  [
+                                                         "docs/security/api-endpoint-classification-model.md"
+                                                     ],
+                                       "supersedes":  [
+
+                                                      ],
+                                       "referencedBy":  [
+                                                            "tests/AssistantEngineer.Tests/Architecture/P7RouteInventoryCoverageTests.cs"
+                                                        ],
+                                       "notes":  "Staged route protection evidence with normalized metadata."
+                                   },
+                                   {
+                                       "path":  "docs/security/tenant-isolation-integration-matrix.md",
+                                       "title":  "Tenant isolation integration matrix",
+                                       "category":  "Tenant isolation",
+                                       "canonicalRole":  "StageEvidence",
+                                       "status":  "Implemented",
+                                       "ownerArea":  "TenantIsolation",
+                                       "dependsOn":  [
+
+                                                     ],
+                                       "supersedes":  [
+
+                                                      ],
+                                       "referencedBy":  [
+                                                            "tests/AssistantEngineer.Tests/Architecture/P5TenantIsolationIntegrationMatrixGovernanceTests.cs"
+                                                        ],
+                                       "notes":  "Cross-tenant matrix for staged protected endpoint groups."
+                                   },
+                                   {
+                                       "path":  "docs/security/ownership-backfill-apply-enablement-architecture-review.md",
+                                       "title":  "Ownership backfill apply enablement architecture review",
+                                       "category":  "Architecture review",
+                                       "canonicalRole":  "StageEvidence",
+                                       "status":  "GovernanceOnly",
+                                       "ownerArea":  "OwnershipBackfillGovernance",
+                                       "dependsOn":  [
+                                                         "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+                                                     ],
+                                       "supersedes":  [
+
+                                                      ],
+                                       "referencedBy":  [
+                                                            "tests/AssistantEngineer.Tests/Architecture/P6ApplyEnablementArchitectureReviewGovernanceTests.cs"
+                                                        ],
+                                       "notes":  "P6-15 invariants and no-wiring constraints before any future code enablement."
+                                   },
+                                   {
+                                       "path":  "docs/security/route-inventory-claims-consistency-audit.md",
+                                       "title":  "Route inventory claims consistency audit",
+                                       "category":  "Audit/release readiness",
+                                       "canonicalRole":  "StageEvidence",
+                                       "status":  "GovernanceOnly",
+                                       "ownerArea":  "RouteGovernance",
+                                       "dependsOn":  [
+                                                         "docs/security/api-endpoint-protection-inventory.md",
+                                                         "docs/security/security-release-boundary.md"
+                                                     ],
+                                       "supersedes":  [
+
+                                                      ],
+                                       "referencedBy":  [
+                                                            "tests/AssistantEngineer.Tests/Architecture/P7RouteInventoryClaimsConsistencyAuditTests.cs"
+                                                        ],
+                                       "notes":  "P7-06 consistency automation audit and constraints."
+                                   },
+                                   {
+                                       "path":  "docs/adr/future-security-adr-backlog.md",
+                                       "title":  "Future security ADR backlog",
+                                       "category":  "Architecture review",
+                                       "canonicalRole":  "Reference",
+                                       "status":  "GovernanceOnly",
+                                       "ownerArea":  "SecurityArchitecture",
+                                       "dependsOn":  [
+                                                         "docs/adr/security-architecture-decision-matrix.md"
+                                                     ],
+                                       "supersedes":  [
+
+                                                      ],
+                                       "referencedBy":  [
+                                                            "docs/adr/adr-index.md",
+                                                            "tests/AssistantEngineer.Tests/Architecture/P7FutureSecurityAdrBacklogTests.cs"
+                                                        ],
+                                       "notes":  "P7-08 deferred ADR intake with trigger/evidence constraints."
+                                   }
+                               ],
+    "templateDocuments":  [
+                              {
+                                  "path":  "docs/security/ownership-backfill-architecture-review-checklist.md",
+                                  "title":  "Ownership backfill architecture review checklist",
+                                  "category":  "Architecture review",
+                                  "canonicalRole":  "Template",
+                                  "status":  "Template",
+                                  "ownerArea":  "OwnershipBackfillGovernance",
+                                  "dependsOn":  [
+                                                    "docs/security/ownership-backfill-apply-enablement-architecture-review.md"
+                                                ],
+                                  "supersedes":  [
+
+                                                 ],
+                                  "referencedBy":  [
+
+                                                   ],
+                                  "notes":  "Template only; not evidence of execution."
+                              },
+                              {
+                                  "path":  "docs/security/ownership-backfill-manual-decision-log-template.md",
+                                  "title":  "Ownership backfill manual decision log template",
+                                  "category":  "Production governance",
+                                  "canonicalRole":  "Template",
+                                  "status":  "Template",
+                                  "ownerArea":  "OwnershipBackfillGovernance",
+                                  "dependsOn":  [
+                                                    "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+                                                ],
+                                  "supersedes":  [
+
+                                                 ],
+                                  "referencedBy":  [
+
+                                                   ],
+                                  "notes":  "Template only; not a write-path enablement action."
+                              }
+                          ],
+    "machineReadableRegistries":  [
+                                      "docs/security/api-endpoint-protection-inventory.json",
+                                      "docs/security/tenant-isolation-integration-matrix.json",
+                                      "docs/security/production-saas-readiness-inventory.json",
+                                      "docs/security/security-regression-guardrails.json",
+                                      "docs/security/security-governance-index.json",
+                                      "docs/security/security-docs-map.json",
+                                      "docs/adr/adr-index.json",
+                                      "docs/adr/security-architecture-decision-matrix.json",
+                                      "docs/adr/future-security-adr-backlog.json"
+                                  ],
+    "guardrailTests":  [
+                           "P7SecurityGovernanceDocsConsistencyTests",
+                           "P7SecurityGovernanceIndexNormalizationTests",
+                           "P7SecurityReleaseBoundaryTests",
+                           "P7RouteInventoryCoverageTests",
+                           "P7RouteClaimsConsistencyTests",
+                           "P7RouteOperationalCategoryConsistencyTests",
+                           "P7RouteTenantScopeConsistencyTests",
+                           "P7ProtectionStageConsistencyTests",
+                           "P7SecurityDocsMapTests",
+                           "P7SecurityAdrTests",
+                           "P7SecurityArchitectureDecisionMatrixTests",
+                           "P7FutureSecurityAdrBacklogTests"
+                       ],
+    "decisionRecords":  [
+                            "docs/adr/ADR-0001-security-governance-boundary.md",
+                            "docs/adr/security-architecture-decision-matrix.md",
+                            "docs/adr/future-security-adr-backlog.md"
+                        ],
+    "knownLimitations":  [
+                             "Route inventory still contains Deferred and UnknownNeedsClassification entries that require staged refinement.",
+                             "P6 governance chain remains broad and has non-trivial maintenance overhead.",
+                             "Write-path and real backfill execution remain intentionally disabled and are not covered by runtime execution evidence.",
+                             "Future ADR backlog items remain deferred and require separate staged decisions before any boundary changes."
+                         ],
+    "nonClaims":  [
+                      "No production security certification claim.",
+                      "No full multi-tenant isolation claim yet.",
+                      "No database row-level security claim.",
+                      "No global EF query filter claim.",
+                      "No production apply enabled claim.",
+                      "No ownership backfill execution claim.",
+                      "No certified/certification claim."
+                  ]
+}

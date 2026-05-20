@@ -1,0 +1,35 @@
+{
+  "name": "security-release-boundary",
+  "version": 1,
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "enabledCapabilities",
+    "intentionallyDisabledCapabilities",
+    "allowedClaims",
+    "forbiddenClaims",
+    "releaseBoundary",
+    "nonClaims"
+  ],
+  "releaseBoundaryRequiredFields": [
+    "productionApplyEnabled",
+    "stagingApplyEnabled",
+    "ownershipBackfillExecuted",
+    "dbWritePathEnabled",
+    "globalEfQueryFiltersEnabled",
+    "databaseRowLevelSecurityEnabled",
+    "fullTenantIsolationClaimed",
+    "productionSecurityCertified"
+  ],
+  "releaseBoundaryExpectedBooleanValues": {
+    "productionApplyEnabled": false,
+    "stagingApplyEnabled": false,
+    "ownershipBackfillExecuted": false,
+    "dbWritePathEnabled": false,
+    "globalEfQueryFiltersEnabled": false,
+    "databaseRowLevelSecurityEnabled": false,
+    "fullTenantIsolationClaimed": false,
+    "productionSecurityCertified": false
+  }
+}

@@ -59,3 +59,8 @@ The inventory covers controller route groups for:
 | StandardTablesController | `api/v{version:apiVersion}/standard-tables` | PublicAllowed | AnonymousAllowed / ProjectsRead | P5-04E | Reference routes can remain public only when explicitly inventoried. | Keep status explicit to avoid accidental policy drift. |
 
 Machine-readable canonical inventory is maintained in `docs/security/api-endpoint-protection-inventory.json`.
+
+## Classification model
+
+Inventory classification and required metadata are defined in `docs/security/api-endpoint-classification-model.md`.
+Canonical release-boundary posture for claims/non-claims is defined in `docs/security/security-release-boundary.md`.

@@ -114,3 +114,5 @@ Dry-run writes run-scoped evidence files under the provided output directory:
 
 - P6-03: validate dry-run evidence and unresolved thresholds.
 - P6-04: design apply mode (still disabled) with explicit gate prerequisites.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

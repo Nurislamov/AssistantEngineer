@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P7-03",
+  "commands": [
+    {
+      "name": "dry-run",
+      "stageIntroduced": "P6-01",
+      "purpose": "Generate ownership dry-run evidence from no-data mode or read-only database scan mode.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1],
+      "generatedArtifacts": [
+        "ownership-backfill-dry-run-summary-*.json",
+        "ownership-backfill-dry-run-summary-*.md",
+        "ownership-backfill-unresolved-records-*.json",
+        "ownership-backfill-previous-values-*.json"
+      ]
+    },
+    {
+      "name": "validate-evidence",
+      "stageIntroduced": "P6-03",
+      "purpose": "Validate dry-run evidence and unresolved-threshold/ambiguity policy.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-evidence-gate-result-*.json",
+        "ownership-backfill-evidence-gate-result-*.md"
+      ]
+    },
+    {
+      "name": "plan-apply",
+      "stageIntroduced": "P6-05",
+      "purpose": "Generate deterministic no-write apply plan artifacts from passed evidence gate.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-apply-plan-*.json",
+        "ownership-backfill-apply-summary-draft-*.json",
+        "ownership-backfill-apply-summary-draft-*.md",
+        "ownership-backfill-planned-records-*.json"
+      ]
+    },
+    {
+      "name": "signoff-plan",
+      "stageIntroduced": "P6-06",
+      "purpose": "Validate plan hash and reviewer metadata; emit sign-off artifact.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-plan-signoff-*.json",
+        "ownership-backfill-plan-signoff-*.md"
+      ]
+    },
+    {
+      "name": "validate-apply-readiness",
+      "stageIntroduced": "P6-08",
+      "purpose": "Validate full artifact chain and ApplyInputHash readiness preconditions.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-apply-readiness-result-*.json",
+        "ownership-backfill-apply-readiness-result-*.md"
+      ]
+    },
+    {
+      "name": "validate-staging-preflight",
+      "stageIntroduced": "P6-11",
+      "purpose": "Validate staging preflight/environment-guard contract without execution.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": []
+    },
+    {
+      "name": "validate-staging-acceptance",
+      "stageIntroduced": "P6-12",
+      "purpose": "Validate staging post-run evidence acceptance contract and StagingRunHash.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-staging-acceptance-result-*.json",
+        "ownership-backfill-staging-acceptance-result-*.md"
+      ]
+    },
+    {
+      "name": "validate-production-promotion",
+      "stageIntroduced": "P6-13",
+      "purpose": "Validate production promotion readiness chain and cross-environment separation.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [0, 1, 2],
+      "generatedArtifacts": [
+        "ownership-backfill-production-promotion-decision-*.json",
+        "ownership-backfill-production-promotion-decision-*.md"
+      ]
+    },
+    {
+      "name": "apply",
+      "stageIntroduced": "P6-04",
+      "purpose": "Disabled boundary placeholder for future apply contract; remains non-executable.",
+      "writesToDb": false,
+      "requiresDbConnection": false,
+      "applyEnabled": false,
+      "exitCodes": [1],
+      "generatedArtifacts": []
+    }
+  ],
+  "exitCodes": [
+    {
+      "code": 0,
+      "meaning": "Success"
+    },
+    {
+      "code": 1,
+      "meaning": "Invalid input or disabled command"
+    },
+    {
+      "code": 2,
+      "meaning": "Governance validation failed"
+    }
+  ],
+  "redactionPolicy": [
+    "Redact values supplied to --connection-string, --password, --token, --api-key, --apikey, and --secret.",
+    "Redact connection-string-like fragments such as Data Source=, Host=, Server=, Username=, and Password=.",
+    "Parser and runtime errors may reference argument names but must not print secret-like values.",
+    "Help examples must use placeholders such as <connection-string>, <path>, and <hash>."
+  ],
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}
+

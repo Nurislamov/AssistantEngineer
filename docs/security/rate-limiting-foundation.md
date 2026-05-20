@@ -108,3 +108,4 @@ Rate-limiting default and partition-key regression guardrails are tracked in `do
 P5-12 execution-endpoint authorization rollout aligns workflow/calculation protected routes with `WorkflowExecute` and `CalculationRun` category governance (`docs/security/protected-execution-endpoints-rollout.md`).
 P5-13 report/artifact authorization rollout aligns protected report/artifact routes with `ReportGenerate`, `ArtifactRead`, and `ArtifactWrite` category governance (`docs/security/protected-report-artifact-endpoints-rollout.md`).
 P5-14 workflow read/history authorization rollout aligns protected workflow-read routes with `WorkflowRead` category governance (`docs/security/protected-workflow-read-history-rollout.md`).
+P7-06 route inventory automation verifies that inventory categories align with this category vocabulary (`docs/security/route-inventory-claims-consistency-audit.md`).

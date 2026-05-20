@@ -22,6 +22,8 @@ This inventory covers:
 - secure configuration;
 - observability/security logging.
 
+Canonical release-boundary reference: `docs/security/security-release-boundary.md`.
+
 ## Non-claims
 
 - No production security certification claim.
@@ -207,7 +209,7 @@ Target SaaS model introduces:
 - P6-09 Production apply enablement proposal (no-write):
   - formal staging/production approval policy, go/no-go criteria, backup/rollback readiness requirements, and change-management template are documented;
   - apply mode remains disabled and no ownership metadata writes are performed.
-  - status: ProposalOnly via `docs/security/ownership-backfill-production-apply-enablement-proposal.md`.
+  - status: GovernanceOnly via `docs/security/ownership-backfill-production-apply-enablement-proposal.md`.
 - P6-10 Staging apply enablement design (no-write):
   - staging-specific runbook/checklist governance, operator/environment policy, backup/rollback rehearsal requirements, and promotion criteria are documented;
   - staging and production apply remain disabled and no ownership metadata writes are performed.
@@ -223,15 +225,27 @@ Target SaaS model introduces:
 - P6-13 Production promotion readiness proposal (no-write):
   - formal production promotion readiness contract validates accepted staging evidence, separate production evidence chain, hash separation, and production change-request binding;
   - staging and production apply remain disabled and no ownership metadata writes are performed.
-  - status: ProposalOnly via `docs/security/ownership-backfill-production-promotion-readiness.md`.
+  - status: GovernanceOnly via `docs/security/ownership-backfill-production-promotion-readiness.md`.
 - P6-14 Manual write-path enablement decision framework (no-write):
   - human-only decision packet/checklist/template governance binds approvals to `ProductionPromotionHash` and `ApplyInputHash` with TTL checks;
   - staging and production apply remain disabled and no ownership metadata writes are performed.
-  - status: ManualDecisionOnly via `docs/security/ownership-backfill-manual-write-path-enablement-decision.md`.
+  - status: GovernanceOnly via `docs/security/ownership-backfill-manual-write-path-enablement-decision.md`.
 - P6-15 Apply enablement architecture review (no-write):
   - architecture invariants/checklist define no-wiring/no-secrets/no-destructive-sql boundaries and mandatory disabled-apply governance before any future code enablement;
   - staging and production apply remain disabled and no ownership metadata writes are performed.
-  - status: ArchitectureReviewOnly via `docs/security/ownership-backfill-apply-enablement-architecture-review.md`.
+  - status: GovernanceOnly via `docs/security/ownership-backfill-apply-enablement-architecture-review.md`.
+- P7-00 Post-P6 governance audit and release boundary review (audit-only):
+  - post-P6 audit/index validates claims consistency, disabled apply boundary, source-level no-wiring posture, docs/schema consistency, and generated artifact policy;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: AuditOnly via `docs/security/post-p6-governance-audit.md`.
+- P7-01 Security governance docs deduplication and index normalization:
+  - canonical `security-release-boundary` and normalized `security-governance-index`/status vocabulary reduce status-text drift;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: GovernanceOnly via `docs/security/security-release-boundary.md`.
+- P7-02 Governance test consolidation:
+  - shared governance test helpers reduce copy-paste and keep no-write/disabled-boundary coverage centralized;
+  - staging and production apply remain disabled and no ownership metadata writes are performed.
+  - status: GovernanceOnly via `docs/security/governance-test-consolidation-report.md`.
 
 P5-01 status note:
 
@@ -464,3 +478,81 @@ P6-15 status note:
 - Staging and production apply remain explicitly disabled and always non-zero for real apply path.
 - No DB write path is enabled and no ownership backfill execution is performed.
 - Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P7-00 status note:
+
+- Post-P6 governance audit reviews P5/P6 security/tenant/backfill release boundary and consolidates findings/backlog without changing runtime behavior.
+- Security governance index centralizes P5/P6/P7 references and non-claim boundaries.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P7-01 status note:
+
+- `security-release-boundary.md` is now the canonical source for enabled/disabled release capability claims.
+- Security-governance index and status vocabulary are normalized to reduce repeated status text drift.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+
+P7-02 status note:
+
+- Governance test helper layer (`tests/AssistantEngineer.Tests/Architecture/Governance/`) consolidates repeated docs/json/claim/source-scan assertions.
+- P7 governance tests and selected high-duplication P6 tests were refactored to shared helper assertions.
+- Staging and production apply remain explicitly disabled and always non-zero for real apply path.
+- No DB write path is enabled and no ownership backfill execution is performed.
+- Global query filters, database row-level security, ownership backfill execution, and external identity provider integration remain future work.
+## P7-03 status note
+
+- P7-03 Ownership backfill CLI UX cleanup is implemented as tooling/governance hardening only.
+- Apply remains disabled; no runtime write-path behavior change is claimed.
+
+## P7-04 status note
+
+- P7-04 release-ready observability/performance audit is implemented as audit/tooling diagnostics hardening only.
+- Runtime behavior and write-path/apply boundaries remain unchanged.
+
+## P7-05 status note
+
+- P7-05 CI/GitHub checks visibility is implemented as audit/governance hardening only.
+- CI visibility contract and runbook are documented; workflow safety checks are test-governed.
+- Runtime behavior and write-path/apply boundaries remain unchanged.
+
+P7-05 reference:
+
+- `docs/security/ci-github-checks-visibility-audit.md`
+- `docs/security/ci-github-checks-visibility-runbook.md`
+
+## P7-06 status note
+
+- P7-06 route inventory and claims consistency automation is implemented as governance hardening only.
+- Route classification model and inventory consistency checks are test-governed; runtime routes and controller behavior are unchanged.
+- Runtime behavior and write-path/apply boundaries remain unchanged.
+
+P7-06 reference:
+
+- `docs/security/route-inventory-claims-consistency-audit.md`
+- `docs/security/api-endpoint-classification-model.md`
+
+## P7-07 status note
+
+- P7-07 security docs map and decision record consolidation is implemented as governance/documentation hardening only.
+- Canonical docs map and accepted ADR boundary are documented without enabling runtime write paths.
+- Runtime behavior and write-path/apply boundaries remain unchanged.
+
+P7-07 reference:
+
+- `docs/security/security-docs-map.md`
+- `docs/adr/ADR-0001-security-governance-boundary.md`
+- `docs/adr/adr-index.md`
+
+## P7-08 status note
+
+- P7-08 post-P6 architecture decision record consolidation is implemented as governance hardening only.
+- Security architecture decision matrix and future ADR backlog are added to centralize accepted/deferred/rejected boundary decisions.
+- Runtime behavior and write-path/apply boundaries remain unchanged.
+
+P7-08 reference:
+
+- `docs/adr/security-architecture-decision-matrix.md`
+- `docs/adr/future-security-adr-backlog.md`

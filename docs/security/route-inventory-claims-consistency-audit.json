@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P7-06",
+  "runtimeBehaviorChanged": false,
+  "publicRoutesChanged": false,
+  "routeProtectionWeakened": false,
+  "inventorySources": [
+    "docs/security/api-endpoint-protection-inventory.json",
+    "docs/security/api-endpoint-protection-inventory.md",
+    "src/Backend/AssistantEngineer.Api/Controllers/**",
+    "docs/security/protected-*-endpoints-rollout.md"
+  ],
+  "classificationRules": [
+    "Every inventory entry includes route/method/controller/action/endpointGroup/protectionStage/permission/tenantScope/rateLimitCategory/auditCategory/publicClaim/knownLimitations.",
+    "UnknownNeedsClassification and deferred entries must include explicit knownLimitations.",
+    "Protection stage values must use canonical vocabulary and remain aligned with staged rollout docs."
+  ],
+  "automationChecks": [
+    "P7RouteInventoryCoverageTests",
+    "P7RouteClaimsConsistencyTests",
+    "P7RouteOperationalCategoryConsistencyTests",
+    "P7RouteTenantScopeConsistencyTests",
+    "P7ProtectionStageConsistencyTests"
+  ],
+  "remainingLimitations": [
+    "Route discovery is text-level and does not execute full runtime endpoint graph inspection.",
+    "Some inventory entries are intentionally aggregated as MULTI and need future split refinement.",
+    "Staged/deferred limitations remain and are documented instead of over-claimed."
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No certified/certification claim."
+  ]
+}

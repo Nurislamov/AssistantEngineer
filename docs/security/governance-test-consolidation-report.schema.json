@@ -1,0 +1,16 @@
+{
+  "name": "governance-test-consolidation-report",
+  "version": 1,
+  "requiredTopLevelFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "writePathEnabled",
+    "helpersAdded",
+    "testClassesRefactored",
+    "preservedGuardrails",
+    "remainingDuplication",
+    "nonClaims"
+  ]
+}

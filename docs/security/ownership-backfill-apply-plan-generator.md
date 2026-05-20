@@ -116,3 +116,5 @@ P6-07 test-only rehearsal may execute simulated updates from plan artifacts in c
 
 - P6-06: add explicit `signoff-plan` review gate before any apply enablement stage.
 - P6-07: add test-only apply executor rehearsal while keeping production apply disabled.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

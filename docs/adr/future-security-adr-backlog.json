@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P7-08",
+  "backlogItems": [
+    {
+      "id": "ADR-FUTURE-001",
+      "title": "Staging ownership backfill apply enablement",
+      "status": "Deferred",
+      "triggerCondition": "Staging runbook/preflight/acceptance governance is complete and explicit staging write-path proposal is ready.",
+      "requiredEvidence": [
+        "docs/security/ownership-backfill-staging-apply-runbook.md",
+        "docs/security/ownership-backfill-staging-post-run-evidence.md"
+      ],
+      "forbiddenShortcuts": [
+        "Enable staging apply directly from CLI apply path.",
+        "Treat design-only artifacts as execution evidence."
+      ],
+      "relatedDocs": [
+        "docs/adr/security-architecture-decision-matrix.md",
+        "docs/security/security-release-boundary.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-002",
+      "title": "Production ownership backfill apply enablement",
+      "status": "Deferred",
+      "triggerCondition": "Accepted staging evidence and production promotion governance are complete with manual decision packet.",
+      "requiredEvidence": [
+        "docs/security/ownership-backfill-production-promotion-readiness.md",
+        "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+      ],
+      "forbiddenShortcuts": [
+        "Enable production apply without separate production ADR.",
+        "Reuse staging hashes/evidence as production execution approval."
+      ],
+      "relatedDocs": [
+        "docs/adr/security-architecture-decision-matrix.md",
+        "docs/security/security-release-boundary.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-003",
+      "title": "Global EF query filter enablement",
+      "status": "Deferred",
+      "triggerCondition": "Post-backfill enforcement strategy is proposed with compatibility and rollback plan.",
+      "requiredEvidence": [
+        "docs/security/ownership-backfill-apply-enablement-architecture-review.md"
+      ],
+      "forbiddenShortcuts": [
+        "Add global HasQueryFilter as side effect of unrelated governance work."
+      ],
+      "relatedDocs": [
+        "docs/security/security-release-boundary.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-004",
+      "title": "DB row-level security enablement",
+      "status": "Deferred",
+      "triggerCondition": "Operational ownership, migration, and rollback model for RLS are explicitly approved.",
+      "requiredEvidence": [
+        "docs/security/security-release-boundary.md"
+      ],
+      "forbiddenShortcuts": [
+        "Claim RLS enabled from governance-only docs.",
+        "Enable RLS without dedicated operational ADR."
+      ],
+      "relatedDocs": [
+        "docs/adr/security-architecture-decision-matrix.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-005",
+      "title": "External identity provider integration",
+      "status": "Deferred",
+      "triggerCondition": "Identity integration requirements and rollout constraints are staged and reviewed.",
+      "requiredEvidence": [
+        "docs/security/authorization-policy-rollout.md"
+      ],
+      "forbiddenShortcuts": [
+        "Claim enterprise identity posture without ADR and rollout evidence."
+      ],
+      "relatedDocs": [
+        "docs/security/post-p6-governance-audit.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-006",
+      "title": "Production audit log persistence",
+      "status": "Deferred",
+      "triggerCondition": "Audit persistence storage, retention, and tamper-evidence controls are designed and reviewed.",
+      "requiredEvidence": [
+        "docs/security/audit-log-foundation.md"
+      ],
+      "forbiddenShortcuts": [
+        "Treat in-memory/dev audit logging as production-grade persistence evidence."
+      ],
+      "relatedDocs": [
+        "docs/security/post-p6-governance-audit.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-007",
+      "title": "Full tenant isolation claim eligibility",
+      "status": "Deferred",
+      "triggerCondition": "Persistence enforcement controls and cross-tenant evidence satisfy release-boundary criteria.",
+      "requiredEvidence": [
+        "docs/security/tenant-isolation-integration-matrix.md",
+        "docs/security/security-release-boundary.md"
+      ],
+      "forbiddenShortcuts": [
+        "Claim full tenant isolation while global filters and DB RLS are still deferred."
+      ],
+      "relatedDocs": [
+        "docs/adr/security-architecture-decision-matrix.md"
+      ]
+    },
+    {
+      "id": "ADR-FUTURE-008",
+      "title": "Post-backfill strict tenant enforcement",
+      "status": "Deferred",
+      "triggerCondition": "Ownership backfill execution and validation evidence are complete and reviewed.",
+      "requiredEvidence": [
+        "docs/security/ownership-backfill-production-promotion-readiness.md",
+        "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+      ],
+      "forbiddenShortcuts": [
+        "Enable strict enforcement without explicit rollback and compatibility ADR."
+      ],
+      "relatedDocs": [
+        "docs/adr/security-architecture-decision-matrix.md"
+      ]
+    }
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No ownership backfill execution claim.",
+    "No certified/certification claim."
+  ]
+}

@@ -4,6 +4,8 @@
 
 This document defines a safe staged ownership backfill strategy before stricter tenant persistence enforcement is considered. P6-00 is strategy-only and does not execute backfill updates.
 
+Canonical release-boundary reference: `docs/security/security-release-boundary.md`.
+
 ## Scope
 
 This strategy covers:
@@ -186,6 +188,9 @@ Before evaluating global query filters or DB RLS:
 - P6-15: apply enablement architecture review (still no code enablement).
 - P6-16: evaluate global query filters readiness.
 - P6-17: evaluate DB row-level security readiness.
+- P7-00: post-P6 governance audit and release boundary review.
+- P7-01: security governance docs deduplication, canonical release-boundary definition, and status/index normalization.
+- P7-02: governance test consolidation and shared helper extraction to reduce maintenance complexity while preserving no-write guardrails.
 
 P6-01 reference:
 
@@ -262,3 +267,14 @@ P6-15 reference:
 - `docs/security/ownership-backfill-apply-enablement-architecture-review.md`
 - `docs/security/ownership-backfill-architecture-review-checklist.md`
 - P6-15 keeps staging/production apply explicitly disabled and formalizes no-wiring/no-secrets/no-destructive-sql invariants before any future code enablement discussion.
+
+P7-00 reference:
+
+- `docs/security/post-p6-governance-audit.md`
+- `docs/security/security-governance-index.md`
+- P7-00 audits P5/P6 governance claims, release boundary, and disabled apply posture without enabling any write path.
+
+P7-04 reference:
+
+- docs/security/release-ready-observability-audit.md`r
+- P7-04 improves release-ready observability diagnostics and timing visibility without changing release-gate semantics or enabling any write path.

@@ -73,6 +73,7 @@ Authorization policies are aligned with the Identity permission model:
 
 Frontend readiness note: P5-07 adds protected-content UX foundation (`docs/frontend/frontend-auth-shell-foundation.md`) to represent unauthorized/forbidden states without forcing route lock-down by default.
 Route inventory guardrails are tracked in `docs/security/security-regression-guardrails.md` and `docs/security/api-endpoint-protection-inventory.json`.
+Route classification vocabulary and required metadata are defined in `docs/security/api-endpoint-classification-model.md`.
 
 ## P5-09 pilot result
 

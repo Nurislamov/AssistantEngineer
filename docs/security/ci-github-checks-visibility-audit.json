@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P7-05",
+  "runtimeBehaviorChanged": false,
+  "releaseGateSemanticsChanged": false,
+  "ciWorkflowPresent": true,
+  "requiredChecks": [
+    "dotnet build AssistantEngineer.sln -c Debug",
+    "dotnet test AssistantEngineer.sln -c Debug",
+    "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1"
+  ],
+  "optionalChecks": [
+    "Frontend build/test checks when frontend/tooling context is applicable",
+    "Release-ready summary artifact publication",
+    "Coverage and trend artifacts in future stages"
+  ],
+  "observabilityGaps": [
+    "No single documented runbook for interpreting empty/missing GitHub check statuses",
+    "Workflow status-to-gate mapping was not centralized",
+    "Release-ready summary visibility in workflow UI was limited"
+  ],
+  "implementedImprovements": [
+    "Added CI/GitHub checks visibility audit and expected checks contract",
+    "Added CI checks visibility runbook with local fallback flow",
+    "Added governance tests for CI visibility docs/workflow safety",
+    "Updated engineering-core-v1-release-ready workflow to publish summary JSON into workflow summary/artifact"
+  ],
+  "remainingLimitations": [
+    "GitHub status visibility still depends on repository settings and permissions",
+    "Path/branch/tag trigger filters can legitimately yield no checks for a given commit",
+    "No claim that every commit will always show identical checks"
+  ],
+  "nonClaims": [
+    "No production security certification claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No certified/certification claim."
+  ]
+}

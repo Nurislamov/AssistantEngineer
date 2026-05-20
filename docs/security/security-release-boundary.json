@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-19",
+  "stage": "P7-01",
+  "enabledCapabilities": [
+    "Route protection governance is options-controlled and staged.",
+    "Tenant-aware read isolation exists for selected protected read paths.",
+    "Ownership backfill dry-run/database dry-run evidence tooling is available.",
+    "Evidence gate, plan, sign-off, readiness, staging acceptance, and production promotion governance validators are available.",
+    "Test-only apply rehearsal is available in controlled test context."
+  ],
+  "intentionallyDisabledCapabilities": [
+    "Production apply execution is disabled.",
+    "Staging apply execution is disabled.",
+    "Real ownership backfill DB write-path is disabled.",
+    "Global EF query filters are not enabled.",
+    "Database row-level security is not enabled.",
+    "Full tenant isolation completion claim is not enabled.",
+    "Production security certification claim is not enabled."
+  ],
+  "allowedClaims": [
+    "Governance-ready P6/P7 boundary with intentional write-path disablement.",
+    "Dry-run, evidence-validation, planning, sign-off, and readiness governance capability.",
+    "Test-only rehearsal capability.",
+    "Staging and production apply remain disabled."
+  ],
+  "forbiddenClaims": [
+    "Production apply enabled.",
+    "Staging apply execution enabled.",
+    "Ownership backfill executed.",
+    "DB write-path enabled for ownership backfill.",
+    "Global EF query filters enabled.",
+    "Database row-level security enabled.",
+    "Full tenant isolation complete.",
+    "Claiming production security certification completion."
+  ],
+  "releaseBoundary": {
+    "productionApplyEnabled": false,
+    "stagingApplyEnabled": false,
+    "ownershipBackfillExecuted": false,
+    "dbWritePathEnabled": false,
+    "globalEfQueryFiltersEnabled": false,
+    "databaseRowLevelSecurityEnabled": false,
+    "fullTenantIsolationClaimed": false,
+    "productionSecurityCertified": false
+  },
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

@@ -138,3 +138,5 @@ Production promotion requires:
 - production `ApplyInputHash` is separate when evidence differs;
 - approvals are renewed for production scope.
 - production promotion readiness decision is validated with `ownership-backfill-production-promotion-readiness.md`.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

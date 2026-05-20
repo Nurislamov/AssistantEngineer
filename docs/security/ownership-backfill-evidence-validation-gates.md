@@ -127,3 +127,5 @@ P6-03 does not enable apply mode. Evidence gates are a prerequisite for future a
 
 - P6-04: define apply-mode design (still disabled) with evidence-gate prerequisites.
 - P6-05: add CI automation to enforce evidence-gate policies for staged datasets.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

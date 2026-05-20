@@ -4,6 +4,8 @@
 
 This document defines architecture review requirements that must be accepted before any future apply code enablement, while write-path remains disabled.
 
+Canonical release-boundary reference: `docs/security/security-release-boundary.md`.
+
 ## Scope
 
 This review framework covers:
@@ -115,3 +117,10 @@ Before any future code enablement:
 - rollback command design is reviewed;
 - audit logging design is reviewed;
 - operator runbook updates are reviewed.
+
+## Relationship to post-P6 audit
+
+- P7-00 (`post-p6-governance-audit.md`) validates that these architecture invariants remain intact after P6 completion.
+- P7-00 does not enable any write path and does not modify CLI apply disabled behavior.
+- P7-01 (`security-release-boundary.md`) is the canonical source for enabled/disabled capability claims referenced by this review.
+- P7-02 (`governance-test-consolidation-report.md`) consolidates repeated governance test assertions that enforce these invariants.

@@ -1,0 +1,537 @@
+{
+    "version":  9,
+    "lastReviewedDate":  "2026-05-20",
+    "documents":  [
+                      {
+                          "path":  "docs/security/security-release-boundary.md",
+                          "stage":  "P7-01",
+                          "category":  "Canonical release boundary",
+                          "status":  "Implemented",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Canonical enabled/disabled security release boundary for P5/P6/P7.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/production-saas-readiness-inventory.md",
+                          "stage":  "P5/P6/P7",
+                          "category":  "Audit/release readiness",
+                          "status":  "Implemented",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Cross-stage readiness inventory and roadmap status register.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/security-regression-guardrails.md",
+                          "stage":  "P5/P6/P7",
+                          "category":  "Audit/release readiness",
+                          "status":  "Implemented",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Guardrail catalog and enforcement mapping for security governance tests.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/authorization-policy-rollout.md",
+                          "stage":  "P5-04",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Authorization policy rollout baseline and constraints.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-endpoint-pilot-rollout.md",
+                          "stage":  "P5-09",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Pilot endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-read-endpoints-rollout.md",
+                          "stage":  "P5-10",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Read endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-write-endpoints-rollout.md",
+                          "stage":  "P5-11",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Write endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-execution-endpoints-rollout.md",
+                          "stage":  "P5-12",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Execution endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-report-artifact-endpoints-rollout.md",
+                          "stage":  "P5-13",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Report/artifact endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/protected-workflow-read-history-rollout.md",
+                          "stage":  "P5-14",
+                          "category":  "Route protection",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Workflow read/history endpoint protection rollout evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/tenant-isolation-integration-matrix.md",
+                          "stage":  "P5-15",
+                          "category":  "Tenant isolation",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Tenant isolation expectations and test coverage matrix.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/project-tenant-scoping-model.md",
+                          "stage":  "P5-02",
+                          "category":  "Tenant isolation",
+                          "status":  "Implemented",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Tenant scoping model for project/building/workflow boundaries.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/persistence-backed-tenant-ownership-fields.md",
+                          "stage":  "P5-16A",
+                          "category":  "Ownership metadata",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Persistence ownership transition fields baseline.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/tenant-aware-query-isolation-services.md",
+                          "stage":  "P5-16B",
+                          "category":  "Tenant isolation",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Tenant-aware query isolation service design and constraints.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/tenant-aware-read-controller-integration.md",
+                          "stage":  "P5-16C",
+                          "category":  "Tenant isolation",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Controller-level tenant-aware read integration evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/workflow-tenant-aware-read-integration.md",
+                          "stage":  "P5-16D",
+                          "category":  "Tenant isolation",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Workflow tenant-aware read integration evidence.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/workflow-ownership-metadata-coverage.md",
+                          "stage":  "P5-17",
+                          "category":  "Ownership metadata",
+                          "status":  "Implemented",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Workflow/scenario/job ownership metadata coverage inventory.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-strategy.md",
+                          "stage":  "P6-00",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "StrategyOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Ownership backfill strategy baseline and safety hierarchy.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-evidence-model.md",
+                          "stage":  "P6-00",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "StrategyOnly",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Ownership backfill evidence model and artifact contracts.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-dry-run-tool.md",
+                          "stage":  "P6-01",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "ToolingOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Dry-run command behavior and no-write guarantees.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-database-dry-run-scanner.md",
+                          "stage":  "P6-02",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "ToolingOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Read-only database scanner and unresolved/ambiguous coverage metrics.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-evidence-validation-gates.md",
+                          "stage":  "P6-03",
+                          "category":  "Apply governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Evidence threshold/ambiguity validation gates and outcomes.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-apply-mode-design.md",
+                          "stage":  "P6-04",
+                          "category":  "Apply governance",
+                          "status":  "DesignOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Apply-mode contract and disabled execution boundary.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-apply-plan-generator.md",
+                          "stage":  "P6-05",
+                          "category":  "Apply governance",
+                          "status":  "ToolingOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Deterministic no-write apply plan generation and PlanHash.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-plan-signoff-gate.md",
+                          "stage":  "P6-06",
+                          "category":  "Apply governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Plan hash sign-off validation and reviewer metadata gate.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-test-only-apply-rehearsal.md",
+                          "stage":  "P6-07",
+                          "category":  "Apply governance",
+                          "status":  "TestOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Test-only apply rehearsal behavior and no-production-write boundary.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-apply-enablement-readiness.md",
+                          "stage":  "P6-08",
+                          "category":  "Apply governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Apply readiness validation chain with ApplyInputHash.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-production-apply-enablement-proposal.md",
+                          "stage":  "P6-09",
+                          "category":  "Production governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Production apply enablement policy proposal and approval model.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-staging-apply-runbook.md",
+                          "stage":  "P6-10",
+                          "category":  "Staging governance",
+                          "status":  "DesignOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Staging-only runbook policy and acceptance criteria.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-staging-apply-executor-design.md",
+                          "stage":  "P6-11",
+                          "category":  "Staging governance",
+                          "status":  "DesignOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Staging preflight and disabled executor contract.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-staging-post-run-evidence.md",
+                          "stage":  "P6-12",
+                          "category":  "Staging governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Post-run staging evidence contract and acceptance validation.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-production-promotion-readiness.md",
+                          "stage":  "P6-13",
+                          "category":  "Production governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Production promotion readiness validator contract and separation rules.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-manual-write-path-enablement-decision.md",
+                          "stage":  "P6-14",
+                          "category":  "Production governance",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Human-only write-path decision framework and approval policy.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-apply-enablement-architecture-review.md",
+                          "stage":  "P6-15",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Architecture invariants and no-wiring constraints before code enablement.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-architecture-review-checklist.md",
+                          "stage":  "P6-15",
+                          "category":  "Architecture review",
+                          "status":  "Template",
+                          "canonicalRole":  "Template",
+                          "summary":  "Architecture review checklist template.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/post-p6-governance-audit.md",
+                          "stage":  "P7-00",
+                          "category":  "Audit/release readiness",
+                          "status":  "AuditOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Post-P6 governance audit and cleanup backlog.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/security-governance-status-vocabulary.md",
+                          "stage":  "P7-01",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Canonical status vocabulary for governance artifacts.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/governance-test-consolidation-report.md",
+                          "stage":  "P7-02",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P7-02 governance test consolidation scope, preserved guardrails, and residual duplication map.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/governance-test-consolidation-report.json",
+                          "stage":  "P7-02",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable governance test consolidation summary for P7-02.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-cli-command-inventory.md",
+                          "stage":  "P7-03",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "ToolingOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Canonical command inventory for ownership backfill CLI help/exit-code/redaction behavior.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ownership-backfill-cli-command-inventory.json",
+                          "stage":  "P7-03",
+                          "category":  "Ownership backfill toolchain",
+                          "status":  "ToolingOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable ownership backfill CLI command inventory and exit-code model.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/release-ready-observability-audit.md",
+                          "stage":  "P7-04",
+                          "category":  "Audit/release readiness",
+                          "status":  "AuditOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Release-ready observability/performance audit findings and implemented diagnostics improvements.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/release-ready-observability-audit.json",
+                          "stage":  "P7-04",
+                          "category":  "Audit/release readiness",
+                          "status":  "AuditOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable release-ready observability/performance audit summary.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ci-github-checks-visibility-audit.md",
+                          "stage":  "P7-05",
+                          "category":  "Audit/release readiness",
+                          "status":  "AuditOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "CI/GitHub checks visibility contract, workflow inventory, and observability gaps after P7-04.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ci-github-checks-visibility-audit.json",
+                          "stage":  "P7-05",
+                          "category":  "Audit/release readiness",
+                          "status":  "AuditOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable CI/GitHub checks visibility audit summary for P7-05.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/ci-github-checks-visibility-runbook.md",
+                          "stage":  "P7-05",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Operator runbook for interpreting GitHub checks and local fallback verification.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/api-endpoint-classification-model.md",
+                          "stage":  "P7-06",
+                          "category":  "Route protection",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Canonical endpoint classification model for route inventory metadata and claim boundaries.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/api-endpoint-protection-inventory.md",
+                          "stage":  "P5-04/P7-06",
+                          "category":  "Route protection",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Canonical API route protection inventory with staged metadata fields.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/route-inventory-claims-consistency-audit.md",
+                          "stage":  "P7-06",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P7-06 route inventory and claims consistency automation audit report.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/route-inventory-claims-consistency-audit.json",
+                          "stage":  "P7-06",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P7-06 route inventory and claims consistency automation audit summary.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/security-docs-map.md",
+                          "stage":  "P7-07",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Canonical map of security governance documentation roles, dependencies, and decision linkage.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/security/security-docs-map.json",
+                          "stage":  "P7-07",
+                          "category":  "Audit/release readiness",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable security governance docs map for P7-07.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/adr/ADR-0001-security-governance-boundary.md",
+                          "stage":  "P7-07",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Accepted ADR defining governance boundary and intentionally disabled ownership backfill write-path.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/adr/adr-index.md",
+                          "stage":  "P7-07",
+                          "category":  "Architecture review",
+                          "status":  "Reference",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Human-readable index of architecture decision records.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "path":  "docs/adr/adr-index.json",
+                          "stage":  "P7-07",
+                          "category":  "Architecture review",
+                          "status":  "Reference",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Machine-readable index of architecture decision records.",
+                          "pointsToCanonicalBoundary":  true
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P7-08",
+                          "path":  "docs/adr/security-architecture-decision-matrix.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Companion matrix consolidating accepted/deferred/rejected security architecture decisions and release-boundary dependencies.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P7-08",
+                          "path":  "docs/adr/security-architecture-decision-matrix.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable P7-08 security architecture decision matrix with disabled release-boundary flags.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P7-08",
+                          "path":  "docs/adr/future-security-adr-backlog.md",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Deferred future security ADR backlog with trigger and evidence requirements.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P7-08",
+                          "path":  "docs/adr/future-security-adr-backlog.json",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Machine-readable deferred future security ADR backlog for boundary-changing decisions.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      }
+                  ]
+}

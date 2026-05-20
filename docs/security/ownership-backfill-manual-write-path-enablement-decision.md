@@ -4,6 +4,8 @@
 
 This document defines a human-only decision framework for any future ownership-backfill write-path enablement, while code apply remains disabled.
 
+Canonical release-boundary reference: `docs/security/security-release-boundary.md`.
+
 ## Scope
 
 This framework covers:

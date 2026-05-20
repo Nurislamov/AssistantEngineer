@@ -1,0 +1,29 @@
+{
+  "name": "security-docs-map",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "canonicalDocuments",
+    "stageEvidenceDocuments",
+    "templateDocuments",
+    "machineReadableRegistries",
+    "guardrailTests",
+    "decisionRecords",
+    "knownLimitations",
+    "nonClaims"
+  ],
+  "documentEntryRequiredFields": [
+    "path",
+    "title",
+    "category",
+    "canonicalRole",
+    "status",
+    "ownerArea",
+    "dependsOn",
+    "supersedes",
+    "referencedBy",
+    "notes"
+  ]
+}

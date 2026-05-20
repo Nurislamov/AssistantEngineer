@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-19",
+  "stage": "P7-02",
+  "runtimeBehaviorChanged": false,
+  "writePathEnabled": false,
+  "helpersAdded": [
+    "GovernancePathHelper",
+    "GovernanceDocumentTestHelper",
+    "GovernanceJsonTestHelper",
+    "GovernanceClaimTestHelper",
+    "GovernanceSourceScanHelper",
+    "GovernanceAssertions"
+  ],
+  "testClassesRefactored": [
+    "P7SecurityReleaseBoundaryTests",
+    "P7SecurityGovernanceIndexNormalizationTests",
+    "P7SecurityGovernanceStatusVocabularyTests",
+    "P7PostP6ClaimsConsistencyTests",
+    "P7PostP6ApplyDisabledBoundaryTests",
+    "P7SecurityGovernanceDocsConsistencyTests",
+    "P7GeneratedOwnershipBackfillArtifactsIgnoreTests",
+    "P7PostP6GovernanceAuditTests",
+    "OwnershipBackfillApplyWiringGuardTests",
+    "P6OwnershipBackfillDryRunToolGovernanceTests",
+    "P6OwnershipBackfillEvidenceGateGovernanceTests"
+  ],
+  "preservedGuardrails": [
+    "ApplyDisabledBoundary",
+    "ForbiddenClaims",
+    "ReleaseBoundary",
+    "GeneratedArtifactsIgnored",
+    "NoDestructiveSql",
+    "NoGlobalEfQueryFilters",
+    "NoProductionExecutorWiring",
+    "NoSecretsInOutput"
+  ],
+  "remainingDuplication": [
+    "Stage-specific markdown required-section arrays across multiple P6 governance tests.",
+    "Per-stage roadmap and guardrail identifier checks repeated for localized diagnostics.",
+    "Artifact-ignore pattern checks repeated in stage-local governance tests."
+  ],
+  "nonClaims": [
+    "No runtime behavior change claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim."
+  ]
+}

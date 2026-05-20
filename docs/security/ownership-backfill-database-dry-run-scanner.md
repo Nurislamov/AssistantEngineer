@@ -111,3 +111,5 @@ Ambiguous ownership is treated as unresolved:
 - P6-03: evidence validation gates and unresolved-threshold policy.
 - P6-04: apply-mode design (still disabled) with explicit gate prerequisites.
 - P6-05: deterministic `plan-apply` generation from passed evidence while apply remains disabled.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

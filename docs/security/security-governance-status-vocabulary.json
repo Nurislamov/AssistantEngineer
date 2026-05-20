@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-19",
+  "statuses": [
+    {
+      "status": "Implemented",
+      "meaning": "Stage deliverable is implemented in current repository scope.",
+      "allowedUsage": "Completed tooling, tests, or governance artifacts.",
+      "notMeaning": "Production write-path or full security completion."
+    },
+    {
+      "status": "AuditOnly",
+      "meaning": "Audit/review artifact with findings and boundaries.",
+      "allowedUsage": "Post-stage audit reports and audit checkpoints.",
+      "notMeaning": "Feature enablement."
+    },
+    {
+      "status": "DesignOnly",
+      "meaning": "Design/contract artifact without execution enablement.",
+      "allowedUsage": "Staged runbook/executor/preflight design docs.",
+      "notMeaning": "Runtime behavior change."
+    },
+    {
+      "status": "StrategyOnly",
+      "meaning": "Strategy/policy definition before implementation.",
+      "allowedUsage": "Strategy and planning baselines.",
+      "notMeaning": "Execution complete."
+    },
+    {
+      "status": "GovernanceOnly",
+      "meaning": "Policy/proposal/decision framework without runtime activation.",
+      "allowedUsage": "Approval policy, proposal, manual decision governance, architecture review governance.",
+      "notMeaning": "Write-path enabled."
+    },
+    {
+      "status": "ToolingOnly",
+      "meaning": "Tooling support exists without runtime feature enablement.",
+      "allowedUsage": "Dry-run/readiness/validator commands and supporting artifacts.",
+      "notMeaning": "Production apply execution."
+    },
+    {
+      "status": "TestOnly",
+      "meaning": "Behavior available only in controlled test contexts.",
+      "allowedUsage": "Test-only rehearsal executors.",
+      "notMeaning": "Staging/production execution enablement."
+    },
+    {
+      "status": "DisabledBoundary",
+      "meaning": "Explicit disabled state boundary for risky capability.",
+      "allowedUsage": "Apply/write-path disabled references.",
+      "notMeaning": "Temporary warning that can be ignored."
+    },
+    {
+      "status": "Reference",
+      "meaning": "Supporting reference artifact used by canonical docs/tests.",
+      "allowedUsage": "Index entries, schemas, and cross-linked references.",
+      "notMeaning": "Superseded/obsolete by default."
+    },
+    {
+      "status": "Template",
+      "meaning": "Reusable manual/governance template artifact.",
+      "allowedUsage": "Change request/checklist/log templates.",
+      "notMeaning": "Actual executed run evidence."
+    },
+    {
+      "status": "NeedsCleanup",
+      "meaning": "Known cleanup/normalization needed.",
+      "allowedUsage": "Backlog and transitional documentation signals.",
+      "notMeaning": "Invalid artifact."
+    },
+    {
+      "status": "Superseded",
+      "meaning": "Artifact is replaced by a newer canonical artifact.",
+      "allowedUsage": "Legacy references that must remain traceable.",
+      "notMeaning": "Deleted history."
+    }
+  ]
+}

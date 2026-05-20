@@ -1,0 +1,37 @@
+{
+    "name":  "adr-index",
+    "type":  "object",
+    "requiredFields":  [
+                           "version",
+                           "lastReviewedDate",
+                           "records",
+                           "decisionMatrices",
+                           "companionBacklogs"
+                       ],
+    "recordRequiredFields":  [
+                                 "id",
+                                 "title",
+                                 "status",
+                                 "date",
+                                 "path",
+                                 "relatedStages",
+                                 "decisionSummary",
+                                 "nonClaims"
+                             ],
+    "decisionMatrixRequiredFields":  [
+                                         "id",
+                                         "title",
+                                         "stage",
+                                         "markdownPath",
+                                         "jsonPath",
+                                         "summary"
+                                     ],
+    "companionBacklogRequiredFields":  [
+                                           "id",
+                                           "title",
+                                           "stage",
+                                           "markdownPath",
+                                           "jsonPath",
+                                           "summary"
+                                       ]
+}

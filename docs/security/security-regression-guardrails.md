@@ -61,6 +61,14 @@ Guardrails cover:
 - `SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-PROMOTION-READINESS`
 - `SEC-GUARD-OWNERSHIP-BACKFILL-MANUAL-WRITE-PATH-DECISION`
 - `SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-ARCHITECTURE-REVIEW`
+- `SEC-GUARD-POST-P6-GOVERNANCE-AUDIT`
+- `SEC-GUARD-SECURITY-GOVERNANCE-RELEASE-BOUNDARY`
+- `SEC-GUARD-SECURITY-GOVERNANCE-INDEX-NORMALIZATION`
+- `SEC-GUARD-GOVERNANCE-TEST-CONSOLIDATION`
+- `SEC-GUARD-CI-GITHUB-CHECKS-VISIBILITY`
+- `SEC-GUARD-ROUTE-INVENTORY-CLAIMS-CONSISTENCY`
+- `SEC-GUARD-SECURITY-DOCS-MAP-ADR`
+- `SEC-GUARD-SECURITY-ADR-DECISION-MATRIX`
 
 ## Enforcement model
 
@@ -99,6 +107,12 @@ Guardrails cover:
 - Ownership backfill production promotion readiness guardrails verify production promotion readiness docs/json/schema, `validate-production-promotion` command availability, production-promotion decision artifact ignore rules, no-write source constraints, and roadmap linkage includes P6-13 while staging and production apply remain disabled.
 - Ownership backfill manual write-path decision guardrails verify manual decision docs/templates/json/schema, required hash/approval policy bindings, inventory and guardrail linkage, and no false claims about write-path enablement or backfill execution in P6-14.
 - Ownership backfill apply-enablement architecture-review guardrails verify P6-15 architecture invariants/checklist artifacts, source-level no-wiring checks, disabled apply boundary regression checks, and roadmap linkage while staging and production apply remain disabled.
+- Post-P6 governance audit guardrails verify P7-00 audit/index artifacts, release-boundary disabled flags, claims consistency checks, and roadmap linkage while apply remains disabled.
+- Security release-boundary guardrails verify canonical release-boundary docs/json/schema and enforce disabled-capability flags remain false.
+- Security governance index-normalization guardrails verify index categories/status/canonicalRole normalization and vocabulary alignment.
+- Governance test consolidation guardrails verify helper-based consolidation artifacts exist, preserved guardrails are explicitly listed, and runtime/write-path boundaries remain disabled in P7-02.
+- Route-inventory claims-consistency guardrails verify endpoint inventory coverage, classification-field completeness, protection-stage/tenant-scope/rate-limit/audit category consistency, and forbidden-claim posture in P7-06.
+- Security docs map/ADR guardrails verify canonical docs-map and accepted ADR boundary remain indexed, machine-readable, and non-claim safe in P7-07.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).
@@ -115,3 +129,22 @@ Guardrails cover:
 - API-key persistence lifecycle and rotation regression tests.
 - Distributed rate-limiting integration tests.
 - Durable audit storage retention and tamper-evidence regression tests.
+## SEC-GUARD-OWNERSHIP-BACKFILL-CLI-UX
+- Enforcement: AutomatedTest`r
+- Tests: OwnershipBackfillCliCommandInventoryTests, OwnershipBackfillCliRedactionTests, OwnershipBackfillCliExitCodeConsistencyTests`r
+- Risk: CLI UX changes may regress disabled-boundary signaling, exit-code consistency, or secret redaction behavior.
+
+## SEC-GUARD-RELEASE-READY-OBSERVABILITY
+- Enforcement: AutomatedTest`r
+- Tests: ReleaseReadyScriptObservabilityTests, P7ReleaseReadyObservabilityAuditTests`r
+- Risk: release-ready tooling changes may reduce diagnostics quality, hide failures, or accidentally leak sensitive values.
+
+## SEC-GUARD-CI-GITHUB-CHECKS-VISIBILITY
+- Enforcement: AutomatedTest
+- Tests: P7CiGithubChecksVisibilityAuditTests, P7CiWorkflowInventoryTests
+- Risk: CI workflow/check visibility drift can hide release-ready status or introduce unsafe apply-path commands in automation.
+
+## SEC-GUARD-SECURITY-ADR-DECISION-MATRIX
+- Enforcement: AutomatedTest
+- Tests: P7SecurityArchitectureDecisionMatrixTests, P7FutureSecurityAdrBacklogTests
+- Risk: ADR matrix/backlog drift can weaken boundary assumptions and future decision trigger clarity for write-path-related changes.

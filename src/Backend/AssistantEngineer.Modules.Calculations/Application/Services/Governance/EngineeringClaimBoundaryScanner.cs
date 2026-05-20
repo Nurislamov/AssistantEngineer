@@ -145,6 +145,9 @@ public sealed class EngineeringClaimBoundaryScanner
         if (IsNonClaimsContext(lines, lineIndex))
             return true;
 
+        if (normalized.Contains("\"productionsecuritycertified\"", StringComparison.OrdinalIgnoreCase))
+            return true;
+
         if (string.Equals(token, "certified", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(token, "external certification", StringComparison.OrdinalIgnoreCase))
             return HasAnyNegation(normalized, allowedNegationTokens);

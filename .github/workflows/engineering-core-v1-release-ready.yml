@@ -38,7 +38,34 @@ jobs:
 
       - name: Run release readiness gate
         shell: pwsh
-        run: .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1
+        run: .\scripts\engineering-core\assert-engineering-core-v1-release-ready.ps1 -OutputSummaryJson .\artifacts\engineering-core\release-ready-summary.json
+
+      - name: Publish release-ready summary to workflow summary
+        if: always()
+        shell: pwsh
+        run: |
+          $summaryPath = ".\artifacts\engineering-core\release-ready-summary.json"
+          if (Test-Path $summaryPath) {
+            "## Engineering Core release-ready summary JSON" >> $env:GITHUB_STEP_SUMMARY
+            "" >> $env:GITHUB_STEP_SUMMARY
+            "Path: `$summaryPath`" >> $env:GITHUB_STEP_SUMMARY
+            "" >> $env:GITHUB_STEP_SUMMARY
+            "```json" >> $env:GITHUB_STEP_SUMMARY
+            Get-Content $summaryPath -Raw >> $env:GITHUB_STEP_SUMMARY
+            "```" >> $env:GITHUB_STEP_SUMMARY
+          } else {
+            "## Engineering Core release-ready summary JSON" >> $env:GITHUB_STEP_SUMMARY
+            "" >> $env:GITHUB_STEP_SUMMARY
+            "Summary file was not produced." >> $env:GITHUB_STEP_SUMMARY
+          }
+
+      - name: Upload release-ready summary artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engineering-core-release-ready-summary
+          path: artifacts/engineering-core/release-ready-summary.json
+          if-no-files-found: ignore
 
       - name: Show final git status
         shell: pwsh

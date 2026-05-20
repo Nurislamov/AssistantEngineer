@@ -16,7 +16,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.DryRun,
             Options = options
         };
@@ -25,7 +25,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.ValidateEvidence,
             GateOptions = options
         };
@@ -34,7 +34,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.Apply,
             ApplyOptions = options
         };
@@ -43,7 +43,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.ValidateApplyReadiness,
             ApplyReadinessOptions = options
         };
@@ -52,7 +52,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.ValidateProductionPromotion,
             ProductionPromotionOptions = options
         };
@@ -61,7 +61,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.ValidateStagingPreflight,
             StagingPreflightOptions = options
         };
@@ -70,7 +70,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.ValidateStagingAcceptance,
             StagingAcceptanceOptions = options
         };
@@ -79,7 +79,7 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.PlanApply,
             PlanOptions = options
         };
@@ -88,20 +88,21 @@ public sealed class OwnershipBackfillCommandLineParseResult
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
+            ExitCode = OwnershipBackfillExitCodes.Success,
             CommandType = OwnershipBackfillCommandType.SignoffPlan,
             SignoffOptions = options
         };
 
-    public static OwnershipBackfillCommandLineParseResult Help() =>
+    public static OwnershipBackfillCommandLineParseResult Help(OwnershipBackfillCommandType? commandType = null) =>
         new()
         {
             IsSuccess = true,
-            ExitCode = 0,
-            ShowHelp = true
+            ExitCode = OwnershipBackfillExitCodes.Success,
+            ShowHelp = true,
+            CommandType = commandType
         };
 
-    public static OwnershipBackfillCommandLineParseResult Failure(string message, int exitCode = 1) =>
+    public static OwnershipBackfillCommandLineParseResult Failure(string message, int exitCode = OwnershipBackfillExitCodes.InvalidInput) =>
         new()
         {
             IsSuccess = false,

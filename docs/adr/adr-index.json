@@ -1,0 +1,52 @@
+{
+    "version":  1,
+    "lastReviewedDate":  "2026-05-20",
+    "records":  [
+                    {
+                        "id":  "ADR-0001",
+                        "title":  "Security governance boundary and ownership backfill write-path disabled state",
+                        "status":  "Accepted",
+                        "date":  "2026-05-20",
+                        "path":  "docs/adr/ADR-0001-security-governance-boundary.md",
+                        "relatedStages":  [
+                                              "P5",
+                                              "P6",
+                                              "P7-00",
+                                              "P7-01",
+                                              "P7-06",
+                                              "P7-07",
+                                              "P7-08"
+                                          ],
+                        "decisionSummary":  "P5/P6/P7 governance capabilities are accepted while ownership backfill write-path, staging apply, and production apply remain intentionally disabled.",
+                        "nonClaims":  [
+                                          "No production apply enabled claim.",
+                                          "No ownership backfill execution claim.",
+                                          "No global EF query filter claim.",
+                                          "No database row-level security claim.",
+                                          "No full multi-tenant isolation claim yet.",
+                                          "No production security certification claim.",
+                                          "No certified/certification claim."
+                                      ]
+                    }
+                ],
+    "decisionMatrices":  [
+                             {
+                                 "id":  "MATRIX-0001",
+                                 "markdownPath":  "docs/adr/security-architecture-decision-matrix.md",
+                                 "stage":  "P7-08",
+                                 "jsonPath":  "docs/adr/security-architecture-decision-matrix.json",
+                                 "summary":  "Companion decision matrix that consolidates accepted/deferred/rejected architecture decisions and disabled boundary posture.",
+                                 "title":  "Security architecture decision matrix"
+                             }
+                         ],
+    "companionBacklogs":  [
+                              {
+                                  "id":  "BACKLOG-0001",
+                                  "markdownPath":  "docs/adr/future-security-adr-backlog.md",
+                                  "stage":  "P7-08",
+                                  "jsonPath":  "docs/adr/future-security-adr-backlog.json",
+                                  "summary":  "Deferred ADR intake for boundary-changing security decisions and trigger conditions.",
+                                  "title":  "Future security ADR backlog"
+                              }
+                          ]
+}

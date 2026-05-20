@@ -1,294 +1,383 @@
 {
-  "version": 1,
-  "lastReviewedDate": "2026-05-18",
-  "guardrails": [
-    {
-      "guardrailId": "SEC-GUARD-ROUTE-INVENTORY",
-      "title": "API route protection inventory must stay current",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "ApiEndpointProtectionInventoryGuardTests",
-      "risk": "Sensitive/public endpoint changes can drift without governance visibility.",
-      "notes": "Controller inventory and status model are validated against source controllers and explicit allowlist."
-    },
-    {
-      "guardrailId": "SEC-GUARD-DEV-ENDPOINT",
-      "title": "Development/demo endpoints must remain environment-gated",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "DevelopmentEndpointSecurityGuardTests",
-      "risk": "Development or demo routes can be exposed in production.",
-      "notes": "Suspicious controller names require IsDevelopment or explicit allowlist reason."
-    },
-    {
-      "guardrailId": "SEC-GUARD-SECRET-LOGGING",
-      "title": "High-confidence secret logging patterns are blocked",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "SecretLoggingSecurityGuardTests",
-      "risk": "Credentials and secret material can leak through logs/source.",
-      "notes": "High-confidence logger/console patterns are blocked; safe policy docs and sanitizers are excluded."
-    },
-    {
-      "guardrailId": "SEC-GUARD-AUTH-DEFAULTS",
-      "title": "Authentication defaults preserve compatibility and avoid secret hardcoding",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "ApiAuthenticationDefaultsGuardTests",
-      "risk": "Accidental forced-login rollout or leaked static API keys in config.",
-      "notes": "Checks appsettings defaults and authentication boundary documentation consistency."
-    },
-    {
-      "guardrailId": "SEC-GUARD-RATE-LIMIT-DEFAULTS",
-      "title": "Rate-limiting defaults remain compatibility-safe and key-safe",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "ApiRateLimitingDefaultsGuardTests",
-      "risk": "Accidental throttling rollout or raw API key use in limiter partitioning.",
-      "notes": "Validates defaults, non-claims, and fingerprint-vs-raw-key behavior."
-    },
-    {
-      "guardrailId": "SEC-GUARD-AUDIT-SANITIZATION",
-      "title": "Audit metadata sanitization and payload-safe event registry are enforced",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "AuditLogSecurityGuardTests",
-      "risk": "Audit trail can leak secret or full payload data.",
-      "notes": "Checks sanitizer behavior and registry allowPayload policy."
-    },
-    {
-      "guardrailId": "SEC-GUARD-INMEMORY-PRODUCTION",
-      "title": "InMemory provider production risk must be explicit and controlled",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "InMemoryProductionProviderGuardTests",
-      "risk": "Accidental production reliance on non-durable providers.",
-      "notes": "Allows transitional InMemory defaults only when explicitly documented as non-durable in security inventory."
-    },
-    {
-      "guardrailId": "SEC-GUARD-FALSE-CLAIMS",
-      "title": "False security/compliance claims are blocked in docs",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "SecurityFalseClaimsGuardTests",
-      "risk": "Overclaiming security/compliance can mislead users and reviewers.",
-      "notes": "Forbidden positive claims are blocked outside non-claim/future/roadmap contexts."
-    },
-    {
-      "guardrailId": "SEC-GUARD-FRONTEND-SECRETS",
-      "title": "Frontend source must not hardcode real tokens/API keys",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "FrontendSecretsGuardTests",
-      "risk": "Client-side secret material leakage and insecure token handling.",
-      "notes": "High-confidence hardcoded token/key patterns are blocked in frontend source."
-    },
-    {
-      "guardrailId": "SEC-GUARD-TENANT-ISOLATION-MATRIX",
-      "title": "Tenant isolation matrix must stay aligned with protected endpoint rollout",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5TenantIsolationIntegrationMatrixGovernanceTests",
-      "risk": "Cross-tenant expectations can drift from staged protected endpoint behavior.",
-      "notes": "Validates tenant-isolation-integration-matrix.md/json/schema plus endpoint inventory and test coverage references."
-    },
-    {
-      "guardrailId": "SEC-GUARD-PERSISTED-TENANT-OWNERSHIP",
-      "title": "Persistence-backed ownership migrations must stay append-only and documented",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5PersistenceBackedTenantOwnershipGovernanceTests",
-      "risk": "Tenant ownership schema changes can become destructive or overclaim isolation guarantees.",
-      "notes": "Validates P5-16A documentation, roadmap inventory, migration safety, and model snapshot fields."
-    },
-    {
-      "guardrailId": "SEC-GUARD-TENANT-QUERY-ISOLATION",
-      "title": "Tenant-aware query isolation services must remain explicit and documented",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5TenantAwareQueryIsolationGovernanceTests",
-      "risk": "Query isolation services can drift into hidden global filtering or overclaim full tenant isolation.",
-      "notes": "Validates P5-16B documentation, service contracts, production inventory, and no global EF query filter/full-isolation claims."
-    },
-    {
-      "guardrailId": "SEC-GUARD-TENANT-READ-CONTROLLER-INTEGRATION",
-      "title": "Tenant-aware read controller integration must stay rollout-gated and documented",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5TenantAwareReadControllerIntegrationGovernanceTests",
-      "risk": "Controller-level tenant-aware read integration can drift from staged rollout constraints or overclaim full isolation.",
-      "notes": "Validates P5-16C documentation, matrix metadata for ProjectsRead/BuildingsRead, and readiness inventory references while keeping workflow integration staged."
-    },
-    {
-      "guardrailId": "SEC-GUARD-WORKFLOW-TENANT-READ-INTEGRATION",
-      "title": "Workflow tenant-aware read integration must stay rollout-gated and documented",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5WorkflowTenantAwareReadIntegrationGovernanceTests",
-      "risk": "Workflow read/history tenant-aware integration can drift from staged rollout constraints or overclaim full isolation.",
-      "notes": "Validates P5-16D documentation, workflow matrix metadata, readiness inventory linkage, and DI registration for workflow tenant-aware read service."
-    },
-    {
-      "guardrailId": "SEC-GUARD-WORKFLOW-OWNERSHIP-METADATA-COVERAGE",
-      "title": "Workflow ownership metadata coverage claims must stay evidence-based and documented",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P5WorkflowOwnershipMetadataCoverageGovernanceTests",
-      "risk": "Workflow/scenario/job ownership coverage claims can overstate completeness or drift from resolver/test reality.",
-      "notes": "Validates P5-17 metadata coverage docs/json/schema, workflow matrix metadataCoverage fields, and readiness inventory linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STRATEGY-EVIDENCE",
-      "title": "Ownership backfill strategy and evidence model must stay explicit before apply execution",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillStrategyGovernanceTests",
-      "risk": "Backfill execution readiness can drift without dry-run metrics, safety checks, and governance gate documentation.",
-      "notes": "Validates P6-00 strategy/evidence docs and schemas, strategy-only mode, non-claims, roadmap linkage, and no false backfill-complete claims."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-DRY-RUN-TOOL",
-      "title": "Ownership backfill dry-run tool must remain no-write and apply-disabled in P6-01",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillDryRunToolGovernanceTests",
-      "risk": "Dry-run tooling can accidentally drift into write behavior or overclaim execution readiness.",
-      "notes": "Validates tool project presence, apply rejection, no write-path indicators, artifact ignore rules, and P6-01 roadmap/guardrail linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-DATABASE-DRY-RUN",
-      "title": "Ownership backfill database dry-run scanner must remain read-only in P6-02",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillDatabaseDryRunScannerGovernanceTests",
-      "risk": "Database dry-run scanner can drift into write behavior or overclaim backfill execution readiness.",
-      "notes": "Validates scanner file presence, no SaveChanges/destructive SQL patterns in tool source, and P6-02 documentation/roadmap linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-EVIDENCE-GATES",
-      "title": "Ownership backfill evidence gates must enforce unresolved-threshold policy in P6-03",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillEvidenceGateGovernanceTests",
-      "risk": "Dry-run evidence can be accepted without consistent threshold/ambiguity validation, increasing future apply-mode risk.",
-      "notes": "Validates validate-evidence command docs, gate result artifact ignore rules, no-write constraints in tool source, and P6-03 inventory/strategy linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-DESIGN-DISABLED",
-      "title": "Ownership backfill apply-mode design must remain disabled and no-write in P6-04",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillApplyModeDesignGovernanceTests",
-      "risk": "Apply-mode scaffolding can drift into accidental write execution or overclaim backfill completion.",
-      "notes": "Validates apply design docs/json/schema, disabled apply CLI behavior, no SaveChanges/destructive SQL in tool source, and P6-04 inventory linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-ONLY",
-      "title": "Ownership backfill plan generator must remain plan-only and no-write in P6-05",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillApplyPlanGovernanceTests",
-      "risk": "Plan generation scaffolding can drift into accidental write execution or overclaim apply/backfill completion.",
-      "notes": "Validates plan-apply command presence, apply command disabled status, plan artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-05 inventory linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-SIGNOFF",
-      "title": "Ownership backfill plan sign-off gate must remain no-write and hash-bound in P6-06",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6OwnershipBackfillPlanSignoffGovernanceTests",
-      "risk": "Plan sign-off scaffolding can drift into weak hash validation, accidental write execution, or overclaim apply/backfill completion.",
-      "notes": "Validates signoff-plan command presence, plan hash/signoff governance linkage, signoff artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-06 inventory linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-TEST-ONLY-APPLY-REHEARSAL",
-      "title": "Ownership backfill test-only apply rehearsal must stay no-write and production-disabled in P6-07",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6TestOnlyApplyExecutorGovernanceTests",
-      "risk": "Test-only rehearsal scaffolding can drift into production write wiring or overclaim backfill execution readiness.",
-      "notes": "Validates test-only executor presence, CLI apply disabled status, rehearsal artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-07 inventory linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-READINESS",
-      "title": "Ownership backfill apply-enablement readiness gate must remain no-write and hash-chain consistent in P6-08",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6ApplyEnablementReadinessGovernanceTests",
-      "risk": "Readiness validation can drift from artifact-chain consistency and rollback evidence requirements, creating unsafe apply assumptions.",
-      "notes": "Validates validate-apply-readiness command presence, apply-readiness artifact ignore rules, hash-chain/readiness-link documentation, no SaveChanges/destructive SQL in tool source, and P6-08 inventory linkage while apply remains disabled."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-APPLY-PROPOSAL",
-      "title": "Ownership backfill production apply enablement proposal must remain policy-bound and no-write in P6-09",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6ProductionApplyEnablementProposalGovernanceTests",
-      "risk": "Production apply enablement can bypass evidence, approval, backup, rollback, and change-management policy requirements.",
-      "notes": "Validates proposal/template docs and descriptors, ApplyInputHash policy linkage, guardrail/inventory references, no false apply-enabled claims, and apply-disabled posture in P6-09."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-RUNBOOK",
-      "title": "Ownership backfill staging apply runbook must remain policy-bound and no-write in P6-10",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6StagingApplyEnablementDesignGovernanceTests",
-      "risk": "Staging apply enablement can bypass evidence, operator, backup, rollback, or promotion controls.",
-      "notes": "Validates staging runbook/checklist docs and descriptors, ApplyInputHash staging requirements, guardrail/inventory references, no false staging/prod apply-enabled claims, and apply-disabled posture in P6-10."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-EXECUTOR-DESIGN",
-      "title": "Ownership backfill staging apply executor design must remain no-write and disabled in P6-11",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6StagingApplyExecutorDesignGovernanceTests",
-      "risk": "Staging executor enablement can bypass environment, preflight, schema, backup, and rollback protections.",
-      "notes": "Validates staging executor design docs/json/schema, staging preflight command/contract presence, disabled executor behavior, no-write source constraints, and P6-11 roadmap linkage."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-POST-RUN-EVIDENCE-ACCEPTANCE",
-      "title": "Ownership backfill staging post-run evidence acceptance must remain no-write and disabled in P6-12",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6StagingPostRunEvidenceAcceptanceGovernanceTests",
-      "risk": "Staging post-run acceptance can drift from hash-chain, rollback, and evidence completeness requirements.",
-      "notes": "Validates staging post-run evidence docs/json/schema, validate-staging-acceptance command presence, acceptance artifact ignore rules, no-write source constraints, and P6-12 roadmap linkage while apply remains disabled."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-PROMOTION-READINESS",
-      "title": "Ownership backfill production promotion readiness must remain no-write and disabled in P6-13",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6ProductionPromotionReadinessGovernanceTests",
-      "risk": "Production promotion readiness can drift from cross-environment evidence separation, TTL/re-approval, and change-request binding requirements.",
-      "notes": "Validates production promotion readiness docs/json/schema, validate-production-promotion command presence, decision artifact ignore rules, no-write source constraints, and P6-13 roadmap linkage while apply remains disabled."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-MANUAL-WRITE-PATH-DECISION",
-      "title": "Ownership backfill manual write-path enablement decision must remain manual-only and no-write in P6-14",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6ManualWritePathEnablementDecisionGovernanceTests",
-      "risk": "Manual enablement decisions can drift from hash binding, approval, TTL, and no-write boundary requirements.",
-      "notes": "Validates manual write-path decision docs/json/schema/templates, required hash and approval bindings, inventory and guardrail linkage, and no false apply-enabled or backfill-executed claims."
-    },
-    {
-      "guardrailId": "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-ARCHITECTURE-REVIEW",
-      "title": "Ownership backfill apply enablement architecture review must remain no-write and no-wiring in P6-15",
-      "status": "Active",
-      "enforcement": "AutomatedTest",
-      "testName": "P6ApplyEnablementArchitectureReviewGovernanceTests",
-      "risk": "Future write-path changes can bypass disabled-apply boundary, environment hard-deny, hash-chain, rollback completeness, and no-secrets/no-destructive-sql invariants.",
-      "notes": "Validates P6-15 architecture review docs/json/schema/templates, required invariants/checks, inventory linkage, source-level no-wiring guards, and no false apply-enabled or backfill-executed claims."
-    }
-  ],
-  "nonClaims": [
-    "No production security certification claim.",
-    "No SOC 2 / ISO 27001 compliance claim.",
-    "No full multi-tenant isolation claim yet.",
-    "No external identity provider integration claim.",
-    "No certified/certification claim.",
-    "No claim that all API endpoints are protected yet."
-  ]
+    "version":  1,
+    "lastReviewedDate":  "2026-05-20",
+    "guardrails":  [
+                       {
+                           "guardrailId":  "SEC-GUARD-ROUTE-INVENTORY",
+                           "title":  "API route protection inventory must stay current",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ApiEndpointProtectionInventoryGuardTests",
+                           "risk":  "Sensitive/public endpoint changes can drift without governance visibility.",
+                           "notes":  "Controller inventory and status model are validated against source controllers and explicit allowlist."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-DEV-ENDPOINT",
+                           "title":  "Development/demo endpoints must remain environment-gated",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "DevelopmentEndpointSecurityGuardTests",
+                           "risk":  "Development or demo routes can be exposed in production.",
+                           "notes":  "Suspicious controller names require IsDevelopment or explicit allowlist reason."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SECRET-LOGGING",
+                           "title":  "High-confidence secret logging patterns are blocked",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "SecretLoggingSecurityGuardTests",
+                           "risk":  "Credentials and secret material can leak through logs/source.",
+                           "notes":  "High-confidence logger/console patterns are blocked; safe policy docs and sanitizers are excluded."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-AUTH-DEFAULTS",
+                           "title":  "Authentication defaults preserve compatibility and avoid secret hardcoding",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ApiAuthenticationDefaultsGuardTests",
+                           "risk":  "Accidental forced-login rollout or leaked static API keys in config.",
+                           "notes":  "Checks appsettings defaults and authentication boundary documentation consistency."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-RATE-LIMIT-DEFAULTS",
+                           "title":  "Rate-limiting defaults remain compatibility-safe and key-safe",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ApiRateLimitingDefaultsGuardTests",
+                           "risk":  "Accidental throttling rollout or raw API key use in limiter partitioning.",
+                           "notes":  "Validates defaults, non-claims, and fingerprint-vs-raw-key behavior."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-AUDIT-SANITIZATION",
+                           "title":  "Audit metadata sanitization and payload-safe event registry are enforced",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "AuditLogSecurityGuardTests",
+                           "risk":  "Audit trail can leak secret or full payload data.",
+                           "notes":  "Checks sanitizer behavior and registry allowPayload policy."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-INMEMORY-PRODUCTION",
+                           "title":  "InMemory provider production risk must be explicit and controlled",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "InMemoryProductionProviderGuardTests",
+                           "risk":  "Accidental production reliance on non-durable providers.",
+                           "notes":  "Allows transitional InMemory defaults only when explicitly documented as non-durable in security inventory."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-FALSE-CLAIMS",
+                           "title":  "False security/compliance claims are blocked in docs",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "SecurityFalseClaimsGuardTests",
+                           "risk":  "Overclaiming security/compliance can mislead users and reviewers.",
+                           "notes":  "Forbidden positive claims are blocked outside non-claim/future/roadmap contexts."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-FRONTEND-SECRETS",
+                           "title":  "Frontend source must not hardcode real tokens/API keys",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "FrontendSecretsGuardTests",
+                           "risk":  "Client-side secret material leakage and insecure token handling.",
+                           "notes":  "High-confidence hardcoded token/key patterns are blocked in frontend source."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-TENANT-ISOLATION-MATRIX",
+                           "title":  "Tenant isolation matrix must stay aligned with protected endpoint rollout",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5TenantIsolationIntegrationMatrixGovernanceTests",
+                           "risk":  "Cross-tenant expectations can drift from staged protected endpoint behavior.",
+                           "notes":  "Validates tenant-isolation-integration-matrix.md/json/schema plus endpoint inventory and test coverage references."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-PERSISTED-TENANT-OWNERSHIP",
+                           "title":  "Persistence-backed ownership migrations must stay append-only and documented",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5PersistenceBackedTenantOwnershipGovernanceTests",
+                           "risk":  "Tenant ownership schema changes can become destructive or overclaim isolation guarantees.",
+                           "notes":  "Validates P5-16A documentation, roadmap inventory, migration safety, and model snapshot fields."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-TENANT-QUERY-ISOLATION",
+                           "title":  "Tenant-aware query isolation services must remain explicit and documented",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5TenantAwareQueryIsolationGovernanceTests",
+                           "risk":  "Query isolation services can drift into hidden global filtering or overclaim full tenant isolation.",
+                           "notes":  "Validates P5-16B documentation, service contracts, production inventory, and no global EF query filter/full-isolation claims."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-TENANT-READ-CONTROLLER-INTEGRATION",
+                           "title":  "Tenant-aware read controller integration must stay rollout-gated and documented",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5TenantAwareReadControllerIntegrationGovernanceTests",
+                           "risk":  "Controller-level tenant-aware read integration can drift from staged rollout constraints or overclaim full isolation.",
+                           "notes":  "Validates P5-16C documentation, matrix metadata for ProjectsRead/BuildingsRead, and readiness inventory references while keeping workflow integration staged."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-WORKFLOW-TENANT-READ-INTEGRATION",
+                           "title":  "Workflow tenant-aware read integration must stay rollout-gated and documented",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5WorkflowTenantAwareReadIntegrationGovernanceTests",
+                           "risk":  "Workflow read/history tenant-aware integration can drift from staged rollout constraints or overclaim full isolation.",
+                           "notes":  "Validates P5-16D documentation, workflow matrix metadata, readiness inventory linkage, and DI registration for workflow tenant-aware read service."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-WORKFLOW-OWNERSHIP-METADATA-COVERAGE",
+                           "title":  "Workflow ownership metadata coverage claims must stay evidence-based and documented",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P5WorkflowOwnershipMetadataCoverageGovernanceTests",
+                           "risk":  "Workflow/scenario/job ownership coverage claims can overstate completeness or drift from resolver/test reality.",
+                           "notes":  "Validates P5-17 metadata coverage docs/json/schema, workflow matrix metadataCoverage fields, and readiness inventory linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-STRATEGY-EVIDENCE",
+                           "title":  "Ownership backfill strategy and evidence model must stay explicit before apply execution",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillStrategyGovernanceTests",
+                           "risk":  "Backfill execution readiness can drift without dry-run metrics, safety checks, and governance gate documentation.",
+                           "notes":  "Validates P6-00 strategy/evidence docs and schemas, strategy-only mode, non-claims, roadmap linkage, and no false backfill-complete claims."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-DRY-RUN-TOOL",
+                           "title":  "Ownership backfill dry-run tool must remain no-write and apply-disabled in P6-01",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillDryRunToolGovernanceTests",
+                           "risk":  "Dry-run tooling can accidentally drift into write behavior or overclaim execution readiness.",
+                           "notes":  "Validates tool project presence, apply rejection, no write-path indicators, artifact ignore rules, and P6-01 roadmap/guardrail linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-DATABASE-DRY-RUN",
+                           "title":  "Ownership backfill database dry-run scanner must remain read-only in P6-02",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillDatabaseDryRunScannerGovernanceTests",
+                           "risk":  "Database dry-run scanner can drift into write behavior or overclaim backfill execution readiness.",
+                           "notes":  "Validates scanner file presence, no SaveChanges/destructive SQL patterns in tool source, and P6-02 documentation/roadmap linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-EVIDENCE-GATES",
+                           "title":  "Ownership backfill evidence gates must enforce unresolved-threshold policy in P6-03",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillEvidenceGateGovernanceTests",
+                           "risk":  "Dry-run evidence can be accepted without consistent threshold/ambiguity validation, increasing future apply-mode risk.",
+                           "notes":  "Validates validate-evidence command docs, gate result artifact ignore rules, no-write constraints in tool source, and P6-03 inventory/strategy linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-DESIGN-DISABLED",
+                           "title":  "Ownership backfill apply-mode design must remain disabled and no-write in P6-04",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillApplyModeDesignGovernanceTests",
+                           "risk":  "Apply-mode scaffolding can drift into accidental write execution or overclaim backfill completion.",
+                           "notes":  "Validates apply design docs/json/schema, disabled apply CLI behavior, no SaveChanges/destructive SQL in tool source, and P6-04 inventory linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-ONLY",
+                           "title":  "Ownership backfill plan generator must remain plan-only and no-write in P6-05",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillApplyPlanGovernanceTests",
+                           "risk":  "Plan generation scaffolding can drift into accidental write execution or overclaim apply/backfill completion.",
+                           "notes":  "Validates plan-apply command presence, apply command disabled status, plan artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-05 inventory linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-PLAN-SIGNOFF",
+                           "title":  "Ownership backfill plan sign-off gate must remain no-write and hash-bound in P6-06",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6OwnershipBackfillPlanSignoffGovernanceTests",
+                           "risk":  "Plan sign-off scaffolding can drift into weak hash validation, accidental write execution, or overclaim apply/backfill completion.",
+                           "notes":  "Validates signoff-plan command presence, plan hash/signoff governance linkage, signoff artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-06 inventory linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-TEST-ONLY-APPLY-REHEARSAL",
+                           "title":  "Ownership backfill test-only apply rehearsal must stay no-write and production-disabled in P6-07",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6TestOnlyApplyExecutorGovernanceTests",
+                           "risk":  "Test-only rehearsal scaffolding can drift into production write wiring or overclaim backfill execution readiness.",
+                           "notes":  "Validates test-only executor presence, CLI apply disabled status, rehearsal artifact ignore rules, no SaveChanges/destructive SQL in tool source, and P6-07 inventory linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-READINESS",
+                           "title":  "Ownership backfill apply-enablement readiness gate must remain no-write and hash-chain consistent in P6-08",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6ApplyEnablementReadinessGovernanceTests",
+                           "risk":  "Readiness validation can drift from artifact-chain consistency and rollback evidence requirements, creating unsafe apply assumptions.",
+                           "notes":  "Validates validate-apply-readiness command presence, apply-readiness artifact ignore rules, hash-chain/readiness-link documentation, no SaveChanges/destructive SQL in tool source, and P6-08 inventory linkage while apply remains disabled."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-APPLY-PROPOSAL",
+                           "title":  "Ownership backfill production apply enablement proposal must remain policy-bound and no-write in P6-09",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6ProductionApplyEnablementProposalGovernanceTests",
+                           "risk":  "Production apply enablement can bypass evidence, approval, backup, rollback, and change-management policy requirements.",
+                           "notes":  "Validates proposal/template docs and descriptors, ApplyInputHash policy linkage, guardrail/inventory references, no false apply-enabled claims, and apply-disabled posture in P6-09."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-RUNBOOK",
+                           "title":  "Ownership backfill staging apply runbook must remain policy-bound and no-write in P6-10",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6StagingApplyEnablementDesignGovernanceTests",
+                           "risk":  "Staging apply enablement can bypass evidence, operator, backup, rollback, or promotion controls.",
+                           "notes":  "Validates staging runbook/checklist docs and descriptors, ApplyInputHash staging requirements, guardrail/inventory references, no false staging/prod apply-enabled claims, and apply-disabled posture in P6-10."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-APPLY-EXECUTOR-DESIGN",
+                           "title":  "Ownership backfill staging apply executor design must remain no-write and disabled in P6-11",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6StagingApplyExecutorDesignGovernanceTests",
+                           "risk":  "Staging executor enablement can bypass environment, preflight, schema, backup, and rollback protections.",
+                           "notes":  "Validates staging executor design docs/json/schema, staging preflight command/contract presence, disabled executor behavior, no-write source constraints, and P6-11 roadmap linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-STAGING-POST-RUN-EVIDENCE-ACCEPTANCE",
+                           "title":  "Ownership backfill staging post-run evidence acceptance must remain no-write and disabled in P6-12",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6StagingPostRunEvidenceAcceptanceGovernanceTests",
+                           "risk":  "Staging post-run acceptance can drift from hash-chain, rollback, and evidence completeness requirements.",
+                           "notes":  "Validates staging post-run evidence docs/json/schema, validate-staging-acceptance command presence, acceptance artifact ignore rules, no-write source constraints, and P6-12 roadmap linkage while apply remains disabled."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-PRODUCTION-PROMOTION-READINESS",
+                           "title":  "Ownership backfill production promotion readiness must remain no-write and disabled in P6-13",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6ProductionPromotionReadinessGovernanceTests",
+                           "risk":  "Production promotion readiness can drift from cross-environment evidence separation, TTL/re-approval, and change-request binding requirements.",
+                           "notes":  "Validates production promotion readiness docs/json/schema, validate-production-promotion command presence, decision artifact ignore rules, no-write source constraints, and P6-13 roadmap linkage while apply remains disabled."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-MANUAL-WRITE-PATH-DECISION",
+                           "title":  "Ownership backfill manual write-path enablement decision must remain manual-only and no-write in P6-14",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6ManualWritePathEnablementDecisionGovernanceTests",
+                           "risk":  "Manual enablement decisions can drift from hash binding, approval, TTL, and no-write boundary requirements.",
+                           "notes":  "Validates manual write-path decision docs/json/schema/templates, required hash and approval bindings, inventory and guardrail linkage, and no false apply-enabled or backfill-executed claims."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-APPLY-ARCHITECTURE-REVIEW",
+                           "title":  "Ownership backfill apply enablement architecture review must remain no-write and no-wiring in P6-15",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P6ApplyEnablementArchitectureReviewGovernanceTests",
+                           "risk":  "Future write-path changes can bypass disabled-apply boundary, environment hard-deny, hash-chain, rollback completeness, and no-secrets/no-destructive-sql invariants.",
+                           "notes":  "Validates P6-15 architecture review docs/json/schema/templates, required invariants/checks, inventory linkage, source-level no-wiring guards, and no false apply-enabled or backfill-executed claims."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-POST-P6-GOVERNANCE-AUDIT",
+                           "title":  "Post-P6 governance audit and release boundary review must remain no-write and claims-consistent in P7-00",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7PostP6GovernanceAuditTests",
+                           "risk":  "Post-P6 drift can introduce inconsistent claims, hidden write-path wiring risk, or release-boundary ambiguity.",
+                           "notes":  "Validates post-P6 audit docs/json/schema, security governance index artifacts, P7-00 roadmap linkage, disabled release-boundary flags, and no false apply-enabled/backfill-executed/full-isolation claims."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SECURITY-GOVERNANCE-RELEASE-BOUNDARY",
+                           "title":  "Canonical security release boundary must remain explicit and disabled-safe in P7-01",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7SecurityReleaseBoundaryTests",
+                           "risk":  "Enabled/disabled capability claims can drift and accidentally imply write-path or security posture changes.",
+                           "notes":  "Validates security-release-boundary docs/json/schema, disabled flags, forbidden claims list, and non-claim posture."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SECURITY-GOVERNANCE-INDEX-NORMALIZATION",
+                           "title":  "Security governance index/status normalization must remain canonical in P7-01",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7SecurityGovernanceIndexNormalizationTests",
+                           "risk":  "Governance document categories, statuses, and canonical roles can drift and create conflicting release-boundary claims.",
+                           "notes":  "Validates normalized index entries, canonical roles, vocabulary-backed statuses, and canonical release-boundary linkage."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-GOVERNANCE-TEST-CONSOLIDATION",
+                           "title":  "Governance test consolidation must preserve no-write safety and disabled-boundary guarantees in P7-02",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7GovernanceTestConsolidationReportTests",
+                           "risk":  "Test consolidation can unintentionally remove critical safety assertions or weaken guardrail coverage.",
+                           "notes":  "Validates consolidation report artifacts, preserved guardrail list, and roadmap/guardrail linkage while runtime and write-path remain unchanged."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIP-BACKFILL-CLI-UX",
+                           "title":  "Ownership backfill CLI UX normalization must preserve disabled/no-write boundaries",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "OwnershipBackfillCliCommandInventoryTests",
+                           "risk":  "CLI UX changes can drift exit-code semantics, hide disabled-boundary warnings, or leak secret-like values in output.",
+                           "notes":  "Validated by OwnershipBackfillCliCommandInventoryTests, OwnershipBackfillCliRedactionTests, and OwnershipBackfillCliExitCodeConsistencyTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-RELEASE-READY-OBSERVABILITY",
+                           "title":  "Release-ready observability diagnostics must remain explicit without weakening gate semantics",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ReleaseReadyScriptObservabilityTests",
+                           "risk":  "Release-ready script/tool updates can hide failures, remove timing visibility, or leak sensitive values.",
+                           "notes":  "Validated by ReleaseReadyScriptObservabilityTests and P7ReleaseReadyObservabilityAuditTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-CI-GITHUB-CHECKS-VISIBILITY",
+                           "title":  "CI/GitHub checks visibility contract must remain explicit and safe",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7CiGithubChecksVisibilityAuditTests",
+                           "risk":  "CI workflow/check visibility can drift and hide gate status or introduce unsafe apply-path commands.",
+                           "notes":  "Validated by P7CiGithubChecksVisibilityAuditTests and P7CiWorkflowInventoryTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-ROUTE-INVENTORY-CLAIMS-CONSISTENCY",
+                           "title":  "Route inventory classification and claims consistency automation must remain enforced in P7-06",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7RouteInventoryCoverageTests",
+                           "risk":  "Route inventory, protection stage, tenant-scope, and claim posture can drift from controller routes and rollout docs.",
+                           "notes":  "Validated by P7RouteInventoryCoverageTests, P7RouteClaimsConsistencyTests, P7RouteOperationalCategoryConsistencyTests, P7RouteTenantScopeConsistencyTests, and P7ProtectionStageConsistencyTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SECURITY-DOCS-MAP-ADR",
+                           "title":  "Security docs map and ADR boundary must remain explicit and claims-safe in P7-07",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7SecurityDocsMapTests",
+                           "risk":  "Documentation ownership and architecture-boundary decisions can drift and weaken governance clarity for future write-path decisions.",
+                           "notes":  "Validated by P7SecurityDocsMapTests and P7SecurityAdrTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SECURITY-ADR-DECISION-MATRIX",
+                           "title":  "Security ADR decision matrix and future ADR backlog must remain explicit and boundary-safe in P7-08",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P7SecurityArchitectureDecisionMatrixTests",
+                           "risk":  "Architecture decision ownership can drift across docs and weaken disabled-boundary guarantees for future write-path decisions.",
+                           "notes":  "Validated by P7SecurityArchitectureDecisionMatrixTests and P7FutureSecurityAdrBacklogTests."
+                       }
+                   ],
+    "nonClaims":  [
+                      "No production security certification claim.",
+                      "No SOC 2 / ISO 27001 compliance claim.",
+                      "No full multi-tenant isolation claim yet.",
+                      "No external identity provider integration claim.",
+                      "No certified/certification claim.",
+                      "No claim that all API endpoints are protected yet."
+                  ]
 }
-

@@ -1,0 +1,17 @@
+{
+  "name": "route-inventory-claims-consistency-audit",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "publicRoutesChanged",
+    "routeProtectionWeakened",
+    "inventorySources",
+    "classificationRules",
+    "automationChecks",
+    "remainingLimitations",
+    "nonClaims"
+  ]
+}

@@ -14,7 +14,19 @@
     "targetPolicy",
     "rolloutStage",
     "risk",
-    "notes"
+    "notes",
+    "route",
+    "httpMethod",
+    "action",
+    "endpointGroup",
+    "protectionStage",
+    "permission",
+    "tenantScope",
+    "rateLimitCategory",
+    "auditCategory",
+    "releaseBoundaryClaim",
+    "publicClaim",
+    "knownLimitations"
   ],
   "allowedCurrentAuthStatus": [
     "PublicAllowed",

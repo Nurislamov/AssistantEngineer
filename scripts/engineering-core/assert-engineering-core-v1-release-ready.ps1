@@ -1,8 +1,10 @@
-﻿param(
+param(
     [switch] $SkipFrontend,
     [switch] $SkipFullDotnet,
     [switch] $SkipGitStatus,
-    [switch] $Fast
+    [switch] $Fast,
+    [switch] $QuietStages,
+    [string] $OutputSummaryJson
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +41,15 @@ if ($Fast) {
     $toolArgs += "--fast"
 }
 
+if ($QuietStages) {
+    $toolArgs += "--quiet-stages"
+}
+
+if (-not [string]::IsNullOrWhiteSpace($OutputSummaryJson)) {
+    $toolArgs += "--output-summary-json"
+    $toolArgs += $OutputSummaryJson
+}
+
 dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\AssistantEngineer.Tools.EngineeringCoreRelease.csproj -- assert-release-ready @toolArgs
 
 # BEGIN AE-STAGE1-RELEASE-READY-GUARD-MARKERS
@@ -53,6 +64,8 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\Assi
 # [switch] 
 # [switch] 
 # [switch] 
+# [switch] 
+# [string] 
 # EngineeringCoreV1Manifest.json
 # EngineeringCoreV1ReleaseManifest.md
 # EngineeringCoreV1ReleaseChecklist.md
@@ -69,4 +82,3 @@ dotnet run --project .\tools\AssistantEngineer.Tools.EngineeringCoreRelease\Assi
 # EngineeringCoreV1ValidationReadiness.md
 # engineering-core-v1.yml
 # END AE-STAGE1-RELEASE-READY-GUARD-MARKERS
-

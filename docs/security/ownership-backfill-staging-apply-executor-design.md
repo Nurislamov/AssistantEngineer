@@ -141,3 +141,5 @@ Reference contract:
 - CLI `apply` remains disabled;
 - no `SaveChanges` in staging executor path;
 - no real DB writes.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

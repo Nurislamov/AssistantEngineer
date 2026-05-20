@@ -125,3 +125,4 @@ Allowed outcomes:
 - Add explicit audit triggers for repeated rate-limit violations (`docs/security/rate-limiting-foundation.md`).
 
 Audit sanitization regression guardrails are tracked in `docs/security/security-regression-guardrails.md`.
+P7-06 route inventory automation verifies route `auditCategory` alignment with this document's category vocabulary (`docs/security/route-inventory-claims-consistency-audit.md`).

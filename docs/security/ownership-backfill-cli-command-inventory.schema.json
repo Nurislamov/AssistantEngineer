@@ -1,0 +1,28 @@
+{
+  "name": "ownership-backfill-cli-command-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "commands",
+    "exitCodes",
+    "redactionPolicy",
+    "nonClaims"
+  ],
+  "commandRequiredFields": [
+    "name",
+    "stageIntroduced",
+    "purpose",
+    "writesToDb",
+    "requiresDbConnection",
+    "applyEnabled",
+    "exitCodes",
+    "generatedArtifacts"
+  ],
+  "exitCodeRequiredFields": [
+    "code",
+    "meaning"
+  ]
+}
+

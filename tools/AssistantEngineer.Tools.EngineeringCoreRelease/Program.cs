@@ -1,9 +1,12 @@
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace AssistantEngineer.Tools.EngineeringCoreRelease;
 
 internal static class Program
 {
+    private static bool s_verboseStageDiagnostics;
+
     public static int Main(string[] args)
     {
         try
@@ -42,14 +45,16 @@ internal static class Program
                     SkipGitStatus: Has(toolArgs, "--skip-git-status") || Has(toolArgs, "-SkipGitStatus"),
                     Fast: Has(toolArgs, "--fast") || Has(toolArgs, "-Fast"),
                     NoRestore: Has(toolArgs, "--no-restore") || Has(toolArgs, "-NoRestore"),
-                    NoBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild"))),
+                    NoBuild: Has(toolArgs, "--no-build") || Has(toolArgs, "-NoBuild"),
+                    VerboseStages: !Has(toolArgs, "--quiet-stages") && !Has(toolArgs, "-QuietStages"),
+                    OutputSummaryJson: GetOptionValue(toolArgs, "--output-summary-json", "-OutputSummaryJson"))),
                 _ => Unknown(command)
             };
         }
         catch (Exception exception)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(exception.Message);
+            Console.Error.WriteLine(RedactSecretLikeValues(exception.Message));
             Console.ResetColor();
             return 1;
         }
@@ -64,7 +69,7 @@ internal static class Program
         Console.WriteLine("  verify-smoke [--skip-frontend]");
         Console.WriteLine("  verify-contracts [--skip-frontend] [--skip-regenerate]");
         Console.WriteLine("  verify-manifest [--skip-frontend]");
-        Console.WriteLine("  assert-release-ready [--skip-frontend] [--skip-full-dotnet] [--skip-git-status] [--fast] [--no-restore] [--no-build]");
+        Console.WriteLine("  assert-release-ready [--skip-frontend] [--skip-full-dotnet] [--skip-git-status] [--fast] [--no-restore] [--no-build] [--quiet-stages] [--output-summary-json <path>]");
     }
 
     private static int Unknown(string command)
@@ -268,10 +273,13 @@ internal static class Program
 
     private static int AssertReleaseReady(ReleaseReadyOptions options)
     {
+        var startedAtUtc = DateTimeOffset.UtcNow;
+        s_verboseStageDiagnostics = options.VerboseStages;
+
         Console.WriteLine("Engineering Core V1 release readiness gate");
         Console.WriteLine($"Repository: {Directory.GetCurrentDirectory()}");
         Console.WriteLine($".NET SDK: {Environment.Version}");
-        Console.WriteLine($"Started (UTC): {DateTimeOffset.UtcNow:O}");
+        Console.WriteLine($"Started (UTC): {startedAtUtc:O}");
         if (options.SkipFrontend)
         {
             WriteWarning("SkipFrontend override is enabled. Frontend build/type checks are intentionally skipped.");
@@ -325,10 +333,7 @@ internal static class Program
                 "restore .\\AssistantEngineer.sln");
             stepResults.Add(restoreResult);
             if (restoreResult.ExitCode != 0)
-            {
-                WriteSummary(stepResults);
-                return restoreResult.ExitCode;
-            }
+                return CompleteWithFailure(startedAtUtc, stepResults, restoreResult, options);
         }
 
         if (!options.NoBuild)
@@ -343,10 +348,7 @@ internal static class Program
                 buildArgs);
             stepResults.Add(buildResult);
             if (buildResult.ExitCode != 0)
-            {
-                WriteSummary(stepResults);
-                return buildResult.ExitCode;
-            }
+                return CompleteWithFailure(startedAtUtc, stepResults, buildResult, options);
         }
 
         var regenerateResult = RunInternalStep(
@@ -354,10 +356,7 @@ internal static class Program
             () => RegenerateArtifacts(skipMissing: false));
         stepResults.Add(regenerateResult);
         if (regenerateResult.ExitCode != 0)
-        {
-            WriteSummary(stepResults);
-            return regenerateResult.ExitCode;
-        }
+            return CompleteWithFailure(startedAtUtc, stepResults, regenerateResult, options);
 
         var smokeResult = RunInternalStep(
             "Smoke verification profile",
@@ -367,10 +366,7 @@ internal static class Program
                 noBuild: true));
         stepResults.Add(smokeResult);
         if (smokeResult.ExitCode != 0)
-        {
-            WriteSummary(stepResults);
-            return smokeResult.ExitCode;
-        }
+            return CompleteWithFailure(startedAtUtc, stepResults, smokeResult, options);
 
         var contractsResult = RunInternalStep(
             "Contracts verification profile",
@@ -381,10 +377,7 @@ internal static class Program
                 noBuild: true));
         stepResults.Add(contractsResult);
         if (contractsResult.ExitCode != 0)
-        {
-            WriteSummary(stepResults);
-            return contractsResult.ExitCode;
-        }
+            return CompleteWithFailure(startedAtUtc, stepResults, contractsResult, options);
 
         var manifestResult = RunInternalStep(
             "Manifest verification profile",
@@ -394,10 +387,7 @@ internal static class Program
                 noBuild: true));
         stepResults.Add(manifestResult);
         if (manifestResult.ExitCode != 0)
-        {
-            WriteSummary(stepResults);
-            return manifestResult.ExitCode;
-        }
+            return CompleteWithFailure(startedAtUtc, stepResults, manifestResult, options);
 
         if (!options.Fast)
         {
@@ -414,10 +404,7 @@ internal static class Program
 
             stepResults.Add(verificationResult);
             if (verificationResult.ExitCode != 0)
-            {
-                WriteSummary(stepResults);
-                return verificationResult.ExitCode;
-            }
+                return CompleteWithFailure(startedAtUtc, stepResults, verificationResult, options);
         }
 
         if (!options.SkipGitStatus)
@@ -429,15 +416,16 @@ internal static class Program
 
             stepResults.Add(gitStatusResult);
             if (gitStatusResult.ExitCode != 0)
-            {
-                WriteSummary(stepResults);
-                return gitStatusResult.ExitCode;
-            }
+                return CompleteWithFailure(startedAtUtc, stepResults, gitStatusResult, options);
         }
 
         Console.WriteLine();
         WriteSuccess("Engineering Core V1 release readiness gate completed successfully.");
         WriteSummary(stepResults);
+        var completedAtUtc = DateTimeOffset.UtcNow;
+        Console.WriteLine($"Completed (UTC): {completedAtUtc:O}");
+        Console.WriteLine($"Total gate duration: {FormatDuration(completedAtUtc - startedAtUtc)}");
+        TryWriteSummaryJson(options.OutputSummaryJson, stepResults, startedAtUtc, completedAtUtc, success: true);
         Console.WriteLine();
         Console.WriteLine("Release-ready interpretation:");
         Console.WriteLine("- Engineering Core V1 is closed as an engineering formula gate.");
@@ -474,20 +462,42 @@ internal static class Program
         Console.WriteLine($"==> {name}");
         Console.ResetColor();
 
+        var startedAtUtc = DateTimeOffset.UtcNow;
+        var resolvedFileName = ResolveProcessFileName(fileName);
+        var commandText = BuildCommandText(resolvedFileName, arguments);
+        if (s_verboseStageDiagnostics)
+        {
+            Console.WriteLine($"Stage start (UTC): {startedAtUtc:O}");
+            Console.WriteLine($"Command: {commandText}");
+        }
+
         var stopwatch = Stopwatch.StartNew();
         var code = RunProcess(fileName, arguments);
         stopwatch.Stop();
+        var completedAtUtc = DateTimeOffset.UtcNow;
 
         if (code == 0)
         {
             WriteSuccess($"OK: {name} ({FormatDuration(stopwatch.Elapsed)})");
-            return new StepResult(name, 0, stopwatch.Elapsed);
+            if (s_verboseStageDiagnostics)
+            {
+                Console.WriteLine($"Stage end (UTC): {completedAtUtc:O}");
+                Console.WriteLine($"Stage exit code: {code}");
+            }
+
+            return new StepResult(name, 0, stopwatch.Elapsed, commandText, startedAtUtc, completedAtUtc);
         }
 
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Error.WriteLine($"FAILED: {name} ({FormatDuration(stopwatch.Elapsed)})");
         Console.ResetColor();
-        return new StepResult(name, code, stopwatch.Elapsed);
+        if (s_verboseStageDiagnostics)
+        {
+            Console.Error.WriteLine($"Stage end (UTC): {completedAtUtc:O}");
+            Console.Error.WriteLine($"Stage exit code: {code}");
+        }
+
+        return new StepResult(name, code, stopwatch.Elapsed, commandText, startedAtUtc, completedAtUtc);
     }
 
     private static string BuildDotnetTestFlags(bool noRestore, bool noBuild)
@@ -520,6 +530,18 @@ internal static class Program
         Console.WriteLine("Slowest 5 steps:");
         foreach (var step in stepResults.OrderByDescending(result => result.Duration).Take(5))
             Console.WriteLine($"- {step.Name}: {FormatDuration(step.Duration)}");
+
+        Console.WriteLine();
+        Console.WriteLine("Deterministic stage summary:");
+        Console.WriteLine("| # | Stage | Status | ExitCode | Duration | Command |");
+        Console.WriteLine("|---:|---|---|---:|---:|---|");
+        var orderedSteps = stepResults.Select((step, index) => (step, index: index + 1));
+        foreach (var item in orderedSteps)
+        {
+            var status = item.step.ExitCode == 0 ? "OK" : "FAIL";
+            var command = item.step.Command.Replace("|", "\\|", StringComparison.Ordinal);
+            Console.WriteLine($"| {item.index} | {item.step.Name} | {status} | {item.step.ExitCode} | {FormatDuration(item.step.Duration)} | {command} |");
+        }
     }
 
     private static string FormatDuration(TimeSpan duration) =>
@@ -534,20 +556,38 @@ internal static class Program
         Console.WriteLine($"==> {name}");
         Console.ResetColor();
 
+        var startedAtUtc = DateTimeOffset.UtcNow;
+        if (s_verboseStageDiagnostics)
+            Console.WriteLine($"Stage start (UTC): {startedAtUtc:O}");
+
         var stopwatch = Stopwatch.StartNew();
         var exitCode = action();
         stopwatch.Stop();
+        var completedAtUtc = DateTimeOffset.UtcNow;
+        const string internalCommand = "[internal-step]";
 
         if (exitCode == 0)
         {
             WriteSuccess($"OK: {name} ({FormatDuration(stopwatch.Elapsed)})");
-            return new StepResult(name, 0, stopwatch.Elapsed);
+            if (s_verboseStageDiagnostics)
+            {
+                Console.WriteLine($"Stage end (UTC): {completedAtUtc:O}");
+                Console.WriteLine($"Stage exit code: {exitCode}");
+            }
+
+            return new StepResult(name, 0, stopwatch.Elapsed, internalCommand, startedAtUtc, completedAtUtc);
         }
 
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Error.WriteLine($"FAILED: {name} ({FormatDuration(stopwatch.Elapsed)})");
         Console.ResetColor();
-        return new StepResult(name, exitCode, stopwatch.Elapsed);
+        if (s_verboseStageDiagnostics)
+        {
+            Console.Error.WriteLine($"Stage end (UTC): {completedAtUtc:O}");
+            Console.Error.WriteLine($"Stage exit code: {exitCode}");
+        }
+
+        return new StepResult(name, exitCode, stopwatch.Elapsed, internalCommand, startedAtUtc, completedAtUtc);
     }
 
     private static int RunProcess(string fileName, string arguments)
@@ -588,6 +628,132 @@ internal static class Program
 
     private static bool Has(IReadOnlyCollection<string> args, string option) =>
         args.Any(arg => string.Equals(arg, option, StringComparison.OrdinalIgnoreCase));
+
+    private static string? GetOptionValue(IReadOnlyList<string> args, params string[] optionNames)
+    {
+        for (var i = 0; i < args.Count; i++)
+        {
+            var current = args[i];
+            if (!optionNames.Any(option => string.Equals(option, current, StringComparison.OrdinalIgnoreCase)))
+                continue;
+
+            if (i + 1 >= args.Count)
+                throw new ArgumentException($"{current} requires a value.");
+
+            return args[i + 1];
+        }
+
+        return null;
+    }
+
+    private static string BuildCommandText(string fileName, string arguments)
+    {
+        var text = string.IsNullOrWhiteSpace(arguments) ? fileName : $"{fileName} {arguments}".Trim();
+        return RedactSecretLikeValues(text);
+    }
+
+    private static int CompleteWithFailure(
+        DateTimeOffset startedAtUtc,
+        IReadOnlyCollection<StepResult> stepResults,
+        StepResult failedStep,
+        ReleaseReadyOptions options)
+    {
+        var completedAtUtc = DateTimeOffset.UtcNow;
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Error.WriteLine("Release-ready gate failed.");
+        Console.ResetColor();
+        Console.Error.WriteLine($"Failed stage: {failedStep.Name}");
+        Console.Error.WriteLine($"Failed command: {failedStep.Command}");
+        Console.Error.WriteLine($"Failed exit code: {failedStep.ExitCode}");
+        Console.Error.WriteLine($"Failed stage duration: {FormatDuration(failedStep.Duration)}");
+        Console.Error.WriteLine("Diagnostics hint: review console output above and generated docs/reports artifacts for the failed stage.");
+        Console.Error.WriteLine("Safety note: secret-like values are redacted from command diagnostics.");
+        WriteSummary(stepResults);
+        Console.WriteLine($"Completed (UTC): {completedAtUtc:O}");
+        Console.WriteLine($"Total gate duration: {FormatDuration(completedAtUtc - startedAtUtc)}");
+        TryWriteSummaryJson(options.OutputSummaryJson, stepResults, startedAtUtc, completedAtUtc, success: false);
+        return failedStep.ExitCode;
+    }
+
+    private static void TryWriteSummaryJson(
+        string? outputSummaryJson,
+        IReadOnlyCollection<StepResult> stepResults,
+        DateTimeOffset startedAtUtc,
+        DateTimeOffset completedAtUtc,
+        bool success)
+    {
+        if (string.IsNullOrWhiteSpace(outputSummaryJson))
+            return;
+
+        try
+        {
+            var fullPath = Path.GetFullPath(outputSummaryJson);
+            var directory = Path.GetDirectoryName(fullPath);
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
+
+            var payload = new
+            {
+                version = 1,
+                stage = "P7-04",
+                success,
+                startedAtUtc,
+                completedAtUtc,
+                totalDuration = FormatDuration(completedAtUtc - startedAtUtc),
+                steps = stepResults.Select(step => new
+                {
+                    step.Name,
+                    step.ExitCode,
+                    duration = FormatDuration(step.Duration),
+                    step.Command,
+                    step.StartedAtUtc,
+                    step.CompletedAtUtc
+                }).ToArray()
+            };
+
+            var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(fullPath, json);
+            Console.WriteLine($"Release summary JSON: {fullPath}");
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Warning: failed to write summary JSON ({RedactSecretLikeValues(exception.Message)}).");
+        }
+    }
+
+    private static string RedactSecretLikeValues(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        var redacted = input;
+        var patterns = new[]
+        {
+            "Data Source=",
+            "Host=",
+            "Server=",
+            "User Id=",
+            "Username=",
+            "Password=",
+            "Token="
+        };
+
+        foreach (var pattern in patterns)
+        {
+            var startIndex = redacted.IndexOf(pattern, StringComparison.OrdinalIgnoreCase);
+            if (startIndex < 0)
+                continue;
+
+            var endIndex = redacted.IndexOf(';', startIndex);
+            if (endIndex < 0)
+                endIndex = redacted.Length;
+
+            redacted = redacted[..startIndex] + pattern + "<redacted>" + redacted[endIndex..];
+        }
+
+        return redacted;
+    }
 
     private static string ResolveProcessFileName(string fileName)
     {
@@ -682,10 +848,15 @@ internal static class Program
         bool SkipGitStatus,
         bool Fast,
         bool NoRestore,
-        bool NoBuild);
+        bool NoBuild,
+        bool VerboseStages,
+        string? OutputSummaryJson);
 
     private sealed record StepResult(
         string Name,
         int ExitCode,
-        TimeSpan Duration);
+        TimeSpan Duration,
+        string Command,
+        DateTimeOffset StartedAtUtc,
+        DateTimeOffset CompletedAtUtc);
 }

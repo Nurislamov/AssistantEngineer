@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P7-08",
+  "acceptedDecisions": [
+    {
+      "id": "DEC-ROUTE-OPTIONS-CONTROLLED",
+      "title": "Route protection remains options-controlled",
+      "category": "Route protection",
+      "status": "Accepted",
+      "rationale": "Prevents accidental lockouts while staged protection rollout and inventory governance continue.",
+      "evidenceDocs": [
+        "docs/security/authorization-policy-rollout.md",
+        "docs/security/api-endpoint-protection-inventory.md"
+      ],
+      "relatedTests": [
+        "ApiEndpointProtectionInventoryGuardTests",
+        "P7RouteInventoryCoverageTests"
+      ],
+      "futureTrigger": "Only revisited if rollout strategy abandons options-based compatibility."
+    },
+    {
+      "id": "DEC-BACKFILL-WRITE-PATH-DISABLED",
+      "title": "Ownership backfill write-path remains disabled",
+      "category": "Apply/write-path governance",
+      "status": "Accepted",
+      "rationale": "No real apply execution until staged governance evidence and future ADR enablement are approved.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-apply-enablement-architecture-review.md",
+        "docs/security/security-release-boundary.md"
+      ],
+      "relatedTests": [
+        "OwnershipBackfillApplyWiringGuardTests",
+        "P7PostP6ApplyDisabledBoundaryTests"
+      ],
+      "futureTrigger": "Separate future ADR for staged write-path enablement is approved."
+    },
+    {
+      "id": "DEC-EF-FILTERS-DEFERRED",
+      "title": "Global EF query filters are deferred",
+      "category": "Future enforcement",
+      "status": "Accepted",
+      "rationale": "Global filters must not be enabled before ownership evidence and enforcement strategy are complete.",
+      "evidenceDocs": [
+        "docs/security/security-release-boundary.md",
+        "docs/security/ownership-backfill-apply-enablement-architecture-review.md"
+      ],
+      "relatedTests": [
+        "P6ApplyEnablementArchitectureReviewGovernanceTests"
+      ],
+      "futureTrigger": "Future ADR for global filters is accepted with migration and compatibility plan."
+    },
+    {
+      "id": "DEC-DB-RLS-DEFERRED",
+      "title": "Database row-level security is deferred",
+      "category": "Future enforcement",
+      "status": "Accepted",
+      "rationale": "DB RLS requires explicit operational ownership and enforcement ADR beyond current stage.",
+      "evidenceDocs": [
+        "docs/security/security-release-boundary.md",
+        "docs/adr/ADR-0001-security-governance-boundary.md"
+      ],
+      "relatedTests": [
+        "P7SecurityReleaseBoundaryTests",
+        "P7SecurityAdrTests"
+      ],
+      "futureTrigger": "Future ADR for DB RLS is accepted with rollback and operational model."
+    },
+    {
+      "id": "DEC-NO-FULL-TENANT-ISOLATION-CLAIM",
+      "title": "Full tenant isolation is not claimed",
+      "category": "Claims/release boundary",
+      "status": "Accepted",
+      "rationale": "Current controls are staged/partial and must not be represented as full isolation.",
+      "evidenceDocs": [
+        "docs/security/security-release-boundary.md",
+        "docs/security/tenant-isolation-integration-matrix.md"
+      ],
+      "relatedTests": [
+        "P7PostP6ClaimsConsistencyTests",
+        "P7RouteClaimsConsistencyTests"
+      ],
+      "futureTrigger": "Revisit only after enforcement ADRs and production evidence are complete."
+    }
+  ],
+  "deferredDecisions": [
+    {
+      "id": "DEC-DEFER-STAGING-APPLY",
+      "title": "Real staging apply enablement",
+      "category": "Staging/production separation",
+      "status": "Deferred",
+      "rationale": "Staging apply remains intentionally disabled in P7.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-staging-apply-runbook.md",
+        "docs/security/ownership-backfill-staging-apply-executor-design.md"
+      ],
+      "relatedTests": [
+        "P6StagingApplyExecutorDesignGovernanceTests"
+      ],
+      "futureTrigger": "ADR-FUTURE-001 accepted with validated staging executor enablement gates."
+    },
+    {
+      "id": "DEC-DEFER-PRODUCTION-APPLY",
+      "title": "Real production apply enablement",
+      "category": "Staging/production separation",
+      "status": "Deferred",
+      "rationale": "Production apply remains intentionally disabled and requires separate approval chain.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-production-promotion-readiness.md",
+        "docs/security/ownership-backfill-manual-write-path-enablement-decision.md"
+      ],
+      "relatedTests": [
+        "P6ProductionPromotionReadinessGovernanceTests",
+        "P6ManualWritePathEnablementDecisionGovernanceTests"
+      ],
+      "futureTrigger": "ADR-FUTURE-002 accepted with explicit production enablement controls."
+    },
+    {
+      "id": "DEC-DEFER-BACKFILL-EXECUTION",
+      "title": "Real ownership backfill execution",
+      "category": "Ownership backfill tooling",
+      "status": "Deferred",
+      "rationale": "No real ownership metadata writes are permitted in current boundary.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-apply-mode-design.md",
+        "docs/security/security-release-boundary.md"
+      ],
+      "relatedTests": [
+        "OwnershipBackfillApplyCommandDisabledTests",
+        "OwnershipBackfillApplyStillDisabledArchitectureTests"
+      ],
+      "futureTrigger": "Write-path ADR and staged enablement evidence approved."
+    }
+  ],
+  "rejectedAlternatives": [
+    {
+      "id": "DEC-REJECT-IMMEDIATE-APPLY",
+      "title": "Enable apply immediately after dry-run",
+      "category": "Apply/write-path governance",
+      "status": "Rejected",
+      "rationale": "Dry-run alone is insufficient for safe write enablement.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-apply-enablement-readiness.md",
+        "docs/security/ownership-backfill-production-promotion-readiness.md"
+      ],
+      "relatedTests": [
+        "P6ApplyEnablementReadinessGovernanceTests",
+        "P6ProductionPromotionReadinessGovernanceTests"
+      ],
+      "futureTrigger": "None; replaced by staged evidence and future ADR process."
+    },
+    {
+      "id": "DEC-REJECT-DOCS-ONLY-GOVERNANCE",
+      "title": "Manual docs without machine-readable guardrails",
+      "category": "Claims/release boundary",
+      "status": "Rejected",
+      "rationale": "Unvalidated prose-only governance drifts and weakens safety guarantees.",
+      "evidenceDocs": [
+        "docs/security/security-regression-guardrails.md",
+        "docs/security/security-governance-index.json"
+      ],
+      "relatedTests": [
+        "P7SecurityGovernanceDocsConsistencyTests",
+        "P7SecurityGovernanceIndexNormalizationTests"
+      ],
+      "futureTrigger": "None; machine-readable guardrails stay required."
+    },
+    {
+      "id": "DEC-REJECT-TEST-ONLY-AS-PROD-READINESS",
+      "title": "Treat test-only apply rehearsal as production readiness",
+      "category": "Apply/write-path governance",
+      "status": "Rejected",
+      "rationale": "Test-only executor does not represent real staging/production execution evidence.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-test-only-apply-rehearsal.md",
+        "docs/security/ownership-backfill-production-apply-enablement-proposal.md"
+      ],
+      "relatedTests": [
+        "P6OwnershipBackfillTestOnlyApplyRehearsalGovernanceTests"
+      ],
+      "futureTrigger": "None; remains explicitly disallowed."
+    }
+  ],
+  "futureAdrRequiredDecisions": [
+    {
+      "id": "ADR-FUTURE-001",
+      "title": "Staging ownership backfill apply enablement",
+      "category": "Staging/production separation",
+      "status": "Deferred",
+      "rationale": "Requires explicit enablement decision with staged safeguards.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-staging-apply-runbook.md"
+      ],
+      "relatedTests": [
+        "P6StagingApplyEnablementDesignGovernanceTests"
+      ],
+      "futureTrigger": "Accepted staging design review plus approved preflight/acceptance evidence."
+    },
+    {
+      "id": "ADR-FUTURE-002",
+      "title": "Production ownership backfill apply enablement",
+      "category": "Staging/production separation",
+      "status": "Deferred",
+      "rationale": "Requires separate production promotion and manual decision evidence.",
+      "evidenceDocs": [
+        "docs/security/ownership-backfill-production-promotion-readiness.md"
+      ],
+      "relatedTests": [
+        "P6ProductionPromotionReadinessGovernanceTests"
+      ],
+      "futureTrigger": "Accepted staging evidence, production promotion readiness, and manual decision packet."
+    },
+    {
+      "id": "ADR-FUTURE-003",
+      "title": "Global EF query filter enablement",
+      "category": "Future enforcement",
+      "status": "Deferred",
+      "rationale": "Must be separately reviewed for compatibility and migration impacts.",
+      "evidenceDocs": [
+        "docs/security/security-release-boundary.md"
+      ],
+      "relatedTests": [
+        "P6ApplyEnablementArchitectureReviewGovernanceTests"
+      ],
+      "futureTrigger": "Post-backfill enforcement architecture proposal accepted."
+    },
+    {
+      "id": "ADR-FUTURE-004",
+      "title": "DB row-level security enablement",
+      "category": "Future enforcement",
+      "status": "Deferred",
+      "rationale": "Requires operational ownership model and rollback strategy.",
+      "evidenceDocs": [
+        "docs/security/security-release-boundary.md"
+      ],
+      "relatedTests": [
+        "P7SecurityReleaseBoundaryTests"
+      ],
+      "futureTrigger": "Dedicated RLS ADR with operational plan and acceptance criteria."
+    }
+  ],
+  "releaseBoundary": {
+    "productionApplyEnabled": false,
+    "stagingApplyEnabled": false,
+    "ownershipBackfillExecuted": false,
+    "globalEfQueryFiltersEnabled": false,
+    "databaseRowLevelSecurityEnabled": false,
+    "fullTenantIsolationClaimed": false
+  },
+  "nonClaims": [
+    "No production security certification claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No ownership backfill execution claim.",
+    "No certified/certification claim."
+  ]
+}

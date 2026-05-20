@@ -19,35 +19,74 @@ public sealed class OwnershipBackfillCommandLineParser
             return OwnershipBackfillCommandLineParseResult.Help();
 
         var command = args[0];
+        var commandSpecificHelp = args.Count >= 2 && IsHelpToken(args[1]);
 
         if (string.Equals(command, "dry-run", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.DryRun);
             return ParseDryRunOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "validate-evidence", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateEvidence);
             return ParseValidateEvidenceOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "validate-apply-readiness", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateApplyReadiness);
             return ParseValidateApplyReadinessOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "validate-production-promotion", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateProductionPromotion);
             return ParseValidateProductionPromotionOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "validate-staging-preflight", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateStagingPreflight);
             return ParseValidateStagingPreflightOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "validate-staging-acceptance", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateStagingAcceptance);
             return ParseValidateStagingAcceptanceOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "apply", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.Apply);
             return ParseApplyOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "plan-apply", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.PlanApply);
             return ParsePlanApplyOptions(args.Skip(1).ToArray());
+        }
 
         if (string.Equals(command, "signoff-plan", StringComparison.OrdinalIgnoreCase))
+        {
+            if (commandSpecificHelp)
+                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.SignoffPlan);
             return ParseSignoffPlanOptions(args.Skip(1).ToArray());
+        }
 
-        return OwnershipBackfillCommandLineParseResult.Failure($"Unknown command: {command}", exitCode: 1);
+        return OwnershipBackfillCommandLineParseResult.Failure(
+            OwnershipBackfillHelpText.BuildUnknownCommandMessage(command),
+            exitCode: OwnershipBackfillExitCodes.InvalidInput);
     }
 
     private static OwnershipBackfillCommandLineParseResult ParseDryRunOptions(IReadOnlyList<string> args)

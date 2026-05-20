@@ -1,0 +1,17 @@
+{
+  "name": "release-ready-observability-audit",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "releaseGateSemanticsChanged",
+    "observabilityImprovements",
+    "performanceFindings",
+    "timeoutRisks",
+    "remainingLimitations",
+    "nonClaims"
+  ]
+}
+

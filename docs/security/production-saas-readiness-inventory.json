@@ -1,6 +1,6 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-18",
+    "lastReviewedDate":  "2026-05-20",
     "areas":  [
                   {
                       "area":  "Authentication",
@@ -20,7 +20,7 @@
                   },
                   {
                       "area":  "Authorization",
-                      "currentStatus":  "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic, P5-17 hardens workflow ownership metadata coverage inventory/resolver behavior, P6-00 defines ownership backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only ownership backfill tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates with unresolved-threshold policy, P6-04 adds apply-mode design and precondition contracts while keeping apply disabled, P6-05 adds no-write apply-plan generation from passed evidence, P6-06 adds no-write plan sign-off governance artifacts, P6-07 adds a test-only apply executor rehearsal while production apply remains disabled, P6-08 adds apply-enablement readiness validation artifacts while production apply remains disabled, P6-09 adds production apply enablement proposal controls while production apply remains disabled, P6-10 adds staging apply enablement runbook/checklist design while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract and acceptance validation governance while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal governance while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply remain disabled.",
+                      "currentStatus":  "Broad policy-based route authorization remains staged; P5-09 introduces a controlled pilot on DevelopmentDemoData endpoint, P5-10 adds read-only pilot checks, P5-11 adds controlled write pilot checks, P5-12 adds controlled execution pilot checks, P5-13 adds controlled report/artifact pilot checks, P5-14 adds controlled workflow read/history pilot checks, P5-15 adds a tenant-isolation integration matrix, P5-16A adds persisted Project ownership fields, P5-16B adds explicit tenant-aware query isolation services for Projects/Buildings, P5-16C integrates those services into protected Project/Building read controllers, P5-16D integrates workflow/scenario/job protected read paths with workflow tenant-aware query service logic, P5-17 hardens workflow ownership metadata coverage inventory/resolver behavior, P6-00 defines ownership backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only ownership backfill tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates with unresolved-threshold policy, P6-04 adds apply-mode design and precondition contracts while keeping apply disabled, P6-05 adds no-write apply-plan generation from passed evidence, P6-06 adds no-write plan sign-off governance artifacts, P6-07 adds a test-only apply executor rehearsal while production apply remains disabled, P6-08 adds apply-enablement readiness validation artifacts while production apply remains disabled, P6-09 adds production apply enablement proposal controls while production apply remains disabled, P6-10 adds staging apply enablement runbook/checklist design while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract and acceptance validation governance while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal governance while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply remain disabled, and P7-00 adds post-P6 governance audit and release boundary review while staging and production apply remain disabled.",
                       "evidence":  [
                                        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
                                        "src/Backend/AssistantEngineer.Api/Controllers/Buildings/BuildingsController.cs",
@@ -87,7 +87,7 @@
                   },
                   {
                       "area":  "Project ownership",
-                      "currentStatus":  "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available, P5-17 adds explicit workflow ownership metadata coverage inventory, P6-00 defines backfill strategy/evidence readiness, P6-01 adds a dry-run-only backfill tooling skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for dry-run artifacts, P6-04 defines apply-mode preconditions while keeping apply disabled, P6-05 adds deterministic plan generation from passed evidence without writes, P6-06 adds deterministic plan sign-off artifacts without writes, P6-07 adds test-only apply executor rehearsal coverage without enabling production apply, P6-08 adds hash-chain and rollback-readiness validation artifacts without enabling production apply, P6-09 adds production apply enablement proposal policy requirements while apply remains disabled, P6-10 adds staging runbook/checklist design requirements while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design requirements while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract/acceptance validation requirements while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal requirements while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision requirements while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review requirements while staging and production apply remain disabled.",
+                      "currentStatus":  "Projects have nullable OrganizationId and OwnerUserId transition fields; P5-16B adds explicit Project/Building tenant-scoped read services, P5-16C wires protected Project/Building read controllers, P5-16D extends read-controller integration to workflow/scenario/job protected read/history paths using workflow/project metadata where available, P5-17 adds explicit workflow ownership metadata coverage inventory, P6-00 defines backfill strategy/evidence readiness, P6-01 adds a dry-run-only backfill tooling skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for dry-run artifacts, P6-04 defines apply-mode preconditions while keeping apply disabled, P6-05 adds deterministic plan generation from passed evidence without writes, P6-06 adds deterministic plan sign-off artifacts without writes, P6-07 adds test-only apply executor rehearsal coverage without enabling production apply, P6-08 adds hash-chain and rollback-readiness validation artifacts without enabling production apply, P6-09 adds production apply enablement proposal policy requirements while apply remains disabled, P6-10 adds staging runbook/checklist design requirements while staging and production apply remain disabled, P6-11 adds staging executor contract/preflight design requirements while staging and production apply remain disabled, and P6-12 adds staging post-run evidence contract/acceptance validation requirements while staging and production apply remain disabled, and P6-13 adds production promotion readiness proposal requirements while staging and production apply remain disabled, and P6-14 adds manual write-path enablement decision requirements while staging and production apply remain disabled, and P6-15 adds apply enablement architecture review requirements while staging and production apply remain disabled, and P7-00 adds post-P6 governance audit and release boundary review requirements while staging and production apply remain disabled.",
                       "evidence":  [
                                        "src/Backend/AssistantEngineer.Modules.Buildings/Domain/Entities/Project.cs",
                                        "src/Backend/AssistantEngineer.Api/Controllers/Projects/ProjectsController.cs",
@@ -112,7 +112,7 @@
                   },
                   {
                       "area":  "Tenant isolation",
-                      "currentStatus":  "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C, workflow/scenario/job protected read paths are integrated in P5-16D, workflow ownership metadata coverage is inventoried/hardened in P5-17, P6-00 defines backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only evidence tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for unresolved thresholds and ambiguity policy, P6-04 defines apply-mode contracts while keeping apply disabled, P6-05 adds plan-only deterministic apply-plan artifacts from passed evidence, P6-06 adds plan sign-off governance artifacts from plan evidence, P6-07 adds test-only apply rehearsal execution artifacts without enabling production apply, P6-08 adds apply-enablement readiness hash-chain and rollback-readiness validation artifacts while production apply stays disabled, P6-09 adds production apply enablement proposal governance while production apply stays disabled, P6-10 adds staging apply runbook/checklist governance while staging and production apply stay disabled, P6-11 adds staging executor contract/preflight governance while staging and production apply stay disabled, and P6-12 adds staging post-run evidence/acceptance governance while staging and production apply stay disabled, and P6-13 adds production promotion readiness governance while staging and production apply stay disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply stay disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply stay disabled; global tenant query filters and database row-level security are not enabled.",
+                      "currentStatus":  "Project tenant identifiers are persisted as nullable transition fields; explicit Project/Building tenant-scoped read services are integrated in P5-16C, workflow/scenario/job protected read paths are integrated in P5-16D, workflow ownership metadata coverage is inventoried/hardened in P5-17, P6-00 defines backfill strategy/evidence readiness gates, P6-01 adds a dry-run-only evidence tool skeleton, P6-02 adds a read-only database dry-run scanner, P6-03 adds evidence-validation gates for unresolved thresholds and ambiguity policy, P6-04 defines apply-mode contracts while keeping apply disabled, P6-05 adds plan-only deterministic apply-plan artifacts from passed evidence, P6-06 adds plan sign-off governance artifacts from plan evidence, P6-07 adds test-only apply rehearsal execution artifacts without enabling production apply, P6-08 adds apply-enablement readiness hash-chain and rollback-readiness validation artifacts while production apply stays disabled, P6-09 adds production apply enablement proposal governance while production apply stays disabled, P6-10 adds staging apply runbook/checklist governance while staging and production apply stay disabled, P6-11 adds staging executor contract/preflight governance while staging and production apply stay disabled, and P6-12 adds staging post-run evidence/acceptance governance while staging and production apply stay disabled, and P6-13 adds production promotion readiness governance while staging and production apply stay disabled, and P6-14 adds manual write-path enablement decision governance while staging and production apply stay disabled, and P6-15 adds apply enablement architecture review governance while staging and production apply stay disabled, and P7-00 adds post-P6 governance audit and release boundary review governance while staging and production apply stay disabled; global tenant query filters and database row-level security are not enabled.",
                       "evidence":  [
                                        "src/Backend/AssistantEngineer.Infrastructure/Persistence/AppDbContext.cs",
                                        "src/Backend/AssistantEngineer.Api/Services/Calculations/Persistence/Durable/EngineeringWorkflowPersistenceDbContext.cs",
@@ -347,19 +347,19 @@
                       {
                           "item":  "P6-01",
                           "title":  "Ownership backfill dry-run tool skeleton",
-                          "status":  "Implemented",
+                          "status":  "ToolingOnly",
                           "risk":  "Dry-run/no-data evidence tooling exists, but database-backed scanning and apply mode remain staged."
                       },
                       {
                           "item":  "P6-02",
                           "title":  "Ownership backfill database dry-run scanner",
-                          "status":  "Implemented",
+                          "status":  "ToolingOnly",
                           "risk":  "Read-only database scan is implemented, but apply mode, execution gates, and backfill writes remain staged."
                       },
                       {
                           "item":  "P6-03",
                           "title":  "Backfill evidence validation gates",
-                          "status":  "Implemented",
+                          "status":  "GovernanceOnly",
                           "risk":  "Evidence validation gates are implemented, but apply mode remains disabled and no ownership backfill execution has run."
                       },
                       {
@@ -371,31 +371,31 @@
                       {
                           "item":  "P6-05",
                           "title":  "Apply plan generator (no-write)",
-                          "status":  "Implemented",
+                          "status":  "ToolingOnly",
                           "risk":  "Deterministic planning artifacts are generated from passed evidence, but apply execution remains disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-06",
                           "title":  "Apply plan sign-off gate (no-write)",
-                          "status":  "Implemented",
+                          "status":  "GovernanceOnly",
                           "risk":  "Signed plan governance artifacts are generated from plan evidence, but apply execution remains disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-07",
                           "title":  "Test-only apply executor rehearsal",
-                          "status":  "Implemented",
+                          "status":  "TestOnly",
                           "risk":  "Test-only rehearsal validates batch/idempotency/conflict and previous-values behavior, but production apply remains disabled and no real ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-08",
                           "title":  "Apply enablement readiness gate (still disabled)",
-                          "status":  "Implemented",
+                          "status":  "GovernanceOnly",
                           "risk":  "Readiness validation improves hash-chain, signoff TTL, and rollback readiness assurance, but production apply remains disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-09",
                           "title":  "Production apply enablement proposal (still disabled)",
-                          "status":  "ProposalOnly",
+                          "status":  "GovernanceOnly",
                           "risk":  "Formal policy and change-management requirements are documented, but production apply remains disabled and no ownership backfill writes have run."
                       },
                       {
@@ -413,26 +413,80 @@
                       {
                           "item":  "P6-12",
                           "title":  "Staging post-run evidence contract and acceptance validator (still disabled)",
-                          "status":  "Implemented",
+                          "status":  "GovernanceOnly",
                           "risk":  "Staging post-run acceptance governance is implemented in no-write mode, but staging and production apply remain disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-13",
                           "title":  "Production promotion readiness proposal (still disabled)",
-                          "status":  "ProposalOnly",
+                          "status":  "GovernanceOnly",
                           "risk":  "Production promotion readiness governance is defined, but staging and production apply remain disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-14",
                           "title":  "Manual write-path enablement decision framework (still disabled)",
-                          "status":  "ManualDecisionOnly",
+                          "status":  "GovernanceOnly",
                           "risk":  "Manual governance artifacts are defined, but staging and production apply remain disabled and no ownership backfill writes have run."
                       },
                       {
                           "item":  "P6-15",
                           "title":  "Apply enablement architecture review (still no code enablement)",
-                          "status":  "ArchitectureReviewOnly",
+                          "status":  "GovernanceOnly",
                           "risk":  "Architecture-review governance invariants and no-wiring checks are defined, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P7-00",
+                          "title":  "Post-P6 governance audit and release boundary review",
+                          "status":  "AuditOnly",
+                          "risk":  "Audit/governance findings and consolidation backlog are documented, but staging and production apply remain disabled and no ownership backfill writes have run."
+                      },
+                      {
+                          "item":  "P7-01",
+                          "title":  "Security governance docs deduplication and index normalization",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Documentation and governance normalization only; no runtime or write-path behavior changes."
+                      },
+                      {
+                          "item":  "P7-02",
+                          "title":  "Governance test consolidation",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Test/helper cleanup only; no runtime or write-path behavior changes."
+                      },
+                      {
+                          "item":  "P7-03",
+                          "title":  "Ownership backfill CLI UX cleanup",
+                          "status":  "ToolingOnly",
+                          "risk":  "CLI consistency/documentation/test cleanup only; apply remains disabled and no write-path behavior changed."
+                      },
+                      {
+                          "item":  "P7-04",
+                          "title":  "Release-ready observability/performance audit",
+                          "status":  "AuditOnly",
+                          "risk":  "Observability/performance diagnostics hardening only; runtime and write-path behavior unchanged."
+                      },
+                      {
+                          "item":  "P7-05",
+                          "title":  "CI/GitHub checks visibility",
+                          "status":  "AuditOnly",
+                          "risk":  "CI visibility/docs/workflow observability hardening only; no runtime or write-path behavior changes."
+                      },
+                      {
+                          "item":  "P7-06",
+                          "title":  "Route inventory and claims consistency automation",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Governance automation only; no runtime/API/write-path behavior changes and no DB writes."
+                      },
+                      {
+                          "item":  "P7-07",
+                          "title":  "Security docs map and decision record",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Documentation/ADR consolidation only; no runtime/API/write-path behavior changes."
+                      },
+                      {
+                          "item":  "P7-08",
+                          "title":  "Post-P6 architecture decision record consolidation",
+                          "status":  "GovernanceOnly",
+                          "risk":  "ADR/matrix/backlog consolidation only; no runtime/API/write-path behavior changes."
                       }
                   ],
     "nonClaims":  [

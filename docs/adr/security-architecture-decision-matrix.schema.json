@@ -1,0 +1,33 @@
+{
+  "name": "security-architecture-decision-matrix",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "acceptedDecisions",
+    "deferredDecisions",
+    "rejectedAlternatives",
+    "futureAdrRequiredDecisions",
+    "releaseBoundary",
+    "nonClaims"
+  ],
+  "decisionRequiredFields": [
+    "id",
+    "title",
+    "category",
+    "status",
+    "rationale",
+    "evidenceDocs",
+    "relatedTests",
+    "futureTrigger"
+  ],
+  "releaseBoundaryRequiredFields": [
+    "productionApplyEnabled",
+    "stagingApplyEnabled",
+    "ownershipBackfillExecuted",
+    "globalEfQueryFiltersEnabled",
+    "databaseRowLevelSecurityEnabled",
+    "fullTenantIsolationClaimed"
+  ]
+}

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AssistantEngineer.Tests.Architecture.Governance;
 
 namespace AssistantEngineer.Tests.Architecture;
 
@@ -16,19 +17,7 @@ public sealed class P6OwnershipBackfillDryRunToolGovernanceTests
     [Fact]
     public void ToolSourceContainsNoApplyImplementationOrWritePaths()
     {
-        var sourceFiles = Directory.GetFiles(ToolDirectoryPath, "*.cs", SearchOption.AllDirectories);
-        Assert.NotEmpty(sourceFiles);
-
-        foreach (var file in sourceFiles)
-        {
-            var content = File.ReadAllText(file);
-
-            Assert.DoesNotContain("SaveChanges(", content, StringComparison.Ordinal);
-            Assert.DoesNotContain("UPDATE ", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("DELETE ", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("TRUNCATE ", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("INSERT INTO", content, StringComparison.OrdinalIgnoreCase);
-        }
+        GovernanceSourceScanHelper.AssertNoWritePatterns(ToolDirectoryPath);
     }
 
     [Fact]
@@ -84,23 +73,21 @@ public sealed class P6OwnershipBackfillDryRunToolGovernanceTests
     [Fact]
     public void DocsDoNotClaimBackfillExecutedOrFullIsolationOrGlobalFiltersOrDbRls()
     {
-        var docs = new[]
-        {
-            File.ReadAllText(StrategyMarkdownPath),
-            File.ReadAllText(EvidenceModelMarkdownPath),
-            File.ReadAllText(DryRunToolMarkdownPath),
-            File.ReadAllText(ProductionInventoryMarkdownPath)
-        };
-
-        foreach (var content in docs)
-        {
-            Assert.DoesNotContain("ownership backfill has been executed", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("ownership backfill has been completed", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("ownership backfill is fully completed", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("global ef query filters are enabled", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("database row-level security is enabled", content, StringComparison.OrdinalIgnoreCase);
-            Assert.DoesNotContain("full tenant isolation is implemented", content, StringComparison.OrdinalIgnoreCase);
-        }
+        GovernanceAssertions.AssertNoFalseSecurityClaims(
+            [
+            StrategyMarkdownPath,
+            EvidenceModelMarkdownPath,
+            DryRunToolMarkdownPath,
+            ProductionInventoryMarkdownPath
+            ],
+            [
+                "ownership backfill has been executed",
+                "ownership backfill has been completed",
+                "ownership backfill is fully completed",
+                "global ef query filters are enabled",
+                "database row-level security is enabled",
+                "full tenant isolation is implemented"
+            ]);
     }
 
     private static string SolutionPath =>

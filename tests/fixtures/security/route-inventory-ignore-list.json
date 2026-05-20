@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "controller": "AnnualClimateDataController",
+      "method": "*",
+      "routeContains": "annual-climate-data/",
+      "reason": "P7-06: climate-data endpoints are pending detailed inventory classification."
+    },
+    {
+      "controller": "AnnualProfilesController",
+      "method": "POST",
+      "routeContains": "/generate",
+      "reason": "P7-06: annual profile generation endpoint remains pending route-inventory classification."
+    },
+    {
+      "controller": "BenchmarksController",
+      "method": "*",
+      "routeContains": "benchmarks/",
+      "reason": "P7-06: benchmark verification/model/reference endpoints remain pending staged protection classification."
+    },
+    {
+      "controller": "BuildingComfortAnalysisController",
+      "method": "*",
+      "routeContains": "comfort-analysis/",
+      "reason": "P7-06: comfort analysis endpoints are not yet split into inventory protection groups."
+    },
+    {
+      "controller": "BuildingEnergyAnalysisController",
+      "method": "*",
+      "routeContains": "energy-analysis/",
+      "reason": "P7-06: energy analysis endpoints remain pending explicit inventory classification."
+    },
+    {
+      "controller": "BuildingSizingAnalysisController",
+      "method": "*",
+      "routeContains": "sizing-analysis/",
+      "reason": "P7-06: sizing analysis endpoints remain pending explicit inventory classification."
+    },
+    {
+      "controller": "BuildingValidationController",
+      "method": "POST",
+      "routeContains": "validation/autocorrect",
+      "reason": "P7-06: building validation autocorrect endpoints remain pending staged protection classification."
+    },
+    {
+      "controller": "DevelopmentDemoDataController",
+      "method": "POST",
+      "routeContains": "/seed",
+      "reason": "P7-06: development seed action is covered by environment-gating guardrail but pending explicit route inventory split."
+    },
+    {
+      "controller": "DomesticHotWaterController",
+      "method": "POST",
+      "routeContains": "domestic-hot-water/demand",
+      "reason": "P7-06: domestic hot water demand endpoint remains pending protection-stage inventory split."
+    },
+    {
+      "controller": "EngineeringCoreStatusController",
+      "method": "GET",
+      "routeContains": "calculations/engineering-core/v1/",
+      "reason": "P7-06: engineering-core status endpoints remain pending diagnostics inventory classification."
+    },
+    {
+      "controller": "EngineeringWorkflowController",
+      "method": "POST",
+      "routeContains": "engineering-workflow/validate",
+      "reason": "P7-06: workflow validation endpoint remains pending explicit inventory classification."
+    },
+    {
+      "controller": "EquipmentCatalogController",
+      "method": "*",
+      "routeContains": "equipment-catalog",
+      "reason": "P7-06: equipment catalog CRUD endpoints remain pending route inventory classification."
+    },
+    {
+      "controller": "FloorsController",
+      "method": "*",
+      "routeContains": "/floors",
+      "reason": "P7-06: floor CRUD endpoints remain pending staged protection inventory classification."
+    },
+    {
+      "controller": "GroundTemperatureController",
+      "method": "GET",
+      "routeContains": "ground-temperature/profile",
+      "reason": "P7-06: ground temperature profile endpoint remains pending route-inventory classification."
+    },
+    {
+      "controller": "RoomsController",
+      "method": "*",
+      "routeContains": "/rooms",
+      "reason": "P7-06: room CRUD/wall/window endpoints remain pending explicit inventory classification."
+    },
+    {
+      "controller": "StandardProfilesController",
+      "method": "GET",
+      "routeContains": "standard-profiles/en16798/room-usage",
+      "reason": "P7-06: standard profile room-usage endpoint remains pending inventory split."
+    },
+    {
+      "controller": "StandardTablesController",
+      "method": "GET",
+      "routeContains": "standard-tables/",
+      "reason": "P7-06: standard tables detail endpoints remain pending explicit inventory classification."
+    }
+  ]
+}

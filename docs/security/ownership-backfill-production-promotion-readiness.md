@@ -128,3 +128,5 @@ No-go criteria:
 - schema or migration mismatch;
 - approvals missing or expired;
 - any evidence contains secrets.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.

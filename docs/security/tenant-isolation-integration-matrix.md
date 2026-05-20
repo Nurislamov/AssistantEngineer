@@ -23,6 +23,7 @@ The matrix covers:
 - P5-16D protected workflow read/history tenant-aware integration introduced in `docs/security/workflow-tenant-aware-read-integration.md`.
 - P5-17 workflow/scenario/job metadata coverage inventory introduced in `docs/security/workflow-ownership-metadata-coverage.md`.
 - P6-00 ownership backfill strategy/evidence planning introduced in `docs/security/ownership-backfill-strategy.md`.
+- P7-06 route inventory/classification consistency automation introduced in `docs/security/route-inventory-claims-consistency-audit.md` and `docs/security/api-endpoint-classification-model.md`.
 
 ## Non-claims
 

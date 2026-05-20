@@ -164,3 +164,5 @@ Readiness output handling requirement:
 ## Next steps
 
 - P6-09: production apply enablement proposal (still disabled) with explicit policy and staged rollout controls.
+## CLI command inventory reference
+See [ownership-backfill-cli-command-inventory.md](ownership-backfill-cli-command-inventory.md) for canonical command list, exit codes, and redaction policy.
