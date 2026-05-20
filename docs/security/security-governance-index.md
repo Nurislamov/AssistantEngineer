@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This index is the canonical navigation map for P5/P6/P7 security governance artifacts.
+This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 
 ## Canonical release boundary
 
@@ -78,6 +78,10 @@ This index is the canonical navigation map for P5/P6/P7 security governance arti
 - `docs/adr/future-security-adr-backlog.json`
 - `docs/adr/adr-index.md`
 - `docs/adr/adr-index.json`
+- `docs/architecture/engineering-domain-architecture-audit.md`
+- `docs/architecture/assistantengineer-architecture-map.md`
+- `docs/architecture/legacy-and-dead-code-inventory.md`
+- `docs/architecture/scripts-tools-inventory.md`
 
 ## Audit/release readiness
 
@@ -97,6 +101,10 @@ This index is the canonical navigation map for P5/P6/P7 security governance arti
 - `docs/security/ci-github-checks-visibility-runbook.md`
 - `docs/security/route-inventory-claims-consistency-audit.md`
 - `docs/security/route-inventory-claims-consistency-audit.json`
+- `docs/architecture/engineering-domain-architecture-audit.json`
+- `docs/architecture/assistantengineer-architecture-map.json`
+- `docs/architecture/legacy-and-dead-code-inventory.json`
+- `docs/architecture/scripts-tools-inventory.json`
 
 ## Notes
 

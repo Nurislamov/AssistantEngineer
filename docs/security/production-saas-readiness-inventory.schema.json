@@ -66,7 +66,8 @@
                                 "P7-05",
                                 "P7-06",
                                 "P7-07",
-                                "P7-08"
+                                "P7-08",
+                                "P8-00"
                             ],
     "statusNotes":  {
                         "planned":  "Planned work item for staged P5 rollout.",

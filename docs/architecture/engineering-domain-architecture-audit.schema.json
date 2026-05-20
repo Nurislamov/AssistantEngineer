@@ -1,0 +1,67 @@
+{
+  "name": "engineering-domain-architecture-audit",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "findings",
+    "findingCounts",
+    "recommendedBacklog",
+    "nonClaims"
+  ],
+  "findingRequiredFields": [
+    "id",
+    "severity",
+    "area",
+    "title",
+    "description",
+    "evidencePath",
+    "principle",
+    "recommendation",
+    "proposedStage",
+    "riskIfIgnored"
+  ],
+  "findingCountsRequiredFields": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+  ],
+  "backlogRequiredFields": [
+    "stage",
+    "title",
+    "goal",
+    "dependsOn",
+    "risk",
+    "expectedChangeType"
+  ],
+  "allowedSeverities": [
+    "Critical",
+    "High",
+    "Medium",
+    "Low"
+  ],
+  "allowedPrinciples": [
+    "SOLID",
+    "KISS",
+    "DRY",
+    "DDD",
+    "CleanArchitecture",
+    "Testing",
+    "Tooling",
+    "DocsClaims",
+    "Legacy"
+  ],
+  "allowedExpectedChangeTypes": [
+    "AuditOnly",
+    "RefactorOnly",
+    "TestOnly",
+    "ToolingOnly",
+    "DocsOnly",
+    "BehaviorChangeRequiresApproval"
+  ]
+}

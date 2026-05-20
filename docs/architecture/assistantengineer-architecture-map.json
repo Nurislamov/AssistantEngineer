@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-00",
+  "modules": [
+    {
+      "name": "AssistantEngineer.Api",
+      "layer": "Api",
+      "ownerArea": "Backend",
+      "notes": "HTTP host/controllers/security entry layer."
+    },
+    {
+      "name": "AssistantEngineer.Infrastructure",
+      "layer": "Infrastructure",
+      "ownerArea": "Backend",
+      "notes": "Persistence integration and wiring."
+    },
+    {
+      "name": "AssistantEngineer.Modules.Buildings",
+      "layer": "Domain/Application",
+      "ownerArea": "Buildings",
+      "notes": "Project/building entities and policies."
+    },
+    {
+      "name": "AssistantEngineer.Modules.Calculations",
+      "layer": "Domain/Application",
+      "ownerArea": "Calculations",
+      "notes": "ISO52016 and calculation services."
+    },
+    {
+      "name": "AssistantEngineer.Modules.EngineeringWorkflow",
+      "layer": "Domain/Application",
+      "ownerArea": "Workflow",
+      "notes": "Scenario/job/workflow orchestration contracts and services."
+    },
+    {
+      "name": "AssistantEngineer.Modules.Identity",
+      "layer": "Domain/Application",
+      "ownerArea": "Identity",
+      "notes": "Access policies and identity abstractions."
+    },
+    {
+      "name": "AssistantEngineer.Modules.Reporting",
+      "layer": "Domain/Application",
+      "ownerArea": "Reporting",
+      "notes": "Report generation contracts and services."
+    },
+    {
+      "name": "AssistantEngineer.SharedKernel",
+      "layer": "SharedKernel",
+      "ownerArea": "Platform",
+      "notes": "Cross-cutting primitives."
+    }
+  ],
+  "tools": [
+    "tools/AssistantEngineer.Tools.OwnershipBackfill",
+    "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+    "tools/AssistantEngineer.Tools.EngineeringCoreVerification",
+    "tools/AssistantEngineer.Tools.EngineeringCoreEvidence",
+    "tools/AssistantEngineer.Tools.EngineeringCoreContracts",
+    "tools/AssistantEngineer.Tools.EngineeringCore",
+    "tools/AssistantEngineer.Tools.Iso52016Verification",
+    "tools/AssistantEngineer.Tools.EnergyPlusValidation",
+    "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+    "tools/AssistantEngineer.Tools.RepositoryBoundaries",
+    "tools/AssistantEngineer.Tools.RepositoryHygieneVerification"
+  ],
+  "scripts": [
+    "scripts/engineering-core",
+    "scripts/iso52016"
+  ],
+  "testAreas": [
+    "tests/AssistantEngineer.Tests/Architecture",
+    "tests/AssistantEngineer.Tests/Api",
+    "tests/AssistantEngineer.Tests/Tools"
+  ],
+  "boundaryRules": [
+    "Domain/application modules should not depend on infrastructure or API contracts unless explicitly transitional and documented.",
+    "OwnershipBackfill tooling must remain outside runtime API execution path.",
+    "Release scripts/tools must not introduce runtime write-path behavior.",
+    "Calculation physics logic must remain in runtime C# modules with behavior-locked tests."
+  ],
+  "knownBoundaryRisks": [
+    "EngineeringWorkflow application namespace and contract leakage into AssistantEngineer.Api naming.",
+    "ModuleBoundaryTests currently omit EngineeringWorkflow assembly coverage.",
+    "Large authorization/workflow classes increase boundary erosion risk."
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No full donor-model match claim.",
+    "No external simulator match claim.",
+    "No external standard-case validation completion claim.",
+    "No production security certification claim.",
+    "No full tenant isolation claim.",
+    "No ownership backfill execution claim.",
+    "No DB RLS/global EF query filter claim."
+  ]
+}

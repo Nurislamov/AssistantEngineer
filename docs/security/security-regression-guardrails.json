@@ -370,6 +370,15 @@
                            "testName":  "P7SecurityArchitectureDecisionMatrixTests",
                            "risk":  "Architecture decision ownership can drift across docs and weaken disabled-boundary guarantees for future write-path decisions.",
                            "notes":  "Validated by P7SecurityArchitectureDecisionMatrixTests and P7FutureSecurityAdrBacklogTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-ENGINEERING-DOMAIN-ARCHITECTURE-AUDIT",
+                           "title":  "Engineering/domain architecture audit artifacts must remain explicit and no-change scoped in P8-00",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8EngineeringDomainArchitectureAuditTests",
+                           "risk":  "Architecture hardening decisions can drift into undocumented runtime, API, or calculation-physics changes.",
+                           "notes":  "Validated by P8EngineeringDomainArchitectureAuditTests, P8AssistantEngineerArchitectureMapTests, P8LegacyAndDeadCodeInventoryTests, and P8ScriptsToolsInventoryTests."
                        }
                    ],
     "nonClaims":  [

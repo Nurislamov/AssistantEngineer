@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-00",
+  "entries": [
+    {
+      "id": "LEG-001",
+      "path": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application",
+      "category": "CandidateForConsolidation",
+      "reason": "Application layer artifacts currently use AssistantEngineer.Api namespaces/contracts; requires staged cleanup, not removal.",
+      "recommendedStage": "P8-01",
+      "recommendedAction": "Review and relocate naming/contracts to module-owned namespaces."
+    },
+    {
+      "id": "LEG-002",
+      "path": "tests/fixtures/security/route-inventory-ignore-list.json",
+      "category": "CandidateForReview",
+      "reason": "Deferred endpoint inventory entries indicate temporary governance debt.",
+      "recommendedStage": "P8-05",
+      "recommendedAction": "Reduce ignores with explicit staged endpoint classification."
+    },
+    {
+      "id": "LEG-003",
+      "path": "tests/AssistantEngineer.Tests/Architecture",
+      "category": "CandidateForConsolidation",
+      "reason": "Wording-sensitive governance assertions remain partly duplicated after P7-02.",
+      "recommendedStage": "P8-08",
+      "recommendedAction": "Consolidate repeated phrase/section checks into semantic helper assertions."
+    },
+    {
+      "id": "LEG-004",
+      "path": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/Program.cs",
+      "category": "CandidateForReview",
+      "reason": "TODO placeholder provenance metadata may be stale for long-term fixture authoring.",
+      "recommendedStage": "P8-07",
+      "recommendedAction": "Define explicit placeholder policy or required provenance fields."
+    },
+    {
+      "id": "LEG-005",
+      "path": "docs/security/ownership-backfill-*.md",
+      "category": "KeepCritical",
+      "reason": "Governance chain is intentionally explicit for disabled apply/write-path safety and should not be removed without replacement.",
+      "recommendedStage": "P8-08",
+      "recommendedAction": "Only consolidate with proven equivalent safety checks."
+    }
+  ],
+  "nonClaims": [
+    "No runtime behavior change claim.",
+    "No calculation physics change claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full tenant isolation claim.",
+    "No production security certification claim."
+  ]
+}

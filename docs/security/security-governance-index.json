@@ -1,5 +1,5 @@
 {
-    "version":  9,
+    "version":  10,
     "lastReviewedDate":  "2026-05-20",
     "documents":  [
                       {
@@ -530,6 +530,78 @@
                           "path":  "docs/adr/future-security-adr-backlog.json",
                           "canonicalRole":  "Reference",
                           "summary":  "Machine-readable deferred future security ADR backlog for boundary-changing decisions.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/engineering-domain-architecture-audit.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P8-00 audit-only engineering/domain architecture assessment after security governance cycle.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/engineering-domain-architecture-audit.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P8-00 engineering/domain architecture audit summary.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/assistantengineer-architecture-map.md",
+                          "canonicalRole":  "Reference",
+                          "summary":  "P8-00 architecture map of backend modules, boundaries, tools, scripts, and test areas.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/assistantengineer-architecture-map.json",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Machine-readable P8-00 architecture map.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/legacy-and-dead-code-inventory.md",
+                          "canonicalRole":  "Reference",
+                          "summary":  "P8-00 review-only inventory of legacy/dead-code candidates without removals.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/legacy-and-dead-code-inventory.json",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Machine-readable P8-00 legacy/dead-code candidate inventory.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/scripts-tools-inventory.md",
+                          "canonicalRole":  "Reference",
+                          "summary":  "P8-00 scripts/tools role classification and consolidation candidates.",
+                          "category":  "Architecture review",
+                          "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-00",
+                          "path":  "docs/architecture/scripts-tools-inventory.json",
+                          "canonicalRole":  "Reference",
+                          "summary":  "Machine-readable P8-00 scripts/tools classification inventory.",
                           "category":  "Architecture review",
                           "status":  "Reference"
                       }

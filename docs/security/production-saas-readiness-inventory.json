@@ -487,6 +487,12 @@
                           "title":  "Post-P6 architecture decision record consolidation",
                           "status":  "GovernanceOnly",
                           "risk":  "ADR/matrix/backlog consolidation only; no runtime/API/write-path behavior changes."
+                      },
+                      {
+                          "item":  "P8-00",
+                          "title":  "Engineering/domain architecture audit after security governance",
+                          "status":  "AuditOnly",
+                          "risk":  "Audit-only architecture inventory and backlog definition; no runtime/write-path/calculation behavior changes."
                       }
                   ],
     "nonClaims":  [

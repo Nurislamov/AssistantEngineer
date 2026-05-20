@@ -1,0 +1,28 @@
+{
+  "name": "scripts-tools-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "entries",
+    "nonClaims"
+  ],
+  "entryRequiredFields": [
+    "id",
+    "path",
+    "type",
+    "category",
+    "reason",
+    "relatedTool",
+    "recommendedStage"
+  ],
+  "allowedCategories": [
+    "KeepAsWrapper",
+    "ConvertToToolCandidate",
+    "DeprecatedCandidate",
+    "ReleaseGateCritical",
+    "GeneratedArtifactProducer",
+    "UnknownNeedsReview"
+  ]
+}

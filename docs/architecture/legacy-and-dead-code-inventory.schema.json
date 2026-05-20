@@ -1,0 +1,26 @@
+{
+  "name": "legacy-and-dead-code-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "entries",
+    "nonClaims"
+  ],
+  "entryRequiredFields": [
+    "id",
+    "path",
+    "category",
+    "reason",
+    "recommendedStage",
+    "recommendedAction"
+  ],
+  "allowedCategories": [
+    "CandidateForReview",
+    "CandidateForConsolidation",
+    "CandidateForRemovalLater",
+    "KeepCritical",
+    "UnknownNeedsReview"
+  ]
+}

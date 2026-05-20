@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-00",
+  "entries": [
+    {
+      "id": "SCR-001",
+      "path": "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
+      "type": "Script",
+      "category": "ReleaseGateCritical",
+      "reason": "Primary release gate wrapper used in CI/local readiness checks.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "SCR-002",
+      "path": "scripts/engineering-core/verify-engineering-core-v1.ps1",
+      "type": "Script",
+      "category": "KeepAsWrapper",
+      "reason": "Operator-friendly verification wrapper over EngineeringCoreVerification tool.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreVerification",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "SCR-003",
+      "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
+      "type": "Script",
+      "category": "GeneratedArtifactProducer",
+      "reason": "Generates engineering-core release artifacts via tool command.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "SCR-004",
+      "path": "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
+      "type": "Script",
+      "category": "ReleaseGateCritical",
+      "reason": "Release readiness wrapper for ISO52016 verification gate.",
+      "relatedTool": "tools/AssistantEngineer.Tools.Iso52016Verification",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "SCR-005",
+      "path": "scripts/engineering-core/compare-energyplus-validation-fixtures.ps1",
+      "type": "Script",
+      "category": "GeneratedArtifactProducer",
+      "reason": "Comparison/summary producer for validation fixtures.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EnergyPlusValidation",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "TOOL-001",
+      "path": "tools/AssistantEngineer.Tools.OwnershipBackfill",
+      "type": "Tool",
+      "category": "ReleaseGateCritical",
+      "reason": "Critical governance tooling with disabled apply safety boundary and no-write validation chain.",
+      "relatedTool": "tools/AssistantEngineer.Tools.OwnershipBackfill",
+      "recommendedStage": "P8-04"
+    },
+    {
+      "id": "TOOL-002",
+      "path": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+      "type": "Tool",
+      "category": "ReleaseGateCritical",
+      "reason": "Release-ready gate implementation and summary output source.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+      "recommendedStage": "P8-06"
+    },
+    {
+      "id": "TOOL-003",
+      "path": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+      "type": "Tool",
+      "category": "UnknownNeedsReview",
+      "reason": "Tool is active but contains TODO placeholder metadata that needs policy clarification.",
+      "relatedTool": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+      "recommendedStage": "P8-07"
+    }
+  ],
+  "nonClaims": [
+    "No runtime behavior change claim.",
+    "No calculation physics change claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full tenant isolation claim.",
+    "No production security certification claim."
+  ]
+}

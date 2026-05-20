@@ -69,6 +69,7 @@ Guardrails cover:
 - `SEC-GUARD-ROUTE-INVENTORY-CLAIMS-CONSISTENCY`
 - `SEC-GUARD-SECURITY-DOCS-MAP-ADR`
 - `SEC-GUARD-SECURITY-ADR-DECISION-MATRIX`
+- `SEC-GUARD-ENGINEERING-DOMAIN-ARCHITECTURE-AUDIT`
 
 ## Enforcement model
 
@@ -113,6 +114,7 @@ Guardrails cover:
 - Governance test consolidation guardrails verify helper-based consolidation artifacts exist, preserved guardrails are explicitly listed, and runtime/write-path boundaries remain disabled in P7-02.
 - Route-inventory claims-consistency guardrails verify endpoint inventory coverage, classification-field completeness, protection-stage/tenant-scope/rate-limit/audit category consistency, and forbidden-claim posture in P7-06.
 - Security docs map/ADR guardrails verify canonical docs-map and accepted ADR boundary remain indexed, machine-readable, and non-claim safe in P7-07.
+- Engineering/domain architecture audit guardrails verify P8-00 architecture audit/map/inventory artifacts remain explicit, review-only, and no-change scoped for runtime/API/write-path/calculation behavior.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).
@@ -148,3 +150,8 @@ Guardrails cover:
 - Enforcement: AutomatedTest
 - Tests: P7SecurityArchitectureDecisionMatrixTests, P7FutureSecurityAdrBacklogTests
 - Risk: ADR matrix/backlog drift can weaken boundary assumptions and future decision trigger clarity for write-path-related changes.
+
+## SEC-GUARD-ENGINEERING-DOMAIN-ARCHITECTURE-AUDIT
+- Enforcement: AutomatedTest
+- Tests: P8EngineeringDomainArchitectureAuditTests, P8AssistantEngineerArchitectureMapTests, P8LegacyAndDeadCodeInventoryTests, P8ScriptsToolsInventoryTests
+- Risk: Architecture hardening decisions can drift into undocumented runtime/API/calculation/write-path changes.

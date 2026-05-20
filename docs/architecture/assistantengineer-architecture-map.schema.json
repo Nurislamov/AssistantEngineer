@@ -1,0 +1,22 @@
+{
+  "name": "assistantengineer-architecture-map",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "modules",
+    "tools",
+    "scripts",
+    "testAreas",
+    "boundaryRules",
+    "knownBoundaryRisks",
+    "nonClaims"
+  ],
+  "moduleRequiredFields": [
+    "name",
+    "layer",
+    "ownerArea",
+    "notes"
+  ]
+}

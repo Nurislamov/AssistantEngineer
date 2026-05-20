@@ -556,3 +556,15 @@ P7-08 reference:
 
 - `docs/adr/security-architecture-decision-matrix.md`
 - `docs/adr/future-security-adr-backlog.md`
+
+## P8-00 status note
+
+- P8-00 engineering/domain architecture audit is implemented as audit-only architecture governance hardening.
+- Findings and backlog are documented without runtime/API/write-path/calculation-physics behavior changes.
+
+P8-00 reference:
+
+- `docs/architecture/engineering-domain-architecture-audit.md`
+- `docs/architecture/assistantengineer-architecture-map.md`
+- `docs/architecture/legacy-and-dead-code-inventory.md`
+- `docs/architecture/scripts-tools-inventory.md`
