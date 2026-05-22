@@ -1,0 +1,17 @@
+{
+  "name": "protected-endpoint-authorization-gate-decomposition",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "authorizationSemanticsChanged",
+    "publicApiChanged",
+    "calculationPhysicsChanged",
+    "componentsExtracted",
+    "remainingResponsibilities",
+    "deferredItems",
+    "nonClaims"
+  ]
+}

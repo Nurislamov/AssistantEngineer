@@ -1,4 +1,4 @@
-﻿using AssistantEngineer.Api;
+using AssistantEngineer.Api;
 
 namespace AssistantEngineer.Tests.Architecture;
 
@@ -9,7 +9,7 @@ public class ApiContractStructureTests
         "AssistantEngineer.Api.Contracts.Common",
         "AssistantEngineer.Api.Contracts.Projects",
         "AssistantEngineer.Api.Contracts.Buildings",
-        "AssistantEngineer.Api.Contracts.Calculations",
+        "AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow",
         "AssistantEngineer.Api.Contracts.Analysis",
         "AssistantEngineer.Api.Contracts.Equipment",
         "AssistantEngineer.Api.Contracts.Reports",

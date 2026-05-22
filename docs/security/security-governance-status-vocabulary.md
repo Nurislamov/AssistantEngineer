@@ -34,6 +34,10 @@ This document defines canonical status terms for P5/P6/P7 security governance ar
   - meaning: behavior available only in controlled test contexts.
   - allowed usage: test-only rehearsal executors.
   - not meaning: staging/production execution enablement.
+- `RefactorOnly`
+  - meaning: internal refactor changes without intended runtime/API semantics changes.
+  - allowed usage: facade-preserving decomposition and boundary cleanup stages.
+  - not meaning: route/DTO/authorization semantics rollout.
 - `DisabledBoundary`
   - meaning: explicit disabled state boundary for risky capability.
   - allowed usage: apply/write-path disabled references.

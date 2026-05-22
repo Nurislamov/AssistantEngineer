@@ -1,0 +1,17 @@
+{
+  "name": "terminology-and-claims-vocabulary",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "allowedClaims",
+    "forbiddenClaims",
+    "preferredTerms",
+    "deprecatedTerms",
+    "nonClaims"
+  ]
+}

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 
 namespace AssistantEngineer.Api.Services.Calculations.Persistence;
 

@@ -1,0 +1,29 @@
+{
+  "name": "workflow-controller-shell-characterization",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "workflowBehaviorChanged",
+    "publicApiChanged",
+    "dtoShapesChanged",
+    "calculationPhysicsChanged",
+    "characterizedEndpointGroups",
+    "characterizedRoutes",
+    "knownLimitations",
+    "nonClaims"
+  ],
+  "characterizedRouteRequiredFields": [
+    "id",
+    "httpMethod",
+    "routeTemplate",
+    "controllerAction",
+    "endpointGroup",
+    "expectedStatusCodes",
+    "responseShapeNote",
+    "authorizationNote",
+    "coveredByTests"
+  ]
+}

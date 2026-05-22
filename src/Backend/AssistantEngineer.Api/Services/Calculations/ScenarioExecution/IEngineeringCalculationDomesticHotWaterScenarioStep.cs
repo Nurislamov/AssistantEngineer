@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;
 
 namespace AssistantEngineer.Api.Services.Calculations;

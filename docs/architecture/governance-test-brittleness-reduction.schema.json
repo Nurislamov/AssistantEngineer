@@ -1,0 +1,18 @@
+{
+  "name": "governance-test-brittleness-reduction",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "publicApiChanged",
+    "calculationPhysicsChanged",
+    "guardrailsWeakened",
+    "testsRefactored",
+    "semanticChecksAdded",
+    "wordingChecksRetained",
+    "remainingBrittleAreas",
+    "nonClaims"
+  ]
+}

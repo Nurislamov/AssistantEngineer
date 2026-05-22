@@ -1,5 +1,5 @@
-using AssistantEngineer.Api.Contracts.Calculations;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Trace;
 using AssistantEngineer.Modules.Reporting;

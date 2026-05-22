@@ -5,6 +5,7 @@ using AssistantEngineer.Api.Security.ApiKey;
 using AssistantEngineer.Api.Security.TenantIsolation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Configuration;
 
@@ -89,7 +90,20 @@ internal static class ApiAuthenticationRegistration
         services.AddScoped<IFloorAccessScopeResolver, DefaultFloorAccessScopeResolver>();
         services.AddScoped<IRoomAccessScopeResolver, DefaultRoomAccessScopeResolver>();
         services.AddScoped<IWorkflowAccessScopeResolver, DefaultWorkflowAccessScopeResolver>();
-        services.AddScoped<IProtectedEndpointAuthorizationGate, ProtectedEndpointAuthorizationGate>();
+        services.AddScoped<IProtectedEndpointAuthorizationDecisionFactory, ProtectedEndpointAuthorizationDecisionFactory>();
+        services.AddScoped<IProtectedEndpointTenantMismatchPolicy, ProtectedEndpointTenantMismatchPolicy>();
+        services.AddScoped<IProtectedEndpointAuthorizationLogger, ProtectedEndpointAuthorizationLogger>();
+        services.AddScoped<IProtectedEndpointPermissionEvaluator, ProtectedEndpointPermissionEvaluator>();
+        services.AddScoped<IProtectedEndpointScopeEvaluationService, ProtectedEndpointScopeEvaluationService>();
+        services.AddScoped<IProtectedEndpointAuthorizationGate>(serviceProvider =>
+            new ProtectedEndpointAuthorizationGate(
+                serviceProvider.GetRequiredService<IOptionsMonitor<ApiAuthorizationOptions>>(),
+                serviceProvider.GetRequiredService<IWebHostEnvironment>(),
+                serviceProvider.GetRequiredService<IProtectedEndpointAuthorizationDecisionFactory>(),
+                serviceProvider.GetRequiredService<IProtectedEndpointPermissionEvaluator>(),
+                serviceProvider.GetRequiredService<IProtectedEndpointScopeEvaluationService>(),
+                serviceProvider.GetRequiredService<IProtectedEndpointTenantMismatchPolicy>(),
+                serviceProvider.GetRequiredService<IProtectedEndpointAuthorizationLogger>()));
         services.AddScoped<IProjectTenantScopedReadService, ProjectTenantScopedReadService>();
         services.AddScoped<IBuildingTenantScopedReadService, BuildingTenantScopedReadService>();
         services.AddScoped<IWorkflowTenantScopedReadService, WorkflowTenantScopedReadService>();

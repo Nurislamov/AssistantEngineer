@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-01",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "filesChanged": [
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Contracts/EngineeringWorkflow/EngineeringWorkflowDtos.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Contracts/EngineeringWorkflow/EngineeringCalculationScenarioDtos.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Contracts/EngineeringWorkflow/EngineeringCalculationJobDtos.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowCatalog.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowInputSnapshot.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowInputSnapshotBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowTracePreviewService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowReportPreviewService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowInputSnapshotBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowTracePreviewService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowReportPreviewService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Idempotency/EngineeringIdempotencyModels.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Idempotency/EngineeringIdempotencyOptions.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Idempotency/EngineeringIdempotencyRequestFingerprint.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Idempotency/IEngineeringIdempotencyService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Idempotency/InMemoryEngineeringIdempotencyService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Jobs/EngineeringCalculationJobPayloadCodec.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Jobs/EngineeringCalculationJobStatusTransitionPolicy.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Jobs/EngineeringCalculationJobEventRecorder.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Persistence/IEngineeringCalculationJobEventRepository.cs"
+  ],
+  "namespacesChanged": [
+    "AssistantEngineer.Api.Contracts.Calculations -> AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow",
+    "AssistantEngineer.Api.Services.Calculations.Workflow -> AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow",
+    "AssistantEngineer.Api.Services.Calculations.Idempotency -> AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency",
+    "AssistantEngineer.Api.Services.Calculations -> AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs",
+    "AssistantEngineer.Api.Services.Calculations.Persistence -> AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence"
+  ],
+  "deferredItems": [
+    {
+      "id": "P8-03-WORKFLOW-API-SHELL",
+      "description": "Keep API workflow shell services in AssistantEngineer.Api.Services.Calculations.Workflow until dedicated hotspot decomposition stage.",
+      "proposedStage": "P8-03"
+    },
+    {
+      "id": "P8-02-MODULE-BOUNDARY-EXPANSION",
+      "description": "Expand module-boundary tests around EngineeringWorkflow assembly and cross-module contracts.",
+      "proposedStage": "P8-02"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

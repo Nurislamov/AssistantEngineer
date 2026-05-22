@@ -1,0 +1,20 @@
+{
+  "name": "scripts-tools-rationalization",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "releaseGateSemanticsChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "scriptsRemoved",
+    "toolsRemoved",
+    "entriesReviewed",
+    "duplicationFindings",
+    "futureMigrationCandidates",
+    "futureDeprecationCandidates",
+    "nonClaims"
+  ]
+}

@@ -21,7 +21,8 @@
   ],
   "remainingLimitations": [
     "No forced child-process timeout/termination policy is applied in default release-ready flow to avoid semantic changes.",
-    "Summary JSON path management is caller-provided and optional."
+    "Summary JSON path management is caller-provided and optional.",
+    "Wrapper/tool surface remains broad and is tracked by P8-06 scripts/tools rationalization governance."
   ],
   "nonClaims": [
     "No production security certification claim.",
@@ -33,4 +34,3 @@
     "No certified/certification claim."
   ]
 }
-

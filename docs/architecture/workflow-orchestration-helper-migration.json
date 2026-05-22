@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-03E",
+  "runtimeBehaviorChanged": false,
+  "workflowBehaviorChanged": false,
+  "publicApiChanged": false,
+  "dtoShapesChanged": false,
+  "authorizationSemanticsChanged": false,
+  "calculationPhysicsChanged": false,
+  "helpersMigrated": [
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowDiagnosticsService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowStateBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowSubmissionService.cs"
+  ],
+  "interfacesMigrated": [
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowDiagnosticsService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowStateBuilder.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowSubmissionService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowScenarioRunner.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/IEngineeringWorkflowJobService.cs",
+    "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Persistence/IEngineeringWorkflowPersistenceService.cs"
+  ],
+  "deferredItems": [
+    {
+      "path": "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/EngineeringWorkflowServiceRegistration.cs",
+      "reason": "API composition-root registration remains in host layer.",
+      "proposedStage": "P8-03F"
+    },
+    {
+      "path": "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController*.cs",
+      "reason": "Controller-shell reduction is staged after helper migration.",
+      "proposedStage": "P8-03F"
+    }
+  ],
+  "allowlistEntriesRemoved": [
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/EngineeringWorkflowDiagnosticsService.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/EngineeringWorkflowStateBuilder.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/EngineeringWorkflowSubmissionService.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/IEngineeringWorkflowDiagnosticsService.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/IEngineeringWorkflowStateBuilder.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/IEngineeringWorkflowSubmissionService.cs"
+  ],
+  "nonClaims": [
+    "No workflow behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No authorization behavior change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

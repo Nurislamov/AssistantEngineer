@@ -1,7 +1,8 @@
-using AssistantEngineer.Api.Contracts.Calculations;
-using AssistantEngineer.Api.Services.Calculations.Persistence;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
 
-namespace AssistantEngineer.Api.Services.Calculations;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
 
 public sealed class EngineeringCalculationJobEventRecorder
 {

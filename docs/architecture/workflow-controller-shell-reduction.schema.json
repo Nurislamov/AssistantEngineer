@@ -1,0 +1,22 @@
+{
+  "name": "workflow-controller-shell-reduction",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "workflowBehaviorChanged",
+    "publicApiChanged",
+    "dtoShapesChanged",
+    "authorizationSemanticsChanged",
+    "calculationPhysicsChanged",
+    "controllerPartialsChanged",
+    "apiAdapterCollaboratorsExtracted",
+    "allowlistEntriesRemoved",
+    "remainingControllerResponsibilities",
+    "remainingLimitations",
+    "nonClaims"
+  ]
+}
+

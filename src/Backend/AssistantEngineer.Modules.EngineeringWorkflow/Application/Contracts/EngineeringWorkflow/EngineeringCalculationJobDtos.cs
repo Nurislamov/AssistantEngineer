@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace AssistantEngineer.Api.Contracts.Calculations;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum EngineeringCalculationJobStatus

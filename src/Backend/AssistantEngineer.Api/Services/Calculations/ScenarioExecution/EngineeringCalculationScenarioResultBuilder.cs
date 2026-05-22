@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Trace;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;

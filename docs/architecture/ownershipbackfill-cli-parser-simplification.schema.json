@@ -1,0 +1,21 @@
+{
+  "name": "ownershipbackfill-cli-parser-simplification",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "cliSemanticsChanged",
+    "applyEnabled",
+    "dbWritePathEnabled",
+    "commandsChanged",
+    "exitCodesChanged",
+    "redactionChanged",
+    "parserComponentsAdded",
+    "testsAddedOrUpdated",
+    "remainingParserResponsibilities",
+    "deferredItems",
+    "nonClaims"
+  ]
+}

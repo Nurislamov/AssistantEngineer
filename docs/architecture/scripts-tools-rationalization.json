@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-22",
+  "stage": "P8-06",
+  "runtimeBehaviorChanged": false,
+  "releaseGateSemanticsChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "scriptsRemoved": false,
+  "toolsRemoved": false,
+  "entriesReviewed": [
+    "scripts (68)",
+    "tools/AssistantEngineer.Tools.* (13)",
+    ".github/workflows relevant wrappers (6)"
+  ],
+  "duplicationFindings": [
+    "Engineering Core scripts are mostly thin wrappers over EngineeringCoreRelease/EngineeringCoreVerification tools.",
+    "Validation artifact scripts and regeneration scripts overlap orchestration shape but remain stable operator/CI wrappers.",
+    "ISO52016 script surface is wrapper-heavy and mostly delegates to Iso52016Verification tool."
+  ],
+  "futureMigrationCandidates": [
+    "scripts/engineering-core/new-energyplus-validation-fixture.ps1",
+    "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj"
+  ],
+  "futureDeprecationCandidates": [],
+  "nonClaims": [
+    "No release gate semantics change claim.",
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim."
+  ]
+}

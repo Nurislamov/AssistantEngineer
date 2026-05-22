@@ -45,6 +45,12 @@
       "notMeaning": "Staging/production execution enablement."
     },
     {
+      "status": "RefactorOnly",
+      "meaning": "Internal refactor changes without intended runtime/API semantics changes.",
+      "allowedUsage": "Facade-preserving decomposition and boundary cleanup stages.",
+      "notMeaning": "Route/DTO/authorization semantics rollout."
+    },
+    {
       "status": "DisabledBoundary",
       "meaning": "Explicit disabled state boundary for risky capability.",
       "allowedUsage": "Apply/write-path disabled references.",

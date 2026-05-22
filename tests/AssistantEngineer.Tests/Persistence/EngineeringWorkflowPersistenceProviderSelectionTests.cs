@@ -1,9 +1,12 @@
 using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ApiWorkflowPersistence = AssistantEngineer.Api.Services.Calculations.Persistence.IEngineeringWorkflowPersistenceService;
+using ApiWorkflowPersistenceProvider = AssistantEngineer.Api.Services.Calculations.Persistence.EngineeringWorkflowPersistenceProvider;
 
 namespace AssistantEngineer.Tests.Persistence;
 
@@ -28,9 +31,9 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
         Assert.IsType<InMemoryEngineeringCalculationJobRepository>(services.GetRequiredService<IEngineeringCalculationJobRepository>());
         Assert.IsType<InMemoryEngineeringCalculationJobEventRepository>(services.GetRequiredService<IEngineeringCalculationJobEventRepository>());
 
-        var persistenceService = services.GetRequiredService<IEngineeringWorkflowPersistenceService>();
+        var persistenceService = services.GetRequiredService<ApiWorkflowPersistence>();
         var info = persistenceService.GetProviderInfo();
-        Assert.Equal(EngineeringWorkflowPersistenceProvider.InMemory, info.Provider);
+        Assert.Equal(ApiWorkflowPersistenceProvider.InMemory, info.Provider);
         Assert.False(info.DurableEnabled);
     }
 
@@ -58,9 +61,9 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
             Assert.IsType<EfEngineeringCalculationJobRepository>(services.GetRequiredService<IEngineeringCalculationJobRepository>());
             Assert.IsType<EfEngineeringCalculationJobEventRepository>(services.GetRequiredService<IEngineeringCalculationJobEventRepository>());
 
-            var persistenceService = services.GetRequiredService<IEngineeringWorkflowPersistenceService>();
+            var persistenceService = services.GetRequiredService<ApiWorkflowPersistence>();
             var info = persistenceService.GetProviderInfo();
-            Assert.Equal(EngineeringWorkflowPersistenceProvider.SQLite, info.Provider);
+            Assert.Equal(ApiWorkflowPersistenceProvider.SQLite, info.Provider);
             Assert.True(info.DurableEnabled);
             Assert.True(File.Exists(dbPath));
         }
@@ -86,10 +89,10 @@ public class EngineeringWorkflowPersistenceProviderSelectionTests
             });
 
             using var scope = provider.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IEngineeringWorkflowPersistenceService>();
+            var service = scope.ServiceProvider.GetRequiredService<ApiWorkflowPersistence>();
             var info = service.GetProviderInfo();
 
-            Assert.Equal(EngineeringWorkflowPersistenceProvider.SQLite, info.Provider);
+            Assert.Equal(ApiWorkflowPersistenceProvider.SQLite, info.Provider);
             Assert.True(File.Exists(dbPath));
         }
         finally

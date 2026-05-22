@@ -70,7 +70,7 @@ This audit formalizes route-inventory and claim-consistency automation for P7-06
 ## Remaining limitations
 
 - Text-level route discovery is conservative and not a full ASP.NET runtime endpoint graph.
-- Inventory still contains staged `Deferred`/`UnknownNeedsClassification` entries that require future refinement.
+- Inventory still contains staged `Deferred` entries that require future refinement; `UnknownNeedsClassification` backlog was reduced in P8-05.
 - Automation prevents silent drift but does not claim complete runtime authorization coverage.
 
 ## Next steps

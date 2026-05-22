@@ -83,3 +83,4 @@ This audit documents release-ready observability and performance diagnostics for
 ## Next steps
 
 - P7-05: CI/GitHub checks visibility with surfaced stage-duration trends from release-ready runs.
+- P8-06: scripts/tools rationalization keeps release-critical wrapper boundaries explicit without changing gate semantics.

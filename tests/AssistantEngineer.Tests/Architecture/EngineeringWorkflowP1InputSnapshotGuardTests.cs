@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
@@ -43,9 +43,8 @@ public class EngineeringWorkflowP1InputSnapshotGuardTests
             TestPaths.RepoRoot,
             "src",
             "Backend",
-            "AssistantEngineer.Api",
-            "Services",
-            "Calculations",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
             "Workflow",
             "EngineeringWorkflowStateBuilder.cs");
         var source = File.ReadAllText(path);

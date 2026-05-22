@@ -1,4 +1,4 @@
-# AssistantEngineer Architecture Map (P8-00)
+# AssistantEngineer Architecture Map (P8-09)
 
 ## Purpose
 
@@ -49,6 +49,7 @@ Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7 govern
 - OwnershipBackfill governance tooling.
 - EngineeringCore release/evidence/contracts tooling.
 - Iso52016 and EnergyPlus verification tooling.
+- EngineeringGovernance and performance benchmark tooling.
 - Repository boundary/hygiene verification tooling.
 
 ## Scripts
@@ -74,18 +75,31 @@ Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7 govern
 - Ownership backfill CLI apply remains disabled boundary.
 - Calculation physics remain in C# runtime modules, not in shell scripts.
 - Security governance tooling and release scripts are operational wrappers, not runtime dependencies.
+- EngineeringWorkflow module application contracts/services now use `AssistantEngineer.Modules.EngineeringWorkflow.Application.*` namespaces.
+- EngineeringWorkflow API controllers remain in `AssistantEngineer.Api.Controllers.Calculations` with unchanged route/DTO behavior.
+- Shared dependency direction is codified in `docs/architecture/module-boundary-matrix.json` and enforced by module-boundary matrix tests.
+- Runtime backend projects do not reference `AssistantEngineer.Tools.*` projects.
+- Protected endpoint authorization gate remains a stable facade; P8-03A characterization tests freeze status/decision outcomes before internal decomposition.
+- Workflow API shell decomposition is staged with controller adapter stability and orchestration migration constraints; P8-03D characterizes workflow shell route/signature/status/response behavior, P8-03E migrates workflow diagnostics/state/submission helpers into module application ownership, and P8-03F reduces main-shell orchestration via API-local action service extraction.
+- OwnershipBackfill CLI parser now uses descriptor catalog and argument-reader collaborators (P8-04) while preserving command names, argument names, help output semantics, exit-code meanings, redaction guarantees, and apply-disabled behavior.
+- Route inventory closure in P8-05 reduced unknown-classification metadata and tightened ignore-list coverage without changing controller attributes, action signatures, or authorization semantics.
+- Scripts/tools rationalization in P8-06 classifies wrapper/tool/workflow surfaces with explicit ReleaseGateCritical and ToolingCritical boundaries.
+- Terminology and claims-surface governance in P8-07 is anchored by `docs/architecture/terminology-and-claims-vocabulary.md` and enforced by dedicated claim-surface tests.
+- Governance test brittleness reduction in P8-08 adds semantic helper-based assertions for governance docs while preserving strict behavior-level safety checks.
+- Final P8 closure decision and deferred P9 backlog are documented in `docs/architecture/p8-engineering-domain-hardening-closure.md`.
 
 ## Known boundary risks
 
-- EngineeringWorkflow application namespace/contracts still leak Api naming.
-- Module boundary tests do not explicitly cover EngineeringWorkflow assembly yet.
-- Large authorization/workflow classes raise long-term boundary erosion risk.
+- Workflow and authorization hotspots are decomposition-staged in P8-03; gate characterization and gate-collaborator extraction (P8-03A/B/C), workflow-shell characterization (P8-03D), workflow helper migration (P8-03E), and main controller-shell reduction (P8-03F) are complete.
+- OwnershipBackfill parser command-specific branches remain in one class and may be optionally split further in future tooling-only stages.
+- Infrastructure-to-module dependency surface remains broad and should be reviewed for minimization in later stages.
+- Read-history and report/artifact controller partials remain broader than ideal and are optional follow-up decomposition candidates.
 
 ## Next review points
 
-- P8-01 namespace and boundary hardening plan.
-- P8-02 architecture-test boundary expansion.
-- P8-03 hotspot decomposition design.
+- P9-00 engineering calculation validation roadmap refresh.
+- P9-04 route inventory deferred-items phase 2.
+- P9-05 ownership backfill apply decision remains deferred unless ADR trigger is met.
 
 ## Non-claims
 

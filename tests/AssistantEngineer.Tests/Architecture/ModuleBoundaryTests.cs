@@ -18,6 +18,8 @@ public class ModuleBoundaryTests
     private const string EquipmentAssemblyName = "AssistantEngineer.Modules.Equipment";
     private const string ReportingAssemblyName = "AssistantEngineer.Modules.Reporting";
     private const string BenchmarksAssemblyName = "AssistantEngineer.Modules.Benchmarks";
+    private const string EngineeringWorkflowAssemblyName = "AssistantEngineer.Modules.EngineeringWorkflow";
+    private const string IdentityAssemblyName = "AssistantEngineer.Modules.Identity";
     private const string InfrastructureAssemblyName = "AssistantEngineer.Infrastructure";
 
     private static readonly Assembly SharedKernelAssembly = typeof(Result).Assembly;
@@ -26,6 +28,8 @@ public class ModuleBoundaryTests
     private static readonly Assembly EquipmentAssembly = typeof(AssistantEngineer.Modules.Equipment.DependencyInjection).Assembly;
     private static readonly Assembly ReportingAssembly = typeof(AssistantEngineer.Modules.Reporting.DependencyInjection).Assembly;
     private static readonly Assembly BenchmarksAssembly = typeof(AssistantEngineer.Modules.Benchmarks.DependencyInjection).Assembly;
+    private static readonly Assembly EngineeringWorkflowAssembly = typeof(AssistantEngineer.Modules.EngineeringWorkflow.DependencyInjection).Assembly;
+    private static readonly Assembly IdentityAssembly = typeof(AssistantEngineer.Modules.Identity.DependencyInjection).Assembly;
     private static readonly Assembly InfrastructureAssembly = typeof(AssistantEngineer.Infrastructure.DependencyInjection).Assembly;
     private static readonly Assembly ApiAssembly = typeof(Program).Assembly;
 
@@ -35,7 +39,9 @@ public class ModuleBoundaryTests
         CalculationsAssembly,
         EquipmentAssembly,
         ReportingAssembly,
-        BenchmarksAssembly
+        BenchmarksAssembly,
+        EngineeringWorkflowAssembly,
+        IdentityAssembly
     ];
 
     private static readonly string[] ModuleAssemblyNames =
@@ -44,7 +50,9 @@ public class ModuleBoundaryTests
         CalculationsAssemblyName,
         EquipmentAssemblyName,
         ReportingAssemblyName,
-        BenchmarksAssemblyName
+        BenchmarksAssemblyName,
+        EngineeringWorkflowAssemblyName,
+        IdentityAssemblyName
     ];
 
     [Fact]

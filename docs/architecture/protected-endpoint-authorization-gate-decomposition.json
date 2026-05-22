@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-03C",
+  "runtimeBehaviorChanged": false,
+  "authorizationSemanticsChanged": false,
+  "publicApiChanged": false,
+  "calculationPhysicsChanged": false,
+  "componentsExtracted": [
+    "IProtectedEndpointAuthorizationDecisionFactory",
+    "IProtectedEndpointTenantMismatchPolicy",
+    "IProtectedEndpointAuthorizationLogger",
+    "IProtectedEndpointPermissionEvaluator",
+    "IProtectedEndpointScopeEvaluationService"
+  ],
+  "remainingResponsibilities": [
+    "Capability-specific option-gate branching and fallback ordering orchestration.",
+    "Public facade method dispatch and composition of collaborator outcomes."
+  ],
+  "deferredItems": [
+    "P8-03D workflow controller shell characterization tests.",
+    "P8-03E workflow orchestration helper migration.",
+    "P8-03F workflow controller shell reduction."
+  ],
+  "nonClaims": [
+    "No authorization behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

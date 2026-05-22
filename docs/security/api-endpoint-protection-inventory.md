@@ -64,3 +64,9 @@ Machine-readable canonical inventory is maintained in `docs/security/api-endpoin
 
 Inventory classification and required metadata are defined in `docs/security/api-endpoint-classification-model.md`.
 Canonical release-boundary posture for claims/non-claims is defined in `docs/security/security-release-boundary.md`.
+
+## P8-05 status note
+
+- P8-05 route inventory deferred-classification closure reduced unknown classifications and tightened ignore-list coverage.
+- Deferred entries remain explicit where rollout stage is intentionally not completed.
+- No controller route attributes, action signatures, DTO contracts, or authorization semantics were changed in this governance step.

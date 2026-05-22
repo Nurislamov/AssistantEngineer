@@ -1,0 +1,25 @@
+{
+  "name": "workflow-orchestration-helper-migration",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "workflowBehaviorChanged",
+    "publicApiChanged",
+    "dtoShapesChanged",
+    "authorizationSemanticsChanged",
+    "calculationPhysicsChanged",
+    "helpersMigrated",
+    "interfacesMigrated",
+    "deferredItems",
+    "allowlistEntriesRemoved",
+    "nonClaims"
+  ],
+  "deferredItemRequiredFields": [
+    "path",
+    "reason",
+    "proposedStage"
+  ]
+}

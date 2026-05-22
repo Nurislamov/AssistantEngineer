@@ -13,9 +13,20 @@
     "path",
     "type",
     "category",
-    "reason",
-    "relatedTool",
-    "recommendedStage"
+    "purpose",
+    "invokedBy",
+    "wrapsTool",
+    "producesArtifacts",
+    "safeToRemove",
+    "recommendedAction",
+    "proposedStage",
+    "riskIfChanged"
+  ],
+  "allowedTypes": [
+    "PowerShell",
+    "CSharpTool",
+    "GitHubWorkflow",
+    "Other"
   ],
   "allowedCategories": [
     "KeepAsWrapper",
@@ -23,6 +34,7 @@
     "DeprecatedCandidate",
     "ReleaseGateCritical",
     "GeneratedArtifactProducer",
+    "ToolingCritical",
     "UnknownNeedsReview"
   ]
 }

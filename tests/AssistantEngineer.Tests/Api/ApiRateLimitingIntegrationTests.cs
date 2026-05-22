@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using AssistantEngineer.Api;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 

@@ -1,5 +1,6 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
 
 namespace AssistantEngineer.Tests.Calculations;
 

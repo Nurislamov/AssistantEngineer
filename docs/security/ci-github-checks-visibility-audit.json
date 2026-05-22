@@ -29,7 +29,8 @@
   "remainingLimitations": [
     "GitHub status visibility still depends on repository settings and permissions",
     "Path/branch/tag trigger filters can legitimately yield no checks for a given commit",
-    "No claim that every commit will always show identical checks"
+    "No claim that every commit will always show identical checks",
+    "Wrapper/tool command surface remains broad and is tracked by P8-06 scripts/tools rationalization governance."
   ],
   "nonClaims": [
     "No production security certification claim.",

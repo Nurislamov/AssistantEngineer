@@ -1,8 +1,9 @@
 using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Composition;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Api.Security.TenantIsolation;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
@@ -39,13 +40,13 @@ public class EngineeringWorkflowApiControllerTests
         var constructor = Assert.Single(typeof(EngineeringWorkflowController).GetConstructors());
         var dependencies = constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
 
+        Assert.Contains(typeof(IEngineeringWorkflowControllerActionService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowStateBuilder), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowDiagnosticsService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowTracePreviewService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowReportPreviewService), dependencies);
         Assert.Contains(typeof(IEngineeringReportJsonExporter), dependencies);
         Assert.Contains(typeof(IEngineeringReportMarkdownExporter), dependencies);
-        Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowSubmissionService), dependencies);

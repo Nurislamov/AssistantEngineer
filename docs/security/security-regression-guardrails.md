@@ -70,6 +70,19 @@ Guardrails cover:
 - `SEC-GUARD-SECURITY-DOCS-MAP-ADR`
 - `SEC-GUARD-SECURITY-ADR-DECISION-MATRIX`
 - `SEC-GUARD-ENGINEERING-DOMAIN-ARCHITECTURE-AUDIT`
+- `SEC-GUARD-ENGINEERINGWORKFLOW-BOUNDARY`
+- `SEC-GUARD-MODULE-BOUNDARY-MATRIX`
+- `SEC-GUARD-AUTHORIZATION-WORKFLOW-DECOMPOSITION-DESIGN`
+- `SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-CHARACTERIZATION`
+- `SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-SCOPE-PERMISSION`
+- `SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-CHARACTERIZATION`
+- `SEC-GUARD-WORKFLOW-ORCHESTRATION-HELPER-MIGRATION`
+- `SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-REDUCTION`
+- `SEC-GUARD-OWNERSHIPBACKFILL-CLI-PARSER-SIMPLIFICATION`
+- `SEC-GUARD-ROUTE-INVENTORY-CLASSIFICATION-CLOSURE`
+- `SEC-GUARD-TERMINOLOGY-CLAIMS-SURFACE`
+- `SEC-GUARD-GOVERNANCE-TEST-BRITTLENESS-REDUCTION`
+- `SEC-GUARD-P8-ENGINEERING-DOMAIN-CLOSURE`
 
 ## Enforcement model
 
@@ -115,6 +128,19 @@ Guardrails cover:
 - Route-inventory claims-consistency guardrails verify endpoint inventory coverage, classification-field completeness, protection-stage/tenant-scope/rate-limit/audit category consistency, and forbidden-claim posture in P7-06.
 - Security docs map/ADR guardrails verify canonical docs-map and accepted ADR boundary remain indexed, machine-readable, and non-claim safe in P7-07.
 - Engineering/domain architecture audit guardrails verify P8-00 architecture audit/map/inventory artifacts remain explicit, review-only, and no-change scoped for runtime/API/write-path/calculation behavior.
+- EngineeringWorkflow boundary guardrails verify P8-01 namespace hardening artifacts and architecture tests keep EngineeringWorkflow module code out of `AssistantEngineer.Api.*` namespaces.
+- Module-boundary matrix guardrails verify P8-02 matrix artifacts and dependency-direction tests (`ModuleBoundaryMatrixTests`, `EngineeringWorkflowModuleBoundaryTests`, `P8ModuleBoundaryTestExpansionTests`) remain active.
+- Authorization/workflow decomposition-design guardrails verify P8-03 hotspot inventory and decomposition design artifacts stay explicit, compatibility-bound, and behavior-neutral.
+- Protected-endpoint authorization gate characterization guardrails verify P8-03A decision/status matrix artifacts and behavior-lock test coverage remain explicit and no-change scoped.
+- Protected-endpoint authorization gate scope/permission extraction guardrails verify P8-03C collaborator extraction tests and behavior-lock characterization coverage remain active.
+- Workflow controller shell characterization guardrails verify route/action signature compatibility, status-code/response-shape behavior locks, and authorization-interaction compatibility before P8-03E/P8-03F decomposition.
+- Workflow orchestration helper migration guardrails verify P8-03E helper relocation remains behavior-neutral and boundary-safe with characterization coverage preserved.
+- Workflow controller shell reduction guardrails verify P8-03F API-shell extraction remains behavior-neutral and keeps route/signature/status/response/auth characterization contracts intact.
+- OwnershipBackfill CLI parser simplification guardrails verify P8-04 descriptor/catalog/argument-reader decomposition remains semantics-neutral for commands/help/exit/redaction/apply-disabled behavior.
+- Route inventory deferred classification closure guardrails verify P8-05 reclassification/ignore-list tightening remains coverage-safe and claims-consistent without changing runtime/controller behavior.
+- Terminology and claims-surface guardrails verify canonical P8-07 vocabulary and cleanup artifacts, and block positive forbidden-claim drift in core governance docs/tests.
+- Governance test brittleness reduction guardrails verify P8-08 semantic-assertion migration remains no-change scoped and preserves critical guardrail coverage.
+- Final P8 closure guardrails verify closure-report consistency, boundary non-claims, deferred-backlog honesty, and linkage to readiness/guardrail registries.
 - Development/demo endpoint environment-gating checks (`DevelopmentEndpointSecurityGuardTests`).
 - Secret logging/source high-confidence leakage checks (`SecretLoggingSecurityGuardTests`).
 - Authentication default compatibility and secret-free appsettings checks (`ApiAuthenticationDefaultsGuardTests`).
@@ -155,3 +181,73 @@ Guardrails cover:
 - Enforcement: AutomatedTest
 - Tests: P8EngineeringDomainArchitectureAuditTests, P8AssistantEngineerArchitectureMapTests, P8LegacyAndDeadCodeInventoryTests, P8ScriptsToolsInventoryTests
 - Risk: Architecture hardening decisions can drift into undocumented runtime/API/calculation/write-path changes.
+
+## SEC-GUARD-ENGINEERINGWORKFLOW-BOUNDARY
+- Enforcement: AutomatedTest
+- Tests: EngineeringWorkflowNamespaceBoundaryTests, P8EngineeringWorkflowBoundaryHardeningTests
+- Risk: EngineeringWorkflow layer/naming boundaries can regress back into AssistantEngineer.Api namespace leakage without explicit governance checks.
+
+## SEC-GUARD-MODULE-BOUNDARY-MATRIX
+- Enforcement: AutomatedTest
+- Tests: ModuleBoundaryMatrixTests, EngineeringWorkflowModuleBoundaryTests, P8ModuleBoundaryTestExpansionTests
+- Risk: Module dependency-direction drift can reintroduce EngineeringWorkflow/API leakage and runtime-tools boundary regressions.
+
+## SEC-GUARD-AUTHORIZATION-WORKFLOW-DECOMPOSITION-DESIGN
+- Enforcement: AutomatedTest
+- Tests: P8AuthorizationWorkflowHotspotInventoryTests, P8AuthorizationWorkflowDecompositionDesignTests
+- Risk: Authorization/workflow hotspot changes can drift into undocumented behavior changes without staged design and compatibility constraints.
+
+## SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-CHARACTERIZATION
+- Enforcement: AutomatedTest
+- Tests: ProtectedEndpointAuthorizationGateCharacterizationTests, P8ProtectedEndpointAuthorizationGateCharacterizationTests
+- Risk: Gate decomposition can regress decision precedence/status outcomes or anti-enumeration behavior without explicit characterization lock coverage.
+
+## SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-SCOPE-PERMISSION
+- Enforcement: AutomatedTest
+- Tests: ProtectedEndpointPermissionEvaluatorTests, ProtectedEndpointScopeEvaluationServiceTests, ProtectedEndpointAuthorizationGateCharacterizationTests
+- Risk: Internal permission/scope collaborator extraction can drift from existing resolver/permission semantics without explicit decomposition guardrails.
+
+## SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-CHARACTERIZATION
+- Enforcement: AutomatedTest
+- Tests: EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowControllerAuthorizationCharacterizationTests, EngineeringWorkflowControllerResponseShapeTests, P8WorkflowControllerShellCharacterizationTests
+- Risk: Workflow controller decomposition can regress route signatures, status outcomes, authorization interaction, or response-shape contracts without explicit characterization guardrails.
+
+## SEC-GUARD-WORKFLOW-ORCHESTRATION-HELPER-MIGRATION
+- Enforcement: AutomatedTest
+- Tests: EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowNamespaceBoundaryTests, P8WorkflowOrchestrationHelperMigrationTests
+- Risk: Workflow helper migration can regress controller contracts or reintroduce API-namespace boundary leakage without explicit migration guardrails.
+
+## SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-REDUCTION
+- Enforcement: AutomatedTest
+- Tests: EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowControllerAuthorizationCharacterizationTests, EngineeringWorkflowControllerResponseShapeTests, EngineeringWorkflowControllerShellShapeTests, P8WorkflowControllerShellReductionTests
+- Risk: Controller shell refactor can regress route contracts, authorization interaction, or response behavior without explicit reduction and characterization guardrails.
+
+## SEC-GUARD-OWNERSHIPBACKFILL-CLI-PARSER-SIMPLIFICATION
+- Enforcement: AutomatedTest
+- Tests: OwnershipBackfillCommandLineParserCharacterizationTests, OwnershipBackfillCliExitCodeConsistencyTests, OwnershipBackfillCliRedactionTests, OwnershipBackfillCommandDescriptorCatalogTests, OwnershipBackfillCommandLineParserSimplificationTests
+- Risk: CLI parser decomposition can regress command/help/exit semantics, secret redaction, or disabled apply boundary guarantees without explicit characterization and decomposition guardrails.
+
+## SEC-GUARD-SCRIPTS-TOOLS-RATIONALIZATION
+- Enforcement: AutomatedTest
+- Tests: P8ScriptsToolsRationalizationTests, P8ScriptsToolsInventoryTests, ScriptsToolsInventoryCoverageTests
+- Risk: scripts/tools surface cleanup can accidentally weaken release-wrapper semantics or CI check visibility if inventory/coverage boundaries are not enforced.
+
+## SEC-GUARD-ROUTE-INVENTORY-CLASSIFICATION-CLOSURE
+- Enforcement: AutomatedTest
+- Tests: P8RouteInventoryClassificationClosureTests, P7RouteInventoryCoverageTests, P7RouteClaimsConsistencyTests, P7RouteOperationalCategoryConsistencyTests, P7RouteTenantScopeConsistencyTests, P7ProtectionStageConsistencyTests
+- Risk: Route inventory cleanup can hide endpoint coverage gaps or weaken staged claims if reclassification and ignore-list tightening are not verified.
+
+## SEC-GUARD-TERMINOLOGY-CLAIMS-SURFACE
+- Enforcement: AutomatedTest
+- Tests: P8TerminologyClaimsVocabularyTests, P8TerminologyClaimsSurfaceCleanupTests, P7PostP6ClaimsConsistencyTests
+- Risk: Terminology drift can reintroduce ambiguous or overclaim wording that implies unsupported parity, certification, or write-path enablement.
+
+## SEC-GUARD-GOVERNANCE-TEST-BRITTLENESS-REDUCTION
+- Enforcement: AutomatedTest
+- Tests: P8GovernanceTestBrittlenessReductionTests, P8GovernanceGuardrailPreservationTests
+- Risk: Governance assertion refactors can accidentally weaken release-boundary, claims, inventory, or apply-disabled protections if not explicitly preserved.
+
+## SEC-GUARD-P8-ENGINEERING-DOMAIN-CLOSURE
+- Enforcement: AutomatedTest
+- Tests: P8EngineeringDomainHardeningClosureTests, P8EngineeringDomainHardeningClosureBoundaryTests
+- Risk: Closure-stage drift can hide unresolved findings, imply unsupported behavior changes, or weaken boundary guarantees entering P9.

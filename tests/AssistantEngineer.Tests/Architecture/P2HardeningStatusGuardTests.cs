@@ -74,9 +74,11 @@ public class P2HardeningStatusGuardTests
             "Calculations",
             "EngineeringWorkflowController.ReportArtifact.cs");
         var submissionServicePath = Path.Combine(
-            TestPaths.ApiProjectPath,
-            "Services",
-            "Calculations",
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
             "Workflow",
             "EngineeringWorkflowSubmissionService.cs");
 

@@ -200,9 +200,17 @@ public sealed class EngineeringClaimBoundaryScanner
                 normalized.Contains("must not claim", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("should not claim", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("not claim", StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains("forbiddenclaims", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("non-claim", StringComparison.OrdinalIgnoreCase) ||
                 normalized.Contains("non claim", StringComparison.OrdinalIgnoreCase))
                 return true;
+
+            var trimmed = normalized.TrimStart();
+            if (trimmed.StartsWith("## ", StringComparison.Ordinal) &&
+                trimmed.Contains("forbidden claims", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
         }
 
         return false;

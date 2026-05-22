@@ -1,6 +1,6 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-20",
+    "lastReviewedDate":  "2026-05-22",
     "areas":  [
                   {
                       "area":  "Authentication",
@@ -493,6 +493,90 @@
                           "title":  "Engineering/domain architecture audit after security governance",
                           "status":  "AuditOnly",
                           "risk":  "Audit-only architecture inventory and backlog definition; no runtime/write-path/calculation behavior changes."
+                      },
+                      {
+                          "item":  "P8-01",
+                          "title":  "EngineeringWorkflow boundary and naming hardening",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Boundary/naming hardening only; no runtime/public-API/write-path/calculation-physics behavior changes."
+                      },
+                      {
+                          "item":  "P8-02",
+                          "title":  "Module-boundary test expansion",
+                          "status":  "TestOnly",
+                          "risk":  "Architecture-test and governance hardening only; no runtime/public-API/write-path/calculation-physics behavior changes."
+                      },
+                      {
+                          "item":  "P8-03",
+                          "title":  "Authorization/workflow hotspot decomposition design",
+                          "status":  "DesignOnly",
+                          "risk":  "Design-only decomposition planning and staged characterization scope; no runtime/public-API/write-path/calculation-physics behavior changes."
+                      },
+                      {
+                          "item":  "P8-03A",
+                          "title":  "Protected endpoint authorization gate characterization tests",
+                          "status":  "TestOnly",
+                          "risk":  "Behavior-lock characterization only; no runtime/public-API/write-path/calculation-physics behavior changes."
+                      },
+                      {
+                          "item":  "P8-03C",
+                          "title":  "Protected endpoint authorization gate permission/scope extraction",
+                          "status":  "RefactorOnly",
+                          "risk":  "Internal collaborator extraction only; authorization semantics, public API contracts, and calculation physics remain unchanged."
+                      },
+                      {
+                          "item":  "P8-03D",
+                          "title":  "Workflow controller shell characterization tests",
+                          "status":  "TestOnly",
+                          "risk":  "Controller-shell route/signature/status/response characterization only; workflow behavior, authorization semantics, public API contracts, and calculation physics remain unchanged."
+                      },
+                      {
+                          "item":  "P8-03E",
+                          "title":  "Workflow orchestration helper migration",
+                          "status":  "RefactorOnly",
+                          "risk":  "Internal workflow helper boundary migration only; workflow behavior, authorization semantics, public API contracts, DTO shapes, and calculation physics remain unchanged."
+                      },
+                      {
+                          "item":  "P8-03F",
+                          "title":  "Workflow controller shell reduction",
+                          "status":  "RefactorOnly",
+                          "risk":  "Internal API shell refactor only; workflow behavior, authorization semantics, route/signature/DTO contracts, status behavior, and calculation physics remain unchanged."
+                      },
+                      {
+                          "item":  "P8-04",
+                          "title":  "OwnershipBackfill CLI parser simplification",
+                          "status":  "ToolingOnly",
+                          "risk":  "Internal tooling/parser decomposition only; apply remains disabled and command/help/exit/redaction semantics remain unchanged."
+                      },
+                      {
+                          "item":  "P8-05",
+                          "title":  "Route inventory deferred classification closure",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Governance/inventory classification refinement only; no runtime/public-API/authorization/write-path/calculation behavior changes."
+                      },
+                      {
+                          "item":  "P8-06",
+                          "title":  "Scripts/tools rationalization",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Governance/tooling inventory refinement only; release semantics, runtime/API behavior, and write-path boundaries remain unchanged."
+                      },
+                      {
+                          "item":  "P8-07",
+                          "title":  "Terminology and claims-surface cleanup",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Governance wording/claim normalization only; runtime/API/authorization/workflow/calculation behavior and write-path boundaries remain unchanged."
+                      },
+                      {
+                          "item":  "P8-08",
+                          "title":  "Governance test brittleness reduction phase 2",
+                          "status":  "TestOnly",
+                          "risk":  "Governance test assertion-hardening only; runtime/API/authorization/workflow/calculation behavior and write-path boundaries remain unchanged."
+                      },
+                      {
+                          "item":  "P8-09",
+                          "title":  "Final P8 closure audit",
+                          "status":  "AuditOnly",
+                          "risk":  "Final closure audit/reporting only; no runtime/API/authorization/workflow/calculation behavior and write-path boundaries remain unchanged."
                       }
                   ],
     "nonClaims":  [

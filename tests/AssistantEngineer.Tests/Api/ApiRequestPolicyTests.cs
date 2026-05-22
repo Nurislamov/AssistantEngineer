@@ -144,9 +144,11 @@ public class ApiRequestPolicyTests
             "Calculations",
             "EngineeringWorkflowController.cs");
         var submissionServicePath = Path.Combine(
-            global::AssistantEngineer.Tests.TestPaths.ApiProjectPath,
-            "Services",
-            "Calculations",
+            global::AssistantEngineer.Tests.TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EngineeringWorkflow",
+            "Application",
             "Workflow",
             "EngineeringWorkflowSubmissionService.cs");
 

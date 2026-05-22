@@ -3,7 +3,7 @@ using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace AssistantEngineer.Api.Services.Calculations.Idempotency;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 
 public sealed class EfEngineeringIdempotencyService : IEngineeringIdempotencyService
 {

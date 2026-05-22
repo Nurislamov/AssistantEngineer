@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-07",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "claimsCorrected": [
+    {
+      "path": "docs/security/security-governance-index.md",
+      "change": "Added canonical reference to P8-07 terminology vocabulary and cleanup artifacts."
+    },
+    {
+      "path": "docs/security/security-release-boundary.md",
+      "change": "Added explicit reference to canonical terminology vocabulary for allowed/forbidden claims."
+    },
+    {
+      "path": "docs/security/security-regression-guardrails.json",
+      "change": "Added SEC-GUARD-TERMINOLOGY-CLAIMS-SURFACE guardrail linked to P8-07 tests."
+    }
+  ],
+  "terminologyNormalized": [
+    "reference-informed",
+    "validation anchors",
+    "governance-ready",
+    "write-path intentionally disabled",
+    "tenant-aware read integration for selected paths",
+    "route protection is options-controlled"
+  ],
+  "deferredRenames": [
+    "Public API contract naming changes are deferred out of P8-07 scope.",
+    "Large-scale wording-coupled test renames are deferred to P8-08 brittleness reduction."
+  ],
+  "remainingLimitations": [
+    "Large historical governance corpus still contains repeated stage-status wording blocks.",
+    "Some legacy docs intentionally retain historical wording with explicit non-claim qualifiers."
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No authorization behavior change claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim."
+  ]
+}

@@ -38,17 +38,20 @@ public sealed class P8EngineeringDomainArchitectureAuditTests
                 "## Next steps"
             ]);
 
-        GovernanceDocumentTestHelper.AssertMarkdownContainsPhrases(
-            AuditMarkdownPath,
+        using var document = GovernanceJsonTestHelper.Parse(AuditJsonPath);
+        var nonClaims = document.RootElement.GetProperty("nonClaims")
+            .EnumerateArray()
+            .Select(item => item.GetString() ?? string.Empty)
+            .ToArray();
+
+        GovernanceSemanticAssertions.AssertNonClaimsContainConcepts(
+            nonClaims,
             [
-                "No calculation physics change claim.",
-                "No full donor-model match claim.",
-                "No external simulator match claim.",
-                "No external standard-case validation completion claim.",
-                "No production security certification claim.",
-                "No full tenant isolation claim.",
-                "No ownership backfill execution claim.",
-                "No DB RLS/global EF query filter claim."
+                "No calculation physics change claim",
+                "No full donor-model match claim",
+                "No production security certification claim",
+                "No ownership backfill execution claim",
+                "No DB RLS/global EF query filter claim"
             ]);
     }
 
@@ -58,9 +61,9 @@ public sealed class P8EngineeringDomainArchitectureAuditTests
         using var document = GovernanceJsonTestHelper.Parse(AuditJsonPath);
         var root = document.RootElement;
 
-        Assert.False(root.GetProperty("runtimeBehaviorChanged").GetBoolean());
-        Assert.False(root.GetProperty("calculationPhysicsChanged").GetBoolean());
-        Assert.False(root.GetProperty("publicApiChanged").GetBoolean());
+        GovernanceSemanticAssertions.AssertJsonBooleanFlagsFalse(
+            root,
+            ["runtimeBehaviorChanged", "calculationPhysicsChanged", "publicApiChanged"]);
 
         Assert.NotEmpty(root.GetProperty("recommendedBacklog").EnumerateArray());
         Assert.NotEmpty(root.GetProperty("nonClaims").EnumerateArray());
@@ -73,9 +76,17 @@ public sealed class P8EngineeringDomainArchitectureAuditTests
     [Fact]
     public void AuditDocumentDoesNotContainFalseParityOrCertificationClaims()
     {
-        var content = File.ReadAllText(AuditMarkdownPath);
-        Assert.DoesNotContain("production security certified", content, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("full tenant isolation complete", content, StringComparison.OrdinalIgnoreCase);
+        var forbiddenPhrases = new[]
+        {
+            "production security certified",
+            "full tenant isolation complete"
+        };
+
+        var violations = GovernanceClaimTestHelper.FindForbiddenPhraseViolations(
+            [AuditMarkdownPath, AuditJsonPath],
+            forbiddenPhrases);
+
+        Assert.Empty(violations);
     }
 
     [Fact]

@@ -1,7 +1,7 @@
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Trace;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Engineering;
 
-namespace AssistantEngineer.Api.Contracts.Calculations;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 
 public sealed record EngineeringWorkflowStateDto(
     int ProjectId,

@@ -2,8 +2,9 @@ using System.Reflection;
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Controllers.Calculations;
 using AssistantEngineer.Api.Services.Calculations;
+using AssistantEngineer.Api.Services.Calculations.Composition;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
@@ -73,11 +74,11 @@ public class EngineeringWorkflowP0ArchitectureGuardTests
 
         Assert.DoesNotContain(typeof(IBuildingsFacade), dependencies);
         Assert.DoesNotContain(typeof(IEngineeringCoreStatusFacade), dependencies);
+        Assert.Contains(typeof(IEngineeringWorkflowControllerActionService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowStateBuilder), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowDiagnosticsService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowTracePreviewService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowReportPreviewService), dependencies);
-        Assert.Contains(typeof(IEngineeringCalculationScenarioRunner), dependencies);
         Assert.Contains(typeof(IEngineeringCalculationJobService), dependencies);
         Assert.Contains(typeof(IEngineeringWorkflowPersistenceService), dependencies);
         Assert.Contains(typeof(IEngineeringReportJsonExporter), dependencies);

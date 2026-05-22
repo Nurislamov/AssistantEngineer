@@ -50,6 +50,24 @@ internal static class GovernanceClaimTestHelper
         return !IsAllowedLineOnlyContext(line);
     }
 
+    public static bool IsAllowedVocabularyOrNonClaimContext(string line)
+    {
+        var lower = line.ToLowerInvariant();
+        return IsAllowedLineOnlyContext(line) ||
+               lower.Contains("forbidden:", StringComparison.Ordinal) ||
+               lower.Contains("deprecated", StringComparison.Ordinal) ||
+               lower.Contains("examples", StringComparison.Ordinal) ||
+               lower.Contains("known limitations", StringComparison.Ordinal) ||
+               lower.Contains("\"forbiddenclaims\"", StringComparison.Ordinal) ||
+               lower.Contains("\"deprecatedterms\"", StringComparison.Ordinal) ||
+               lower.Contains("\"allowedclaims\"", StringComparison.Ordinal) ||
+               lower.Contains("not claimed", StringComparison.Ordinal) ||
+               lower.Contains("not enabled", StringComparison.Ordinal) ||
+               lower.Contains("deferred", StringComparison.Ordinal) ||
+               lower.Contains("eligibility", StringComparison.Ordinal) ||
+               lower.Contains("overclaim", StringComparison.Ordinal);
+    }
+
     private static bool IsAllowedContext(string[] lines, int lineIndex, string lowerLine, int matchIndex)
     {
         if (IsAllowedLineOnlyContext(lines[lineIndex]))

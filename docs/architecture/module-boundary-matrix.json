@@ -1,0 +1,429 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-02",
+  "components": [
+    {
+      "project": "AssistantEngineer.Api",
+      "assembly": "AssistantEngineer.Api",
+      "layer": "Api",
+      "allowedDependencies": [
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Modules.Benchmarks",
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Modules.EngineeringWorkflow",
+        "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.Identity",
+        "AssistantEngineer.Modules.Reporting",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Api."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Infrastructure",
+      "assembly": "AssistantEngineer.Infrastructure",
+      "layer": "Infrastructure",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Benchmarks",
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.Reporting",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Infrastructure."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Benchmarks",
+      "assembly": "AssistantEngineer.Modules.Benchmarks",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Benchmarks."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Buildings",
+      "assembly": "AssistantEngineer.Modules.Buildings",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Buildings."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Calculations",
+      "assembly": "AssistantEngineer.Modules.Calculations",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Calculations."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.EngineeringWorkflow",
+      "assembly": "AssistantEngineer.Modules.EngineeringWorkflow",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Modules.Reporting",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.EngineeringWorkflow."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Equipment",
+      "assembly": "AssistantEngineer.Modules.Equipment",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Equipment."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Identity",
+      "assembly": "AssistantEngineer.Modules.Identity",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Identity."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.Reporting",
+      "assembly": "AssistantEngineer.Modules.Reporting",
+      "layer": "DomainModule",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.SharedKernel"
+      ],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.Reporting."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.SharedKernel",
+      "assembly": "AssistantEngineer.SharedKernel",
+      "layer": "SharedKernel",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Modules.",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.SharedKernel."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.OwnershipBackfill",
+      "assembly": "AssistantEngineer.Tools.OwnershipBackfill",
+      "layer": "Tool",
+      "allowedDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure"
+      ],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.OwnershipBackfill."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringCoreRelease",
+      "assembly": "AssistantEngineer.Tools.EngineeringCoreRelease",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringCoreRelease."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringCoreVerification",
+      "assembly": "AssistantEngineer.Tools.EngineeringCoreVerification",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringCoreVerification."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringCoreEvidence",
+      "assembly": "AssistantEngineer.Tools.EngineeringCoreEvidence",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringCoreEvidence."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringCoreContracts",
+      "assembly": "AssistantEngineer.Tools.EngineeringCoreContracts",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringCoreContracts."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringCore",
+      "assembly": "AssistantEngineer.Tools.EngineeringCore",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringCore."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.Iso52016Verification",
+      "assembly": "AssistantEngineer.Tools.Iso52016Verification",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.Iso52016Verification."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "assembly": "AssistantEngineer.Tools.EnergyPlusValidation",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EnergyPlusValidation."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+      "assembly": "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EngineeringGovernance",
+      "assembly": "AssistantEngineer.Tools.EngineeringGovernance",
+      "layer": "Tool",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.Calculations"
+      ],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EngineeringGovernance."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.PerformanceBenchmarks",
+      "assembly": "AssistantEngineer.Tools.PerformanceBenchmarks",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.PerformanceBenchmarks."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.RepositoryBoundaries",
+      "assembly": "AssistantEngineer.Tools.RepositoryBoundaries",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.RepositoryBoundaries."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.RepositoryHygieneVerification",
+      "assembly": "AssistantEngineer.Tools.RepositoryHygieneVerification",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.RepositoryHygieneVerification."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tests",
+      "assembly": "AssistantEngineer.Tests",
+      "layer": "Test",
+      "allowedDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Modules.Benchmarks",
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Modules.EngineeringWorkflow",
+        "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.Identity",
+        "AssistantEngineer.Modules.Reporting",
+        "AssistantEngineer.SharedKernel",
+        "AssistantEngineer.Tools.EngineeringCoreVerification",
+        "AssistantEngineer.Tools.OwnershipBackfill"
+      ],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tests."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

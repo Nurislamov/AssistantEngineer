@@ -1,0 +1,42 @@
+{
+  "name": "authorization-workflow-hotspot-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "authorizationSemanticsChanged",
+    "publicApiChanged",
+    "calculationPhysicsChanged",
+    "hotspots",
+    "decompositionCandidates",
+    "proposedStages",
+    "nonClaims"
+  ],
+  "hotspotRequiredFields": [
+    "id",
+    "area",
+    "filePath",
+    "title",
+    "responsibilities",
+    "risk",
+    "recommendedAction",
+    "proposedStage"
+  ],
+  "candidateRequiredFields": [
+    "id",
+    "sourceFile",
+    "responsibility",
+    "targetComponent",
+    "targetNamespace",
+    "expectedChangeType",
+    "risk",
+    "prerequisites"
+  ],
+  "proposedStageRequiredFields": [
+    "stage",
+    "title",
+    "scope"
+  ]
+}

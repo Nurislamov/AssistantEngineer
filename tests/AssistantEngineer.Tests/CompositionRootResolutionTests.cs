@@ -1,8 +1,10 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Services.Calculations;
-using AssistantEngineer.Api.Services.Calculations.Idempotency;
+using AssistantEngineer.Api.Services.Calculations.Composition;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
 using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Api.Security.Authentication;
 using AssistantEngineer.Api.Security.TenantIsolation;
@@ -23,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using ApiWorkflowPersistence = AssistantEngineer.Api.Services.Calculations.Persistence.IEngineeringWorkflowPersistenceService;
 
 namespace AssistantEngineer.Tests;
 
@@ -66,9 +69,10 @@ public class CompositionRootResolutionTests
         services.AddScoped<IEngineeringCalculationJobRepository, InMemoryEngineeringCalculationJobRepository>();
         services.AddScoped<IEngineeringCalculationJobEventRepository, InMemoryEngineeringCalculationJobEventRepository>();
         services.AddOptions<EngineeringWorkflowPersistenceOptions>();
-        services.AddScoped<IEngineeringWorkflowPersistenceService, EngineeringWorkflowPersistenceService>();
+        services.AddScoped<ApiWorkflowPersistence, EngineeringWorkflowPersistenceService>();
         services.AddEngineeringIdempotency();
         services.AddEngineeringWorkflowServices();
+        services.AddScoped<IEngineeringWorkflowControllerActionService, EngineeringWorkflowControllerActionService>();
         services.AddScoped<IEngineeringCalculationScenarioModuleExecutor, EngineeringCalculationScenarioModuleExecutor>();
         services.AddScoped<IEngineeringCalculationVentilationScenarioStep, EngineeringCalculationVentilationScenarioStep>();
         services.AddScoped<IEngineeringCalculationDomesticHotWaterScenarioStep, EngineeringCalculationDomesticHotWaterScenarioStep>();
@@ -387,7 +391,7 @@ public class CompositionRootResolutionTests
                     new WorkflowTenantScopedStateReadResult(null)));
         }
 
-        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>> GetScenarioForTenantAsync(
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationScenarioRecordDto>> GetScenarioForTenantAsync(
             string scenarioId,
             TenantQueryContext context,
             CancellationToken cancellationToken = default)
@@ -396,11 +400,11 @@ public class CompositionRootResolutionTests
             _ = context;
             _ = cancellationToken;
             return Task.FromResult(
-                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>.NotFound(
+                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationScenarioRecordDto>.NotFound(
                     "Not used in composition-root test."));
         }
 
-        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>>> ListScenariosForProjectForTenantAsync(
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationScenarioRecordDto>>> ListScenariosForProjectForTenantAsync(
             int projectId,
             TenantQueryContext context,
             CancellationToken cancellationToken = default)
@@ -409,11 +413,11 @@ public class CompositionRootResolutionTests
             _ = context;
             _ = cancellationToken;
             return Task.FromResult(
-                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>>.Success(
-                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationScenarioRecordDto>()));
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationScenarioRecordDto>>.Success(
+                    Array.Empty<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationScenarioRecordDto>()));
         }
 
-        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>> GetJobForTenantAsync(
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobResultDto>> GetJobForTenantAsync(
             string jobId,
             TenantQueryContext context,
             CancellationToken cancellationToken = default)
@@ -422,11 +426,11 @@ public class CompositionRootResolutionTests
             _ = context;
             _ = cancellationToken;
             return Task.FromResult(
-                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>.NotFound(
+                AssistantEngineer.SharedKernel.Primitives.Result<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobResultDto>.NotFound(
                     "Not used in composition-root test."));
         }
 
-        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>>> GetJobEventsForTenantAsync(
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobEventDto>>> GetJobEventsForTenantAsync(
             string jobId,
             TenantQueryContext context,
             CancellationToken cancellationToken = default)
@@ -435,11 +439,11 @@ public class CompositionRootResolutionTests
             _ = context;
             _ = cancellationToken;
             return Task.FromResult(
-                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>>.Success(
-                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobEventDto>()));
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobEventDto>>.Success(
+                    Array.Empty<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobEventDto>()));
         }
 
-        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>>> ListJobsForProjectForTenantAsync(
+        public Task<AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobResultDto>>> ListJobsForProjectForTenantAsync(
             int projectId,
             TenantQueryContext context,
             CancellationToken cancellationToken = default)
@@ -448,8 +452,8 @@ public class CompositionRootResolutionTests
             _ = context;
             _ = cancellationToken;
             return Task.FromResult(
-                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>>.Success(
-                    Array.Empty<AssistantEngineer.Api.Contracts.Calculations.EngineeringCalculationJobResultDto>()));
+                AssistantEngineer.SharedKernel.Primitives.Result<IReadOnlyList<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobResultDto>>.Success(
+                    Array.Empty<AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow.EngineeringCalculationJobResultDto>()));
         }
     }
 }

@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using System.Collections.Concurrent;
 
 namespace AssistantEngineer.Api.Services.Calculations.Persistence;

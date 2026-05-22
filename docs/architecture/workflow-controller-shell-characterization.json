@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-03D",
+  "runtimeBehaviorChanged": false,
+  "workflowBehaviorChanged": false,
+  "publicApiChanged": false,
+  "dtoShapesChanged": false,
+  "calculationPhysicsChanged": false,
+  "characterizedEndpointGroups": [
+    "Execution",
+    "ReadHistory",
+    "ReportArtifact"
+  ],
+  "characterizedRoutes": [
+    {
+      "id": "P8-03D-EXEC-PREPARE",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/prepare-calculation",
+      "controllerAction": "PrepareCalculation",
+      "endpointGroup": "Execution",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowCalculationPreparationResponseDto on success.",
+      "authorizationNote": "Uses WorkflowsExecute gate with project/building fallback.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ExecutionEndpoints_CurrentStatusAndShapeAreCharacterized",
+        "EngineeringWorkflowControllerAuthorizationCharacterizationTests.ExecutionProtectionEnabled_WithoutPrincipal_ReturnsUnauthorized"
+      ]
+    },
+    {
+      "id": "P8-03D-EXEC-RUN",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/run-calculation",
+      "controllerAction": "RunCalculation",
+      "endpointGroup": "Execution",
+      "expectedStatusCodes": [200, 401, 403, 404, 409],
+      "responseShapeNote": "Returns EngineeringCalculationScenarioResultDto on success and conflict envelope on idempotency mismatch.",
+      "authorizationNote": "Uses WorkflowsExecute gate with workflow/project/building fallback.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ExecutionEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-EXEC-JOBS",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/jobs",
+      "controllerAction": "CreateOrRunJob",
+      "endpointGroup": "Execution",
+      "expectedStatusCodes": [200, 400, 401, 403, 404, 409],
+      "responseShapeNote": "Returns EngineeringCalculationJobResultDto on success.",
+      "authorizationNote": "Uses WorkflowsExecute gate and project validation.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ExecutionEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-EXEC-CANCEL",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/jobs/{jobId}/cancel",
+      "controllerAction": "CancelJob",
+      "endpointGroup": "Execution",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns not-found envelope with CALCULATION_JOB_NOT_FOUND when job is absent.",
+      "authorizationNote": "Uses WorkflowsExecute gate with workflow-id route parameter.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ExecutionEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-STATE",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/state",
+      "controllerAction": "GetWorkflowState",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowStateDto.",
+      "authorizationNote": "Uses WorkflowsRead gate and tenant-scoped read branch when enabled.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReadHistoryEndpoints_CurrentStatusAndShapeAreCharacterized",
+        "EngineeringWorkflowControllerAuthorizationCharacterizationTests.WorkflowReadTenantMismatch_WithNotFoundOptionEnabled_ReturnsNotFound"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-SCENARIO",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId}",
+      "controllerAction": "GetScenarioResult",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Not-found envelope includes WORKFLOW_SCENARIO_NOT_FOUND.",
+      "authorizationNote": "Uses WorkflowsRead gate with scenario/project/building scope fallback.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReadHistoryEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-SCENARIOS-LIST",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/scenarios",
+      "controllerAction": "GetProjectScenarios",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns PagedResponse<EngineeringCalculationScenarioRecordDto>.",
+      "authorizationNote": "Uses WorkflowsRead project scope.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReadHistoryEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-JOB",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/jobs/{jobId}",
+      "controllerAction": "GetJob",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Not-found envelope includes CALCULATION_JOB_NOT_FOUND.",
+      "authorizationNote": "Uses WorkflowsRead gate and job/scope fallback checks.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReadHistoryEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-JOB-EVENTS",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/jobs/{jobId}/events",
+      "controllerAction": "GetJobEvents",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns list of EngineeringCalculationJobEventDto.",
+      "authorizationNote": "Uses WorkflowsRead gate with job-id and fallback scope checks.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable"
+      ]
+    },
+    {
+      "id": "P8-03D-READ-JOBS-LIST",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/{projectId:int}/jobs",
+      "controllerAction": "ListProjectJobs",
+      "endpointGroup": "ReadHistory",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns PagedResponse<EngineeringCalculationJobResultDto>.",
+      "authorizationNote": "Uses WorkflowsRead project scope.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReadHistoryEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-REPORT-TRACE-PREVIEW",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/trace-preview",
+      "controllerAction": "TracePreview",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowTracePreviewResponseDto.",
+      "authorizationNote": "Uses ReportsRead gate.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-REPORT-GENERATE",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/report",
+      "controllerAction": "GenerateReport",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowReportResponseDto.",
+      "authorizationNote": "Uses ReportsWrite gate.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized",
+        "EngineeringWorkflowControllerAuthorizationCharacterizationTests.ReportAndArtifactPolicies_RemainSeparatedFromWorkflowReadPermission"
+      ]
+    },
+    {
+      "id": "P8-03D-REPORT-EXPORT-JSON",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/report/export/json",
+      "controllerAction": "ExportReportJson",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowReportExportResponseDto with Format=Json.",
+      "authorizationNote": "Uses ReportsWrite gate.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-REPORT-EXPORT-MARKDOWN",
+      "httpMethod": "POST",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/report/export/markdown",
+      "controllerAction": "ExportReportMarkdown",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Returns EngineeringWorkflowReportExportResponseDto with Format=Markdown.",
+      "authorizationNote": "Uses ReportsWrite gate.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03D-ARTIFACT-LIST",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId}/artifacts",
+      "controllerAction": "GetScenarioArtifacts",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 401, 403, 404],
+      "responseShapeNote": "Currently returns 200 with list payload; unresolved scenario can yield empty list in compatibility path.",
+      "authorizationNote": "Uses ArtifactRead gate with scenario-derived scope inputs.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized",
+        "EngineeringWorkflowControllerAuthorizationCharacterizationTests.ReportAndArtifactPolicies_RemainSeparatedFromWorkflowReadPermission"
+      ]
+    },
+    {
+      "id": "P8-03D-ARTIFACT-BY-KIND",
+      "httpMethod": "GET",
+      "routeTemplate": "api/v{version:apiVersion}/engineering-workflow/scenarios/{scenarioId}/artifacts/{artifactKind}",
+      "controllerAction": "GetScenarioArtifactByKind",
+      "endpointGroup": "ReportArtifact",
+      "expectedStatusCodes": [200, 400, 401, 403, 404],
+      "responseShapeNote": "Invalid artifact kind returns WORKFLOW_ARTIFACT_KIND_INVALID; missing valid artifact returns WORKFLOW_ARTIFACT_NOT_FOUND.",
+      "authorizationNote": "Uses ArtifactRead gate with workflow/artifact identifier context.",
+      "coveredByTests": [
+        "EngineeringWorkflowControllerRouteSignatureTests.WorkflowController_RouteTemplatesRemainStable",
+        "EngineeringWorkflowControllerCharacterizationTests.ReportAndArtifactEndpoints_CurrentStatusAndShapeAreCharacterized"
+      ]
+    }
+  ],
+  "knownLimitations": [
+    "GET /engineering-workflow/scenarios/{scenarioId}/artifacts currently returns 200 with empty list when scenario id is unresolved in default compatibility path.",
+    "Characterization is focused on route/signature/status/shape freeze and does not refactor controller orchestration in P8-03D.",
+    "Workflow-id unresolved fallback behavior remains characterized and unchanged from prior gate characterization stages."
+  ],
+  "nonClaims": [
+    "No workflow behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

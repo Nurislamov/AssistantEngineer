@@ -3,10 +3,14 @@ using AssistantEngineer.Api.Configuration;
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
 using AssistantEngineer.Api.Services.Calculations;
-using AssistantEngineer.Api.Services.Calculations.Idempotency;
+using AssistantEngineer.Api.Services.Calculations.Composition;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.Extensions.DependencyInjection;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence;
+using ApiWorkflowPersistence = AssistantEngineer.Api.Services.Calculations.Persistence.IEngineeringWorkflowPersistenceService;
 
 namespace AssistantEngineer.Tests.Architecture;
 
@@ -64,7 +68,7 @@ public class ApiPresentationRegistrationTests
             services,
             ServiceLifetime.Scoped);
 
-        AssertServiceLifetime<IEngineeringWorkflowPersistenceService>(
+        AssertServiceLifetime<ApiWorkflowPersistence>(
             services,
             ServiceLifetime.Scoped);
 
@@ -121,6 +125,10 @@ AssertServiceLifetime<IEngineeringCalculationScenarioRunner>(
             ServiceLifetime.Scoped);
 
         AssertServiceLifetime<IEngineeringCalculationJobService>(
+            services,
+            ServiceLifetime.Scoped);
+
+        AssertServiceLifetime<IEngineeringWorkflowControllerActionService>(
             services,
             ServiceLifetime.Scoped);
         Assert.Contains(services, service =>

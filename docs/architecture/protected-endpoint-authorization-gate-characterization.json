@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-03A",
+  "runtimeBehaviorChanged": false,
+  "authorizationSemanticsChanged": false,
+  "publicApiChanged": false,
+  "calculationPhysicsChanged": false,
+  "characterizedDecisionCases": [
+    {
+      "id": "P8-03A-CASE-OPTIONS-DISABLED-PROJECTS-READ",
+      "capability": "ProjectsRead",
+      "optionFlags": "Enabled=false",
+      "principalState": "Anonymous",
+      "permissionState": "N/A",
+      "scopeState": "N/A",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 200,
+      "expectedDecisionName": "Allowed",
+      "expectedResultKind": "Allow",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.OptionsDisabled_DefaultCompatibility_AllCapabilitiesAreAllowed"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-UNAUTHENTICATED",
+      "capability": "ProjectsRead|ProjectsWrite|BuildingsRead|BuildingsWrite|WorkflowsRead|WorkflowsExecute|CalculationRun|ReportsRead|ReportsWrite|ArtifactRead",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Anonymous",
+      "permissionState": "MissingByDefinition",
+      "scopeState": "Present",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 401,
+      "expectedDecisionName": "Unauthorized",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.ProtectionEnabled_UnauthenticatedPrincipal_ReturnsUnauthorizedForProtectedCapabilities"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-MISSING-PERMISSION",
+      "capability": "ProjectsRead|ProjectsWrite|BuildingsRead|BuildingsWrite|WorkflowsRead|WorkflowsExecute|CalculationRun|ReportsRead|ReportsWrite|ArtifactRead",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Authenticated",
+      "permissionState": "MissingRequiredPermission",
+      "scopeState": "Present",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 403,
+      "expectedDecisionName": "Forbidden",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.ProtectionEnabled_MissingPermissions_ReturnsForbiddenForProtectedCapabilities"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-MISSING-SCOPE-PROJECT-BUILDING-CALCULATION",
+      "capability": "ProjectsRead|BuildingsRead|CalculationRun",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "MissingProjectOrBuildingOrRoom",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 404,
+      "expectedDecisionName": "NotFound",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.ScopeNotFoundAndFallbackCases_AreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-WORKFLOW-MISSING-SCOPE-NO-FALLBACK",
+      "capability": "WorkflowsExecute",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "MissingWorkflowScopeNoFallback",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 200,
+      "expectedDecisionName": "Allowed",
+      "expectedResultKind": "Allow",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.ScopeNotFoundAndFallbackCases_AreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-REPORT-MISSING-WORKFLOW-SCOPE-NO-FALLBACK",
+      "capability": "ReportsRead",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "MissingWorkflowScopeNoFallback",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 200,
+      "expectedDecisionName": "Allowed",
+      "expectedResultKind": "Allow",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.ScopeNotFoundAndFallbackCases_AreCharacterized"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-TENANT-MISMATCH-FORBIDDEN",
+      "capability": "ProjectsRead",
+      "optionFlags": "ReturnNotFoundForTenantMismatch=false",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "CrossTenantScope",
+      "tenantMismatchPolicy": "Forbidden",
+      "expectedStatusCode": 403,
+      "expectedDecisionName": "Forbidden",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.TenantMismatch_ForProjectScope_RespectsReturnNotFoundOption"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-TENANT-MISMATCH-NOTFOUND",
+      "capability": "ProjectsRead",
+      "optionFlags": "ReturnNotFoundForTenantMismatch=true",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "CrossTenantScope",
+      "tenantMismatchPolicy": "NotFound",
+      "expectedStatusCode": 404,
+      "expectedDecisionName": "NotFound",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.TenantMismatch_ForProjectScope_RespectsReturnNotFoundOption"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-WORKFLOW-TENANT-MISMATCH-WORKFLOW-FLAG",
+      "capability": "WorkflowsRead|WorkflowsExecute",
+      "optionFlags": "ReturnNotFoundForTenantMismatch=false;ReturnNotFoundForWorkflowTenantMismatch=true",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "CrossTenantWorkflowScope",
+      "tenantMismatchPolicy": "NotFound",
+      "expectedStatusCode": 404,
+      "expectedDecisionName": "NotFound",
+      "expectedResultKind": "Deny",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.TenantMismatch_ForWorkflowScope_UsesWorkflowSpecificNotFoundOption"
+      ]
+    },
+    {
+      "id": "P8-03A-CASE-SUCCESS-MATRIX",
+      "capability": "ProjectsRead|ProjectsWrite|BuildingsRead|BuildingsWrite|WorkflowsRead|WorkflowsExecute|CalculationRun|ReportsRead|ReportsWrite|ArtifactRead",
+      "optionFlags": "AllProtectionEnabled",
+      "principalState": "Authenticated",
+      "permissionState": "Granted",
+      "scopeState": "SameTenantScope",
+      "tenantMismatchPolicy": "N/A",
+      "expectedStatusCode": 200,
+      "expectedDecisionName": "Allowed",
+      "expectedResultKind": "Allow",
+      "coveredByTests": [
+        "ProtectedEndpointAuthorizationGateCharacterizationTests.MatchingPermissionsAndTenantScope_AllCapabilitiesAreAllowed"
+      ]
+    }
+  ],
+  "statusCodeMatrix": [
+    {
+      "decisionName": "Allowed",
+      "statusCode": 200
+    },
+    {
+      "decisionName": "Unauthorized",
+      "statusCode": 401
+    },
+    {
+      "decisionName": "Forbidden",
+      "statusCode": 403
+    },
+    {
+      "decisionName": "NotFound",
+      "statusCode": 404
+    }
+  ],
+  "optionGateMatrix": [
+    {
+      "condition": "Enabled=false",
+      "expectedDecision": "Allowed"
+    },
+    {
+      "condition": "Protected pilots/require flags enabled and principal anonymous",
+      "expectedDecision": "Unauthorized"
+    },
+    {
+      "condition": "Protected pilots/require flags enabled and permission missing",
+      "expectedDecision": "Forbidden"
+    }
+  ],
+  "antiEnumerationMatrix": [
+    {
+      "condition": "Tenant mismatch and ReturnNotFoundForTenantMismatch=false",
+      "expectedDecision": "Forbidden"
+    },
+    {
+      "condition": "Tenant mismatch and ReturnNotFoundForTenantMismatch=true",
+      "expectedDecision": "NotFound"
+    },
+    {
+      "condition": "Workflow tenant mismatch and ReturnNotFoundForWorkflowTenantMismatch=true",
+      "expectedDecision": "NotFound"
+    }
+  ],
+  "knownLimitations": [
+    "Workflow execute/report-read checks can return Allowed when workflow identifier scope is unresolved and no project/building fallback identifiers are provided.",
+    "Characterization freezes current behavior and does not change gate semantics in P8-03A."
+  ],
+  "nonClaims": [
+    "No authorization behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

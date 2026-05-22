@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Api.Services.Calculations.Idempotency;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 
 public sealed class EngineeringIdempotencyOptions
 {

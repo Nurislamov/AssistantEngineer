@@ -1,6 +1,6 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-20",
+    "lastReviewedDate":  "2026-05-22",
     "guardrails":  [
                        {
                            "guardrailId":  "SEC-GUARD-ROUTE-INVENTORY",
@@ -379,6 +379,132 @@
                            "testName":  "P8EngineeringDomainArchitectureAuditTests",
                            "risk":  "Architecture hardening decisions can drift into undocumented runtime, API, or calculation-physics changes.",
                            "notes":  "Validated by P8EngineeringDomainArchitectureAuditTests, P8AssistantEngineerArchitectureMapTests, P8LegacyAndDeadCodeInventoryTests, and P8ScriptsToolsInventoryTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-ENGINEERINGWORKFLOW-BOUNDARY",
+                           "title":  "EngineeringWorkflow namespace and boundary hardening must stay enforced in P8-01",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "EngineeringWorkflowNamespaceBoundaryTests",
+                           "risk":  "EngineeringWorkflow module boundaries can regress into AssistantEngineer.Api namespace leakage.",
+                           "notes":  "Validated by EngineeringWorkflowNamespaceBoundaryTests and P8EngineeringWorkflowBoundaryHardeningTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-MODULE-BOUNDARY-MATRIX",
+                           "title":  "Module-boundary matrix and dependency-direction checks must remain enforced in P8-02",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ModuleBoundaryMatrixTests",
+                           "risk":  "Module dependency-direction regressions can reintroduce API leakage and tool/runtime boundary drift.",
+                           "notes":  "Validated by ModuleBoundaryMatrixTests, EngineeringWorkflowModuleBoundaryTests, and P8ModuleBoundaryTestExpansionTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-AUTHORIZATION-WORKFLOW-DECOMPOSITION-DESIGN",
+                           "title":  "Authorization/workflow hotspot decomposition design artifacts must remain explicit and no-change scoped in P8-03",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8AuthorizationWorkflowHotspotInventoryTests",
+                           "risk":  "Hotspot decomposition can drift into undocumented behavior changes without staged design and compatibility constraints.",
+                           "notes":  "Validated by P8AuthorizationWorkflowHotspotInventoryTests and P8AuthorizationWorkflowDecompositionDesignTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-CHARACTERIZATION",
+                           "title":  "Protected endpoint authorization gate characterization matrix must remain explicit and behavior-locked in P8-03A",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ProtectedEndpointAuthorizationGateCharacterizationTests",
+                           "risk":  "Authorization gate decomposition can regress decision precedence, anti-enumeration outcomes, or status-code expectations without characterization lock coverage.",
+                           "notes":  "Validated by ProtectedEndpointAuthorizationGateCharacterizationTests and P8ProtectedEndpointAuthorizationGateCharacterizationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-PROTECTED-ENDPOINT-AUTHORIZATION-GATE-SCOPE-PERMISSION",
+                           "title":  "Protected endpoint authorization gate permission/scope collaborator extraction must preserve characterized behavior in P8-03C",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "ProtectedEndpointPermissionEvaluatorTests",
+                           "risk":  "Permission and scope collaborator extraction can drift from existing resolver semantics or authorization outcomes without explicit decomposition guard coverage.",
+                           "notes":  "Validated by ProtectedEndpointPermissionEvaluatorTests, ProtectedEndpointScopeEvaluationServiceTests, and ProtectedEndpointAuthorizationGateCharacterizationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-CHARACTERIZATION",
+                           "title":  "Workflow controller shell characterization guardrails must preserve route/action/status/response compatibility in P8-03D",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "EngineeringWorkflowControllerRouteSignatureTests",
+                           "risk":  "Workflow controller decomposition can regress route signatures, status outcomes, authorization interaction, or response-shape contracts without explicit characterization guards.",
+                           "notes":  "Validated by EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowControllerAuthorizationCharacterizationTests, EngineeringWorkflowControllerResponseShapeTests, and P8WorkflowControllerShellCharacterizationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-WORKFLOW-ORCHESTRATION-HELPER-MIGRATION",
+                           "title":  "Workflow orchestration helper migration must preserve route/signature characterization and module boundary constraints in P8-03E",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8WorkflowOrchestrationHelperMigrationTests",
+                           "risk":  "Helper migration can regress controller contracts or reintroduce API-namespace boundary leakage without explicit migration and boundary guardrails.",
+                           "notes":  "Validated by EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowNamespaceBoundaryTests, and P8WorkflowOrchestrationHelperMigrationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-WORKFLOW-CONTROLLER-SHELL-REDUCTION",
+                           "title":  "Workflow controller shell reduction must preserve characterized route/signature/status/response/auth compatibility in P8-03F",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8WorkflowControllerShellReductionTests",
+                           "risk":  "Controller shell refactor can regress route contracts, authorization interaction, or response behavior without explicit reduction and characterization guardrails.",
+                           "notes":  "Validated by EngineeringWorkflowControllerRouteSignatureTests, EngineeringWorkflowControllerCharacterizationTests, EngineeringWorkflowControllerAuthorizationCharacterizationTests, EngineeringWorkflowControllerResponseShapeTests, EngineeringWorkflowControllerShellShapeTests, and P8WorkflowControllerShellReductionTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-OWNERSHIPBACKFILL-CLI-PARSER-SIMPLIFICATION",
+                           "title":  "OwnershipBackfill CLI parser simplification must preserve command/help/exit/redaction/apply-disabled semantics in P8-04",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "OwnershipBackfillCommandLineParserCharacterizationTests",
+                           "risk":  "Parser decomposition can regress command routing, help behavior, exit-code semantics, or redaction guarantees and weaken the disabled apply boundary.",
+                           "notes":  "Validated by OwnershipBackfillCommandLineParserCharacterizationTests, OwnershipBackfillCliExitCodeConsistencyTests, OwnershipBackfillCliRedactionTests, OwnershipBackfillCommandDescriptorCatalogTests, and OwnershipBackfillCommandLineParserSimplificationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-ROUTE-INVENTORY-CLASSIFICATION-CLOSURE",
+                           "title":  "Route inventory deferred classification closure must preserve inventory coverage and staged-claims consistency in P8-05",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8RouteInventoryClassificationClosureTests",
+                           "risk":  "Route-inventory cleanup can hide endpoint coverage gaps or weaken staged claims if reclassification and ignore-list tightening are not verified.",
+                           "notes":  "Validated by P8RouteInventoryClassificationClosureTests, P7RouteInventoryCoverageTests, P7RouteClaimsConsistencyTests, P7RouteOperationalCategoryConsistencyTests, P7RouteTenantScopeConsistencyTests, and P7ProtectionStageConsistencyTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-SCRIPTS-TOOLS-RATIONALIZATION",
+                           "title":  "Scripts/tools rationalization must preserve release-wrapper and CI invocation semantics in P8-06",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8ScriptsToolsRationalizationTests",
+                           "risk":  "Scripts/tools inventory cleanup can drift into wrapper semantic changes or hidden CI invocation regressions.",
+                           "notes":  "Validated by P8ScriptsToolsRationalizationTests, P8ScriptsToolsInventoryTests, and ScriptsToolsInventoryCoverageTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-TERMINOLOGY-CLAIMS-SURFACE",
+                           "title":  "Terminology and claims-surface cleanup must preserve explicit non-claim boundaries in P8-07",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8TerminologyClaimsVocabularyTests",
+                           "risk":  "Terminology drift can reintroduce ambiguous or unsupported parity/certification/write-path claims across governance artifacts.",
+                           "notes":  "Validated by P8TerminologyClaimsVocabularyTests, P8TerminologyClaimsSurfaceCleanupTests, and P7PostP6ClaimsConsistencyTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-GOVERNANCE-TEST-BRITTLENESS-REDUCTION",
+                           "title":  "Governance test brittleness reduction must preserve strict safety guardrails in P8-08",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8GovernanceTestBrittlenessReductionTests",
+                           "risk":  "Governance assertion refactors can accidentally weaken critical release-boundary, claims, inventory, or apply-disabled protections.",
+                           "notes":  "Validated by P8GovernanceTestBrittlenessReductionTests and P8GovernanceGuardrailPreservationTests."
+                       },
+                       {
+                           "guardrailId":  "SEC-GUARD-P8-ENGINEERING-DOMAIN-CLOSURE",
+                           "title":  "Final P8 engineering/domain closure must remain explicit, no-change scoped, and deferred-backlog honest in P8-09",
+                           "status":  "Active",
+                           "enforcement":  "AutomatedTest",
+                           "testName":  "P8EngineeringDomainHardeningClosureTests",
+                           "risk":  "Closure-stage drift can hide unresolved findings, imply unsupported behavior changes, or weaken boundary guarantees entering P9.",
+                           "notes":  "Validated by P8EngineeringDomainHardeningClosureTests and P8EngineeringDomainHardeningClosureBoundaryTests."
                        }
                    ],
     "nonClaims":  [

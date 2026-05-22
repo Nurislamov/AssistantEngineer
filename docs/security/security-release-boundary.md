@@ -94,6 +94,7 @@ Release boundary assertions rely on:
 - security docs map (`docs/security/security-docs-map.md/.json`).
 - ADR records (`docs/adr/ADR-0001-security-governance-boundary.md`, `docs/adr/adr-index.md/.json`).
 - ADR decision matrix and backlog (`docs/adr/security-architecture-decision-matrix.md/.json`, `docs/adr/future-security-adr-backlog.md/.json`).
+- terminology and claims vocabulary (`docs/architecture/terminology-and-claims-vocabulary.md/.json`).
 
 ## Relationship to P5/P6/P7 docs
 

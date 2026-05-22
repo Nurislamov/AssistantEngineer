@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-22",
+  "stage": "P8-05",
+  "runtimeBehaviorChanged": false,
+  "publicApiChanged": false,
+  "authorizationSemanticsChanged": false,
+  "routeBehaviorChanged": false,
+  "classificationCountsBefore": {
+    "total": 69,
+    "deferred": 21,
+    "unknown": 3,
+    "multi": 22
+  },
+  "classificationCountsAfter": {
+    "total": 83,
+    "deferred": 21,
+    "unknown": 0,
+    "multi": 22
+  },
+  "entriesReclassified": [
+    "ThermalZonesController :: UnknownNeedsAudit placeholder -> ProtectedWrite/Building/Compatibility staged metadata.",
+    "RoomGroundContactController :: UnknownNeedsAudit placeholder -> ProtectedWrite/Building/Compatibility staged metadata.",
+    "RoomVentilationController :: UnknownNeedsAudit placeholder -> ProtectedWrite/Building/Compatibility staged metadata.",
+    "EngineeringCoreStatusController routes added to explicit HealthDiagnostics/PublicRead metadata.",
+    "EngineeringWorkflowController validate route added to explicit WorkflowExecute compatibility classification."
+  ],
+  "deferredEntriesRetained": [
+    "Deferred aggregate route groups remain for staged authorization rollout coverage (projects/buildings/workflow/report boundaries).",
+    "Artifact/admin deferred posture remains explicit where dedicated public write/delete route rollout is not completed."
+  ],
+  "ignoreListUpdates": [
+    "Removed AnnualProfilesController ignore entry; route is now explicitly inventoried.",
+    "Removed BuildingValidationController ignore entry; routes are now explicitly inventoried.",
+    "Removed DevelopmentDemoDataController ignore entry; route is now explicitly inventoried.",
+    "Removed DomesticHotWaterController ignore entry; route is now explicitly inventoried.",
+    "Removed EngineeringCoreStatusController ignore entry; routes are now explicitly inventoried.",
+    "Removed EngineeringWorkflowController validate-route ignore entry; route is now explicitly inventoried.",
+    "Removed GroundTemperatureController ignore entry; route is now explicitly inventoried.",
+    "Removed StandardProfilesController ignore entry; route is now explicitly inventoried.",
+    "Removed StandardTablesController ignore entry; routes are now explicitly inventoried."
+  ],
+  "remainingLimitations": [
+    "Route discovery is text-level and not a full runtime endpoint graph.",
+    "Some inventory entries remain MULTI aggregates and should be split in later refinement.",
+    "Deferred staged rollout entries remain by design and are documented with explicit limitations."
+  ],
+  "nonClaims": [
+    "No public API route change claim.",
+    "No authorization behavior change claim.",
+    "No full tenant isolation claim.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No ownership backfill execution claim.",
+    "No production security certification claim."
+  ]
+}

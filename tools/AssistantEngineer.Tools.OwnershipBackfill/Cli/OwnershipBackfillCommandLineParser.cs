@@ -13,6 +13,23 @@ namespace AssistantEngineer.Tools.OwnershipBackfill.Cli;
 
 public sealed class OwnershipBackfillCommandLineParser
 {
+    // Supported commands (behavior-locked): dry-run, validate-evidence, plan-apply, signoff-plan,
+    // validate-apply-readiness, validate-staging-preflight, validate-staging-acceptance,
+    // validate-production-promotion, apply.
+    private static readonly IReadOnlyDictionary<OwnershipBackfillCommandType, Func<IReadOnlyList<string>, OwnershipBackfillCommandLineParseResult>> CommandParsers =
+        new Dictionary<OwnershipBackfillCommandType, Func<IReadOnlyList<string>, OwnershipBackfillCommandLineParseResult>>
+        {
+            [OwnershipBackfillCommandType.DryRun] = ParseDryRunOptions,
+            [OwnershipBackfillCommandType.ValidateEvidence] = ParseValidateEvidenceOptions,
+            [OwnershipBackfillCommandType.ValidateApplyReadiness] = ParseValidateApplyReadinessOptions,
+            [OwnershipBackfillCommandType.ValidateProductionPromotion] = ParseValidateProductionPromotionOptions,
+            [OwnershipBackfillCommandType.ValidateStagingPreflight] = ParseValidateStagingPreflightOptions,
+            [OwnershipBackfillCommandType.ValidateStagingAcceptance] = ParseValidateStagingAcceptanceOptions,
+            [OwnershipBackfillCommandType.Apply] = ParseApplyOptions,
+            [OwnershipBackfillCommandType.PlanApply] = ParsePlanApplyOptions,
+            [OwnershipBackfillCommandType.SignoffPlan] = ParseSignoffPlanOptions
+        };
+
     public OwnershipBackfillCommandLineParseResult Parse(IReadOnlyList<string> args)
     {
         if (args.Count == 0 || IsHelpToken(args[0]))
@@ -21,72 +38,20 @@ public sealed class OwnershipBackfillCommandLineParser
         var command = args[0];
         var commandSpecificHelp = args.Count >= 2 && IsHelpToken(args[1]);
 
-        if (string.Equals(command, "dry-run", StringComparison.OrdinalIgnoreCase))
+        if (!OwnershipBackfillCommandDescriptorCatalog.TryGet(command, out var descriptor))
         {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.DryRun);
-            return ParseDryRunOptions(args.Skip(1).ToArray());
+            return OwnershipBackfillCommandLineParseResult.Failure(
+                OwnershipBackfillHelpText.BuildUnknownCommandMessage(command),
+                exitCode: OwnershipBackfillExitCodes.InvalidInput);
         }
 
-        if (string.Equals(command, "validate-evidence", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateEvidence);
-            return ParseValidateEvidenceOptions(args.Skip(1).ToArray());
-        }
+        if (commandSpecificHelp && descriptor.SupportsHelp)
+            return OwnershipBackfillCommandLineParseResult.Help(descriptor.CommandType);
 
-        if (string.Equals(command, "validate-apply-readiness", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateApplyReadiness);
-            return ParseValidateApplyReadinessOptions(args.Skip(1).ToArray());
-        }
+        if (!CommandParsers.TryGetValue(descriptor.CommandType, out var parser))
+            return OwnershipBackfillCommandLineParseResult.Failure($"Unsupported command: {descriptor.Name}");
 
-        if (string.Equals(command, "validate-production-promotion", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateProductionPromotion);
-            return ParseValidateProductionPromotionOptions(args.Skip(1).ToArray());
-        }
-
-        if (string.Equals(command, "validate-staging-preflight", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateStagingPreflight);
-            return ParseValidateStagingPreflightOptions(args.Skip(1).ToArray());
-        }
-
-        if (string.Equals(command, "validate-staging-acceptance", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.ValidateStagingAcceptance);
-            return ParseValidateStagingAcceptanceOptions(args.Skip(1).ToArray());
-        }
-
-        if (string.Equals(command, "apply", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.Apply);
-            return ParseApplyOptions(args.Skip(1).ToArray());
-        }
-
-        if (string.Equals(command, "plan-apply", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.PlanApply);
-            return ParsePlanApplyOptions(args.Skip(1).ToArray());
-        }
-
-        if (string.Equals(command, "signoff-plan", StringComparison.OrdinalIgnoreCase))
-        {
-            if (commandSpecificHelp)
-                return OwnershipBackfillCommandLineParseResult.Help(OwnershipBackfillCommandType.SignoffPlan);
-            return ParseSignoffPlanOptions(args.Skip(1).ToArray());
-        }
-
-        return OwnershipBackfillCommandLineParseResult.Failure(
-            OwnershipBackfillHelpText.BuildUnknownCommandMessage(command),
-            exitCode: OwnershipBackfillExitCodes.InvalidInput);
+        return parser(args.Skip(1).ToArray());
     }
 
     private static OwnershipBackfillCommandLineParseResult ParseDryRunOptions(IReadOnlyList<string> args)
@@ -1409,16 +1374,7 @@ public sealed class OwnershipBackfillCommandLineParser
     }
 
     private static bool TryReadValue(IReadOnlyList<string> args, ref int index, out string value)
-    {
-        if (index + 1 >= args.Count)
-        {
-            value = string.Empty;
-            return false;
-        }
-
-        value = args[++index];
-        return true;
-    }
+        => OwnershipBackfillArgumentReader.TryReadValue(args, ref index, out value);
 
     private static bool TryReadDouble(IReadOnlyList<string> args, ref int index, out double value)
     {

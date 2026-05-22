@@ -1,0 +1,237 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-03",
+  "runtimeBehaviorChanged": false,
+  "authorizationSemanticsChanged": false,
+  "publicApiChanged": false,
+  "calculationPhysicsChanged": false,
+  "hotspots": [
+    {
+      "id": "P8-03-HOTSPOT-AUTH-GATE",
+      "area": "Authorization",
+      "filePath": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "title": "Protected endpoint authorization gate is a multi-responsibility hotspot",
+      "responsibilities": [
+        "Options-based protection toggles",
+        "Principal authentication and permission checks",
+        "Resource scope resolution across project/building/floor/room/workflow/scenario/job",
+        "Tenant mismatch anti-enumeration decision mapping",
+        "Authorization deny logging"
+      ],
+      "risk": "Mixed responsibilities and repeated branching raise semantic-regression risk when extending protected endpoint coverage.",
+      "recommendedAction": "Introduce characterization-first decomposition with stable facade and focused collaborators.",
+      "proposedStage": "P8-03A",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P8-03C",
+      "resolutionNotes": "Decision factory, tenant mismatch policy, authorization logger, permission evaluator, and scope evaluation service were extracted. Public gate facade and outcome semantics remain unchanged."
+    },
+    {
+      "id": "P8-03-HOTSPOT-WORKFLOW-CONTROLLER",
+      "area": "WorkflowApi",
+      "filePath": "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController*.cs",
+      "title": "EngineeringWorkflowController partial shell is oversized",
+      "responsibilities": [
+        "HTTP adapter actions",
+        "Authorization gate orchestration",
+        "Tenant-scoped read branching and failure mapping",
+        "Workflow job/scenario/state/report/artifact response shaping"
+      ],
+      "risk": "Large partial shell increases coupling between API adapters and application orchestration.",
+      "recommendedAction": "Freeze response behavior first, then split adapter responsibilities from orchestration helpers.",
+      "proposedStage": "P8-03D",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P8-03F",
+      "resolutionNotes": "P8-03D characterized route/action/status/response behavior, P8-03E migrated workflow helpers to module namespace, and P8-03F extracted main-shell validate/prepare orchestration into API adapter collaborator while preserving characterization outcomes."
+    },
+    {
+      "id": "P8-03-HOTSPOT-WORKFLOW-SUBMISSION",
+      "area": "WorkflowApplication",
+      "filePath": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowSubmissionService.cs",
+      "title": "Workflow submission service mixes idempotency, replay, and orchestration concerns",
+      "responsibilities": [
+        "Idempotency evaluation and conflict handling",
+        "Replay path hydration",
+        "Scenario/job orchestration dispatch",
+        "Persistence metadata enrichment"
+      ],
+      "risk": "High branching complexity reduces local testability and increases change risk.",
+      "recommendedAction": "Split replay/idempotency orchestration into dedicated collaborators behind stable service contract.",
+      "proposedStage": "P8-03E",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P8-03E",
+      "resolutionNotes": "Service moved into EngineeringWorkflow module application namespace with API composition adapters; behavior remains characterization-locked."
+    },
+    {
+      "id": "P8-03-HOTSPOT-WORKFLOW-STATE-BUILDER",
+      "area": "WorkflowApplication",
+      "filePath": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowStateBuilder.cs",
+      "title": "Workflow state builder concentrates large transformation pipeline",
+      "responsibilities": [
+        "Snapshot aggregation and fallback synthesis",
+        "Diagnostics normalization and enrichment",
+        "Trace/report summary coupling"
+      ],
+      "risk": "Single-class composition path is hard to evolve safely and complicates boundary ownership.",
+      "recommendedAction": "Extract focused state assembly collaborators while preserving output structure and semantics.",
+      "proposedStage": "P8-03E",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P8-03E",
+      "resolutionNotes": "State builder moved into EngineeringWorkflow module application namespace while preserving output/status semantics."
+    },
+    {
+      "id": "P8-03-HOTSPOT-WORKFLOW-DIAGNOSTICS",
+      "area": "WorkflowApplication",
+      "filePath": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/EngineeringWorkflowDiagnosticsService.cs",
+      "title": "Workflow diagnostics service remains broad despite boundary migration",
+      "responsibilities": [
+        "Diagnostics normalization",
+        "Step status derivation",
+        "Severity mapping",
+        "Persistence-source diagnostic enrichment"
+      ],
+      "risk": "Wide helper responsibility can still increase change risk even after boundary migration.",
+      "recommendedAction": "Keep behavior locked and split focused collaborators in P8-03F or later, if needed.",
+      "proposedStage": "P8-03F",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P8-03E",
+      "resolutionNotes": "Diagnostics helper moved into EngineeringWorkflow module application namespace; behavioral decomposition deferred."
+    }
+  ],
+  "decompositionCandidates": [
+    {
+      "id": "P8-03-CANDIDATE-AUTH-PERMISSION-EVALUATOR",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "responsibility": "Principal permission checks and protection requirement preconditions",
+      "targetComponent": "IProtectedEndpointPermissionEvaluator",
+      "targetNamespace": "AssistantEngineer.Api.Security.Authorization",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Incorrect extraction order may alter denial precedence.",
+      "prerequisites": [
+        "P8-03A characterization tests"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-AUTH-SCOPE-EVALUATION",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "responsibility": "Resource scope resolution and tenant policy evaluation",
+      "targetComponent": "IProtectedEndpointScopeEvaluationService",
+      "targetNamespace": "AssistantEngineer.Api.Security.Authorization",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Scope fallback precedence must remain identical.",
+      "prerequisites": [
+        "P8-03A characterization tests",
+        "P8-03B decision/logging extraction"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-AUTH-DECISION-FACTORY",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "responsibility": "Decision object creation and outcome mapping helpers",
+      "targetComponent": "IProtectedEndpointDecisionFactory",
+      "targetNamespace": "AssistantEngineer.Api.Security.Authorization",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Decision default path drift may affect anti-enumeration behavior.",
+      "prerequisites": [
+        "P8-03A characterization tests"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-AUTH-LOGGER",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "responsibility": "Deny-path logging policy",
+      "targetComponent": "IProtectedEndpointAuthorizationLogger",
+      "targetNamespace": "AssistantEngineer.Api.Security.Authorization",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Log shape drift can reduce auditability.",
+      "prerequisites": [
+        "P8-03A characterization tests"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-AUTH-TENANT-MISMATCH-POLICY",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+      "responsibility": "Forbidden vs NotFound mapping for tenant mismatch",
+      "targetComponent": "IProtectedEndpointTenantMismatchPolicy",
+      "targetNamespace": "AssistantEngineer.Api.Security.Authorization",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Anti-enumeration semantics regression if options precedence changes.",
+      "prerequisites": [
+        "P8-03A characterization tests"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-WORKFLOW-CONTROLLER-ADAPTER-REDUCTION",
+      "sourceFile": "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController*.cs",
+      "responsibility": "Route adapter orchestration currently mixed with validation and mapping details",
+      "targetComponent": "EngineeringWorkflow controller adapter helpers",
+      "targetNamespace": "AssistantEngineer.Api.Controllers.Calculations",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Response contract drift if extraction changes error mapping.",
+      "prerequisites": [
+        "P8-03D characterization tests"
+      ]
+    },
+    {
+      "id": "P8-03-CANDIDATE-WORKFLOW-ORCHESTRATION-MOVE",
+      "sourceFile": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application/Workflow/*.cs",
+      "responsibility": "Post-migration helper decomposition and controller-shell decoupling for module-owned orchestration services",
+      "targetComponent": "EngineeringWorkflow application orchestrators",
+      "targetNamespace": "AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow",
+      "expectedChangeType": "InternalRefactorOnly",
+      "risk": "Composition-root registration drift during namespace/path relocation.",
+      "prerequisites": [
+        "P8-03D characterization tests",
+        "P8-03E staged migration plan"
+      ]
+    }
+  ],
+  "proposedStages": [
+    {
+      "stage": "P8-03A",
+      "title": "ProtectedEndpointAuthorizationGate characterization tests",
+      "scope": "Freeze decision/status matrix without production behavior changes.",
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03B",
+      "title": "Extract decision factory/logger/tenant mismatch policy",
+      "scope": "Internal refactor only with stable gate facade.",
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03C",
+      "title": "Extract permission/scope evaluation collaborators",
+      "scope": "Internal refactor only with unchanged route protection semantics.",
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03D",
+      "title": "Workflow API shell characterization tests",
+      "scope": "Freeze controller response behavior before controller/service decomposition.",
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03E",
+      "title": "Workflow orchestration helper migration",
+      "scope": "Move safe orchestration helpers from API namespace to EngineeringWorkflow module.",
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03F",
+      "title": "EngineeringWorkflowController partial shell reduction",
+      "scope": "Reduce controller shell size with stable route/action signatures.",
+      "status": "Implemented"
+    }
+  ],
+  "nonClaims": [
+    "No authorization behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

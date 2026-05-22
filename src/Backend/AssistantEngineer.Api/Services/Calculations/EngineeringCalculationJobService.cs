@@ -1,5 +1,8 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
+using ApiWorkflowPersistence = AssistantEngineer.Api.Services.Calculations.Persistence.IEngineeringWorkflowPersistenceService;
 
 namespace AssistantEngineer.Api.Services.Calculations;
 
@@ -8,7 +11,7 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
     private const string DirectQueuedExecutorWorkerId = "direct-queued-executor";
     private static readonly TimeSpan DefaultDirectClaimLease = TimeSpan.FromMinutes(5);
 
-    private readonly IEngineeringWorkflowPersistenceService _workflowPersistenceService;
+    private readonly ApiWorkflowPersistence _workflowPersistenceService;
     private readonly IEngineeringCalculationJobRepository _jobRepository;
     private readonly IEngineeringCalculationJobEventRepository _jobEventRepository;
     private readonly ILogger<EngineeringCalculationJobService> _logger;
@@ -19,7 +22,7 @@ public sealed class EngineeringCalculationJobService : IEngineeringCalculationJo
 
     public EngineeringCalculationJobService(
         IEngineeringCalculationScenarioRunner scenarioRunner,
-        IEngineeringWorkflowPersistenceService workflowPersistenceService,
+        ApiWorkflowPersistence workflowPersistenceService,
         IEngineeringCalculationJobRepository jobRepository,
         IEngineeringCalculationJobEventRepository jobEventRepository,
         EngineeringCalculationJobPayloadCodec payloadCodec,

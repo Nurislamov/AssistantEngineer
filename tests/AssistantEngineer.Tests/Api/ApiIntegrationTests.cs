@@ -3,7 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using AssistantEngineer.Api.Contracts.Common;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Cooling;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Heating;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;

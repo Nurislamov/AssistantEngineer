@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-07",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "allowedClaims": [
+    "reference-informed",
+    "pyBuildingEnergy-style methodology reference",
+    "validation anchors",
+    "manual engineering validation fixtures",
+    "governance-ready",
+    "write-path intentionally disabled",
+    "tenant-aware read integration for selected paths",
+    "route protection is options-controlled",
+    "dry-run/evidence/signoff/readiness capable"
+  ],
+  "forbiddenClaims": [
+    "full pyBuildingEnergy parity",
+    "EnergyPlus parity",
+    "ASHRAE 140 validated",
+    "ISO certified",
+    "full tenant isolation",
+    "production security certified",
+    "SOC2 compliant",
+    "ISO27001 compliant",
+    "ownership backfill executed",
+    "production apply enabled",
+    "DB RLS enabled",
+    "global EF query filters enabled"
+  ],
+  "preferredTerms": [
+    "reference-informed",
+    "validation anchors",
+    "governance-ready",
+    "write-path intentionally disabled",
+    "options-controlled rollout",
+    "tenant-aware read integration for selected paths"
+  ],
+  "deprecatedTerms": [
+    "parity as a positive capability claim",
+    "certified security without certification evidence",
+    "full tenant isolation complete",
+    "production apply enabled",
+    "global EF query filters enabled",
+    "DB RLS enabled"
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No authorization behavior change claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No DB row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim."
+  ]
+}

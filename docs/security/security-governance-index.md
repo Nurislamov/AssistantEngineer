@@ -82,6 +82,11 @@ This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 - `docs/architecture/assistantengineer-architecture-map.md`
 - `docs/architecture/legacy-and-dead-code-inventory.md`
 - `docs/architecture/scripts-tools-inventory.md`
+- `docs/architecture/scripts-tools-rationalization.md`
+- `docs/architecture/terminology-and-claims-vocabulary.md`
+- `docs/architecture/terminology-claims-surface-cleanup.md`
+- `docs/architecture/governance-test-brittleness-reduction.md`
+- `docs/architecture/p8-engineering-domain-hardening-closure.md`
 
 ## Audit/release readiness
 
@@ -105,9 +110,17 @@ This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 - `docs/architecture/assistantengineer-architecture-map.json`
 - `docs/architecture/legacy-and-dead-code-inventory.json`
 - `docs/architecture/scripts-tools-inventory.json`
+- `docs/architecture/scripts-tools-rationalization.json`
+- `docs/architecture/terminology-and-claims-vocabulary.json`
+- `docs/architecture/terminology-claims-surface-cleanup.json`
+- `docs/architecture/governance-test-brittleness-reduction.json`
+- `docs/architecture/p8-engineering-domain-hardening-closure.json`
 
 ## Notes
 
 - Stage documents remain as evidence/reference and are not deleted by normalization.
 - Use `docs/security/security-release-boundary.md` for canonical enabled/disabled capability claims.
 - Use `docs/security/security-governance-status-vocabulary.md` for normalized status values.
+- Use `docs/architecture/terminology-and-claims-vocabulary.md` for canonical allowed/forbidden terminology and claim wording.
+- Use `docs/architecture/governance-test-brittleness-reduction.md` for P8-08 semantic assertion migration boundaries and preserved strict guardrail list.
+- Use `docs/architecture/p8-engineering-domain-hardening-closure.md` as the final P8 closure decision and deferred P9 backlog boundary.

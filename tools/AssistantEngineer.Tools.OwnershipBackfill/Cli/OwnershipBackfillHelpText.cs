@@ -5,18 +5,7 @@ namespace AssistantEngineer.Tools.OwnershipBackfill.Cli;
 
 public static class OwnershipBackfillHelpText
 {
-    private static readonly string[] CommandNames =
-    [
-        "dry-run",
-        "validate-evidence",
-        "plan-apply",
-        "signoff-plan",
-        "validate-apply-readiness",
-        "validate-staging-preflight",
-        "validate-staging-acceptance",
-        "validate-production-promotion",
-        "apply"
-    ];
+    private static readonly string[] CommandNames = OwnershipBackfillCommandDescriptorCatalog.CommandNames.ToArray();
 
     public static string Build(IReadOnlyList<string>? args = null)
     {
@@ -102,4 +91,3 @@ public static class OwnershipBackfillHelpText
         return CommandNames.Contains(candidate, StringComparer.OrdinalIgnoreCase) ? candidate : null;
     }
 }
-

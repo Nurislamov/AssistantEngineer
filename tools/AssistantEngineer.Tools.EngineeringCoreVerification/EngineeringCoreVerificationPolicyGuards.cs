@@ -8,6 +8,7 @@ internal sealed class EngineeringCoreVerificationPolicyGuards(
     public void AssertNoForbiddenTerminologyAndClaims(string repoRoot)
     {
         var forbidden = BuildForbiddenTermsAndClaims();
+        var allowedFiles = BuildAllowedTerminologyScanFiles(repoRoot);
         var scanTargets = new[]
         {
             Path.Combine(repoRoot, "README.md"),
@@ -26,6 +27,9 @@ internal sealed class EngineeringCoreVerificationPolicyGuards(
         {
             foreach (var file in fileSystem.EnumerateTextFiles(target))
             {
+                if (allowedFiles.Contains(Path.GetFullPath(file)))
+                    continue;
+
                 var text = fileSystem.ReadAllText(file);
                 foreach (var marker in forbidden)
                 {
@@ -192,5 +196,18 @@ internal sealed class EngineeringCoreVerificationPolicyGuards(
             energy + calc + parity + "Verification",
             "energy" + calc + parity
         ];
+    }
+
+    private static HashSet<string> BuildAllowedTerminologyScanFiles(string repoRoot)
+    {
+        return new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Path.GetFullPath(Path.Combine(repoRoot, "docs", "architecture", "terminology-and-claims-vocabulary.md")),
+            Path.GetFullPath(Path.Combine(repoRoot, "docs", "architecture", "terminology-and-claims-vocabulary.json")),
+            Path.GetFullPath(Path.Combine(repoRoot, "docs", "architecture", "terminology-claims-surface-cleanup.md")),
+            Path.GetFullPath(Path.Combine(repoRoot, "docs", "architecture", "terminology-claims-surface-cleanup.json")),
+            Path.GetFullPath(Path.Combine(repoRoot, "tests", "AssistantEngineer.Tests", "Architecture", "P8TerminologyClaimsVocabularyTests.cs")),
+            Path.GetFullPath(Path.Combine(repoRoot, "tests", "AssistantEngineer.Tests", "Architecture", "P8TerminologyClaimsSurfaceCleanupTests.cs"))
+        };
     }
 }

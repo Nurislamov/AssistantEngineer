@@ -1,0 +1,30 @@
+{
+  "name": "authorization-workflow-decomposition-design",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "authorizationSemanticsChanged",
+    "publicApiChanged",
+    "calculationPhysicsChanged",
+    "targetComponents",
+    "proposedStages",
+    "compatibilityRequirements",
+    "nonClaims"
+  ],
+  "targetComponentRequiredFields": [
+    "id",
+    "component",
+    "layer",
+    "stability",
+    "notes"
+  ],
+  "proposedStageRequiredFields": [
+    "stage",
+    "title",
+    "changeType",
+    "behaviorChangeAllowed"
+  ]
+}

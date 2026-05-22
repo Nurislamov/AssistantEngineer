@@ -1,5 +1,5 @@
 using System.Globalization;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.DomesticHotWater;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Diagnostics;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.DomesticHotWater;

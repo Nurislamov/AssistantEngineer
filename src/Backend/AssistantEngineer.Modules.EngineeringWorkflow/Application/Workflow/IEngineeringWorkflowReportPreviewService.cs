@@ -1,7 +1,7 @@
-﻿using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Engineering;
 
-namespace AssistantEngineer.Api.Services.Calculations.Workflow;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 
 public interface IEngineeringWorkflowReportPreviewService
 {

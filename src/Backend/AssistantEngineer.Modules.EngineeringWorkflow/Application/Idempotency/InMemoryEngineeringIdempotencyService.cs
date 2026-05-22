@@ -3,7 +3,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AssistantEngineer.Api.Services.Calculations.Idempotency;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 
 public sealed class InMemoryEngineeringIdempotencyService : IEngineeringIdempotencyService
 {

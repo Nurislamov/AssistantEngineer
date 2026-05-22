@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-04",
+  "runtimeBehaviorChanged": false,
+  "cliSemanticsChanged": false,
+  "applyEnabled": false,
+  "dbWritePathEnabled": false,
+  "commandsChanged": false,
+  "exitCodesChanged": false,
+  "redactionChanged": false,
+  "parserComponentsAdded": [
+    "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillCommandDescriptor.cs",
+    "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillCommandDescriptorCatalog.cs",
+    "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillArgumentReader.cs",
+    "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillParsedArguments.cs",
+    "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillCommandParseError.cs"
+  ],
+  "testsAddedOrUpdated": [
+    "tests/AssistantEngineer.Tests/Tools/OwnershipBackfill/OwnershipBackfillCommandLineParserCharacterizationTests.cs",
+    "tests/AssistantEngineer.Tests/Tools/OwnershipBackfill/OwnershipBackfillCommandDescriptorCatalogTests.cs",
+    "tests/AssistantEngineer.Tests/Tools/OwnershipBackfill/OwnershipBackfillArgumentReaderTests.cs",
+    "tests/AssistantEngineer.Tests/Tools/OwnershipBackfill/OwnershipBackfillCommandLineParserSimplificationTests.cs",
+    "tests/AssistantEngineer.Tests/Architecture/P8OwnershipBackfillCliParserSimplificationTests.cs"
+  ],
+  "remainingParserResponsibilities": [
+    "Command-specific option validation and options model materialization remain in OwnershipBackfillCommandLineParser.",
+    "Per-command parse branches are preserved to avoid semantic drift in P8-04."
+  ],
+  "deferredItems": [
+    "Optional future extraction of command-specific parse branches into dedicated parser classes after additional characterization."
+  ],
+  "nonClaims": [
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No DB write-path enabled claim.",
+    "No public API route change claim.",
+    "No calculation physics change claim.",
+    "No production security certification claim."
+  ]
+}

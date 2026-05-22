@@ -1,98 +1,115 @@
 {
-  "version": 1,
-  "lastReviewedDate": "2026-05-20",
-  "stage": "P8-00",
-  "modules": [
-    {
-      "name": "AssistantEngineer.Api",
-      "layer": "Api",
-      "ownerArea": "Backend",
-      "notes": "HTTP host/controllers/security entry layer."
-    },
-    {
-      "name": "AssistantEngineer.Infrastructure",
-      "layer": "Infrastructure",
-      "ownerArea": "Backend",
-      "notes": "Persistence integration and wiring."
-    },
-    {
-      "name": "AssistantEngineer.Modules.Buildings",
-      "layer": "Domain/Application",
-      "ownerArea": "Buildings",
-      "notes": "Project/building entities and policies."
-    },
-    {
-      "name": "AssistantEngineer.Modules.Calculations",
-      "layer": "Domain/Application",
-      "ownerArea": "Calculations",
-      "notes": "ISO52016 and calculation services."
-    },
-    {
-      "name": "AssistantEngineer.Modules.EngineeringWorkflow",
-      "layer": "Domain/Application",
-      "ownerArea": "Workflow",
-      "notes": "Scenario/job/workflow orchestration contracts and services."
-    },
-    {
-      "name": "AssistantEngineer.Modules.Identity",
-      "layer": "Domain/Application",
-      "ownerArea": "Identity",
-      "notes": "Access policies and identity abstractions."
-    },
-    {
-      "name": "AssistantEngineer.Modules.Reporting",
-      "layer": "Domain/Application",
-      "ownerArea": "Reporting",
-      "notes": "Report generation contracts and services."
-    },
-    {
-      "name": "AssistantEngineer.SharedKernel",
-      "layer": "SharedKernel",
-      "ownerArea": "Platform",
-      "notes": "Cross-cutting primitives."
-    }
-  ],
-  "tools": [
-    "tools/AssistantEngineer.Tools.OwnershipBackfill",
-    "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
-    "tools/AssistantEngineer.Tools.EngineeringCoreVerification",
-    "tools/AssistantEngineer.Tools.EngineeringCoreEvidence",
-    "tools/AssistantEngineer.Tools.EngineeringCoreContracts",
-    "tools/AssistantEngineer.Tools.EngineeringCore",
-    "tools/AssistantEngineer.Tools.Iso52016Verification",
-    "tools/AssistantEngineer.Tools.EnergyPlusValidation",
-    "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
-    "tools/AssistantEngineer.Tools.RepositoryBoundaries",
-    "tools/AssistantEngineer.Tools.RepositoryHygieneVerification"
-  ],
-  "scripts": [
-    "scripts/engineering-core",
-    "scripts/iso52016"
-  ],
-  "testAreas": [
-    "tests/AssistantEngineer.Tests/Architecture",
-    "tests/AssistantEngineer.Tests/Api",
-    "tests/AssistantEngineer.Tests/Tools"
-  ],
-  "boundaryRules": [
-    "Domain/application modules should not depend on infrastructure or API contracts unless explicitly transitional and documented.",
-    "OwnershipBackfill tooling must remain outside runtime API execution path.",
-    "Release scripts/tools must not introduce runtime write-path behavior.",
-    "Calculation physics logic must remain in runtime C# modules with behavior-locked tests."
-  ],
-  "knownBoundaryRisks": [
-    "EngineeringWorkflow application namespace and contract leakage into AssistantEngineer.Api naming.",
-    "ModuleBoundaryTests currently omit EngineeringWorkflow assembly coverage.",
-    "Large authorization/workflow classes increase boundary erosion risk."
-  ],
-  "nonClaims": [
-    "No calculation physics change claim.",
-    "No full donor-model match claim.",
-    "No external simulator match claim.",
-    "No external standard-case validation completion claim.",
-    "No production security certification claim.",
-    "No full tenant isolation claim.",
-    "No ownership backfill execution claim.",
-    "No DB RLS/global EF query filter claim."
-  ]
+    "version":  1,
+    "lastReviewedDate":  "2026-05-22",
+    "stage":  "P8-09",
+    "modules":  [
+                    {
+                        "name":  "AssistantEngineer.Api",
+                        "layer":  "Api",
+                        "ownerArea":  "Backend",
+                        "notes":  "HTTP host/controllers/security entry layer."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Infrastructure",
+                        "layer":  "Infrastructure",
+                        "ownerArea":  "Backend",
+                        "notes":  "Persistence integration and wiring."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Modules.Buildings",
+                        "layer":  "Domain/Application",
+                        "ownerArea":  "Buildings",
+                        "notes":  "Project/building entities and policies."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Modules.Calculations",
+                        "layer":  "Domain/Application",
+                        "ownerArea":  "Calculations",
+                        "notes":  "ISO52016 and calculation services."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Modules.EngineeringWorkflow",
+                        "layer":  "Domain/Application",
+                        "ownerArea":  "Workflow",
+                        "notes":  "Scenario/job/workflow orchestration contracts and services."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Modules.Identity",
+                        "layer":  "Domain/Application",
+                        "ownerArea":  "Identity",
+                        "notes":  "Access policies and identity abstractions."
+                    },
+                    {
+                        "name":  "AssistantEngineer.Modules.Reporting",
+                        "layer":  "Domain/Application",
+                        "ownerArea":  "Reporting",
+                        "notes":  "Report generation contracts and services."
+                    },
+                    {
+                        "name":  "AssistantEngineer.SharedKernel",
+                        "layer":  "SharedKernel",
+                        "ownerArea":  "Platform",
+                        "notes":  "Cross-cutting primitives."
+                    }
+                ],
+    "tools":  [
+                  "tools/AssistantEngineer.Tools.OwnershipBackfill",
+                  "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
+                  "tools/AssistantEngineer.Tools.EngineeringCoreVerification",
+                  "tools/AssistantEngineer.Tools.EngineeringCoreEvidence",
+                  "tools/AssistantEngineer.Tools.EngineeringCoreContracts",
+                  "tools/AssistantEngineer.Tools.EngineeringCore",
+                  "tools/AssistantEngineer.Tools.Iso52016Verification",
+                  "tools/AssistantEngineer.Tools.EnergyPlusValidation",
+                  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+                  "tools/AssistantEngineer.Tools.EngineeringGovernance",
+                  "tools/AssistantEngineer.Tools.PerformanceBenchmarks",
+                  "tools/AssistantEngineer.Tools.RepositoryBoundaries",
+                  "tools/AssistantEngineer.Tools.RepositoryHygieneVerification"
+              ],
+    "scripts":  [
+                    "scripts/engineering-core",
+                    "scripts/iso52016"
+                ],
+    "testAreas":  [
+                      "tests/AssistantEngineer.Tests/Architecture",
+                      "tests/AssistantEngineer.Tests/Api",
+                      "tests/AssistantEngineer.Tests/Tools"
+                  ],
+    "boundaryRules":  [
+                          "Domain/application modules should not depend on infrastructure or API contracts unless explicitly transitional and documented.",
+                          "EngineeringWorkflow module application contracts/services should use AssistantEngineer.Modules.EngineeringWorkflow.Application.* namespaces.",
+                          "Module-boundary dependency direction is governed by docs/architecture/module-boundary-matrix.json and enforced by architecture tests.",
+                          "Protected endpoint authorization gate remains a stable facade; P8-03A characterization now freezes decision semantics and anti-enumeration outcomes before extraction.",
+                          "EngineeringWorkflow controllers remain API adapters; workflow shell route/signature/status/response behavior is characterized in P8-03D before staged migration.",
+                          "EngineeringWorkflow diagnostics/state/submission orchestration helpers are migrated to module application ownership in P8-03E while API keeps composition-root wiring.",
+                          "EngineeringWorkflow main controller shell uses an API-local action service for validate/prepare orchestration after P8-03F extraction while preserving route/signature/status behavior.",
+                          "OwnershipBackfill tooling must remain outside runtime API execution path.",
+                          "OwnershipBackfill CLI parser uses command-descriptor catalog and shared argument reader after P8-04 while preserving command/help/exit/redaction/apply-disabled semantics.",
+                          "Scripts/tools rationalization in P8-06 classifies wrapper/tool/workflow boundaries and keeps release wrapper semantics stable.",
+                          "Terminology/claims wording for architecture and security governance is normalized by docs/architecture/terminology-and-claims-vocabulary.json in P8-07.",
+                          "Governance test brittleness reduction in P8-08 adds shared semantic assertion helpers while preserving strict behavior-level guardrails.",
+                          "Final P8 closure decision and deferred P9 backlog are documented by docs/architecture/p8-engineering-domain-hardening-closure.json.",
+                          "Release scripts/tools must not introduce runtime write-path behavior.",
+                          "Calculation physics logic must remain in runtime C# modules with behavior-locked tests.",
+                          "Route inventory classification closure in P8-05 reduces unknown classifications and tightens ignore-list coverage without changing controller/runtime behavior."
+                      ],
+    "knownBoundaryRisks":  [
+                               "Workflow and authorization hotspots are staged in P8-03; P8-03A/B/C gate characterization and collaborator extraction, P8-03D workflow controller shell behavior characterization, P8-03E helper migration, and P8-03F main-shell reduction are complete with behavior-lock constraints preserved.",
+                               "OwnershipBackfill command-specific parse branches remain concentrated in parser internals and can be optionally split further in later tooling stages.",
+                               "Infrastructure-to-module dependency surface remains broad and should be reviewed for minimization in later stages.",
+                               "Controller read-history/report-artifact partial shells remain broader than desired and are candidates for optional follow-up decomposition.",
+                               "Route inventory still contains staged Deferred entries (authorization rollout backlog) even after P8-05 unknown-classification closure and ignore-list tightening.",
+                               "Some historical docs still contain repeated status-note blocks and remain candidates for optional P9 deduplication."
+                           ],
+    "nonClaims":  [
+                      "No calculation physics change claim.",
+                      "No full donor-model match claim.",
+                      "No external simulator match claim.",
+                      "No external standard-case validation completion claim.",
+                      "No production security certification claim.",
+                      "No full tenant isolation claim.",
+                      "No ownership backfill execution claim.",
+                      "No DB RLS/global EF query filter claim."
+                  ]
 }

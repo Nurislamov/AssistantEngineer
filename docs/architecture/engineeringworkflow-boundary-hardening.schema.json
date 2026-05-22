@@ -1,0 +1,21 @@
+{
+  "name": "engineeringworkflow-boundary-hardening",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "filesChanged",
+    "namespacesChanged",
+    "deferredItems",
+    "nonClaims"
+  ],
+  "deferredItemRequiredFields": [
+    "id",
+    "description",
+    "proposedStage"
+  ]
+}

@@ -2,7 +2,7 @@ using AssistantEngineer.Modules.Calculations.Application.Contracts.Trace;
 using AssistantEngineer.Modules.Reporting.Application.Contracts.Reports.Engineering;
 using System.Text.Json.Serialization;
 
-namespace AssistantEngineer.Api.Contracts.Calculations;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum EngineeringCalculationScenarioKind

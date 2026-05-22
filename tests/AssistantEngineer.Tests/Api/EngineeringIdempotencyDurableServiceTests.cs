@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Services.Calculations.Idempotency;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

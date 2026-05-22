@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-03",
+  "runtimeBehaviorChanged": false,
+  "authorizationSemanticsChanged": false,
+  "publicApiChanged": false,
+  "calculationPhysicsChanged": false,
+  "targetComponents": [
+    {
+      "id": "P8-03-TARGET-AUTH-GATE-FACADE",
+      "component": "IProtectedEndpointAuthorizationGate",
+      "layer": "ApiSecurityFacade",
+      "stability": "MustRemainStable",
+      "notes": "Public facade contract remains unchanged through P8-03B..P8-03F."
+    },
+    {
+      "id": "P8-03-TARGET-AUTH-PERMISSION-EVALUATOR",
+      "component": "IProtectedEndpointPermissionEvaluator",
+      "layer": "ApiSecurityInternal",
+      "stability": "Internal",
+      "notes": "Owns precondition and principal permission evaluation."
+    },
+    {
+      "id": "P8-03-TARGET-AUTH-SCOPE-EVALUATOR",
+      "component": "IProtectedEndpointScopeEvaluationService",
+      "layer": "ApiSecurityInternal",
+      "stability": "Internal",
+      "notes": "Owns resource scope resolution and policy evaluation orchestration."
+    },
+    {
+      "id": "P8-03-TARGET-AUTH-DECISION-FACTORY",
+      "component": "IProtectedEndpointDecisionFactory",
+      "layer": "ApiSecurityInternal",
+      "stability": "Internal",
+      "notes": "Centralizes outcome construction and default-path consistency."
+    },
+    {
+      "id": "P8-03-TARGET-AUTH-LOGGER",
+      "component": "IProtectedEndpointAuthorizationLogger",
+      "layer": "ApiSecurityInternal",
+      "stability": "Internal",
+      "notes": "Centralizes deny-path structured logging."
+    },
+    {
+      "id": "P8-03-TARGET-AUTH-TENANT-MISMATCH",
+      "component": "IProtectedEndpointTenantMismatchPolicy",
+      "layer": "ApiSecurityInternal",
+      "stability": "Internal",
+      "notes": "Encapsulates forbidden-vs-notfound anti-enumeration policy."
+    },
+    {
+      "id": "P8-03-TARGET-WORKFLOW-CONTROLLER-ADAPTER",
+      "component": "EngineeringWorkflowController adapter shell",
+      "layer": "ApiController",
+      "stability": "MustRemainRouteStable",
+      "notes": "Retains route/action signatures and response contracts."
+    },
+    {
+      "id": "P8-03-TARGET-WORKFLOW-ORCHESTRATION",
+      "component": "Engineering workflow orchestration services",
+      "layer": "ModuleApplication",
+      "stability": "Internal",
+      "notes": "Safe orchestration migration target under module application namespace."
+    }
+  ],
+  "proposedStages": [
+    {
+      "stage": "P8-03A",
+      "title": "ProtectedEndpointAuthorizationGate characterization tests",
+      "changeType": "TestOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03B",
+      "title": "Extract decision factory/logger/tenant mismatch policy",
+      "changeType": "InternalRefactorOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03C",
+      "title": "Extract permission/scope evaluation collaborators",
+      "changeType": "InternalRefactorOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03D",
+      "title": "Workflow API shell characterization tests",
+      "changeType": "TestOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03E",
+      "title": "Move workflow orchestration helpers to module application namespace",
+      "changeType": "InternalRefactorOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    },
+    {
+      "stage": "P8-03F",
+      "title": "Reduce EngineeringWorkflowController partial shell",
+      "changeType": "InternalRefactorOnly",
+      "behaviorChangeAllowed": false,
+      "status": "Implemented"
+    }
+  ],
+  "compatibilityRequirements": [
+    "No public API route change.",
+    "No controller action signature change.",
+    "No DTO shape change.",
+    "No authorization semantics change.",
+    "No route protection behavior change.",
+    "No calculation physics change.",
+    "No numerical expected values change.",
+    "No ownership backfill apply/write-path change."
+  ],
+  "nonClaims": [
+    "No authorization behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

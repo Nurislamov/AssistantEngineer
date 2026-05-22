@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using AssistantEngineer.Api;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Api.Security.ApiKey;
 using AssistantEngineer.Api.Security.Authentication;
 using AssistantEngineer.Api.Security.Authorization;

@@ -2,7 +2,7 @@ using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.CoreStatus;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Services.Calculations.Workflow;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 
 public sealed record EngineeringWorkflowInputSnapshot(
     int ProjectId,

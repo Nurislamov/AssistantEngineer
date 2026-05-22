@@ -1,0 +1,36 @@
+{
+  "name": "module-boundary-matrix",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "components",
+    "nonClaims"
+  ],
+  "componentRequiredFields": [
+    "project",
+    "assembly",
+    "layer",
+    "allowedDependencies",
+    "forbiddenDependencies",
+    "allowedNamespacePrefixes",
+    "forbiddenNamespacePrefixes",
+    "knownExceptions"
+  ],
+  "knownExceptionRequiredFields": [
+    "source",
+    "target",
+    "reason",
+    "proposedStage",
+    "expiresWhen"
+  ],
+  "allowedLayers": [
+    "Api",
+    "DomainModule",
+    "Infrastructure",
+    "Tool",
+    "Test",
+    "SharedKernel"
+  ]
+}

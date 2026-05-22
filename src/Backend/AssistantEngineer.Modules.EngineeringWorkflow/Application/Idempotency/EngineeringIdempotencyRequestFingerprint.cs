@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AssistantEngineer.Api.Services.Calculations.Idempotency;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 
 public static class EngineeringIdempotencyRequestFingerprint
 {

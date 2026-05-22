@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 
 namespace AssistantEngineer.Tests.Persistence;

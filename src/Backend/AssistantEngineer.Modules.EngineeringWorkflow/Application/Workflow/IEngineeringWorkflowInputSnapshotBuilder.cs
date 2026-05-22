@@ -1,4 +1,4 @@
-namespace AssistantEngineer.Api.Services.Calculations.Workflow;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 
 public interface IEngineeringWorkflowInputSnapshotBuilder
 {

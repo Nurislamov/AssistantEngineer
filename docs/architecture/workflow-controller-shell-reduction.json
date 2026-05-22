@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-03F",
+  "runtimeBehaviorChanged": false,
+  "workflowBehaviorChanged": false,
+  "publicApiChanged": false,
+  "dtoShapesChanged": false,
+  "authorizationSemanticsChanged": false,
+  "calculationPhysicsChanged": false,
+  "controllerPartialsChanged": [
+    "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController.cs"
+  ],
+  "apiAdapterCollaboratorsExtracted": [
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Composition/IEngineeringWorkflowControllerActionService.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Composition/EngineeringWorkflowControllerActionService.cs",
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Composition/EngineeringWorkflowServiceRegistration.cs"
+  ],
+  "allowlistEntriesRemoved": [
+    "src/Backend/AssistantEngineer.Api/Services/Calculations/Workflow/EngineeringWorkflowServiceRegistration.cs"
+  ],
+  "remainingControllerResponsibilities": [
+    "Route/action boundary and API metadata.",
+    "Request binding and response/action-result mapping.",
+    "Authorization gate invocation and decision-to-HTTP mapping.",
+    "Tenant-scoped read branch handling and failure mapping."
+  ],
+  "remainingLimitations": [
+    "GET /engineering-workflow/scenarios/{scenarioId}/artifacts unresolved scenario returns 200 with an empty list.",
+    "Unresolved workflow-id fallback authorization limitation remains characterized and unchanged."
+  ],
+  "nonClaims": [
+    "No workflow behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No authorization behavior change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}
+

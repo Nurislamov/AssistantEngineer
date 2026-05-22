@@ -3,7 +3,7 @@ using AssistantEngineer.Modules.Buildings.Application.Facades;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.SharedKernel.Primitives;
 
-namespace AssistantEngineer.Api.Services.Calculations.Workflow;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 
 public sealed class EngineeringWorkflowInputSnapshotBuilder : IEngineeringWorkflowInputSnapshotBuilder
 {

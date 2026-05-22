@@ -1,4 +1,5 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 
 namespace AssistantEngineer.Api.Services.Calculations;

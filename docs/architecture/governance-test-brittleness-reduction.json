@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-21",
+  "stage": "P8-08",
+  "runtimeBehaviorChanged": false,
+  "publicApiChanged": false,
+  "calculationPhysicsChanged": false,
+  "guardrailsWeakened": false,
+  "testsRefactored": [
+    "P8ScriptsToolsRationalizationTests",
+    "P8RouteInventoryClassificationClosureTests",
+    "P8EngineeringDomainArchitectureAuditTests",
+    "P8TerminologyClaimsVocabularyTests",
+    "P8TerminologyClaimsSurfaceCleanupTests"
+  ],
+  "semanticChecksAdded": [
+    "GovernanceSemanticAssertions.AssertJsonBooleanFlagsFalse",
+    "GovernanceSemanticAssertions.AssertNonClaimsContainConcepts",
+    "GovernanceSemanticAssertions.AssertDocumentArtifactsExist",
+    "GovernanceClaimTestHelper.IsAllowedVocabularyOrNonClaimContext"
+  ],
+  "wordingChecksRetained": [
+    "OwnershipBackfill apply disabled message exact-text checks",
+    "Route template/signature exact checks",
+    "Public DTO/property name checks for contract stability",
+    "CLI command-name and exit-code exact checks"
+  ],
+  "remainingBrittleAreas": [
+    "Large required-path governance index assertions require maintenance when new artifacts are added",
+    "Section-header presence checks remain string-based by design"
+  ],
+  "nonClaims": [
+    "No runtime behavior change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No calculation physics change claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No full tenant isolation claim.",
+    "No production security certification claim."
+  ]
+}

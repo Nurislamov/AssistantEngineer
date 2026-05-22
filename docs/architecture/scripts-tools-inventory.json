@@ -1,87 +1,1429 @@
 {
-  "version": 1,
-  "lastReviewedDate": "2026-05-20",
-  "stage": "P8-00",
-  "entries": [
-    {
-      "id": "SCR-001",
-      "path": "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
-      "type": "Script",
-      "category": "ReleaseGateCritical",
-      "reason": "Primary release gate wrapper used in CI/local readiness checks.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "SCR-002",
-      "path": "scripts/engineering-core/verify-engineering-core-v1.ps1",
-      "type": "Script",
-      "category": "KeepAsWrapper",
-      "reason": "Operator-friendly verification wrapper over EngineeringCoreVerification tool.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreVerification",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "SCR-003",
-      "path": "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
-      "type": "Script",
-      "category": "GeneratedArtifactProducer",
-      "reason": "Generates engineering-core release artifacts via tool command.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "SCR-004",
-      "path": "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
-      "type": "Script",
-      "category": "ReleaseGateCritical",
-      "reason": "Release readiness wrapper for ISO52016 verification gate.",
-      "relatedTool": "tools/AssistantEngineer.Tools.Iso52016Verification",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "SCR-005",
-      "path": "scripts/engineering-core/compare-energyplus-validation-fixtures.ps1",
-      "type": "Script",
-      "category": "GeneratedArtifactProducer",
-      "reason": "Comparison/summary producer for validation fixtures.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EnergyPlusValidation",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "TOOL-001",
-      "path": "tools/AssistantEngineer.Tools.OwnershipBackfill",
-      "type": "Tool",
-      "category": "ReleaseGateCritical",
-      "reason": "Critical governance tooling with disabled apply safety boundary and no-write validation chain.",
-      "relatedTool": "tools/AssistantEngineer.Tools.OwnershipBackfill",
-      "recommendedStage": "P8-04"
-    },
-    {
-      "id": "TOOL-002",
-      "path": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
-      "type": "Tool",
-      "category": "ReleaseGateCritical",
-      "reason": "Release-ready gate implementation and summary output source.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EngineeringCoreRelease",
-      "recommendedStage": "P8-06"
-    },
-    {
-      "id": "TOOL-003",
-      "path": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
-      "type": "Tool",
-      "category": "UnknownNeedsReview",
-      "reason": "Tool is active but contains TODO placeholder metadata that needs policy clarification.",
-      "relatedTool": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
-      "recommendedStage": "P8-07"
-    }
-  ],
-  "nonClaims": [
-    "No runtime behavior change claim.",
-    "No calculation physics change claim.",
-    "No production apply enabled claim.",
-    "No ownership backfill execution claim.",
-    "No full tenant isolation claim.",
-    "No production security certification claim."
-  ]
+    "version":  2,
+    "lastReviewedDate":  "2026-05-22",
+    "stage":  "P8-06",
+    "entries":  [
+                    {
+                        "id":  "SCR-001",
+                        "path":  "scripts/engineering-core/assert-engineering-core-v1-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1-release-ready.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EngineeringCoreRelease/AssistantEngineer.Tools.EngineeringCoreRelease.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-002",
+                        "path":  "scripts/engineering-core/assert-ep-smoke-001-real-fixture-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-003",
+                        "path":  "scripts/engineering-core/compare-energyplus-validation-fixtures.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-004",
+                        "path":  "scripts/engineering-core/compare-ep-smoke-001-placeholder.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-005",
+                        "path":  "scripts/engineering-core/generate-calculation-module-inventory.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-006",
+                        "path":  "scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-007",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-api-contract-snapshots.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-008",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-export-disclosure-checklist.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-009",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-release-evidence.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-010",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-report-contract-snapshots.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-011",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-traceability-matrix.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-012",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-validation-comparison-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-013",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-validation-evidence.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-014",
+                        "path":  "scripts/engineering-core/generate-engineering-core-v1-validation-readiness.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-015",
+                        "path":  "scripts/engineering-core/generate-ep-smoke-001-comparison-readiness.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-016",
+                        "path":  "scripts/engineering-core/new-energyplus-validation-fixture.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ConvertToToolCandidate",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Evaluate extraction into strongly-typed tool command in future stage.",
+                        "proposedStage":  "P8-07",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-017",
+                        "path":  "scripts/engineering-core/regenerate-engineering-core-v1-artifacts.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EngineeringCoreRelease/AssistantEngineer.Tools.EngineeringCoreRelease.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-018",
+                        "path":  "scripts/engineering-core/regenerate-engineering-core-v1-validation-artifacts.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1-validation.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-019",
+                        "path":  "scripts/engineering-core/verify-calculation-module-balance-invariants.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-020",
+                        "path":  "scripts/engineering-core/verify-calculation-module-deepening.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-021",
+                        "path":  "scripts/engineering-core/verify-calculation-module-diagnostics-consistency.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-022",
+                        "path":  "scripts/engineering-core/verify-engineering-core-v1.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EngineeringCoreVerification/AssistantEngineer.Tools.EngineeringCoreVerification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-023",
+                        "path":  "scripts/engineering-core/verify-engineering-core-v1-contracts.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1-contracts.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EngineeringCoreRelease/AssistantEngineer.Tools.EngineeringCoreRelease.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-024",
+                        "path":  "scripts/engineering-core/verify-engineering-core-v1-manifest.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-025",
+                        "path":  "scripts/engineering-core/verify-engineering-core-v1-smoke.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1-smoke.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EngineeringCoreRelease/AssistantEngineer.Tools.EngineeringCoreRelease.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-026",
+                        "path":  "scripts/engineering-core/verify-engineering-core-v1-validation.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/engineering-core-v1-validation.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-027",
+                        "path":  "scripts/engineering-core/verify-iso52016-solar-chain.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-028",
+                        "path":  "scripts/engineering-core/verify-p3-13-building-input-validation-refactor.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-029",
+                        "path":  "scripts/engineering-core/verify-p3-14-energy-calculation-pipeline-refactor.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "MixedWrapperLogic",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-030",
+                        "path":  "scripts/iso52016/assert-iso52016-matrix-application-integration-hardening-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-031",
+                        "path":  "scripts/iso52016/assert-iso52016-matrix-engineering-edge-cases-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-032",
+                        "path":  "scripts/iso52016/assert-iso52016-matrix-external-validation-anchors-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-033",
+                        "path":  "scripts/iso52016/assert-iso52016-matrix-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          ".github/workflows/iso52016-matrix-release-ready.yml",
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-034",
+                        "path":  "scripts/iso52016/assert-iso52016-physical-branch-hygiene.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-035",
+                        "path":  "scripts/iso52016/assert-iso52016-physical-chain-final-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-036",
+                        "path":  "scripts/iso52016/assert-iso52016-physical-model-chain-release-ready.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-037",
+                        "path":  "scripts/iso52016/export-iso52016-matrix-baseline-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-038",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-all.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-039",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-application-baselines.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-040",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-041",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-application-integration-hardening-stage-gate.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-042",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-baselines.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-043",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-engineering-edge-cases.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-044",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-engineering-edge-cases-stage-gate.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-045",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-external-validation.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-046",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-047",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-external-validation-anchors-stage-gate.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-048",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-external-validation-annual-anchors.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-049",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-external-validation-naming-anchors.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-050",
+                        "path":  "scripts/iso52016/verify-iso52016-matrix-solver-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-051",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-boundary-profile-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-052",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-branch-hygiene-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-053",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-chain-stage-registry.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-054",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-chain-stage-registry-stage-gate.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-055",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-model-chain.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-056",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-model-selection-application-guard.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-057",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-model-selection-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-058",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-node-model-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-059",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-operation-profile-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-060",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-room-model-diagnostics-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-061",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-room-simulation-service-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-062",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-scenario-anchors-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-063",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-selection-application-integration-hardening.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-064",
+                        "path":  "scripts/iso52016/verify-iso52016-physical-surface-model-stage.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-065",
+                        "path":  "scripts/iso52016/write-iso52016-matrix-application-integration-hardening-merge-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-066",
+                        "path":  "scripts/iso52016/write-iso52016-matrix-engineering-edge-cases-merge-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-067",
+                        "path":  "scripts/iso52016/write-iso52016-matrix-external-validation-anchors-merge-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "SCR-068",
+                        "path":  "scripts/iso52016/write-iso52016-matrix-merge-summary.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Wrapper/orchestration script for engineering verification, release gating, or artifact generation.",
+                        "invokedBy":  [
+                                          "LocalManualOrNestedScript"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep wrapper semantics stable; do not change release/CI defaults.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
+                    },
+                    {
+                        "id":  "TOOL-001",
+                        "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ConvertToToolCandidate",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Review authoring metadata TODO surface and split authoring policy helpers.",
+                        "proposedStage":  "P8-07",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-002",
+                        "path":  "tools/AssistantEngineer.Tools.EnergyPlusValidation/AssistantEngineer.Tools.EnergyPlusValidation.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-003",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringCore/AssistantEngineer.Tools.EngineeringCore.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-004",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringCoreContracts/AssistantEngineer.Tools.EngineeringCoreContracts.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-005",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringCoreEvidence/AssistantEngineer.Tools.EngineeringCoreEvidence.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-006",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringCoreRelease/AssistantEngineer.Tools.EngineeringCoreRelease.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-007",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringCoreVerification/AssistantEngineer.Tools.EngineeringCoreVerification.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-008",
+                        "path":  "tools/AssistantEngineer.Tools.EngineeringGovernance/AssistantEngineer.Tools.EngineeringGovernance.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-009",
+                        "path":  "tools/AssistantEngineer.Tools.Iso52016Verification/AssistantEngineer.Tools.Iso52016Verification.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-010",
+                        "path":  "tools/AssistantEngineer.Tools.OwnershipBackfill/AssistantEngineer.Tools.OwnershipBackfill.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-011",
+                        "path":  "tools/AssistantEngineer.Tools.PerformanceBenchmarks/AssistantEngineer.Tools.PerformanceBenchmarks.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-012",
+                        "path":  "tools/AssistantEngineer.Tools.RepositoryBoundaries/AssistantEngineer.Tools.RepositoryBoundaries.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-013",
+                        "path":  "tools/AssistantEngineer.Tools.RepositoryHygieneVerification/AssistantEngineer.Tools.RepositoryHygieneVerification.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CLI tool project for verification, release gating, governance, or artifact generation.",
+                        "invokedBy":  [
+                                          "scripts/* wrappers",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "WF-001",
+                        "path":  ".github/workflows/engineering-core-v1.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-002",
+                        "path":  ".github/workflows/engineering-core-v1-contracts.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-003",
+                        "path":  ".github/workflows/engineering-core-v1-release-ready.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-004",
+                        "path":  ".github/workflows/engineering-core-v1-smoke.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-005",
+                        "path":  ".github/workflows/engineering-core-v1-validation.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-006",
+                        "path":  ".github/workflows/iso52016-matrix-release-ready.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "CI workflow wrapper for scripted verification/release gates.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/* + dotnet CLI invocations",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
+                        "proposedStage":  "P8-06",
+                        "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    }
+                ],
+    "nonClaims":  [
+                      "No release gate semantics change claim.",
+                      "No calculation physics change claim.",
+                      "No public API route change claim.",
+                      "No ownership backfill execution claim.",
+                      "No production apply enabled claim.",
+                      "No DB row-level security claim.",
+                      "No global EF query filter claim.",
+                      "No production security certification claim."
+                  ]
 }

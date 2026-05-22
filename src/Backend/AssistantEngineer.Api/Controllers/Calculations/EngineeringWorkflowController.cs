@@ -1,18 +1,19 @@
 using AssistantEngineer.Api;
 using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Configuration;
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Options.Security;
 using AssistantEngineer.Api.Querying.Projects;
 using AssistantEngineer.Api.Services.Calculations;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
+using AssistantEngineer.Api.Services.Calculations.Composition;
 using AssistantEngineer.Api.Security.Authorization;
 using AssistantEngineer.Api.Security.TenantIsolation;
 using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
-using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.Modules.Identity.Domain.Enums;
+using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
@@ -29,13 +30,13 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
     private const string IdempotencyHeaderName = "Idempotency-Key";
     private const int WorkflowListMaxPageSize = 200;
 
+    private readonly IEngineeringWorkflowControllerActionService _actionService;
     private readonly IEngineeringWorkflowStateBuilder _stateBuilder;
     private readonly IEngineeringWorkflowDiagnosticsService _workflowDiagnostics;
     private readonly IEngineeringWorkflowTracePreviewService _tracePreviewService;
     private readonly IEngineeringWorkflowReportPreviewService _reportPreviewService;
     private readonly IEngineeringReportJsonExporter _reportJsonExporter;
     private readonly IEngineeringReportMarkdownExporter _reportMarkdownExporter;
-    private readonly IEngineeringCalculationScenarioRunner _scenarioRunner;
     private readonly IEngineeringCalculationJobService _jobService;
     private readonly IEngineeringWorkflowPersistenceService _workflowPersistence;
     private readonly IEngineeringWorkflowSubmissionService _workflowSubmissionService;
@@ -45,13 +46,13 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
     private readonly IOptionsMonitor<ApiAuthorizationOptions> _authorizationOptions;
 
     public EngineeringWorkflowController(
+        IEngineeringWorkflowControllerActionService actionService,
         IEngineeringWorkflowStateBuilder stateBuilder,
         IEngineeringWorkflowDiagnosticsService workflowDiagnostics,
         IEngineeringWorkflowTracePreviewService tracePreviewService,
         IEngineeringWorkflowReportPreviewService reportPreviewService,
         IEngineeringReportJsonExporter reportJsonExporter,
         IEngineeringReportMarkdownExporter reportMarkdownExporter,
-        IEngineeringCalculationScenarioRunner scenarioRunner,
         IEngineeringCalculationJobService jobService,
         IEngineeringWorkflowPersistenceService workflowPersistence,
         IEngineeringWorkflowSubmissionService workflowSubmissionService,
@@ -60,13 +61,13 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         ITenantQueryContextFactory tenantQueryContextFactory,
         IOptionsMonitor<ApiAuthorizationOptions> authorizationOptions)
     {
+        _actionService = actionService;
         _stateBuilder = stateBuilder;
         _workflowDiagnostics = workflowDiagnostics;
         _tracePreviewService = tracePreviewService;
         _reportPreviewService = reportPreviewService;
         _reportJsonExporter = reportJsonExporter;
         _reportMarkdownExporter = reportMarkdownExporter;
-        _scenarioRunner = scenarioRunner;
         _jobService = jobService;
         _workflowPersistence = workflowPersistence;
         _workflowSubmissionService = workflowSubmissionService;
@@ -81,20 +82,8 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         [FromBody] EngineeringWorkflowValidationRequestDto request,
         CancellationToken cancellationToken)
     {
-        var diagnostics = _workflowDiagnostics.ValidateState(request.State);
-        var steps = _workflowDiagnostics.BuildStepStatuses(request.State, diagnostics);
-        var stateToPersist = request.State with
-        {
-            Diagnostics = diagnostics,
-            Steps = steps
-        };
-
-        await _workflowPersistence.SaveWorkflowStateAsync(stateToPersist, diagnostics, cancellationToken);
-
-        return Ok(new EngineeringWorkflowValidationResponseDto(
-            IsValid: diagnostics.All(diagnostic => !_workflowDiagnostics.IsErrorSeverity(diagnostic.Severity)),
-            Diagnostics: diagnostics,
-            Steps: steps));
+        var response = await _actionService.ValidateAsync(request, cancellationToken);
+        return Ok(response);
     }
 
     [HttpPost("prepare-calculation")]
@@ -113,62 +102,7 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
             return ToAuthorizationActionResult(authorizationDecision);
         }
 
-        var scenarioRequest = new EngineeringCalculationScenarioRequestDto(
-            ScenarioId: $"wf-prep-{request.State.ProjectId}-{request.State.BuildingId?.ToString() ?? "none"}",
-            ProjectId: request.State.ProjectId,
-            BuildingId: request.State.BuildingId,
-            ScenarioKind: EngineeringCalculationScenarioKind.FullEngineeringCore,
-            ExecutionMode: EngineeringCalculationExecutionMode.PrepareOnly,
-            State: request.State,
-            RequestedModules: request.State.AvailableModules,
-            DetailLevel: "Summary",
-            IncludeTrace: false,
-            IncludeReport: false,
-            ReportFormats: ["Json"],
-            DeterministicTimestampUtc: null,
-            DiagnosticsMode: "Deterministic");
-
-        var scenarioResult = await _scenarioRunner.RunAsync(scenarioRequest, cancellationToken);
-        var persistedScenario = await _workflowPersistence.SavePreparedScenarioAsync(
-            scenarioRequest,
-            scenarioResult,
-            cancellationToken);
-
-        var preview = new SortedDictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["projectId"] = request.State.ProjectId.ToString(),
-            ["projectName"] = request.State.ProjectName,
-            ["buildingId"] = request.State.BuildingId?.ToString() ?? "n/a",
-            ["currentStep"] = request.State.CurrentStep,
-            ["zonesCount"] = request.State.Zones.Count.ToString(),
-            ["boundariesCount"] = request.State.Boundaries.Count.ToString(),
-            ["diagnosticsCount"] = scenarioResult.ValidationDiagnostics.Count.ToString(),
-            ["availableModulesCount"] = request.State.AvailableModules.Count.ToString(),
-            ["scenarioStatus"] = scenarioResult.Status.ToString(),
-            ["scenarioId"] = persistedScenario.ScenarioId
-        };
-
-        var status = scenarioResult.Status is EngineeringCalculationExecutionStatus.FailedValidation or EngineeringCalculationExecutionStatus.FailedExecution
-            ? "blocked"
-            : "prepared";
-
-        var providerInfo = _workflowPersistence.GetProviderInfo();
-        var metadata = scenarioResult.Metadata
-            .OrderBy(item => item.Key, StringComparer.Ordinal)
-            .ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
-        metadata["persistence"] = providerInfo.ProviderLabel;
-        metadata["persistenceProvider"] = providerInfo.Provider.ToString();
-        metadata["durablePersistenceEnabled"] = providerInfo.DurableEnabled ? "true" : "false";
-
-        var response = new EngineeringWorkflowCalculationPreparationResponseDto(
-            RequestId: persistedScenario.ScenarioId,
-            Status: status,
-            Executed: false,
-            RequestPreview: preview,
-            Assumptions: scenarioResult.Assumptions,
-            Diagnostics: scenarioResult.ValidationDiagnostics,
-            Metadata: metadata);
-
+        var response = await _actionService.PrepareCalculationAsync(request, cancellationToken);
         return Ok(response);
     }
 
@@ -274,7 +208,7 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
         return Ok(result);
     }
 
-    private static CollectionQueryParameters NormalizeWorkflowListQuery(CollectionQueryParameters query)
+    internal static CollectionQueryParameters NormalizeWorkflowListQuery(CollectionQueryParameters query)
     {
         var page = query.GetPage();
         var pageSize = Math.Min(query.GetPageSize(), WorkflowListMaxPageSize);
@@ -311,4 +245,21 @@ public sealed partial class EngineeringWorkflowController : ControllerBase
             includeUnscopedResourcesInTenantLists: includeUnscopedResourcesInTenantLists,
             returnNotFoundForTenantMismatch: options.ShouldReturnNotFoundForWorkflowTenantMismatch());
     }
+
+    private static AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence.EngineeringWorkflowPersistenceProviderInfo MapWorkflowPersistenceProviderInfo(
+        EngineeringWorkflowPersistenceProviderInfo providerInfo)
+    {
+        var provider = providerInfo.Provider switch
+        {
+            EngineeringWorkflowPersistenceProvider.SQLite => AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence.EngineeringWorkflowPersistenceProvider.SQLite,
+            EngineeringWorkflowPersistenceProvider.None => AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence.EngineeringWorkflowPersistenceProvider.None,
+            _ => AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence.EngineeringWorkflowPersistenceProvider.InMemory
+        };
+
+        return new AssistantEngineer.Modules.EngineeringWorkflow.Application.Persistence.EngineeringWorkflowPersistenceProviderInfo(
+            Provider: provider,
+            DurableEnabled: providerInfo.DurableEnabled,
+            ProviderLabel: providerInfo.ProviderLabel);
+    }
+
 }

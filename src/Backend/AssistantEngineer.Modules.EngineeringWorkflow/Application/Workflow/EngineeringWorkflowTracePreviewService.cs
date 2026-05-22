@@ -1,8 +1,8 @@
-﻿using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Trace;
 using AssistantEngineer.Modules.Calculations.Application.Contracts.Trace;
 
-namespace AssistantEngineer.Api.Services.Calculations.Workflow;
+namespace AssistantEngineer.Modules.EngineeringWorkflow.Application.Workflow;
 
 public sealed class EngineeringWorkflowTracePreviewService : IEngineeringWorkflowTracePreviewService
 {

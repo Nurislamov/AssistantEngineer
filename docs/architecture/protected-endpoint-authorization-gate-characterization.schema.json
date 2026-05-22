@@ -1,0 +1,44 @@
+{
+  "name": "protected-endpoint-authorization-gate-characterization",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "authorizationSemanticsChanged",
+    "publicApiChanged",
+    "calculationPhysicsChanged",
+    "characterizedDecisionCases",
+    "statusCodeMatrix",
+    "optionGateMatrix",
+    "antiEnumerationMatrix",
+    "knownLimitations",
+    "nonClaims"
+  ],
+  "characterizedDecisionCaseRequiredFields": [
+    "id",
+    "capability",
+    "optionFlags",
+    "principalState",
+    "permissionState",
+    "scopeState",
+    "tenantMismatchPolicy",
+    "expectedStatusCode",
+    "expectedDecisionName",
+    "expectedResultKind",
+    "coveredByTests"
+  ],
+  "statusCodeMatrixRequiredFields": [
+    "decisionName",
+    "statusCode"
+  ],
+  "optionGateMatrixRequiredFields": [
+    "condition",
+    "expectedDecision"
+  ],
+  "antiEnumerationMatrixRequiredFields": [
+    "condition",
+    "expectedDecision"
+  ]
+}

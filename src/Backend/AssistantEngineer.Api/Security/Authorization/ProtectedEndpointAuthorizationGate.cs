@@ -3,6 +3,8 @@ using AssistantEngineer.Api.Security.Authentication;
 using AssistantEngineer.Modules.Identity.Application.Contracts.Access;
 using AssistantEngineer.Modules.Identity.Application.Services.Access;
 using AssistantEngineer.Modules.Identity.Domain.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Security.Authorization;
@@ -11,14 +13,30 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
 {
     private readonly IOptionsMonitor<ApiAuthorizationOptions> _optionsMonitor;
     private readonly IWebHostEnvironment _environment;
-    private readonly IAuthenticatedPrincipalProvider _principalProvider;
-    private readonly IProjectReadAccessScopeResolver _projectScopeResolver;
-    private readonly IBuildingReadAccessScopeResolver _buildingScopeResolver;
-    private readonly IFloorAccessScopeResolver _floorScopeResolver;
-    private readonly IRoomAccessScopeResolver _roomScopeResolver;
-    private readonly IWorkflowAccessScopeResolver _workflowScopeResolver;
-    private readonly ProjectTenantAccessPolicy _accessPolicy;
-    private readonly ILogger<ProtectedEndpointAuthorizationGate> _logger;
+    private readonly IProtectedEndpointAuthorizationDecisionFactory _decisionFactory;
+    private readonly IProtectedEndpointPermissionEvaluator _permissionEvaluator;
+    private readonly IProtectedEndpointScopeEvaluationService _scopeEvaluationService;
+    private readonly IProtectedEndpointTenantMismatchPolicy _tenantMismatchPolicy;
+    private readonly IProtectedEndpointAuthorizationLogger _authorizationLogger;
+
+    [ActivatorUtilitiesConstructor]
+    public ProtectedEndpointAuthorizationGate(
+        IOptionsMonitor<ApiAuthorizationOptions> optionsMonitor,
+        IWebHostEnvironment environment,
+        IProtectedEndpointAuthorizationDecisionFactory decisionFactory,
+        IProtectedEndpointPermissionEvaluator permissionEvaluator,
+        IProtectedEndpointScopeEvaluationService scopeEvaluationService,
+        IProtectedEndpointTenantMismatchPolicy tenantMismatchPolicy,
+        IProtectedEndpointAuthorizationLogger authorizationLogger)
+    {
+        _optionsMonitor = optionsMonitor;
+        _environment = environment;
+        _decisionFactory = decisionFactory;
+        _permissionEvaluator = permissionEvaluator;
+        _scopeEvaluationService = scopeEvaluationService;
+        _tenantMismatchPolicy = tenantMismatchPolicy;
+        _authorizationLogger = authorizationLogger;
+    }
 
     public ProtectedEndpointAuthorizationGate(
         IOptionsMonitor<ApiAuthorizationOptions> optionsMonitor,
@@ -31,17 +49,21 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         IWorkflowAccessScopeResolver workflowScopeResolver,
         ProjectTenantAccessPolicy accessPolicy,
         ILogger<ProtectedEndpointAuthorizationGate> logger)
+        : this(
+            optionsMonitor,
+            environment,
+            new ProtectedEndpointAuthorizationDecisionFactory(),
+            new ProtectedEndpointPermissionEvaluator(principalProvider),
+            new ProtectedEndpointScopeEvaluationService(
+                projectScopeResolver,
+                buildingScopeResolver,
+                floorScopeResolver,
+                roomScopeResolver,
+                workflowScopeResolver,
+                accessPolicy),
+            new ProtectedEndpointTenantMismatchPolicy(),
+            new ProtectedEndpointAuthorizationLogger(logger))
     {
-        _optionsMonitor = optionsMonitor;
-        _environment = environment;
-        _principalProvider = principalProvider;
-        _projectScopeResolver = projectScopeResolver;
-        _buildingScopeResolver = buildingScopeResolver;
-        _floorScopeResolver = floorScopeResolver;
-        _roomScopeResolver = roomScopeResolver;
-        _workflowScopeResolver = workflowScopeResolver;
-        _accessPolicy = accessPolicy;
-        _logger = logger;
     }
 
     public Task<ProtectedEndpointAuthorizationDecision> RequirePermissionAsync(
@@ -53,24 +75,24 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsProtectionRequired(options, permission))
         {
-            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+            return Task.FromResult(_decisionFactory.Allowed());
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Allowed);
+            return Task.FromResult(_decisionFactory.Allowed());
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        var evaluation = _permissionEvaluator.Evaluate(permission);
+        if (!evaluation.IsAuthenticated)
         {
-            return Task.FromResult(ProtectedEndpointAuthorizationDecision.Unauthorized);
+            return Task.FromResult(_decisionFactory.Unauthorized());
         }
 
         return Task.FromResult(
-            HasPermission(principal, permission)
-                ? ProtectedEndpointAuthorizationDecision.Allowed
-                : ProtectedEndpointAuthorizationDecision.Forbidden);
+            evaluation.HasPermission
+                ? _decisionFactory.Allowed()
+                : _decisionFactory.Forbidden());
     }
 
     public async Task<ProtectedEndpointAuthorizationDecision> RequireProjectPermissionAsync(
@@ -81,26 +103,26 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsProtectionRequired(options, permission))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(permission, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
+            return denialDecision!.Value;
         }
 
-        if (!HasPermission(principal, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
-        }
+        var scopeResult = await _scopeEvaluationService.EvaluateProjectScopeAsync(
+            principal,
+            projectId,
+            permission,
+            cancellationToken);
 
-        return await AuthorizeProjectScopeAsync(principal, projectId, permission, options, cancellationToken);
+        return ResolveScopedDecision(scopeResult, options, permission);
     }
 
     public async Task<ProtectedEndpointAuthorizationDecision> RequireBuildingPermissionAsync(
@@ -111,26 +133,26 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsProtectionRequired(options, permission))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(permission, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
+            return denialDecision!.Value;
         }
 
-        if (!HasPermission(principal, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
-        }
+        var scopeResult = await _scopeEvaluationService.EvaluateBuildingScopeAsync(
+            principal,
+            buildingId,
+            permission,
+            cancellationToken);
 
-        return await AuthorizeBuildingScopeAsync(principal, buildingId, permission, options, cancellationToken);
+        return ResolveScopedDecision(scopeResult, options, permission);
     }
 
     public async Task<ProtectedEndpointAuthorizationDecision> RequireWorkflowPermissionAsync(
@@ -143,49 +165,61 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsWorkflowProtectionRequired(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(permission, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
-        }
-
-        if (!HasPermission(principal, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
+            return denialDecision!.Value;
         }
 
         if (!string.IsNullOrWhiteSpace(workflowId))
         {
-            var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
-            if (workflowScope is not null)
+            var workflowScopeResult = await _scopeEvaluationService.EvaluateWorkflowScopeAsync(
+                principal,
+                workflowId,
+                permission,
+                cancellationToken);
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.Allowed)
             {
-                var workflowScopeDecision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId: null);
-                if (workflowScopeDecision.HasValue)
-                {
-                    return workflowScopeDecision.Value;
-                }
+                return _decisionFactory.Allowed();
+            }
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.TenantMismatch)
+            {
+                return ResolveTenantMismatchDecision(workflowScopeResult, options, permission, workflowId, artifactId: null);
             }
         }
 
         if (buildingId.HasValue)
         {
-            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, permission, options, cancellationToken);
+            var buildingScopeResult = await _scopeEvaluationService.EvaluateBuildingScopeAsync(
+                principal,
+                buildingId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(buildingScopeResult, options, permission);
         }
 
         if (projectId.HasValue)
         {
-            return await AuthorizeProjectScopeAsync(principal, projectId.Value, permission, options, cancellationToken);
+            var projectScopeResult = await _scopeEvaluationService.EvaluateProjectScopeAsync(
+                principal,
+                projectId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(projectScopeResult, options, permission);
         }
 
-        return ProtectedEndpointAuthorizationDecision.Allowed;
+        return _decisionFactory.Allowed();
     }
 
     public async Task<ProtectedEndpointAuthorizationDecision> RequireCalculationPermissionAsync(
@@ -199,58 +233,64 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsCalculationProtectionRequired(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(permission, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
-        }
-
-        if (!HasPermission(principal, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
+            return denialDecision!.Value;
         }
 
         if (roomId.HasValue)
         {
-            var roomScope = await _roomScopeResolver.ResolveRoomScopeAsync(roomId.Value, cancellationToken);
-            if (roomScope is null)
-            {
-                return ProtectedEndpointAuthorizationDecision.NotFound;
-            }
+            var roomScopeResult = await _scopeEvaluationService.EvaluateRoomScopeAsync(
+                principal,
+                roomId.Value,
+                permission,
+                cancellationToken);
 
-            return await AuthorizeBuildingScopeAsync(principal, roomScope.BuildingId, permission, options, cancellationToken);
+            return ResolveScopedDecision(roomScopeResult, options, permission);
         }
 
         if (floorId.HasValue)
         {
-            var floorScope = await _floorScopeResolver.ResolveFloorScopeAsync(floorId.Value, cancellationToken);
-            if (floorScope is null)
-            {
-                return ProtectedEndpointAuthorizationDecision.NotFound;
-            }
+            var floorScopeResult = await _scopeEvaluationService.EvaluateFloorScopeAsync(
+                principal,
+                floorId.Value,
+                permission,
+                cancellationToken);
 
-            return await AuthorizeBuildingScopeAsync(principal, floorScope.BuildingId, permission, options, cancellationToken);
+            return ResolveScopedDecision(floorScopeResult, options, permission);
         }
 
         if (buildingId.HasValue)
         {
-            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, permission, options, cancellationToken);
+            var buildingScopeResult = await _scopeEvaluationService.EvaluateBuildingScopeAsync(
+                principal,
+                buildingId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(buildingScopeResult, options, permission);
         }
 
         if (projectId.HasValue)
         {
-            return await AuthorizeProjectScopeAsync(principal, projectId.Value, permission, options, cancellationToken);
+            var projectScopeResult = await _scopeEvaluationService.EvaluateProjectScopeAsync(
+                principal,
+                projectId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(projectScopeResult, options, permission);
         }
 
-        return ProtectedEndpointAuthorizationDecision.Allowed;
+        return _decisionFactory.Allowed();
     }
 
     public Task<ProtectedEndpointAuthorizationDecision> RequireReportReadPermissionAsync(
@@ -330,26 +370,20 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!IsWorkflowReadProtectionRequired(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(Permission.WorkflowsRead, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
+            return denialDecision!.Value;
         }
 
-        if (!HasPermission(principal, Permission.WorkflowsRead))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
-        }
-
-        var scopeDecision = await AuthorizeWorkflowScopeByAnyIdentifierAsync(
+        var workflowDecision = await EvaluateWorkflowScopeByAnyIdentifierAsync(
             principal,
             Permission.WorkflowsRead,
             options,
@@ -357,34 +391,39 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
             scenarioId,
             jobId,
             cancellationToken);
-        if (scopeDecision.HasValue)
+        if (workflowDecision.HasValue)
         {
-            return scopeDecision.Value;
+            return workflowDecision.Value;
         }
 
         if (buildingId.HasValue)
         {
-            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, Permission.WorkflowsRead, options, cancellationToken);
+            var buildingScopeResult = await _scopeEvaluationService.EvaluateBuildingScopeAsync(
+                principal,
+                buildingId.Value,
+                Permission.WorkflowsRead,
+                cancellationToken);
+
+            return ResolveScopedDecision(buildingScopeResult, options, Permission.WorkflowsRead);
         }
 
         if (projectId.HasValue)
         {
-            return await AuthorizeProjectScopeAsync(principal, projectId.Value, Permission.WorkflowsRead, options, cancellationToken);
+            var projectScopeResult = await _scopeEvaluationService.EvaluateProjectScopeAsync(
+                principal,
+                projectId.Value,
+                Permission.WorkflowsRead,
+                cancellationToken);
+
+            return ResolveScopedDecision(projectScopeResult, options, Permission.WorkflowsRead);
         }
 
-        return ProtectedEndpointAuthorizationDecision.Allowed;
+        return _decisionFactory.Allowed();
     }
 
     private bool CanBypassDevelopmentAnonymous(ApiAuthorizationOptions options)
     {
         return _environment.IsDevelopment() && options.AllowAnonymousInDevelopment;
-    }
-
-    private static bool HasPermission(AuthenticatedPrincipal principal, Permission permission)
-    {
-        var requiredPermission = permission.ToString();
-        return principal.Permissions.Any(candidate =>
-            string.Equals(candidate, requiredPermission, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool IsProtectionRequired(ApiAuthorizationOptions options, Permission permission)
@@ -512,52 +551,64 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
         var options = _optionsMonitor.CurrentValue;
         if (!isProtectionRequired(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
         if (CanBypassDevelopmentAnonymous(options))
         {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
+            return _decisionFactory.Allowed();
         }
 
-        var principal = _principalProvider.GetCurrentPrincipal();
-        if (!principal.IsAuthenticated)
+        if (!TryEvaluatePermission(permission, out var principal, out var denialDecision))
         {
-            return ProtectedEndpointAuthorizationDecision.Unauthorized;
-        }
-
-        if (!HasPermission(principal, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Forbidden;
+            return denialDecision!.Value;
         }
 
         if (!string.IsNullOrWhiteSpace(workflowId))
         {
-            var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
-            if (workflowScope is not null)
+            var workflowScopeResult = await _scopeEvaluationService.EvaluateWorkflowScopeAsync(
+                principal,
+                workflowId,
+                permission,
+                cancellationToken);
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.Allowed)
             {
-                var workflowScopeDecision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId);
-                if (workflowScopeDecision.HasValue)
-                {
-                    return workflowScopeDecision.Value;
-                }
+                return _decisionFactory.Allowed();
+            }
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.TenantMismatch)
+            {
+                return ResolveTenantMismatchDecision(workflowScopeResult, options, permission, workflowId, artifactId);
             }
         }
 
         if (buildingId.HasValue)
         {
-            return await AuthorizeBuildingScopeAsync(principal, buildingId.Value, permission, options, cancellationToken);
+            var buildingScopeResult = await _scopeEvaluationService.EvaluateBuildingScopeAsync(
+                principal,
+                buildingId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(buildingScopeResult, options, permission);
         }
 
         if (projectId.HasValue)
         {
-            return await AuthorizeProjectScopeAsync(principal, projectId.Value, permission, options, cancellationToken);
+            var projectScopeResult = await _scopeEvaluationService.EvaluateProjectScopeAsync(
+                principal,
+                projectId.Value,
+                permission,
+                cancellationToken);
+
+            return ResolveScopedDecision(projectScopeResult, options, permission);
         }
 
-        return ProtectedEndpointAuthorizationDecision.Allowed;
+        return _decisionFactory.Allowed();
     }
 
-    private async Task<ProtectedEndpointAuthorizationDecision?> AuthorizeWorkflowScopeByAnyIdentifierAsync(
+    private async Task<ProtectedEndpointAuthorizationDecision?> EvaluateWorkflowScopeByAnyIdentifierAsync(
         AuthenticatedPrincipal principal,
         Permission permission,
         ApiAuthorizationOptions options,
@@ -568,139 +619,143 @@ public sealed class ProtectedEndpointAuthorizationGate : IProtectedEndpointAutho
     {
         if (!string.IsNullOrWhiteSpace(workflowId))
         {
-            var workflowScope = await _workflowScopeResolver.ResolveWorkflowScopeAsync(workflowId, cancellationToken);
-            if (workflowScope is not null)
+            var workflowScopeResult = await _scopeEvaluationService.EvaluateWorkflowScopeAsync(
+                principal,
+                workflowId,
+                permission,
+                cancellationToken);
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.Allowed)
             {
-                var decision = AuthorizeResolvedWorkflowScope(principal, workflowScope, permission, options, workflowId, artifactId: null);
-                if (decision.HasValue)
-                {
-                    return decision.Value;
-                }
+                return _decisionFactory.Allowed();
+            }
+
+            if (workflowScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.TenantMismatch)
+            {
+                return ResolveTenantMismatchDecision(workflowScopeResult, options, permission, workflowId, artifactId: null);
             }
         }
 
         if (!string.IsNullOrWhiteSpace(scenarioId))
         {
-            var scenarioScope = await _workflowScopeResolver.ResolveScenarioScopeAsync(scenarioId, cancellationToken);
-            if (scenarioScope is not null)
+            var scenarioScopeResult = await _scopeEvaluationService.EvaluateScenarioScopeAsync(
+                principal,
+                scenarioId,
+                permission,
+                cancellationToken);
+
+            if (scenarioScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.Allowed)
             {
-                var decision = AuthorizeResolvedWorkflowScope(principal, scenarioScope, permission, options, scenarioId, artifactId: null);
-                if (decision.HasValue)
-                {
-                    return decision.Value;
-                }
+                return _decisionFactory.Allowed();
+            }
+
+            if (scenarioScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.TenantMismatch)
+            {
+                return ResolveTenantMismatchDecision(scenarioScopeResult, options, permission, scenarioId, artifactId: null);
             }
         }
 
         if (!string.IsNullOrWhiteSpace(jobId))
         {
-            var jobScope = await _workflowScopeResolver.ResolveJobScopeAsync(jobId, cancellationToken);
-            if (jobScope is not null)
+            var jobScopeResult = await _scopeEvaluationService.EvaluateJobScopeAsync(
+                principal,
+                jobId,
+                permission,
+                cancellationToken);
+
+            if (jobScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.Allowed)
             {
-                var decision = AuthorizeResolvedWorkflowScope(principal, jobScope, permission, options, jobId, artifactId: null);
-                if (decision.HasValue)
-                {
-                    return decision.Value;
-                }
+                return _decisionFactory.Allowed();
+            }
+
+            if (jobScopeResult.Kind == ProtectedEndpointScopeEvaluationKind.TenantMismatch)
+            {
+                return ResolveTenantMismatchDecision(jobScopeResult, options, permission, jobId, artifactId: null);
             }
         }
 
         return null;
     }
 
-    private ProtectedEndpointAuthorizationDecision? AuthorizeResolvedWorkflowScope(
-        AuthenticatedPrincipal principal,
-        WorkflowAccessScope workflowScope,
+    private bool TryEvaluatePermission(
         Permission permission,
+        out AuthenticatedPrincipal principal,
+        out ProtectedEndpointAuthorizationDecision? denialDecision)
+    {
+        var evaluation = _permissionEvaluator.Evaluate(permission);
+        principal = evaluation.Principal;
+
+        if (!evaluation.IsAuthenticated)
+        {
+            denialDecision = _decisionFactory.Unauthorized();
+            return false;
+        }
+
+        if (!evaluation.HasPermission)
+        {
+            denialDecision = _decisionFactory.Forbidden();
+            return false;
+        }
+
+        denialDecision = null;
+        return true;
+    }
+
+    private ProtectedEndpointAuthorizationDecision ResolveScopedDecision(
+        ProtectedEndpointScopeEvaluationResult scopeResult,
         ApiAuthorizationOptions options,
-        string workflowIdentifier,
+        Permission permission)
+    {
+        return scopeResult.Kind switch
+        {
+            ProtectedEndpointScopeEvaluationKind.Allowed => _decisionFactory.Allowed(),
+            ProtectedEndpointScopeEvaluationKind.ScopeMissing => _decisionFactory.NotFound(),
+            ProtectedEndpointScopeEvaluationKind.TenantMismatch => ResolveTenantMismatchDecision(
+                scopeResult,
+                options,
+                permission,
+                workflowId: null,
+                artifactId: null),
+            _ => _decisionFactory.Allowed()
+        };
+    }
+
+    private ProtectedEndpointAuthorizationDecision ResolveTenantMismatchDecision(
+        ProtectedEndpointScopeEvaluationResult scopeResult,
+        ApiAuthorizationOptions options,
+        Permission permission,
+        string? workflowId,
         string? artifactId)
     {
-        var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
-        if (_accessPolicy.CanAccessWorkflow(principalContext, workflowScope, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
-        }
+        var shouldReturnNotFound = _tenantMismatchPolicy.ShouldReturnNotFound(options, scopeResult.ScopeKind);
+        LogTenantMismatch(scopeResult, permission, shouldReturnNotFound, workflowId, artifactId);
 
-        if (workflowScope.OrganizationId is null && !workflowScope.IsTenantScoped)
-        {
-            return null;
-        }
-
-        _logger.LogInformation(
-            "Workflow authorization denied for principal. WorkflowId={WorkflowId}, ArtifactId={ArtifactId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
-            workflowIdentifier,
-            artifactId,
-            permission,
-            ShouldReturnNotFoundForWorkflowTenantMismatch(options));
-
-        return ShouldReturnNotFoundForWorkflowTenantMismatch(options)
-            ? ProtectedEndpointAuthorizationDecision.NotFound
-            : ProtectedEndpointAuthorizationDecision.Forbidden;
+        return shouldReturnNotFound
+            ? _decisionFactory.NotFound()
+            : _decisionFactory.Forbidden();
     }
 
-    private static bool ShouldReturnNotFoundForWorkflowTenantMismatch(ApiAuthorizationOptions options)
-    {
-        return options.ReturnNotFoundForWorkflowTenantMismatch || options.ReturnNotFoundForTenantMismatch;
-    }
-
-    private async Task<ProtectedEndpointAuthorizationDecision> AuthorizeProjectScopeAsync(
-        AuthenticatedPrincipal principal,
-        int projectId,
+    private void LogTenantMismatch(
+        ProtectedEndpointScopeEvaluationResult scopeResult,
         Permission permission,
-        ApiAuthorizationOptions options,
-        CancellationToken cancellationToken)
+        bool returnNotFound,
+        string? workflowId,
+        string? artifactId)
     {
-        var scope = await _projectScopeResolver.ResolveProjectScopeAsync(projectId, cancellationToken);
-        if (scope is null)
+        switch (scopeResult.ScopeKind)
         {
-            return ProtectedEndpointAuthorizationDecision.NotFound;
+            case ProtectedEndpointScopeKind.Project when scopeResult.ProjectId.HasValue:
+                _authorizationLogger.LogProjectDenied(scopeResult.ProjectId.Value, permission, returnNotFound);
+                break;
+            case ProtectedEndpointScopeKind.Building when scopeResult.BuildingId.HasValue:
+                _authorizationLogger.LogBuildingDenied(scopeResult.BuildingId.Value, permission, returnNotFound);
+                break;
+            case ProtectedEndpointScopeKind.Workflow:
+            case ProtectedEndpointScopeKind.WorkflowScenario:
+            case ProtectedEndpointScopeKind.WorkflowJob:
+                var resolvedWorkflowId = scopeResult.ScopeIdentifier ?? workflowId ?? string.Empty;
+                _authorizationLogger.LogWorkflowDenied(resolvedWorkflowId, artifactId, permission, returnNotFound);
+                break;
         }
-
-        var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
-        if (_accessPolicy.CanAccessProject(principalContext, scope, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
-        }
-
-        _logger.LogInformation(
-            "Project authorization denied for principal. ProjectId={ProjectId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
-            projectId,
-            permission,
-            options.ReturnNotFoundForTenantMismatch);
-
-        return options.ReturnNotFoundForTenantMismatch
-            ? ProtectedEndpointAuthorizationDecision.NotFound
-            : ProtectedEndpointAuthorizationDecision.Forbidden;
-    }
-
-    private async Task<ProtectedEndpointAuthorizationDecision> AuthorizeBuildingScopeAsync(
-        AuthenticatedPrincipal principal,
-        int buildingId,
-        Permission permission,
-        ApiAuthorizationOptions options,
-        CancellationToken cancellationToken)
-    {
-        var scope = await _buildingScopeResolver.ResolveBuildingScopeAsync(buildingId, cancellationToken);
-        if (scope is null)
-        {
-            return ProtectedEndpointAuthorizationDecision.NotFound;
-        }
-
-        var principalContext = AuthenticatedPrincipalMapper.ToPrincipalAccessContext(principal);
-        if (_accessPolicy.CanAccessBuilding(principalContext, scope, permission))
-        {
-            return ProtectedEndpointAuthorizationDecision.Allowed;
-        }
-
-        _logger.LogInformation(
-            "Building authorization denied for principal. BuildingId={BuildingId}, Permission={Permission}, ReturnNotFound={ReturnNotFound}.",
-            buildingId,
-            permission,
-            options.ReturnNotFoundForTenantMismatch);
-
-        return options.ReturnNotFoundForTenantMismatch
-            ? ProtectedEndpointAuthorizationDecision.NotFound
-            : ProtectedEndpointAuthorizationDecision.Forbidden;
     }
 }

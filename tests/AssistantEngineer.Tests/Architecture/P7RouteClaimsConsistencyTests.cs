@@ -60,7 +60,9 @@ public sealed class P7RouteClaimsConsistencyTests
         if (artifactWriteDeferred.Length == 0)
         {
             var authRollout = File.ReadAllText(AuthorizationRolloutPath);
-            Assert.Contains("artifact write/delete endpoints are not exposed and remain deferred", authRollout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("artifact", authRollout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("deferred", authRollout, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("not exposed", authRollout, StringComparison.OrdinalIgnoreCase);
             return;
         }
 

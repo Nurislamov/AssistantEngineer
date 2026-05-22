@@ -1,0 +1,26 @@
+{
+  "name": "p8-engineering-domain-hardening-closure",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "p8ClosureStatus",
+    "runtimeBehaviorChanged",
+    "publicApiChanged",
+    "dtoShapesChanged",
+    "authorizationSemanticsChanged",
+    "workflowBehaviorChanged",
+    "calculationPhysicsChanged",
+    "ownershipBackfillApplyEnabled",
+    "dbWritePathEnabled",
+    "globalEfQueryFiltersEnabled",
+    "databaseRowLevelSecurityEnabled",
+    "findingsResolutionSummary",
+    "stagesCompleted",
+    "guardrailsAddedOrStrengthened",
+    "deferredItems",
+    "recommendedP9Backlog",
+    "nonClaims"
+  ]
+}

@@ -96,8 +96,10 @@ Optional checks:
 - Visibility still depends on repository settings and GitHub permissions outside source control.
 - Workflow status completeness can vary by trigger context (push/pr/tag/manual).
 - No claim is made that every commit in every branch will always show identical checks.
+- Wrapper/tool command surface is still broad; P8-06 inventory/rationalization governs staged simplification without CI semantic changes.
 
 ## Next steps
 
 - P7-06: route inventory and claims consistency automation.
 - Optional future: add consolidated CI dashboard artifact index for trend history.
+- P8-06: scripts/tools rationalization for explicit wrapper/tool criticality mapping.

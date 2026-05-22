@@ -568,3 +568,144 @@ P8-00 reference:
 - `docs/architecture/assistantengineer-architecture-map.md`
 - `docs/architecture/legacy-and-dead-code-inventory.md`
 - `docs/architecture/scripts-tools-inventory.md`
+
+## P8-01 status note
+
+- P8-01 EngineeringWorkflow boundary and naming hardening is implemented as refactor/governance hardening only.
+- EngineeringWorkflow module application namespaces were normalized to `AssistantEngineer.Modules.EngineeringWorkflow.Application.*`.
+- Runtime behavior, public API routes/DTO shapes, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-01 reference:
+
+- `docs/architecture/engineeringworkflow-boundary-hardening.md`
+
+## P8-02 status note
+
+- P8-02 module-boundary test expansion is implemented as architecture-test/governance hardening only.
+- Shared module-boundary matrix and EngineeringWorkflow-specific boundary checks are added without runtime/API/write-path/calculation-physics behavior changes.
+
+P8-02 reference:
+
+- `docs/architecture/module-boundary-matrix.md`
+- `docs/architecture/module-boundary-test-expansion.md`
+
+## P8-03 status note
+
+- P8-03 authorization/workflow hotspot decomposition remains design-led for extraction stages.
+- Hotspot inventory and staged decomposition plan are documented with explicit no-behavior-change compatibility requirements.
+- Runtime behavior, protected endpoint semantics, public routes/DTOs, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03 reference:
+
+- `docs/architecture/authorization-workflow-hotspot-inventory.md`
+- `docs/architecture/authorization-workflow-decomposition-design.md`
+
+## P8-03A status note
+
+- P8-03A protected endpoint authorization gate characterization tests are implemented as test-only behavior freeze.
+- Decision/status matrix, option-gate behavior, tenant-mismatch anti-enumeration outcomes, and deny-log redaction expectations are documented and test-governed.
+- Runtime behavior, authorization semantics, public routes/DTOs, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03A reference:
+
+- `docs/architecture/protected-endpoint-authorization-gate-characterization.md`
+
+## P8-03C status note
+
+- P8-03C protected-endpoint authorization gate permission/scope extraction is implemented as internal refactor-only decomposition.
+- Gate facade contract is unchanged and characterization tests continue to lock decision/status semantics.
+- Runtime behavior, authorization semantics, public routes/DTOs, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03C reference:
+
+- `docs/architecture/protected-endpoint-authorization-gate-decomposition.md`
+
+## P8-03D status note
+
+- P8-03D workflow controller shell characterization tests are implemented as test-only behavior freeze for route/action/status/response compatibility.
+- EngineeringWorkflowController decomposition moved to P8-03E/P8-03F staged implementation.
+- Workflow behavior, authorization semantics, public routes/DTOs, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03D reference:
+
+- `docs/architecture/workflow-controller-shell-characterization.md`
+
+## P8-03E status note
+
+- P8-03E workflow orchestration helper migration is implemented as internal refactor-only boundary hardening.
+- `EngineeringWorkflowDiagnosticsService`, `EngineeringWorkflowStateBuilder`, and `EngineeringWorkflowSubmissionService` are migrated to EngineeringWorkflow module application paths while API routes/actions/DTO contracts remain unchanged.
+- Workflow behavior, authorization semantics, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03E reference:
+
+- `docs/architecture/workflow-orchestration-helper-migration.md`
+
+## P8-03F status note
+
+- P8-03F workflow controller shell reduction is implemented as internal refactor-only adapter cleanup.
+- Main controller-shell validate/prepare orchestration is extracted to API-local `EngineeringWorkflowControllerActionService` while route/action signatures and status/response behavior remain unchanged.
+- Workflow behavior, authorization semantics, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-03F reference:
+
+- `docs/architecture/workflow-controller-shell-reduction.md`
+
+## P8-04 status note
+
+- P8-04 OwnershipBackfill CLI parser simplification is implemented as tooling-only refactor.
+- Parser command dispatch now uses descriptor catalog/argument-reader collaborators while command names, argument names, help semantics, exit-code meanings, redaction guarantees, and apply-disabled boundary remain unchanged.
+- Runtime API behavior, workflow/calculation behavior, and DB write-path boundary remain unchanged.
+
+P8-04 reference:
+
+- `docs/architecture/ownershipbackfill-cli-parser-simplification.md`
+
+## P8-05 status note
+
+- P8-05 route inventory deferred classification closure is implemented as governance-only refinement.
+- Unknown route classifications were reduced and ignore-list coverage was tightened with explicit replacement inventory entries.
+- Runtime/API route behavior, authorization semantics, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-05 reference:
+
+- `docs/architecture/route-inventory-classification-closure.md`
+
+## P8-06 status note
+
+- P8-06 scripts/tools rationalization is implemented as governance/tooling boundary refinement only.
+- Wrapper/tool/workflow criticality inventory is normalized to reduce ambiguity in future migration/deprecation decisions.
+- Release-ready semantics, CI gate behavior, runtime/API behavior, write-path/apply boundary, and calculation physics remain unchanged.
+
+P8-06 reference:
+
+- `docs/architecture/scripts-tools-rationalization.md`
+
+## P8-07 status note
+
+- P8-07 terminology and claims-surface cleanup is implemented as governance-only wording normalization.
+- Canonical allowed/forbidden claims vocabulary is now explicit and linked from security/architecture indexes and release-boundary docs.
+- Runtime/API behavior, authorization semantics, workflow/calculation behavior, and write-path/apply boundary remain unchanged.
+
+P8-07 reference:
+
+- `docs/architecture/terminology-and-claims-vocabulary.md`
+- `docs/architecture/terminology-claims-surface-cleanup.md`
+
+## P8-08 status note
+
+- P8-08 governance test brittleness reduction phase 2 is implemented as test/governance hardening only.
+- Selected wording-coupled governance assertions are replaced with shared semantic JSON/non-claim checks while critical behavior-level guardrails remain strict.
+- Runtime/API behavior, authorization semantics, workflow/calculation behavior, and write-path/apply boundary remain unchanged.
+
+P8-08 reference:
+
+- `docs/architecture/governance-test-brittleness-reduction.md`
+
+## P8-09 status note
+
+- P8-09 final closure audit consolidates P8 findings resolution, deferred backlog, and preserved boundary guarantees.
+- Runtime/API behavior, authorization semantics, workflow/calculation behavior, and write-path/apply boundary remain unchanged.
+
+P8-09 reference:
+
+- `docs/architecture/p8-engineering-domain-hardening-closure.md`

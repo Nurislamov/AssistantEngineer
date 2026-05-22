@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-20",
+  "stage": "P8-02",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "modulesCovered": [
+    "AssistantEngineer.Api",
+    "AssistantEngineer.Infrastructure",
+    "AssistantEngineer.Modules.Benchmarks",
+    "AssistantEngineer.Modules.Buildings",
+    "AssistantEngineer.Modules.Calculations",
+    "AssistantEngineer.Modules.EngineeringWorkflow",
+    "AssistantEngineer.Modules.Equipment",
+    "AssistantEngineer.Modules.Identity",
+    "AssistantEngineer.Modules.Reporting",
+    "AssistantEngineer.SharedKernel",
+    "AssistantEngineer.Tools.EnergyPlusFixtureAuthoring",
+    "AssistantEngineer.Tools.EnergyPlusValidation",
+    "AssistantEngineer.Tools.EngineeringCore",
+    "AssistantEngineer.Tools.EngineeringCoreContracts",
+    "AssistantEngineer.Tools.EngineeringCoreEvidence",
+    "AssistantEngineer.Tools.EngineeringCoreRelease",
+    "AssistantEngineer.Tools.EngineeringCoreVerification",
+    "AssistantEngineer.Tools.EngineeringGovernance",
+    "AssistantEngineer.Tools.Iso52016Verification",
+    "AssistantEngineer.Tools.OwnershipBackfill",
+    "AssistantEngineer.Tools.PerformanceBenchmarks",
+    "AssistantEngineer.Tools.RepositoryBoundaries",
+    "AssistantEngineer.Tools.RepositoryHygieneVerification"
+  ],
+  "testsAddedOrUpdated": [
+    "tests/AssistantEngineer.Tests/Architecture/ModuleBoundaryTests.cs",
+    "tests/AssistantEngineer.Tests/Architecture/ModuleBoundaryMatrixTests.cs",
+    "tests/AssistantEngineer.Tests/Architecture/EngineeringWorkflowModuleBoundaryTests.cs",
+    "tests/AssistantEngineer.Tests/Architecture/P8ModuleBoundaryTestExpansionTests.cs"
+  ],
+  "allowlistEntries": [],
+  "remainingExceptions": [
+    {
+      "id": "P8-03-WORKFLOW-API-SHELL",
+      "source": "tests/fixtures/architecture/engineeringworkflow-boundary-allowlist.json",
+      "proposedStage": "P8-03",
+      "note": "EngineeringWorkflow API shell decomposition is intentionally deferred to hotspot decomposition stage."
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No public API route change claim.",
+    "No DTO shape change claim.",
+    "No ownership backfill execution claim.",
+    "No global EF query filter claim.",
+    "No DB RLS claim.",
+    "No production security certification claim."
+  ]
+}

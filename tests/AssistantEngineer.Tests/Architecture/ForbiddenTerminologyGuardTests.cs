@@ -25,13 +25,26 @@ public sealed class ForbiddenTerminologyGuardTests
             "AssistantEngineer.Tests",
             "Architecture",
             "ForbiddenTerminologyGuardTests.cs"));
+        var allowedFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            allowedFile,
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "terminology-and-claims-vocabulary.md")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "terminology-and-claims-vocabulary.json")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "terminology-claims-surface-cleanup.md")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "terminology-claims-surface-cleanup.json")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "p8-engineering-domain-hardening-closure.md")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "docs", "architecture", "p8-engineering-domain-hardening-closure.json")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "tests", "AssistantEngineer.Tests", "Architecture", "P8TerminologyClaimsVocabularyTests.cs")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "tests", "AssistantEngineer.Tests", "Architecture", "P8TerminologyClaimsSurfaceCleanupTests.cs")),
+            Path.GetFullPath(Path.Combine(TestPaths.RepoRoot, "tests", "AssistantEngineer.Tests", "Architecture", "P8EngineeringDomainHardeningClosureBoundaryTests.cs"))
+        };
 
         var violations = new List<string>();
         foreach (var target in scanTargets)
         {
             foreach (var file in EnumerateTextFiles(target))
             {
-                if (string.Equals(Path.GetFullPath(file), allowedFile, StringComparison.OrdinalIgnoreCase))
+                if (allowedFiles.Contains(Path.GetFullPath(file)))
                     continue;
 
                 var text = File.ReadAllText(file);

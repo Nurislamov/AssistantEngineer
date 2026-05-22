@@ -1,231 +1,290 @@
 {
-  "version": 1,
-  "lastReviewedDate": "2026-05-20",
-  "stage": "P8-00",
-  "runtimeBehaviorChanged": false,
-  "calculationPhysicsChanged": false,
-  "publicApiChanged": false,
-  "findings": [
-    {
-      "id": "P8-00-F01",
-      "severity": "High",
-      "area": "LayerBoundaries",
-      "title": "EngineeringWorkflow application namespace leaks into Api contracts",
-      "description": "Multiple files under AssistantEngineer.Modules.EngineeringWorkflow/Application use AssistantEngineer.Api namespaces/contracts, weakening clean module boundaries and DDD language separation.",
-      "evidencePath": "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application",
-      "principle": "CleanArchitecture",
-      "recommendation": "Create a staged namespace and contract relocation plan so module application abstractions no longer depend on Api naming/contracts.",
-      "proposedStage": "P8-01",
-      "riskIfIgnored": "Boundary erosion increases coupling and raises cost/risk of future refactors and runtime changes."
-    },
-    {
-      "id": "P8-00-F02",
-      "severity": "High",
-      "area": "ArchitectureTests",
-      "title": "Module boundary tests do not include EngineeringWorkflow assembly",
-      "description": "ModuleBoundaryTests currently validate several modules but omit explicit EngineeringWorkflow module coverage.",
-      "evidencePath": "tests/AssistantEngineer.Tests/Architecture/ModuleBoundaryTests.cs",
-      "principle": "Testing",
-      "recommendation": "Extend module-boundary coverage to include EngineeringWorkflow assembly and key forbidden dependencies.",
-      "proposedStage": "P8-02",
-      "riskIfIgnored": "Dependency leaks in EngineeringWorkflow can remain undetected by architecture tests."
-    },
-    {
-      "id": "P8-00-F03",
-      "severity": "Medium",
-      "area": "SecurityOrchestration",
-      "title": "ProtectedEndpointAuthorizationGate is a maintainability hotspot",
-      "description": "Authorization gate file size and concern breadth suggest mixed responsibilities and long-term change risk.",
-      "evidencePath": "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
-      "principle": "SOLID",
-      "recommendation": "Plan decomposition into smaller policy/resolution/message components while preserving behavior.",
-      "proposedStage": "P8-03",
-      "riskIfIgnored": "Policy changes may become risky and regressions harder to isolate."
-    },
-    {
-      "id": "P8-00-F04",
-      "severity": "Medium",
-      "area": "CliTooling",
-      "title": "OwnershipBackfillCommandLineParser is oversized",
-      "description": "CLI parser centralizes command parsing and validation branches in a single large file.",
-      "evidencePath": "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillCommandLineParser.cs",
-      "principle": "KISS",
-      "recommendation": "Split parser by command families with shared validation helpers and lock behavior via tests.",
-      "proposedStage": "P8-04",
-      "riskIfIgnored": "Small UX/validation changes can cause unintended side effects across commands."
-    },
-    {
-      "id": "P8-00-F05",
-      "severity": "Medium",
-      "area": "GovernanceInventory",
-      "title": "Route inventory still has deferred/unknown classification backlog",
-      "description": "Route inventory currently contains deferred and unknown classification entries requiring staged completion.",
-      "evidencePath": "docs/security/api-endpoint-protection-inventory.json",
-      "principle": "DocsClaims",
-      "recommendation": "Prioritize deferred endpoint classification closure in staged governance work.",
-      "proposedStage": "P8-05",
-      "riskIfIgnored": "Protection-stage visibility can drift as new endpoints evolve."
-    },
-    {
-      "id": "P8-00-F06",
-      "severity": "Medium",
-      "area": "ScriptsVsTools",
-      "title": "Wrapper script surface is large relative to tool commands",
-      "description": "Many scripts are useful wrappers around C# tools but increase maintenance surface and ownership complexity.",
-      "evidencePath": "scripts/engineering-core",
-      "principle": "DRY",
-      "recommendation": "Introduce scripts-to-tools ownership map and consolidation candidates while keeping critical wrappers.",
-      "proposedStage": "P8-06",
-      "riskIfIgnored": "Operational drift and duplicated command behavior may increase over time."
-    },
-    {
-      "id": "P8-00-F07",
-      "severity": "Medium",
-      "area": "TestsGovernance",
-      "title": "Governance tests still include wording-fragile assertions",
-      "description": "Large governance suite includes many phrase/section checks that are useful but brittle to benign documentation edits.",
-      "evidencePath": "tests/AssistantEngineer.Tests/Architecture",
-      "principle": "Testing",
-      "recommendation": "Continue consolidation toward semantic assertions and shared helpers for brittle patterns.",
-      "proposedStage": "P8-08",
-      "riskIfIgnored": "Maintenance friction and noisy test failures can slow safe documentation updates."
-    },
-    {
-      "id": "P8-00-F08",
-      "severity": "Medium",
-      "area": "ControllerDesign",
-      "title": "EngineeringWorkflow controller partial surface remains large",
-      "description": "Workflow controller partial files remain sizable and mix different endpoint concerns.",
-      "evidencePath": "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController*.cs",
-      "principle": "SOLID",
-      "recommendation": "Plan endpoint orchestration split and clearer application-service boundaries in a dedicated refactor stage.",
-      "proposedStage": "P8-03",
-      "riskIfIgnored": "Controller evolution can become slower and more regression-prone."
-    },
-    {
-      "id": "P8-00-F09",
-      "severity": "Low",
-      "area": "ToolingMetadata",
-      "title": "EnergyPlus fixture authoring contains placeholder TODO metadata",
-      "description": "Fixture authoring tool includes explicit TODO placeholders for provenance fields.",
-      "evidencePath": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/Program.cs",
-      "principle": "Legacy",
-      "recommendation": "Backfill placeholder provenance fields with explicit template/default policy.",
-      "proposedStage": "P8-07",
-      "riskIfIgnored": "Generated fixture metadata can remain inconsistent across contributors."
-    },
-    {
-      "id": "P8-00-F10",
-      "severity": "Low",
-      "area": "DocumentationScale",
-      "title": "Production readiness inventory contains very long staged status text",
-      "description": "Large repeated stage narrative in readiness inventory increases drift risk despite index normalization.",
-      "evidencePath": "docs/security/production-saas-readiness-inventory.md",
-      "principle": "DRY",
-      "recommendation": "Introduce compact linked status blocks for long stage chains in a docs-only cleanup.",
-      "proposedStage": "P8-07",
-      "riskIfIgnored": "Status drift and review overhead increase with each stage update."
-    }
-  ],
-  "findingCounts": {
-    "critical": 0,
-    "high": 2,
-    "medium": 6,
-    "low": 2
-  },
-  "recommendedBacklog": [
-    {
-      "stage": "P8-01",
-      "title": "EngineeringWorkflow boundary and naming hardening plan",
-      "goal": "Restore clean module boundary by removing Api namespace leakage from EngineeringWorkflow application contracts and services.",
-      "dependsOn": [
-        "P8-00"
-      ],
-      "risk": "Boundary coupling will continue to grow if not addressed early.",
-      "expectedChangeType": "RefactorOnly"
-    },
-    {
-      "stage": "P8-02",
-      "title": "Architecture boundary coverage expansion",
-      "goal": "Extend architecture tests to cover EngineeringWorkflow module boundary and explicit dependency constraints.",
-      "dependsOn": [
-        "P8-00"
-      ],
-      "risk": "Dependency drift can remain undetected.",
-      "expectedChangeType": "TestOnly"
-    },
-    {
-      "stage": "P8-03",
-      "title": "Workflow and authorization hotspot decomposition design",
-      "goal": "Prepare safe decomposition plan for oversized authorization/workflow controller/application orchestration hotspots.",
-      "dependsOn": [
-        "P8-01",
-        "P8-02"
-      ],
-      "risk": "Hotspots can block future feature work and raise regression risk.",
-      "expectedChangeType": "RefactorOnly"
-    },
-    {
-      "stage": "P8-04",
-      "title": "OwnershipBackfill CLI parser simplification",
-      "goal": "Reduce parser complexity while preserving command semantics, exit codes, and redaction behavior.",
-      "dependsOn": [
-        "P8-00"
-      ],
-      "risk": "CLI behavior changes may regress without staged behavior-lock refactor.",
-      "expectedChangeType": "RefactorOnly"
-    },
-    {
-      "stage": "P8-05",
-      "title": "Route inventory deferred classification closure",
-      "goal": "Reduce unknown/deferred route classification entries with explicit stage mapping and limitations.",
-      "dependsOn": [
-        "P7-06",
-        "P8-00"
-      ],
-      "risk": "Governance visibility can drift from runtime endpoint growth.",
-      "expectedChangeType": "TestOnly"
-    },
-    {
-      "stage": "P8-06",
-      "title": "Scripts/tools rationalization",
-      "goal": "Classify wrappers versus native tools and remove avoidable overlap in operator entry points.",
-      "dependsOn": [
-        "P8-00"
-      ],
-      "risk": "Operational complexity grows with duplicate wrappers.",
-      "expectedChangeType": "ToolingOnly"
-    },
-    {
-      "stage": "P8-07",
-      "title": "Engineering terminology and claim-surface cleanup",
-      "goal": "Tighten terminology consistency and reduce long repeated status text across architecture/security docs.",
-      "dependsOn": [
-        "P8-00"
-      ],
-      "risk": "Claim drift and review friction remain high.",
-      "expectedChangeType": "DocsOnly"
-    },
-    {
-      "stage": "P8-08",
-      "title": "Governance test brittleness reduction phase 2",
-      "goal": "Further reduce wording-coupled tests while preserving safety guardrails and explicit non-claims checks.",
-      "dependsOn": [
-        "P7-02",
-        "P8-00"
-      ],
-      "risk": "Doc updates continue to trigger noisy failures with low semantic value.",
-      "expectedChangeType": "TestOnly"
-    }
-  ],
-  "nonClaims": [
-    "No calculation physics change claim.",
-    "No full donor-model match claim.",
-    "No external simulator match claim.",
-    "No external standard-case validation completion claim.",
-    "No production security certification claim.",
-    "No full tenant isolation claim.",
-    "No ownership backfill execution claim.",
-    "No DB RLS/global EF query filter claim."
-  ]
+    "version":  1,
+    "lastReviewedDate":  "2026-05-22",
+    "stage":  "P8-00",
+    "runtimeBehaviorChanged":  false,
+    "calculationPhysicsChanged":  false,
+    "publicApiChanged":  false,
+    "findings":  [
+                     {
+                         "id":  "P8-00-F01",
+                         "severity":  "High",
+                         "area":  "LayerBoundaries",
+                         "title":  "EngineeringWorkflow application namespace leaks into Api contracts",
+                         "description":  "Multiple files under AssistantEngineer.Modules.EngineeringWorkflow/Application use AssistantEngineer.Api namespaces/contracts, weakening clean module boundaries and DDD language separation.",
+                         "evidencePath":  "src/Backend/AssistantEngineer.Modules.EngineeringWorkflow/Application",
+                         "principle":  "CleanArchitecture",
+                         "recommendation":  "Create a staged namespace and contract relocation plan so module application abstractions no longer depend on Api naming/contracts.",
+                         "proposedStage":  "P8-01",
+                         "riskIfIgnored":  "Boundary erosion increases coupling and raises cost/risk of future refactors and runtime changes.",
+                         "resolutionStatus":  "Addressed",
+                         "resolutionStage":  "P8-01",
+                         "resolutionNotes":  "EngineeringWorkflow module application contracts/workflow/idempotency/jobs/persistence abstractions were renamed from AssistantEngineer.Api.* namespaces to AssistantEngineer.Modules.EngineeringWorkflow.Application.* namespaces. API workflow shell decomposition remains deferred to P8-03."
+                     },
+                     {
+                         "id":  "P8-00-F02",
+                         "severity":  "High",
+                         "area":  "ArchitectureTests",
+                         "title":  "Module boundary tests do not include EngineeringWorkflow assembly",
+                         "description":  "ModuleBoundaryTests currently validate several modules but omit explicit EngineeringWorkflow module coverage.",
+                         "evidencePath":  "tests/AssistantEngineer.Tests/Architecture/ModuleBoundaryTests.cs",
+                         "principle":  "Testing",
+                         "recommendation":  "Extend module-boundary coverage to include EngineeringWorkflow assembly and key forbidden dependencies.",
+                         "proposedStage":  "P8-02",
+                         "riskIfIgnored":  "Dependency leaks in EngineeringWorkflow can remain undetected by architecture tests.",
+                         "resolutionStatus":  "Addressed",
+                         "resolutionStage":  "P8-02",
+                         "resolutionNotes":  "Added module-boundary matrix artifacts and expanded architecture tests (ModuleBoundaryMatrixTests, EngineeringWorkflowModuleBoundaryTests, and P8ModuleBoundaryTestExpansionTests) with explicit EngineeringWorkflow coverage and dependency-direction assertions."
+                     },
+                     {
+                         "id":  "P8-00-F03",
+                         "severity":  "Medium",
+                         "area":  "SecurityOrchestration",
+                         "title":  "ProtectedEndpointAuthorizationGate is a maintainability hotspot",
+                         "description":  "Authorization gate file size and concern breadth suggest mixed responsibilities and long-term change risk.",
+                         "evidencePath":  "src/Backend/AssistantEngineer.Api/Security/Authorization/ProtectedEndpointAuthorizationGate.cs",
+                         "principle":  "SOLID",
+                         "recommendation":  "Plan decomposition into smaller policy/resolution/message components while preserving behavior.",
+                         "proposedStage":  "P8-03",
+                         "riskIfIgnored":  "Policy changes may become risky and regressions harder to isolate.",
+                         "resolutionStatus":  "PartiallyAddressed",
+                         "resolutionStage":  "P8-03C",
+                         "resolutionNotes":  "P8-03A froze decision/status matrix; P8-03B and P8-03C extracted decision/logging/tenant-mismatch/permission/scope collaborators behind stable gate facade with characterization coverage preserved. Workflow-controller hotspot work was completed in P8-03D..P8-03F. Optional further hardening is deferred to P9 architecture decomposition review."
+                     },
+                     {
+                         "id":  "P8-00-F04",
+                         "severity":  "Medium",
+                         "area":  "CliTooling",
+                         "title":  "OwnershipBackfillCommandLineParser is oversized",
+                         "description":  "CLI parser centralizes command parsing and validation branches in a single large file.",
+                         "evidencePath":  "tools/AssistantEngineer.Tools.OwnershipBackfill/Cli/OwnershipBackfillCommandLineParser.cs",
+                         "principle":  "KISS",
+                         "recommendation":  "Split parser by command families with shared validation helpers and lock behavior via tests.",
+                         "proposedStage":  "P8-04",
+                         "riskIfIgnored":  "Small UX/validation changes can cause unintended side effects across commands.",
+                         "resolutionStatus":  "Addressed",
+                         "resolutionStage":  "P8-04",
+                         "resolutionNotes":  "Introduced command descriptor catalog and argument reader components, switched top-level parser dispatch to descriptor-based orchestration, and added characterization/simplification tests while preserving command names, argument names, help behavior, exit-code semantics, redaction guarantees, and apply-disabled behavior."
+                     },
+                     {
+                         "id":  "P8-00-F05",
+                         "severity":  "Medium",
+                         "area":  "GovernanceInventory",
+                         "title":  "Route inventory still has deferred/unknown classification backlog",
+                         "description":  "Route inventory currently contains deferred and unknown classification entries requiring staged completion.",
+                         "evidencePath":  "docs/security/api-endpoint-protection-inventory.json",
+                         "principle":  "DocsClaims",
+                         "recommendation":  "Prioritize deferred endpoint classification closure in staged governance work.",
+                         "proposedStage":  "P8-05",
+                         "riskIfIgnored":  "Protection-stage visibility can drift as new endpoints evolve.",
+                         "resolutionStatus":  "PartiallyAddressed",
+                         "resolutionStage":  "P8-05",
+                         "resolutionNotes":  "P8-05 reclassified prior UnknownNeedsClassification placeholders, added explicit route-level coverage for selected previously ignored endpoints, and tightened route-inventory ignore-list entries without changing routes/auth/runtime behavior. Deferred staged rollout entries remain documented by design and continue in P9-04 phase 2."
+                     },
+                     {
+                         "id":  "P8-00-F06",
+                         "severity":  "Medium",
+                         "area":  "ScriptsVsTools",
+                         "title":  "Wrapper script surface is large relative to tool commands",
+                         "description":  "Many scripts are useful wrappers around C# tools but increase maintenance surface and ownership complexity.",
+                         "evidencePath":  "scripts/engineering-core",
+                         "principle":  "DRY",
+                         "recommendation":  "Introduce scripts-to-tools ownership map and consolidation candidates while keeping critical wrappers.",
+                         "proposedStage":  "P8-06",
+                         "riskIfIgnored":  "Operational drift and duplicated command behavior may increase over time.",
+                         "resolutionStatus":  "PartiallyAddressed",
+                         "resolutionStage":  "P8-06",
+                         "resolutionNotes":  "Scripts/tools inventory was normalized across scripts, tools, and workflow wrappers; release-critical/tooling-critical boundaries are now explicit and future migration/deprecation candidates are documented without changing release/runtime semantics. Follow-up execution planning is deferred to P9 tooling backlog."
+                     },
+                     {
+                         "id":  "P8-00-F07",
+                         "severity":  "Medium",
+                         "area":  "TestsGovernance",
+                         "title":  "Governance tests still include wording-fragile assertions",
+                         "description":  "Large governance suite includes many phrase/section checks that are useful but brittle to benign documentation edits.",
+                         "evidencePath":  "tests/AssistantEngineer.Tests/Architecture",
+                         "principle":  "Testing",
+                         "recommendation":  "Continue consolidation toward semantic assertions and shared helpers for brittle patterns.",
+                         "proposedStage":  "P8-08",
+                         "riskIfIgnored":  "Maintenance friction and noisy test failures can slow safe documentation updates.",
+                         "resolutionStatus":  "Addressed",
+                         "resolutionStage":  "P8-08",
+                         "resolutionNotes":  "P8-08 introduced shared governance semantic assertions, reduced wording-coupled checks in selected P7/P8 governance tests, and added explicit guardrail-preservation coverage without weakening critical behavior-level safeguards."
+                     },
+                     {
+                         "id":  "P8-00-F08",
+                         "severity":  "Medium",
+                         "area":  "ControllerDesign",
+                         "title":  "EngineeringWorkflow controller partial surface remains large",
+                         "description":  "Workflow controller partial files remain sizable and mix different endpoint concerns.",
+                         "evidencePath":  "src/Backend/AssistantEngineer.Api/Controllers/Calculations/EngineeringWorkflowController*.cs",
+                         "principle":  "SOLID",
+                         "recommendation":  "Plan endpoint orchestration split and clearer application-service boundaries in a dedicated refactor stage.",
+                         "proposedStage":  "P8-03",
+                         "riskIfIgnored":  "Controller evolution can become slower and more regression-prone.",
+                         "resolutionStatus":  "PartiallyAddressed",
+                         "resolutionStage":  "P8-03F",
+                         "resolutionNotes":  "P8-03D added workflow controller shell characterization coverage; P8-03E migrated workflow diagnostics/state/submission helpers into EngineeringWorkflow module paths; P8-03F extracted main-shell validate/prepare orchestration into API adapter collaborator with route/signature/status/response compatibility preserved. Optional further partial-shell decomposition is deferred to P9."
+                     },
+                     {
+                         "id":  "P8-00-F09",
+                         "severity":  "Low",
+                         "area":  "ToolingMetadata",
+                         "title":  "EnergyPlus fixture authoring contains placeholder TODO metadata",
+                         "description":  "Fixture authoring tool includes explicit TODO placeholders for provenance fields.",
+                         "evidencePath":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/Program.cs",
+                         "principle":  "Legacy",
+                         "recommendation":  "Backfill placeholder provenance fields with explicit template/default policy.",
+                         "proposedStage":  "P8-07",
+                         "riskIfIgnored":  "Generated fixture metadata can remain inconsistent across contributors.",
+                         "resolutionStatus":  "PartiallyAddressed",
+                         "resolutionStage":  "P8-07",
+                         "resolutionNotes":  "P8-07 added canonical terminology/claims vocabulary and claims-surface guardrails to reduce ambiguous wording risk; fixture-authoring provenance TODO metadata remains a targeted follow-up cleanup candidate for P9-03."
+                     },
+                     {
+                         "id":  "P8-00-F10",
+                         "severity":  "Low",
+                         "area":  "DocumentationScale",
+                         "title":  "Production readiness inventory contains very long staged status text",
+                         "description":  "Large repeated stage narrative in readiness inventory increases drift risk despite index normalization.",
+                         "evidencePath":  "docs/security/production-saas-readiness-inventory.md",
+                         "principle":  "DRY",
+                         "recommendation":  "Introduce compact linked status blocks for long stage chains in a docs-only cleanup.",
+                         "proposedStage":  "P8-07",
+                         "riskIfIgnored":  "Status drift and review overhead increase with each stage update.",
+                         "resolutionStatus":  "Addressed",
+                         "resolutionStage":  "P8-07",
+                         "resolutionNotes":  "P8-07 introduced canonical terminology/claims vocabulary plus claims-surface cleanup report and linked references in architecture/security indexes to reduce wording drift and repeated ambiguous status blocks."
+                     }
+                 ],
+    "findingCounts":  {
+                          "critical":  0,
+                          "high":  2,
+                          "medium":  6,
+                          "low":  2
+                      },
+    "recommendedBacklog":  [
+                               {
+                                   "stage":  "P8-01",
+                                   "title":  "EngineeringWorkflow boundary and naming hardening plan",
+                                   "goal":  "Restore clean module boundary by removing Api namespace leakage from EngineeringWorkflow application contracts and services.",
+                                   "dependsOn":  [
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Boundary coupling will continue to grow if not addressed early.",
+                                   "expectedChangeType":  "RefactorOnly"
+                               },
+                               {
+                                   "stage":  "P8-02",
+                                   "title":  "Architecture boundary coverage expansion",
+                                   "goal":  "Extend architecture tests to cover EngineeringWorkflow module boundary and explicit dependency constraints.",
+                                   "dependsOn":  [
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Dependency drift can remain undetected.",
+                                   "expectedChangeType":  "TestOnly"
+                               },
+                               {
+                                   "stage":  "P8-03",
+                                   "title":  "Workflow and authorization hotspot decomposition design",
+                                   "goal":  "Prepare safe decomposition plan for oversized authorization/workflow controller/application orchestration hotspots.",
+                                   "dependsOn":  [
+                                                     "P8-01",
+                                                     "P8-02"
+                                                 ],
+                                   "risk":  "Hotspots can block future feature work and raise regression risk.",
+                                   "expectedChangeType":  "RefactorOnly"
+                               },
+                               {
+                                   "stage":  "P8-04",
+                                   "title":  "OwnershipBackfill CLI parser simplification",
+                                   "goal":  "Reduce parser complexity while preserving command semantics, exit codes, and redaction behavior.",
+                                   "dependsOn":  [
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "CLI behavior changes may regress without staged behavior-lock refactor.",
+                                   "expectedChangeType":  "RefactorOnly"
+                               },
+                               {
+                                   "stage":  "P8-05",
+                                   "title":  "Route inventory deferred classification closure",
+                                   "goal":  "Reduce unknown/deferred route classification entries with explicit stage mapping and limitations.",
+                                   "dependsOn":  [
+                                                     "P7-06",
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Governance visibility can drift from runtime endpoint growth.",
+                                   "expectedChangeType":  "TestOnly"
+                               },
+                               {
+                                   "stage":  "P8-06",
+                                   "title":  "Scripts/tools rationalization",
+                                   "goal":  "Classify wrappers versus native tools and remove avoidable overlap in operator entry points.",
+                                   "dependsOn":  [
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Operational complexity grows with duplicate wrappers.",
+                                   "expectedChangeType":  "ToolingOnly"
+                               },
+                               {
+                                   "stage":  "P8-07",
+                                   "title":  "Engineering terminology and claim-surface cleanup",
+                                   "goal":  "Tighten terminology consistency and reduce long repeated status text across architecture/security docs.",
+                                   "dependsOn":  [
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Claim drift and review friction remain high.",
+                                   "expectedChangeType":  "DocsOnly"
+                               },
+                               {
+                                   "stage":  "P8-08",
+                                   "title":  "Governance test brittleness reduction phase 2",
+                                   "goal":  "Further reduce wording-coupled tests while preserving safety guardrails and explicit non-claims checks.",
+                                   "dependsOn":  [
+                                                     "P7-02",
+                                                     "P8-00"
+                                                 ],
+                                   "risk":  "Doc updates continue to trigger noisy failures with low semantic value.",
+                                   "expectedChangeType":  "TestOnly"
+                               },
+                               {
+                                   "stage":  "P8-09",
+                                   "title":  "Final P8 engineering/domain hardening closure audit",
+                                   "goal":  "Close P8 with consolidated findings resolution, preserved boundary verification, and explicit P9 deferred backlog.",
+                                   "dependsOn":  [
+                                                     "P8-00",
+                                                     "P8-01",
+                                                     "P8-02",
+                                                     "P8-03A",
+                                                     "P8-03B",
+                                                     "P8-03C",
+                                                     "P8-03D",
+                                                     "P8-03E",
+                                                     "P8-03F",
+                                                     "P8-04",
+                                                     "P8-05",
+                                                     "P8-06",
+                                                     "P8-07",
+                                                     "P8-08"
+                                                 ],
+                                   "risk":  "Without closure audit, deferred scope and boundary guarantees can become ambiguous entering P9.",
+                                   "expectedChangeType":  "AuditOnly"
+                               }
+                           ],
+    "closure":  {
+                    "stage":  "P8-09",
+                    "status":  "ClosedWithDeferredBacklog",
+                    "reportPath":  "docs/architecture/p8-engineering-domain-hardening-closure.md",
+                    "notes":  "P8 cycle closed with no runtime/API/calculation behavior changes and explicit P9 deferred backlog."
+                },
+    "nonClaims":  [
+                      "No calculation physics change claim.",
+                      "No full donor-model match claim.",
+                      "No external simulator match claim.",
+                      "No external standard-case validation completion claim.",
+                      "No production security certification claim.",
+                      "No full tenant isolation claim.",
+                      "No ownership backfill execution claim.",
+                      "No DB RLS/global EF query filter claim."
+                  ]
 }

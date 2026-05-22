@@ -1,0 +1,23 @@
+{
+  "name": "module-boundary-test-expansion",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "modulesCovered",
+    "testsAddedOrUpdated",
+    "allowlistEntries",
+    "remainingExceptions",
+    "nonClaims"
+  ],
+  "remainingExceptionRequiredFields": [
+    "id",
+    "source",
+    "proposedStage",
+    "note"
+  ]
+}

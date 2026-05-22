@@ -1,0 +1,17 @@
+{
+  "name": "terminology-claims-surface-cleanup",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "claimsCorrected",
+    "terminologyNormalized",
+    "deferredRenames",
+    "remainingLimitations",
+    "nonClaims"
+  ]
+}

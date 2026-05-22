@@ -1,4 +1,4 @@
-using AssistantEngineer.Api.Contracts.Calculations;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Contracts.EngineeringWorkflow;
 using AssistantEngineer.Api.Contracts.Common;
 using AssistantEngineer.Api.Extensions.Collections;
 using AssistantEngineer.Api.Querying.Projects;
@@ -63,7 +63,9 @@ public sealed partial class EngineeringWorkflowController
         try
         {
             state = await _stateBuilder.BuildWorkflowStateAsync(projectId, buildingId, cancellationToken);
-            state = _workflowDiagnostics.AddMissingPersistedStateDiagnostic(state, _workflowPersistence.GetProviderInfo());
+            state = _workflowDiagnostics.AddMissingPersistedStateDiagnostic(
+                state,
+                MapWorkflowPersistenceProviderInfo(_workflowPersistence.GetProviderInfo()));
             await _workflowPersistence.SaveWorkflowStateAsync(state, state.Diagnostics, cancellationToken);
         }
         catch (Exception exception)

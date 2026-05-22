@@ -1,9 +1,10 @@
 using AssistantEngineer.Api.Filters;
 using AssistantEngineer.Api.Filters.Exceptions;
 using AssistantEngineer.Api.Services.Calculations;
-using AssistantEngineer.Api.Services.Calculations.Idempotency;
+using AssistantEngineer.Api.Services.Calculations.Composition;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Jobs;
+using AssistantEngineer.Modules.EngineeringWorkflow.Application.Idempotency;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
-using AssistantEngineer.Api.Services.Calculations.Workflow;
 
 namespace AssistantEngineer.Api.Configuration;
 
@@ -19,6 +20,7 @@ internal static class ApiPresentationRegistration
         services.AddEngineeringWorkflowPersistence();
         services.AddEngineeringIdempotency();
         services.AddEngineeringWorkflowServices();
+        services.AddScoped<IEngineeringWorkflowControllerActionService, EngineeringWorkflowControllerActionService>();
         services.AddScoped<IEngineeringCalculationScenarioModuleExecutor, EngineeringCalculationScenarioModuleExecutor>();
         services.AddScoped<IEngineeringCalculationVentilationScenarioStep, EngineeringCalculationVentilationScenarioStep>();
         services.AddScoped<IEngineeringCalculationDomesticHotWaterScenarioStep, EngineeringCalculationDomesticHotWaterScenarioStep>();

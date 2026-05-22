@@ -1,6 +1,6 @@
 {
-    "version":  10,
-    "lastReviewedDate":  "2026-05-20",
+    "version":  11,
+    "lastReviewedDate":  "2026-05-22",
     "documents":  [
                       {
                           "path":  "docs/security/security-release-boundary.md",
@@ -604,6 +604,96 @@
                           "summary":  "Machine-readable P8-00 scripts/tools classification inventory.",
                           "category":  "Architecture review",
                           "status":  "Reference"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-06",
+                          "path":  "docs/architecture/scripts-tools-rationalization.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P8-06 scripts/tools wrapper rationalization, criticality map, and staged migration/deprecation candidates.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-06",
+                          "path":  "docs/architecture/scripts-tools-rationalization.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P8-06 scripts/tools rationalization summary.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-07",
+                          "path":  "docs/architecture/terminology-and-claims-vocabulary.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Canonical P8-07 allowed/forbidden claim vocabulary and preferred terminology boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-07",
+                          "path":  "docs/architecture/terminology-and-claims-vocabulary.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable P8-07 allowed/forbidden claim vocabulary and preferred term catalog.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-07",
+                          "path":  "docs/architecture/terminology-claims-surface-cleanup.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P8-07 scan/report for terminology and claims-surface normalization across governance artifacts.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-07",
+                          "path":  "docs/architecture/terminology-claims-surface-cleanup.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P8-07 claims-surface cleanup summary and deferred naming candidates.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-08",
+                          "path":  "docs/architecture/governance-test-brittleness-reduction.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P8-08 governance test brittleness reduction report with semantic-assertion migration scope and preserved strict guardrails.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-08",
+                          "path":  "docs/architecture/governance-test-brittleness-reduction.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P8-08 governance test brittleness reduction summary.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-09",
+                          "path":  "docs/architecture/p8-engineering-domain-hardening-closure.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Final P8 closure report with findings resolution summary, preserved boundaries, and deferred P9 backlog.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P8-09",
+                          "path":  "docs/architecture/p8-engineering-domain-hardening-closure.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable final P8 closure summary and P9 recommended backlog.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
                       }
                   ]
 }
