@@ -40,6 +40,17 @@ ED-01 adds read-only API endpoints in `AssistantEngineer.Api`:
 
 The API layer is a thin adapter over `IEquipmentDiagnosticsFacade`. Search normalization stays in the application service.
 
+ED-02 adds a knowledge catalog layer:
+
+- `Application/Knowledge/IEquipmentDiagnosticsKnowledgeSource.cs`
+- `Application/Knowledge/InMemoryEquipmentDiagnosticsKnowledgeSource.cs`
+- `Application/Knowledge/EquipmentDiagnosticsKnowledgeCatalog.cs`
+- `Application/Knowledge/EquipmentDiagnosticsKnowledgeEntry.cs`
+
+`InMemoryEquipmentDiagnosticsService` now depends on `IEquipmentDiagnosticsKnowledgeSource`. The service owns query behavior, normalization, filtering, and DTO mapping. The deterministic seeded diagnostic entries live in the knowledge catalog instead of inside the service.
+
+The catalog is still in-memory and deterministic. It is not persistence, not a manual-ingestion system, and not an AI/RAG search layer.
+
 ## API Routes
 
 ### Search Error Codes
@@ -156,12 +167,12 @@ Example response excerpt:
 - Diagnostics must not instruct users to bypass safety switches, protection inputs, current protection, pressure protection, flow protection, or controller safeguards.
 - Seed entries are preliminary unless an exact manual reference exists in the repository. They must not claim `ManualVerified` confidence without explicit source evidence.
 - ED-01 remains deterministic seeded knowledge only. It does not claim full manual verification, and it does not add Telegram, RAG/vector search, or persistence.
+- ED-02 keeps seeded knowledge in a deterministic in-memory catalog. Entries remain low-confidence unless explicit source evidence is added later.
 
 ## Future Stages
 
-- Add curated manual-backed diagnostic entries with provenance and page references.
-- Introduce persistence through a dedicated Infrastructure adapter and migration.
-- Add richer API filtering and versioned response examples after facade contracts settle.
-- Add import workflows for verified manual data.
-- Add audit and confidence rules for manual-backed content.
-- Evaluate search enhancements only after deterministic source-backed data exists.
+- ED-03: structured JSON/manual-backed catalog with explicit provenance and page references.
+- ED-04: persistence through a dedicated Infrastructure adapter and migration.
+- ED-05: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-06: RAG/manual search only if deterministic source-backed data and safety/provenance rules justify it.
+- Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.
