@@ -57,6 +57,8 @@ The inventory covers controller route groups for:
 | BuildingEnergyBalanceReportsController | `api/v{version:apiVersion}/reports/buildings/{buildingId:int}/energy-balance` | AuthPlanned | ReportsRead | P5-04B | Baseline staged report protection inventory entry. | Historical inventory anchor. |
 | BuildingHeatingReportsController | `api/v{version:apiVersion}/reports/buildings/{buildingId:int}/heating` | AuthPlanned | ReportsRead | P5-04B | Baseline staged report protection inventory entry. | Historical inventory anchor. |
 | StandardTablesController | `api/v{version:apiVersion}/standard-tables` | PublicAllowed | AnonymousAllowed / ProjectsRead | P5-04E | Reference routes can remain public only when explicitly inventoried. | Keep status explicit to avoid accidental policy drift. |
+| EquipmentDiagnosticsController | `api/v{version:apiVersion}/equipment-diagnostics/error-codes [GET]` | PublicAllowed | ReferenceData | ED-01 | Seeded diagnostic reference data must remain clearly classified and not over-claimed. | Deterministic seed only; no persistence, Telegram, RAG/vector search, AI search, or full manual verification claim. |
+| EquipmentDiagnosticsController | `api/v{version:apiVersion}/equipment-diagnostics/cases [GET]` | PublicAllowed | ReferenceData | ED-01 | Seeded diagnostic case data includes safety-sensitive guidance and confidence limitations. | Deterministic seed only; safety notes and non-ManualVerified confidence remain required. |
 
 Machine-readable canonical inventory is maintained in `docs/security/api-endpoint-protection-inventory.json`.
 

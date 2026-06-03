@@ -33,10 +33,118 @@ ED-00 includes:
   - Gree / Chiller / E6
 - Tests for search behavior, normalization, diagnostic-case content, confidence claims, and module dependency boundaries.
 
+ED-01 adds read-only API endpoints in `AssistantEngineer.Api`:
+
+- `GET /api/v1/equipment-diagnostics/error-codes`
+- `GET /api/v1/equipment-diagnostics/cases`
+
+The API layer is a thin adapter over `IEquipmentDiagnosticsFacade`. Search normalization stays in the application service.
+
+## API Routes
+
+### Search Error Codes
+
+`GET /api/v1/equipment-diagnostics/error-codes`
+
+Query parameters:
+
+- `manufacturer` required
+- `code` optional
+- `series` optional
+- `modelCode` optional
+- `category` optional
+
+Unknown manufacturers or codes return `200 OK` with an empty array.
+
+Example:
+
+```http
+GET /api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&code=H5
+```
+
+Example response:
+
+```json
+[
+  {
+    "manufacturer": "Gree",
+    "seriesName": "GMV",
+    "modelCode": null,
+    "code": "H5",
+    "title": "GMV protection alarm H5",
+    "meaning": "Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+    "severity": "Service attention required",
+    "category": 0,
+    "confidence": 1,
+    "sourceManual": {
+      "manufacturer": "Gree",
+      "manualTitle": "Gree service manual for the matching series and model",
+      "manualVersion": null,
+      "page": null,
+      "notes": "ED-00 deterministic seed only; exact manual page is not verified in this repository."
+    }
+  }
+]
+```
+
+### Get Diagnostic Case
+
+`GET /api/v1/equipment-diagnostics/cases`
+
+Query parameters:
+
+- `manufacturer` required
+- `code` required
+- `series` optional
+- `modelCode` optional
+
+If a case is not found, the endpoint returns `404 NotFound` with AssistantEngineer problem-details metadata.
+
+Example:
+
+```http
+GET /api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5
+```
+
+Example response excerpt:
+
+```json
+{
+  "errorCode": {
+    "manufacturer": "Gree",
+    "seriesName": "GMV",
+    "code": "H5",
+    "confidence": 1
+  },
+  "likelyCauses": [
+    "Outdoor unit protection condition reported by the control board."
+  ],
+  "diagnosticSteps": [
+    {
+      "order": 1,
+      "title": "Confirm installed equipment identity",
+      "instruction": "Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+      "expectedResult": "Manufacturer, series, model, and displayed H5 code are confirmed before diagnosis continues.",
+      "ifFailedAction": "Stop classification and obtain the exact model information."
+    }
+  ],
+  "requiredMeasurements": [
+    {
+      "name": "Supply voltage",
+      "unit": "V",
+      "requiredBeforeConclusion": true
+    }
+  ],
+  "safetyNotes": [
+    "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician."
+  ],
+  "confidence": 1
+}
+```
+
 ## Non-Goals
 
 - No EF Core persistence or migrations.
-- No public API controller routes yet.
 - No Telegram bot integration.
 - No AI, RAG, vector search, or semantic search.
 - No calculation-physics changes.
@@ -47,12 +155,13 @@ ED-00 includes:
 - Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by qualified technicians.
 - Diagnostics must not instruct users to bypass safety switches, protection inputs, current protection, pressure protection, flow protection, or controller safeguards.
 - Seed entries are preliminary unless an exact manual reference exists in the repository. They must not claim `ManualVerified` confidence without explicit source evidence.
+- ED-01 remains deterministic seeded knowledge only. It does not claim full manual verification, and it does not add Telegram, RAG/vector search, or persistence.
 
 ## Future Stages
 
 - Add curated manual-backed diagnostic entries with provenance and page references.
 - Introduce persistence through a dedicated Infrastructure adapter and migration.
-- Add API endpoints after the facade contracts settle.
+- Add richer API filtering and versioned response examples after facade contracts settle.
 - Add import workflows for verified manual data.
 - Add audit and confidence rules for manual-backed content.
 - Evaluate search enhancements only after deterministic source-backed data exists.
