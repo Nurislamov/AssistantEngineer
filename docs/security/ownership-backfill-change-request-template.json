@@ -1,0 +1,32 @@
+{
+  "changeId": "CHANGE-PLACEHOLDER-0001",
+  "environment": "staging",
+  "requestedBy": "requester-placeholder",
+  "reviewers": [
+    "engineering-owner-placeholder",
+    "security-reviewer-placeholder"
+  ],
+  "approvers": [
+    "database-release-owner-placeholder",
+    "business-owner-placeholder"
+  ],
+  "dryRunRunId": "dryrun-placeholder",
+  "gateResultId": "gate-placeholder",
+  "planHash": "planhash-placeholder",
+  "applyInputHash": "applyinputhash-placeholder",
+  "signoffId": "signoff-placeholder",
+  "readinessId": "readiness-placeholder",
+  "backupReference": "backup-placeholder",
+  "rollbackOwner": "rollback-owner-placeholder",
+  "scheduledWindow": "2026-05-18T00:00:00Z/2026-05-18T01:00:00Z",
+  "goNoGoDecision": "Undecided",
+  "nonClaims": [
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

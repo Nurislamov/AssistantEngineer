@@ -12,8 +12,8 @@ riderModule.iml
 *.sln.docstates
 TestResults/
 coverage/
-artifacts/
-artifacts/engineering/
+/artifacts/
+/artifacts/engineering/
 generated/
 node_modules/
 dist/
@@ -22,25 +22,25 @@ dist/
 .env.local
 
 # Generated ISO52016 Matrix baseline summaries
-artifacts/iso52016/matrix-baselines/
+/artifacts/iso52016/matrix-baselines/
 
 
 # Generated ISO52016 Matrix merge summaries
-artifacts/iso52016/matrix-merge-summary/
+/artifacts/iso52016/matrix-merge-summary/
 
 # ISO52016 Matrix external validation anchors generated outputs
-artifacts/iso52016/external-validation-anchors/
+/artifacts/iso52016/external-validation-anchors/
 
 # Generated ISO52016 Matrix engineering edge-case artifacts
-artifacts/iso52016/matrix-engineering-edge-cases/
-artifacts/iso52016/engineering-edge-cases/
-artifacts/iso52016/application-integration-hardening/
-artifacts/iso52016/physical-chain/
-artifacts/iso52016/physical-scenario-anchors/
-artifacts/iso52016/physical-selection-application-integration-hardening/
+/artifacts/iso52016/matrix-engineering-edge-cases/
+/artifacts/iso52016/engineering-edge-cases/
+/artifacts/iso52016/application-integration-hardening/
+/artifacts/iso52016/physical-chain/
+/artifacts/iso52016/physical-scenario-anchors/
+/artifacts/iso52016/physical-selection-application-integration-hardening/
 
 # Performance benchmark campaign outputs (opt-in tooling artifacts)
-artifacts/performance/
+/artifacts/performance/
 BenchmarkDotNet.Artifacts/
 *.db
 *.db-shm
@@ -49,7 +49,7 @@ playwright-report/
 test-results/
 blob-report/
 # Ownership backfill future artifacts
-artifacts/ownership-backfill/
+/artifacts/ownership-backfill/
 **/ownership-backfill-dry-run-summary*.json
 **/ownership-backfill-dry-run-summary-*.json
 **/ownership-backfill-dry-run-summary-*.md
@@ -88,3 +88,14 @@ artifacts/ownership-backfill/
 **/ownership-backfill-manual-decision-log-*.md
 **/ownership-backfill-architecture-review-*.json
 **/ownership-backfill-architecture-review-*.md
+
+# Canonical governance documents referenced by tests and indexes.
+!docs/security/ownership-backfill-plan-signoff-gate.md
+!docs/security/ownership-backfill-change-request-template.json
+!docs/security/ownership-backfill-change-request-template.md
+!docs/security/ownership-backfill-staging-acceptance-checklist.json
+!docs/security/ownership-backfill-staging-acceptance-checklist.md
+!docs/security/ownership-backfill-manual-decision-log-template.json
+!docs/security/ownership-backfill-manual-decision-log-template.md
+!docs/security/ownership-backfill-architecture-review-checklist.json
+!docs/security/ownership-backfill-architecture-review-checklist.md

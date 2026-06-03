@@ -1,0 +1,29 @@
+{
+  "stagingChangeId": "STAGING-CHANGE-PLACEHOLDER-0001",
+  "environment": "staging",
+  "operator": "staging-operator-placeholder",
+  "dryRunRunId": "dryrun-placeholder",
+  "gateResultId": "gate-placeholder",
+  "planHash": "planhash-placeholder",
+  "applyInputHash": "applyinputhash-placeholder",
+  "stagingRunHash": "stagingrunhash-placeholder",
+  "signoffId": "signoff-placeholder",
+  "readinessId": "readiness-placeholder",
+  "backupReference": "backup-placeholder",
+  "rollbackReadinessReference": "rollback-placeholder",
+  "postApplyDryRunReference": "post-apply-dry-run-placeholder",
+  "stagingAcceptanceValidationReference": "validate-staging-acceptance-placeholder",
+  "regressionTestReference": "regression-tests-placeholder",
+  "tenantIsolationMatrixReference": "tenant-isolation-placeholder",
+  "acceptanceDecision": "Undecided",
+  "nonClaims": [
+    "No staging apply execution claim.",
+    "No production apply enabled claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "decisionId": "DECISION-ID-PLACEHOLDER",
+  "decisionStatus": "NotReady",
+  "productionPromotionHash": "PRODUCTION-PROMOTION-HASH-PLACEHOLDER",
+  "applyInputHash": "APPLY-INPUT-HASH-PLACEHOLDER",
+  "planHash": "PLAN-HASH-PLACEHOLDER",
+  "stagingRunHash": "STAGING-RUN-HASH-PLACEHOLDER",
+  "productionChangeRequestId": "CHANGE-ID-PLACEHOLDER",
+  "evidenceReferences": {
+    "productionPromotionDecision": "REFERENCE-PLACEHOLDER",
+    "productionReadiness": "REFERENCE-PLACEHOLDER",
+    "productionSignoff": "REFERENCE-PLACEHOLDER",
+    "productionPreviousValues": "REFERENCE-PLACEHOLDER",
+    "stagingAcceptance": "REFERENCE-PLACEHOLDER",
+    "tenantIsolationMatrix": "REFERENCE-PLACEHOLDER",
+    "securityRegression": "REFERENCE-PLACEHOLDER"
+  },
+  "approvals": [
+    {
+      "role": "EngineeringOwner",
+      "approver": "APPROVER-PLACEHOLDER",
+      "approvedAtUtc": "2026-01-01T00:00:00Z"
+    },
+    {
+      "role": "SecurityReviewer",
+      "approver": "APPROVER-PLACEHOLDER",
+      "approvedAtUtc": "2026-01-01T00:00:00Z"
+    },
+    {
+      "role": "DatabaseReleaseOwner",
+      "approver": "APPROVER-PLACEHOLDER",
+      "approvedAtUtc": "2026-01-01T00:00:00Z"
+    },
+    {
+      "role": "BusinessApplicationOwner",
+      "approver": "APPROVER-PLACEHOLDER",
+      "approvedAtUtc": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "expiresAtUtc": "2026-01-02T00:00:00Z",
+  "backupReference": "BACKUP-REFERENCE-PLACEHOLDER",
+  "rollbackOwner": "ROLLBACK-OWNER-PLACEHOLDER",
+  "goNoGoChecklist": {
+    "validateProductionPromotionReady": false,
+    "hashesMatch": false,
+    "previousValuesComplete": false,
+    "tenantIsolationPassed": false,
+    "securityRegressionPassed": false,
+    "noSecretLeakage": false,
+    "releaseWindowApproved": false
+  },
+  "riskAcceptance": "RISK-ACCEPTANCE-PLACEHOLDER",
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No production ownership backfill execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}
