@@ -83,6 +83,12 @@ Guardrails cover:
 - `SEC-GUARD-TERMINOLOGY-CLAIMS-SURFACE`
 - `SEC-GUARD-GOVERNANCE-TEST-BRITTLENESS-REDUCTION`
 - `SEC-GUARD-P8-ENGINEERING-DOMAIN-CLOSURE`
+- `SEC-GUARD-ENGINEERING-VALIDATION-ROADMAP`
+- `SEC-GUARD-VALIDATION-FIXTURE-PROVENANCE`
+- `SEC-GUARD-ISO52016-DECOMPOSITION-REVIEW`
+- `SEC-GUARD-ISO52016-BEHAVIOR-CHARACTERIZATION`
+- `SEC-GUARD-ISO52016-MATRIX-SOLVER-SEAM-DESIGN`
+- `SEC-GUARD-ISO52016-MATRIX-SOLVER-CHARACTERIZATION-HARDENING`
 
 ## Enforcement model
 
@@ -251,3 +257,33 @@ Guardrails cover:
 - Enforcement: AutomatedTest
 - Tests: P8EngineeringDomainHardeningClosureTests, P8EngineeringDomainHardeningClosureBoundaryTests
 - Risk: Closure-stage drift can hide unresolved findings, imply unsupported behavior changes, or weaken boundary guarantees entering P9.
+
+## SEC-GUARD-ENGINEERING-VALIDATION-ROADMAP
+- Enforcement: AutomatedTest
+- Tests: P9EngineeringCalculationValidationRoadmapTests, P9ValidationEvidenceInventoryTests, P9ValidationClaimsPolicyTests
+- Risk: Validation-roadmap updates can drift into unsupported parity/certification claims or imply runtime physics changes without evidence.
+
+## SEC-GUARD-VALIDATION-FIXTURE-PROVENANCE
+- Enforcement: AutomatedTest
+- Tests: P9ValidationFixtureProvenanceModelTests, P9ValidationFixtureProvenanceInventoryTests, P9ValidationFixtureExpectedValuesUnchangedTests
+- Risk: Fixture provenance metadata can drift into overclaims or mix planned placeholders with achieved evidence unless provenance categories, evidence-strength fields, and expected-values-no-change flags remain enforced.
+
+## SEC-GUARD-ISO52016-DECOMPOSITION-REVIEW
+- Enforcement: AutomatedTest
+- Tests: P9Iso52016DecompositionReviewTests, P9Iso52016ComponentMapTests, P9Iso52016NoPhysicsChangeBoundaryTests
+- Risk: ISO52016 decomposition planning updates can drift into implicit formula/expected-value changes or unsupported parity/certification claims unless review/component-map and no-physics-change boundaries are enforced.
+
+## SEC-GUARD-ISO52016-BEHAVIOR-CHARACTERIZATION
+- Enforcement: AutomatedTest
+- Tests: P9Iso52016BehaviorCharacterizationInventoryTests, P9Iso52016BehaviorCharacterizationCoverageTests, Iso52016MatrixAssemblyCharacterizationTests, Iso52016SolverOutputCharacterizationTests, Iso52016AggregationCharacterizationTests, Iso52016ReportMappingCharacterizationTests, P9Iso52016NoPhysicsChangeBoundaryTests
+- Risk: ISO52016 characterization-stage updates can accidentally drift into hidden formula/expected-value edits or unsupported parity/certification claims unless explicit coverage and no-physics-change boundaries are enforced.
+
+## SEC-GUARD-ISO52016-MATRIX-SOLVER-SEAM-DESIGN
+- Enforcement: AutomatedTest
+- Tests: P9Iso52016MatrixSolverSeamDesignTests, P9Iso52016MatrixSolverSeamRiskRegisterTests, P9Iso52016SeamDesignNoPhysicsChangeTests
+- Risk: Matrix/solver seam-design planning can drift into implied behavior changes, unsupported tolerance broadening, or unsupported parity/certification claims unless explicit design/risk and no-physics-change boundaries remain enforced.
+
+## SEC-GUARD-ISO52016-MATRIX-SOLVER-CHARACTERIZATION-HARDENING
+- Enforcement: AutomatedTest
+- Tests: P9Iso52016MatrixSolverCharacterizationHardeningTests, P9Iso52016MatrixSolverCharacterizationCoverageTests, Iso52016MatrixAssemblyInvariantTests, Iso52016LoadVectorCharacterizationTests, Iso52016SolverKernelCharacterizationTests, Iso52016MultiZoneCouplingCharacterizationTests, Iso52016DiagnosticsResultMappingCharacterizationTests
+- Risk: Characterization hardening can drift into hidden tolerance widening, incomplete seam coverage, or implied behavior change unless focused seam tests and governance coverage remain explicit.

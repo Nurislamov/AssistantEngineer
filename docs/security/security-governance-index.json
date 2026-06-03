@@ -1,6 +1,6 @@
 {
-    "version":  11,
-    "lastReviewedDate":  "2026-05-22",
+    "version":  13,
+    "lastReviewedDate":  "2026-05-23",
     "documents":  [
                       {
                           "path":  "docs/security/security-release-boundary.md",
@@ -694,6 +694,204 @@
                           "summary":  "Machine-readable final P8 closure summary and P9 recommended backlog.",
                           "category":  "Architecture review",
                           "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/engineering-calculation-validation-roadmap.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-00 validation roadmap refresh across ISO52010/ISO52016/heating-cooling/report-workflow evidence planning with explicit non-claim boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/engineering-calculation-validation-roadmap.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-00 validation roadmap with maturity model, gaps, and staged backlog recommendations.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/validation-evidence-inventory.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-00/P9-03 inventory of validation evidence categories, maturity tags, provenance links, and claim boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/validation-evidence-inventory.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-00/P9-03 validation evidence inventory with category/maturity/provenance mappings.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/validation-claims-policy.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "P9-00 validation claims policy defining allowed and forbidden claim vocabulary for validation artifacts.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-00",
+                          "path":  "docs/validation/validation-claims-policy.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable P9-00 validation claims policy and preferred/deprecated terminology surface.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-03",
+                          "path":  "docs/validation/validation-fixture-provenance-model.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "P9-03 canonical provenance category/strength model for validation fixtures and claim boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-03",
+                          "path":  "docs/validation/validation-fixture-provenance-model.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable P9-03 fixture provenance model and required metadata field contract.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-03",
+                          "path":  "docs/validation/validation-fixture-provenance-inventory.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-03 provenance inventory that separates achieved evidence from planned placeholders.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-03",
+                          "path":  "docs/validation/validation-fixture-provenance-inventory.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-03 provenance inventory with per-entry metadata and follow-up stages.",
+                          "category":  "Architecture review",
+                          "status":  "GovernanceOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01",
+                          "path":  "docs/validation/iso52016-decomposition-review.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-01 audit-only ISO52016 solver/service decomposition review with hotspot and staged-backlog inventory.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01",
+                          "path":  "docs/validation/iso52016-decomposition-review.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-01 ISO52016 decomposition review with no-physics-change boundary flags.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01",
+                          "path":  "docs/validation/iso52016-component-map.md",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "P9-01 ISO52016 component-to-file/test/evidence map for staged decomposition planning.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01",
+                          "path":  "docs/validation/iso52016-component-map.json",
+                          "canonicalRole":  "Canonical",
+                          "summary":  "Machine-readable P9-01 ISO52016 component map linked to evidence and provenance entries.",
+                          "category":  "Architecture review",
+                          "status":  "AuditOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01A",
+                          "path":  "docs/validation/iso52016-behavior-characterization-inventory.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-01A test-only ISO52016 behavior characterization inventory with component coverage, retained gaps, and deterministic tolerance policy.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01A",
+                          "path":  "docs/validation/iso52016-behavior-characterization-inventory.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-01A ISO52016 characterization coverage matrix and no-physics-change boundary flags.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B",
+                          "path":  "docs/validation/iso52016-matrix-solver-seam-design.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-01B design-only seam model for ISO52016 matrix input/assembly/solver/result/diagnostics extraction with preserved no-change boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "DesignOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B",
+                          "path":  "docs/validation/iso52016-matrix-solver-seam-design.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-01B matrix/solver seam design with invariants and staged extraction prerequisites.",
+                          "category":  "Architecture review",
+                          "status":  "DesignOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B",
+                          "path":  "docs/validation/iso52016-matrix-solver-seam-risk-register.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-01B seam extraction risk register with mitigation and test-gate mapping.",
+                          "category":  "Architecture review",
+                          "status":  "DesignOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B",
+                          "path":  "docs/validation/iso52016-matrix-solver-seam-risk-register.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-01B seam extraction risk register with no-expected-value-change boundary.",
+                          "category":  "Architecture review",
+                          "status":  "DesignOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B1",
+                          "path":  "docs/validation/iso52016-matrix-solver-characterization-hardening.md",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "P9-01B1 focused characterization hardening report for matrix/vector/kernel/coupling/diagnostics seams.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
+                      },
+                      {
+                          "pointsToCanonicalBoundary":  true,
+                          "stage":  "P9-01B1",
+                          "path":  "docs/validation/iso52016-matrix-solver-characterization-hardening.json",
+                          "canonicalRole":  "StageEvidence",
+                          "summary":  "Machine-readable P9-01B1 hardening inventory with no-physics/no-expected-values-change boundaries.",
+                          "category":  "Architecture review",
+                          "status":  "TestOnly"
                       }
                   ]
 }

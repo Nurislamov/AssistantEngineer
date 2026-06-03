@@ -84,3 +84,6 @@ This audit documents release-ready observability and performance diagnostics for
 
 - P7-05: CI/GitHub checks visibility with surfaced stage-duration trends from release-ready runs.
 - P8-06: scripts/tools rationalization keeps release-critical wrapper boundaries explicit without changing gate semantics.
+- P9-00: validation-roadmap refresh uses these observability artifacts as planning evidence only and does not imply formal validation completion.
+- P9-01: ISO52016 decomposition review uses observability evidence as architecture-planning input only and does not imply formula, expected-value, or release-boundary changes.
+- P9-03: fixture provenance cleanup classifies evidence strength and planned placeholders; it does not modify release-ready gate semantics or expected numerical values.

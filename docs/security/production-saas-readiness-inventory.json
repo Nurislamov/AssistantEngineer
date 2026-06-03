@@ -1,6 +1,6 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-22",
+    "lastReviewedDate":  "2026-05-23",
     "areas":  [
                   {
                       "area":  "Authentication",
@@ -577,6 +577,42 @@
                           "title":  "Final P8 closure audit",
                           "status":  "AuditOnly",
                           "risk":  "Final closure audit/reporting only; no runtime/API/authorization/workflow/calculation behavior and write-path boundaries remain unchanged."
+                      },
+                      {
+                          "item":  "P9-00",
+                          "title":  "Engineering calculation validation roadmap refresh",
+                          "status":  "AuditOnly",
+                          "risk":  "Validation roadmap/evidence/policy governance refresh only; no calculation physics, runtime/API behavior, authorization semantics, or write-path boundaries changed."
+                      },
+                      {
+                          "item":  "P9-01",
+                          "title":  "ISO52016 solver/service decomposition review",
+                          "status":  "AuditOnly",
+                          "risk":  "ISO52016 decomposition/component-map review only; no calculation physics, expected numerical values, runtime/API behavior, authorization semantics, or write-path boundaries changed."
+                      },
+                      {
+                          "item":  "P9-01A",
+                          "title":  "ISO52016 behavior characterization inventory",
+                          "status":  "TestOnly",
+                          "risk":  "ISO52016 seam behavior coverage inventory and focused characterization tests only; no calculation physics, expected numerical values, fixture numeric values, runtime/API behavior, authorization semantics, or write-path boundaries changed."
+                      },
+                      {
+                          "item":  "P9-01B",
+                          "title":  "ISO52016 matrix assembly/solver seam extraction design",
+                          "status":  "DesignOnly",
+                          "risk":  "ISO52016 seam boundary/risk design only; no calculation physics, expected numerical values, fixture numeric values, runtime/API behavior, authorization semantics, or write-path boundaries changed."
+                      },
+                      {
+                          "item":  "P9-01B1",
+                          "title":  "ISO52016 matrix assembly/solver characterization hardening",
+                          "status":  "TestOnly",
+                          "risk":  "Focused seam characterization hardening only; no calculation physics, expected numerical values, fixture numeric values, runtime/API behavior, authorization semantics, or write-path boundaries changed."
+                      },
+                      {
+                          "item":  "P9-03",
+                          "title":  "Validation fixture provenance cleanup",
+                          "status":  "GovernanceOnly",
+                          "risk":  "Validation provenance metadata/model/inventory cleanup only; no calculation physics, expected numerical values, runtime/API behavior, authorization semantics, or write-path boundaries changed."
                       }
                   ],
     "nonClaims":  [

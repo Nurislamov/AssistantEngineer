@@ -1,8 +1,8 @@
-# AssistantEngineer Architecture Map (P8-09)
+# AssistantEngineer Architecture Map (P9-01B1)
 
 ## Purpose
 
-Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7 governance cycle.
+Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7/P8 hardening cycle and P9 validation-roadmap/provenance governance refresh.
 
 ## Backend module map
 
@@ -87,10 +87,17 @@ Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7 govern
 - Terminology and claims-surface governance in P8-07 is anchored by `docs/architecture/terminology-and-claims-vocabulary.md` and enforced by dedicated claim-surface tests.
 - Governance test brittleness reduction in P8-08 adds semantic helper-based assertions for governance docs while preserving strict behavior-level safety checks.
 - Final P8 closure decision and deferred P9 backlog are documented in `docs/architecture/p8-engineering-domain-hardening-closure.md`.
+- P9-00 validation evidence planning is documented in `docs/validation/engineering-calculation-validation-roadmap.md`, `docs/validation/validation-evidence-inventory.md`, and `docs/validation/validation-claims-policy.md`.
+- P9-03 validation fixture provenance governance is documented in `docs/validation/validation-fixture-provenance-model.md` and `docs/validation/validation-fixture-provenance-inventory.md`.
+- P9-01 ISO52016 decomposition review/component map are documented in `docs/validation/iso52016-decomposition-review.md` and `docs/validation/iso52016-component-map.md`.
+- P9-01A ISO52016 behavior characterization coverage is documented in `docs/validation/iso52016-behavior-characterization-inventory.md`.
+- P9-01B ISO52016 matrix/solver seam extraction design and risk register are documented in `docs/validation/iso52016-matrix-solver-seam-design.md` and `docs/validation/iso52016-matrix-solver-seam-risk-register.md`.
+- P9-01B1 matrix/solver characterization hardening is documented in `docs/validation/iso52016-matrix-solver-characterization-hardening.md`.
 
 ## Known boundary risks
 
 - Workflow and authorization hotspots are decomposition-staged in P8-03; gate characterization and gate-collaborator extraction (P8-03A/B/C), workflow-shell characterization (P8-03D), workflow helper migration (P8-03E), and main controller-shell reduction (P8-03F) are complete.
+- ISO52016 service/component decomposition remains staged; P9-01A characterization inventory, P9-01B seam design, and P9-01B1 hardening are complete, while extraction and follow-up review stages P9-01B2/P9-01B3/P9-01B4/P9-01B5/P9-01B6/P9-01C/P9-01D/P9-01E/P9-01F remain pending.
 - OwnershipBackfill parser command-specific branches remain in one class and may be optionally split further in future tooling-only stages.
 - Infrastructure-to-module dependency surface remains broad and should be reviewed for minimization in later stages.
 - Read-history and report/artifact controller partials remain broader than ideal and are optional follow-up decomposition candidates.
@@ -98,6 +105,11 @@ Provide a stable module/layer map of AssistantEngineer after the P5/P6/P7 govern
 ## Next review points
 
 - P9-00 engineering calculation validation roadmap refresh.
+- P9-03 validation fixture provenance cleanup.
+- P9-01 ISO52016 solver/service decomposition review.
+- P9-01A ISO52016 behavior characterization inventory.
+- P9-01B matrix assembly/solver seam extraction design.
+- P9-01B1 matrix assembly/solver characterization hardening.
 - P9-04 route inventory deferred-items phase 2.
 - P9-05 ownership backfill apply decision remains deferred unless ADR trigger is met.
 

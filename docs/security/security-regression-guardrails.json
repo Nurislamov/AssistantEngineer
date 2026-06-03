@@ -1,6 +1,6 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-22",
+    "lastReviewedDate":  "2026-05-23",
     "guardrails":  [
                        {
                            "guardrailId":  "SEC-GUARD-ROUTE-INVENTORY",
@@ -505,8 +505,62 @@
                            "testName":  "P8EngineeringDomainHardeningClosureTests",
                            "risk":  "Closure-stage drift can hide unresolved findings, imply unsupported behavior changes, or weaken boundary guarantees entering P9.",
                            "notes":  "Validated by P8EngineeringDomainHardeningClosureTests and P8EngineeringDomainHardeningClosureBoundaryTests."
-                       }
-                   ],
+                       },
+                      {
+                          "guardrailId":  "SEC-GUARD-ENGINEERING-VALIDATION-ROADMAP",
+                          "title":  "P9 validation roadmap artifacts must preserve no-change boundaries and explicit claim constraints",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9EngineeringCalculationValidationRoadmapTests",
+                          "risk":  "Validation-roadmap updates can drift into unsupported parity/certification claims or imply runtime physics changes without evidence.",
+                          "notes":  "Validated by P9EngineeringCalculationValidationRoadmapTests, P9ValidationEvidenceInventoryTests, and P9ValidationClaimsPolicyTests."
+                      },
+                      {
+                          "guardrailId":  "SEC-GUARD-VALIDATION-FIXTURE-PROVENANCE",
+                          "title":  "P9-03 validation fixture provenance metadata must preserve no-change numeric boundaries and explicit placeholder separation",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9ValidationFixtureProvenanceModelTests",
+                          "risk":  "Fixture provenance drift can overstate evidence strength, blur placeholder/planned versus achieved evidence, or imply unsupported parity/certification claims.",
+                          "notes":  "Validated by P9ValidationFixtureProvenanceModelTests, P9ValidationFixtureProvenanceInventoryTests, and P9ValidationFixtureExpectedValuesUnchangedTests."
+                      },
+                      {
+                          "guardrailId":  "SEC-GUARD-ISO52016-DECOMPOSITION-REVIEW",
+                          "title":  "P9-01 ISO52016 decomposition review artifacts must preserve no-physics-change and no-expected-value-change boundaries",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9Iso52016DecompositionReviewTests",
+                          "risk":  "ISO52016 decomposition planning updates can drift into implicit formula/expected-value changes or unsupported parity/certification claims without explicit boundary checks.",
+                          "notes":  "Validated by P9Iso52016DecompositionReviewTests, P9Iso52016ComponentMapTests, and P9Iso52016NoPhysicsChangeBoundaryTests."
+                      },
+                      {
+                          "guardrailId":  "SEC-GUARD-ISO52016-BEHAVIOR-CHARACTERIZATION",
+                          "title":  "P9-01A ISO52016 behavior characterization inventory must preserve no-physics-change and no-expected-value-change boundaries",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9Iso52016BehaviorCharacterizationInventoryTests",
+                          "risk":  "Characterization-stage coverage updates can drift into hidden formula/expected-value edits or unsupported validation parity/certification claims without explicit boundary checks.",
+                          "notes":  "Validated by P9Iso52016BehaviorCharacterizationInventoryTests, P9Iso52016BehaviorCharacterizationCoverageTests, Iso52016MatrixAssemblyCharacterizationTests, Iso52016SolverOutputCharacterizationTests, Iso52016AggregationCharacterizationTests, Iso52016ReportMappingCharacterizationTests, and P9Iso52016NoPhysicsChangeBoundaryTests."
+                      },
+                      {
+                          "guardrailId":  "SEC-GUARD-ISO52016-MATRIX-SOLVER-SEAM-DESIGN",
+                          "title":  "P9-01B ISO52016 matrix/solver seam design must preserve no-physics-change and no-expected-value-change boundaries",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9Iso52016MatrixSolverSeamDesignTests",
+                          "risk":  "Seam-design and extraction-stage planning can drift into implied behavior changes, unsupported tolerance broadening, or unsupported parity/certification claims without explicit design/risk guardrails.",
+                          "notes":  "Validated by P9Iso52016MatrixSolverSeamDesignTests, P9Iso52016MatrixSolverSeamRiskRegisterTests, and P9Iso52016SeamDesignNoPhysicsChangeTests."
+                      },
+                      {
+                          "guardrailId":  "SEC-GUARD-ISO52016-MATRIX-SOLVER-CHARACTERIZATION-HARDENING",
+                          "title":  "P9-01B1 ISO52016 matrix/solver characterization hardening must preserve no-physics-change/no-expected-value-change boundaries",
+                          "status":  "Active",
+                          "enforcement":  "AutomatedTest",
+                          "testName":  "P9Iso52016MatrixSolverCharacterizationHardeningTests",
+                          "risk":  "Pre-extraction characterization hardening can drift into hidden tolerance widening, incomplete seam coverage, or implied behavior changes without explicit test/governance guardrails.",
+                          "notes":  "Validated by P9Iso52016MatrixSolverCharacterizationHardeningTests, P9Iso52016MatrixSolverCharacterizationCoverageTests, Iso52016MatrixAssemblyInvariantTests, Iso52016LoadVectorCharacterizationTests, Iso52016SolverKernelCharacterizationTests, Iso52016MultiZoneCouplingCharacterizationTests, and Iso52016DiagnosticsResultMappingCharacterizationTests."
+                      }
+                  ],
     "nonClaims":  [
                       "No production security certification claim.",
                       "No SOC 2 / ISO 27001 compliance claim.",

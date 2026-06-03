@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
+This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts and P9 validation-governance planning.
 
 ## Canonical release boundary
 
@@ -87,6 +87,17 @@ This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 - `docs/architecture/terminology-claims-surface-cleanup.md`
 - `docs/architecture/governance-test-brittleness-reduction.md`
 - `docs/architecture/p8-engineering-domain-hardening-closure.md`
+- `docs/validation/engineering-calculation-validation-roadmap.md`
+- `docs/validation/validation-evidence-inventory.md`
+- `docs/validation/validation-claims-policy.md`
+- `docs/validation/validation-fixture-provenance-model.md`
+- `docs/validation/validation-fixture-provenance-inventory.md`
+- `docs/validation/iso52016-decomposition-review.md`
+- `docs/validation/iso52016-component-map.md`
+- `docs/validation/iso52016-behavior-characterization-inventory.md`
+- `docs/validation/iso52016-matrix-solver-seam-design.md`
+- `docs/validation/iso52016-matrix-solver-seam-risk-register.md`
+- `docs/validation/iso52016-matrix-solver-characterization-hardening.md`
 
 ## Audit/release readiness
 
@@ -115,6 +126,12 @@ This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 - `docs/architecture/terminology-claims-surface-cleanup.json`
 - `docs/architecture/governance-test-brittleness-reduction.json`
 - `docs/architecture/p8-engineering-domain-hardening-closure.json`
+- `docs/validation/iso52016-decomposition-review.json`
+- `docs/validation/iso52016-component-map.json`
+- `docs/validation/iso52016-behavior-characterization-inventory.json`
+- `docs/validation/iso52016-matrix-solver-seam-design.json`
+- `docs/validation/iso52016-matrix-solver-seam-risk-register.json`
+- `docs/validation/iso52016-matrix-solver-characterization-hardening.json`
 
 ## Notes
 
@@ -124,3 +141,9 @@ This index is the canonical navigation map for P5/P6/P7/P8 governance artifacts.
 - Use `docs/architecture/terminology-and-claims-vocabulary.md` for canonical allowed/forbidden terminology and claim wording.
 - Use `docs/architecture/governance-test-brittleness-reduction.md` for P8-08 semantic assertion migration boundaries and preserved strict guardrail list.
 - Use `docs/architecture/p8-engineering-domain-hardening-closure.md` as the final P8 closure decision and deferred P9 backlog boundary.
+- Use `docs/validation/engineering-calculation-validation-roadmap.md` and `docs/validation/validation-claims-policy.md` for P9 validation evidence planning and claim boundaries.
+- Use `docs/validation/validation-fixture-provenance-model.md` and `docs/validation/validation-fixture-provenance-inventory.md` for P9-03 provenance-strength and placeholder classification boundaries.
+- Use `docs/validation/iso52016-decomposition-review.md` and `docs/validation/iso52016-component-map.md` for P9-01 ISO52016 solver/service decomposition review boundaries.
+- Use `docs/validation/iso52016-behavior-characterization-inventory.md` for P9-01A seam-level behavior-lock coverage and retained-gap tracking before decomposition refactor stages.
+- Use `docs/validation/iso52016-matrix-solver-seam-design.md` and `docs/validation/iso52016-matrix-solver-seam-risk-register.md` for P9-01B matrix/solver seam extraction design prerequisites and risk controls before any refactor implementation.
+- Use `docs/validation/iso52016-matrix-solver-characterization-hardening.md` for P9-01B1 pre-extraction hardening evidence and seam-coverage updates.

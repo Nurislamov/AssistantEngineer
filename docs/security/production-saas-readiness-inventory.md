@@ -709,3 +709,68 @@ P8-08 reference:
 P8-09 reference:
 
 - `docs/architecture/p8-engineering-domain-hardening-closure.md`
+
+## P9-00 status note
+
+- P9-00 engineering calculation validation roadmap refresh is implemented as audit-only governance planning.
+- Validation roadmap, evidence inventory, and claims policy are documented to improve calculation-confidence planning without changing runtime or physics behavior.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, and write-path/apply boundary remain unchanged.
+
+P9-00 reference:
+
+- `docs/validation/engineering-calculation-validation-roadmap.md`
+- `docs/validation/validation-evidence-inventory.md`
+- `docs/validation/validation-claims-policy.md`
+
+## P9-01 status note
+
+- P9-01 ISO52016 decomposition review is implemented as audit-only architecture/validation planning.
+- ISO52016 component map and hotspot inventory are documented for staged characterization-first decomposition, without code-level formula or expected-value changes.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, expected numerical values, and write-path/apply boundary remain unchanged.
+
+P9-01 reference:
+
+- `docs/validation/iso52016-decomposition-review.md`
+- `docs/validation/iso52016-component-map.md`
+
+## P9-01A status note
+
+- P9-01A ISO52016 behavior characterization inventory is implemented as test-only seam behavior freeze prior to decomposition stages.
+- Component-level coverage classification, retained-gap inventory, and focused deterministic characterization tests are added without formula or expected-value fixture edits.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, expected numerical values, and write-path/apply boundary remain unchanged.
+
+P9-01A reference:
+
+- `docs/validation/iso52016-behavior-characterization-inventory.md`
+
+## P9-01B status note
+
+- P9-01B ISO52016 matrix/solver seam extraction design is implemented as design-only decomposition planning.
+- Proposed seams, invariants, extraction-sequence stages, and seam risk register are documented without formula, expected-value, fixture, runtime, or API behavior changes.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, expected numerical values, and write-path/apply boundary remain unchanged.
+
+P9-01B reference:
+
+- `docs/validation/iso52016-matrix-solver-seam-design.md`
+- `docs/validation/iso52016-matrix-solver-seam-risk-register.md`
+
+## P9-01B1 status note
+
+- P9-01B1 ISO52016 matrix/solver characterization hardening is implemented as test-only pre-extraction hardening.
+- Focused matrix/vector/kernel/coupling/diagnostics characterization tests are strengthened without formula, expected-value, fixture, runtime, or API behavior changes.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, expected numerical values, and write-path/apply boundary remain unchanged.
+
+P9-01B1 reference:
+
+- `docs/validation/iso52016-matrix-solver-characterization-hardening.md`
+
+## P9-03 status note
+
+- P9-03 validation fixture provenance cleanup is implemented as governance/docs metadata normalization.
+- Provenance model and provenance inventory now separate achieved evidence from planned placeholders and enforce explicit claim boundaries.
+- Runtime/API behavior, authorization semantics, workflow behavior, calculation formulas, expected numerical values, and write-path/apply boundary remain unchanged.
+
+P9-03 reference:
+
+- `docs/validation/validation-fixture-provenance-model.md`
+- `docs/validation/validation-fixture-provenance-inventory.md`
