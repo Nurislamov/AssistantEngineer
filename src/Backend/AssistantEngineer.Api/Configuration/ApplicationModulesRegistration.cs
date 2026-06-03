@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings;
 using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.EngineeringWorkflow;
 using AssistantEngineer.Modules.Equipment;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.Identity;
 using AssistantEngineer.Modules.Reporting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,6 +21,7 @@ internal static class ApplicationModulesRegistration
         services.AddBuildingsModule(configuration);
         services.AddCalculationsModule(configuration);
         services.AddEquipmentModule();
+        services.AddEquipmentDiagnosticsModule();
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddEngineeringWorkflowModule(configuration);

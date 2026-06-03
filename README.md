@@ -25,6 +25,10 @@ AssistantEngineer is a standalone C# engineering calculation platform for HVAC a
 - Diagram editor.
 - Full external validation proof. Existing fixtures are deterministic reference fixtures unless a test names a documented external source and tolerance workflow.
 
+## Planned / Early Modules
+
+- Equipment Diagnostics: early backend foundation for deterministic equipment error-code diagnostics, separate from equipment catalog and selection. ED-00 uses in-memory seed data only and has no persistence or public API routes yet.
+
 ## Architecture Overview
 
 The backend is a modular monolith. `AssistantEngineer.Api` composes public module facades. Domain and application modules stay independent from EF Core, ASP.NET Core, UI, and Infrastructure implementation details. Persistence and report integrations live under `AssistantEngineer.Infrastructure`.

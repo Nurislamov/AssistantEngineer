@@ -14,6 +14,7 @@
         "AssistantEngineer.Modules.Calculations",
         "AssistantEngineer.Modules.EngineeringWorkflow",
         "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.EquipmentDiagnostics",
         "AssistantEngineer.Modules.Identity",
         "AssistantEngineer.Modules.Reporting",
         "AssistantEngineer.SharedKernel"
@@ -158,6 +159,27 @@
       ],
       "allowedNamespacePrefixes": [
         "AssistantEngineer.Modules.Equipment."
+      ],
+      "forbiddenNamespacePrefixes": [
+        "AssistantEngineer.Api.",
+        "AssistantEngineer.Tools."
+      ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Modules.EquipmentDiagnostics",
+      "assembly": "AssistantEngineer.Modules.EquipmentDiagnostics",
+      "layer": "DomainModule",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [
+        "AssistantEngineer.Api",
+        "AssistantEngineer.Infrastructure",
+        "AssistantEngineer.Modules.Buildings",
+        "AssistantEngineer.Modules.Calculations",
+        "AssistantEngineer.Tools."
+      ],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Modules.EquipmentDiagnostics."
       ],
       "forbiddenNamespacePrefixes": [
         "AssistantEngineer.Api.",
@@ -403,6 +425,7 @@
         "AssistantEngineer.Modules.Calculations",
         "AssistantEngineer.Modules.EngineeringWorkflow",
         "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.EquipmentDiagnostics",
         "AssistantEngineer.Modules.Identity",
         "AssistantEngineer.Modules.Reporting",
         "AssistantEngineer.SharedKernel",
