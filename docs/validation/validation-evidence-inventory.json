@@ -1,0 +1,421 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-03",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "provenanceInventoryReference": "docs/validation/validation-fixture-provenance-inventory.json",
+  "iso52016ComponentMapReference": "docs/validation/iso52016-component-map.json",
+  "evidenceEntries": [
+    {
+      "id": "P9-EVID-001",
+      "path": "tests/fixtures/validation/manual/MAN-ENG-HEAT-001-steady-state-room-loss/",
+      "category": "ManualFixture",
+      "area": "Heating/cooling load",
+      "maturity": "ManualReferenceAnchor",
+      "provenanceCategory": "ManualFixture",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-001",
+      "claimAllowed": [
+        "manual engineering reference fixture",
+        "validation anchor"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated"
+      ],
+      "claimBoundaryNotes": [
+        "Manual anchor evidence only; not formal validation."
+      ],
+      "relatedTests": [
+        "ManualEngineeringHeatingValidationFixtureTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "Single-case anchor, not exhaustive scenario coverage."
+      ],
+      "proposedStage": "P9-03"
+    },
+    {
+      "id": "P9-EVID-002",
+      "path": "tests/fixtures/validation/manual/MAN-ENG-VENT-001-ventilation-infiltration-sensible-load/",
+      "category": "ManualFixture",
+      "area": "Heating/cooling load",
+      "maturity": "ManualReferenceAnchor",
+      "provenanceCategory": "ManualFixture",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-002",
+      "claimAllowed": [
+        "manual engineering reference fixture",
+        "reference-informed"
+      ],
+      "claimForbidden": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity"
+      ],
+      "claimBoundaryNotes": [
+        "No full dynamic HVAC validation claim."
+      ],
+      "relatedTests": [
+        "ManualEngineeringVentilationValidationFixtureTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "Does not represent full HVAC dynamic behavior."
+      ],
+      "proposedStage": "P9-03"
+    },
+    {
+      "id": "P9-EVID-003",
+      "path": "tests/fixtures/validation/manual/MAN-ENG-SOLAR-001-simple-window-solar-gain/",
+      "category": "ManualFixture",
+      "area": "ISO52010 / solar-weather foundation",
+      "maturity": "ManualReferenceAnchor",
+      "provenanceCategory": "ManualFixture",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-003",
+      "claimAllowed": [
+        "manual engineering reference fixture",
+        "validation anchor"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated"
+      ],
+      "claimBoundaryNotes": [
+        "Manual solar anchor; not formal standard-case validation."
+      ],
+      "relatedTests": [
+        "ManualEngineeringSolarValidationFixtureTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "Explicitly excludes full external parity claims."
+      ],
+      "proposedStage": "P9-03"
+    },
+    {
+      "id": "P9-EVID-004",
+      "path": "tests/AssistantEngineer.Tests/Calculations/Solar/PerezAnisotropicSurfaceIrradianceCalculatorTests.cs",
+      "category": "InternalInvariant",
+      "area": "ISO52010 / solar-weather foundation",
+      "maturity": "InternalInvariant",
+      "provenanceCategory": "InternalInvariant",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-004",
+      "claimAllowed": [
+        "internal invariant",
+        "reference-informed"
+      ],
+      "claimForbidden": [
+        "forbidden: fully validated",
+        "forbidden: ISO certified"
+      ],
+      "claimBoundaryNotes": [
+        "Internal deterministic checks are non-certifying."
+      ],
+      "relatedTests": [
+        "PerezAnisotropicSurfaceIrradianceCalculatorTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "Internal-only evidence strength."
+      ],
+      "proposedStage": "P9-01"
+    },
+    {
+      "id": "P9-EVID-005",
+      "path": "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/",
+      "category": "IndependentReferenceFixture",
+      "area": "ISO52016 / hourly matrix solver",
+      "maturity": "IndependentReferenceFixture",
+      "provenanceCategory": "IndependentReferenceFixture",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-006",
+      "claimAllowed": [
+        "independent reference fixture",
+        "validation anchor"
+      ],
+      "claimForbidden": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity"
+      ],
+      "claimBoundaryNotes": [
+        "Independent anchors, no donor parity claim."
+      ],
+      "relatedTests": [
+        "Iso52016MatrixExternalValidationAnchorTests",
+        "Iso52016MatrixExternalValidationFixtureTests",
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification"
+      ],
+      "knownLimitations": [
+        "Historical provenance metadata normalization is still in progress."
+      ],
+      "proposedStage": "P9-03"
+    },
+    {
+      "id": "P9-EVID-006",
+      "path": "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/",
+      "category": "DonorMethodologyReference",
+      "area": "ISO52016 / hourly matrix solver",
+      "maturity": "ExternalToolReferenceFixture",
+      "provenanceCategory": "DonorMethodologyReference",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-008",
+      "claimAllowed": [
+        "reference-informed methodology context",
+        "EnergyPlus-style fixture naming"
+      ],
+      "claimForbidden": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity"
+      ],
+      "claimBoundaryNotes": [
+        "Naming anchors are methodology-only."
+      ],
+      "relatedTests": [
+        "Iso52016MatrixExternalValidationNamingAnchorTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "No numerical parity implication."
+      ],
+      "proposedStage": "P9-08"
+    },
+    {
+      "id": "P9-EVID-007",
+      "path": "docs/validation/EnergyPlusValidationCaseRegistry.json",
+      "category": "PlannedPlaceholder",
+      "area": "External/reference evidence",
+      "maturity": "ExternalToolReferenceFixture",
+      "provenanceCategory": "PlannedPlaceholder",
+      "plannedPlaceholder": true,
+      "provenanceInventoryReference": "P9-FIX-009",
+      "claimAllowed": [
+        "external tool reference candidate"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: fully validated"
+      ],
+      "claimBoundaryNotes": [
+        "Registry status includes PlannedValidation and ReferenceFixturePlaceholder entries."
+      ],
+      "relatedTests": [
+        "EnergyPlusValidationCaseRegistryTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.EnergyPlusValidation"
+      ],
+      "knownLimitations": [
+        "Planned/placeholder entries are not achieved evidence."
+      ],
+      "proposedStage": "P9-08"
+    },
+    {
+      "id": "P9-EVID-008",
+      "path": "docs/validation/EnergyPlusValidationFixtureCatalog.json",
+      "category": "PlannedPlaceholder",
+      "area": "External/reference evidence",
+      "maturity": "ExternalToolReferenceFixture",
+      "provenanceCategory": "PlannedPlaceholder",
+      "plannedPlaceholder": true,
+      "provenanceInventoryReference": "P9-FIX-010",
+      "claimAllowed": [
+        "external tool reference candidate"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ISO certified"
+      ],
+      "claimBoundaryNotes": [
+        "Catalog contains explicit PlaceholderComparison/PlaceholderReferenceOutput statuses."
+      ],
+      "relatedTests": [
+        "EnergyPlusValidationFixtureCatalogTests"
+      ],
+      "relatedTools": [
+        "scripts/engineering-core/generate-energyplus-validation-fixture-catalog.ps1"
+      ],
+      "knownLimitations": [
+        "Catalog includes planned placeholders by design."
+      ],
+      "proposedStage": "P9-08"
+    },
+    {
+      "id": "P9-EVID-009",
+      "path": "docs/validation/ExternalComparisonCaseRegistry.json",
+      "category": "PlannedPlaceholder",
+      "area": "External/reference evidence",
+      "maturity": "CrossImplementationComparison",
+      "provenanceCategory": "PlannedPlaceholder",
+      "plannedPlaceholder": true,
+      "provenanceInventoryReference": "P9-FIX-011",
+      "claimAllowed": [
+        "comparison candidate"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: ISO certified"
+      ],
+      "claimBoundaryNotes": [
+        "Contains Planned status entries that must not be treated as achieved evidence."
+      ],
+      "relatedTests": [
+        "ExternalComparisonWorkflowFoundationTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.EngineeringCoreVerification"
+      ],
+      "knownLimitations": [
+        "Planned entries require future evidence import."
+      ],
+      "proposedStage": "P9-08"
+    },
+    {
+      "id": "P9-EVID-010",
+      "path": "docs/validation/manual-engineering-fixtures.md",
+      "category": "ReleaseGateManifest",
+      "area": "Heating/cooling load",
+      "maturity": "ManualReferenceAnchor",
+      "provenanceCategory": "ReleaseGateManifest",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-012",
+      "claimAllowed": [
+        "manual engineering reference fixture",
+        "validation anchor"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated"
+      ],
+      "claimBoundaryNotes": [
+        "Manifest is bounded evidence index, not formal validation completion."
+      ],
+      "relatedTests": [
+        "ManualEngineeringHeatingValidationFixtureTests",
+        "ManualEngineeringSolarValidationFixtureTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.EngineeringCoreVerification"
+      ],
+      "knownLimitations": [
+        "Coverage remains intentionally bounded."
+      ],
+      "proposedStage": "P9-03"
+    },
+    {
+      "id": "P9-EVID-011",
+      "path": "tools/AssistantEngineer.Tools.EngineeringCoreVerification/",
+      "category": "ReleaseGateManifest",
+      "area": "External/reference evidence",
+      "maturity": "CrossImplementationComparison",
+      "provenanceCategory": "ReleaseGateManifest",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-016",
+      "claimAllowed": [
+        "governance-ready evidence runner",
+        "dry-run/evidence/signoff/readiness capable"
+      ],
+      "claimForbidden": [
+        "forbidden: production apply enabled",
+        "forbidden: ownership backfill executed"
+      ],
+      "claimBoundaryNotes": [
+        "Verification orchestration does not imply certification."
+      ],
+      "relatedTests": [
+        "EngineeringCoreV1VerificationRunbookTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.EngineeringCoreVerification"
+      ],
+      "knownLimitations": [
+        "Cross-implementation evidence is still staged."
+      ],
+      "proposedStage": "P9-06"
+    },
+    {
+      "id": "P9-EVID-012",
+      "path": "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/",
+      "category": "ExternalToolReferenceCandidate",
+      "area": "External/reference evidence",
+      "maturity": "ExternalToolReferenceFixture",
+      "provenanceCategory": "ExternalToolReferenceCandidate",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-018",
+      "claimAllowed": [
+        "external tool reference candidate",
+        "EnergyPlus-style fixture naming"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated"
+      ],
+      "claimBoundaryNotes": [
+        "Authoring tooling is not proof of formal external validation."
+      ],
+      "relatedTests": [
+        "EnergyPlusFixtureAuthoringCSharpToolArchitectureTests"
+      ],
+      "relatedTools": [
+        "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring"
+      ],
+      "knownLimitations": [
+        "Evidence promotion depends on future registry provenance completion."
+      ],
+      "proposedStage": "P9-08"
+    },
+    {
+      "id": "P9-EVID-013",
+      "path": "docs/validation/iso52016-behavior-characterization-inventory.json",
+      "category": "InternalInvariant",
+      "area": "ISO52016 / hourly matrix solver",
+      "maturity": "InternalInvariant",
+      "provenanceCategory": "InternalInvariant",
+      "plannedPlaceholder": false,
+      "provenanceInventoryReference": "P9-FIX-019",
+      "claimAllowed": [
+        "internal invariant",
+        "validation anchor"
+      ],
+      "claimForbidden": [
+        "forbidden: EnergyPlus parity",
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: ISO certified"
+      ],
+      "claimBoundaryNotes": [
+        "P9-01A characterization inventory freezes seam behavior but does not assert formal validation or parity."
+      ],
+      "relatedTests": [
+        "P9Iso52016BehaviorCharacterizationInventoryTests",
+        "P9Iso52016BehaviorCharacterizationCoverageTests",
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests"
+      ],
+      "relatedTools": [],
+      "knownLimitations": [
+        "Coverage locks behavior for decomposition safety; it does not upgrade maturity to formal validation."
+      ],
+      "proposedStage": "P9-01A"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected numerical values change claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim.",
+    "No ownership backfill execution claim.",
+    "No production apply enabled claim."
+  ]
+}

@@ -1,0 +1,447 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "calculationSourceFilesChanged": false,
+  "fixtureExpectedValueFilesChanged": false,
+  "p901b1HardeningStatus": {
+    "stage": "P9-01B1",
+    "status": "Implemented",
+    "changeType": "TestOnly",
+    "hardeningReport": "docs/validation/iso52016-matrix-solver-characterization-hardening.json",
+    "summary": "Focused matrix/vector/kernel/coupling/diagnostics characterization was hardened with no formula, expected-value, fixture, runtime, or API changes."
+  },
+  "proposedSeams": [
+    {
+      "id": "P9-01B-SEAM-001",
+      "name": "Matrix input preparation seam",
+      "responsibility": "Prepare normalized room/multi-zone inputs and solver-ready matrix requests without embedding coefficient/solve logic.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs"
+      ],
+      "proposedTarget": "IISO52016MatrixInputPreparer",
+      "inputs": [
+        "Iso52016RoomEnergySimulationRequest",
+        "MultiZoneNormalizedInputBuildRequest"
+      ],
+      "outputs": [
+        "Iso52016MatrixReducedRoomModelRequest",
+        "MultiZoneCalculationInput"
+      ],
+      "invariants": [
+        "Profile-length acceptance remains 1 or 8760 where currently enforced.",
+        "Current deterministic profile expansion and defaulting behavior remains unchanged.",
+        "Current claim-flag boundary behavior remains unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016RoomEnergySimulationRequestBuilderTests",
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests"
+      ],
+      "missingCoverage": [
+        "Focused per-rule-family characterization for multi-zone validator sub-seams remains deferred."
+      ],
+      "risk": "Medium",
+      "proposedStage": "P9-01B2"
+    },
+    {
+      "id": "P9-01B-SEAM-002",
+      "name": "Matrix assembler seam",
+      "responsibility": "Build matrix coefficients from nodes, internal links, boundary links, and hourly overrides.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "proposedTarget": "IISO52016MatrixAssembler",
+      "inputs": [
+        "Iso52016MatrixNodeDefinition[]",
+        "Iso52016MatrixConductanceLink[]",
+        "Iso52016MatrixBoundaryConductance[]",
+        "Iso52016MatrixHourlyInputRecord",
+        "timeStepSeconds"
+      ],
+      "outputs": [
+        "coefficientMatrix"
+      ],
+      "invariants": [
+        "Matrix dimensions and node ordering remain unchanged for identical input.",
+        "Diagonal/off-diagonal sign conventions remain unchanged.",
+        "Boundary override application precedence remains unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016MatrixHourlySolverTests",
+        "Iso52016MatrixAssemblyCharacterizationTests"
+      ],
+      "missingCoverage": [
+        "Intermediate coefficient-term snapshots are intentionally limited to avoid brittle implementation coupling."
+      ],
+      "risk": "High",
+      "proposedStage": "P9-01B3"
+    },
+    {
+      "id": "P9-01B-SEAM-003",
+      "name": "Load vector assembler seam",
+      "responsibility": "Build right-hand-side vector from thermal capacity carry-over, gains, HVAC load injection, and boundary-temperature forcing terms.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "proposedTarget": "IISO52016LoadVectorAssembler",
+      "inputs": [
+        "Iso52016MatrixNodeDefinition[]",
+        "Iso52016MatrixBoundaryConductance[]",
+        "Iso52016MatrixHourlyInputRecord",
+        "previousTemperaturesC[]",
+        "timeStepSeconds",
+        "hvacLoadW"
+      ],
+      "outputs": [
+        "rightHandSideVector"
+      ],
+      "invariants": [
+        "All existing gain and boundary terms remain present.",
+        "HVAC load injection target-node behavior remains unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016MatrixHourlySolverTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ],
+      "missingCoverage": [
+        "Term-level omission checks need explicit focused characterization before extraction."
+      ],
+      "risk": "High",
+      "proposedStage": "P9-01B3"
+    },
+    {
+      "id": "P9-01B-SEAM-004",
+      "name": "Solver kernel seam",
+      "responsibility": "Execute linear solve kernel with pivoting and singular/ill-conditioned detection.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "proposedTarget": "IISO52016MatrixSolverKernel",
+      "inputs": [
+        "coefficientMatrix",
+        "rightHandSideVector"
+      ],
+      "outputs": [
+        "nodeTemperatures"
+      ],
+      "invariants": [
+        "Deterministic repeated-run outputs remain unchanged.",
+        "No NaN/Infinity values are produced.",
+        "Singular/ill-conditioned failure behavior remains unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016MatrixHourlySolverTests",
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ],
+      "missingCoverage": [
+        "Explicit singular-matrix seam-focused characterization can be tightened in P9-01B1."
+      ],
+      "risk": "High",
+      "proposedStage": "P9-01B4"
+    },
+    {
+      "id": "P9-01B-SEAM-005",
+      "name": "Hourly result mapper seam",
+      "responsibility": "Map solved node temperatures and HVAC loads into hourly node-state/result contracts and monthly summaries.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationResultMapper.cs"
+      ],
+      "proposedTarget": "IISO52016HourlyResultMapper",
+      "inputs": [
+        "solverOutputs",
+        "hourlyInputs",
+        "solverOptions"
+      ],
+      "outputs": [
+        "Iso52016MatrixHourlyResult[]",
+        "Iso52016MatrixMonthlySummary[]"
+      ],
+      "invariants": [
+        "Hourly/annual aggregate consistency remains unchanged.",
+        "Current mapped field semantics remain unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016MatrixRoomEnergySimulationResultMapperTests"
+      ],
+      "missingCoverage": [
+        "Deeper field-level anchor traceability remains staged with P9-02."
+      ],
+      "risk": "Medium",
+      "proposedStage": "P9-01B5"
+    },
+    {
+      "id": "P9-01B-SEAM-006",
+      "name": "Solver diagnostics seam",
+      "responsibility": "Build diagnostics projection from matrix/multi-zone/heat-balance internals for governance and report consumers.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneSolverDiagnostics.cs"
+      ],
+      "proposedTarget": "IISO52016SolverDiagnosticsBuilder",
+      "inputs": [
+        "solverIntermediateState",
+        "hourlyResultContracts"
+      ],
+      "outputs": [
+        "diagnosticsContracts"
+      ],
+      "invariants": [
+        "Current diagnostics disclosure boundaries remain unchanged.",
+        "No unsupported parity/certification wording is introduced."
+      ],
+      "coveredByTests": [
+        "Iso52016ResponseDiagnosticsVisibilityTests",
+        "Iso52016AnnualDiagnosticsVisibilityTests",
+        "Iso52016ReportMappingCharacterizationTests"
+      ],
+      "missingCoverage": [
+        "Cross-doc anchor-to-report traceability remains partial and staged for P9-02."
+      ],
+      "risk": "Medium",
+      "proposedStage": "P9-01B5"
+    },
+    {
+      "id": "P9-01B-SEAM-007",
+      "name": "Multi-zone coupling seam",
+      "responsibility": "Assemble/deduplicate inter-zone coupling and adjacent-boundary policies for multi-zone solving.",
+      "currentFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneCouplingBuilder.cs"
+      ],
+      "proposedTarget": "IISO52016MultiZoneCouplingAssembler",
+      "inputs": [
+        "normalizedBoundaries",
+        "zoneProfiles",
+        "exteriorOrAdjacentProfiles"
+      ],
+      "outputs": [
+        "thermalBoundaryLinks",
+        "couplingDiagnostics"
+      ],
+      "invariants": [
+        "Inter-zone pair deduplication behavior remains unchanged.",
+        "Same-use adiabatic equivalent handling remains unchanged."
+      ],
+      "coveredByTests": [
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests",
+        "Iso52016MultiZoneHourlySolverTests"
+      ],
+      "missingCoverage": [
+        "Sub-seam focused characterization is still broad and retained as a staged gap."
+      ],
+      "risk": "Medium",
+      "proposedStage": "P9-01B6"
+    }
+  ],
+  "invariantsToPreserve": [
+    "Calculation formulas remain unchanged.",
+    "Expected numerical values remain unchanged.",
+    "Fixture numeric values remain unchanged.",
+    "No NaN/Infinity in characterized solver outputs.",
+    "Deterministic repeated-run behavior remains unchanged for identical inputs.",
+    "No tolerance broadening beyond current P9-01A characterization policy.",
+    "No runtime/API/workflow/auth behavior changes."
+  ],
+  "requiredCharacterizationBeforeExtraction": [
+    {
+      "seamId": "P9-01B-SEAM-002",
+      "requiredTests": [
+        "Iso52016MatrixAssemblyInvariantTests",
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016MatrixHourlySolverTests"
+      ],
+      "status": "ImplementedInP9-01B1",
+      "notes": "Coefficient sign, dimension, finite-value, and deterministic repeat invariants are explicitly hardened."
+    },
+    {
+      "seamId": "P9-01B-SEAM-003",
+      "requiredTests": [
+        "Iso52016LoadVectorCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016MatrixExternalValidationFixtureTests"
+      ],
+      "status": "ImplementedInP9-01B1",
+      "notes": "Load-vector omission risk is hardened with direct RHS characterization plus pinned fixture output checks."
+    },
+    {
+      "seamId": "P9-01B-SEAM-004",
+      "requiredTests": [
+        "Iso52016SolverKernelCharacterizationTests",
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ],
+      "status": "ImplementedInP9-01B1",
+      "notes": "Kernel deterministic/no-NaN/no-Infinity behavior is explicitly hardened, including singular behavior characterization."
+    },
+    {
+      "seamId": "P9-01B-SEAM-005",
+      "requiredTests": [
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016DiagnosticsResultMappingCharacterizationTests"
+      ],
+      "status": "ImplementedInP9-01B1",
+      "notes": "Aggregation and report-facing mapping behavior is hardened with additional diagnostics/result-mapping checks."
+    },
+    {
+      "seamId": "P9-01B-SEAM-007",
+      "requiredTests": [
+        "Iso52016MultiZoneCouplingCharacterizationTests",
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests",
+        "Iso52016MultiZoneHourlySolverTests"
+      ],
+      "status": "PartiallyImplementedInP9-01B1",
+      "notes": "Deterministic/finite/shape coupling behavior is hardened; absolute pinned coupling anchors remain staged in P9-01B6."
+    }
+  ],
+  "proposedExtractionStages": [
+    {
+      "stage": "P9-01B1",
+      "title": "Matrix assembly seam characterization hardening",
+      "changeType": "TestOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01A inventory is implemented",
+        "Retained gaps P9-01A-GAP-001 and P9-01A-GAP-003 are explicitly tracked"
+      ],
+      "protectedByTests": [
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016MatrixHourlySolverTests"
+      ]
+    },
+    {
+      "stage": "P9-01B2",
+      "title": "Extract matrix input preparation seam",
+      "changeType": "RefactorOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01B1 characterization hardening complete"
+      ],
+      "protectedByTests": [
+        "Iso52016RoomEnergySimulationRequestBuilderTests",
+        "Iso52016MatrixRoomEnergySimulationServiceTests",
+        "Iso52016RoomEnergySimulationServiceTests"
+      ]
+    },
+    {
+      "stage": "P9-01B3",
+      "title": "Extract matrix coefficient/vector assembly seam",
+      "changeType": "RefactorOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01B1 characterization hardening complete"
+      ],
+      "protectedByTests": [
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016MatrixExternalValidationFixtureTests"
+      ]
+    },
+    {
+      "stage": "P9-01B4",
+      "title": "Extract solver kernel wrapper",
+      "changeType": "RefactorOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01B3 extraction complete",
+        "No-NaN/Infinity and deterministic checks remain green"
+      ],
+      "protectedByTests": [
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016MatrixHourlySolverTests"
+      ]
+    },
+    {
+      "stage": "P9-01B5",
+      "title": "Extract result/diagnostics mapper seam",
+      "changeType": "RefactorOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01B4 extraction complete"
+      ],
+      "protectedByTests": [
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016ResponseDiagnosticsVisibilityTests"
+      ]
+    },
+    {
+      "stage": "P9-01B6",
+      "title": "Multi-zone coupling seam review",
+      "changeType": "AuditOnly",
+      "behaviorChangeAllowed": false,
+      "prerequisites": [
+        "P9-01D multi-zone pipeline seam review planning remains active"
+      ],
+      "protectedByTests": [
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests",
+        "Iso52016MultiZoneHourlySolverTests"
+      ]
+    }
+  ],
+  "risks": [
+    {
+      "id": "P9-01B-RISK-001",
+      "title": "Coefficient sign regression during seam extraction",
+      "riskLevel": "High",
+      "mitigation": "Freeze sign/dimension invariants with characterization tests before any extraction."
+    },
+    {
+      "id": "P9-01B-RISK-002",
+      "title": "Load-vector term omission while splitting RHS assembly",
+      "riskLevel": "High",
+      "mitigation": "Keep fixture-pinned solver-output checks and explicit omission-focused tests in B1."
+    },
+    {
+      "id": "P9-01B-RISK-003",
+      "title": "Multi-zone coupling regression from boundary-link seam split",
+      "riskLevel": "Medium",
+      "mitigation": "Retain pair-deduplication and adjacent-boundary policy checks as explicit extraction gates."
+    },
+    {
+      "id": "P9-01B-RISK-004",
+      "title": "Aggregation/report mapping drift after mapper extraction",
+      "riskLevel": "Medium",
+      "mitigation": "Require unchanged aggregation and diagnostics mapping characterization suites."
+    },
+    {
+      "id": "P9-01B-RISK-005",
+      "title": "Accidental tolerance broadening",
+      "riskLevel": "Medium",
+      "mitigation": "Preserve P9-01A tolerance policy and fail any unapproved tolerance increase."
+    },
+    {
+      "id": "P9-01B-RISK-006",
+      "title": "Accidental validation overclaim in seam artifacts",
+      "riskLevel": "Low",
+      "mitigation": "Run claim-boundary scanners and keep explicit non-claims in design artifacts."
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected value change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim."
+  ]
+}

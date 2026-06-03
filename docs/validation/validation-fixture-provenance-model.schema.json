@@ -1,0 +1,56 @@
+{
+  "name": "validation-fixture-provenance-model",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "validationClaimChanged",
+    "provenanceCategories",
+    "requiredMetadataFields",
+    "evidenceStrengthLevels",
+    "allowedClaimsByCategory",
+    "forbiddenClaims",
+    "nonClaims"
+  ],
+  "allowedProvenanceCategories": [
+    "ManualFixture",
+    "IndependentReferenceFixture",
+    "InternalInvariant",
+    "ReleaseGateManifest",
+    "ExternalToolReferenceCandidate",
+    "DonorMethodologyReference",
+    "HistoricalSmoke",
+    "PlannedPlaceholder",
+    "UnknownNeedsReview"
+  ],
+  "requiredMetadataFieldsBaseline": [
+    "fixtureId",
+    "path",
+    "area",
+    "provenanceCategory",
+    "evidenceStrength",
+    "sourceType",
+    "sourceDescription",
+    "sourceDateOrVersion",
+    "generatedBy",
+    "reviewedBy",
+    "lastReviewedDate",
+    "expectedValuePolicy",
+    "allowedClaim",
+    "forbiddenClaims",
+    "relatedTests",
+    "knownLimitations"
+  ],
+  "allowedEvidenceStrengthLevels": [
+    "InternalInvariant",
+    "ManualReferenceAnchor",
+    "IndependentReferenceFixture",
+    "ExternalToolCandidate",
+    "CrossImplementationCandidate",
+    "FormalValidationNotClaimed"
+  ]
+}

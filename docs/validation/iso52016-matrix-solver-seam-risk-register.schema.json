@@ -1,0 +1,36 @@
+{
+  "name": "iso52016-matrix-solver-seam-risk-register",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "expectedValueChangeAllowed",
+    "risks",
+    "nonClaims"
+  ],
+  "riskRequiredFields": [
+    "id",
+    "seamId",
+    "riskLevel",
+    "description",
+    "mitigation",
+    "requiredTests",
+    "mitigationEvidence",
+    "expectedValueChangeAllowed",
+    "proposedStage"
+  ],
+  "requiredRiskConcepts": [
+    "coefficient sign",
+    "load-vector",
+    "multi-zone coupling",
+    "aggregation/report mapping",
+    "tolerance broadening",
+    "validation overclaim"
+  ]
+}

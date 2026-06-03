@@ -1,0 +1,56 @@
+{
+  "name": "iso52016-component-map",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "components",
+    "behaviorCharacterizationInventoryReference",
+    "seamDesignReference",
+    "hardeningReportReference",
+    "characterizationCoverage",
+    "nonClaims"
+  ],
+  "componentRequiredFields": [
+    "id",
+    "name",
+    "category",
+    "maturityLevel",
+    "files",
+    "tests",
+    "validationEvidenceEntries",
+    "provenanceEntries",
+    "knownLimitations"
+  ],
+  "componentOptionalFields": [
+    "seamDesignReference"
+  ],
+  "requiredComponentCategories": [
+    "Input normalization/adaptation",
+    "Weather/solar input preparation",
+    "Internal gains preparation",
+    "Boundary/thermal element modeling",
+    "Zone model building",
+    "Matrix assembly",
+    "Matrix solving",
+    "Report/diagnostics mapping",
+    "Workflow integration"
+  ],
+  "characterizationCoverageRequiredFields": [
+    "componentId",
+    "coverageLevel"
+  ],
+  "allowedCoverageLevels": [
+    "FocusedCharacterization",
+    "BroadIntegrationCharacterization",
+    "InternalInvariant",
+    "GovernanceOnly",
+    "Missing"
+  ]
+}
