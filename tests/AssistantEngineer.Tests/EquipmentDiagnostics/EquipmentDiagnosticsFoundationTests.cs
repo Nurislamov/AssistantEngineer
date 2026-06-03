@@ -2,6 +2,7 @@ using System.Reflection;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -148,6 +149,64 @@ public class EquipmentDiagnosticsFoundationTests
     }
 
     [Fact]
+    public void JsonKnowledgeSourceLoadsSeededGreeEntries()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var entries = source.GetEntries();
+
+        Assert.Contains(entries, entry =>
+            entry.Manufacturer == "Gree" &&
+            entry.SeriesName == "GMV" &&
+            entry.Code == "H5" &&
+            entry.Category == EquipmentCategory.VrfOutdoorUnit);
+        Assert.Contains(entries, entry =>
+            entry.Manufacturer == "Gree" &&
+            entry.SeriesName == "GMV" &&
+            entry.Code == "C7" &&
+            entry.Category == EquipmentCategory.VrfOutdoorUnit);
+        Assert.Contains(entries, entry =>
+            entry.Manufacturer == "Gree" &&
+            entry.SeriesName == "Chiller" &&
+            entry.Code == "E6" &&
+            entry.Category == EquipmentCategory.Chiller);
+    }
+
+    [Fact]
+    public void JsonKnowledgeFilesAreValidAccordingToModuleRules()
+    {
+        var loader = new EquipmentDiagnosticsKnowledgeJsonLoader();
+
+        foreach (var file in GetKnowledgeJsonFiles())
+        {
+            var entries = loader.LoadFromJson(
+                File.ReadAllText(file),
+                Path.GetRelativePath(global::AssistantEngineer.Tests.TestPaths.RepoRoot, file));
+
+            Assert.NotEmpty(entries);
+        }
+    }
+
+    [Fact]
+    public void JsonKnowledgeEntriesContainRequiredDiagnosticData()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        foreach (var entry in source.GetEntries())
+        {
+            Assert.False(string.IsNullOrWhiteSpace(entry.Manufacturer));
+            Assert.False(string.IsNullOrWhiteSpace(entry.Code));
+            Assert.False(string.IsNullOrWhiteSpace(entry.Title));
+            Assert.False(string.IsNullOrWhiteSpace(entry.Meaning));
+            Assert.True(Enum.IsDefined(entry.Confidence));
+            Assert.True(Enum.IsDefined(entry.Category));
+            Assert.NotEmpty(entry.SafetyNotes);
+            Assert.NotEmpty(entry.DiagnosticSteps);
+            Assert.NotEmpty(entry.RequiredMeasurements);
+        }
+    }
+
+    [Fact]
     public async Task ServiceUsesKnowledgeSourceForSearchAndDiagnosticCases()
     {
         var service = new InMemoryEquipmentDiagnosticsService(
@@ -208,7 +267,10 @@ public class EquipmentDiagnosticsFoundationTests
             "disable protections",
             "disable-protection",
             "disabling protection",
-            "disabling protections"
+            "disabling protections",
+            "force run",
+            "short protection",
+            "ignore protection"
         };
 
         var searchableTexts = source.GetEntries()
@@ -265,11 +327,66 @@ public class EquipmentDiagnosticsFoundationTests
             $"Service should not contain direct seed construction: {string.Join(", ", violations)}.");
     }
 
+    [Fact]
+    public void KnowledgeCatalogDoesNotContainDirectSeedConstruction()
+    {
+        var catalogPath = Path.Combine(
+            global::AssistantEngineer.Tests.TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EquipmentDiagnostics",
+            "Application",
+            "Knowledge",
+            "EquipmentDiagnosticsKnowledgeCatalog.cs");
+
+        var text = File.ReadAllText(catalogPath);
+        var forbiddenFragments = new[]
+        {
+            "GMV protection alarm H5",
+            "GMV communication or configuration alarm C7",
+            "Chiller protection alarm E6",
+            "CreateGreeGmvEntry"
+        };
+
+        var violations = forbiddenFragments
+            .Where(fragment => text.Contains(fragment, StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"Knowledge catalog helper should not contain direct seed data: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
+    public void JsonKnowledgeResourcesAreEmbedded()
+    {
+        var resources = EquipmentDiagnosticsJsonKnowledgeSource.GetEmbeddedKnowledgeResourceNames();
+
+        Assert.Contains(resources, name => name.EndsWith("Knowledge.equipment-diagnostics.schema.json", StringComparison.Ordinal));
+        Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-gmv.json", StringComparison.Ordinal));
+        Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-chiller.json", StringComparison.Ordinal));
+    }
+
     private static ServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
         services.AddEquipmentDiagnosticsModule();
         return services.BuildServiceProvider();
+    }
+
+    private static IReadOnlyList<string> GetKnowledgeJsonFiles()
+    {
+        var knowledgeRoot = Path.Combine(
+            global::AssistantEngineer.Tests.TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EquipmentDiagnostics",
+            "Knowledge");
+
+        return Directory.GetFiles(knowledgeRoot, "*.json", SearchOption.AllDirectories)
+            .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
     }
 
     private static EquipmentDiagnosticsKnowledgeEntry CreateKnowledgeEntry(

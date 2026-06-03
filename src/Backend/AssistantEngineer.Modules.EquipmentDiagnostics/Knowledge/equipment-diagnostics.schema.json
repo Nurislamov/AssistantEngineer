@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assistantengineer.local/schemas/equipment-diagnostics.schema.json",
+  "title": "AssistantEngineer Equipment Diagnostics Knowledge Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "entries"
+  ],
+  "properties": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manufacturer",
+        "seriesName",
+        "modelCode",
+        "category",
+        "code",
+        "title",
+        "meaning",
+        "severity",
+        "confidence",
+        "likelyCauses",
+        "diagnosticSteps",
+        "requiredMeasurements",
+        "safetyNotes",
+        "manualReferences",
+        "tags"
+      ],
+      "properties": {
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seriesName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "modelCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
+          "enum": [
+            "VrfOutdoorUnit",
+            "VrfIndoorUnit",
+            "Chiller",
+            "RooftopUnit",
+            "SplitSystem",
+            "AirHandlingUnit",
+            "Controller",
+            "Unknown"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "meaning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence": {
+          "enum": [
+            "Unknown",
+            "Low",
+            "Medium",
+            "High",
+            "ManualVerified"
+          ]
+        },
+        "likelyCauses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "diagnosticSteps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnosticStep"
+          }
+        },
+        "requiredMeasurements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requiredMeasurement"
+          }
+        },
+        "safetyNotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "manualReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/manualReference"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "diagnosticStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "title",
+        "instruction",
+        "expectedResult",
+        "ifFailedAction"
+      ],
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedResult": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ifFailedAction": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "requiredMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "unit",
+        "description",
+        "requiredBeforeConclusion"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requiredBeforeConclusion": {
+          "type": "boolean"
+        }
+      }
+    },
+    "manualReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manufacturer",
+        "manualTitle",
+        "manualVersion",
+        "page",
+        "notes"
+      ],
+      "properties": {
+        "manufacturer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manualTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manualVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "page": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

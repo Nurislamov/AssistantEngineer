@@ -7,7 +7,7 @@ Equipment Diagnostics is an early backend module for deterministic diagnostic su
 - Provide a clean domain and application foundation for HVAC equipment error-code diagnostics.
 - Keep diagnostic knowledge separate from equipment catalog and equipment selection concerns.
 - Expose a public facade that the API layer can compose without depending on module internals.
-- Start with deterministic in-memory seed data before persistence, import, or search infrastructure is introduced.
+- Start with deterministic JSON seed data before persistence, import, or search infrastructure is introduced.
 
 ## Boundaries
 
@@ -49,7 +49,42 @@ ED-02 adds a knowledge catalog layer:
 
 `InMemoryEquipmentDiagnosticsService` now depends on `IEquipmentDiagnosticsKnowledgeSource`. The service owns query behavior, normalization, filtering, and DTO mapping. The deterministic seeded diagnostic entries live in the knowledge catalog instead of inside the service.
 
-The catalog is still in-memory and deterministic. It is not persistence, not a manual-ingestion system, and not an AI/RAG search layer.
+ED-03 moves seeded entries into structured JSON files embedded in the module:
+
+- `Knowledge/equipment-diagnostics.schema.json`
+- `Knowledge/gree/gree-gmv.json`
+- `Knowledge/gree/gree-chiller.json`
+
+`EquipmentDiagnosticsJsonKnowledgeSource` reads embedded JSON resources through `EquipmentDiagnosticsKnowledgeJsonLoader`. The loader performs lightweight module validation without external schema-validator dependencies. The catalog remains deterministic and local. It is not persistence, not a manual-ingestion workflow, and not an AI/RAG search layer.
+
+## JSON Catalog
+
+Each JSON file contains an `entries` array. Each entry has:
+
+- `manufacturer`, `seriesName`, `modelCode`, `category`, `code`, `title`, `meaning`, `severity`, `confidence`
+- `likelyCauses[]`
+- `diagnosticSteps[]` with `order`, `title`, `instruction`, `expectedResult`, `ifFailedAction`
+- `requiredMeasurements[]` with `name`, `unit`, `description`, `requiredBeforeConclusion`
+- `safetyNotes[]`
+- `manualReferences[]`
+- `tags[]`
+
+To add a new manufacturer, series, or code:
+
+1. Add or extend a JSON file under `Knowledge/{manufacturer}/`.
+2. Keep arrays present even when a future entry has no optional content.
+3. Use only defined `EquipmentCategory` and `DiagnosticConfidence` enum names.
+4. Keep `confidence` below `ManualVerified` until exact manual evidence and page references are present in the repository.
+5. Include safety notes and required measurements for every diagnostic case.
+6. Run `dotnet test AssistantEngineer.sln`; JSON loader tests validate required fields, enum values, safety text, embedded resources, and seeded behavior.
+
+Confidence levels:
+
+- `Unknown`: insufficient knowledge to classify confidence.
+- `Low`: preliminary deterministic seed, not manually verified.
+- `Medium`: curated but still not exact manual-page verified.
+- `High`: strong curated evidence, still below explicit manual verification.
+- `ManualVerified`: reserved for future entries with explicit manual title/version/page evidence and audit rules.
 
 ## API Routes
 
@@ -92,7 +127,7 @@ Example response:
       "manualTitle": "Gree service manual for the matching series and model",
       "manualVersion": null,
       "page": null,
-      "notes": "ED-00 deterministic seed only; exact manual page is not verified in this repository."
+      "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
     }
   }
 ]
@@ -159,20 +194,21 @@ Example response excerpt:
 - No Telegram bot integration.
 - No AI, RAG, vector search, or semantic search.
 - No calculation-physics changes.
-- No bypass or disablement instructions for equipment protections.
+- No protection-defeat or safeguard-deactivation instructions.
 
 ## Safety Notes
 
 - Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by qualified technicians.
-- Diagnostics must not instruct users to bypass safety switches, protection inputs, current protection, pressure protection, flow protection, or controller safeguards.
+- Diagnostics must keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.
 - Seed entries are preliminary unless an exact manual reference exists in the repository. They must not claim `ManualVerified` confidence without explicit source evidence.
 - ED-01 remains deterministic seeded knowledge only. It does not claim full manual verification, and it does not add Telegram, RAG/vector search, or persistence.
 - ED-02 keeps seeded knowledge in a deterministic in-memory catalog. Entries remain low-confidence unless explicit source evidence is added later.
+- ED-03 keeps seeded knowledge in deterministic embedded JSON files. It does not add persistence, Telegram, RAG/vector search, AI search, or full manual verification claims.
 
 ## Future Stages
 
-- ED-03: structured JSON/manual-backed catalog with explicit provenance and page references.
-- ED-04: persistence through a dedicated Infrastructure adapter and migration.
-- ED-05: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-06: RAG/manual search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-04: catalog expansion for Gree GMV/chiller real manuals with explicit provenance and page references.
+- ED-05: persistence/admin import through a dedicated Infrastructure adapter and migration.
+- ED-06: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-07: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.
