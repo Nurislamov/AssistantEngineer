@@ -47,6 +47,7 @@ public class ApplicationModuleRegistrationStructureTests
             "AddBuildingsModule(",
             "AddCalculationsModule(",
             "AddEquipmentModule(",
+            "AddEquipmentDiagnosticsModule(",
             "AddReportingModule(",
             "AddBenchmarksModule(",
             "AddInfrastructure("
@@ -79,6 +80,7 @@ public class ApplicationModuleRegistrationStructureTests
             "AddBuildingsModule(",
             "AddCalculationsModule(",
             "AddEquipmentModule(",
+            "AddEquipmentDiagnosticsModule(",
             "AddReportingModule(",
             "AddBenchmarksModule("
         };
@@ -140,6 +142,7 @@ public class ApplicationModuleRegistrationStructureTests
             "AddBuildingsModule(",
             "AddCalculationsModule(",
             "AddEquipmentModule(",
+            "AddEquipmentDiagnosticsModule(",
             "AddReportingModule(",
             "AddBenchmarksModule("
         };
