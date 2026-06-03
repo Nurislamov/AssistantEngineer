@@ -1,0 +1,150 @@
+{
+  "entries": [
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "H5",
+      "title": "GMV protection alarm H5",
+      "meaning": "Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Outdoor unit protection condition reported by the control board.",
+        "Abnormal supply voltage, phase condition, or wiring issue.",
+        "Compressor or inverter drive protection condition requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm installed equipment identity",
+          "instruction": "Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+          "expectedResult": "Manufacturer, series, model, and displayed H5 code are confirmed before diagnosis continues.",
+          "ifFailedAction": "Stop classification and obtain the exact model information."
+        },
+        {
+          "order": 2,
+          "title": "Check electrical supply condition",
+          "instruction": "A qualified technician should measure supply voltage and phase condition at the service point using approved procedures.",
+          "expectedResult": "Supply values are within the equipment nameplate and local electrical requirements.",
+          "ifFailedAction": "Correct the electrical supply issue through qualified service before resetting operation."
+        },
+        {
+          "order": 3,
+          "title": "Inspect protection-related wiring",
+          "instruction": "Inspect compressor, inverter, control-board, and protection-sensor connections for visible damage, loose terminals, or water ingress.",
+          "expectedResult": "Connections are secure and no visible damage is found.",
+          "ifFailedAction": "Repair damaged wiring or components according to the manufacturer procedure."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured line voltage and phase balance at the unit service point.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Operating current",
+          "unit": "A",
+          "description": "Measured compressor or inverter input current where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [
+        {
+          "manufacturer": "Gree",
+          "manualTitle": "Gree service manual for the matching series and model",
+          "manualVersion": null,
+          "page": null,
+          "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
+        }
+      ],
+      "tags": [
+        "gree",
+        "gmv",
+        "protection",
+        "electrical"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "C7",
+      "title": "GMV communication or configuration alarm C7",
+      "meaning": "Preliminary diagnostic entry for a Gree GMV C7 alarm. Confirm the exact model-specific meaning from the applicable manual.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Indoor/outdoor communication fault or address/configuration mismatch.",
+        "Damaged communication wiring or incorrect polarity.",
+        "Controller or board communication issue requiring qualified service."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm network scope",
+          "instruction": "Record which controller, indoor unit, and outdoor unit display the C7 alarm.",
+          "expectedResult": "The affected communication segment is identified.",
+          "ifFailedAction": "Map the connected units before replacing parts."
+        },
+        {
+          "order": 2,
+          "title": "Inspect communication wiring",
+          "instruction": "A qualified technician should inspect communication terminals, polarity, shielding, and continuity according to the installation manual.",
+          "expectedResult": "Communication wiring is intact and connected to the correct terminals.",
+          "ifFailedAction": "Correct wiring defects and re-test communication."
+        },
+        {
+          "order": 3,
+          "title": "Check addressing and configuration",
+          "instruction": "Verify controller addressing and unit configuration against the commissioning records and service manual.",
+          "expectedResult": "Addresses and configuration match the installed system topology.",
+          "ifFailedAction": "Correct configuration through the supported commissioning procedure."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Communication bus voltage",
+          "unit": "V",
+          "description": "Measured at the communication terminals when required by the service manual.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Cable continuity",
+          "unit": "Ohm",
+          "description": "Continuity and short-circuit check for the communication cable with power isolated.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [
+        {
+          "manufacturer": "Gree",
+          "manualTitle": "Gree service manual for the matching series and model",
+          "manualVersion": null,
+          "page": null,
+          "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
+        }
+      ],
+      "tags": [
+        "gree",
+        "gmv",
+        "communication",
+        "configuration"
+      ]
+    }
+  ]
+}

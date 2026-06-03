@@ -17,6 +17,8 @@ using AssistantEngineer.Modules.Buildings.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Requests;
 using AssistantEngineer.Modules.Equipment.Application.Contracts.Responses;
 using AssistantEngineer.Modules.Equipment.Domain;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.Buildings.Domain.Climate;
 using AssistantEngineer.Modules.Buildings.Domain.Entities;
 using AssistantEngineer.Modules.Buildings.Domain.Enums;
@@ -317,6 +319,149 @@ public class ApiIntegrationTests
             Assert.Equal("Split", item.SystemType);
             Assert.True(item.IsActive);
         });
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesByManufacturerAndCodeReturnsResults()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var results = await response.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+
+        Assert.NotNull(results);
+        Assert.NotEmpty(results);
+        Assert.Contains(results, result =>
+            result.Manufacturer == "Gree" &&
+            result.SeriesName == "GMV" &&
+            result.Code == "H5");
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesUnknownCodeReturnsEmptyArray()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&code=Unknown");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var results = await response.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsCaseForGreeGmvH5ReturnsDiagnosticCase()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var diagnosticCase = await response.Content.ReadFromJsonAsync<EquipmentDiagnosticCaseDto>();
+
+        Assert.NotNull(diagnosticCase);
+        Assert.Equal("H5", diagnosticCase.ErrorCode.Code);
+        Assert.Equal("GMV", diagnosticCase.ErrorCode.SeriesName);
+        Assert.NotEmpty(diagnosticCase.LikelyCauses);
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsCaseUnknownCodeReturnsNotFoundProblem()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=Unknown");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal("Not found", problem.Title);
+        Assert.Equal("resource_not_found", GetExtensionValue(problem, "code"));
+        Assert.Contains("No equipment diagnostic case", problem.Detail ?? string.Empty);
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesWithoutManufacturerReturnsValidationProblem()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?code=H5");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal("Validation failed", problem.Title);
+        Assert.Equal("validation_failed", GetExtensionValue(problem, "code"));
+        Assert.Contains(problem.Errors.Keys, key => string.Equals(key, "manufacturer", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsCaseWithoutCodeReturnsValidationProblem()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
+        Assert.NotNull(problem);
+        Assert.Equal("Validation failed", problem.Title);
+        Assert.Equal("validation_failed", GetExtensionValue(problem, "code"));
+        Assert.Contains(problem.Errors.Keys, key => string.Equals(key, "code", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsH5ResponseDoesNotClaimManualVerified()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var diagnosticCase = await response.Content.ReadFromJsonAsync<EquipmentDiagnosticCaseDto>();
+
+        Assert.NotNull(diagnosticCase);
+        Assert.NotEqual(DiagnosticConfidence.ManualVerified, diagnosticCase.Confidence);
+        Assert.NotEqual(DiagnosticConfidence.ManualVerified, diagnosticCase.ErrorCode.Confidence);
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsH5ResponseIncludesSafetyMeasurementsAndSteps()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var diagnosticCase = await response.Content.ReadFromJsonAsync<EquipmentDiagnosticCaseDto>();
+
+        Assert.NotNull(diagnosticCase);
+        Assert.NotEmpty(diagnosticCase.SafetyNotes);
+        Assert.NotEmpty(diagnosticCase.RequiredMeasurements);
+        Assert.NotEmpty(diagnosticCase.DiagnosticSteps);
     }
 
     [Fact]

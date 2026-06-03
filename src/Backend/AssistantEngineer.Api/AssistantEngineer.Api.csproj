@@ -18,6 +18,7 @@
         <ProjectReference Include="..\AssistantEngineer.Modules.Buildings\AssistantEngineer.Modules.Buildings.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Calculations\AssistantEngineer.Modules.Calculations.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Equipment\AssistantEngineer.Modules.Equipment.csproj" />
+        <ProjectReference Include="..\AssistantEngineer.Modules.EquipmentDiagnostics\AssistantEngineer.Modules.EquipmentDiagnostics.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Reporting\AssistantEngineer.Modules.Reporting.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.Benchmarks\AssistantEngineer.Modules.Benchmarks.csproj" />
         <ProjectReference Include="..\AssistantEngineer.Modules.EngineeringWorkflow\AssistantEngineer.Modules.EngineeringWorkflow.csproj" />

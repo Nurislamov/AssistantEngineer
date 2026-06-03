@@ -1,0 +1,41 @@
+{
+  "reviewId": "placeholder-review-id",
+  "reviewedCommit": "placeholder-commit-or-range",
+  "reviewer": "placeholder-reviewer",
+  "decision": "NotReady",
+  "invariants": {
+    "ApplyDisabledInvariant": "Pending",
+    "EnvironmentHardDenyInvariant": "Pending",
+    "HashChainInvariant": "Pending",
+    "EvidenceCompletenessInvariant": "Pending",
+    "RollbackCompletenessInvariant": "Pending",
+    "NoSecretsInvariant": "Pending",
+    "NoPayloadInvariant": "Pending",
+    "NoDestructiveSqlInvariant": "Pending",
+    "NoGlobalFilterInvariant": "Pending",
+    "NoProductionWiringInvariant": "Pending"
+  },
+  "forbiddenChanges": {
+    "cliApplyToProductionWiring": "NotObserved",
+    "nonTestOnlySaveChanges": "NotObserved",
+    "destructiveSqlPatterns": "NotObserved",
+    "environmentInferenceFromConnectionString": "NotObserved"
+  },
+  "cliApplyDisabledEvidence": "placeholder-cli-evidence-reference",
+  "writePathWiringEvidence": "placeholder-wiring-evidence-reference",
+  "secretLoggingEvidence": "placeholder-secret-logging-evidence-reference",
+  "hashChainEvidence": "placeholder-hash-chain-evidence-reference",
+  "rollbackCompletenessEvidence": "placeholder-rollback-evidence-reference",
+  "testEvidence": "placeholder-test-evidence-reference",
+  "nonClaims": [
+    "No production apply enabled claim.",
+    "No staging apply execution claim.",
+    "No production ownership backfill execution claim.",
+    "No ownership backfill execution claim.",
+    "No full multi-tenant isolation claim yet.",
+    "No database row-level security claim.",
+    "No global EF query filter claim.",
+    "No production security certification claim.",
+    "No certified/certification claim."
+  ]
+}

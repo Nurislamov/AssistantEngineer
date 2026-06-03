@@ -1,0 +1,83 @@
+{
+  "entries": [
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Chiller",
+      "modelCode": null,
+      "category": "Chiller",
+      "code": "E6",
+      "title": "Chiller protection alarm E6",
+      "meaning": "Preliminary diagnostic entry for a Gree chiller E6 alarm. Verify exact meaning and limits in the service manual for the installed chiller model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Protection input active because a measured operating condition is outside allowed range.",
+        "Water-flow, temperature-sensor, pressure, or electrical condition requiring model-specific confirmation.",
+        "Control board input or field wiring issue."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm model and operating mode",
+          "instruction": "Record the chiller model, current operating mode, displayed E6 code, and any secondary controller diagnostics.",
+          "expectedResult": "The installed model and active diagnostic state are documented.",
+          "ifFailedAction": "Do not classify the fault until the installed model and controller state are known."
+        },
+        {
+          "order": 2,
+          "title": "Check water-side operating condition",
+          "instruction": "A qualified technician should confirm water pump status, flow indication, strainer condition, and leaving/entering water temperatures.",
+          "expectedResult": "Water-side flow and temperatures are within the expected service range for the operating mode.",
+          "ifFailedAction": "Resolve water-side restrictions or pump faults using the approved service process."
+        },
+        {
+          "order": 3,
+          "title": "Inspect protection inputs",
+          "instruction": "Inspect relevant protection input wiring and sensors according to the exact chiller service manual.",
+          "expectedResult": "Protection input wiring and sensors are intact and readings are plausible.",
+          "ifFailedAction": "Repair wiring or sensor faults; replace components only after measurements support the conclusion."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Entering and leaving water temperature",
+          "unit": "degC",
+          "description": "Measured water temperatures used to assess flow and operating condition.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Water flow indication",
+          "unit": "Manufacturer-specific",
+          "description": "Flow switch, differential pressure, or flow-meter indication required by the installed chiller design.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured supply voltage at the chiller service point by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [
+        {
+          "manufacturer": "Gree",
+          "manualTitle": "Gree service manual for the matching series and model",
+          "manualVersion": null,
+          "page": null,
+          "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
+        }
+      ],
+      "tags": [
+        "gree",
+        "chiller",
+        "protection",
+        "water-side"
+      ]
+    }
+  ]
+}

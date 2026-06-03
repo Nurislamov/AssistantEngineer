@@ -1870,6 +1870,54 @@
                           "rolloutStage":  "P5-09"
                       },
                       {
+                          "risk":  "Diagnostic reference endpoint exposes seeded equipment troubleshooting knowledge and must remain explicitly classified.",
+                          "endpointGroup":  "PublicRead",
+                          "auditCategory":  "System",
+                          "knownLimitations":  [
+                                                   "ED-01 data is deterministic seed knowledge only and does not claim full manual verification.",
+                                                   "No persistence, Telegram integration, RAG, vector search, or AI search is introduced by this endpoint."
+                                               ],
+                          "currentAuthStatus":  "PublicAllowed",
+                          "tenantScope":  "NotApplicable",
+                          "action":  "InventoryRouteGroup",
+                          "routePattern":  "api/v{version:apiVersion}/equipment-diagnostics/error-codes [GET]",
+                          "notes":  "Read-only EquipmentDiagnostics facade endpoint for deterministic seeded error-code summaries.",
+                          "publicClaim":  "ExplicitPublic",
+                          "permission":  "NotApplicable",
+                          "protectionStage":  "Public",
+                          "route":  "api/v{version:apiVersion}/equipment-diagnostics/error-codes",
+                          "httpMethod":  "GET",
+                          "controller":  "EquipmentDiagnosticsController",
+                          "rateLimitCategory":  "ReferenceData",
+                          "targetPolicy":  "ReferenceData",
+                          "releaseBoundaryClaim":  "PublicOrCompatibilityByDesign",
+                          "rolloutStage":  "ED-01"
+                      },
+                      {
+                          "risk":  "Diagnostic case endpoint exposes seeded service guidance and must retain safety and confidence limitations.",
+                          "endpointGroup":  "PublicRead",
+                          "auditCategory":  "System",
+                          "knownLimitations":  [
+                                                   "ED-01 data is deterministic seed knowledge only and does not claim full manual verification.",
+                                                   "No persistence, Telegram integration, RAG, vector search, or AI search is introduced by this endpoint."
+                                               ],
+                          "currentAuthStatus":  "PublicAllowed",
+                          "tenantScope":  "NotApplicable",
+                          "action":  "InventoryRouteGroup",
+                          "routePattern":  "api/v{version:apiVersion}/equipment-diagnostics/cases [GET]",
+                          "notes":  "Read-only EquipmentDiagnostics facade endpoint for deterministic seeded diagnostic cases.",
+                          "publicClaim":  "ExplicitPublic",
+                          "permission":  "NotApplicable",
+                          "protectionStage":  "Public",
+                          "route":  "api/v{version:apiVersion}/equipment-diagnostics/cases",
+                          "httpMethod":  "GET",
+                          "controller":  "EquipmentDiagnosticsController",
+                          "rateLimitCategory":  "ReferenceData",
+                          "targetPolicy":  "ReferenceData",
+                          "releaseBoundaryClaim":  "PublicOrCompatibilityByDesign",
+                          "rolloutStage":  "ED-01"
+                      },
+                      {
                           "risk":  "Demand calculation endpoint is execution-sensitive and should stay explicitly staged for workflow execute protection.",
                           "endpointGroup":  "WorkflowExecute",
                           "auditCategory":  "Workflow",

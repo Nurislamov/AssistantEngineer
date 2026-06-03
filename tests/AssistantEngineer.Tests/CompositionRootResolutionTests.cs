@@ -19,6 +19,8 @@ using AssistantEngineer.Modules.Calculations;
 using AssistantEngineer.Modules.Calculations.Application.Facades;
 using AssistantEngineer.Modules.Equipment;
 using AssistantEngineer.Modules.Equipment.Application.Facades;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using AssistantEngineer.Modules.Reporting;
 using AssistantEngineer.Modules.Reporting.Application.Facades;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +59,7 @@ public class CompositionRootResolutionTests
         services.AddBuildingsModule(configuration);
         services.AddCalculationsModule(configuration);
         services.AddEquipmentModule();
+        services.AddEquipmentDiagnosticsModule();
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddInfrastructure(configuration, "Testing");
@@ -130,6 +133,7 @@ public class CompositionRootResolutionTests
         typeof(IBuildingSizingAnalysisFacade),
 
         typeof(IEquipmentFacade),
+        typeof(IEquipmentDiagnosticsFacade),
 
         typeof(IBuildingCoolingReportsFacade),
         typeof(IBuildingHeatingReportsFacade),
