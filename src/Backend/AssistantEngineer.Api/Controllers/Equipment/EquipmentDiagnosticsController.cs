@@ -19,6 +19,15 @@ public sealed class EquipmentDiagnosticsController : ControllerBase
         _equipmentDiagnostics = equipmentDiagnostics;
     }
 
+    [HttpGet("catalog")]
+    public async Task<ActionResult<EquipmentDiagnosticsCatalogIndexDto>> GetCatalogIndex(
+        CancellationToken cancellationToken)
+    {
+        var catalog = await _equipmentDiagnostics.GetCatalogIndexAsync(cancellationToken);
+
+        return Ok(catalog);
+    }
+
     [HttpGet("error-codes")]
     public async Task<ActionResult<IReadOnlyList<EquipmentErrorCodeSummaryDto>>> SearchErrorCodes(
         [FromQuery] string? manufacturer,

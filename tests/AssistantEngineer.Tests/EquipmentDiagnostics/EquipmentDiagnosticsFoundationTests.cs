@@ -47,6 +47,23 @@ public class EquipmentDiagnosticsFoundationTests
     }
 
     [Fact]
+    public async Task SearchCodeNormalizationAllowsHyphenatedCodeInput()
+    {
+        var facade = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsFacade>();
+
+        var results = await facade.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                ErrorCode: " e-1 ",
+                Series: "GMV"),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("E1", result.Code);
+        Assert.Equal("GMV", result.SeriesName);
+    }
+
+    [Fact]
     public async Task UnknownCodeReturnsEmptyResult()
     {
         var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
@@ -218,6 +235,92 @@ public class EquipmentDiagnosticsFoundationTests
             Assert.NotNull(entry.Source.ApplicableModels);
             Assert.NotNull(entry.Source.ApplicableSeries);
         }
+    }
+
+    [Fact]
+    public async Task CatalogIndexReturnsGreeGmvVrfOutdoorUnitAndKnownGmvCodes()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var index = await service.GetCatalogIndexAsync(CancellationToken.None);
+
+        Assert.True(index.TotalEntries >= 7);
+        Assert.Contains(index.Manufacturers, facet =>
+            facet.Manufacturer == "Gree" &&
+            facet.NormalizedManufacturer == "GREE" &&
+            facet.Count >= 7);
+        Assert.Contains(index.Series, facet =>
+            facet.Manufacturer == "Gree" &&
+            facet.SeriesName == "GMV" &&
+            facet.Count >= 6);
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == EquipmentCategory.VrfOutdoorUnit &&
+            facet.Count >= 6);
+
+        foreach (var code in new[] { "H5", "C7", "E1", "E3", "E4", "E5" })
+        {
+            Assert.Contains(index.Codes, facet =>
+                facet.Manufacturer == "Gree" &&
+                facet.SeriesName == "GMV" &&
+                facet.Category == EquipmentCategory.VrfOutdoorUnit &&
+                facet.Code == code &&
+                facet.Count == 1);
+        }
+
+        Assert.Contains("SeededEngineeringKnowledge", index.SourceTypes);
+        Assert.Contains("UnverifiedSeed", index.EvidenceLevels);
+    }
+
+    [Fact]
+    public async Task CatalogIndexOutputIsDeterministicallySorted()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var index = await service.GetCatalogIndexAsync(CancellationToken.None);
+
+        Assert.Equal(
+            index.Manufacturers.OrderBy(facet => facet.Manufacturer, StringComparer.Ordinal),
+            index.Manufacturers);
+        Assert.Equal(
+            index.Series
+                .OrderBy(facet => facet.Manufacturer, StringComparer.Ordinal)
+                .ThenBy(facet => facet.SeriesName ?? string.Empty, StringComparer.Ordinal),
+            index.Series);
+        Assert.Equal(
+            index.Categories.OrderBy(facet => facet.Category.ToString(), StringComparer.Ordinal),
+            index.Categories);
+        Assert.Equal(
+            index.Codes
+                .OrderBy(facet => facet.Manufacturer, StringComparer.Ordinal)
+                .ThenBy(facet => facet.SeriesName ?? string.Empty, StringComparer.Ordinal)
+                .ThenBy(facet => facet.Category.ToString(), StringComparer.Ordinal)
+                .ThenBy(facet => facet.NormalizedCode, StringComparer.Ordinal)
+                .ThenBy(facet => facet.ModelCode ?? string.Empty, StringComparer.Ordinal),
+            index.Codes);
+    }
+
+    [Fact]
+    public async Task CatalogIndexRejectsDuplicateManufacturerSeriesCategoryCodeCombinations()
+    {
+        var service = new InMemoryEquipmentDiagnosticsService(
+            new StubKnowledgeSource(
+            [
+                CreateKnowledgeEntry(
+                    manufacturer: "Test Manufacturer",
+                    seriesName: "Alpha",
+                    category: EquipmentCategory.SplitSystem,
+                    code: "T1"),
+                CreateKnowledgeEntry(
+                    manufacturer: " test manufacturer ",
+                    seriesName: "A l p h a",
+                    category: EquipmentCategory.SplitSystem,
+                    code: "t-1")
+            ]));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.GetCatalogIndexAsync(CancellationToken.None));
+
+        Assert.Contains("duplicate manufacturer/series/category/code", exception.Message);
     }
 
     [Fact]

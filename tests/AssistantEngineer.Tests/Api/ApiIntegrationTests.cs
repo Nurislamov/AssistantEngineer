@@ -378,6 +378,47 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsCatalogReturnsDeterministicIndex()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/catalog");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var index = await response.Content.ReadFromJsonAsync<EquipmentDiagnosticsCatalogIndexDto>();
+
+        Assert.NotNull(index);
+        Assert.True(index.TotalEntries >= 7);
+        Assert.Contains(index.Manufacturers, facet => facet.Manufacturer == "Gree");
+        Assert.Contains(index.Series, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "GMV");
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.VrfOutdoorUnit);
+        Assert.Contains(index.Codes, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "GMV" && facet.Code == "E1");
+        Assert.Contains("SeededEngineeringKnowledge", index.SourceTypes);
+        Assert.Contains("UnverifiedSeed", index.EvidenceLevels);
+    }
+
+    [Fact]
+    public async Task GetEquipmentDiagnosticsCatalogDoesNotExposeDiagnosticCaseDomainShape()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/catalog");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var json = await response.Content.ReadAsStringAsync();
+
+        Assert.DoesNotContain("diagnosticSteps", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("manualReferences", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("safetyNotes", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("sourceManual", json, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCaseForGreeGmvH5ReturnsDiagnosticCase()
     {
         await using var factory = new AssistantEngineerApiFactory();
