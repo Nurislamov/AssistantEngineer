@@ -167,6 +167,370 @@
         "communication",
         "configuration"
       ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "E1",
+      "title": "GMV preliminary alarm E1",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV E1 alarm. Some Gree equipment families associate E1-style alarms with pressure-related protection, but the exact meaning must be verified against the service manual for the installed model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Pressure-related protection condition reported by the outdoor unit controls.",
+        "Restricted outdoor airflow, condenser heat rejection issue, or fan operation issue.",
+        "Refrigerant circuit condition, pressure sensor issue, or control-board input requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm model and displayed code",
+          "instruction": "Record the outdoor unit model, GMV series, operating mode, ambient condition, and the displayed E1 code before classification.",
+          "expectedResult": "The installed equipment identity and displayed code are confirmed.",
+          "ifFailedAction": "Stop classification and obtain the exact model and controller information."
+        },
+        {
+          "order": 2,
+          "title": "Check heat rejection conditions",
+          "instruction": "A qualified technician should inspect outdoor coil cleanliness, airflow path, fan operation, and installation clearances according to the service manual.",
+          "expectedResult": "Outdoor heat rejection path is clear and fan operation is normal for the operating mode.",
+          "ifFailedAction": "Correct airflow or fan-related issues through qualified service procedures before drawing a final conclusion."
+        },
+        {
+          "order": 3,
+          "title": "Compare pressure readings with service limits",
+          "instruction": "A qualified technician should measure relevant refrigerant pressures only where the applicable service procedure requires it.",
+          "expectedResult": "Measured pressures are within the model-specific range for the current operating condition.",
+          "ifFailedAction": "Follow the manufacturer diagnostic procedure for pressure, sensor, or refrigerant-circuit faults."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Outdoor ambient temperature",
+          "unit": "degC",
+          "description": "Ambient condition used when interpreting pressure-related operation.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Fan operation status",
+          "unit": "Observed state",
+          "description": "Outdoor fan operation and airflow condition observed by qualified personnel.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Refrigerant pressure",
+          "unit": "Manufacturer-specific",
+          "description": "Model-specific pressure reading where the service manual requires pressure confirmation.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "pressure",
+        "outdoor-unit",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "E3",
+      "title": "GMV preliminary alarm E3",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV E3 alarm. Some Gree equipment families associate E3-style alarms with low-pressure or refrigerant-circuit protection, but the exact meaning must be verified against the service manual for the installed model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Low-pressure or refrigerant-circuit protection condition reported by the controls.",
+        "Restricted refrigerant flow, insufficient heat exchange, or abnormal operating condition.",
+        "Pressure sensor, wiring, or controller input issue requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm operating context",
+          "instruction": "Record the installed model, operating mode, indoor load condition, ambient condition, and the displayed E3 code.",
+          "expectedResult": "The equipment identity and operating context are documented before diagnosis continues.",
+          "ifFailedAction": "Stop classification and obtain complete system information."
+        },
+        {
+          "order": 2,
+          "title": "Inspect airflow and heat exchange",
+          "instruction": "A qualified technician should inspect indoor and outdoor airflow paths, coil condition, filter condition, and fan operation according to the service procedure.",
+          "expectedResult": "Airflow and heat exchange paths are suitable for the active operating mode.",
+          "ifFailedAction": "Correct airflow or heat-exchange restrictions through qualified service procedures."
+        },
+        {
+          "order": 3,
+          "title": "Check pressure-related inputs",
+          "instruction": "A qualified technician should compare pressure-related readings and sensor wiring against the exact model service manual.",
+          "expectedResult": "Pressure readings and sensor input behavior match model-specific expectations.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or refrigerant-circuit issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Indoor return air temperature",
+          "unit": "degC",
+          "description": "Return air condition used to interpret low-load or heat-exchange behavior.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Outdoor ambient temperature",
+          "unit": "degC",
+          "description": "Outdoor condition used when interpreting refrigerant-circuit operation.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Pressure-related sensor reading",
+          "unit": "Manufacturer-specific",
+          "description": "Sensor or pressure reading required by the model-specific service procedure.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "pressure",
+        "refrigerant-circuit",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "E4",
+      "title": "GMV preliminary alarm E4",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV E4 alarm. Some Gree equipment families associate E4-style alarms with discharge temperature or compressor protection, but the exact meaning must be verified against the service manual for the installed model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Compressor discharge temperature or compressor protection condition reported by the controls.",
+        "Abnormal refrigerant circuit operation, heat-exchange issue, or sensor input issue.",
+        "Compressor, inverter, or control-board condition requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm alarm history",
+          "instruction": "Record the displayed E4 code, operating mode, alarm recurrence, outdoor ambient condition, and any companion controller diagnostics.",
+          "expectedResult": "Alarm context and recurrence are documented before component-level diagnosis.",
+          "ifFailedAction": "Collect controller history and exact model information before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Check temperature-related readings",
+          "instruction": "A qualified technician should compare discharge-temperature and related sensor readings against the exact service manual.",
+          "expectedResult": "Temperature readings are plausible and within model-specific expectations for the operating state.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or refrigerant-circuit issues."
+        },
+        {
+          "order": 3,
+          "title": "Inspect compressor operating condition",
+          "instruction": "A qualified technician should inspect compressor and inverter operating indicators using approved procedures.",
+          "expectedResult": "Compressor and inverter operation is consistent with the expected operating state.",
+          "ifFailedAction": "Escalate to qualified compressor or inverter diagnosis according to the manufacturer procedure."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Discharge temperature",
+          "unit": "degC",
+          "description": "Compressor discharge temperature reading where available through the controller or service procedure.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Outdoor ambient temperature",
+          "unit": "degC",
+          "description": "Ambient temperature used to interpret compressor and heat-rejection operation.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Operating current",
+          "unit": "A",
+          "description": "Measured compressor or inverter input current where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "temperature",
+        "compressor",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "E5",
+      "title": "GMV preliminary alarm E5",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV E5 alarm. Some Gree equipment families associate E5-style alarms with electrical or current-related protection, but the exact meaning must be verified against the service manual for the installed model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Electrical supply, current, or inverter protection condition reported by the outdoor unit controls.",
+        "Abnormal voltage, phase condition, terminal connection, or operating current.",
+        "Compressor, inverter, or control-board issue requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm electrical context",
+          "instruction": "Record the model, displayed E5 code, power supply type, recent power events, and active operating mode.",
+          "expectedResult": "Electrical context and displayed code are confirmed before diagnosis continues.",
+          "ifFailedAction": "Stop classification and obtain complete electrical and model information."
+        },
+        {
+          "order": 2,
+          "title": "Measure supply condition",
+          "instruction": "A qualified technician should measure supply voltage and phase condition at the service point using approved procedures.",
+          "expectedResult": "Supply values are within the equipment nameplate and local electrical requirements.",
+          "ifFailedAction": "Correct supply or wiring issues through qualified electrical service."
+        },
+        {
+          "order": 3,
+          "title": "Inspect current-related wiring",
+          "instruction": "Inspect compressor, inverter, current-sensing, and control-board connections for visible damage, loose terminals, or moisture ingress.",
+          "expectedResult": "Connections are secure and no visible damage is found.",
+          "ifFailedAction": "Repair wiring or component issues according to the manufacturer procedure."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured line voltage and phase balance at the unit service point.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Operating current",
+          "unit": "A",
+          "description": "Measured compressor or inverter input current where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Terminal condition",
+          "unit": "Observed state",
+          "description": "Observed condition of relevant power and control terminals by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+        "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
+        "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "electrical",
+        "current",
+        "preliminary"
+      ]
     }
   ]
 }

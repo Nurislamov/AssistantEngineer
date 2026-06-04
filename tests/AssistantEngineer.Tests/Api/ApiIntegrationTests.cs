@@ -358,6 +358,26 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesCanFindNewGreeGmvSeedCode()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&series=GMV&code=E1");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var results = await response.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+
+        Assert.NotNull(results);
+        var result = Assert.Single(results);
+        Assert.Equal("Gree", result.Manufacturer);
+        Assert.Equal("GMV", result.SeriesName);
+        Assert.Equal("E1", result.Code);
+        Assert.Equal(DiagnosticConfidence.Low, result.Confidence);
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCaseForGreeGmvH5ReturnsDiagnosticCase()
     {
         await using var factory = new AssistantEngineerApiFactory();

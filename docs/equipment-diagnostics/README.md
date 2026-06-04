@@ -59,6 +59,15 @@ ED-03 moves seeded entries into structured JSON files embedded in the module:
 
 ED-04 adds a provenance/source model for every diagnostic entry. Each entry must state where its knowledge comes from, what evidence level supports it, and what limitations apply. The current Gree entries remain deterministic seed knowledge and are not manual verified.
 
+ED-05 adds a small conservative Gree GMV catalog expansion. The added entries are deterministic seed guidance only:
+
+- Gree / GMV / E1
+- Gree / GMV / E3
+- Gree / GMV / E4
+- Gree / GMV / E5
+
+They use `sourceType = SeededEngineeringKnowledge`, `evidenceLevel = UnverifiedSeed`, and `confidence = Low`. They do not provide manual titles, pages, sections, or quotes because no exact manual evidence is stored in this repository for those entries.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -81,6 +90,7 @@ To add a new manufacturer, series, or code:
 5. Include safety notes and required measurements for every diagnostic case.
 6. Include a `source` block for every entry.
 7. Run `dotnet test AssistantEngineer.sln`; JSON loader tests validate required fields, enum values, safety text, embedded resources, provenance, and seeded behavior.
+8. Check for duplicate `manufacturer`/`seriesName`/`category`/`code` combinations before adding another entry.
 
 ## Provenance and Source Model
 
@@ -130,6 +140,15 @@ How to add a manual-backed entry honestly:
 5. Set `evidenceLevel` no higher than the evidence supports.
 6. Raise `confidence` to `ManualVerified` only after the module validation rules have explicit manual-page or cross-checked evidence.
 7. Keep all safety notes intact and avoid protection-defeat instructions.
+
+How to add seed entries honestly:
+
+1. Use a small batch rather than a broad catalog dump.
+2. Use `SeededEngineeringKnowledge` and `UnverifiedSeed`.
+3. Keep `confidence = Low`.
+4. Leave manual title, version, document code, page, section, and quote as `null`.
+5. Keep wording preliminary and require verification against the exact service manual.
+6. Include qualified-technician safety notes, required measurements, and source limitations.
 
 Confidence levels:
 
@@ -268,11 +287,12 @@ Example response excerpt:
 - ED-02 keeps seeded knowledge in a deterministic in-memory catalog. Entries remain low-confidence unless explicit source evidence is added later.
 - ED-03 keeps seeded knowledge in deterministic embedded JSON files. It does not add persistence, Telegram, RAG/vector search, AI search, or full manual verification claims.
 - ED-04 adds source/provenance metadata. Current entries remain deterministic seed knowledge, not manual verified.
+- ED-05 expands Gree GMV seed coverage with a small batch of low-confidence entries. It does not add manual-backed claims.
 
 ## Future Stages
 
-- ED-05: real manual-backed Gree catalog expansion with explicit provenance and page references.
-- ED-06: persistence/admin import through a dedicated Infrastructure adapter and migration.
-- ED-07: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-08: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-06: real manual-backed Gree catalog expansion with explicit provenance and page references.
+- ED-07: persistence/admin import through a dedicated Infrastructure adapter and migration.
+- ED-08: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-09: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.
