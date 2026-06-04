@@ -1,0 +1,394 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-00",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "p901ReviewStatus": {
+    "stage": "P9-01",
+    "status": "Completed",
+    "changeType": "AuditOnly",
+    "summary": "ISO52016 decomposition review and component map added without formula, fixture, expected-value, runtime, or API changes."
+  },
+  "p901aCharacterizationStatus": {
+    "stage": "P9-01A",
+    "status": "Completed",
+    "changeType": "TestOnly",
+    "summary": "ISO52016 behavior characterization inventory and focused seam tests added without formula, expected-value fixture, runtime, or API changes."
+  },
+  "p901bMatrixSolverSeamDesignStatus": {
+    "stage": "P9-01B",
+    "status": "Completed",
+    "changeType": "AuditOnly",
+    "summary": "ISO52016 matrix/solver seam design and risk register added without formula, expected-value, fixture, runtime, or API changes."
+  },
+  "p901b1MatrixSolverCharacterizationHardeningStatus": {
+    "stage": "P9-01B1",
+    "status": "Completed",
+    "changeType": "TestOnly",
+    "summary": "ISO52016 matrix/solver characterization hardening added without formula, expected-value, fixture, runtime, or API changes."
+  },
+  "coverageAreas": [
+    {
+      "id": "P9-VAL-A",
+      "area": "ISO52010 / solar-weather foundation",
+      "scope": "Local solar time, solar position, Perez/aniso irradiance, annual weather/solar profiles, and shading/window benchmark fixtures.",
+      "currentMaturity": "IndependentReferenceFixture",
+      "existingEvidence": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Solar/SolarPositionCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Solar/PerezAnisotropicSurfaceIrradianceCalculator.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52010/Iso52010SolarChainCompletenessEvidenceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/WeatherSolar/AnnualWeatherSolarProfileBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Solar/WindowShadingBenchmarkFixtureTests.cs"
+      ],
+      "knownLimitations": [
+        "No external simulator parity claim.",
+        "No formal standard-case validation completion claim."
+      ],
+      "recommendedNextStage": "P9-03",
+      "forbiddenClaims": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: ISO certified"
+      ]
+    },
+    {
+      "id": "P9-VAL-B",
+      "area": "ISO52016 / hourly matrix solver",
+      "scope": "Single-zone and multi-zone matrix fixtures, adjacent boundaries, weather/solar input chains, internal gains, and hourly/annual outputs.",
+      "currentMaturity": "IndependentReferenceFixture",
+      "existingEvidence": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnnualAnchors/",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationNamingAnchors/",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationFixtureTests.cs",
+        "tools/AssistantEngineer.Tools.Iso52016Verification/"
+      ],
+      "knownLimitations": [
+        "Reference-informed external anchors are present, but external parity is not claimed.",
+        "Formal validation program status is not claimed."
+      ],
+      "recommendedNextStage": "P9-01",
+      "forbiddenClaims": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: fully validated"
+      ]
+    },
+    {
+      "id": "P9-VAL-C",
+      "area": "Heating/cooling load",
+      "scope": "EN12831-style load anchors, room/floor/building aggregation, annual/coincident outputs, and cooling/heating report source fixtures.",
+      "currentMaturity": "ManualReferenceAnchor",
+      "existingEvidence": [
+        "tests/AssistantEngineer.Tests/Calculations/HeatingLoadValidationTests.cs",
+        "tests/AssistantEngineer.Tests/Validation/ManualEngineering/",
+        "tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/Fixtures/",
+        "docs/validation/manual-engineering-fixtures.md"
+      ],
+      "knownLimitations": [
+        "Anchor fixture breadth is strong but not exhaustive for every production configuration.",
+        "No certification claim is allowed."
+      ],
+      "recommendedNextStage": "P9-02",
+      "forbiddenClaims": [
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: ISO certified",
+        "forbidden: fully validated"
+      ]
+    },
+    {
+      "id": "P9-VAL-D",
+      "area": "Reports/workflow outputs",
+      "scope": "Trace preview, report generation/export, workflow state/history/job surfaces, and artifact listing/read response contracts.",
+      "currentMaturity": "InternalInvariant",
+      "existingEvidence": [
+        "tests/AssistantEngineer.Tests/Api/EngineeringWorkflow/EngineeringWorkflowControllerCharacterizationTests.cs",
+        "tests/AssistantEngineer.Tests/Api/EngineeringWorkflow/EngineeringWorkflowControllerResponseShapeTests.cs",
+        "tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ReportContractSnapshotTests.cs",
+        "tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ReportExportDisclosureGuardTests.cs"
+      ],
+      "knownLimitations": [
+        "Contract and behavior characterization exists, but this is not external scientific validation evidence.",
+        "Some historical workflow limitations remain intentionally deferred."
+      ],
+      "recommendedNextStage": "P9-07",
+      "forbiddenClaims": [
+        "forbidden: fully validated",
+        "forbidden: production certified"
+      ]
+    },
+    {
+      "id": "P9-VAL-E",
+      "area": "External/reference evidence",
+      "scope": "Manual fixtures, external-tool candidate fixtures, case registries, evidence manifests, and release-ready relationship.",
+      "currentMaturity": "ExternalToolReferenceFixture",
+      "existingEvidence": [
+        "docs/validation/EnergyPlusValidationCaseRegistry.json",
+        "docs/validation/EnergyPlusValidationFixtureCatalog.json",
+        "docs/validation/ExternalComparisonCaseRegistry.json",
+        "docs/validation/external-numerical-validation-roadmap.md",
+        "tools/AssistantEngineer.Tools.EnergyPlusValidation/",
+        "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/",
+        "tools/AssistantEngineer.Tools.EngineeringCoreVerification/"
+      ],
+      "knownLimitations": [
+        "External fixtures remain comparison-oriented and include placeholder/prospective cases.",
+        "No external parity/certification claim is allowed."
+      ],
+      "recommendedNextStage": "P9-08",
+      "forbiddenClaims": [
+        "forbidden: full pyBuildingEnergy parity",
+        "forbidden: EnergyPlus parity",
+        "forbidden: ASHRAE 140 validated",
+        "forbidden: ISO certified"
+      ]
+    }
+  ],
+  "maturityModel": [
+    {
+      "level": "None",
+      "description": "No meaningful validation evidence in repository scope."
+    },
+    {
+      "level": "SmokeOnly",
+      "description": "Basic smoke checks without stronger invariants or traceable references."
+    },
+    {
+      "level": "InternalInvariant",
+      "description": "Deterministic internal assertions and structural invariants."
+    },
+    {
+      "level": "ManualReferenceAnchor",
+      "description": "Hand-derived engineering anchors with traceable fixture evidence."
+    },
+    {
+      "level": "IndependentReferenceFixture",
+      "description": "Independent reference fixtures with declared tolerances/provenance."
+    },
+    {
+      "level": "ExternalToolReferenceFixture",
+      "description": "External-tool comparison fixtures and harness candidates without parity claims."
+    },
+    {
+      "level": "CrossImplementationComparison",
+      "description": "Structured cross-implementation comparison workflows with bounded interpretation."
+    },
+    {
+      "level": "CandidateForFormalValidation",
+      "description": "Future candidate for formal validation program entry after governance gates."
+    }
+  ],
+  "validationGaps": [
+    {
+      "id": "P9-GAP-001",
+      "severity": "Medium",
+      "area": "ISO52016 matrix external evidence provenance",
+      "description": "Older external-validation fixture metadata is uneven and not uniformly normalized for provenance quality.",
+      "evidencePath": "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/",
+      "recommendedAction": "Normalize provenance metadata and fixture descriptors.",
+      "proposedStage": "P9-03",
+      "resolutionStatus": "PartiallyAddressed",
+      "resolutionStage": "P9-03",
+      "resolutionNotes": "Added validation-fixture-provenance-model and validation-fixture-provenance-inventory; planned/placeholder and evidence-strength metadata normalized."
+    },
+    {
+      "id": "P9-GAP-002",
+      "severity": "Medium",
+      "area": "Heating/cooling report-builder evidence mapping",
+      "description": "Report contract/behavior checks exist, but explicit traceability map from physics anchors to report fields remains fragmented.",
+      "evidencePath": "tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1ReportContractSnapshotTests.cs",
+      "recommendedAction": "Consolidate report-builder traceability and fixture mapping.",
+      "proposedStage": "P9-02",
+      "resolutionStatus": "Open",
+      "resolutionStage": "P9-02",
+      "resolutionNotes": "No behavior or report-field traceability refactor is performed in P9-03."
+    },
+    {
+      "id": "P9-GAP-003",
+      "severity": "Low",
+      "area": "External comparison registry state",
+      "description": "External comparison registries include planned/placeholder entries that are useful for planning but not strong evidence for high-maturity claims.",
+      "evidencePath": "docs/validation/ExternalComparisonCaseRegistry.json",
+      "recommendedAction": "Promote ready entries with complete provenance and keep planned entries explicitly non-claiming.",
+      "proposedStage": "P9-08",
+      "resolutionStatus": "Open",
+      "resolutionStage": "P9-08",
+      "resolutionNotes": "P9-03 classifies planned entries, but does not promote placeholders to achieved evidence."
+    },
+    {
+      "id": "P9-GAP-004",
+      "severity": "Medium",
+      "area": "Cross-doc evidence indexing",
+      "description": "Validation evidence paths are spread across docs/tests/tools and need stronger single-source indexing for audits.",
+      "evidencePath": "docs/validation/",
+      "recommendedAction": "Maintain a dedicated validation evidence inventory with category/maturity mapping.",
+      "proposedStage": "P9-00",
+      "resolutionStatus": "Addressed",
+      "resolutionStage": "P9-00/P9-03",
+      "resolutionNotes": "Initial evidence inventory added in P9-00 and extended with provenance model/inventory cross-links in P9-03."
+    }
+  ],
+  "recommendedP9Backlog": [
+    {
+      "stage": "P9-01",
+      "title": "ISO52016 solver/service decomposition review",
+      "goal": "Review decomposition opportunities and boundary clarity for ISO52016 services while preserving behavior locks.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-00"
+      ],
+      "risk": "Medium",
+      "resolutionStatus": "Addressed",
+      "resolutionStage": "P9-01",
+      "resolutionNotes": "Audit-only decomposition review completed with component map and no-physics-change boundary flags."
+    },
+    {
+      "stage": "P9-01A",
+      "title": "ISO52016 behavior characterization inventory",
+      "goal": "Freeze key numerical outputs and seam-level behavior assertions before decomposition refactors.",
+      "changeType": "TestOnly",
+      "dependsOn": [
+        "P9-01"
+      ],
+      "risk": "Medium",
+      "resolutionStatus": "Addressed",
+      "resolutionStage": "P9-01A",
+      "resolutionNotes": "Component coverage matrix and focused characterization tests were added; retained seam gaps are explicitly documented for P9-01B/P9-01C/P9-01D."
+    },
+    {
+      "stage": "P9-01B",
+      "title": "Matrix assembly/solver seam extraction design",
+      "goal": "Define matrix assembly and solver seam extraction plan without formula changes.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "High",
+      "resolutionStatus": "Addressed",
+      "resolutionStage": "P9-01B",
+      "resolutionNotes": "Design-only seam model and risk register were added with explicit no-physics/no-expected-values-change boundaries."
+    },
+    {
+      "stage": "P9-01B1",
+      "title": "Matrix assembly/solver characterization hardening",
+      "goal": "Strengthen focused coefficient/vector/kernel/coupling/diagnostics characterization before extraction.",
+      "changeType": "TestOnly",
+      "dependsOn": [
+        "P9-01B"
+      ],
+      "risk": "High",
+      "resolutionStatus": "Addressed",
+      "resolutionStage": "P9-01B1",
+      "resolutionNotes": "Focused characterization hardening tests were added and linked to seam/risk artifacts without formula or expected-value changes."
+    },
+    {
+      "stage": "P9-01C",
+      "title": "Report/diagnostics mapping seam review",
+      "goal": "Review report and diagnostics mapping seams with characterization-first safety.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-01D",
+      "title": "Weather/solar/gains input pipeline seam review",
+      "goal": "Review weather/solar/gains pipeline boundaries and duplication risk without behavior change.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-01E",
+      "title": "ISO52016 naming/ubiquitous-language cleanup candidates",
+      "goal": "Prepare naming cleanup candidates for approval-scoped refactor stages.",
+      "changeType": "DocsOnly",
+      "dependsOn": [
+        "P9-01"
+      ],
+      "risk": "Low"
+    },
+    {
+      "stage": "P9-01F",
+      "title": "Fixture traceability to ISO52016 components",
+      "goal": "Expand fixture-to-component traceability using provenance metadata without expected-value changes.",
+      "changeType": "DocsOnly",
+      "dependsOn": [
+        "P9-01",
+        "P9-03"
+      ],
+      "risk": "Low"
+    },
+    {
+      "stage": "P9-02",
+      "title": "Heating/cooling load report builder consolidation",
+      "goal": "Consolidate report-traceability mapping and reduce duplicated report calculation assembly logic.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-00",
+        "P9-01"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-03",
+      "title": "Validation fixture provenance cleanup",
+      "goal": "Normalize fixture provenance/metadata quality for manual and external-reference anchor inventories.",
+      "changeType": "FixtureOnly",
+      "dependsOn": [
+        "P9-00"
+      ],
+      "risk": "Low"
+    },
+    {
+      "stage": "P9-04",
+      "title": "Route inventory deferred items phase 2",
+      "goal": "Continue deferred route governance closure with explicit staged evidence.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P8-05"
+      ],
+      "risk": "Low"
+    },
+    {
+      "stage": "P9-05",
+      "title": "Ownership backfill apply decision remains deferred unless ADR trigger is met",
+      "goal": "Preserve disabled boundary and governance prerequisites before any apply-path reconsideration.",
+      "changeType": "DocsOnly",
+      "dependsOn": [
+        "P6-15"
+      ],
+      "risk": "High"
+    },
+    {
+      "stage": "P9-08",
+      "title": "External validation evidence planning",
+      "goal": "Plan evidence-promotion criteria for external-tool reference candidates without parity/certification overclaims.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-00",
+        "P9-03"
+      ],
+      "risk": "Medium"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim.",
+    "No production security certification claim.",
+    "No ownership backfill execution claim.",
+    "No full tenant isolation claim."
+  ]
+}

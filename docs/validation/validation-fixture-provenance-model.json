@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-03",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "validationClaimChanged": false,
+  "provenanceCategories": [
+    "ManualFixture",
+    "IndependentReferenceFixture",
+    "InternalInvariant",
+    "ReleaseGateManifest",
+    "ExternalToolReferenceCandidate",
+    "DonorMethodologyReference",
+    "HistoricalSmoke",
+    "PlannedPlaceholder",
+    "UnknownNeedsReview"
+  ],
+  "requiredMetadataFields": [
+    "fixtureId",
+    "path",
+    "area",
+    "provenanceCategory",
+    "evidenceStrength",
+    "sourceType",
+    "sourceDescription",
+    "sourceDateOrVersion",
+    "generatedBy",
+    "reviewedBy",
+    "lastReviewedDate",
+    "expectedValuePolicy",
+    "allowedClaim",
+    "forbiddenClaims",
+    "relatedTests",
+    "knownLimitations"
+  ],
+  "evidenceStrengthLevels": [
+    "InternalInvariant",
+    "ManualReferenceAnchor",
+    "IndependentReferenceFixture",
+    "ExternalToolCandidate",
+    "CrossImplementationCandidate",
+    "FormalValidationNotClaimed"
+  ],
+  "allowedClaimsByCategory": [
+    {
+      "provenanceCategory": "ManualFixture",
+      "allowedClaims": [
+        "manual engineering reference fixture",
+        "validation anchor"
+      ]
+    },
+    {
+      "provenanceCategory": "IndependentReferenceFixture",
+      "allowedClaims": [
+        "independent reference fixture",
+        "validation anchor"
+      ]
+    },
+    {
+      "provenanceCategory": "InternalInvariant",
+      "allowedClaims": [
+        "internal invariant",
+        "reference-informed"
+      ]
+    },
+    {
+      "provenanceCategory": "ReleaseGateManifest",
+      "allowedClaims": [
+        "governance-ready",
+        "release-gate manifest"
+      ]
+    },
+    {
+      "provenanceCategory": "ExternalToolReferenceCandidate",
+      "allowedClaims": [
+        "external tool reference candidate",
+        "comparison candidate"
+      ]
+    },
+    {
+      "provenanceCategory": "DonorMethodologyReference",
+      "allowedClaims": [
+        "reference-informed methodology context"
+      ]
+    },
+    {
+      "provenanceCategory": "HistoricalSmoke",
+      "allowedClaims": [
+        "historical smoke evidence"
+      ]
+    },
+    {
+      "provenanceCategory": "PlannedPlaceholder",
+      "allowedClaims": [
+        "planned placeholder evidence"
+      ]
+    },
+    {
+      "provenanceCategory": "UnknownNeedsReview",
+      "allowedClaims": [
+        "classification pending"
+      ]
+    }
+  ],
+  "forbiddenClaims": [
+    "full pyBuildingEnergy parity",
+    "EnergyPlus parity",
+    "ASHRAE 140 validated",
+    "ISO certified",
+    "fully validated",
+    "production certified"
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected numerical values change claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No EnergyPlus parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim.",
+    "No production certified claim."
+  ]
+}

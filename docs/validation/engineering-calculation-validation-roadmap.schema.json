@@ -1,0 +1,73 @@
+{
+  "name": "engineering-calculation-validation-roadmap",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "p901ReviewStatus",
+    "p901aCharacterizationStatus",
+    "p901bMatrixSolverSeamDesignStatus",
+    "p901b1MatrixSolverCharacterizationHardeningStatus",
+    "coverageAreas",
+    "maturityModel",
+    "validationGaps",
+    "recommendedP9Backlog",
+    "nonClaims"
+  ],
+  "p901StatusRequiredFields": [
+    "stage",
+    "status",
+    "changeType",
+    "summary"
+  ],
+  "coverageAreaRequiredFields": [
+    "id",
+    "area",
+    "scope",
+    "currentMaturity",
+    "existingEvidence",
+    "knownLimitations",
+    "recommendedNextStage",
+    "forbiddenClaims"
+  ],
+  "validationGapRequiredFields": [
+    "id",
+    "severity",
+    "area",
+    "description",
+    "evidencePath",
+    "recommendedAction",
+    "proposedStage"
+  ],
+  "recommendedP9BacklogRequiredFields": [
+    "stage",
+    "title",
+    "goal",
+    "changeType",
+    "dependsOn",
+    "risk"
+  ],
+  "allowedChangeTypes": [
+    "AuditOnly",
+    "TestOnly",
+    "FixtureOnly",
+    "ToolingOnly",
+    "DocsOnly",
+    "CalculationChangeRequiresApproval"
+  ],
+  "allowedMaturityLevels": [
+    "None",
+    "SmokeOnly",
+    "InternalInvariant",
+    "ManualReferenceAnchor",
+    "IndependentReferenceFixture",
+    "ExternalToolReferenceFixture",
+    "CrossImplementationComparison",
+    "CandidateForFormalValidation"
+  ]
+}

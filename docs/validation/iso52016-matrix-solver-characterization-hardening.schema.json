@@ -1,0 +1,32 @@
+{
+  "name": "iso52016-matrix-solver-characterization-hardening",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "fixtureNumericValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "tolerancePolicyChanged",
+    "calculationSourceFilesChanged",
+    "newCharacterizationTests",
+    "seamsCovered",
+    "invariantsPinned",
+    "retainedGaps",
+    "nonClaims"
+  ],
+  "seamsCoveredRequiredFields": [
+    "seamId",
+    "seamName",
+    "tests"
+  ],
+  "retainedGapRequiredFields": [
+    "id",
+    "description",
+    "proposedFollowUpStage"
+  ]
+}

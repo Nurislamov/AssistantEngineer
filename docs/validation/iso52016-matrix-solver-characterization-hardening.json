@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B1",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "fixtureNumericValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "tolerancePolicyChanged": false,
+  "calculationSourceFilesChanged": false,
+  "newCharacterizationTests": [
+    "Iso52016MatrixAssemblyInvariantTests",
+    "Iso52016LoadVectorCharacterizationTests",
+    "Iso52016SolverKernelCharacterizationTests",
+    "Iso52016MultiZoneCouplingCharacterizationTests",
+    "Iso52016DiagnosticsResultMappingCharacterizationTests"
+  ],
+  "seamsCovered": [
+    {
+      "seamId": "P9-01B-SEAM-002",
+      "seamName": "Matrix assembler seam",
+      "tests": [
+        "Iso52016MatrixAssemblyInvariantTests",
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016MatrixHourlySolverTests"
+      ]
+    },
+    {
+      "seamId": "P9-01B-SEAM-003",
+      "seamName": "Load vector assembler seam",
+      "tests": [
+        "Iso52016LoadVectorCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ]
+    },
+    {
+      "seamId": "P9-01B-SEAM-004",
+      "seamName": "Solver kernel seam",
+      "tests": [
+        "Iso52016SolverKernelCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests"
+      ]
+    },
+    {
+      "seamId": "P9-01B-SEAM-005",
+      "seamName": "Hourly result mapper seam",
+      "tests": [
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016DiagnosticsResultMappingCharacterizationTests"
+      ]
+    },
+    {
+      "seamId": "P9-01B-SEAM-006",
+      "seamName": "Solver diagnostics seam",
+      "tests": [
+        "Iso52016DiagnosticsResultMappingCharacterizationTests",
+        "Iso52016ResponseDiagnosticsVisibilityTests",
+        "Iso52016AnnualDiagnosticsVisibilityTests"
+      ]
+    },
+    {
+      "seamId": "P9-01B-SEAM-007",
+      "seamName": "Multi-zone coupling seam",
+      "tests": [
+        "Iso52016MultiZoneCouplingCharacterizationTests",
+        "Iso52016MultiZoneHourlySolverTests",
+        "Iso52016MultiZoneNormalizedInputBuilderTests"
+      ]
+    }
+  ],
+  "invariantsPinned": [
+    "Matrix dimension equals node count for deterministic requests.",
+    "Matrix coefficients and load-vector terms are finite.",
+    "Diagonal/off-diagonal sign invariants remain stable for characterized matrix cases.",
+    "Load-vector gains and HVAC injection behavior are preserved for characterized cases.",
+    "Solver-kernel known-case output remains pinned and deterministic.",
+    "Singular-matrix failure behavior remains explicit.",
+    "Multi-zone coupled output remains deterministic and finite for characterized fixture.",
+    "Mapped diagnostics/report-facing selected fields remain finite and deterministic.",
+    "No NaN/Infinity is allowed in characterized solver/coupling outputs."
+  ],
+  "retainedGaps": [
+    {
+      "id": "P9-01A-GAP-001",
+      "description": "Full intermediate coefficient-term snapshot locking remains intentionally limited to avoid brittle internals coupling.",
+      "proposedFollowUpStage": "P9-01B3"
+    },
+    {
+      "id": "P9-01A-GAP-002",
+      "description": "Full physics-anchor to report-field traceability remains staged.",
+      "proposedFollowUpStage": "P9-02"
+    },
+    {
+      "id": "P9-01A-GAP-003",
+      "description": "Multi-zone absolute pinned coupling anchors remain partial; deterministic/finite/shape coverage was strengthened in P9-01B1.",
+      "proposedFollowUpStage": "P9-01B6"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected value change claim.",
+    "No fixture numeric value change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim."
+  ]
+}

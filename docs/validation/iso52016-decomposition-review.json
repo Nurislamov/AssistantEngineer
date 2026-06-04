@@ -1,0 +1,542 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B1",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "calculationSourceFilesChanged": false,
+  "fixtureFilesChanged": false,
+  "expectedValueFilesChanged": false,
+  "p901aCharacterizationStatus": {
+    "stage": "P9-01A",
+    "status": "Implemented",
+    "changeType": "TestOnly",
+    "inventoryReference": "docs/validation/iso52016-behavior-characterization-inventory.json",
+    "notes": "Component coverage classification, retained-gap inventory, and focused deterministic seam tests were added without formula or expected-value changes."
+  },
+  "p901bMatrixSolverSeamDesignStatus": {
+    "stage": "P9-01B",
+    "status": "Implemented",
+    "changeType": "DesignOnly",
+    "designReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+    "riskRegisterReference": "docs/validation/iso52016-matrix-solver-seam-risk-register.json",
+    "notes": "Matrix/solver seam boundaries, extraction sequence, and risk mitigations are defined without formula, expected-value, fixture, runtime, or API behavior changes."
+  },
+  "p901b1CharacterizationHardeningStatus": {
+    "stage": "P9-01B1",
+    "status": "Implemented",
+    "changeType": "TestOnly",
+    "hardeningReference": "docs/validation/iso52016-matrix-solver-characterization-hardening.json",
+    "notes": "Focused matrix/vector/kernel/coupling/diagnostics characterization was hardened without formula, expected-value, fixture, runtime, or API behavior changes."
+  },
+  "components": [
+    {
+      "id": "P9-ISO-CMP-001",
+      "name": "Input normalization and adaptation",
+      "category": "Input normalization/adaptation",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnergySimulationRequestBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs"
+      ],
+      "responsibility": "Normalize room/building/multi-zone inputs before matrix/physical calculations.",
+      "dependencies": [
+        "Topology services",
+        "Multi-zone contracts",
+        "Validation diagnostics contracts"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016RoomEnergySimulationRequestBuilderTests",
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-002",
+      "name": "Weather and solar input preparation",
+      "category": "Weather/solar input preparation",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016WeatherSolarContextBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyWeatherProvider.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/SolarRadiationService.cs"
+      ],
+      "responsibility": "Prepare hourly weather/solar context and irradiance inputs for downstream simulation services.",
+      "dependencies": [
+        "Solar abstractions",
+        "Weather contracts",
+        "Surface irradiance models"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016WeatherSolarContextBuilderTests",
+        "Iso52016WeatherSolarContextPerezDiagnosticsTests",
+        "Iso52016HourlySteadyStateWeatherSolarContextIntegrationTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-004",
+        "P9-FIX-005"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-003",
+      "name": "Internal gains preparation",
+      "category": "Internal gains preparation",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomInternalGainProfileBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InternalGains/InternalGainEngine.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016InternalGainReferenceDataProvider.cs"
+      ],
+      "responsibility": "Generate internal gains profiles and reference inputs for room and matrix solvers.",
+      "dependencies": [
+        "Reference data providers",
+        "Hourly profile contracts"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016RoomInternalGainProfileBuilderTests",
+        "Iso52016InternalGainReferenceDataProviderTests",
+        "Iso52016RoomHourlyInputProfileBuilderTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-004",
+      "name": "Boundary and thermal element modeling",
+      "category": "Boundary/thermal element modeling",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Construction/Iso52016ConstructionAssemblyCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnvelopeInputCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016AdjacentUnconditionedZoneTemperatureSolver.cs"
+      ],
+      "responsibility": "Map construction and boundary properties to solver-ready thermal parameters.",
+      "dependencies": [
+        "Construction reference data",
+        "Ground boundary mapping",
+        "Matrix boundary contracts"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016ConstructionAssemblyCalculatorTests",
+        "Iso52016RoomEnvelopeInputCalculatorTests",
+        "Iso52016AdjacentUnconditionedZoneTemperatureSolverTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-005",
+      "name": "Zone model building",
+      "category": "Zone model building",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixReducedRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneGraphBuilder.cs"
+      ],
+      "responsibility": "Construct reduced room/multi-zone/physical models from normalized inputs.",
+      "dependencies": [
+        "Model contracts",
+        "Topology services"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016MatrixReducedRoomModelBuilderTests",
+        "Iso52016PhysicalRoomModelBuilderTests",
+        "Iso52016MultiZoneGraphBuilderTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-006",
+      "name": "Matrix assembly and solving",
+      "category": "Matrix assembly and matrix solving",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationResultMapper.cs"
+      ],
+      "responsibility": "Assemble hourly matrix equations, solve node temperatures and HVAC loads, map solver output to contracts.",
+      "dependencies": [
+        "Matrix contracts",
+        "Room solar/gain profile services"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016MatrixHourlySolverTests",
+        "Iso52016MatrixRoomEnergySimulationServiceTests",
+        "Iso52016MatrixRoomEnergySimulationResultMapperTests",
+        "Iso52016MatrixExternalValidationFixtureTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-007",
+        "P9-FIX-008"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-007",
+      "name": "Multi-zone solving and coupling",
+      "category": "Zone model building / matrix solving",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneHourlySimulationLoop.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneEnergySimulationService.cs"
+      ],
+      "responsibility": "Solve coupled thermal zones with boundary coupling and hourly loop orchestration.",
+      "dependencies": [
+        "Multi-zone normalized input builder",
+        "Boundary resolver",
+        "Result aggregators"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016MultiZoneHourlySolverTests",
+        "Iso52016MultiZoneFixtureTests",
+        "Iso52016MultiZoneGroundBoundaryTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-008",
+      "name": "Hourly and annual aggregation",
+      "category": "Hourly result aggregation / annual summary aggregation",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyResultComposer.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016MonthlyQuasiSteadyStateCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneResultAggregator.cs"
+      ],
+      "responsibility": "Aggregate hourly solver output into monthly/annual summaries and diagnostic profiles.",
+      "dependencies": [
+        "Hourly weather and profile services",
+        "Energy-need contracts"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016MatrixBaselineFixtureTests",
+        "Iso52016MatrixExternalValidationAnnualAnchorTests",
+        "Iso52016EngineeringCoreV1ClosureTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-007"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-009",
+      "name": "Report and diagnostics mapping",
+      "category": "Report/diagnostics mapping",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceResultAssembler.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs"
+      ],
+      "responsibility": "Map solver internals into diagnostics and reporting-friendly contract shapes.",
+      "dependencies": [
+        "Diagnostics contracts",
+        "Hourly/multi-zone/physical results"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016ResponseDiagnosticsVisibilityTests",
+        "Iso52016AnnualDiagnosticsVisibilityTests",
+        "Iso52016PhysicalRoomModelDiagnosticsBuilderTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-014",
+        "P9-FIX-015"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-010",
+      "name": "Validation fixtures and verification tooling",
+      "category": "Validation fixtures/tools",
+      "files": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Iso52016VerificationRunner.cs",
+        "docs/verification/Iso52016VerificationRegistry.json",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/"
+      ],
+      "responsibility": "Enforce ISO52016 validation stage checks, claim boundaries, fixture manifests, and wrapper policy.",
+      "dependencies": [
+        "Verification registry",
+        "Fixture directories",
+        "Stage test filters"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016VerificationToolTests",
+        "Iso52016VerificationRegistryTests",
+        "Iso52016PowerShellThinWrapperTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-006",
+        "P9-FIX-008",
+        "P9-FIX-016"
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-011",
+      "name": "Workflow and API integration boundary",
+      "category": "Workflow integration",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016BuildingEnergySimulationApplicationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016BuildingSimulationFacade.cs",
+        "tests/AssistantEngineer.Tests/Api/BuildingEnergyAnalysisControllerIso52016SimulationEndpointTests.cs"
+      ],
+      "responsibility": "Bridge building repository/climate data and ISO52016 simulation facades without changing API contracts.",
+      "dependencies": [
+        "Building repository",
+        "Climate data provider",
+        "Simulation facades"
+      ],
+      "behaviorLockedByTests": [
+        "Iso52016BuildingEnergySimulationApplicationServiceTests",
+        "Iso52016BuildingSimulationFacadeTests",
+        "BuildingEnergyAnalysisControllerIso52016SimulationEndpointTests"
+      ],
+      "validationEvidence": [
+        "P9-FIX-015",
+        "P9-FIX-016"
+      ]
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "P9-ISO-HS-001",
+      "severity": "High",
+      "title": "Iso52016HourlyHeatBalanceCalculator mixes physics, preprocessing, and diagnostics mapping",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceCalculator.cs"
+      ],
+      "description": "Single class combines request normalization, internal/solar gains, ventilation and ground coupling, control decision, and result assembly.",
+      "principle": "Single responsibility and seam visibility",
+      "risk": "Behavior-preserving extraction is hard without characterization expansion around per-component intermediates.",
+      "recommendation": "Add characterization inventory first, then extract preprocessing and result-composition seams.",
+      "proposedStage": "P9-01A/P9-01B"
+    },
+    {
+      "id": "P9-ISO-HS-002",
+      "severity": "High",
+      "title": "Iso52016MatrixHourlySolver combines assembly, control policy, solve, and summary logic",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "description": "Matrix coefficient preparation and HVAC control response are embedded in one implementation with monthly aggregation helpers.",
+      "principle": "Computation seam isolation",
+      "risk": "Future modifications can accidentally couple solver internals with aggregation rules.",
+      "recommendation": "Design matrix assembly/solve seam and aggregate mapping seam before refactor.",
+      "proposedStage": "P9-01B"
+    },
+    {
+      "id": "P9-ISO-HS-003",
+      "severity": "Medium",
+      "title": "Multi-zone normalized input builder and validator are oversized",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs"
+      ],
+      "description": "Topology, profile normalization, boundary link construction, and validation rule families are dense and coupled.",
+      "principle": "Validator and builder boundary clarity",
+      "risk": "Rule drift across features is harder to track and test-lock.",
+      "recommendation": "Split rule families and boundary condition builders after characterization inventory.",
+      "proposedStage": "P9-01D"
+    },
+    {
+      "id": "P9-ISO-HS-004",
+      "severity": "Medium",
+      "title": "Duplicate room simulation pre-solver pipeline exists in two services",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs"
+      ],
+      "description": "Solar/internal/hourly-input preparation flow is repeated across room simulation services.",
+      "principle": "Duplication reduction and ubiquitous language consistency",
+      "risk": "Behavior divergence risk between nearly identical pathways.",
+      "recommendation": "Review extraction of a shared internal orchestration seam once characterization is explicit.",
+      "proposedStage": "P9-01E"
+    },
+    {
+      "id": "P9-ISO-HS-005",
+      "severity": "Medium",
+      "title": "Diagnostics/report mapping seam traceability is incomplete",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceResultAssembler.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceDiagnosticsBuilder.cs",
+        "tests/AssistantEngineer.Tests/Validation/ExternalReferenceValidation/FormulaAudit/EngineeringCoreV1TraceabilityMatrixTests.cs"
+      ],
+      "description": "Traceability between physics anchors and diagnostics/report fields is present but scattered.",
+      "principle": "Traceability and reporting separation",
+      "risk": "Harder to prove mapping invariants during future report consolidation stages.",
+      "recommendation": "Perform dedicated report/diagnostics seam review and mapping inventory.",
+      "proposedStage": "P9-01C/P9-02"
+    }
+  ],
+  "decompositionCandidates": [
+    {
+      "id": "P9-ISO-CAND-001",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "targetResponsibility": "Matrix coefficient assembly",
+      "suggestedTargetComponent": "Iso52016MatrixCoefficientAssembler (internal)",
+      "changeType": "DesignOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B"
+    },
+    {
+      "id": "P9-ISO-CAND-002",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs"
+      ],
+      "targetResponsibility": "Hourly control/load policy and solve loop",
+      "suggestedTargetComponent": "Iso52016MatrixHourlyControlSolver (internal)",
+      "changeType": "DesignOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B"
+    },
+    {
+      "id": "P9-ISO-CAND-003",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceCalculator.cs"
+      ],
+      "targetResponsibility": "Hourly preprocessing of gains and boundary conditions",
+      "suggestedTargetComponent": "Iso52016HourlyHeatBalancePreprocessor (internal)",
+      "changeType": "DesignOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01A/P9-01B"
+    },
+    {
+      "id": "P9-ISO-CAND-004",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceResultAssembler.cs"
+      ],
+      "targetResponsibility": "Hourly result and diagnostics composition",
+      "suggestedTargetComponent": "Iso52016HourlyBalanceResultMapper (internal)",
+      "changeType": "AuditOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01C"
+    },
+    {
+      "id": "P9-ISO-CAND-005",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs"
+      ],
+      "targetResponsibility": "Split validation rules by domain",
+      "suggestedTargetComponent": "ZoneProfileBoundaryRuleValidators (internal group)",
+      "changeType": "AuditOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01D"
+    },
+    {
+      "id": "P9-ISO-CAND-006",
+      "sourceFiles": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs"
+      ],
+      "targetResponsibility": "Shared room pre-solver pipeline",
+      "suggestedTargetComponent": "Iso52016RoomSimulationInputPipeline (internal)",
+      "changeType": "RefactorOnly",
+      "requiresCharacterizationFirst": true,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01E"
+    },
+    {
+      "id": "P9-ISO-CAND-007",
+      "sourceFiles": [
+        "docs/validation/validation-fixture-provenance-inventory.json",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/ExternalValidationAnchors/"
+      ],
+      "targetResponsibility": "Fixture-to-component traceability",
+      "suggestedTargetComponent": "ISO52016 component evidence mapping",
+      "changeType": "DocsOnly",
+      "requiresCharacterizationFirst": false,
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01F"
+    }
+  ],
+  "proposedBacklog": [
+    {
+      "stage": "P9-01A",
+      "title": "ISO52016 behavior characterization inventory",
+      "goal": "Freeze key numerical outputs and seam-level behavior assertions before decomposition.",
+      "changeType": "TestOnly",
+      "dependsOn": [
+        "P9-01"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-01B",
+      "title": "Matrix assembly/solver seam extraction design",
+      "goal": "Define extraction seams for matrix assembly and solve policy without formula changes.",
+      "changeType": "DesignOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "High"
+    },
+    {
+      "stage": "P9-01C",
+      "title": "Report and diagnostics mapping seam review",
+      "goal": "Review and lock report/diagnostics mapping seams without runtime behavior changes.",
+      "changeType": "AuditOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-01D",
+      "title": "Weather/solar/gains input pipeline seam review",
+      "goal": "Review and lock input-pipeline seams for weather, solar, gains, and multi-zone normalization/validation.",
+      "changeType": "TestOnly",
+      "dependsOn": [
+        "P9-01A"
+      ],
+      "risk": "Medium"
+    },
+    {
+      "stage": "P9-01E",
+      "title": "ISO52016 naming and ubiquitous-language cleanup candidates",
+      "goal": "Prepare internal naming cleanup candidates with explicit approval boundaries.",
+      "changeType": "DocsOnly",
+      "dependsOn": [
+        "P9-01A",
+        "P9-01B"
+      ],
+      "risk": "Low"
+    },
+    {
+      "stage": "P9-01F",
+      "title": "Fixture traceability to ISO52016 components",
+      "goal": "Expand fixture metadata links from provenance inventory to component map without changing expected values.",
+      "changeType": "DocsOnly",
+      "dependsOn": [
+        "P9-01",
+        "P9-03"
+      ],
+      "risk": "Low"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected value change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim.",
+    "No production security certification claim."
+  ]
+}

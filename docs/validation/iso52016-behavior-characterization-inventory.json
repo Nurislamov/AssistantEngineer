@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B1",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "calculationSourceFilesChanged": false,
+  "fixtureExpectedValueFilesChanged": false,
+  "seamDesignReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+  "hardeningReportReference": "docs/validation/iso52016-matrix-solver-characterization-hardening.json",
+  "componentCoverage": [
+    {
+      "componentId": "P9-ISO-CMP-001",
+      "componentName": "Input normalization and adaptation",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016RoomEnergySimulationRequestBuilderTests",
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Focused unit characterization exists, but deeper multi-zone rule-family split locks are deferred.",
+      "proposedFollowUpStage": "P9-01D"
+    },
+    {
+      "componentId": "P9-ISO-CMP-002",
+      "componentName": "Weather and solar input preparation",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016WeatherSolarContextBuilderTests",
+        "Iso52016WeatherSolarContextPerezDiagnosticsTests",
+        "Iso52016HourlySteadyStateWeatherSolarContextIntegrationTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Pipeline behavior is covered, but no additional refactor seam extraction is performed in P9-01A.",
+      "proposedFollowUpStage": "P9-01D"
+    },
+    {
+      "componentId": "P9-ISO-CMP-003",
+      "componentName": "Internal gains preparation",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016RoomInternalGainProfileBuilderTests",
+        "Iso52016InternalGainReferenceDataProviderTests",
+        "Iso52016RoomHourlyInputProfileBuilderTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Current profile and gain contracts are locked at service-level behavior.",
+      "proposedFollowUpStage": "P9-01D"
+    },
+    {
+      "componentId": "P9-ISO-CMP-004",
+      "componentName": "Boundary and thermal element modeling",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016ConstructionAssemblyCalculatorTests",
+        "Iso52016RoomEnvelopeInputCalculatorTests",
+        "Iso52016AdjacentUnconditionedZoneTemperatureSolverTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Boundary/thermal mapping invariants are locked by deterministic unit tests.",
+      "proposedFollowUpStage": "P9-01B1"
+    },
+    {
+      "componentId": "P9-ISO-CMP-005",
+      "componentName": "Zone model building",
+      "coverageLevel": "BroadIntegrationCharacterization",
+      "existingTests": [
+        "Iso52016MatrixReducedRoomModelBuilderTests",
+        "Iso52016PhysicalRoomModelBuilderTests",
+        "Iso52016MultiZoneGraphBuilderTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Zone-model seams are covered broadly; focused sub-seam characterization remains staged.",
+      "proposedFollowUpStage": "P9-01B6"
+    },
+    {
+      "componentId": "P9-ISO-CMP-006",
+      "componentName": "Matrix assembly and solving",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016MatrixHourlySolverTests",
+        "Iso52016MatrixBaselineFixtureTests",
+        "Iso52016MatrixExternalValidationFixtureTests"
+      ],
+      "newTests": [
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016MatrixAssemblyInvariantTests",
+        "Iso52016LoadVectorCharacterizationTests",
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016SolverKernelCharacterizationTests"
+      ],
+      "gapNotes": "Intermediate full coefficient-term snapshots remain intentionally limited to avoid brittle solver-internal coupling.",
+      "proposedFollowUpStage": "P9-01B3"
+    },
+    {
+      "componentId": "P9-ISO-CMP-007",
+      "componentName": "Multi-zone solving and coupling",
+      "coverageLevel": "BroadIntegrationCharacterization",
+      "existingTests": [
+        "Iso52016MultiZoneHourlySolverTests",
+        "Iso52016MultiZoneFixtureTests",
+        "Iso52016MultiZoneGroundBoundaryTests"
+      ],
+      "newTests": [
+        "Iso52016MultiZoneCouplingCharacterizationTests"
+      ],
+      "gapNotes": "Coupling behavior now has deterministic/finite/shape focused coverage; absolute pinned coupling anchors remain staged.",
+      "proposedFollowUpStage": "P9-01B6"
+    },
+    {
+      "componentId": "P9-ISO-CMP-008",
+      "componentName": "Hourly and annual aggregation",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016MatrixExternalValidationAnnualAnchorTests",
+        "Iso52016MatrixBaselineFixtureTests"
+      ],
+      "newTests": [
+        "Iso52016AggregationCharacterizationTests"
+      ],
+      "gapNotes": "Aggregation invariants are now explicitly locked for hourly-to-annual consistency.",
+      "proposedFollowUpStage": "P9-01C"
+    },
+    {
+      "componentId": "P9-ISO-CMP-009",
+      "componentName": "Report and diagnostics mapping",
+      "coverageLevel": "FocusedCharacterization",
+      "existingTests": [
+        "Iso52016ResponseDiagnosticsVisibilityTests",
+        "Iso52016AnnualDiagnosticsVisibilityTests",
+        "Iso52016MatrixRoomEnergySimulationResultMapperTests"
+      ],
+      "newTests": [
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016DiagnosticsResultMappingCharacterizationTests"
+      ],
+      "gapNotes": "Selected field mapping and determinism are locked; full anchor-to-report traceability remains deferred.",
+      "proposedFollowUpStage": "P9-02"
+    },
+    {
+      "componentId": "P9-ISO-CMP-010",
+      "componentName": "Validation fixtures and verification tooling",
+      "coverageLevel": "GovernanceOnly",
+      "existingTests": [
+        "Iso52016VerificationToolTests",
+        "Iso52016VerificationRegistryTests",
+        "Iso52016PowerShellThinWrapperTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Tooling governance is strong; this stage adds no new runtime fixture behavior tests.",
+      "proposedFollowUpStage": "P9-08"
+    },
+    {
+      "componentId": "P9-ISO-CMP-011",
+      "componentName": "Workflow and API integration boundary",
+      "coverageLevel": "BroadIntegrationCharacterization",
+      "existingTests": [
+        "Iso52016BuildingEnergySimulationApplicationServiceTests",
+        "Iso52016BuildingSimulationFacadeTests",
+        "BuildingEnergyAnalysisControllerIso52016SimulationEndpointTests"
+      ],
+      "newTests": [],
+      "gapNotes": "Workflow/API integration behavior remains integration-characterized and unchanged.",
+      "proposedFollowUpStage": "P9-02"
+    }
+  ],
+  "characterizationTests": [
+    {
+      "testName": "Iso52016MatrixAssemblyCharacterizationTests",
+      "componentIds": [
+        "P9-ISO-CMP-006"
+      ],
+      "assertionType": "Matrix node-state invariants, finiteness, and deterministic repeat-run behavior",
+      "tolerance": "1e-9 deterministic equality and finiteness checks",
+      "inputFixture": "In-test deterministic two-node request",
+      "expectedValuePolicy": "No expected value edits; behavior lock only",
+      "claimBoundary": "internal invariant"
+    },
+    {
+      "testName": "Iso52016SolverOutputCharacterizationTests",
+      "componentIds": [
+        "P9-ISO-CMP-006"
+      ],
+      "assertionType": "Pinned baseline fixture output with finite hourly values and repeat-run determinism",
+      "tolerance": "1e-6",
+      "inputFixture": "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Baselines/winter-heating-24h.json",
+      "expectedValuePolicy": "Baseline fixture expected values unchanged",
+      "claimBoundary": "independent reference fixture"
+    },
+    {
+      "testName": "Iso52016AggregationCharacterizationTests",
+      "componentIds": [
+        "P9-ISO-CMP-008"
+      ],
+      "assertionType": "Hourly-to-annual aggregation consistency and monthly summary equality",
+      "tolerance": "1e-9",
+      "inputFixture": "In-test deterministic 48-hour request",
+      "expectedValuePolicy": "No expected value edits; aggregation invariant lock",
+      "claimBoundary": "internal invariant"
+    },
+    {
+      "testName": "Iso52016ReportMappingCharacterizationTests",
+      "componentIds": [
+        "P9-ISO-CMP-009"
+      ],
+      "assertionType": "Selected report/diagnostics fields map from matrix result and remain deterministic",
+      "tolerance": "1e-6",
+      "inputFixture": "In-test deterministic room request/context",
+      "expectedValuePolicy": "No expected value edits; mapping contract lock",
+      "claimBoundary": "internal invariant"
+    }
+  ],
+  "gapsRetained": [
+    {
+      "id": "P9-01A-GAP-001",
+      "componentId": "P9-ISO-CMP-006",
+      "title": "Matrix internal coefficient-level seam is not directly snapshotted",
+      "reason": "Direct coefficient snapshots would couple to internal implementation details and become brittle before design-stage seam definition.",
+      "proposedFollowUpStage": "P9-01B1"
+    },
+    {
+      "id": "P9-01A-GAP-002",
+      "componentId": "P9-ISO-CMP-009",
+      "title": "Physics-anchor to report-field traceability is not fully explicit",
+      "reason": "Current mapping locks selected fields; full anchor-to-report trace map is staged for report-builder consolidation.",
+      "proposedFollowUpStage": "P9-02"
+    },
+    {
+      "id": "P9-01A-GAP-003",
+      "componentId": "P9-ISO-CMP-007",
+      "title": "Multi-zone coupling absolute pinned anchors remain partial",
+      "reason": "Deterministic/finite/shape focused coverage is added, but absolute pinned coupling anchors across rule families remain staged.",
+      "proposedFollowUpStage": "P9-01B6"
+    }
+  ],
+  "tolerancePolicy": [
+    {
+      "dimension": "Pinned fixture annual/hourly numerical assertions",
+      "absoluteTolerance": 1e-6,
+      "notes": "Aligned with existing matrix baseline and external-anchor expectations."
+    },
+    {
+      "dimension": "Deterministic repeated-run equivalence for derived aggregates",
+      "absoluteTolerance": 1e-9,
+      "notes": "Repeat-run invariant checks are stricter for same-process deterministic inputs."
+    },
+    {
+      "dimension": "Finite numeric invariants",
+      "absoluteTolerance": 0.0,
+      "notes": "No NaN/Infinity is allowed for characterized seam outputs."
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected value change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim."
+  ]
+}

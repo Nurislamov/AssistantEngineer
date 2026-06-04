@@ -1,0 +1,70 @@
+{
+  "name": "iso52016-decomposition-review",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "calculationSourceFilesChanged",
+    "fixtureFilesChanged",
+    "expectedValueFilesChanged",
+    "p901aCharacterizationStatus",
+    "p901bMatrixSolverSeamDesignStatus",
+    "components",
+    "hotspots",
+    "decompositionCandidates",
+    "proposedBacklog",
+    "nonClaims"
+  ],
+  "componentRequiredFields": [
+    "id",
+    "name",
+    "category",
+    "files",
+    "responsibility",
+    "dependencies",
+    "behaviorLockedByTests",
+    "validationEvidence"
+  ],
+  "hotspotRequiredFields": [
+    "id",
+    "severity",
+    "title",
+    "files",
+    "description",
+    "principle",
+    "risk",
+    "recommendation",
+    "proposedStage"
+  ],
+  "candidateRequiredFields": [
+    "id",
+    "sourceFiles",
+    "targetResponsibility",
+    "suggestedTargetComponent",
+    "changeType",
+    "requiresCharacterizationFirst",
+    "expectedValueChangeAllowed",
+    "proposedStage"
+  ],
+  "p901aCharacterizationStatusRequiredFields": [
+    "stage",
+    "status",
+    "changeType",
+    "inventoryReference",
+    "notes"
+  ],
+  "p901bMatrixSolverSeamDesignStatusRequiredFields": [
+    "stage",
+    "status",
+    "changeType",
+    "designReference",
+    "riskRegisterReference",
+    "notes"
+  ]
+}

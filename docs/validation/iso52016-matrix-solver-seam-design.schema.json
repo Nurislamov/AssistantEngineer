@@ -1,0 +1,81 @@
+{
+  "name": "iso52016-matrix-solver-seam-design",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "calculationSourceFilesChanged",
+    "fixtureExpectedValueFilesChanged",
+    "p901b1HardeningStatus",
+    "proposedSeams",
+    "invariantsToPreserve",
+    "requiredCharacterizationBeforeExtraction",
+    "proposedExtractionStages",
+    "risks",
+    "nonClaims"
+  ],
+  "proposedSeamRequiredFields": [
+    "id",
+    "name",
+    "responsibility",
+    "currentFiles",
+    "proposedTarget",
+    "inputs",
+    "outputs",
+    "invariants",
+    "coveredByTests",
+    "missingCoverage",
+    "risk",
+    "proposedStage"
+  ],
+  "requiredCharacterizationRequiredFields": [
+    "seamId",
+    "requiredTests",
+    "status",
+    "notes"
+  ],
+  "p901b1HardeningStatusRequiredFields": [
+    "stage",
+    "status",
+    "changeType",
+    "hardeningReport",
+    "summary"
+  ],
+  "proposedExtractionStageRequiredFields": [
+    "stage",
+    "title",
+    "changeType",
+    "behaviorChangeAllowed",
+    "prerequisites",
+    "protectedByTests"
+  ],
+  "riskRequiredFields": [
+    "id",
+    "title",
+    "riskLevel",
+    "mitigation"
+  ],
+  "requiredExtractionStages": [
+    "P9-01B1",
+    "P9-01B2",
+    "P9-01B3",
+    "P9-01B4",
+    "P9-01B5",
+    "P9-01B6"
+  ],
+  "requiredSeamConcepts": [
+    "Matrix input preparation",
+    "Matrix assembler",
+    "Load vector",
+    "Solver kernel",
+    "Hourly result mapper",
+    "Solver diagnostics",
+    "Multi-zone coupling"
+  ]
+}

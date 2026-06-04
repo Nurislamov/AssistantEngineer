@@ -1,0 +1,323 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B1",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "components": [
+    {
+      "id": "P9-ISO-CMP-001",
+      "name": "Input normalization and adaptation",
+      "category": "Input normalization/adaptation",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnergySimulationRequestBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneInputValidator.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016RoomEnergySimulationRequestBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneNormalizedInputBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneInputValidatorAdvancedTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ],
+      "knownLimitations": [
+        "Multi-zone normalization and validation seams remain dense and are decomposition candidates."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-002",
+      "name": "Weather and solar input preparation",
+      "category": "Weather/solar input preparation",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016WeatherSolarContextBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/SolarRadiationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/WeatherSolar/AnnualWeatherSolarProfileBuilder.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016WeatherSolarContextBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016WeatherSolarContextPerezDiagnosticsTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/WeatherSolar/AnnualWeatherSolarProfileBuilderTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-004"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-004",
+        "P9-FIX-005"
+      ],
+      "knownLimitations": [
+        "No formal external validation completion claim."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-003",
+      "name": "Internal gains preparation",
+      "category": "Internal gains preparation",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomInternalGainProfileBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/InternalGains/InternalGainEngine.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016InternalGainReferenceDataProvider.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016RoomInternalGainProfileBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016InternalGainReferenceDataProviderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016RoomHourlyInputProfileBuilderTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "id": "P9-ISO-CMP-004",
+      "name": "Boundary and thermal element modeling",
+      "category": "Boundary/thermal element modeling",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Construction/Iso52016ConstructionAssemblyCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016RoomEnvelopeInputCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016AdjacentUnconditionedZoneTemperatureSolver.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Construction/Iso52016ConstructionAssemblyCalculatorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016RoomEnvelopeInputCalculatorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016AdjacentUnconditionedZoneTemperatureSolverTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "id": "P9-ISO-CMP-005",
+      "name": "Zone model building",
+      "category": "Zone model building",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixReducedRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneGraphBuilder.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixReducedRoomModelBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneGraphBuilderTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ],
+      "knownLimitations": []
+    },
+    {
+      "id": "P9-ISO-CMP-006",
+      "name": "Matrix assembly and solving",
+      "category": "Matrix assembly",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationResultMapper.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixHourlySolverTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixRoomEnergySimulationServiceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationFixtureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixAssemblyInvariantTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016LoadVectorCharacterizationTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016SolverKernelCharacterizationTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005",
+        "P9-EVID-006"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006",
+        "P9-FIX-007",
+        "P9-FIX-008"
+      ],
+      "seamDesignReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+      "knownLimitations": [
+        "Solver class is oversized and mixes assembly/control/summary responsibilities."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-007",
+      "name": "Multi-zone solving and coupling",
+      "category": "Matrix solving",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneHourlySolver.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneHourlySimulationLoop.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneEnergySimulationService.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneHourlySolverTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneFixtureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/MultiZone/Iso52016MultiZoneGroundBoundaryTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MultiZoneCouplingCharacterizationTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-006",
+        "P9-FIX-007"
+      ],
+      "seamDesignReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+      "knownLimitations": [
+        "Input normalization and validation seams are still coupled with topology policies."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-008",
+      "name": "Hourly and annual aggregation",
+      "category": "Annual/summary aggregation",
+      "maturityLevel": "IndependentReferenceFixture",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyResultComposer.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016MonthlyQuasiSteadyStateCalculator.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/MultiZone/Iso52016MultiZoneResultAggregator.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixExternalValidationAnnualAnchorTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016EngineeringCoreV1ClosureTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016MatrixBaselineFixtureTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-005"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-007"
+      ],
+      "knownLimitations": [
+        "Monthly aggregation service is oversized and couples climate/gains/ground logic with summary construction."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-009",
+      "name": "Report and diagnostics mapping",
+      "category": "Report/diagnostics mapping",
+      "maturityLevel": "InternalInvariant",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceDiagnosticsBuilder.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016HourlyHeatBalanceResultAssembler.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilder.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016ResponseDiagnosticsVisibilityTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016AnnualDiagnosticsVisibilityTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Physical/Iso52016PhysicalRoomModelDiagnosticsBuilderTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Matrix/Iso52016DiagnosticsResultMappingCharacterizationTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-010",
+        "P9-EVID-011"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-014",
+        "P9-FIX-015"
+      ],
+      "seamDesignReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+      "knownLimitations": [
+        "Traceability from physics anchors to report fields remains a staged follow-up in P9-02."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-010",
+      "name": "Validation fixtures and verification tooling",
+      "category": "Validation fixtures/tools",
+      "maturityLevel": "ExternalToolReferenceFixture",
+      "files": [
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Iso52016VerificationRunner.cs",
+        "tools/AssistantEngineer.Tools.Iso52016Verification/Iso52016VerificationCommandOptions.cs",
+        "scripts/iso52016/verify-iso52016-matrix-all.ps1"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Verification/Iso52016VerificationToolTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Verification/Iso52016VerificationRegistryTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Verification/Iso52016PowerShellThinWrapperTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-011",
+        "P9-EVID-012"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-016",
+        "P9-FIX-018"
+      ],
+      "knownLimitations": [
+        "External evidence remains reference-candidate oriented; no parity/certification claim."
+      ]
+    },
+    {
+      "id": "P9-ISO-CMP-011",
+      "name": "Workflow and API integration boundary",
+      "category": "Workflow integration",
+      "maturityLevel": "InternalInvariant",
+      "files": [
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016BuildingEnergySimulationApplicationService.cs",
+        "src/Backend/AssistantEngineer.Modules.Calculations/Application/Services/Iso52016/Iso52016BuildingSimulationFacade.cs",
+        "tests/AssistantEngineer.Tests/Api/BuildingEnergyAnalysisControllerIso52016SimulationEndpointTests.cs"
+      ],
+      "tests": [
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016BuildingEnergySimulationApplicationServiceTests.cs",
+        "tests/AssistantEngineer.Tests/Calculations/Iso52016/Iso52016BuildingSimulationFacadeTests.cs",
+        "tests/AssistantEngineer.Tests/Api/BuildingEnergyAnalysisControllerIso52016SimulationEndpointTests.cs"
+      ],
+      "validationEvidenceEntries": [
+        "P9-EVID-011"
+      ],
+      "provenanceEntries": [
+        "P9-FIX-015"
+      ],
+      "knownLimitations": []
+    }
+  ],
+  "behaviorCharacterizationInventoryReference": "docs/validation/iso52016-behavior-characterization-inventory.json",
+  "seamDesignReference": "docs/validation/iso52016-matrix-solver-seam-design.json",
+  "hardeningReportReference": "docs/validation/iso52016-matrix-solver-characterization-hardening.json",
+  "characterizationCoverage": [
+    { "componentId": "P9-ISO-CMP-001", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-002", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-003", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-004", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-005", "coverageLevel": "BroadIntegrationCharacterization" },
+    { "componentId": "P9-ISO-CMP-006", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-007", "coverageLevel": "BroadIntegrationCharacterization" },
+    { "componentId": "P9-ISO-CMP-008", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-009", "coverageLevel": "FocusedCharacterization" },
+    { "componentId": "P9-ISO-CMP-010", "coverageLevel": "GovernanceOnly" },
+    { "componentId": "P9-ISO-CMP-011", "coverageLevel": "BroadIntegrationCharacterization" }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected numerical values change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim."
+  ]
+}

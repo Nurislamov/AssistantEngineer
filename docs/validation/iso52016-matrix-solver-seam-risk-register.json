@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "lastReviewedDate": "2026-05-23",
+  "stage": "P9-01B",
+  "runtimeBehaviorChanged": false,
+  "calculationPhysicsChanged": false,
+  "expectedValuesChanged": false,
+  "publicApiChanged": false,
+  "validationClaimChanged": false,
+  "expectedValueChangeAllowed": false,
+  "risks": [
+    {
+      "id": "P9-01B-RSK-001",
+      "seamId": "P9-01B-SEAM-002",
+      "riskLevel": "High",
+      "description": "Coefficient sign/placement regression can silently alter matrix physics behavior.",
+      "mitigation": "Preserve coefficient-sign and dimension invariants with focused characterization before extraction.",
+      "requiredTests": [
+        "Iso52016MatrixAssemblyCharacterizationTests",
+        "Iso52016MatrixHourlySolverTests"
+      ],
+      "mitigationEvidence": [
+        "Iso52016MatrixAssemblyInvariantTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B1"
+    },
+    {
+      "id": "P9-01B-RSK-002",
+      "seamId": "P9-01B-SEAM-003",
+      "riskLevel": "High",
+      "description": "Load-vector term omission (capacity carry-over, gains, boundary forcing, HVAC injection) can change hourly outputs.",
+      "mitigation": "Keep pinned fixture solver-output characterization and add omission-focused seam checks in B1.",
+      "requiredTests": [
+        "Iso52016SolverOutputCharacterizationTests",
+        "Iso52016MatrixExternalValidationFixtureTests"
+      ],
+      "mitigationEvidence": [
+        "Iso52016LoadVectorCharacterizationTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B1"
+    },
+    {
+      "id": "P9-01B-RSK-003",
+      "seamId": "P9-01B-SEAM-007",
+      "riskLevel": "Medium",
+      "description": "Multi-zone coupling split can regress pair deduplication and adjacent-boundary handling.",
+      "mitigation": "Keep pair-deduplication and boundary-policy checks explicit before and after extraction.",
+      "requiredTests": [
+        "Iso52016MultiZoneNormalizedInputBuilderTests",
+        "Iso52016MultiZoneInputValidatorAdvancedTests",
+        "Iso52016MultiZoneHourlySolverTests"
+      ],
+      "mitigationEvidence": [
+        "Iso52016MultiZoneCouplingCharacterizationTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B6"
+    },
+    {
+      "id": "P9-01B-RSK-004",
+      "seamId": "P9-01B-SEAM-005",
+      "riskLevel": "Medium",
+      "description": "Result mapper extraction can drift hourly/annual aggregation and report-facing fields.",
+      "mitigation": "Require unchanged aggregation and report-mapping characterization suites.",
+      "requiredTests": [
+        "Iso52016AggregationCharacterizationTests",
+        "Iso52016ReportMappingCharacterizationTests",
+        "Iso52016MatrixRoomEnergySimulationResultMapperTests"
+      ],
+      "mitigationEvidence": [
+        "Iso52016DiagnosticsResultMappingCharacterizationTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B5"
+    },
+    {
+      "id": "P9-01B-RSK-005",
+      "seamId": "P9-01B-SEAM-004",
+      "riskLevel": "Medium",
+      "description": "Hidden tolerance broadening may mask numerical drift after solver-kernel extraction.",
+      "mitigation": "Keep P9-01A tolerance policy unchanged and fail unapproved tolerance widening.",
+      "requiredTests": [
+        "Iso52016SolverOutputCharacterizationTests",
+        "P9Iso52016BehaviorCharacterizationInventoryTests"
+      ],
+      "mitigationEvidence": [
+        "Iso52016SolverKernelCharacterizationTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B4"
+    },
+    {
+      "id": "P9-01B-RSK-006",
+      "seamId": "P9-01B-SEAM-006",
+      "riskLevel": "Low",
+      "description": "Design artifacts can accidentally overclaim unsupported parity/certification posture.",
+      "mitigation": "Apply claim-boundary scanners and keep explicit non-claims/forbidden-claims boundaries.",
+      "requiredTests": [
+        "ForbiddenTerminologyGuardTests",
+        "P9Iso52016SeamDesignNoPhysicsChangeTests"
+      ],
+      "mitigationEvidence": [
+        "P9Iso52016MatrixSolverCharacterizationHardeningTests",
+        "P9Iso52016MatrixSolverCharacterizationCoverageTests"
+      ],
+      "expectedValueChangeAllowed": false,
+      "proposedStage": "P9-01B"
+    }
+  ],
+  "nonClaims": [
+    "No calculation physics change claim.",
+    "No expected value change claim.",
+    "No EnergyPlus parity claim.",
+    "No pyBuildingEnergy full parity claim.",
+    "No ASHRAE 140 validation claim.",
+    "No ISO certification claim.",
+    "No fully validated claim."
+  ]
+}

@@ -81,7 +81,13 @@
                                 "P8-06",
                                 "P8-07",
                                 "P8-08",
-                                "P8-09"
+                                "P8-09",
+                                "P9-00",
+                                "P9-01",
+                                "P9-01A",
+                                "P9-01B",
+                                "P9-01B1",
+                                "P9-03"
                             ],
     "statusNotes":  {
                         "planned":  "Planned work item for staged P5 rollout.",

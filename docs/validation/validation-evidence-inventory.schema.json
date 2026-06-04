@@ -1,0 +1,54 @@
+{
+  "name": "validation-evidence-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "publicApiChanged",
+    "provenanceInventoryReference",
+    "iso52016ComponentMapReference",
+    "evidenceEntries",
+    "nonClaims"
+  ],
+  "evidenceEntryRequiredFields": [
+    "id",
+    "path",
+    "category",
+    "area",
+    "maturity",
+    "provenanceCategory",
+    "plannedPlaceholder",
+    "provenanceInventoryReference",
+    "claimAllowed",
+    "claimForbidden",
+    "claimBoundaryNotes",
+    "relatedTests",
+    "relatedTools",
+    "knownLimitations",
+    "proposedStage"
+  ],
+  "allowedCategories": [
+    "ManualFixture",
+    "IndependentReferenceFixture",
+    "InternalInvariant",
+    "ReleaseGateManifest",
+    "ExternalToolReferenceCandidate",
+    "DonorMethodologyReference",
+    "HistoricalSmoke",
+    "PlannedPlaceholder",
+    "UnknownNeedsReview"
+  ],
+  "allowedMaturityLevels": [
+    "None",
+    "SmokeOnly",
+    "InternalInvariant",
+    "ManualReferenceAnchor",
+    "IndependentReferenceFixture",
+    "ExternalToolReferenceFixture",
+    "CrossImplementationComparison",
+    "CandidateForFormalValidation"
+  ]
+}

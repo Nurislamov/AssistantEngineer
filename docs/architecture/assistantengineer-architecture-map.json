@@ -1,7 +1,7 @@
 {
     "version":  1,
-    "lastReviewedDate":  "2026-05-22",
-    "stage":  "P8-09",
+    "lastReviewedDate":  "2026-05-23",
+    "stage":  "P9-01B1",
     "modules":  [
                     {
                         "name":  "AssistantEngineer.Api",
@@ -90,6 +90,12 @@
                           "Terminology/claims wording for architecture and security governance is normalized by docs/architecture/terminology-and-claims-vocabulary.json in P8-07.",
                           "Governance test brittleness reduction in P8-08 adds shared semantic assertion helpers while preserving strict behavior-level guardrails.",
                           "Final P8 closure decision and deferred P9 backlog are documented by docs/architecture/p8-engineering-domain-hardening-closure.json.",
+                          "P9-00 validation governance is anchored by docs/validation/engineering-calculation-validation-roadmap.json, docs/validation/validation-evidence-inventory.json, and docs/validation/validation-claims-policy.json.",
+                          "P9-03 provenance governance is anchored by docs/validation/validation-fixture-provenance-model.json and docs/validation/validation-fixture-provenance-inventory.json.",
+                          "P9-01 ISO52016 decomposition planning is anchored by docs/validation/iso52016-decomposition-review.json and docs/validation/iso52016-component-map.json.",
+                          "P9-01A behavior characterization inventory is anchored by docs/validation/iso52016-behavior-characterization-inventory.json and focused seam characterization tests.",
+                          "P9-01B matrix/solver seam design is anchored by docs/validation/iso52016-matrix-solver-seam-design.json and docs/validation/iso52016-matrix-solver-seam-risk-register.json.",
+                          "P9-01B1 characterization hardening is anchored by docs/validation/iso52016-matrix-solver-characterization-hardening.json.",
                           "Release scripts/tools must not introduce runtime write-path behavior.",
                           "Calculation physics logic must remain in runtime C# modules with behavior-locked tests.",
                           "Route inventory classification closure in P8-05 reduces unknown classifications and tightens ignore-list coverage without changing controller/runtime behavior."
@@ -98,6 +104,8 @@
                                "Workflow and authorization hotspots are staged in P8-03; P8-03A/B/C gate characterization and collaborator extraction, P8-03D workflow controller shell behavior characterization, P8-03E helper migration, and P8-03F main-shell reduction are complete with behavior-lock constraints preserved.",
                                "OwnershipBackfill command-specific parse branches remain concentrated in parser internals and can be optionally split further in later tooling stages.",
                                "Infrastructure-to-module dependency surface remains broad and should be reviewed for minimization in later stages.",
+                               "Validation evidence provenance quality was normalized in P9-03 model/inventory artifacts, with planned placeholder and follow-up-stage tagging still requiring staged promotion work.",
+                               "ISO52016 service/component decomposition remains staged; P9-01A characterization inventory, P9-01B seam design, and P9-01B1 hardening are complete, while extraction and follow-up review stages P9-01B2/P9-01B3/P9-01B4/P9-01B5/P9-01B6/P9-01C/P9-01D/P9-01E/P9-01F remain pending.",
                                "Controller read-history/report-artifact partial shells remain broader than desired and are candidates for optional follow-up decomposition.",
                                "Route inventory still contains staged Deferred entries (authorization rollout backlog) even after P8-05 unknown-classification closure and ignore-list tightening.",
                                "Some historical docs still contain repeated status-note blocks and remain candidates for optional P9 deduplication."

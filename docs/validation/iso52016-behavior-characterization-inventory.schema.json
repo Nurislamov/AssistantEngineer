@@ -1,0 +1,60 @@
+{
+  "name": "iso52016-behavior-characterization-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "publicApiChanged",
+    "validationClaimChanged",
+    "calculationSourceFilesChanged",
+    "fixtureExpectedValueFilesChanged",
+    "seamDesignReference",
+    "hardeningReportReference",
+    "componentCoverage",
+    "characterizationTests",
+    "gapsRetained",
+    "tolerancePolicy",
+    "nonClaims"
+  ],
+  "componentCoverageRequiredFields": [
+    "componentId",
+    "componentName",
+    "coverageLevel",
+    "existingTests",
+    "newTests",
+    "gapNotes",
+    "proposedFollowUpStage"
+  ],
+  "characterizationTestRequiredFields": [
+    "testName",
+    "componentIds",
+    "assertionType",
+    "tolerance",
+    "inputFixture",
+    "expectedValuePolicy",
+    "claimBoundary"
+  ],
+  "gapsRetainedRequiredFields": [
+    "id",
+    "componentId",
+    "title",
+    "reason",
+    "proposedFollowUpStage"
+  ],
+  "tolerancePolicyRequiredFields": [
+    "dimension",
+    "absoluteTolerance",
+    "notes"
+  ],
+  "allowedCoverageLevels": [
+    "FocusedCharacterization",
+    "BroadIntegrationCharacterization",
+    "InternalInvariant",
+    "GovernanceOnly",
+    "Missing"
+  ]
+}

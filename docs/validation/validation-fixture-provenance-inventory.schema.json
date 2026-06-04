@@ -1,0 +1,58 @@
+{
+  "name": "validation-fixture-provenance-inventory",
+  "type": "object",
+  "requiredFields": [
+    "version",
+    "lastReviewedDate",
+    "stage",
+    "runtimeBehaviorChanged",
+    "calculationPhysicsChanged",
+    "expectedValuesChanged",
+    "validationClaimChanged",
+    "iso52016ComponentMapReference",
+    "entries",
+    "countsByProvenanceCategory",
+    "countsByEvidenceStrength",
+    "nonClaims"
+  ],
+  "entryRequiredFields": [
+    "fixtureId",
+    "path",
+    "area",
+    "provenanceCategory",
+    "evidenceStrength",
+    "sourceType",
+    "sourceDescription",
+    "sourceDateOrVersion",
+    "generatedBy",
+    "reviewedBy",
+    "lastReviewedDate",
+    "expectedValuePolicy",
+    "expectedValuesChangedInP903",
+    "allowedClaim",
+    "forbiddenClaims",
+    "relatedTests",
+    "relatedTools",
+    "knownLimitations",
+    "proposedFollowUpStage"
+  ],
+  "allowedProvenanceCategories": [
+    "ManualFixture",
+    "IndependentReferenceFixture",
+    "InternalInvariant",
+    "ReleaseGateManifest",
+    "ExternalToolReferenceCandidate",
+    "DonorMethodologyReference",
+    "HistoricalSmoke",
+    "PlannedPlaceholder",
+    "UnknownNeedsReview"
+  ],
+  "allowedEvidenceStrengthLevels": [
+    "InternalInvariant",
+    "ManualReferenceAnchor",
+    "IndependentReferenceFixture",
+    "ExternalToolCandidate",
+    "CrossImplementationCandidate",
+    "FormalValidationNotClaimed"
+  ]
+}
