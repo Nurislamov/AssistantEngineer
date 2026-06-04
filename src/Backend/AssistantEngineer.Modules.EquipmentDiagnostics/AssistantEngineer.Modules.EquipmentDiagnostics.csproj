@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Knowledge\**\*.json" />
+    <EmbeddedResource Remove="Knowledge\staging\**\*.json" />
   </ItemGroup>
 
 </Project>

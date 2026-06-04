@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
@@ -696,6 +697,149 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.Contains(resources, name => name.EndsWith("Knowledge.equipment-diagnostics.schema.json", StringComparison.Ordinal));
         Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-gmv.json", StringComparison.Ordinal));
         Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-chiller.json", StringComparison.Ordinal));
+        Assert.DoesNotContain(resources, name => name.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void StagingSchemaAndTemplateFilesExist()
+    {
+        Assert.True(File.Exists(StagingReadmePath), $"Missing staging README: {StagingReadmePath}");
+        Assert.True(File.Exists(StagingSchemaPath), $"Missing staging schema: {StagingSchemaPath}");
+        Assert.True(File.Exists(GreeManualEntryTemplatePath), $"Missing staging template: {GreeManualEntryTemplatePath}");
+    }
+
+    [Fact]
+    public void StagingTemplateIsValidJsonAndDoesNotClaimManualVerified()
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(GreeManualEntryTemplatePath));
+
+        var candidate = Assert.Single(document.RootElement.GetProperty("candidates").EnumerateArray());
+
+        Assert.Equal("Draft", candidate.GetProperty("reviewStatus").GetString());
+        Assert.Equal("Low", candidate.GetProperty("proposedConfidence").GetString());
+        Assert.NotEqual("ManualVerified", candidate.GetProperty("proposedConfidence").GetString());
+
+        var source = candidate.GetProperty("source");
+        Assert.Equal("SeededEngineeringKnowledge", source.GetProperty("sourceType").GetString());
+        Assert.Equal("UnverifiedSeed", source.GetProperty("evidenceLevel").GetString());
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("manualTitle").ValueKind);
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("page").ValueKind);
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("quote").ValueKind);
+        Assert.NotEmpty(source.GetProperty("limitations").EnumerateArray());
+    }
+
+    [Fact]
+    public async Task RuntimeCatalogIndexCountIgnoresStagingTemplate()
+    {
+        var loader = new EquipmentDiagnosticsKnowledgeJsonLoader();
+        var expectedRuntimeEntries = GetKnowledgeJsonFiles()
+            .SelectMany(file => loader.LoadFromJson(
+                File.ReadAllText(file),
+                Path.GetRelativePath(global::AssistantEngineer.Tests.TestPaths.RepoRoot, file)))
+            .Count();
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var index = await service.GetCatalogIndexAsync(CancellationToken.None);
+
+        Assert.Equal(expectedRuntimeEntries, index.TotalEntries);
+
+        using var template = JsonDocument.Parse(File.ReadAllText(GreeManualEntryTemplatePath));
+        var templateCode = template.RootElement
+            .GetProperty("candidates")
+            .EnumerateArray()
+            .Single()
+            .GetProperty("code")
+            .GetString();
+
+        Assert.DoesNotContain(index.Codes, code => code.Code == templateCode);
+    }
+
+    [Fact]
+    public void RuntimeKnowledgeFileEnumerationExcludesStagingFiles()
+    {
+        var runtimeKnowledgeFiles = GetKnowledgeJsonFiles();
+
+        Assert.DoesNotContain(runtimeKnowledgeFiles, IsStagingKnowledgePath);
+        Assert.Contains(runtimeKnowledgeFiles, path => path.EndsWith("gree-gmv.json", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(runtimeKnowledgeFiles, path => path.EndsWith("gree-chiller.json", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void StagingSchemaIncludesReviewStatusAndProvenanceRequirements()
+    {
+        var schema = File.ReadAllText(StagingSchemaPath);
+
+        foreach (var requiredFragment in new[]
+                 {
+                     "\"reviewStatus\"",
+                     "\"Draft\"",
+                     "\"NeedsManualCheck\"",
+                     "\"ReadyForReview\"",
+                     "\"ApprovedForCatalog\"",
+                     "\"Rejected\"",
+                     "\"sourceType\"",
+                     "\"evidenceLevel\"",
+                     "\"manualTitle\"",
+                     "\"manualVersion\"",
+                     "\"manualDocumentCode\"",
+                     "\"page\"",
+                     "\"section\"",
+                     "\"quote\"",
+                     "\"limitations\"",
+                     "\"applicableModels\"",
+                     "\"applicableSeries\""
+                 })
+        {
+            Assert.Contains(requiredFragment, schema, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void StagingSchemaDocumentsManualVerifiedAndApprovedForCatalogRules()
+    {
+        var schema = File.ReadAllText(StagingSchemaPath);
+
+        Assert.Contains("\"proposedConfidence\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"ManualVerified\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"ManualPageVerified\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"CrossChecked\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"ApprovedForCatalog\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"ManualReferenced\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"manualTitle\"", schema, StringComparison.Ordinal);
+        Assert.Contains("\"page\"", schema, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void StagingDocsAndTemplateDoNotContainUnsafeDiagnosticWording()
+    {
+        var checkedFiles = new[]
+        {
+            StagingReadmePath,
+            GreeManualEntryTemplatePath
+        };
+        var forbiddenFragments = new[]
+        {
+            "bypass",
+            "disable protection",
+            "disable protections",
+            "force run",
+            "short protection",
+            "ignore protection"
+        };
+
+        var violations = checkedFiles
+            .SelectMany(file =>
+            {
+                var text = File.ReadAllText(file);
+                return forbiddenFragments
+                    .Where(fragment => text.Contains(fragment, StringComparison.OrdinalIgnoreCase))
+                    .Select(fragment => $"{Path.GetFileName(file)}:{fragment}");
+            })
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"Staging docs/templates contain unsafe diagnostic wording fragments: {string.Join(", ", violations)}.");
     }
 
     private static ServiceProvider CreateServiceProvider()
@@ -716,9 +860,14 @@ public class EquipmentDiagnosticsFoundationTests
 
         return Directory.GetFiles(knowledgeRoot, "*.json", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !IsStagingKnowledgePath(path))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
     }
+
+    private static bool IsStagingKnowledgePath(string path) =>
+        path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .Contains("staging", StringComparer.OrdinalIgnoreCase);
 
     private static EquipmentDiagnosticsKnowledgeEntry CreateKnowledgeEntry(
         string manufacturer,
@@ -795,6 +944,35 @@ public class EquipmentDiagnosticsFoundationTests
         "E4",
         "E5"
     ];
+
+    private static string EquipmentDiagnosticsModuleRoot =>
+        Path.Combine(
+            global::AssistantEngineer.Tests.TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EquipmentDiagnostics");
+
+    private static string StagingRootPath =>
+        Path.Combine(
+            EquipmentDiagnosticsModuleRoot,
+            "Knowledge",
+            "staging");
+
+    private static string StagingReadmePath =>
+        Path.Combine(
+            StagingRootPath,
+            "README.md");
+
+    private static string StagingSchemaPath =>
+        Path.Combine(
+            StagingRootPath,
+            "equipment-diagnostics-staging.schema.json");
+
+    private static string GreeManualEntryTemplatePath =>
+        Path.Combine(
+            StagingRootPath,
+            "templates",
+            "gree-manual-entry.template.json");
 
     private static string CreateSingleEntryJson(
         string confidence = "Low",
