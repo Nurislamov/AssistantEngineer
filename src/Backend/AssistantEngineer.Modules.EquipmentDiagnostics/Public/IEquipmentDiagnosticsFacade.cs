@@ -14,4 +14,7 @@ public interface IEquipmentDiagnosticsFacade
         string? series,
         string? modelCode,
         CancellationToken cancellationToken);
+
+    Task<EquipmentDiagnosticsCatalogIndexDto> GetCatalogIndexAsync(
+        CancellationToken cancellationToken = default);
 }

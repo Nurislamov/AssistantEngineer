@@ -68,6 +68,16 @@ ED-05 adds a small conservative Gree GMV catalog expansion. The added entries ar
 
 They use `sourceType = SeededEngineeringKnowledge`, `evidenceLevel = UnverifiedSeed`, and `confidence = Low`. They do not provide manual titles, pages, sections, or quotes because no exact manual evidence is stored in this repository for those entries.
 
+ED-06 adds a deterministic catalog index/query layer for future UI and assistant experiences:
+
+- `GET /api/v1/equipment-diagnostics/catalog`
+- manufacturer, series, category, and code facets
+- total catalog counts
+- source type and evidence level summaries
+- deterministic sorting and duplicate key validation
+
+The index is built from the existing JSON knowledge source through the application service. It is not a database, not a search engine, and not an AI/RAG/vector layer. Code matching remains deterministic and normalized so safe formatting differences such as whitespace or a hyphen in an error code do not break lookup.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -270,6 +280,74 @@ Example response excerpt:
 }
 ```
 
+### Get Catalog Index
+
+`GET /api/v1/equipment-diagnostics/catalog`
+
+Returns deterministic catalog facets for UI filters, bot menus, and predictable discovery flows. It exposes application DTOs only, not domain records.
+
+Example:
+
+```http
+GET /api/v1/equipment-diagnostics/catalog
+```
+
+Example response excerpt:
+
+```json
+{
+  "totalEntries": 7,
+  "manufacturers": [
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "count": 7
+    }
+  ],
+  "series": [
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "seriesName": "Chiller",
+      "normalizedSeriesName": "CHILLER",
+      "count": 1
+    },
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "seriesName": "GMV",
+      "normalizedSeriesName": "GMV",
+      "count": 6
+    }
+  ],
+  "categories": [
+    {
+      "category": 0,
+      "count": 6
+    }
+  ],
+  "codes": [
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "category": 0,
+      "code": "E1",
+      "normalizedCode": "E1",
+      "confidence": 1,
+      "sourceType": "SeededEngineeringKnowledge",
+      "evidenceLevel": "UnverifiedSeed",
+      "count": 1
+    }
+  ],
+  "sourceTypes": [
+    "SeededEngineeringKnowledge"
+  ],
+  "evidenceLevels": [
+    "UnverifiedSeed"
+  ]
+}
+```
+
 ## Non-Goals
 
 - No EF Core persistence or migrations.
@@ -288,11 +366,12 @@ Example response excerpt:
 - ED-03 keeps seeded knowledge in deterministic embedded JSON files. It does not add persistence, Telegram, RAG/vector search, AI search, or full manual verification claims.
 - ED-04 adds source/provenance metadata. Current entries remain deterministic seed knowledge, not manual verified.
 - ED-05 expands Gree GMV seed coverage with a small batch of low-confidence entries. It does not add manual-backed claims.
+- ED-06 adds deterministic catalog indexing for query/filter discovery. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 
 ## Future Stages
 
-- ED-06: real manual-backed Gree catalog expansion with explicit provenance and page references.
-- ED-07: persistence/admin import through a dedicated Infrastructure adapter and migration.
-- ED-08: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-09: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-07: real manual-backed Gree catalog expansion with explicit provenance and page references.
+- ED-08: persistence/admin import through a dedicated Infrastructure adapter and migration.
+- ED-09: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-10: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.

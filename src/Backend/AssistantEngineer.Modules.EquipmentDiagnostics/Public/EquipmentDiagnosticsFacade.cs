@@ -24,4 +24,8 @@ public sealed class EquipmentDiagnosticsFacade : IEquipmentDiagnosticsFacade
         string? modelCode,
         CancellationToken cancellationToken) =>
         _service.GetDiagnosticCaseAsync(manufacturer, errorCode, series, modelCode, cancellationToken);
+
+    public Task<EquipmentDiagnosticsCatalogIndexDto> GetCatalogIndexAsync(
+        CancellationToken cancellationToken = default) =>
+        _service.GetCatalogIndexAsync(cancellationToken);
 }

@@ -1870,6 +1870,30 @@
                           "rolloutStage":  "P5-09"
                       },
                       {
+                          "risk":  "Diagnostic catalog index endpoint exposes seeded troubleshooting metadata and must remain explicitly classified.",
+                          "endpointGroup":  "PublicRead",
+                          "auditCategory":  "System",
+                          "knownLimitations":  [
+                                                   "ED-06 catalog index is deterministic seed knowledge only and does not claim full manual verification.",
+                                                   "No persistence, Telegram integration, RAG, vector search, or AI search is introduced by this endpoint."
+                                               ],
+                          "currentAuthStatus":  "PublicAllowed",
+                          "tenantScope":  "NotApplicable",
+                          "action":  "InventoryRouteGroup",
+                          "routePattern":  "api/v{version:apiVersion}/equipment-diagnostics/catalog [GET]",
+                          "notes":  "Read-only EquipmentDiagnostics facade endpoint for deterministic catalog facets and code index metadata.",
+                          "publicClaim":  "ExplicitPublic",
+                          "permission":  "NotApplicable",
+                          "protectionStage":  "Public",
+                          "route":  "api/v{version:apiVersion}/equipment-diagnostics/catalog",
+                          "httpMethod":  "GET",
+                          "controller":  "EquipmentDiagnosticsController",
+                          "rateLimitCategory":  "ReferenceData",
+                          "targetPolicy":  "ReferenceData",
+                          "releaseBoundaryClaim":  "PublicOrCompatibilityByDesign",
+                          "rolloutStage":  "ED-06"
+                      },
+                      {
                           "risk":  "Diagnostic reference endpoint exposes seeded equipment troubleshooting knowledge and must remain explicitly classified.",
                           "endpointGroup":  "PublicRead",
                           "auditCategory":  "System",

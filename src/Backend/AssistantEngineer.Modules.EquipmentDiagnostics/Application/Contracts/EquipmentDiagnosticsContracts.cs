@@ -45,6 +45,47 @@ public sealed record EquipmentDiagnosticSourceDto(
     IReadOnlyList<string> ApplicableModels,
     IReadOnlyList<string> ApplicableSeries);
 
+public sealed record EquipmentDiagnosticsCatalogIndexDto(
+    int TotalEntries,
+    IReadOnlyList<EquipmentDiagnosticsManufacturerFacetDto> Manufacturers,
+    IReadOnlyList<EquipmentDiagnosticsSeriesFacetDto> Series,
+    IReadOnlyList<EquipmentDiagnosticsCategoryFacetDto> Categories,
+    IReadOnlyList<EquipmentDiagnosticsCodeFacetDto> Codes,
+    IReadOnlyList<string> SourceTypes,
+    IReadOnlyList<string> EvidenceLevels);
+
+public sealed record EquipmentDiagnosticsManufacturerFacetDto(
+    string Manufacturer,
+    string NormalizedManufacturer,
+    int Count);
+
+public sealed record EquipmentDiagnosticsSeriesFacetDto(
+    string Manufacturer,
+    string NormalizedManufacturer,
+    string? SeriesName,
+    string? NormalizedSeriesName,
+    int Count);
+
+public sealed record EquipmentDiagnosticsCategoryFacetDto(
+    EquipmentCategory Category,
+    int Count);
+
+public sealed record EquipmentDiagnosticsCodeFacetDto(
+    string Manufacturer,
+    string NormalizedManufacturer,
+    string? SeriesName,
+    string? NormalizedSeriesName,
+    string? ModelCode,
+    string? NormalizedModelCode,
+    EquipmentCategory Category,
+    string Code,
+    string NormalizedCode,
+    string Title,
+    DiagnosticConfidence Confidence,
+    string SourceType,
+    string EvidenceLevel,
+    int Count);
+
 public sealed record DiagnosticStepDto(
     int Order,
     string Title,
