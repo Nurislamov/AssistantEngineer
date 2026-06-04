@@ -57,15 +57,26 @@
         "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
         "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
       ],
-      "manualReferences": [
-        {
-          "manufacturer": "Gree",
-          "manualTitle": "Gree service manual for the matching series and model",
-          "manualVersion": null,
-          "page": null,
-          "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
-        }
-      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
       "tags": [
         "gree",
         "gmv",
@@ -130,15 +141,26 @@
         "Keep safety switches, protection inputs, current protection, pressure protection, flow protection, and controller safeguards active during diagnosis.",
         "De-energize and lock out equipment where the service procedure requires it, and follow the manufacturer manual and local safety rules."
       ],
-      "manualReferences": [
-        {
-          "manufacturer": "Gree",
-          "manualTitle": "Gree service manual for the matching series and model",
-          "manualVersion": null,
-          "page": null,
-          "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
-        }
-      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
       "tags": [
         "gree",
         "gmv",

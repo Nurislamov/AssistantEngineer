@@ -373,6 +373,9 @@ public class ApiIntegrationTests
         Assert.Equal("H5", diagnosticCase.ErrorCode.Code);
         Assert.Equal("GMV", diagnosticCase.ErrorCode.SeriesName);
         Assert.NotEmpty(diagnosticCase.LikelyCauses);
+        Assert.Equal("SeededEngineeringKnowledge", diagnosticCase.Source.SourceType);
+        Assert.Equal("UnverifiedSeed", diagnosticCase.Source.EvidenceLevel);
+        Assert.NotEmpty(diagnosticCase.Source.Limitations);
     }
 
     [Fact]
@@ -444,6 +447,10 @@ public class ApiIntegrationTests
         Assert.NotNull(diagnosticCase);
         Assert.NotEqual(DiagnosticConfidence.ManualVerified, diagnosticCase.Confidence);
         Assert.NotEqual(DiagnosticConfidence.ManualVerified, diagnosticCase.ErrorCode.Confidence);
+        Assert.Equal("UnverifiedSeed", diagnosticCase.Source.EvidenceLevel);
+        Assert.Null(diagnosticCase.Source.ManualTitle);
+        Assert.Null(diagnosticCase.Source.Page);
+        Assert.Null(diagnosticCase.Source.Quote);
     }
 
     [Fact]

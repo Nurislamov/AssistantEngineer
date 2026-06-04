@@ -34,7 +34,88 @@
         "requiredMeasurements",
         "safetyNotes",
         "manualReferences",
+        "source",
         "tags"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "confidence": {
+                "const": "ManualVerified"
+              }
+            },
+            "required": [
+              "confidence"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "properties": {
+                  "evidenceLevel": {
+                    "enum": [
+                      "ManualPageVerified",
+                      "CrossChecked"
+                    ]
+                  }
+                },
+                "required": [
+                  "evidenceLevel"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "properties": {
+                  "evidenceLevel": {
+                    "const": "CrossChecked"
+                  }
+                },
+                "required": [
+                  "evidenceLevel"
+                ]
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "source": {
+                    "properties": {
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "notes"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "manualReferences": {
+                    "type": "array",
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "manualReferences"
+                ]
+              }
+            ]
+          }
+        }
       ],
       "properties": {
         "manufacturer": {
@@ -122,7 +203,148 @@
             "$ref": "#/$defs/manualReference"
           }
         },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
         "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType",
+        "evidenceLevel",
+        "manualTitle",
+        "manualVersion",
+        "manualDocumentCode",
+        "page",
+        "section",
+        "quote",
+        "notes",
+        "limitations",
+        "applicableModels",
+        "applicableSeries"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidenceLevel": {
+                "const": "ManualPageVerified"
+              }
+            },
+            "required": [
+              "evidenceLevel"
+            ]
+          },
+          "then": {
+            "properties": {
+              "manualTitle": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "manualTitle",
+              "page"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "sourceType": {
+          "enum": [
+            "SeededEngineeringKnowledge",
+            "ManufacturerDocumentation",
+            "ServiceManual",
+            "FieldObservation",
+            "CrossCheckedManuals"
+          ]
+        },
+        "evidenceLevel": {
+          "enum": [
+            "UnverifiedSeed",
+            "ManualReferenced",
+            "ManualPageVerified",
+            "FieldObserved",
+            "CrossChecked"
+          ]
+        },
+        "manualTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "manualVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "manualDocumentCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "page": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "section": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "quote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "applicableModels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "applicableSeries": {
           "type": "array",
           "items": {
             "type": "string",

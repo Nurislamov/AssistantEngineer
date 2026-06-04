@@ -28,7 +28,22 @@ public sealed record EquipmentDiagnosticCaseDto(
     IReadOnlyList<RequiredMeasurementDto> RequiredMeasurements,
     IReadOnlyList<string> SafetyNotes,
     IReadOnlyList<ManualReferenceDto> ManualReferences,
+    EquipmentDiagnosticSourceDto Source,
     DiagnosticConfidence Confidence);
+
+public sealed record EquipmentDiagnosticSourceDto(
+    string SourceType,
+    string EvidenceLevel,
+    string? ManualTitle,
+    string? ManualVersion,
+    string? ManualDocumentCode,
+    string? Page,
+    string? Section,
+    string? Quote,
+    string? Notes,
+    IReadOnlyList<string> Limitations,
+    IReadOnlyList<string> ApplicableModels,
+    IReadOnlyList<string> ApplicableSeries);
 
 public sealed record DiagnosticStepDto(
     int Order,

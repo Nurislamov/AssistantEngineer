@@ -57,6 +57,8 @@ ED-03 moves seeded entries into structured JSON files embedded in the module:
 
 `EquipmentDiagnosticsJsonKnowledgeSource` reads embedded JSON resources through `EquipmentDiagnosticsKnowledgeJsonLoader`. The loader performs lightweight module validation without external schema-validator dependencies. The catalog remains deterministic and local. It is not persistence, not a manual-ingestion workflow, and not an AI/RAG search layer.
 
+ED-04 adds a provenance/source model for every diagnostic entry. Each entry must state where its knowledge comes from, what evidence level supports it, and what limitations apply. The current Gree entries remain deterministic seed knowledge and are not manual verified.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -67,6 +69,7 @@ Each JSON file contains an `entries` array. Each entry has:
 - `requiredMeasurements[]` with `name`, `unit`, `description`, `requiredBeforeConclusion`
 - `safetyNotes[]`
 - `manualReferences[]`
+- `source` with `sourceType`, `evidenceLevel`, manual evidence fields, `limitations[]`, `applicableModels[]`, and `applicableSeries[]`
 - `tags[]`
 
 To add a new manufacturer, series, or code:
@@ -76,7 +79,57 @@ To add a new manufacturer, series, or code:
 3. Use only defined `EquipmentCategory` and `DiagnosticConfidence` enum names.
 4. Keep `confidence` below `ManualVerified` until exact manual evidence and page references are present in the repository.
 5. Include safety notes and required measurements for every diagnostic case.
-6. Run `dotnet test AssistantEngineer.sln`; JSON loader tests validate required fields, enum values, safety text, embedded resources, and seeded behavior.
+6. Include a `source` block for every entry.
+7. Run `dotnet test AssistantEngineer.sln`; JSON loader tests validate required fields, enum values, safety text, embedded resources, provenance, and seeded behavior.
+
+## Provenance and Source Model
+
+Every JSON entry must include a `source` block. This is separate from the diagnostic `confidence` value:
+
+- `confidence` describes how strongly AssistantEngineer should trust the diagnostic guidance.
+- `evidenceLevel` describes the kind of evidence behind the entry.
+
+Allowed `sourceType` values:
+
+- `SeededEngineeringKnowledge`
+- `ManufacturerDocumentation`
+- `ServiceManual`
+- `FieldObservation`
+- `CrossCheckedManuals`
+
+Allowed `evidenceLevel` values:
+
+- `UnverifiedSeed`
+- `ManualReferenced`
+- `ManualPageVerified`
+- `FieldObserved`
+- `CrossChecked`
+
+Current Gree GMV H5, Gree GMV C7, and Gree Chiller E6 entries use:
+
+- `sourceType`: `SeededEngineeringKnowledge`
+- `evidenceLevel`: `UnverifiedSeed`
+- `confidence`: `Low`
+
+They are deterministic seeded guidance only. They do not claim manual page verification, and their `source.manualTitle`, `source.page`, and `source.quote` fields remain `null`.
+
+Rules for `ManualVerified`:
+
+- `confidence = ManualVerified` is allowed only when `source.evidenceLevel` is `ManualPageVerified` or `CrossChecked`.
+- `ManualPageVerified` requires a real `manualTitle` and `page`.
+- Do not invent manual titles, versions, document codes, pages, sections, quotes, or citations.
+- `quote` may be `null`; if present, it must be non-empty and must come from explicit manual evidence.
+- `CrossChecked` requires notes or manual references explaining the cross-check.
+
+How to add a manual-backed entry honestly:
+
+1. Identify the exact installed equipment family and applicable manual.
+2. Add the manual title/version/document code only if that evidence is explicit.
+3. Add page and section only when the page/section is actually known.
+4. Keep direct quotes short, exact, and only when necessary.
+5. Set `evidenceLevel` no higher than the evidence supports.
+6. Raise `confidence` to `ManualVerified` only after the module validation rules have explicit manual-page or cross-checked evidence.
+7. Keep all safety notes intact and avoid protection-defeat instructions.
 
 Confidence levels:
 
@@ -122,13 +175,7 @@ Example response:
     "severity": "Service attention required",
     "category": 0,
     "confidence": 1,
-    "sourceManual": {
-      "manufacturer": "Gree",
-      "manualTitle": "Gree service manual for the matching series and model",
-      "manualVersion": null,
-      "page": null,
-      "notes": "ED-03 deterministic JSON seed only; exact manual page is not verified in this repository."
-    }
+    "sourceManual": null
   }
 ]
 ```
@@ -184,6 +231,22 @@ Example response excerpt:
   "safetyNotes": [
     "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician."
   ],
+  "source": {
+    "sourceType": "SeededEngineeringKnowledge",
+    "evidenceLevel": "UnverifiedSeed",
+    "manualTitle": null,
+    "page": null,
+    "quote": null,
+    "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+    "limitations": [
+      "Use as preliminary diagnostic guidance only.",
+      "Verify against the exact service manual for the installed equipment family before final conclusion."
+    ],
+    "applicableModels": [],
+    "applicableSeries": [
+      "GMV"
+    ]
+  },
   "confidence": 1
 }
 ```
@@ -204,11 +267,12 @@ Example response excerpt:
 - ED-01 remains deterministic seeded knowledge only. It does not claim full manual verification, and it does not add Telegram, RAG/vector search, or persistence.
 - ED-02 keeps seeded knowledge in a deterministic in-memory catalog. Entries remain low-confidence unless explicit source evidence is added later.
 - ED-03 keeps seeded knowledge in deterministic embedded JSON files. It does not add persistence, Telegram, RAG/vector search, AI search, or full manual verification claims.
+- ED-04 adds source/provenance metadata. Current entries remain deterministic seed knowledge, not manual verified.
 
 ## Future Stages
 
-- ED-04: catalog expansion for Gree GMV/chiller real manuals with explicit provenance and page references.
-- ED-05: persistence/admin import through a dedicated Infrastructure adapter and migration.
-- ED-06: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-07: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-05: real manual-backed Gree catalog expansion with explicit provenance and page references.
+- ED-06: persistence/admin import through a dedicated Infrastructure adapter and migration.
+- ED-07: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-08: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.

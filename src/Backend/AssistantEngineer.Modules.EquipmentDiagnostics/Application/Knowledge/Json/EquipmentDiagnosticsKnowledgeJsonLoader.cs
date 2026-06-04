@@ -17,10 +17,29 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
     private static readonly string[] UnsafeTextFragments =
     [
         "bypass",
+        "disable protections",
         "disable protection",
         "force run",
         "short protection",
         "ignore protection"
+    ];
+
+    private static readonly string[] AllowedSourceTypes =
+    [
+        "SeededEngineeringKnowledge",
+        "ManufacturerDocumentation",
+        "ServiceManual",
+        "FieldObservation",
+        "CrossCheckedManuals"
+    ];
+
+    private static readonly string[] AllowedEvidenceLevels =
+    [
+        "UnverifiedSeed",
+        "ManualReferenced",
+        "ManualPageVerified",
+        "FieldObserved",
+        "CrossChecked"
     ];
 
     public IReadOnlyCollection<EquipmentDiagnosticsKnowledgeEntry> LoadFromAssembly(Assembly assembly)
@@ -96,6 +115,7 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
             RequiredMeasurements: RequireMeasurements(entry.RequiredMeasurements, path),
             SafetyNotes: RequireTextArray(entry.SafetyNotes, path, "safetyNotes"),
             ManualReferences: RequireManualReferences(entry.ManualReferences, path),
+            Source: RequireSource(entry.Source, path),
             Tags: RequireTextArray(entry.Tags, path, "tags"));
 
         ValidateKnowledgeRules(mappedEntry, path);
@@ -176,6 +196,42 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
             .ToArray();
     }
 
+    private static EquipmentDiagnosticsKnowledgeSourceInfo RequireSource(
+        EquipmentDiagnosticsKnowledgeJsonSourceInfo? source,
+        string path)
+    {
+        if (source is null)
+        {
+            throw new InvalidOperationException($"{path}.source must be present.");
+        }
+
+        var sourcePath = $"{path}.source";
+        var sourceType = RequireAllowedText(
+            source.SourceType,
+            sourcePath,
+            "sourceType",
+            AllowedSourceTypes);
+        var evidenceLevel = RequireAllowedText(
+            source.EvidenceLevel,
+            sourcePath,
+            "evidenceLevel",
+            AllowedEvidenceLevels);
+
+        return new EquipmentDiagnosticsKnowledgeSourceInfo(
+            SourceType: sourceType,
+            EvidenceLevel: evidenceLevel,
+            ManualTitle: NormalizeOptionalText(source.ManualTitle, sourcePath, "manualTitle"),
+            ManualVersion: NormalizeOptionalText(source.ManualVersion, sourcePath, "manualVersion"),
+            ManualDocumentCode: NormalizeOptionalText(source.ManualDocumentCode, sourcePath, "manualDocumentCode"),
+            Page: NormalizeOptionalText(source.Page, sourcePath, "page"),
+            Section: NormalizeOptionalText(source.Section, sourcePath, "section"),
+            Quote: NormalizeOptionalText(source.Quote, sourcePath, "quote"),
+            Notes: NormalizeOptionalText(source.Notes, sourcePath, "notes"),
+            Limitations: RequireTextArray(source.Limitations, sourcePath, "limitations"),
+            ApplicableModels: RequireTextArray(source.ApplicableModels, sourcePath, "applicableModels"),
+            ApplicableSeries: RequireTextArray(source.ApplicableSeries, sourcePath, "applicableSeries"));
+    }
+
     private static IReadOnlyList<string> RequireTextArray(
         IReadOnlyList<string>? values,
         string path,
@@ -197,7 +253,31 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
     {
         if (entry.Confidence == DiagnosticConfidence.ManualVerified)
         {
-            throw new InvalidOperationException($"{path}.confidence must not be ManualVerified without explicit verified source evidence.");
+            if (entry.Source.EvidenceLevel is not ("ManualPageVerified" or "CrossChecked"))
+            {
+                throw new InvalidOperationException(
+                    $"{path}.confidence must not be ManualVerified without ManualPageVerified or CrossChecked source evidence.");
+            }
+        }
+
+        if (entry.Source.EvidenceLevel == "ManualPageVerified" &&
+            (entry.Source.ManualTitle is null || entry.Source.Page is null))
+        {
+            throw new InvalidOperationException(
+                $"{path}.source must include manualTitle and page when evidenceLevel is ManualPageVerified.");
+        }
+
+        if (entry.Source.EvidenceLevel == "CrossChecked" &&
+            entry.Source.Notes is null &&
+            entry.ManualReferences.Count == 0)
+        {
+            throw new InvalidOperationException(
+                $"{path}.source must include notes or manualReferences when evidenceLevel is CrossChecked.");
+        }
+
+        if (entry.Source.Limitations.Count == 0)
+        {
+            throw new InvalidOperationException($"{path}.source.limitations must contain at least one limitation.");
         }
 
         if (entry.SafetyNotes.Count == 0)
@@ -238,6 +318,21 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
                 reference.Page ?? string.Empty,
                 reference.Notes ?? string.Empty
             }))
+            .Concat(new[]
+            {
+                entry.Source.SourceType,
+                entry.Source.EvidenceLevel,
+                entry.Source.ManualTitle ?? string.Empty,
+                entry.Source.ManualVersion ?? string.Empty,
+                entry.Source.ManualDocumentCode ?? string.Empty,
+                entry.Source.Page ?? string.Empty,
+                entry.Source.Section ?? string.Empty,
+                entry.Source.Quote ?? string.Empty,
+                entry.Source.Notes ?? string.Empty
+            })
+            .Concat(entry.Source.Limitations)
+            .Concat(entry.Source.ApplicableModels)
+            .Concat(entry.Source.ApplicableSeries)
             .Concat(entry.Tags ?? [])
             .ToArray();
 
@@ -268,6 +363,22 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
         return parsed;
     }
 
+    private static string RequireAllowedText(
+        string? value,
+        string path,
+        string propertyName,
+        IReadOnlyCollection<string> allowedValues)
+    {
+        var required = RequireText(value, path, propertyName);
+        if (!allowedValues.Contains(required, StringComparer.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"{path}.{propertyName} has unsupported value '{required}'. Allowed values: {string.Join(", ", allowedValues)}.");
+        }
+
+        return required;
+    }
+
     private static string RequireText(
         string? value,
         string path,
@@ -283,4 +394,22 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonLoader
 
     private static string? NormalizeNullable(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value;
+
+    private static string? NormalizeOptionalText(
+        string? value,
+        string path,
+        string propertyName)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidOperationException($"{path}.{propertyName} must be non-empty when present.");
+        }
+
+        return value;
+    }
 }

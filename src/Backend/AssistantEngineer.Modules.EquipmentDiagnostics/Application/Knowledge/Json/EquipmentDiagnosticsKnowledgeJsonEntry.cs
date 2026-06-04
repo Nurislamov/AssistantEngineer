@@ -30,6 +30,8 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonEntry
 
     public List<EquipmentDiagnosticsKnowledgeJsonManualReference>? ManualReferences { get; set; }
 
+    public EquipmentDiagnosticsKnowledgeJsonSourceInfo? Source { get; set; }
+
     public List<string>? Tags { get; set; }
 }
 
@@ -68,4 +70,31 @@ public sealed class EquipmentDiagnosticsKnowledgeJsonManualReference
     public string? Page { get; set; }
 
     public string? Notes { get; set; }
+}
+
+public sealed class EquipmentDiagnosticsKnowledgeJsonSourceInfo
+{
+    public string? SourceType { get; set; }
+
+    public string? EvidenceLevel { get; set; }
+
+    public string? ManualTitle { get; set; }
+
+    public string? ManualVersion { get; set; }
+
+    public string? ManualDocumentCode { get; set; }
+
+    public string? Page { get; set; }
+
+    public string? Section { get; set; }
+
+    public string? Quote { get; set; }
+
+    public string? Notes { get; set; }
+
+    public List<string>? Limitations { get; set; }
+
+    public List<string>? ApplicableModels { get; set; }
+
+    public List<string>? ApplicableSeries { get; set; }
 }
