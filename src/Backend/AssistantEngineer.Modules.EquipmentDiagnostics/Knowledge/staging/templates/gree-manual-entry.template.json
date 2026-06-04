@@ -1,0 +1,68 @@
+{
+  "candidates": [
+    {
+      "manufacturer": "Gree",
+      "series": "GMV",
+      "category": "VrfOutdoorUnit",
+      "modelCode": null,
+      "code": "REPLACE_WITH_CODE",
+      "title": "Draft Gree GMV diagnostic candidate",
+      "meaning": "Draft candidate text. Replace with cautious guidance after manual evidence is reviewed.",
+      "severity": "Service attention required",
+      "proposedConfidence": "Low",
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Template only. Fill exact source evidence before review or promotion.",
+        "limitations": [
+          "Use as preliminary staging guidance only.",
+          "Verify against the exact service manual for the installed equipment family before promotion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "likelyCauses": [
+        "Draft likely cause pending manual evidence review."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm equipment identity",
+          "instruction": "Record manufacturer, series, model, serial plate data, and displayed error code.",
+          "expectedResult": "Equipment identity and displayed code are confirmed before classification.",
+          "ifFailedAction": "Stop classification and obtain exact equipment information."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured only by a qualified technician when the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards active during diagnosis."
+      ],
+      "tags": [
+        "gree",
+        "gmv",
+        "manual-staging"
+      ],
+      "promotionNotes": [
+        "Draft and needs manual evidence before promotion.",
+        "Copy to production catalog only after review approval."
+      ],
+      "reviewStatus": "Draft"
+    }
+  ]
+}
