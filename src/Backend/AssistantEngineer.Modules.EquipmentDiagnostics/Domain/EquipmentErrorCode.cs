@@ -10,4 +10,4 @@ public sealed record EquipmentErrorCode(
     string Meaning,
     string Severity,
     DiagnosticConfidence Confidence,
-    ManualReference SourceManual);
+    ManualReference? SourceManual);

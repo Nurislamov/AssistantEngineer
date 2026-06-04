@@ -54,7 +54,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                 normalizedSeries,
                 normalizedModelCode,
                 category: null))
-            .Select(entry => MapCase(ToDiagnosticCase(entry), entry.Category))
+            .Select(MapCase)
             .FirstOrDefault();
 
         return Task.FromResult(result);
@@ -119,18 +119,14 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
             Meaning: entry.Meaning,
             Severity: entry.Severity,
             Confidence: entry.Confidence,
-            SourceManual: entry.ManualReferences.FirstOrDefault() ?? new ManualReference(
-                Manufacturer: entry.Manufacturer,
-                ManualTitle: "Unspecified source manual",
-                ManualVersion: null,
-                Page: null,
-                Notes: "No manual reference was provided for this deterministic knowledge entry."));
+            SourceManual: entry.ManualReferences.FirstOrDefault());
 
-    private static EquipmentDiagnosticCaseDto MapCase(
-        DiagnosticCase diagnosticCase,
-        EquipmentCategory category) =>
-        new(
-            ErrorCode: MapSummary(diagnosticCase.ErrorCode, category),
+    private static EquipmentDiagnosticCaseDto MapCase(EquipmentDiagnosticsKnowledgeEntry entry)
+    {
+        var diagnosticCase = ToDiagnosticCase(entry);
+
+        return new(
+            ErrorCode: MapSummary(diagnosticCase.ErrorCode, entry.Category),
             LikelyCauses: diagnosticCase.LikelyCauses,
             DiagnosticSteps: diagnosticCase.DiagnosticSteps
                 .OrderBy(step => step.Order)
@@ -150,9 +146,11 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                 .ToArray(),
             SafetyNotes: diagnosticCase.SafetyNotes,
             ManualReferences: diagnosticCase.ManualReferences
-                .Select(MapManualReference)
+                .Select(reference => MapManualReference(reference)!)
                 .ToArray(),
+            Source: MapSource(entry.Source),
             Confidence: diagnosticCase.Confidence);
+    }
 
     private static EquipmentErrorCodeSummaryDto MapSummary(
         EquipmentErrorCode errorCode,
@@ -169,13 +167,35 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
             Confidence: errorCode.Confidence,
             SourceManual: MapManualReference(errorCode.SourceManual));
 
-    private static ManualReferenceDto MapManualReference(ManualReference reference) =>
+    private static EquipmentDiagnosticSourceDto MapSource(EquipmentDiagnosticsKnowledgeSourceInfo source) =>
         new(
+            SourceType: source.SourceType,
+            EvidenceLevel: source.EvidenceLevel,
+            ManualTitle: source.ManualTitle,
+            ManualVersion: source.ManualVersion,
+            ManualDocumentCode: source.ManualDocumentCode,
+            Page: source.Page,
+            Section: source.Section,
+            Quote: source.Quote,
+            Notes: source.Notes,
+            Limitations: source.Limitations,
+            ApplicableModels: source.ApplicableModels,
+            ApplicableSeries: source.ApplicableSeries);
+
+    private static ManualReferenceDto? MapManualReference(ManualReference? reference)
+    {
+        if (reference is null)
+        {
+            return null;
+        }
+
+        return new(
             Manufacturer: reference.Manufacturer,
             ManualTitle: reference.ManualTitle,
             ManualVersion: reference.ManualVersion,
             Page: reference.Page,
             Notes: reference.Notes);
+    }
 
     private static string? Normalize(string? value)
     {

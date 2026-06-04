@@ -203,6 +203,47 @@ public class EquipmentDiagnosticsFoundationTests
             Assert.NotEmpty(entry.SafetyNotes);
             Assert.NotEmpty(entry.DiagnosticSteps);
             Assert.NotEmpty(entry.RequiredMeasurements);
+            Assert.NotNull(entry.Source);
+            Assert.False(string.IsNullOrWhiteSpace(entry.Source.SourceType));
+            Assert.False(string.IsNullOrWhiteSpace(entry.Source.EvidenceLevel));
+            Assert.NotEmpty(entry.Source.Limitations);
+            Assert.NotNull(entry.Source.ApplicableModels);
+            Assert.NotNull(entry.Source.ApplicableSeries);
+        }
+    }
+
+    [Fact]
+    public void SeededGreeEntriesUseUnverifiedSeedProvenance()
+    {
+        var entries = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
+
+        foreach (var entry in GetSeededGreeEntries(entries))
+        {
+            Assert.Equal("SeededEngineeringKnowledge", entry.Source.SourceType);
+            Assert.Equal("UnverifiedSeed", entry.Source.EvidenceLevel);
+            Assert.Equal(DiagnosticConfidence.Low, entry.Confidence);
+            Assert.NotEqual(DiagnosticConfidence.ManualVerified, entry.Confidence);
+            Assert.Null(entry.Source.ManualTitle);
+            Assert.Null(entry.Source.Page);
+            Assert.Null(entry.Source.Quote);
+            Assert.NotEmpty(entry.Source.Limitations);
+        }
+    }
+
+    [Fact]
+    public void SeededEntriesDoNotInventManualEvidence()
+    {
+        var seededEntries = GetSeededGreeEntries(new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries());
+
+        foreach (var entry in seededEntries)
+        {
+            Assert.Empty(entry.ManualReferences);
+            Assert.Null(entry.Source.ManualTitle);
+            Assert.Null(entry.Source.ManualVersion);
+            Assert.Null(entry.Source.ManualDocumentCode);
+            Assert.Null(entry.Source.Page);
+            Assert.Null(entry.Source.Section);
+            Assert.Null(entry.Source.Quote);
         }
     }
 
@@ -257,6 +298,21 @@ public class EquipmentDiagnosticsFoundationTests
     }
 
     [Fact]
+    public void JsonKnowledgeEntriesDoNotClaimManualVerifiedConfidence()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var violations = source.GetEntries()
+            .Where(entry => entry.Confidence == DiagnosticConfidence.ManualVerified)
+            .Select(entry => $"{entry.Manufacturer}/{entry.SeriesName}/{entry.Code}")
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"JSON diagnostics must not claim ManualVerified confidence: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
     public void SeededKnowledgeDoesNotContainBypassOrDisableProtectionWording()
     {
         var source = new InMemoryEquipmentDiagnosticsKnowledgeSource();
@@ -282,7 +338,28 @@ public class EquipmentDiagnosticsFoundationTests
                     step.Instruction,
                     step.ExpectedResult,
                     step.IfFailedAction
-                })))
+                }))
+                .Concat(entry.RequiredMeasurements.SelectMany(measurement => new[]
+                {
+                    measurement.Name,
+                    measurement.Unit,
+                    measurement.Description
+                }))
+                .Concat(new[]
+                {
+                    entry.Source.SourceType,
+                    entry.Source.EvidenceLevel,
+                    entry.Source.ManualTitle ?? string.Empty,
+                    entry.Source.ManualVersion ?? string.Empty,
+                    entry.Source.ManualDocumentCode ?? string.Empty,
+                    entry.Source.Page ?? string.Empty,
+                    entry.Source.Section ?? string.Empty,
+                    entry.Source.Quote ?? string.Empty,
+                    entry.Source.Notes ?? string.Empty
+                })
+                .Concat(entry.Source.Limitations)
+                .Concat(entry.Source.ApplicableModels)
+                .Concat(entry.Source.ApplicableSeries))
             .ToArray();
 
         var violations = forbiddenFragments
@@ -293,6 +370,45 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.True(
             violations.Length == 0,
             $"Seeded diagnostic text contains unsafe wording fragments: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
+    public void JsonLoaderRejectsEntriesWithoutSource()
+    {
+        var json = CreateSingleEntryJson(sourceJson: null);
+        var loader = new EquipmentDiagnosticsKnowledgeJsonLoader();
+
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            loader.LoadFromJson(json, "missing-source.json"));
+
+        Assert.Contains(".source must be present", exception.Message);
+    }
+
+    [Fact]
+    public void JsonLoaderRejectsManualVerifiedWithoutVerifiedEvidence()
+    {
+        var json = CreateSingleEntryJson(
+            confidence: "ManualVerified",
+            sourceJson: CreateSourceJson(evidenceLevel: "UnverifiedSeed"));
+        var loader = new EquipmentDiagnosticsKnowledgeJsonLoader();
+
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            loader.LoadFromJson(json, "manual-verified-without-evidence.json"));
+
+        Assert.Contains("ManualVerified", exception.Message);
+        Assert.Contains("ManualPageVerified or CrossChecked", exception.Message);
+    }
+
+    [Fact]
+    public void JsonLoaderRejectsManualPageVerifiedWithoutManualTitleAndPage()
+    {
+        var json = CreateSingleEntryJson(sourceJson: CreateSourceJson(evidenceLevel: "ManualPageVerified"));
+        var loader = new EquipmentDiagnosticsKnowledgeJsonLoader();
+
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            loader.LoadFromJson(json, "manual-page-verified-without-page.json"));
+
+        Assert.Contains("manualTitle and page", exception.Message);
     }
 
     [Fact]
@@ -432,7 +548,109 @@ public class EquipmentDiagnosticsFoundationTests
                     Page: null,
                     Notes: "Test source.")
             ],
+            Source: new EquipmentDiagnosticsKnowledgeSourceInfo(
+                SourceType: "SeededEngineeringKnowledge",
+                EvidenceLevel: "UnverifiedSeed",
+                ManualTitle: null,
+                ManualVersion: null,
+                ManualDocumentCode: null,
+                Page: null,
+                Section: null,
+                Quote: null,
+                Notes: "Test source.",
+                Limitations: ["Use as preliminary diagnostic guidance only."],
+                ApplicableModels: [],
+                ApplicableSeries: [seriesName]),
             Tags: ["test"]);
+
+    private static IReadOnlyList<EquipmentDiagnosticsKnowledgeEntry> GetSeededGreeEntries(
+        IReadOnlyCollection<EquipmentDiagnosticsKnowledgeEntry> entries) =>
+        entries
+            .Where(entry =>
+                entry.Manufacturer == "Gree" &&
+                ((entry.SeriesName == "GMV" && entry.Code is "H5" or "C7") ||
+                 (entry.SeriesName == "Chiller" && entry.Code == "E6")))
+            .OrderBy(entry => entry.Code, StringComparer.Ordinal)
+            .ToArray();
+
+    private static string CreateSingleEntryJson(
+        string confidence = "Low",
+        string? sourceJson = null)
+    {
+        var sourceProperty = sourceJson is null
+            ? string.Empty
+            : $"""
+                  "source": {sourceJson},
+              """;
+
+        return $$"""
+        {
+          "entries": [
+            {
+              "manufacturer": "Test",
+              "seriesName": "Alpha",
+              "modelCode": null,
+              "category": "SplitSystem",
+              "code": "T1",
+              "title": "Test diagnostic",
+              "meaning": "Test diagnostic meaning.",
+              "severity": "Service attention required",
+              "confidence": "{{confidence}}",
+              "likelyCauses": [
+                "Test cause."
+              ],
+              "diagnosticSteps": [
+                {
+                  "order": 1,
+                  "title": "Confirm test condition",
+                  "instruction": "Record the displayed test code.",
+                  "expectedResult": "The test code is confirmed.",
+                  "ifFailedAction": "Stop classification and obtain correct equipment information."
+                }
+              ],
+              "requiredMeasurements": [
+                {
+                  "name": "Test measurement",
+                  "unit": "V",
+                  "description": "Test measurement description.",
+                  "requiredBeforeConclusion": true
+                }
+              ],
+              "safetyNotes": [
+                "Electrical checks must be performed by a qualified technician."
+              ],
+              "manualReferences": [],
+        {{sourceProperty}}
+              "tags": [
+                "test"
+              ]
+            }
+          ]
+        }
+        """;
+    }
+
+    private static string CreateSourceJson(string evidenceLevel = "UnverifiedSeed") =>
+        $$"""
+        {
+          "sourceType": "SeededEngineeringKnowledge",
+          "evidenceLevel": "{{evidenceLevel}}",
+          "manualTitle": null,
+          "manualVersion": null,
+          "manualDocumentCode": null,
+          "page": null,
+          "section": null,
+          "quote": null,
+          "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+          "limitations": [
+            "Use as preliminary diagnostic guidance only."
+          ],
+          "applicableModels": [],
+          "applicableSeries": [
+            "Alpha"
+          ]
+        }
+        """;
 
     private sealed class StubKnowledgeSource : IEquipmentDiagnosticsKnowledgeSource
     {

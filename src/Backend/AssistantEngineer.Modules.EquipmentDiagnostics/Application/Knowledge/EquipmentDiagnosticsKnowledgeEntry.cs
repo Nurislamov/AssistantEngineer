@@ -17,4 +17,5 @@ public sealed record EquipmentDiagnosticsKnowledgeEntry(
     IReadOnlyList<RequiredMeasurement> RequiredMeasurements,
     IReadOnlyList<string> SafetyNotes,
     IReadOnlyList<ManualReference> ManualReferences,
+    EquipmentDiagnosticsKnowledgeSourceInfo Source,
     IReadOnlyList<string>? Tags = null);
