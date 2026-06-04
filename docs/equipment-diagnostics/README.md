@@ -86,6 +86,14 @@ ED-07 adds a manual-backed staging workflow for future catalog expansion:
 
 Staging files are review artifacts only. They are excluded from embedded runtime knowledge resources and are not loaded by `EquipmentDiagnosticsJsonKnowledgeSource`. The runtime catalog remains the approved source of truth under production knowledge folders such as `Knowledge/gree/`.
 
+ED-08 adds a deterministic staging validator and promotion guard:
+
+- `Application/Knowledge/Staging/IEquipmentDiagnosticsStagingValidator.cs`
+- `Application/Knowledge/Staging/EquipmentDiagnosticsStagingValidator.cs`
+- staging candidate/result/issue models
+
+The validator checks required fields, allowed review/source/evidence/confidence values, evidence rules for `ManualVerified`, duplicate staging keys, conflicts with the production runtime catalog, and unsafe diagnostic wording. It is not registered as a public API endpoint and does not load staging candidates into runtime knowledge.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -211,6 +219,25 @@ Evidence level meanings in staging:
 - `CrossChecked`: multiple sources or records were compared and notes explain the check.
 
 `ManualVerified` confidence is allowed only with `ManualPageVerified` or `CrossChecked` evidence. Do not invent manual titles, versions, document codes, pages, sections, or quotes. Do not store long copyrighted manual text; prefer short identifiers, page/section references, and a minimal quote only when needed for review.
+
+## ED-08 Staging Validator And Promotion Guard
+
+`EquipmentDiagnosticsStagingValidator` validates staging candidates before they can be considered for production catalog promotion. It is application-level code for tests, tooling, and future import workflows. It is not wired into the API and does not affect runtime search or catalog indexing.
+
+Promotion rules:
+
+- `Draft` and `NeedsManualCheck` are never runtime catalog entries.
+- `ReadyForReview` means ready for engineering review, not runtime approval.
+- `ApprovedForCatalog` requires sufficient source evidence and a validation pass.
+- `ApprovedForCatalog` cannot use `UnverifiedSeed` evidence.
+- `ManualVerified` requires `ManualPageVerified` or `CrossChecked` evidence.
+- `ManualPageVerified` requires explicit `manualTitle` and `page`.
+- `CrossChecked` requires evidence notes explaining the check.
+- Candidate keys must not duplicate another staging candidate.
+- Candidate keys must not conflict with production catalog entries unless a future explicit revision/update model is added.
+- Promotion to production JSON must be a normal PR with tests.
+
+The validator accepts staging JSON text or parsed candidate models. It reports deterministic issues with severity, code, path, and message. A valid `Draft` template may still produce an informational issue that it is not ready for runtime catalog use.
 
 ## API Routes
 
@@ -412,11 +439,12 @@ Example response excerpt:
 - ED-05 expands Gree GMV seed coverage with a small batch of low-confidence entries. It does not add manual-backed claims.
 - ED-06 adds deterministic catalog indexing for query/filter discovery. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 - ED-07 adds manual-backed staging artifacts for review and promotion. It does not alter runtime catalog loading or public API routes.
+- ED-08 adds staging candidate validation and promotion guards. It does not alter runtime catalog loading, public API routes, or calculation behavior.
 
 ## Future Stages
 
-- ED-08: real manual-backed Gree catalog expansion with explicit provenance and page references.
-- ED-09: persistence/admin import through a dedicated Infrastructure adapter and migration.
-- ED-10: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-11: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-09: real manual-backed Gree catalog expansion with explicit provenance and page references.
+- ED-10: persistence/admin import through a dedicated Infrastructure adapter and migration.
+- ED-11: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
+- ED-12: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.
