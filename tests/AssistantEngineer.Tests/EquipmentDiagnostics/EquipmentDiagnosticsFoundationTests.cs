@@ -170,6 +170,14 @@ public class EquipmentDiagnosticsFoundationTests
             entry.SeriesName == "Chiller" &&
             entry.Code == "E6" &&
             entry.Category == EquipmentCategory.Chiller);
+        foreach (var code in Ed05GreeGmvSeedCodes)
+        {
+            Assert.Contains(entries, entry =>
+                entry.Manufacturer == "Gree" &&
+                entry.SeriesName == "GMV" &&
+                entry.Code == code &&
+                entry.Category == EquipmentCategory.VrfOutdoorUnit);
+        }
     }
 
     [Fact]
@@ -213,6 +221,49 @@ public class EquipmentDiagnosticsFoundationTests
     }
 
     [Fact]
+    public void KnowledgeEntriesDoNotContainDuplicateManufacturerSeriesCategoryCodeCombinations()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var duplicates = source.GetEntries()
+            .GroupBy(
+                entry => string.Join(
+                    "/",
+                    entry.Manufacturer,
+                    entry.SeriesName ?? string.Empty,
+                    entry.Category,
+                    entry.Code),
+                StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToArray();
+
+        Assert.True(
+            duplicates.Length == 0,
+            $"Equipment diagnostics catalog contains duplicate entries: {string.Join(", ", duplicates)}.");
+    }
+
+    [Fact]
+    public void EveryGreeEntryHasProvenanceSource()
+    {
+        var greeEntries = new EquipmentDiagnosticsJsonKnowledgeSource()
+            .GetEntries()
+            .Where(entry => entry.Manufacturer == "Gree")
+            .ToArray();
+
+        Assert.NotEmpty(greeEntries);
+        foreach (var entry in greeEntries)
+        {
+            Assert.NotNull(entry.Source);
+            Assert.False(string.IsNullOrWhiteSpace(entry.Source.SourceType));
+            Assert.False(string.IsNullOrWhiteSpace(entry.Source.EvidenceLevel));
+            Assert.NotEmpty(entry.Source.Limitations);
+            Assert.NotNull(entry.Source.ApplicableModels);
+            Assert.NotNull(entry.Source.ApplicableSeries);
+        }
+    }
+
+    [Fact]
     public void SeededGreeEntriesUseUnverifiedSeedProvenance()
     {
         var entries = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
@@ -227,6 +278,31 @@ public class EquipmentDiagnosticsFoundationTests
             Assert.Null(entry.Source.Page);
             Assert.Null(entry.Source.Quote);
             Assert.NotEmpty(entry.Source.Limitations);
+        }
+    }
+
+    [Fact]
+    public void Ed05GreeGmvSeedEntriesRemainUnverifiedLowConfidence()
+    {
+        var entries = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
+
+        foreach (var code in Ed05GreeGmvSeedCodes)
+        {
+            var entry = Assert.Single(entries, candidate =>
+                candidate.Manufacturer == "Gree" &&
+                candidate.SeriesName == "GMV" &&
+                candidate.Category == EquipmentCategory.VrfOutdoorUnit &&
+                candidate.Code == code);
+
+            Assert.Equal(DiagnosticConfidence.Low, entry.Confidence);
+            Assert.Equal("SeededEngineeringKnowledge", entry.Source.SourceType);
+            Assert.Equal("UnverifiedSeed", entry.Source.EvidenceLevel);
+            Assert.Empty(entry.ManualReferences);
+            Assert.Null(entry.Source.ManualTitle);
+            Assert.Null(entry.Source.Page);
+            Assert.Null(entry.Source.Quote);
+            Assert.NotEmpty(entry.Source.Limitations);
+            Assert.Contains("GMV", entry.Source.ApplicableSeries);
         }
     }
 
@@ -310,6 +386,42 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.True(
             violations.Length == 0,
             $"JSON diagnostics must not claim ManualVerified confidence: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
+    public void ManualVerifiedConfidenceRequiresVerifiedOrCrossCheckedEvidence()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var violations = source.GetEntries()
+            .Where(entry =>
+                entry.Confidence == DiagnosticConfidence.ManualVerified &&
+                entry.Source.EvidenceLevel is not ("ManualPageVerified" or "CrossChecked"))
+            .Select(entry => $"{entry.Manufacturer}/{entry.SeriesName}/{entry.Code}/{entry.Source.EvidenceLevel}")
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"ManualVerified entries require ManualPageVerified or CrossChecked evidence: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
+    public async Task ServiceCanFindNewlyAddedGreeGmvSeedCode()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                ErrorCode: "E1",
+                Series: "GMV"),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("Gree", result.Manufacturer);
+        Assert.Equal("GMV", result.SeriesName);
+        Assert.Equal("E1", result.Code);
+        Assert.Equal(DiagnosticConfidence.Low, result.Confidence);
     }
 
     [Fact]
@@ -568,10 +680,18 @@ public class EquipmentDiagnosticsFoundationTests
         entries
             .Where(entry =>
                 entry.Manufacturer == "Gree" &&
-                ((entry.SeriesName == "GMV" && entry.Code is "H5" or "C7") ||
+                ((entry.SeriesName == "GMV" && (entry.Code is "H5" or "C7" || Ed05GreeGmvSeedCodes.Contains(entry.Code))) ||
                  (entry.SeriesName == "Chiller" && entry.Code == "E6")))
             .OrderBy(entry => entry.Code, StringComparer.Ordinal)
             .ToArray();
+
+    private static readonly string[] Ed05GreeGmvSeedCodes =
+    [
+        "E1",
+        "E3",
+        "E4",
+        "E5"
+    ];
 
     private static string CreateSingleEntryJson(
         string confidence = "Low",
