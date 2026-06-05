@@ -89,6 +89,323 @@
         "protection",
         "water-side"
       ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Chiller",
+      "modelCode": null,
+      "category": "Chiller",
+      "code": "E1",
+      "title": "Chiller preliminary alarm E1",
+      "meaning": "Preliminary diagnostic guidance for a Gree chiller E1 alarm. Verify exact meaning and limits in the service manual for the installed chiller model before drawing a final conclusion.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Water-side, temperature, pressure, or electrical protection condition reported by the controller.",
+        "Pump, strainer, flow indication, or sensor input condition requiring qualified diagnosis.",
+        "Model-specific controller interpretation that must be verified against the exact chiller manual."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm chiller operating state",
+          "instruction": "Record chiller model, displayed E1 code, operating mode, water pump state, and any secondary controller diagnostics.",
+          "expectedResult": "Installed model and operating state are documented before diagnosis continues.",
+          "ifFailedAction": "Stop classification until exact model and controller information are available."
+        },
+        {
+          "order": 2,
+          "title": "Check water-side condition",
+          "instruction": "A qualified technician should confirm pump operation, strainer condition, water flow indication, and entering/leaving water temperatures.",
+          "expectedResult": "Water-side values are plausible for the active operating mode.",
+          "ifFailedAction": "Resolve water-side restrictions or sensor issues using the approved service process."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Entering and leaving water temperature",
+          "unit": "degC",
+          "description": "Measured water temperatures used to assess chiller operating condition.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Water flow indication",
+          "unit": "Manufacturer-specific",
+          "description": "Flow switch, differential pressure, or flow-meter indication required by the installed chiller design.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, refrigerant, hydronic, and chiller protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, flow protection, pressure protection, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Chiller"
+        ]
+      },
+      "tags": [
+        "gree",
+        "chiller",
+        "water-side",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Chiller",
+      "modelCode": null,
+      "category": "Chiller",
+      "code": "E2",
+      "title": "Chiller preliminary alarm E2",
+      "meaning": "Preliminary diagnostic guidance for a Gree chiller E2 alarm. Treat this as seed guidance until exact manual evidence is added.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Temperature sensor, water-side condition, or controller input outside expected range.",
+        "Loose sensor wiring, unstable reading, or abnormal entering/leaving water condition.",
+        "Model-specific chiller protection logic requiring exact manual verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Record temperature context",
+          "instruction": "Record model, displayed E2 code, entering/leaving water temperatures, ambient condition, and pump status.",
+          "expectedResult": "Temperature and operating context are documented before classification.",
+          "ifFailedAction": "Collect complete chiller operating data before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Compare sensor readings",
+          "instruction": "A qualified technician should compare controller temperature readings with measured water temperatures using the service procedure.",
+          "expectedResult": "Controller readings are plausible and stable for the measured condition.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or water-side issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Controller temperature reading",
+          "unit": "degC",
+          "description": "Relevant controller-reported temperature value for the suspected alarm condition.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Measured water temperature",
+          "unit": "degC",
+          "description": "Measured water temperature near the related sensor location by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, refrigerant, hydronic, and chiller protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, flow protection, pressure protection, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Chiller"
+        ]
+      },
+      "tags": [
+        "gree",
+        "chiller",
+        "temperature",
+        "sensor",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Chiller",
+      "modelCode": null,
+      "category": "Chiller",
+      "code": "E3",
+      "title": "Chiller preliminary alarm E3",
+      "meaning": "Preliminary diagnostic guidance for a Gree chiller E3 alarm. Verify exact meaning against the installed model service manual before final diagnosis.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Pressure, water-flow, or heat-exchange condition reported by the chiller controller.",
+        "Restricted water circuit, abnormal pump operation, or heat exchanger fouling.",
+        "Pressure sensor, temperature sensor, or controller input condition requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm water and refrigerant context",
+          "instruction": "Record chiller model, displayed E3 code, entering/leaving water temperatures, flow indication, and ambient condition.",
+          "expectedResult": "Operating conditions are documented before pressure or flow interpretation.",
+          "ifFailedAction": "Stop classification until model and water-side data are available."
+        },
+        {
+          "order": 2,
+          "title": "Inspect flow and heat transfer",
+          "instruction": "A qualified technician should inspect pump operation, strainers, valves, heat exchanger condition, and required flow indication.",
+          "expectedResult": "Water flow and heat transfer path are suitable for the active operating mode.",
+          "ifFailedAction": "Correct water-side restrictions or sensor issues using the approved service process."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Water flow indication",
+          "unit": "Manufacturer-specific",
+          "description": "Flow switch, differential pressure, or flow-meter indication required by the installed chiller design.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Entering and leaving water temperature",
+          "unit": "degC",
+          "description": "Measured water temperatures used to interpret heat transfer.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, refrigerant, hydronic, and chiller protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, flow protection, pressure protection, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Chiller"
+        ]
+      },
+      "tags": [
+        "gree",
+        "chiller",
+        "flow",
+        "heat-transfer",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Chiller",
+      "modelCode": null,
+      "category": "Chiller",
+      "code": "E4",
+      "title": "Chiller preliminary alarm E4",
+      "meaning": "Preliminary diagnostic guidance for a Gree chiller E4 alarm. Confirm the exact model-specific meaning and service limits before drawing a final conclusion.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Compressor, refrigerant circuit, temperature, or pressure protection condition reported by the controller.",
+        "Abnormal heat rejection, water-side condition, or electrical operating value.",
+        "Sensor, wiring, or controller input issue requiring qualified service verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Record chiller alarm history",
+          "instruction": "Record model, displayed E4 code, operating mode, alarm recurrence, water temperatures, and any secondary controller diagnostics.",
+          "expectedResult": "Alarm history and operating state are documented before component-level diagnosis.",
+          "ifFailedAction": "Collect exact model and controller history before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Check operating values",
+          "instruction": "A qualified technician should compare supply voltage, current, water temperatures, and controller diagnostic values with the exact service manual.",
+          "expectedResult": "Measured values are within model-specific expectations for the active operating state.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for the measured abnormal condition."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured supply voltage at the chiller service point by qualified personnel.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Operating current",
+          "unit": "A",
+          "description": "Measured compressor or pump current where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Controller diagnostic value",
+          "unit": "Manufacturer-specific",
+          "description": "Relevant controller value for the suspected E4 condition.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, refrigerant, hydronic, and chiller protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, flow protection, pressure protection, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Chiller"
+        ]
+      },
+      "tags": [
+        "gree",
+        "chiller",
+        "compressor",
+        "protection",
+        "preliminary"
+      ]
     }
   ]
 }

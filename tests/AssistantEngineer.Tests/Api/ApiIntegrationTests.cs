@@ -378,6 +378,49 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesCanFindEd09AGreeGmvChillerAndIndoorCodes()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var gmvResponse = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&series=GMV&code=F0");
+        var chillerResponse = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&series=Chiller&code=E2");
+        var indoorResponse = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&series=Indoor&code=H6&category=VrfIndoorUnit");
+
+        await EnsureSuccessWithBodyAsync(gmvResponse);
+        await EnsureSuccessWithBodyAsync(chillerResponse);
+        await EnsureSuccessWithBodyAsync(indoorResponse);
+
+        var gmvResults = await gmvResponse.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+        var chillerResults = await chillerResponse.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+        var indoorResults = await indoorResponse.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+
+        Assert.NotNull(gmvResults);
+        Assert.NotNull(chillerResults);
+        Assert.NotNull(indoorResults);
+
+        var gmv = Assert.Single(gmvResults);
+        Assert.Equal("GMV", gmv.SeriesName);
+        Assert.Equal("F0", gmv.Code);
+        Assert.Equal(DiagnosticConfidence.Low, gmv.Confidence);
+
+        var chiller = Assert.Single(chillerResults);
+        Assert.Equal("Chiller", chiller.SeriesName);
+        Assert.Equal("E2", chiller.Code);
+        Assert.Equal(AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.Chiller, chiller.Category);
+        Assert.Equal(DiagnosticConfidence.Low, chiller.Confidence);
+
+        var indoor = Assert.Single(indoorResults);
+        Assert.Equal("Indoor", indoor.SeriesName);
+        Assert.Equal("H6", indoor.Code);
+        Assert.Equal(AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.VrfIndoorUnit, indoor.Category);
+        Assert.Equal(DiagnosticConfidence.Low, indoor.Confidence);
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCatalogReturnsDeterministicIndex()
     {
         await using var factory = new AssistantEngineerApiFactory();
@@ -390,12 +433,21 @@ public class ApiIntegrationTests
         var index = await response.Content.ReadFromJsonAsync<EquipmentDiagnosticsCatalogIndexDto>();
 
         Assert.NotNull(index);
-        Assert.True(index.TotalEntries >= 7);
+        Assert.True(index.TotalEntries >= 23);
         Assert.Contains(index.Manufacturers, facet => facet.Manufacturer == "Gree");
         Assert.Contains(index.Series, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "GMV");
+        Assert.Contains(index.Series, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "Chiller");
+        Assert.Contains(index.Series, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "Indoor");
         Assert.Contains(index.Categories, facet =>
             facet.Category == AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.VrfOutdoorUnit);
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.Chiller);
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.VrfIndoorUnit);
         Assert.Contains(index.Codes, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "GMV" && facet.Code == "E1");
+        Assert.Contains(index.Codes, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "GMV" && facet.Code == "F0");
+        Assert.Contains(index.Codes, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "Chiller" && facet.Code == "E2");
+        Assert.Contains(index.Codes, facet => facet.Manufacturer == "Gree" && facet.SeriesName == "Indoor" && facet.Code == "H6");
         Assert.Contains("SeededEngineeringKnowledge", index.SourceTypes);
         Assert.Contains("UnverifiedSeed", index.EvidenceLevels);
     }
