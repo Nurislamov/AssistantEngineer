@@ -102,6 +102,25 @@ ED-09A adds catalog expansion pack 1. It expands production JSON coverage while 
 
 The indoor foundation uses the existing `VrfIndoorUnit` category and documents that indoor, duct, and split-family code meanings can vary by installed controller and model. All ED-09A entries use `sourceType = SeededEngineeringKnowledge`, `evidenceLevel = UnverifiedSeed`, and `confidence = Low`. They do not include manual titles, versions, document codes, pages, sections, quotes, or manual references.
 
+ED-09B adds deterministic query quality and catalog QA improvements on top of the existing runtime JSON catalog:
+
+- common code formatting such as `h5`, `H-5`, and `H 5` normalizes to the same lookup intent;
+- series formatting such as `GMV` and `G-M-V` is normalized;
+- conservative free-text search is supported through the existing error-code search endpoint with `query`;
+- query matching is token-based and deterministic, not AI/RAG/vector search;
+- exact code matches rank highest, manufacturer/series/category matches rank next, then title/tags, then meaning/likely causes;
+- friendly category words such as `outdoor`, `indoor`, and `chiller` can help disambiguate shared codes;
+- broader QA tests guard duplicate normalized keys, tag style, minimum safety notes, required measurements, diagnostic steps, provenance, staging exclusion, and unsafe wording.
+
+Example deterministic query patterns:
+
+- `query=gree gmv h5`
+- `query=gmv outdoor e1`
+- `query=chiller e6`
+- `query=indoor h6`
+
+Free-text matching remains conservative: all query tokens must match deterministic catalog fields. Ambiguous or unknown text returns an empty result rather than guessing.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -272,6 +291,7 @@ Query parameters:
 - `series` optional
 - `modelCode` optional
 - `category` optional
+- `query` optional, deterministic token-based search across manufacturer, series, category, model code, code, title, meaning, likely causes, and tags
 
 Unknown manufacturers or codes return `200 OK` with an empty array.
 
@@ -279,6 +299,12 @@ Example:
 
 ```http
 GET /api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&code=H5
+```
+
+Free-text example:
+
+```http
+GET /api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&query=gmv%20outdoor%20e1
 ```
 
 Example response:
@@ -387,12 +413,12 @@ Example response excerpt:
 
 ```json
 {
-  "totalEntries": 7,
+  "totalEntries": 23,
   "manufacturers": [
     {
       "manufacturer": "Gree",
       "normalizedManufacturer": "GREE",
-      "count": 7
+      "count": 23
     }
   ],
   "series": [
@@ -401,14 +427,14 @@ Example response excerpt:
       "normalizedManufacturer": "GREE",
       "seriesName": "Chiller",
       "normalizedSeriesName": "CHILLER",
-      "count": 1
+      "count": 5
     },
     {
       "manufacturer": "Gree",
       "normalizedManufacturer": "GREE",
       "seriesName": "GMV",
       "normalizedSeriesName": "GMV",
-      "count": 6
+      "count": 14
     }
   ],
   "categories": [
@@ -461,10 +487,11 @@ Example response excerpt:
 - ED-07 adds manual-backed staging artifacts for review and promotion. It does not alter runtime catalog loading or public API routes.
 - ED-08 adds staging candidate validation and promotion guards. It does not alter runtime catalog loading, public API routes, or calculation behavior.
 - ED-09A expands Gree GMV outdoor, Gree Chiller, and Gree Indoor seed catalog coverage. It does not add manual-backed claims or runtime infrastructure.
+- ED-09B improves deterministic search normalization, free-text query matching, and catalog QA tests. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 
 ## Future Stages
 
-- ED-09B: manual-backed source ingestion from real manuals through staging validator review.
+- ED-09C: manual-backed source ingestion from real manuals through staging validator review.
 - ED-10: persistence/admin import through a dedicated Infrastructure adapter and migration.
 - ED-11: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
 - ED-12: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.

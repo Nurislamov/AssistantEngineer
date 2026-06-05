@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
@@ -61,6 +62,116 @@ public class EquipmentDiagnosticsFoundationTests
 
         var result = Assert.Single(results);
         Assert.Equal("E1", result.Code);
+        Assert.Equal("GMV", result.SeriesName);
+    }
+
+    [Theory]
+    [InlineData("h5")]
+    [InlineData("H-5")]
+    [InlineData("H 5")]
+    public async Task QuerySearchNormalizesCommonCodeFormattingForH5(string queryText)
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Series: "GMV",
+                Query: queryText),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("H5", result.Code);
+        Assert.Equal("GMV", result.SeriesName);
+    }
+
+    [Fact]
+    public async Task QuerySearchFindsGreeGmvH5FromNaturalPhrase()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(Query: "gree gmv h5"),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("Gree", result.Manufacturer);
+        Assert.Equal("GMV", result.SeriesName);
+        Assert.Equal("H5", result.Code);
+    }
+
+    [Fact]
+    public async Task QuerySearchUsesSeriesAndFriendlyCategoryWordsToDisambiguateSharedCodes()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Query: "gmv outdoor e1"),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("GMV", result.SeriesName);
+        Assert.Equal("E1", result.Code);
+        Assert.Equal(EquipmentCategory.VrfOutdoorUnit, result.Category);
+    }
+
+    [Fact]
+    public async Task QuerySearchFindsChillerAndIndoorCodesFromFriendlyWords()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var chillerResults = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Query: "chiller e6"),
+            CancellationToken.None);
+        var indoorResults = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Query: "indoor h6"),
+            CancellationToken.None);
+
+        var chiller = Assert.Single(chillerResults);
+        Assert.Equal("Chiller", chiller.SeriesName);
+        Assert.Equal("E6", chiller.Code);
+        Assert.Equal(EquipmentCategory.Chiller, chiller.Category);
+
+        var indoor = Assert.Single(indoorResults);
+        Assert.Equal("Indoor", indoor.SeriesName);
+        Assert.Equal("H6", indoor.Code);
+        Assert.Equal(EquipmentCategory.VrfIndoorUnit, indoor.Category);
+    }
+
+    [Fact]
+    public async Task QuerySearchUnknownTextReturnsEmptyResult()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Query: "unknown diagnostic phrase"),
+            CancellationToken.None);
+
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task SeriesFilterAcceptsHyphenatedGmvInput()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var results = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                ErrorCode: "H5",
+                Series: "G-M-V"),
+            CancellationToken.None);
+
+        var result = Assert.Single(results);
+        Assert.Equal("H5", result.Code);
         Assert.Equal("GMV", result.SeriesName);
     }
 
@@ -406,6 +517,65 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.True(
             duplicates.Length == 0,
             $"Equipment diagnostics catalog contains duplicate entries: {string.Join(", ", duplicates)}.");
+    }
+
+    [Fact]
+    public void KnowledgeEntriesDoNotContainDuplicateNormalizedManufacturerSeriesCategoryCodeCombinations()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var duplicates = source.GetEntries()
+            .GroupBy(
+                entry => string.Join(
+                    "/",
+                    NormalizeTestIdentifier(entry.Manufacturer),
+                    NormalizeTestIdentifier(entry.SeriesName),
+                    entry.Category,
+                    NormalizeTestCode(entry.Code)),
+                StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToArray();
+
+        Assert.True(
+            duplicates.Length == 0,
+            $"Equipment diagnostics catalog contains duplicate normalized entries: {string.Join(", ", duplicates)}.");
+    }
+
+    [Fact]
+    public void KnowledgeEntriesUseDocumentedTagStyle()
+    {
+        var tagPattern = new Regex("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.CultureInvariant);
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        var violations = source.GetEntries()
+            .SelectMany(entry => (entry.Tags ?? [])
+                .Where(tag => !tagPattern.IsMatch(tag))
+                .Select(tag => $"{entry.Manufacturer}/{entry.SeriesName}/{entry.Code}:{tag}"))
+            .ToArray();
+
+        Assert.True(
+            violations.Length == 0,
+            $"Equipment diagnostics catalog tags must use lowercase kebab-case: {string.Join(", ", violations)}.");
+    }
+
+    [Fact]
+    public void RuntimeKnowledgeEntriesMeetEd09BCatalogQaMinimums()
+    {
+        var source = new EquipmentDiagnosticsJsonKnowledgeSource();
+
+        foreach (var entry in source.GetEntries())
+        {
+            Assert.True(
+                entry.SafetyNotes.Count >= 2,
+                $"{entry.Manufacturer}/{entry.SeriesName}/{entry.Code} must include at least two safety notes.");
+            Assert.NotEmpty(entry.RequiredMeasurements);
+            Assert.True(
+                entry.DiagnosticSteps.Count >= 2,
+                $"{entry.Manufacturer}/{entry.SeriesName}/{entry.Code} must include at least two diagnostic steps.");
+            Assert.NotEmpty(entry.Source.Limitations);
+            Assert.NotNull(entry.Source.ApplicableSeries);
+        }
     }
 
     [Fact]
@@ -983,6 +1153,25 @@ public class EquipmentDiagnosticsFoundationTests
     private static bool IsStagingKnowledgePath(string path) =>
         path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             .Contains("staging", StringComparer.OrdinalIgnoreCase);
+
+    private static string NormalizeTestIdentifier(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return new string(value
+            .Where(character => !char.IsWhiteSpace(character) && character != '-')
+            .Select(char.ToUpperInvariant)
+            .ToArray());
+    }
+
+    private static string NormalizeTestCode(string value) =>
+        new(value
+            .Where(character => !char.IsWhiteSpace(character) && character != '-')
+            .Select(char.ToUpperInvariant)
+            .ToArray());
 
     private static EquipmentDiagnosticsKnowledgeEntry CreateKnowledgeEntry(
         string manufacturer,
