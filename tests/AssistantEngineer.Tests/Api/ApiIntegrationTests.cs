@@ -421,6 +421,27 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsErrorCodesSupportsDeterministicQueryText()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&query=gmv%20outdoor%20e1");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var results = await response.Content.ReadFromJsonAsync<List<EquipmentErrorCodeSummaryDto>>();
+
+        Assert.NotNull(results);
+        var result = Assert.Single(results);
+        Assert.Equal("Gree", result.Manufacturer);
+        Assert.Equal("GMV", result.SeriesName);
+        Assert.Equal("E1", result.Code);
+        Assert.Equal(AssistantEngineer.Modules.EquipmentDiagnostics.Domain.EquipmentCategory.VrfOutdoorUnit, result.Category);
+        Assert.Equal(DiagnosticConfidence.Low, result.Confidence);
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCatalogReturnsDeterministicIndex()
     {
         await using var factory = new AssistantEngineerApiFactory();

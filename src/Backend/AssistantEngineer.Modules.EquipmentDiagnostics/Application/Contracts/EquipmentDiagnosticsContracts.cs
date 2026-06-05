@@ -7,7 +7,8 @@ public sealed record SearchEquipmentErrorCodesQuery(
     string? ErrorCode = null,
     string? Series = null,
     string? ModelCode = null,
-    EquipmentCategory? Category = null);
+    EquipmentCategory? Category = null,
+    string? Query = null);
 
 public sealed record EquipmentErrorCodeSummaryDto(
     string Manufacturer,

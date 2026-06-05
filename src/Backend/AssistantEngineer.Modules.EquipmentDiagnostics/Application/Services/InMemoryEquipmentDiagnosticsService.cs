@@ -19,14 +19,26 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var manufacturer = Normalize(query.Manufacturer);
+        var manufacturer = NormalizeIdentifier(query.Manufacturer);
         var errorCode = NormalizeCode(query.ErrorCode);
-        var series = Normalize(query.Series);
+        var series = NormalizeSeries(query.Series);
         var modelCode = Normalize(query.ModelCode);
+        var queryTokens = NormalizeQueryTokens(query.Query);
 
         var results = _knowledgeSource.GetEntries()
-            .Where(entry => Matches(entry, manufacturer, errorCode, series, modelCode, query.Category))
-            .Select(entry => MapSummary(ToErrorCode(entry), entry.Category))
+            .Select(entry => new SearchCandidate(
+                Entry: entry,
+                Score: CalculateQueryScore(entry, queryTokens)))
+            .Where(candidate =>
+                MatchesExplicitFilters(candidate.Entry, manufacturer, errorCode, series, modelCode, query.Category) &&
+                MatchesTextQuery(candidate, queryTokens))
+            .OrderByDescending(candidate => candidate.Score)
+            .ThenBy(candidate => candidate.Entry.Manufacturer, StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.Entry.SeriesName ?? string.Empty, StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.Entry.Category.ToString(), StringComparer.Ordinal)
+            .ThenBy(candidate => NormalizeCodeRequired(candidate.Entry.Code), StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.Entry.ModelCode ?? string.Empty, StringComparer.Ordinal)
+            .Select(candidate => MapSummary(ToErrorCode(candidate.Entry), candidate.Entry.Category))
             .ToArray();
 
         return Task.FromResult<IReadOnlyList<EquipmentErrorCodeSummaryDto>>(results);
@@ -41,13 +53,13 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var normalizedManufacturer = Normalize(manufacturer);
+        var normalizedManufacturer = NormalizeIdentifier(manufacturer);
         var normalizedErrorCode = NormalizeCode(errorCode);
-        var normalizedSeries = Normalize(series);
+        var normalizedSeries = NormalizeSeries(series);
         var normalizedModelCode = Normalize(modelCode);
 
         var result = _knowledgeSource.GetEntries()
-            .Where(entry => Matches(
+            .Where(entry => MatchesExplicitFilters(
                 entry,
                 normalizedManufacturer,
                 normalizedErrorCode,
@@ -99,7 +111,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                     entry => new
                     {
                         Manufacturer = NormalizeRequired(entry.Manufacturer),
-                        Series = Normalize(entry.SeriesName)
+                        Series = NormalizeSeries(entry.SeriesName)
                     })
                 .Select(group =>
                 {
@@ -130,7 +142,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                     Manufacturer: entry.Manufacturer,
                     NormalizedManufacturer: NormalizeRequired(entry.Manufacturer),
                     SeriesName: entry.SeriesName,
-                    NormalizedSeriesName: Normalize(entry.SeriesName),
+                    NormalizedSeriesName: NormalizeSeries(entry.SeriesName),
                     ModelCode: entry.ModelCode,
                     NormalizedModelCode: Normalize(entry.ModelCode),
                     Category: entry.Category,
@@ -161,7 +173,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
         return Task.FromResult(index);
     }
 
-    private static bool Matches(
+    private static bool MatchesExplicitFilters(
         EquipmentDiagnosticsKnowledgeEntry entry,
         string? manufacturer,
         string? errorCode,
@@ -170,7 +182,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
         EquipmentCategory? category)
     {
         if (!string.IsNullOrWhiteSpace(manufacturer) &&
-            Normalize(entry.Manufacturer) != manufacturer)
+            NormalizeIdentifier(entry.Manufacturer) != manufacturer)
         {
             return false;
         }
@@ -182,7 +194,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
         }
 
         if (!string.IsNullOrWhiteSpace(series) &&
-            Normalize(entry.SeriesName) != series)
+            !MatchesSeries(entry, series))
         {
             return false;
         }
@@ -195,6 +207,131 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
 
         return category is null || entry.Category == category;
     }
+
+    private static bool MatchesTextQuery(
+        SearchCandidate candidate,
+        IReadOnlyCollection<SearchToken> queryTokens) =>
+        queryTokens.Count == 0 ||
+        (candidate.Score > 0 && queryTokens.All(token => TokenMatches(candidate.Entry, token)));
+
+    private static int CalculateQueryScore(
+        EquipmentDiagnosticsKnowledgeEntry entry,
+        IReadOnlyCollection<SearchToken> queryTokens)
+    {
+        if (queryTokens.Count == 0)
+        {
+            return 0;
+        }
+
+        var score = 0;
+        foreach (var token in queryTokens)
+        {
+            if (NormalizeCode(entry.Code) == token.Code)
+            {
+                score += 100;
+                continue;
+            }
+
+            if (token.Text.Length == 1)
+            {
+                if (token.Code is not null &&
+                    NormalizeCode(entry.Code)?.Contains(token.Code, StringComparison.Ordinal) == true)
+                {
+                    score += 40;
+                }
+
+                continue;
+            }
+
+            if (FieldMatches(token, entry.Manufacturer, NormalizeIdentifier) ||
+                MatchesSeriesToken(entry, token) ||
+                FieldMatches(token, entry.Category.ToString(), NormalizeIdentifier) ||
+                CategorySynonyms(entry.Category).Contains(token.Text, StringComparer.Ordinal))
+            {
+                score += 50;
+                continue;
+            }
+
+            if (FieldMatches(token, entry.ModelCode, Normalize) ||
+                (entry.Tags ?? []).Any(tag => FieldMatches(token, tag, NormalizeIdentifier)) ||
+                FieldMatches(token, entry.Title, NormalizeContains))
+            {
+                score += 25;
+                continue;
+            }
+
+            if (FieldMatches(token, entry.Meaning, NormalizeContains) ||
+                entry.LikelyCauses.Any(cause => FieldMatches(token, cause, NormalizeContains)))
+            {
+                score += 10;
+            }
+        }
+
+        return score;
+    }
+
+    private static bool TokenMatches(
+        EquipmentDiagnosticsKnowledgeEntry entry,
+        SearchToken token)
+    {
+        if (NormalizeCode(entry.Code) == token.Code)
+        {
+            return true;
+        }
+
+        if (token.Text.Length == 1)
+        {
+            return token.Code is not null &&
+                NormalizeCode(entry.Code)?.Contains(token.Code, StringComparison.Ordinal) == true;
+        }
+
+        return FieldMatches(token, entry.Manufacturer, NormalizeIdentifier) ||
+            MatchesSeriesToken(entry, token) ||
+            FieldMatches(token, entry.ModelCode, Normalize) ||
+            FieldMatches(token, entry.Category.ToString(), NormalizeIdentifier) ||
+            CategorySynonyms(entry.Category).Contains(token.Text, StringComparer.Ordinal) ||
+            (entry.Tags ?? []).Any(tag => FieldMatches(token, tag, NormalizeIdentifier)) ||
+            FieldMatches(token, entry.Title, NormalizeContains) ||
+            FieldMatches(token, entry.Meaning, NormalizeContains) ||
+            entry.LikelyCauses.Any(cause => FieldMatches(token, cause, NormalizeContains));
+    }
+
+    private static bool FieldMatches(
+        SearchToken token,
+        string? value,
+        Func<string?, string?> normalize)
+    {
+        var normalized = normalize(value);
+        return normalized is not null &&
+            (normalized == token.Text ||
+             normalized.Contains(token.Text, StringComparison.Ordinal) ||
+             (token.Code is not null && normalized.Contains(token.Code, StringComparison.Ordinal)));
+    }
+
+    private static bool MatchesSeries(
+        EquipmentDiagnosticsKnowledgeEntry entry,
+        string normalizedSeries) =>
+        NormalizeSeries(entry.SeriesName) == normalizedSeries ||
+        (normalizedSeries == "VRF" && entry.Category is EquipmentCategory.VrfOutdoorUnit or EquipmentCategory.VrfIndoorUnit);
+
+    private static bool MatchesSeriesToken(
+        EquipmentDiagnosticsKnowledgeEntry entry,
+        SearchToken token) =>
+        FieldMatches(token, entry.SeriesName, NormalizeSeries) ||
+        (token.Text == "VRF" && entry.Category is EquipmentCategory.VrfOutdoorUnit or EquipmentCategory.VrfIndoorUnit);
+
+    private static IReadOnlyCollection<string> CategorySynonyms(EquipmentCategory category) =>
+        category switch
+        {
+            EquipmentCategory.VrfOutdoorUnit => ["OUTDOOR", "OUTDOORUNIT", "VRFOUTDOOR", "VRF"],
+            EquipmentCategory.VrfIndoorUnit => ["INDOOR", "INDOORUNIT", "VRFINDOOR", "VRF"],
+            EquipmentCategory.Chiller => ["CHILLER", "WATERCHILLER"],
+            EquipmentCategory.RooftopUnit => ["ROOFTOP", "RTU", "ROOFTOPUNIT"],
+            EquipmentCategory.SplitSystem => ["SPLIT", "SPLITSYSTEM"],
+            EquipmentCategory.AirHandlingUnit => ["AHU", "AIRHANDLING", "AIRHANDLINGUNIT"],
+            EquipmentCategory.Controller => ["CONTROLLER", "CONTROL"],
+            _ => ["UNKNOWN"]
+        };
 
     private static DiagnosticCase ToDiagnosticCase(EquipmentDiagnosticsKnowledgeEntry entry) =>
         new(
@@ -298,6 +435,23 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
             Notes: reference.Notes);
     }
 
+    private static IReadOnlyCollection<SearchToken> NormalizeQueryTokens(string? query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return [];
+        }
+
+        return query
+            .Split([' ', '\t', '\r', '\n', ',', ';', ':', '/', '\\', '(', ')', '[', ']'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(token => new SearchToken(
+                Text: NormalizeIdentifier(token) ?? string.Empty,
+                Code: NormalizeCode(token)))
+            .Where(token => token.Text.Length > 0)
+            .DistinctBy(token => token.Text, StringComparer.Ordinal)
+            .ToArray();
+    }
+
     private static string? Normalize(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -312,6 +466,40 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
 
         return new string(normalizedCharacters);
     }
+
+    private static string? NormalizeIdentifier(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var normalizedCharacters = value
+            .Where(character => !char.IsWhiteSpace(character) && character != '-')
+            .Select(char.ToUpperInvariant)
+            .ToArray();
+
+        if (normalizedCharacters.Length == 0)
+        {
+            return null;
+        }
+
+        return new string(normalizedCharacters);
+    }
+
+    private static string? NormalizeSeries(string? value)
+    {
+        var normalized = NormalizeIdentifier(value);
+        return normalized switch
+        {
+            "GMV" or "GREEGMV" => "GMV",
+            "VRF" or "VRFSYSTEM" => "VRF",
+            _ => normalized
+        };
+    }
+
+    private static string? NormalizeContains(string? value) =>
+        NormalizeIdentifier(value);
 
     private static string? NormalizeCode(string? value)
     {
@@ -362,4 +550,12 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                 $"Equipment diagnostics catalog contains duplicate manufacturer/series/category/code combinations: {string.Join(", ", duplicates)}.");
         }
     }
+
+    private sealed record SearchCandidate(
+        EquipmentDiagnosticsKnowledgeEntry Entry,
+        int Score);
+
+    private sealed record SearchToken(
+        string Text,
+        string? Code);
 }

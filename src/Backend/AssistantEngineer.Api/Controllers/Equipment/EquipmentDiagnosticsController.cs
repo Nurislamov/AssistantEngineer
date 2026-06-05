@@ -35,6 +35,7 @@ public sealed class EquipmentDiagnosticsController : ControllerBase
         [FromQuery] string? series,
         [FromQuery] string? modelCode,
         [FromQuery] EquipmentCategory? category,
+        [FromQuery] string? query,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(manufacturer))
@@ -52,7 +53,8 @@ public sealed class EquipmentDiagnosticsController : ControllerBase
                 ErrorCode: errorCode,
                 Series: series,
                 ModelCode: modelCode,
-                Category: category),
+                Category: category,
+                Query: query),
             cancellationToken);
 
         return Ok(results);
