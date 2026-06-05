@@ -94,6 +94,14 @@ ED-08 adds a deterministic staging validator and promotion guard:
 
 The validator checks required fields, allowed review/source/evidence/confidence values, evidence rules for `ManualVerified`, duplicate staging keys, conflicts with the production runtime catalog, and unsafe diagnostic wording. It is not registered as a public API endpoint and does not load staging candidates into runtime knowledge.
 
+ED-09A adds catalog expansion pack 1. It expands production JSON coverage while keeping every added entry as deterministic seed knowledge:
+
+- Gree / GMV outdoor: F0, F1, F2, F3, L1, L2, P0, P1
+- Gree / Chiller: E1, E2, E3, E4
+- Gree / Indoor foundation: C5, E1, F0, H6
+
+The indoor foundation uses the existing `VrfIndoorUnit` category and documents that indoor, duct, and split-family code meanings can vary by installed controller and model. All ED-09A entries use `sourceType = SeededEngineeringKnowledge`, `evidenceLevel = UnverifiedSeed`, and `confidence = Low`. They do not include manual titles, versions, document codes, pages, sections, quotes, or manual references.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -238,6 +246,18 @@ Promotion rules:
 - Promotion to production JSON must be a normal PR with tests.
 
 The validator accepts staging JSON text or parsed candidate models. It reports deterministic issues with severity, code, path, and message. A valid `Draft` template may still produce an informational issue that it is not ready for runtime catalog use.
+
+## ED-09A Catalog Expansion Pack 1
+
+ED-09A increases the runtime catalog while preserving the same provenance rules:
+
+- runtime JSON remains the approved source of truth;
+- staging JSON remains excluded from runtime loading;
+- all newly added records are unverified seed entries;
+- no new public endpoints, persistence, Telegram, AI, RAG, or vector search are introduced;
+- no manual-backed claims are made without exact source evidence.
+
+Future manual-backed replacements or additions should start as staging candidates, pass `EquipmentDiagnosticsStagingValidator`, and move to production JSON only through a normal PR with tests. If a future entry uses `ManualVerified`, it must have `ManualPageVerified` or `CrossChecked` evidence and must not invent source metadata.
 
 ## API Routes
 
@@ -440,10 +460,11 @@ Example response excerpt:
 - ED-06 adds deterministic catalog indexing for query/filter discovery. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 - ED-07 adds manual-backed staging artifacts for review and promotion. It does not alter runtime catalog loading or public API routes.
 - ED-08 adds staging candidate validation and promotion guards. It does not alter runtime catalog loading, public API routes, or calculation behavior.
+- ED-09A expands Gree GMV outdoor, Gree Chiller, and Gree Indoor seed catalog coverage. It does not add manual-backed claims or runtime infrastructure.
 
 ## Future Stages
 
-- ED-09: real manual-backed Gree catalog expansion with explicit provenance and page references.
+- ED-09B: manual-backed source ingestion from real manuals through staging validator review.
 - ED-10: persistence/admin import through a dedicated Infrastructure adapter and migration.
 - ED-11: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
 - ED-12: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.

@@ -531,6 +531,630 @@
         "current",
         "preliminary"
       ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "F0",
+      "title": "GMV preliminary alarm F0",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV F0 alarm. Verify the exact meaning against the service manual for the installed model before drawing a final conclusion.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Sensor, controller input, or protection-related condition reported by the outdoor unit controls.",
+        "Loose terminal, damaged sensor wiring, or abnormal measured value requiring qualified diagnosis.",
+        "Model-specific control-board interpretation that must be verified against the exact service manual."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm model and alarm context",
+          "instruction": "Record the outdoor unit model, GMV series, controller-displayed F0 code, operating mode, and ambient condition.",
+          "expectedResult": "Equipment identity and alarm context are confirmed before diagnosis continues.",
+          "ifFailedAction": "Stop classification and obtain the exact model and controller information."
+        },
+        {
+          "order": 2,
+          "title": "Inspect sensor and control wiring",
+          "instruction": "A qualified technician should inspect relevant sensor and control-board wiring for loose terminals, visible damage, or moisture ingress.",
+          "expectedResult": "Sensor and control wiring are secure and readings are plausible for the operating condition.",
+          "ifFailedAction": "Repair wiring or sensor issues according to the manufacturer procedure before concluding."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Controller sensor reading",
+          "unit": "Manufacturer-specific",
+          "description": "Relevant controller-reported value used by the service procedure for this alarm family.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Terminal condition",
+          "unit": "Observed state",
+          "description": "Observed condition of relevant sensor and control terminals by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "sensor",
+        "control-input",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "F1",
+      "title": "GMV preliminary alarm F1",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV F1 alarm. Treat this as seed knowledge until the exact model service manual verifies the code meaning.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Temperature sensor reading outside an expected range for the active operating mode.",
+        "Open, shorted, or unstable sensor circuit requiring qualified confirmation.",
+        "Control-board input interpretation that may vary by installed GMV family."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm temperature context",
+          "instruction": "Record model, displayed F1 code, operating mode, ambient condition, and controller-reported temperature values.",
+          "expectedResult": "Temperature context and equipment identity are documented before classification.",
+          "ifFailedAction": "Stop classification and collect exact model/controller information."
+        },
+        {
+          "order": 2,
+          "title": "Compare sensor behavior",
+          "instruction": "A qualified technician should compare relevant temperature sensor readings with measured conditions using the exact service procedure.",
+          "expectedResult": "Sensor readings are plausible and stable for the observed operating condition.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or controller input issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Controller temperature reading",
+          "unit": "degC",
+          "description": "Temperature value reported by the controller for the suspected sensor circuit.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Measured reference temperature",
+          "unit": "degC",
+          "description": "Reference temperature measured near the relevant sensor location by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "temperature",
+        "sensor",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "F2",
+      "title": "GMV preliminary alarm F2",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV F2 alarm. Confirm the installed model and exact service manual before assigning a final meaning.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Outdoor heat-exchange or temperature input condition reported by the controls.",
+        "Sensor wiring issue, abnormal coil condition, or fan/airflow condition requiring qualified diagnosis.",
+        "Model-specific controller interpretation that requires service manual verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Document operating state",
+          "instruction": "Record operating mode, outdoor ambient condition, coil condition, fan operation, and displayed F2 code.",
+          "expectedResult": "The operating state is clear enough to interpret temperature-related readings.",
+          "ifFailedAction": "Collect complete operating context before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Inspect outdoor heat-exchange path",
+          "instruction": "A qualified technician should inspect coil cleanliness, airflow path, fan operation, and related sensor wiring.",
+          "expectedResult": "Heat-exchange path and related wiring are suitable for the operating mode.",
+          "ifFailedAction": "Correct airflow, fan, wiring, or sensor issues through qualified service."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Outdoor ambient temperature",
+          "unit": "degC",
+          "description": "Ambient condition used when interpreting outdoor heat-exchange behavior.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Outdoor coil condition",
+          "unit": "Observed state",
+          "description": "Observed cleanliness, obstruction, and airflow condition by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "outdoor-unit",
+        "heat-exchange",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "F3",
+      "title": "GMV preliminary alarm F3",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV F3 alarm. Use only as seed guidance until exact manual evidence is added.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Temperature, pressure, or sensor input condition that requires model-specific confirmation.",
+        "Unstable sensor reading, wiring issue, or abnormal operating condition.",
+        "Controller input behavior that must be checked against the installed equipment family."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm displayed code",
+          "instruction": "Record model, controller, displayed F3 code, recent alarm history, and active operating mode.",
+          "expectedResult": "Displayed code and operating context are confirmed before diagnosis continues.",
+          "ifFailedAction": "Stop classification until exact equipment and alarm history are available."
+        },
+        {
+          "order": 2,
+          "title": "Check related readings",
+          "instruction": "A qualified technician should compare controller readings and field observations with the exact service manual.",
+          "expectedResult": "Readings are plausible for the current operating state.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or operating-condition issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Controller diagnostic value",
+          "unit": "Manufacturer-specific",
+          "description": "Related controller diagnostic value for the suspected F3 alarm family.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Operating mode",
+          "unit": "Recorded state",
+          "description": "Heating, cooling, standby, defrost, or other active mode when the code appeared.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "sensor",
+        "diagnostic-value",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "L1",
+      "title": "GMV preliminary alarm L1",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV L1 alarm. The exact meaning may vary by equipment family and must be verified against the installed model service manual.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Communication, addressing, or controller network condition reported by the system.",
+        "Incorrect unit configuration, loose communication terminal, or damaged communication wiring.",
+        "Controller or control-board communication issue requiring qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Map affected communication segment",
+          "instruction": "Record which controller, outdoor unit, and connected units report or accompany the L1 alarm.",
+          "expectedResult": "Affected communication segment and equipment identity are documented.",
+          "ifFailedAction": "Map connected units and controller topology before replacing parts."
+        },
+        {
+          "order": 2,
+          "title": "Inspect communication wiring and addressing",
+          "instruction": "A qualified technician should inspect communication terminals, polarity, shielding, continuity, and addressing according to the service manual.",
+          "expectedResult": "Communication wiring and addressing match the installed system topology.",
+          "ifFailedAction": "Correct wiring or configuration using supported commissioning procedures."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Communication bus condition",
+          "unit": "Manufacturer-specific",
+          "description": "Communication bus voltage or diagnostic indication required by the service procedure.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Address configuration",
+          "unit": "Recorded state",
+          "description": "Controller and unit address configuration recorded from commissioning data.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "communication",
+        "addressing",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "L2",
+      "title": "GMV preliminary alarm L2",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV L2 alarm. Confirm the exact meaning in the service manual for the installed equipment family.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Controller network, unit addressing, or communication stability issue.",
+        "Communication wiring condition, terminal issue, or commissioning mismatch.",
+        "Model-specific controller behavior requiring qualified service verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm controller topology",
+          "instruction": "Record controller type, connected unit list, displayed L2 code, and recent commissioning changes.",
+          "expectedResult": "Controller topology and alarm context are documented.",
+          "ifFailedAction": "Obtain commissioning records and exact controller information before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Check communication stability",
+          "instruction": "A qualified technician should inspect communication cable routing, terminal condition, shielding, and controller addressing.",
+          "expectedResult": "Communication path is stable and configuration matches the system design.",
+          "ifFailedAction": "Correct communication or configuration issues using the supported service procedure."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Communication continuity",
+          "unit": "Ohm",
+          "description": "Continuity check for communication wiring with power isolated where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Controller topology",
+          "unit": "Recorded state",
+          "description": "Recorded list of connected units and controller configuration.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "controller",
+        "communication",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "P0",
+      "title": "GMV preliminary alarm P0",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV P0 alarm. Use only as seed guidance until exact manual evidence is added for the installed model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Pressure, temperature, or compressor/inverter protection condition reported by the controls.",
+        "Abnormal operating condition, heat-exchange issue, or sensor input requiring qualified diagnosis.",
+        "Model-specific protection interpretation that must be verified against the exact service manual."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Record protection context",
+          "instruction": "Record model, displayed P0 code, operating mode, ambient condition, and controller diagnostic values.",
+          "expectedResult": "Protection context and equipment identity are documented before diagnosis continues.",
+          "ifFailedAction": "Stop classification until exact model and controller diagnostics are available."
+        },
+        {
+          "order": 2,
+          "title": "Compare operating readings",
+          "instruction": "A qualified technician should compare relevant pressure, temperature, and current readings with the exact service manual.",
+          "expectedResult": "Readings are within model-specific expectations for the active operating state.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for the measured abnormal condition."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Operating current",
+          "unit": "A",
+          "description": "Measured compressor or inverter current where the service procedure requires it.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Pressure or temperature diagnostic value",
+          "unit": "Manufacturer-specific",
+          "description": "Model-specific controller or field value used by the service procedure.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "protection",
+        "compressor",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "GMV",
+      "modelCode": null,
+      "category": "VrfOutdoorUnit",
+      "code": "P1",
+      "title": "GMV preliminary alarm P1",
+      "meaning": "Preliminary diagnostic guidance for a Gree GMV P1 alarm. Confirm the exact model-specific meaning and limits before drawing a final diagnosis.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Protection condition related to compressor, inverter, pressure, or temperature controls.",
+        "Electrical supply issue, abnormal load condition, or sensor input issue requiring qualified diagnosis.",
+        "Model-specific controller interpretation requiring exact manual verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm alarm and operating mode",
+          "instruction": "Record model, displayed P1 code, operating mode, alarm history, and any companion controller diagnostics.",
+          "expectedResult": "Alarm context is documented before measurements are interpreted.",
+          "ifFailedAction": "Collect exact model and controller information before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Check electrical and operating values",
+          "instruction": "A qualified technician should check supply condition, current, and relevant controller values using approved procedures.",
+          "expectedResult": "Measured values are consistent with model-specific service limits.",
+          "ifFailedAction": "Escalate according to the manufacturer diagnostic path for the abnormal reading."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Supply voltage",
+          "unit": "V",
+          "description": "Measured line voltage and phase condition at the unit service point.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Controller protection value",
+          "unit": "Manufacturer-specific",
+          "description": "Relevant controller diagnostic value for the suspected protection condition.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "tags": [
+        "gree",
+        "gmv",
+        "electrical",
+        "protection",
+        "preliminary"
+      ]
     }
   ]
 }

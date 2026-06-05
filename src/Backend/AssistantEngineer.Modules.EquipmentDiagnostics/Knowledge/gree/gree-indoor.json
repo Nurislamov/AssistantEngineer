@@ -1,0 +1,320 @@
+{
+  "entries": [
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Indoor",
+      "modelCode": null,
+      "category": "VrfIndoorUnit",
+      "code": "C5",
+      "title": "Indoor preliminary alarm C5",
+      "meaning": "Preliminary diagnostic guidance for a Gree indoor unit C5 alarm. Verify the exact meaning against the service manual for the installed indoor unit family before drawing a final conclusion.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Indoor controller, communication, addressing, or configuration condition reported by the unit.",
+        "Loose communication terminal, incorrect addressing, or controller configuration mismatch.",
+        "Model-specific interpretation that requires exact manual verification."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm indoor unit identity",
+          "instruction": "Record indoor unit model, controller type, displayed C5 code, connected outdoor unit, and recent commissioning changes.",
+          "expectedResult": "Indoor unit identity and communication context are documented before diagnosis continues.",
+          "ifFailedAction": "Stop classification and obtain exact indoor model and controller information."
+        },
+        {
+          "order": 2,
+          "title": "Inspect communication and addressing",
+          "instruction": "A qualified technician should inspect communication terminals, addressing, controller configuration, and wiring continuity according to the service manual.",
+          "expectedResult": "Communication wiring and addressing match the installed system topology.",
+          "ifFailedAction": "Correct communication or configuration issues using supported commissioning procedures."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Communication bus condition",
+          "unit": "Manufacturer-specific",
+          "description": "Communication voltage or controller diagnostic value required by the exact service procedure.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Address configuration",
+          "unit": "Recorded state",
+          "description": "Indoor controller and unit address settings recorded from commissioning information.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion.",
+          "Indoor, duct, and split-family code meanings can vary by installed controller and model."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Indoor"
+        ]
+      },
+      "tags": [
+        "gree",
+        "indoor",
+        "communication",
+        "configuration",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Indoor",
+      "modelCode": null,
+      "category": "VrfIndoorUnit",
+      "code": "E1",
+      "title": "Indoor preliminary alarm E1",
+      "meaning": "Preliminary diagnostic guidance for a Gree indoor unit E1 alarm. Use only as seed guidance until exact manual evidence is added for the installed indoor model.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Indoor control, communication, or protection condition requiring model-specific confirmation.",
+        "Power supply, terminal, sensor, or controller input issue requiring qualified diagnosis.",
+        "Code meaning may differ between indoor, duct, and split equipment families."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Record displayed code and context",
+          "instruction": "Record indoor unit model, controller, displayed E1 code, operating mode, and connected system information.",
+          "expectedResult": "Equipment identity and displayed code are confirmed before classification.",
+          "ifFailedAction": "Stop classification and obtain exact model/controller information."
+        },
+        {
+          "order": 2,
+          "title": "Check supply and controller condition",
+          "instruction": "A qualified technician should verify supply condition, controller wiring, and relevant sensor/controller readings according to the exact service manual.",
+          "expectedResult": "Supply and controller values are plausible for the active operating state.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for wiring, sensor, or controller issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Indoor unit supply voltage",
+          "unit": "V",
+          "description": "Measured supply voltage at the indoor unit service point by qualified personnel.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Controller diagnostic value",
+          "unit": "Manufacturer-specific",
+          "description": "Relevant controller value for the suspected indoor E1 condition.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion.",
+          "Indoor, duct, and split-family code meanings can vary by installed controller and model."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Indoor"
+        ]
+      },
+      "tags": [
+        "gree",
+        "indoor",
+        "electrical",
+        "controller",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Indoor",
+      "modelCode": null,
+      "category": "VrfIndoorUnit",
+      "code": "F0",
+      "title": "Indoor preliminary alarm F0",
+      "meaning": "Preliminary diagnostic guidance for a Gree indoor unit F0 alarm. Confirm exact code meaning and sensor association from the installed model service manual.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Indoor temperature sensor, coil sensor, or controller input condition reported by the unit.",
+        "Loose sensor terminal, unstable sensor reading, or airflow/heat-exchange condition.",
+        "Model-specific sensor assignment that must be verified against the exact manual."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm sensor context",
+          "instruction": "Record indoor model, displayed F0 code, return air condition, operating mode, and controller-reported sensor values.",
+          "expectedResult": "Sensor context and operating condition are documented before classification.",
+          "ifFailedAction": "Collect exact model and controller diagnostic data before continuing."
+        },
+        {
+          "order": 2,
+          "title": "Compare indoor readings",
+          "instruction": "A qualified technician should compare controller temperature readings with measured indoor conditions using the exact service procedure.",
+          "expectedResult": "Sensor readings are plausible and stable for the observed condition.",
+          "ifFailedAction": "Follow the manufacturer diagnostic path for sensor, wiring, or airflow issues."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Controller temperature reading",
+          "unit": "degC",
+          "description": "Relevant controller-reported indoor temperature or coil value.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Measured indoor reference temperature",
+          "unit": "degC",
+          "description": "Reference temperature measured near the relevant indoor location by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion.",
+          "Indoor, duct, and split-family code meanings can vary by installed controller and model."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Indoor"
+        ]
+      },
+      "tags": [
+        "gree",
+        "indoor",
+        "temperature",
+        "sensor",
+        "preliminary"
+      ]
+    },
+    {
+      "manufacturer": "Gree",
+      "seriesName": "Indoor",
+      "modelCode": null,
+      "category": "VrfIndoorUnit",
+      "code": "H6",
+      "title": "Indoor preliminary alarm H6",
+      "meaning": "Preliminary diagnostic guidance for a Gree indoor unit H6 alarm. Verify exact meaning against the service manual for the installed indoor, duct, or split-family model before final diagnosis.",
+      "severity": "Service attention required",
+      "confidence": "Low",
+      "likelyCauses": [
+        "Indoor fan, airflow, motor feedback, or controller input condition requiring model-specific confirmation.",
+        "Restricted indoor airflow, fan wiring issue, or controller input issue.",
+        "Model-specific fan or airflow protection interpretation that requires qualified diagnosis."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm fan and airflow context",
+          "instruction": "Record indoor model, displayed H6 code, fan command state, filter condition, and observed airflow condition.",
+          "expectedResult": "Fan and airflow context are documented before diagnosis continues.",
+          "ifFailedAction": "Collect exact model and controller data before component-level diagnosis."
+        },
+        {
+          "order": 2,
+          "title": "Inspect indoor airflow path",
+          "instruction": "A qualified technician should inspect filter condition, coil cleanliness, fan operation, wiring, and controller indications according to the service manual.",
+          "expectedResult": "Indoor airflow path and fan-related wiring are suitable for the operating state.",
+          "ifFailedAction": "Correct airflow, fan, wiring, or controller issues using the approved service process."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Fan command state",
+          "unit": "Recorded state",
+          "description": "Controller command or operating state for the indoor fan.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Airflow path condition",
+          "unit": "Observed state",
+          "description": "Filter, coil, and airflow path condition observed by qualified personnel.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical and controller checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards, safety inputs, and controller protections active during diagnosis.",
+        "Verify the exact service manual before drawing a final diagnosis."
+      ],
+      "manualReferences": [],
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+        "limitations": [
+          "Use as preliminary diagnostic guidance only.",
+          "Verify against the exact service manual for the installed equipment family before final conclusion.",
+          "Indoor, duct, and split-family code meanings can vary by installed controller and model."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "Indoor"
+        ]
+      },
+      "tags": [
+        "gree",
+        "indoor",
+        "fan",
+        "airflow",
+        "preliminary"
+      ]
+    }
+  ]
+}

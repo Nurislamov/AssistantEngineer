@@ -196,6 +196,33 @@ public class EquipmentDiagnosticsFoundationTests
                 entry.Code == code &&
                 entry.Category == EquipmentCategory.VrfOutdoorUnit);
         }
+
+        foreach (var code in Ed09AGreeGmvSeedCodes)
+        {
+            Assert.Contains(entries, entry =>
+                entry.Manufacturer == "Gree" &&
+                entry.SeriesName == "GMV" &&
+                entry.Code == code &&
+                entry.Category == EquipmentCategory.VrfOutdoorUnit);
+        }
+
+        foreach (var code in Ed09AGreeChillerSeedCodes)
+        {
+            Assert.Contains(entries, entry =>
+                entry.Manufacturer == "Gree" &&
+                entry.SeriesName == "Chiller" &&
+                entry.Code == code &&
+                entry.Category == EquipmentCategory.Chiller);
+        }
+
+        foreach (var code in Ed09AGreeIndoorSeedCodes)
+        {
+            Assert.Contains(entries, entry =>
+                entry.Manufacturer == "Gree" &&
+                entry.SeriesName == "Indoor" &&
+                entry.Code == code &&
+                entry.Category == EquipmentCategory.VrfIndoorUnit);
+        }
     }
 
     [Fact]
@@ -245,25 +272,59 @@ public class EquipmentDiagnosticsFoundationTests
 
         var index = await service.GetCatalogIndexAsync(CancellationToken.None);
 
-        Assert.True(index.TotalEntries >= 7);
+        Assert.True(index.TotalEntries >= 23);
         Assert.Contains(index.Manufacturers, facet =>
             facet.Manufacturer == "Gree" &&
             facet.NormalizedManufacturer == "GREE" &&
-            facet.Count >= 7);
+            facet.Count >= 23);
         Assert.Contains(index.Series, facet =>
             facet.Manufacturer == "Gree" &&
             facet.SeriesName == "GMV" &&
-            facet.Count >= 6);
+            facet.Count >= 14);
+        Assert.Contains(index.Series, facet =>
+            facet.Manufacturer == "Gree" &&
+            facet.SeriesName == "Chiller" &&
+            facet.Count >= 5);
+        Assert.Contains(index.Series, facet =>
+            facet.Manufacturer == "Gree" &&
+            facet.SeriesName == "Indoor" &&
+            facet.Count >= 4);
         Assert.Contains(index.Categories, facet =>
             facet.Category == EquipmentCategory.VrfOutdoorUnit &&
-            facet.Count >= 6);
+            facet.Count >= 14);
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == EquipmentCategory.Chiller &&
+            facet.Count >= 5);
+        Assert.Contains(index.Categories, facet =>
+            facet.Category == EquipmentCategory.VrfIndoorUnit &&
+            facet.Count >= 4);
 
-        foreach (var code in new[] { "H5", "C7", "E1", "E3", "E4", "E5" })
+        foreach (var code in new[] { "H5", "C7", "E1", "E3", "E4", "E5" }.Concat(Ed09AGreeGmvSeedCodes))
         {
             Assert.Contains(index.Codes, facet =>
                 facet.Manufacturer == "Gree" &&
                 facet.SeriesName == "GMV" &&
                 facet.Category == EquipmentCategory.VrfOutdoorUnit &&
+                facet.Code == code &&
+                facet.Count == 1);
+        }
+
+        foreach (var code in Ed09AGreeChillerSeedCodes)
+        {
+            Assert.Contains(index.Codes, facet =>
+                facet.Manufacturer == "Gree" &&
+                facet.SeriesName == "Chiller" &&
+                facet.Category == EquipmentCategory.Chiller &&
+                facet.Code == code &&
+                facet.Count == 1);
+        }
+
+        foreach (var code in Ed09AGreeIndoorSeedCodes)
+        {
+            Assert.Contains(index.Codes, facet =>
+                facet.Manufacturer == "Gree" &&
+                facet.SeriesName == "Indoor" &&
+                facet.Category == EquipmentCategory.VrfIndoorUnit &&
                 facet.Code == code &&
                 facet.Count == 1);
         }
@@ -390,7 +451,7 @@ public class EquipmentDiagnosticsFoundationTests
     {
         var entries = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
 
-        foreach (var code in Ed05GreeGmvSeedCodes)
+        foreach (var code in Ed05GreeGmvSeedCodes.Concat(Ed09AGreeGmvSeedCodes))
         {
             var entry = Assert.Single(entries, candidate =>
                 candidate.Manufacturer == "Gree" &&
@@ -407,6 +468,27 @@ public class EquipmentDiagnosticsFoundationTests
             Assert.Null(entry.Source.Quote);
             Assert.NotEmpty(entry.Source.Limitations);
             Assert.Contains("GMV", entry.Source.ApplicableSeries);
+        }
+    }
+
+    [Fact]
+    public void Ed09ASeedEntriesRemainUnverifiedLowConfidence()
+    {
+        var entries = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
+
+        foreach (var entry in GetEd09ASeedEntries(entries))
+        {
+            Assert.Equal(DiagnosticConfidence.Low, entry.Confidence);
+            Assert.Equal("SeededEngineeringKnowledge", entry.Source.SourceType);
+            Assert.Equal("UnverifiedSeed", entry.Source.EvidenceLevel);
+            Assert.Empty(entry.ManualReferences);
+            Assert.Null(entry.Source.ManualTitle);
+            Assert.Null(entry.Source.ManualVersion);
+            Assert.Null(entry.Source.ManualDocumentCode);
+            Assert.Null(entry.Source.Page);
+            Assert.Null(entry.Source.Section);
+            Assert.Null(entry.Source.Quote);
+            Assert.NotEmpty(entry.Source.Limitations);
         }
     }
 
@@ -526,6 +608,38 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.Equal("GMV", result.SeriesName);
         Assert.Equal("E1", result.Code);
         Assert.Equal(DiagnosticConfidence.Low, result.Confidence);
+    }
+
+    [Fact]
+    public async Task ServiceCanFindEd09AChillerAndIndoorSeedCodes()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var chillerResults = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                ErrorCode: "E2",
+                Series: "Chiller"),
+            CancellationToken.None);
+        var indoorResults = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                ErrorCode: "H6",
+                Series: "Indoor",
+                Category: EquipmentCategory.VrfIndoorUnit),
+            CancellationToken.None);
+
+        var chiller = Assert.Single(chillerResults);
+        Assert.Equal("Chiller", chiller.SeriesName);
+        Assert.Equal("E2", chiller.Code);
+        Assert.Equal(EquipmentCategory.Chiller, chiller.Category);
+        Assert.Equal(DiagnosticConfidence.Low, chiller.Confidence);
+
+        var indoor = Assert.Single(indoorResults);
+        Assert.Equal("Indoor", indoor.SeriesName);
+        Assert.Equal("H6", indoor.Code);
+        Assert.Equal(EquipmentCategory.VrfIndoorUnit, indoor.Category);
+        Assert.Equal(DiagnosticConfidence.Low, indoor.Confidence);
     }
 
     [Fact]
@@ -697,6 +811,7 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.Contains(resources, name => name.EndsWith("Knowledge.equipment-diagnostics.schema.json", StringComparison.Ordinal));
         Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-gmv.json", StringComparison.Ordinal));
         Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-chiller.json", StringComparison.Ordinal));
+        Assert.Contains(resources, name => name.EndsWith("Knowledge.gree.gree-indoor.json", StringComparison.Ordinal));
         Assert.DoesNotContain(resources, name => name.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -944,6 +1059,46 @@ public class EquipmentDiagnosticsFoundationTests
         "E4",
         "E5"
     ];
+
+    private static readonly string[] Ed09AGreeGmvSeedCodes =
+    [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "L1",
+        "L2",
+        "P0",
+        "P1"
+    ];
+
+    private static readonly string[] Ed09AGreeChillerSeedCodes =
+    [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+    ];
+
+    private static readonly string[] Ed09AGreeIndoorSeedCodes =
+    [
+        "C5",
+        "E1",
+        "F0",
+        "H6"
+    ];
+
+    private static IReadOnlyList<EquipmentDiagnosticsKnowledgeEntry> GetEd09ASeedEntries(
+        IReadOnlyCollection<EquipmentDiagnosticsKnowledgeEntry> entries) =>
+        entries
+            .Where(entry =>
+                entry.Manufacturer == "Gree" &&
+                ((entry.SeriesName == "GMV" && Ed09AGreeGmvSeedCodes.Contains(entry.Code)) ||
+                 (entry.SeriesName == "Chiller" && Ed09AGreeChillerSeedCodes.Contains(entry.Code)) ||
+                 (entry.SeriesName == "Indoor" && Ed09AGreeIndoorSeedCodes.Contains(entry.Code))))
+            .OrderBy(entry => entry.SeriesName, StringComparer.Ordinal)
+            .ThenBy(entry => entry.Code, StringComparer.Ordinal)
+            .ToArray();
 
     private static string EquipmentDiagnosticsModuleRoot =>
         Path.Combine(
