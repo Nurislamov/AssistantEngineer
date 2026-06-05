@@ -121,6 +121,23 @@ Example deterministic query patterns:
 
 Free-text matching remains conservative: all query tokens must match deterministic catalog fields. Ambiguous or unknown text returns an empty result rather than guessing.
 
+ED-09C adds operator-facing response quality fields to diagnostic case responses. These fields are derived deterministically from the existing catalog entry:
+
+- `shortSummary`
+- `recommendedNextChecks`
+- `confidenceExplanation`
+- `sourceSummary`
+- `applicabilitySummary`
+- `safetyBoundary`
+- `operatorNotes`
+- `isManualVerified`
+- `isSeedKnowledge`
+- `verificationRequired`
+
+The module does not invent new procedures for these fields. Recommended checks summarize the existing diagnostic steps and required measurements. Confidence and source explanations come from the existing `confidence` and `source` block. Applicability and limitations come from `source.applicableSeries`, `source.applicableModels`, and `source.limitations`. Safety boundaries come from the category and catalog safety notes.
+
+For current Gree seed entries, operator-facing fields continue to state that the guidance is preliminary, seed knowledge, and requires verification against the exact installed model, controller, and service manual. Future Telegram, assistant, or UI surfaces should consume these fields instead of generating their own diagnostic wording.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -377,6 +394,24 @@ Example response excerpt:
   "safetyNotes": [
     "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician."
   ],
+  "shortSummary": "Gree GMV H5: GMV protection alarm H5. Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+  "recommendedNextChecks": [
+    "Step 1: Confirm installed equipment identity - Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+    "Record Supply voltage (V) before drawing a conclusion."
+  ],
+  "confidenceExplanation": "Low confidence seeded guidance: use as preliminary diagnostic support only and verify the exact installed model, controller, and service manual before drawing a conclusion.",
+  "sourceSummary": "SeededEngineeringKnowledge / UnverifiedSeed. No manual title/page evidence is attached to this runtime entry.",
+  "applicabilitySummary": "Applicable series: GMV; no specific applicable models listed. Limitations: Use as preliminary diagnostic guidance only. Verify against the exact service manual for the installed equipment family before final conclusion.",
+  "safetyBoundary": "VRF outdoor electrical, compressor, inverter, refrigerant, and protection checks must stay within qualified-technician service scope.",
+  "operatorNotes": [
+    "Do not treat this response as a final diagnosis.",
+    "Verify the installed model, controller, and exact service manual before final conclusion.",
+    "Record required measurements before drawing a conclusion.",
+    "This runtime entry is deterministic seed knowledge and is not manual page verified."
+  ],
+  "isManualVerified": false,
+  "isSeedKnowledge": true,
+  "verificationRequired": true,
   "source": {
     "sourceType": "SeededEngineeringKnowledge",
     "evidenceLevel": "UnverifiedSeed",
@@ -488,10 +523,11 @@ Example response excerpt:
 - ED-08 adds staging candidate validation and promotion guards. It does not alter runtime catalog loading, public API routes, or calculation behavior.
 - ED-09A expands Gree GMV outdoor, Gree Chiller, and Gree Indoor seed catalog coverage. It does not add manual-backed claims or runtime infrastructure.
 - ED-09B improves deterministic search normalization, free-text query matching, and catalog QA tests. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
+- ED-09C adds deterministic operator-facing case response fields for summaries, next checks, confidence/source explanation, applicability, safety boundaries, and verification flags. It does not add public routes, persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 
 ## Future Stages
 
-- ED-09C: manual-backed source ingestion from real manuals through staging validator review.
+- ED-09D: manual-backed source ingestion from real manuals through staging validator review.
 - ED-10: persistence/admin import through a dedicated Infrastructure adapter and migration.
 - ED-11: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
 - ED-12: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
