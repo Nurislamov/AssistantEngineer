@@ -513,6 +513,43 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsCaseReturnsOperatorFacingGuidanceFields()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var json = await response.Content.ReadAsStringAsync();
+        var diagnosticCase = JsonSerializer.Deserialize<EquipmentDiagnosticCaseDto>(
+            json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        Assert.Contains("shortSummary", json, StringComparison.Ordinal);
+        Assert.Contains("recommendedNextChecks", json, StringComparison.Ordinal);
+        Assert.Contains("confidenceExplanation", json, StringComparison.Ordinal);
+        Assert.Contains("sourceSummary", json, StringComparison.Ordinal);
+        Assert.Contains("applicabilitySummary", json, StringComparison.Ordinal);
+        Assert.Contains("safetyBoundary", json, StringComparison.Ordinal);
+        Assert.Contains("operatorNotes", json, StringComparison.Ordinal);
+
+        Assert.NotNull(diagnosticCase);
+        Assert.Contains("H5", diagnosticCase.ShortSummary, StringComparison.Ordinal);
+        Assert.NotEmpty(diagnosticCase.RecommendedNextChecks);
+        Assert.Contains("preliminary", diagnosticCase.ConfidenceExplanation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("SeededEngineeringKnowledge", diagnosticCase.SourceSummary, StringComparison.Ordinal);
+        Assert.Contains("UnverifiedSeed", diagnosticCase.SourceSummary, StringComparison.Ordinal);
+        Assert.NotEmpty(diagnosticCase.ApplicabilitySummary);
+        Assert.Contains("qualified-technician", diagnosticCase.SafetyBoundary, StringComparison.OrdinalIgnoreCase);
+        Assert.NotEmpty(diagnosticCase.OperatorNotes);
+        Assert.False(diagnosticCase.IsManualVerified);
+        Assert.True(diagnosticCase.IsSeedKnowledge);
+        Assert.True(diagnosticCase.VerificationRequired);
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCaseUnknownCodeReturnsNotFoundProblem()
     {
         await using var factory = new AssistantEngineerApiFactory();

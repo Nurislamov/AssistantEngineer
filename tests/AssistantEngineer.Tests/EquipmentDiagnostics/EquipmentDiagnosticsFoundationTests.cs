@@ -209,6 +209,38 @@ public class EquipmentDiagnosticsFoundationTests
     }
 
     [Fact]
+    public async Task DiagnosticCaseIncludesOperatorFacingResponseGuidance()
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var diagnosticCase = await service.GetDiagnosticCaseAsync(
+            manufacturer: "Gree",
+            errorCode: "H5",
+            series: "GMV",
+            modelCode: null,
+            CancellationToken.None);
+
+        Assert.NotNull(diagnosticCase);
+        Assert.Contains("Gree", diagnosticCase.ShortSummary, StringComparison.Ordinal);
+        Assert.Contains("H5", diagnosticCase.ShortSummary, StringComparison.Ordinal);
+        Assert.NotEmpty(diagnosticCase.RecommendedNextChecks);
+        Assert.Contains(diagnosticCase.RecommendedNextChecks, check =>
+            check.Contains("Step 1", StringComparison.Ordinal) ||
+            check.Contains("Supply voltage", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains("preliminary", diagnosticCase.ConfidenceExplanation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("verify", diagnosticCase.ConfidenceExplanation, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("SeededEngineeringKnowledge", diagnosticCase.SourceSummary, StringComparison.Ordinal);
+        Assert.Contains("UnverifiedSeed", diagnosticCase.SourceSummary, StringComparison.Ordinal);
+        Assert.Contains("Applicable series", diagnosticCase.ApplicabilitySummary, StringComparison.Ordinal);
+        Assert.Contains("qualified-technician", diagnosticCase.SafetyBoundary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(diagnosticCase.OperatorNotes, note =>
+            note.Contains("not manual page verified", StringComparison.OrdinalIgnoreCase));
+        Assert.False(diagnosticCase.IsManualVerified);
+        Assert.True(diagnosticCase.IsSeedKnowledge);
+        Assert.True(diagnosticCase.VerificationRequired);
+    }
+
+    [Fact]
     public async Task SeededGreeH5DoesNotClaimManualVerifiedConfidence()
     {
         var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();

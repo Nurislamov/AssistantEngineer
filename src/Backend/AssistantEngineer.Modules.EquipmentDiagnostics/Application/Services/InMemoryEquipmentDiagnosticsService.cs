@@ -362,12 +362,16 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
     private static EquipmentDiagnosticCaseDto MapCase(EquipmentDiagnosticsKnowledgeEntry entry)
     {
         var diagnosticCase = ToDiagnosticCase(entry);
+        var orderedSteps = diagnosticCase.DiagnosticSteps
+            .OrderBy(step => step.Order)
+            .ToArray();
+        var requiredMeasurements = diagnosticCase.RequiredMeasurements
+            .ToArray();
 
         return new(
             ErrorCode: MapSummary(diagnosticCase.ErrorCode, entry.Category),
             LikelyCauses: diagnosticCase.LikelyCauses,
-            DiagnosticSteps: diagnosticCase.DiagnosticSteps
-                .OrderBy(step => step.Order)
+            DiagnosticSteps: orderedSteps
                 .Select(step => new DiagnosticStepDto(
                     step.Order,
                     step.Title,
@@ -375,7 +379,7 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                     step.ExpectedResult,
                     step.IfFailedAction))
                 .ToArray(),
-            RequiredMeasurements: diagnosticCase.RequiredMeasurements
+            RequiredMeasurements: requiredMeasurements
                 .Select(measurement => new RequiredMeasurementDto(
                     measurement.Name,
                     measurement.Unit,
@@ -387,8 +391,132 @@ public sealed class InMemoryEquipmentDiagnosticsService : IEquipmentDiagnosticsS
                 .Select(reference => MapManualReference(reference)!)
                 .ToArray(),
             Source: MapSource(entry.Source),
-            Confidence: diagnosticCase.Confidence);
+            Confidence: diagnosticCase.Confidence,
+            ShortSummary: BuildShortSummary(entry),
+            RecommendedNextChecks: BuildRecommendedNextChecks(orderedSteps, requiredMeasurements),
+            ConfidenceExplanation: BuildConfidenceExplanation(entry),
+            SourceSummary: BuildSourceSummary(entry.Source),
+            ApplicabilitySummary: BuildApplicabilitySummary(entry.Source),
+            SafetyBoundary: BuildSafetyBoundary(entry),
+            OperatorNotes: BuildOperatorNotes(entry),
+            IsManualVerified: IsManualVerified(entry),
+            IsSeedKnowledge: IsSeedKnowledge(entry),
+            VerificationRequired: IsVerificationRequired(entry));
     }
+
+    private static string BuildShortSummary(EquipmentDiagnosticsKnowledgeEntry entry) =>
+        $"{entry.Manufacturer} {entry.SeriesName ?? entry.Category.ToString()} {entry.Code}: {entry.Title}. {entry.Meaning}";
+
+    private static IReadOnlyList<string> BuildRecommendedNextChecks(
+        IReadOnlyList<DiagnosticStep> orderedSteps,
+        IReadOnlyList<RequiredMeasurement> requiredMeasurements)
+    {
+        var stepChecks = orderedSteps
+            .Take(3)
+            .Select(step => $"Step {step.Order}: {step.Title} - {step.Instruction}")
+            .ToArray();
+        var measurementChecks = requiredMeasurements
+            .Where(measurement => measurement.RequiredBeforeConclusion)
+            .Take(3)
+            .Select(measurement => $"Record {measurement.Name} ({measurement.Unit}) before drawing a conclusion.")
+            .ToArray();
+
+        return stepChecks
+            .Concat(measurementChecks)
+            .DefaultIfEmpty("Record installed equipment identity and required measurements before drawing a conclusion.")
+            .ToArray();
+    }
+
+    private static string BuildConfidenceExplanation(EquipmentDiagnosticsKnowledgeEntry entry) =>
+        (entry.Confidence, entry.Source.EvidenceLevel) switch
+        {
+            (DiagnosticConfidence.Low, "UnverifiedSeed") =>
+                "Low confidence seeded guidance: use as preliminary diagnostic support only and verify the exact installed model, controller, and service manual before drawing a conclusion.",
+            (DiagnosticConfidence.ManualVerified, "ManualPageVerified") =>
+                "Manual verified guidance: the catalog entry has page-level manual evidence. Confirm the installed model and applicability before drawing a conclusion.",
+            (DiagnosticConfidence.ManualVerified, "CrossChecked") =>
+                "Manual verified guidance: the catalog entry is supported by cross-checked source evidence. Confirm the installed model and applicability before drawing a conclusion.",
+            (_, "ManualPageVerified" or "CrossChecked") =>
+                $"{entry.Confidence} confidence source-backed guidance: verify applicability to the installed model before drawing a conclusion.",
+            _ =>
+                $"{entry.Confidence} confidence guidance: verify the exact installed model, controller, and service manual before drawing a conclusion."
+        };
+
+    private static string BuildSourceSummary(EquipmentDiagnosticsKnowledgeSourceInfo source)
+    {
+        var manualPart = source.ManualTitle is null
+            ? "No manual title/page evidence is attached to this runtime entry."
+            : $"Manual evidence: {source.ManualTitle}{FormatOptional(source.ManualVersion, " version ")}{FormatOptional(source.Page, " page ")}.";
+
+        return $"{source.SourceType} / {source.EvidenceLevel}. {manualPart}";
+    }
+
+    private static string BuildApplicabilitySummary(EquipmentDiagnosticsKnowledgeSourceInfo source)
+    {
+        var series = source.ApplicableSeries.Count == 0
+            ? "No specific applicable series listed"
+            : $"Applicable series: {string.Join(", ", source.ApplicableSeries)}";
+        var models = source.ApplicableModels.Count == 0
+            ? "no specific applicable models listed"
+            : $"applicable models: {string.Join(", ", source.ApplicableModels)}";
+        var limitations = source.Limitations.Count == 0
+            ? "No limitations are listed."
+            : $"Limitations: {string.Join(" ", source.Limitations)}";
+
+        return $"{series}; {models}. {limitations}";
+    }
+
+    private static string BuildSafetyBoundary(EquipmentDiagnosticsKnowledgeEntry entry)
+    {
+        var categoryBoundary = entry.Category switch
+        {
+            EquipmentCategory.Chiller =>
+                "Chiller electrical, compressor, refrigerant, hydronic, and protection checks must stay within qualified-technician service scope.",
+            EquipmentCategory.VrfOutdoorUnit =>
+                "VRF outdoor electrical, compressor, inverter, refrigerant, and protection checks must stay within qualified-technician service scope.",
+            EquipmentCategory.VrfIndoorUnit =>
+                "Indoor-unit electrical and controller checks must stay within qualified-technician service scope.",
+            _ =>
+                "Equipment electrical, controller, refrigerant, and protection checks must stay within qualified-technician service scope."
+        };
+
+        var firstSafetyNote = entry.SafetyNotes.FirstOrDefault();
+        return firstSafetyNote is null
+            ? categoryBoundary
+            : $"{categoryBoundary} Catalog safety note: {firstSafetyNote}";
+    }
+
+    private static IReadOnlyList<string> BuildOperatorNotes(EquipmentDiagnosticsKnowledgeEntry entry)
+    {
+        var notes = new List<string>
+        {
+            "Do not treat this response as a final diagnosis.",
+            "Verify the installed model, controller, and exact service manual before final conclusion.",
+            "Record required measurements before drawing a conclusion."
+        };
+
+        if (IsSeedKnowledge(entry))
+        {
+            notes.Add("This runtime entry is deterministic seed knowledge and is not manual page verified.");
+        }
+
+        return notes;
+    }
+
+    private static bool IsManualVerified(EquipmentDiagnosticsKnowledgeEntry entry) =>
+        entry.Confidence == DiagnosticConfidence.ManualVerified &&
+        entry.Source.EvidenceLevel is "ManualPageVerified" or "CrossChecked";
+
+    private static bool IsSeedKnowledge(EquipmentDiagnosticsKnowledgeEntry entry) =>
+        entry.Source.SourceType == "SeededEngineeringKnowledge" ||
+        entry.Source.EvidenceLevel == "UnverifiedSeed";
+
+    private static bool IsVerificationRequired(EquipmentDiagnosticsKnowledgeEntry entry) =>
+        !IsManualVerified(entry) ||
+        entry.Source.Limitations.Count > 0;
+
+    private static string FormatOptional(string? value, string prefix) =>
+        string.IsNullOrWhiteSpace(value) ? string.Empty : $"{prefix}{value}";
 
     private static EquipmentErrorCodeSummaryDto MapSummary(
         EquipmentErrorCode errorCode,

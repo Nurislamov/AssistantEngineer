@@ -30,7 +30,17 @@ public sealed record EquipmentDiagnosticCaseDto(
     IReadOnlyList<string> SafetyNotes,
     IReadOnlyList<ManualReferenceDto> ManualReferences,
     EquipmentDiagnosticSourceDto Source,
-    DiagnosticConfidence Confidence);
+    DiagnosticConfidence Confidence,
+    string ShortSummary,
+    IReadOnlyList<string> RecommendedNextChecks,
+    string ConfidenceExplanation,
+    string SourceSummary,
+    string ApplicabilitySummary,
+    string SafetyBoundary,
+    IReadOnlyList<string> OperatorNotes,
+    bool IsManualVerified,
+    bool IsSeedKnowledge,
+    bool VerificationRequired);
 
 public sealed record EquipmentDiagnosticSourceDto(
     string SourceType,
