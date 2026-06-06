@@ -25,6 +25,72 @@ public class EquipmentDiagnosticsStagingValidatorTests
         var issue = Assert.Single(result.Issues);
         Assert.Equal("CandidateNotReadyForRuntimeCatalog", issue.Code);
         Assert.Equal(EquipmentDiagnosticsStagingValidationIssueSeverity.Info, issue.Severity);
+        Assert.NotNull(result.Report);
+        Assert.Equal(1, result.Report.TotalCandidates);
+        Assert.Equal(0, result.Report.ErrorCount);
+        Assert.Equal(1, result.Report.InfoCount);
+        Assert.False(result.Report.HasBlockingIssues);
+        Assert.False(result.Report.PromotionReady);
+        Assert.Contains(result.Report.CandidateKeys, key => key.Contains("REPLACE_WITH_CODE", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ReadyForReviewSampleValidatesDeterministicallyWithoutRuntimePromotionReadiness()
+    {
+        var validator = new EquipmentDiagnosticsStagingValidator();
+
+        var result = validator.ValidateJson(
+            File.ReadAllText(GreeReadyForReviewSamplePath),
+            GetProductionEntries(),
+            "gree-gmv-ready-for-review.sample.json");
+
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
+        Assert.Empty(result.Issues);
+        Assert.NotNull(result.Report);
+        Assert.Equal(1, result.Report.TotalCandidates);
+        Assert.Equal(0, result.Report.ErrorCount);
+        Assert.Equal(0, result.Report.WarningCount);
+        Assert.Equal(0, result.Report.InfoCount);
+        Assert.False(result.Report.HasBlockingIssues);
+        Assert.False(result.Report.PromotionReady);
+        Assert.Contains("GREE/GMV/VrfOutdoorUnit//SAMPLERFR", result.Report.CandidateKeys);
+    }
+
+    [Fact]
+    public void InvalidSampleFailsForExpectedPromotionEvidenceReasons()
+    {
+        var validator = new EquipmentDiagnosticsStagingValidator();
+
+        var result = validator.ValidateJson(
+            File.ReadAllText(GreeInvalidInsufficientEvidenceSamplePath),
+            GetProductionEntries(),
+            "gree-gmv-invalid-insufficient-evidence.sample.json");
+
+        Assert.False(result.IsValid);
+        Assert.NotNull(result.Report);
+        Assert.True(result.Report.HasBlockingIssues);
+        Assert.False(result.Report.PromotionReady);
+        Assert.Contains(result.Errors, issue => issue.Code == "ManualVerifiedRequiresVerifiedEvidence");
+        Assert.Contains(result.Errors, issue => issue.Code == "ApprovedForCatalogRequiresVerifiedEvidence");
+        Assert.Contains(result.Errors, issue => issue.Code == "ApprovedForCatalogRequiresExternalSource");
+    }
+
+    [Fact]
+    public void ValidationReportGroupsIssuesByCandidateKey()
+    {
+        var validator = new EquipmentDiagnosticsStagingValidator();
+
+        var result = validator.ValidateJson(
+            File.ReadAllText(GreeInvalidInsufficientEvidenceSamplePath),
+            GetProductionEntries(),
+            "gree-gmv-invalid-insufficient-evidence.sample.json");
+
+        Assert.NotNull(result.Report);
+        var group = Assert.Single(result.Report.IssuesByCandidateKey);
+        Assert.Equal("GREE/GMV/VrfOutdoorUnit//SAMPLEINVALID", group.CandidateKey);
+        Assert.Contains(group.Issues, issue => issue.Code == "ManualVerifiedRequiresVerifiedEvidence");
+        Assert.Contains(group.Issues, issue => issue.Code == "ApprovedForCatalogRequiresVerifiedEvidence");
     }
 
     [Fact]
@@ -138,6 +204,10 @@ public class EquipmentDiagnosticsStagingValidatorTests
             resource.EndsWith(".Knowledge.gree.gree-gmv.json", StringComparison.Ordinal));
         Assert.Contains(resources, resource =>
             resource.EndsWith(".Knowledge.gree.gree-chiller.json", StringComparison.Ordinal));
+        Assert.DoesNotContain(resources, resource =>
+            resource.Contains("ready-for-review", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(resources, resource =>
+            resource.Contains("invalid-insufficient-evidence", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -338,4 +408,20 @@ public class EquipmentDiagnosticsStagingValidatorTests
             "staging",
             "templates",
             "gree-manual-entry.template.json");
+
+    private static string GreeReadyForReviewSamplePath =>
+        Path.Combine(
+            EquipmentDiagnosticsModuleRoot,
+            "Knowledge",
+            "staging",
+            "examples",
+            "gree-gmv-ready-for-review.sample.json");
+
+    private static string GreeInvalidInsufficientEvidenceSamplePath =>
+        Path.Combine(
+            EquipmentDiagnosticsModuleRoot,
+            "Knowledge",
+            "staging",
+            "examples",
+            "gree-gmv-invalid-insufficient-evidence.sample.json");
 }

@@ -1,0 +1,84 @@
+{
+  "candidates": [
+    {
+      "manufacturer": "Gree",
+      "series": "GMV",
+      "category": "VrfOutdoorUnit",
+      "modelCode": null,
+      "code": "SAMPLE-RFR",
+      "title": "Sample ready-for-review Gree GMV diagnostic candidate",
+      "meaning": "Sample staging guidance for review workflow only. Replace with exact evidence-backed meaning before production promotion.",
+      "severity": "Service attention required",
+      "proposedConfidence": "Medium",
+      "source": {
+        "sourceType": "ServiceManual",
+        "evidenceLevel": "ManualReferenced",
+        "manualTitle": "Sample placeholder manual title - not runtime evidence",
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "ReadyForReview sample only. Reviewer must replace placeholder source metadata with exact manual evidence before approval.",
+        "limitations": [
+          "Use as a staging review example only.",
+          "Do not promote until exact manual evidence and installed equipment applicability are verified."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "likelyCauses": [
+        "Sample likely cause pending source review.",
+        "Sample controller-reported condition requiring exact manual interpretation before production use."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Confirm sample equipment identity",
+          "instruction": "Record manufacturer, GMV series, installed model, serial plate data, controller, and displayed code for review.",
+          "expectedResult": "The reviewer can confirm the sample candidate applies to the intended equipment family before approval.",
+          "ifFailedAction": "Keep the candidate in staging and request exact equipment information."
+        },
+        {
+          "order": 2,
+          "title": "Check source evidence completeness",
+          "instruction": "Confirm whether the exact manual title, page, and applicable model family are available for review.",
+          "expectedResult": "Manual evidence is either complete enough for approval or the candidate remains in staging.",
+          "ifFailedAction": "Keep the candidate as ReadyForReview or NeedsManualCheck until evidence is complete."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Displayed code",
+          "unit": "code",
+          "description": "Controller-displayed diagnostic code recorded for review traceability.",
+          "requiredBeforeConclusion": true
+        },
+        {
+          "name": "Installed model identification",
+          "unit": "text",
+          "description": "Model and serial plate data recorded before applicability review.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards active during diagnosis and review."
+      ],
+      "tags": [
+        "gree",
+        "gmv",
+        "ready-for-review",
+        "manual-staging"
+      ],
+      "promotionNotes": [
+        "ReadyForReview is not runtime approval.",
+        "Replace placeholder manual metadata before ApprovedForCatalog.",
+        "Copy to production JSON only through normal PR review after validator approval."
+      ],
+      "reviewStatus": "ReadyForReview"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Gree GMV H5 diagnostic guidance",
+  "summary": "Gree GMV H5: GMV protection alarm H5. Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+  "verificationBanner": "Verification required: seed knowledge. Low confidence seeded guidance: use as preliminary diagnostic support only and verify the exact installed model, controller, and service manual before drawing a conclusion.",
+  "sourceLine": "SeededEngineeringKnowledge / UnverifiedSeed. No manual title/page evidence is attached to this runtime entry.",
+  "recommendedChecks": [
+    "Step 1: Confirm installed equipment identity - Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+    "Step 2: Check electrical supply condition - A qualified technician should measure supply voltage and phase condition at the service point using approved procedures.",
+    "Step 3: Inspect protection-related wiring - Inspect compressor, inverter, control-board, and protection-sensor connections for visible damage, loose terminals, or water ingress.",
+    "Record Supply voltage (V) before drawing a conclusion.",
+    "Record Operating current (A) before drawing a conclusion."
+  ],
+  "safetyLine": "VRF outdoor electrical, compressor, inverter, refrigerant, and protection checks must stay within qualified-technician service scope. Catalog safety note: Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+  "operatorNotes": [
+    "Do not treat this response as a final diagnosis.",
+    "Verify the installed model, controller, and exact service manual before final conclusion.",
+    "Record required measurements before drawing a conclusion.",
+    "This runtime entry is deterministic seed knowledge and is not manual page verified."
+  ],
+  "footer": "This runtime entry is deterministic seed knowledge and is not manual page verified."
+}

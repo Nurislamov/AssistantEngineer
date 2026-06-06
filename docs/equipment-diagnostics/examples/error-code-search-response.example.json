@@ -1,0 +1,14 @@
+[
+  {
+    "manufacturer": "Gree",
+    "seriesName": "GMV",
+    "modelCode": null,
+    "code": "H5",
+    "title": "GMV protection alarm H5",
+    "meaning": "Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+    "severity": "Service attention required",
+    "category": 0,
+    "confidence": 1,
+    "sourceManual": null
+  }
+]

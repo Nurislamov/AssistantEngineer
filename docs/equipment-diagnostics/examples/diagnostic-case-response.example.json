@@ -1,0 +1,79 @@
+{
+  "errorCode": {
+    "manufacturer": "Gree",
+    "seriesName": "GMV",
+    "modelCode": null,
+    "code": "H5",
+    "title": "GMV protection alarm H5",
+    "meaning": "Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+    "severity": "Service attention required",
+    "category": 0,
+    "confidence": 1,
+    "sourceManual": null
+  },
+  "likelyCauses": [
+    "Outdoor unit protection condition reported by the control board."
+  ],
+  "diagnosticSteps": [
+    {
+      "order": 1,
+      "title": "Confirm installed equipment identity",
+      "instruction": "Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+      "expectedResult": "Manufacturer, series, model, and displayed H5 code are confirmed before diagnosis continues.",
+      "ifFailedAction": "Stop classification and obtain the exact model information."
+    }
+  ],
+  "requiredMeasurements": [
+    {
+      "name": "Supply voltage",
+      "unit": "V",
+      "description": "Measure the supply voltage at the equipment terminals using approved service procedures.",
+      "requiredBeforeConclusion": true
+    }
+  ],
+  "safetyNotes": [
+    "Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician."
+  ],
+  "manualReferences": [],
+  "source": {
+    "sourceType": "SeededEngineeringKnowledge",
+    "evidenceLevel": "UnverifiedSeed",
+    "manualTitle": null,
+    "manualVersion": null,
+    "manualDocumentCode": null,
+    "page": null,
+    "section": null,
+    "quote": null,
+    "notes": "Seeded deterministic diagnostic guidance. Not manually page-verified.",
+    "limitations": [
+      "Use as preliminary diagnostic guidance only.",
+      "Verify against the exact service manual for the installed equipment family before final conclusion."
+    ],
+    "applicableModels": [],
+    "applicableSeries": [
+      "GMV"
+    ]
+  },
+  "confidence": 1,
+  "shortSummary": "Gree GMV H5: GMV protection alarm H5. Preliminary diagnostic entry for a Gree GMV H5 alarm. Verify the exact meaning against the service manual for the installed model before concluding.",
+  "recommendedNextChecks": [
+    "Step 1: Confirm installed equipment identity - Record the outdoor unit model, GMV series, serial plate data, and controller-displayed error code.",
+    "Step 2: Check electrical supply condition - A qualified technician should measure supply voltage and phase condition at the service point using approved procedures.",
+    "Step 3: Inspect protection-related wiring - Inspect compressor, inverter, control-board, and protection-sensor connections for visible damage, loose terminals, or water ingress.",
+    "Record Supply voltage (V) before drawing a conclusion.",
+    "Record Operating current (A) before drawing a conclusion."
+  ],
+  "confidenceExplanation": "Low confidence seeded guidance: use as preliminary diagnostic support only and verify the exact installed model, controller, and service manual before drawing a conclusion.",
+  "sourceSummary": "SeededEngineeringKnowledge / UnverifiedSeed. No manual title/page evidence is attached to this runtime entry.",
+  "applicabilitySummary": "Applicable series: GMV; no specific applicable models listed. Limitations: Use as preliminary diagnostic guidance only. Verify against the exact service manual for the installed equipment family before final conclusion.",
+  "safetyBoundary": "VRF outdoor electrical, compressor, inverter, refrigerant, and protection checks must stay within qualified-technician service scope. Catalog safety note: Electrical, compressor, inverter, refrigerant, and chiller protection checks must be performed by a qualified technician.",
+  "operatorNotes": [
+    "Do not treat this response as a final diagnosis.",
+    "Verify the installed model, controller, and exact service manual before final conclusion.",
+    "Record required measurements before drawing a conclusion.",
+    "This runtime entry is deterministic seed knowledge and is not manual page verified."
+  ],
+  "isManualVerified": false,
+  "isSeedKnowledge": true,
+  "verificationRequired": true
+}

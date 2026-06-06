@@ -1,0 +1,49 @@
+{
+  "totalEntries": 23,
+  "manufacturers": [
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "count": 23
+    }
+  ],
+  "series": [
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "seriesName": "GMV",
+      "normalizedSeriesName": "GMV",
+      "count": 14
+    }
+  ],
+  "categories": [
+    {
+      "category": 0,
+      "count": 14
+    }
+  ],
+  "codes": [
+    {
+      "manufacturer": "Gree",
+      "normalizedManufacturer": "GREE",
+      "seriesName": "GMV",
+      "normalizedSeriesName": "GMV",
+      "modelCode": null,
+      "normalizedModelCode": null,
+      "category": 0,
+      "code": "H5",
+      "normalizedCode": "H5",
+      "title": "GMV protection alarm H5",
+      "confidence": 1,
+      "sourceType": "SeededEngineeringKnowledge",
+      "evidenceLevel": "UnverifiedSeed",
+      "count": 1
+    }
+  ],
+  "sourceTypes": [
+    "SeededEngineeringKnowledge"
+  ],
+  "evidenceLevels": [
+    "UnverifiedSeed"
+  ]
+}

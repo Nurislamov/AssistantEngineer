@@ -144,6 +144,45 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.Equal(EquipmentCategory.VrfIndoorUnit, indoor.Category);
     }
 
+    [Theory]
+    [InlineData("gree gmv h5", "GMV", "H5")]
+    [InlineData("gmv outdoor e1", "GMV", "E1")]
+    [InlineData("chiller e6", "Chiller", "E6")]
+    [InlineData("indoor h6", "Indoor", "H6")]
+    public async Task AssistantBotReadinessExamplesUseDeterministicSearchAndOperatorFields(
+        string queryText,
+        string expectedSeries,
+        string expectedCode)
+    {
+        var service = CreateServiceProvider().GetRequiredService<IEquipmentDiagnosticsService>();
+
+        var searchResults = await service.SearchErrorCodesAsync(
+            new SearchEquipmentErrorCodesQuery(
+                Manufacturer: "Gree",
+                Query: queryText),
+            CancellationToken.None);
+
+        var summary = Assert.Single(searchResults);
+        Assert.Equal(expectedSeries, summary.SeriesName);
+        Assert.Equal(expectedCode, summary.Code);
+
+        var diagnosticCase = await service.GetDiagnosticCaseAsync(
+            manufacturer: summary.Manufacturer,
+            errorCode: summary.Code,
+            series: summary.SeriesName,
+            modelCode: summary.ModelCode,
+            CancellationToken.None);
+
+        Assert.NotNull(diagnosticCase);
+        Assert.False(string.IsNullOrWhiteSpace(diagnosticCase.ShortSummary));
+        Assert.NotEmpty(diagnosticCase.RecommendedNextChecks);
+        Assert.False(string.IsNullOrWhiteSpace(diagnosticCase.SourceSummary));
+        Assert.False(string.IsNullOrWhiteSpace(diagnosticCase.ConfidenceExplanation));
+        Assert.True(diagnosticCase.VerificationRequired);
+        Assert.True(diagnosticCase.IsSeedKnowledge);
+        Assert.Contains("UnverifiedSeed", diagnosticCase.SourceSummary, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task QuerySearchUnknownTextReturnsEmptyResult()
     {
@@ -1023,6 +1062,8 @@ public class EquipmentDiagnosticsFoundationTests
         Assert.True(File.Exists(StagingReadmePath), $"Missing staging README: {StagingReadmePath}");
         Assert.True(File.Exists(StagingSchemaPath), $"Missing staging schema: {StagingSchemaPath}");
         Assert.True(File.Exists(GreeManualEntryTemplatePath), $"Missing staging template: {GreeManualEntryTemplatePath}");
+        Assert.True(File.Exists(GreeReadyForReviewSamplePath), $"Missing staging sample: {GreeReadyForReviewSamplePath}");
+        Assert.True(File.Exists(GreeInvalidInsufficientEvidenceSamplePath), $"Missing staging sample: {GreeInvalidInsufficientEvidenceSamplePath}");
     }
 
     [Fact]
@@ -1129,11 +1170,10 @@ public class EquipmentDiagnosticsFoundationTests
     [Fact]
     public void StagingDocsAndTemplateDoNotContainUnsafeDiagnosticWording()
     {
-        var checkedFiles = new[]
-        {
-            StagingReadmePath,
-            GreeManualEntryTemplatePath
-        };
+        var checkedFiles = new[] { StagingReadmePath }
+            .Concat(Directory.GetFiles(StagingRootPath, "*.json", SearchOption.AllDirectories)
+                .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase)))
+            .ToArray();
         var forbiddenFragments = new[]
         {
             "bypass",
@@ -1349,6 +1389,18 @@ public class EquipmentDiagnosticsFoundationTests
             StagingRootPath,
             "templates",
             "gree-manual-entry.template.json");
+
+    private static string GreeReadyForReviewSamplePath =>
+        Path.Combine(
+            StagingRootPath,
+            "examples",
+            "gree-gmv-ready-for-review.sample.json");
+
+    private static string GreeInvalidInsufficientEvidenceSamplePath =>
+        Path.Combine(
+            StagingRootPath,
+            "examples",
+            "gree-gmv-invalid-insufficient-evidence.sample.json");
 
     private static string CreateSingleEntryJson(
         string confidence = "Low",

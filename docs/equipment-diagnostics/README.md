@@ -138,6 +138,43 @@ The module does not invent new procedures for these fields. Recommended checks s
 
 For current Gree seed entries, operator-facing fields continue to state that the guidance is preliminary, seed knowledge, and requires verification against the exact installed model, controller, and service manual. Future Telegram, assistant, or UI surfaces should consume these fields instead of generating their own diagnostic wording.
 
+ED-10A improves manual-ingestion and bot-readiness workflow without adding persistence, Telegram, AI, RAG, vector search, or new public endpoints:
+
+- staging now includes review examples for `Draft`, `ReadyForReview`, and invalid insufficient-evidence candidates;
+- staging examples remain excluded from runtime embedded knowledge;
+- validator results include a deterministic report summary with total candidates, issue counts, candidate keys, grouped issues, `PromotionReady`, and `HasBlockingIssues`;
+- `PromotionReady` is reserved for error-free `ApprovedForCatalog` candidates and does not apply to `Draft`, `NeedsManualCheck`, or `ReadyForReview`;
+- future assistant or UI flows should search deterministically, fetch the diagnostic case, and render existing operator fields rather than inventing diagnostic prose.
+
+ED-10B adds a deterministic assistant/operator consumption helper without changing API routes, DTO contracts, persistence, Telegram, AI, RAG, or vector search:
+
+- `Application/Guidance/EquipmentDiagnosticOperatorGuidanceFormatter.cs`
+- `Application/Guidance/EquipmentDiagnosticOperatorGuidanceMessage.cs`
+
+The formatter consumes an existing `EquipmentDiagnosticCaseDto` and reshapes its operator-facing fields into a stable message structure: title, summary, verification banner, source line, recommended checks, safety line, operator notes, and footer. It does not create new diagnostic actions. Recommended checks come directly from `recommendedNextChecks`, safety text comes from `safetyBoundary`, and operator notes come from `operatorNotes`.
+
+ED-10C adds contract examples and release-readiness guards for future bot/UI/Telegram consumers:
+
+- `docs/equipment-diagnostics/examples/catalog-response.example.json`
+- `docs/equipment-diagnostics/examples/error-code-search-response.example.json`
+- `docs/equipment-diagnostics/examples/diagnostic-case-response.example.json`
+- `docs/equipment-diagnostics/examples/operator-guidance-message.example.json`
+- `docs/equipment-diagnostics/examples/staging-validation-report.example.json`
+
+These examples are documentation/test fixtures only. They are not runtime knowledge, are not embedded resources, and are not loaded by `EquipmentDiagnosticsJsonKnowledgeSource`. Tests guard that examples remain valid JSON, avoid manual-verification claims without evidence, avoid unsafe diagnostic wording, and do not affect runtime catalog counts.
+
+ED-10D finalizes the ED-10 manual-ingestion and bot-readiness pack with consistency and release-readiness QA:
+
+- staging JSON, docs examples, and test fixtures remain non-runtime and outside embedded knowledge resources;
+- runtime catalog counts are derived from production JSON files rather than fixed magic numbers;
+- staging sample codes are not returned by runtime search or catalog index;
+- seed runtime entries stay `SeededEngineeringKnowledge` / `UnverifiedSeed` / `Low`;
+- unverified seed case DTOs keep `verificationRequired = true`;
+- formatter output keeps the verification banner visible and reuses DTO checks/safety text;
+- the public read routes remain limited to catalog, error-code search, and case retrieval.
+
+ED-10A, ED-10B, ED-10C, and ED-10D together form a manual-ingestion and bot-readiness pack. They do not add persistence, admin import, Telegram/UI integration, AI/RAG/vector search, or new public endpoints.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -283,6 +320,17 @@ Promotion rules:
 
 The validator accepts staging JSON text or parsed candidate models. It reports deterministic issues with severity, code, path, and message. A valid `Draft` template may still produce an informational issue that it is not ready for runtime catalog use.
 
+Validation result reports include:
+
+- `TotalCandidates`
+- `ErrorCount`, `WarningCount`, and `InfoCount`
+- normalized `CandidateKeys`
+- `IssuesByCandidateKey`
+- `PromotionReady`
+- `HasBlockingIssues`
+
+Reviewers should treat `HasBlockingIssues = true` as a stop signal. `PromotionReady = false` is expected for draft and ready-for-review candidates; it means the candidate is still a review artifact, not runtime catalog data.
+
 ## ED-09A Catalog Expansion Pack 1
 
 ED-09A increases the runtime catalog while preserving the same provenance rules:
@@ -294,6 +342,122 @@ ED-09A increases the runtime catalog while preserving the same provenance rules:
 - no manual-backed claims are made without exact source evidence.
 
 Future manual-backed replacements or additions should start as staging candidates, pass `EquipmentDiagnosticsStagingValidator`, and move to production JSON only through a normal PR with tests. If a future entry uses `ManualVerified`, it must have `ManualPageVerified` or `CrossChecked` evidence and must not invent source metadata.
+
+## ED-10A Manual-Ingestion And Bot-Readiness
+
+ED-10A keeps runtime behavior Git-reviewed and deterministic:
+
+1. Capture a manual observation as a staging candidate under `Knowledge/staging/`.
+2. Keep placeholder or incomplete candidates at `Draft`, `NeedsManualCheck`, or `ReadyForReview`.
+3. Run the staging validator and review the grouped report by candidate key.
+4. Promote only through production JSON after evidence is sufficient, validator checks pass, and a normal PR review approves the change.
+5. Keep runtime `ManualVerified` reserved for exact `ManualPageVerified` or `CrossChecked` evidence.
+
+Future bot/UI flows should use the existing API in this order:
+
+1. Search with `GET /api/v1/equipment-diagnostics/error-codes?manufacturer=Gree&query=...`.
+2. Fetch the selected case with `GET /api/v1/equipment-diagnostics/cases`.
+3. Render `shortSummary`, `sourceSummary`, `confidenceExplanation`, `recommendedNextChecks`, `safetyBoundary`, and `verificationRequired`.
+4. Avoid adding diagnostic statements that are not present in the response DTO.
+
+Example deterministic query prompts:
+
+- `gree gmv h5`
+- `gmv outdoor e1`
+- `chiller e6`
+- `indoor h6`
+
+## ED-10B Deterministic Operator Guidance Pack
+
+ED-10B provides an application-level formatter for future Telegram, UI, or assistant clients. It is intentionally small: clients should still call the existing search and case endpoints, then pass the returned `EquipmentDiagnosticCaseDto` through the formatter if they need a structured operator message.
+
+Formatter output:
+
+- `Title`
+- `Summary`
+- `VerificationBanner`
+- `SourceLine`
+- `RecommendedChecks`
+- `SafetyLine`
+- `OperatorNotes`
+- `Footer`
+
+The formatter uses DTO fields only. It does not read domain records, staging files, JSON resources, controllers, or external services. It does not add diagnostic procedures that are absent from `diagnosticSteps`, `requiredMeasurements`, `recommendedNextChecks`, or `operatorNotes`.
+
+For current Gree runtime entries, the formatter keeps seed status visible:
+
+- `VerificationBanner` states that verification is required for seed knowledge.
+- `SourceLine` includes `SeededEngineeringKnowledge / UnverifiedSeed`.
+- `RecommendedChecks` is exactly the DTO `recommendedNextChecks` collection.
+- `SafetyLine` is exactly the DTO `safetyBoundary`.
+- `Footer` is taken from the final DTO operator note when available.
+
+This keeps future assistant/operator surfaces deterministic and auditable while manual-backed evidence, persistence, and UI integrations remain separate future work.
+
+## ED-10C Contract Examples And Release-Readiness Guards
+
+ED-10C locks down the consumption contract for future bot, UI, or Telegram surfaces without adding endpoints or runtime integrations.
+
+Bot/UI clients should rely on these diagnostic case fields:
+
+- `shortSummary`
+- `recommendedNextChecks`
+- `confidenceExplanation`
+- `sourceSummary`
+- `applicabilitySummary`
+- `safetyBoundary`
+- `operatorNotes`
+- `isManualVerified`
+- `isSeedKnowledge`
+- `verificationRequired`
+- `source.sourceType`
+- `source.evidenceLevel`
+- `source.limitations`
+- `source.applicableSeries`
+- `source.applicableModels`
+
+For formatter-based clients, use `EquipmentDiagnosticOperatorGuidanceFormatter` and render:
+
+- `Title`
+- `Summary`
+- `VerificationBanner`
+- `SourceLine`
+- `RecommendedChecks`
+- `SafetyLine`
+- `OperatorNotes`
+- `Footer`
+
+Examples under `docs/equipment-diagnostics/examples/` are deterministic contract documentation. They are intentionally small and should not be treated as runtime catalog data. They must not include real copyrighted manual text, invented manual titles/pages/quotes, or source metadata that is not present in the repository.
+
+Future integrations must not generate their own diagnosis text. The safe flow remains:
+
+1. Search deterministically through the existing error-code API.
+2. Fetch the diagnostic case through the existing case API.
+3. Render the DTO operator fields directly or pass the DTO into the deterministic formatter.
+4. Keep seed/unverified status visible to the operator.
+5. Require exact installed model, controller, and manual verification before final conclusion.
+
+Manual-backed confidence still requires staging validation and reviewed promotion. Database/admin import, Telegram/UI integration, and RAG/manual evidence search remain postponed.
+
+## ED-10D Final QA And Release Readiness
+
+ED-10D is a cleanup and guardrail pass over the accumulated ED-10A/B/C work. It keeps the implementation scope unchanged and focuses on consistency:
+
+- naming remains within the EquipmentDiagnostics application/module style;
+- Application code stays free of Infrastructure, Telegram/UI, and AI/RAG dependencies;
+- staging examples and docs examples are explicitly non-runtime;
+- runtime knowledge still comes only from production JSON under `Knowledge/{manufacturer}/`;
+- examples and staging samples are validated as JSON but are not embedded catalog resources;
+- formatter tests guard that recommended checks and safety text are reused from DTO fields;
+- QA tests guard that unverified seed entries do not invent manual evidence.
+
+The existing public EquipmentDiagnostics API remains:
+
+- `GET /api/v1/equipment-diagnostics/catalog`
+- `GET /api/v1/equipment-diagnostics/error-codes`
+- `GET /api/v1/equipment-diagnostics/cases`
+
+No security endpoint inventory change is required because no route is added.
 
 ## API Routes
 
@@ -524,11 +688,14 @@ Example response excerpt:
 - ED-09A expands Gree GMV outdoor, Gree Chiller, and Gree Indoor seed catalog coverage. It does not add manual-backed claims or runtime infrastructure.
 - ED-09B improves deterministic search normalization, free-text query matching, and catalog QA tests. It does not add persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
 - ED-09C adds deterministic operator-facing case response fields for summaries, next checks, confidence/source explanation, applicability, safety boundaries, and verification flags. It does not add public routes, persistence, Telegram, RAG/vector search, AI search, or manual-backed claims.
+- ED-10A improves manual-ingestion staging examples, validation report summaries, and deterministic assistant/bot-readiness guidance. It does not add runtime persistence, Telegram integration, AI/RAG/vector search, new public endpoints, or manual-backed runtime claims.
+- ED-10B adds an application-level deterministic operator guidance formatter over existing diagnostic case DTO fields. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, DTO contract changes, or manual-backed runtime claims.
+- ED-10C adds deterministic contract examples and release-readiness guards for EquipmentDiagnostics API DTOs, formatter output, staging reports, and runtime/example separation. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
+- ED-10D adds final consistency, runtime-pollution, safety/provenance, formatter, and route-surface QA guards. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
 
 ## Future Stages
 
-- ED-09D: manual-backed source ingestion from real manuals through staging validator review.
-- ED-10: persistence/admin import through a dedicated Infrastructure adapter and migration.
-- ED-11: Telegram or assistant UX on top of the existing facade and API, without moving diagnostics into the Equipment catalog module.
-- ED-12: RAG/manual evidence search only if deterministic source-backed data and safety/provenance rules justify it.
+- ED-11: Telegram, assistant, or UI UX on top of the existing facade/API and deterministic formatter, without moving diagnostics into the Equipment catalog module.
+- ED-12: database projection and admin/manual import through a dedicated Infrastructure adapter and migration.
+- ED-13: RAG/manual evidence search only after deterministic source-backed data, safety/provenance rules, and manual evidence governance justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.

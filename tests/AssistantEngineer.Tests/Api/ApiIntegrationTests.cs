@@ -550,6 +550,62 @@ public class ApiIntegrationTests
     }
 
     [Fact]
+    public async Task GetEquipmentDiagnosticsCaseJsonContractExposesBotConsumptionFieldsAndSource()
+    {
+        await using var factory = new AssistantEngineerApiFactory();
+        var client = factory.CreateClient();
+
+        var response = await client.GetAsync(
+            "/api/v1/equipment-diagnostics/cases?manufacturer=Gree&series=GMV&code=H5");
+
+        await EnsureSuccessWithBodyAsync(response);
+        var json = await response.Content.ReadAsStringAsync();
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        foreach (var propertyName in new[]
+                 {
+                     "shortSummary",
+                     "recommendedNextChecks",
+                     "confidenceExplanation",
+                     "sourceSummary",
+                     "applicabilitySummary",
+                     "safetyBoundary",
+                     "operatorNotes",
+                     "isManualVerified",
+                     "isSeedKnowledge",
+                     "verificationRequired"
+                 })
+        {
+            Assert.True(root.TryGetProperty(propertyName, out _), $"Missing API case property '{propertyName}'.");
+        }
+
+        var source = root.GetProperty("source");
+        foreach (var propertyName in new[]
+                 {
+                     "sourceType",
+                     "evidenceLevel",
+                     "limitations",
+                     "applicableSeries",
+                     "applicableModels"
+                 })
+        {
+            Assert.True(source.TryGetProperty(propertyName, out _), $"Missing API source property '{propertyName}'.");
+        }
+
+        Assert.Equal("SeededEngineeringKnowledge", source.GetProperty("sourceType").GetString());
+        Assert.Equal("UnverifiedSeed", source.GetProperty("evidenceLevel").GetString());
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("manualTitle").ValueKind);
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("page").ValueKind);
+        Assert.Equal(JsonValueKind.Null, source.GetProperty("quote").ValueKind);
+        Assert.NotEmpty(source.GetProperty("limitations").EnumerateArray());
+        Assert.NotEmpty(source.GetProperty("applicableSeries").EnumerateArray());
+        Assert.False(root.GetProperty("isManualVerified").GetBoolean());
+        Assert.True(root.GetProperty("isSeedKnowledge").GetBoolean());
+        Assert.True(root.GetProperty("verificationRequired").GetBoolean());
+    }
+
+    [Fact]
     public async Task GetEquipmentDiagnosticsCaseUnknownCodeReturnsNotFoundProblem()
     {
         await using var factory = new AssistantEngineerApiFactory();

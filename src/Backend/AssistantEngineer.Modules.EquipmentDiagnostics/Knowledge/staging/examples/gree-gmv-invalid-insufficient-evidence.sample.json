@@ -1,0 +1,69 @@
+{
+  "candidates": [
+    {
+      "manufacturer": "Gree",
+      "series": "GMV",
+      "category": "VrfOutdoorUnit",
+      "modelCode": null,
+      "code": "SAMPLE-INVALID",
+      "title": "Invalid sample Gree GMV promotion candidate",
+      "meaning": "Invalid staging example used to verify that approval cannot proceed with unverified seed evidence.",
+      "severity": "Service attention required",
+      "proposedConfidence": "ManualVerified",
+      "source": {
+        "sourceType": "SeededEngineeringKnowledge",
+        "evidenceLevel": "UnverifiedSeed",
+        "manualTitle": null,
+        "manualVersion": null,
+        "manualDocumentCode": null,
+        "page": null,
+        "section": null,
+        "quote": null,
+        "notes": "Invalid sample only. It intentionally lacks manual evidence and must never be promoted.",
+        "limitations": [
+          "Use as a validator failure example only.",
+          "Manual verification cannot be claimed without exact source evidence."
+        ],
+        "applicableModels": [],
+        "applicableSeries": [
+          "GMV"
+        ]
+      },
+      "likelyCauses": [
+        "Invalid sample likely cause used only for validator tests."
+      ],
+      "diagnosticSteps": [
+        {
+          "order": 1,
+          "title": "Reject insufficient evidence",
+          "instruction": "Confirm that the candidate lacks manual page or cross-checked evidence.",
+          "expectedResult": "The validator reports blocking issues and the candidate remains outside runtime catalog.",
+          "ifFailedAction": "Keep the candidate in staging until source evidence is corrected."
+        }
+      ],
+      "requiredMeasurements": [
+        {
+          "name": "Evidence completeness",
+          "unit": "review",
+          "description": "Reviewer confirms whether manual title, page, and evidence level are sufficient.",
+          "requiredBeforeConclusion": true
+        }
+      ],
+      "safetyNotes": [
+        "Electrical, compressor, inverter, refrigerant, and protection checks must be performed by a qualified technician.",
+        "Keep manufacturer safeguards active during diagnosis and review."
+      ],
+      "tags": [
+        "gree",
+        "gmv",
+        "invalid-sample",
+        "manual-staging"
+      ],
+      "promotionNotes": [
+        "This sample must fail validator checks.",
+        "Do not copy invalid samples into production JSON."
+      ],
+      "reviewStatus": "ApprovedForCatalog"
+    }
+  ]
+}
