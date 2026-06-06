@@ -61,6 +61,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
 
         var runtimeIssues = ValidateRuntimeCatalog(input);
         var (stagingIssues, stagingExampleIssues, candidateSummaries) = ValidateStaging(input);
+        var (manualCodeBookIssues, manualCodeBookSummary) = ValidateManualCodeBook(input);
         var docsIssues = ValidateDocsExamples(input.DocsExampleDocuments);
 
         var sections = new[]
@@ -77,6 +78,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
                     document.Kind is EquipmentDiagnosticsVerificationDocumentKind.StagingExample
                         or EquipmentDiagnosticsVerificationDocumentKind.StagingTemplate),
                 stagingExampleIssues),
+            CreateSection("manual-codebook", input.ManualCodeBookDocuments?.Count ?? 0, manualCodeBookIssues),
             CreateSection("docs-examples", input.DocsExampleDocuments.Count, docsIssues)
         };
         var duplicateKeys = GetDuplicateRuntimeKeys(input.RuntimeEntries);
@@ -93,6 +95,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
 
         return new EquipmentDiagnosticsVerificationReport(
             RuntimeCatalog: runtimeSummary,
+            ManualCodeBookSummary: manualCodeBookSummary,
             StagingCandidateFileCount: sections.Single(section => section.Name == "staging-candidates").FileCount,
             StagingExampleFileCount: sections.Single(section => section.Name == "staging-examples").FileCount,
             DocsExampleFileCount: input.DocsExampleDocuments.Count,
@@ -101,6 +104,169 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
             IsReleaseReady: !hasBlockingIssues,
             HasBlockingIssues: hasBlockingIssues);
     }
+
+    private static (
+        IReadOnlyList<EquipmentDiagnosticsVerificationIssue> Issues,
+        EquipmentDiagnosticsManualCodeBookSummary Summary)
+        ValidateManualCodeBook(EquipmentDiagnosticsVerificationInput input)
+    {
+        var issues = new List<EquipmentDiagnosticsVerificationIssue>();
+        var occurrences = new List<(string SourceName, JsonElement Value)>();
+
+        foreach (var document in input.ManualCodeBookDocuments ?? [])
+        {
+            if (document.Kind != EquipmentDiagnosticsVerificationDocumentKind.ManualCodeBook)
+            {
+                issues.Add(Error("InvalidManualCodeBookKind", document.SourceName,
+                    "Manual codebook input must use ManualCodeBook kind.", "manual-codebook"));
+                continue;
+            }
+
+            try
+            {
+                using var json = JsonDocument.Parse(document.Json);
+                if (!json.RootElement.TryGetProperty("occurrences", out var values) ||
+                    values.ValueKind != JsonValueKind.Array)
+                {
+                    issues.Add(Error("MissingCodeOccurrences", document.SourceName,
+                        "Manual codebook file must contain an occurrences array.", "manual-codebook"));
+                    continue;
+                }
+
+                foreach (var value in values.EnumerateArray())
+                {
+                    occurrences.Add((document.SourceName, value.Clone()));
+                }
+
+                issues.AddRange(ValidateJsonDocumentSafety(document, "manual-codebook", isNonRuntimeExample: false));
+            }
+            catch (JsonException exception)
+            {
+                issues.Add(Error("InvalidJson", document.SourceName,
+                    $"Manual codebook JSON is invalid: {exception.Message}", "manual-codebook"));
+            }
+        }
+
+        var allowedKinds = Enum.GetNames<Application.Knowledge.ManualCodeBook.EquipmentDiagnosticsManualCodeKind>();
+        var allowedSides = Enum.GetNames<Application.Knowledge.ManualCodeBook.EquipmentDiagnosticsManualCodeEquipmentSide>();
+        var allowedContexts = Enum.GetNames<Application.Knowledge.ManualCodeBook.EquipmentDiagnosticsManualCodeDisplayContext>();
+        var allowedEvidence = Enum.GetNames<Application.Knowledge.ManualCodeBook.EquipmentDiagnosticsManualCodeEvidenceLevel>();
+        var allowedReadiness = Enum.GetNames<Application.Knowledge.ManualCodeBook.EquipmentDiagnosticsManualCodePromotionReadiness>();
+        var keys = new List<string>();
+
+        foreach (var (sourceName, value) in occurrences)
+        {
+            var code = RequiredCodeBookText(value, "code", sourceName, issues);
+            var manualId = RequiredCodeBookText(value, "manualId", sourceName, issues);
+            var page = RequiredCodeBookText(value, "page", sourceName, issues);
+            var section = RequiredCodeBookText(value, "section", sourceName, issues);
+            var kind = RequiredCodeBookEnum(value, "codeKind", allowedKinds, sourceName, issues);
+            var side = RequiredCodeBookEnum(value, "equipmentSide", allowedSides, sourceName, issues);
+            var context = RequiredCodeBookEnum(value, "displayContext", allowedContexts, sourceName, issues);
+            var evidence = RequiredCodeBookEnum(value, "evidenceLevel", allowedEvidence, sourceName, issues);
+            var readiness = RequiredCodeBookEnum(value, "promotionReadiness", allowedReadiness, sourceName, issues);
+
+            RequiredCodeBookText(value, "sourceFileName", sourceName, issues);
+            RequiredCodeBookText(value, "sourceTitle", sourceName, issues);
+            RequiredCodeBookText(value, "normalizedCode", sourceName, issues);
+            RequiredCodeBookText(value, "series", sourceName, issues);
+            RequiredCodeBookText(value, "meaning", sourceName, issues);
+
+            if (!string.IsNullOrWhiteSpace(manualId) && input.KnownManualIds is not null &&
+                !input.KnownManualIds.Contains(manualId))
+            {
+                issues.Add(Error("UnknownManualId", $"{sourceName}:{code}",
+                    $"Manual codebook occurrence references unknown manualId '{manualId}'.", "manual-codebook"));
+            }
+
+            if (value.TryGetProperty("shortQuote", out var quote) && quote.ValueKind == JsonValueKind.String &&
+                quote.GetString()!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length >= 25)
+            {
+                issues.Add(Error("LongManualQuote", $"{sourceName}:{code}",
+                    "Manual codebook shortQuote must contain fewer than 25 words.", "manual-codebook"));
+            }
+
+            keys.Add($"{manualId}|{page}|{section}|{context}|{code}");
+        }
+
+        var duplicates = keys.GroupBy(key => key, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1).Select(group => group.Key).ToArray();
+        foreach (var duplicate in duplicates)
+        {
+            issues.Add(Error("DuplicateManualCodeOccurrence", duplicate,
+                "Manual codebook contains a duplicate manual/context/page/code occurrence.", "manual-codebook"));
+        }
+
+        var countsByKind = CountCodeBookValues(occurrences, "codeKind");
+        var countsBySide = CountCodeBookValues(occurrences, "equipmentSide");
+        var countsByManual = CountCodeBookValues(occurrences, "manualId");
+        var summary = new EquipmentDiagnosticsManualCodeBookSummary(
+            SourceCount: countsByManual.Count,
+            CodeOccurrenceCount: occurrences.Count,
+            CountsByCodeKind: countsByKind,
+            CountsByEquipmentSide: countsBySide,
+            CountsByManualId: countsByManual,
+            PromotableCandidatesCount: CountCodeBookValue(occurrences, "promotionReadiness", "ReadyForStagingCandidate"),
+            ReferenceOnlyCount: CountCodeBookValue(occurrences, "promotionReadiness", "ReferenceOnly"),
+            BlockedOrNeedsReviewCount: CountCodeBookValue(occurrences, "promotionReadiness", "Blocked") +
+                CountCodeBookValue(occurrences, "promotionReadiness", "NeedsTroubleshootingEvidence") +
+                CountCodeBookValue(occurrences, "promotionReadiness", "ReadyForEngineeringReview"),
+            DuplicateOrConflictCount: duplicates.Length);
+
+        return (SortIssues(issues), summary);
+    }
+
+    private static string RequiredCodeBookText(
+        JsonElement value,
+        string propertyName,
+        string sourceName,
+        ICollection<EquipmentDiagnosticsVerificationIssue> issues)
+    {
+        if (!value.TryGetProperty(propertyName, out var property) ||
+            property.ValueKind != JsonValueKind.String ||
+            string.IsNullOrWhiteSpace(property.GetString()))
+        {
+            issues.Add(Error("MissingManualCodeBookField", $"{sourceName}:{propertyName}",
+                $"Manual codebook occurrence must include non-empty '{propertyName}'.", "manual-codebook"));
+            return string.Empty;
+        }
+
+        return property.GetString()!;
+    }
+
+    private static string RequiredCodeBookEnum(
+        JsonElement value,
+        string propertyName,
+        IReadOnlyCollection<string> allowed,
+        string sourceName,
+        ICollection<EquipmentDiagnosticsVerificationIssue> issues)
+    {
+        var result = RequiredCodeBookText(value, propertyName, sourceName, issues);
+        if (!string.IsNullOrEmpty(result) && !allowed.Contains(result, StringComparer.Ordinal))
+        {
+            issues.Add(Error("InvalidManualCodeBookEnum", $"{sourceName}:{propertyName}",
+                $"Manual codebook value '{result}' is not allowed for '{propertyName}'.", "manual-codebook"));
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyDictionary<string, int> CountCodeBookValues(
+        IEnumerable<(string SourceName, JsonElement Value)> occurrences,
+        string propertyName) =>
+        occurrences
+            .Where(item => item.Value.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String)
+            .GroupBy(item => item.Value.GetProperty(propertyName).GetString()!, StringComparer.Ordinal)
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
+
+    private static int CountCodeBookValue(
+        IEnumerable<(string SourceName, JsonElement Value)> occurrences,
+        string propertyName,
+        string expected) =>
+        occurrences.Count(item => item.Value.TryGetProperty(propertyName, out var value) &&
+            value.ValueKind == JsonValueKind.String &&
+            string.Equals(value.GetString(), expected, StringComparison.Ordinal));
 
     private static IReadOnlyList<EquipmentDiagnosticsVerificationIssue> ValidateRuntimeCatalog(
         EquipmentDiagnosticsVerificationInput input)
@@ -546,6 +712,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
     {
         var normalized = sourceName.Replace('\\', '/');
         return normalized.Contains("/staging/", StringComparison.OrdinalIgnoreCase) ||
+            normalized.Contains("/manual-codebook/", StringComparison.OrdinalIgnoreCase) ||
             normalized.Contains("/docs/", StringComparison.OrdinalIgnoreCase) ||
             normalized.Contains("/tests/", StringComparison.OrdinalIgnoreCase) ||
             normalized.Contains("/fixtures/", StringComparison.OrdinalIgnoreCase);

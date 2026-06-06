@@ -1218,6 +1218,7 @@ public class EquipmentDiagnosticsFoundationTests
         return Directory.GetFiles(knowledgeRoot, "*.json", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .Where(path => !IsStagingKnowledgePath(path))
+            .Where(path => !HasKnowledgePathSegment(path, "manual-codebook"))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
     }
@@ -1225,6 +1226,10 @@ public class EquipmentDiagnosticsFoundationTests
     private static bool IsStagingKnowledgePath(string path) =>
         path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             .Contains("staging", StringComparer.OrdinalIgnoreCase);
+
+    private static bool HasKnowledgePathSegment(string path, string segment) =>
+        path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .Contains(segment, StringComparer.OrdinalIgnoreCase);
 
     private static string NormalizeTestIdentifier(string? value)
     {

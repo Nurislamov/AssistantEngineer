@@ -15,6 +15,7 @@ public enum EquipmentDiagnosticsVerificationDocumentKind
     StagingCandidate,
     StagingTemplate,
     StagingExample,
+    ManualCodeBook,
     DocsExample
 }
 
@@ -37,7 +38,8 @@ public sealed record EquipmentDiagnosticsVerificationInput(
     IReadOnlyList<EquipmentDiagnosticsVerificationDocument> StagingDocuments,
     IReadOnlyList<EquipmentDiagnosticsVerificationDocument> DocsExampleDocuments,
     int MinimumRuntimeCatalogCount = 23,
-    IReadOnlySet<string>? KnownManualIds = null);
+    IReadOnlySet<string>? KnownManualIds = null,
+    IReadOnlyList<EquipmentDiagnosticsVerificationDocument>? ManualCodeBookDocuments = null);
 
 public sealed record EquipmentDiagnosticsVerificationIssue(
     string Code,
@@ -61,6 +63,17 @@ public sealed record EquipmentDiagnosticsRuntimeCatalogSummary(
     int ManualVerifiedEntries,
     IReadOnlyList<string> DuplicateKeys);
 
+public sealed record EquipmentDiagnosticsManualCodeBookSummary(
+    int SourceCount,
+    int CodeOccurrenceCount,
+    IReadOnlyDictionary<string, int> CountsByCodeKind,
+    IReadOnlyDictionary<string, int> CountsByEquipmentSide,
+    IReadOnlyDictionary<string, int> CountsByManualId,
+    int PromotableCandidatesCount,
+    int ReferenceOnlyCount,
+    int BlockedOrNeedsReviewCount,
+    int DuplicateOrConflictCount);
+
 public sealed record EquipmentDiagnosticsVerificationSection(
     string Name,
     int FileCount,
@@ -72,6 +85,7 @@ public sealed record EquipmentDiagnosticsVerificationSection(
 
 public sealed record EquipmentDiagnosticsVerificationReport(
     EquipmentDiagnosticsRuntimeCatalogSummary RuntimeCatalog,
+    EquipmentDiagnosticsManualCodeBookSummary ManualCodeBookSummary,
     int StagingCandidateFileCount,
     int StagingExampleFileCount,
     int DocsExampleFileCount,

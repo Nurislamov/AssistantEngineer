@@ -26,7 +26,9 @@ public sealed class EquipmentDiagnosticsGmv6ManualBackedStagingTests
             Assert.False(string.IsNullOrWhiteSpace(RequiredText(source, "title")));
             Assert.Contains(
                 RequiredText(source, "usage"),
-                new[] { "PrimaryTroubleshootingSource", "SecondarySafetySource", "IndoorFutureSource" });
+                new[] { "PrimaryTroubleshootingSource", "SecondarySafetySource", "IndoorTroubleshootingSource",
+                    "ControllerOperationSource", "CommissioningToolSource", "OwnerReferenceSource",
+                    "TechnicalApplicabilitySource" });
             Assert.Contains("must not be committed", RequiredText(source, "commitPolicy"), StringComparison.OrdinalIgnoreCase);
         });
         Assert.DoesNotContain(
@@ -51,7 +53,7 @@ public sealed class EquipmentDiagnosticsGmv6ManualBackedStagingTests
         Assert.Equal("SecondarySafetySource", RequiredText(owner, "usage"));
 
         var indoor = FindSource(sources, "gree-gmv5-indoor-service-manual-gc201711-v");
-        Assert.Equal("IndoorFutureSource", RequiredText(indoor, "usage"));
+        Assert.Equal("IndoorTroubleshootingSource", RequiredText(indoor, "usage"));
         Assert.Equal("GC201711-V", RequiredText(indoor, "documentCode"));
     }
 
@@ -183,6 +185,7 @@ public sealed class EquipmentDiagnosticsGmv6ManualBackedStagingTests
         Directory.GetFiles(KnowledgeRoot, "*.json", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}staging{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}manual-codebook{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
     private static string ModuleRoot =>

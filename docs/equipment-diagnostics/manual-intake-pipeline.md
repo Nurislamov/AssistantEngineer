@@ -1,5 +1,9 @@
 # Equipment Diagnostics Manual Intake Pipeline
 
+## Manual codebook extraction
+
+After a local manual is registered and its cover identity is checked, reviewed code occurrences may be recorded in `Knowledge/manual-codebook`. The codebook is non-runtime and preserves source/page/section plus classification and promotion readiness. Only occurrences with separately reviewed troubleshooting evidence may move into the staging-candidate workflow.
+
 ED-11A provides a deterministic manual-intake, validation, and promotion-readiness pipeline for EquipmentDiagnostics.
 
 The pipeline does not automatically modify the runtime catalog. A reviewed pull request remains required for every runtime catalog change.

@@ -383,6 +383,8 @@ public class EquipmentDiagnosticsStagingValidatorTests
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .Where(path => !path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                 .Contains("staging", StringComparer.OrdinalIgnoreCase))
+            .Where(path => !path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .Contains("manual-codebook", StringComparer.OrdinalIgnoreCase))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
     }

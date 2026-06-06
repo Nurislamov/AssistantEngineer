@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://assistantengineer.local/schemas/equipment-diagnostics-manual-codebook.schema.json",
+  "title": "AssistantEngineer Equipment Diagnostics Non-Runtime Manual Code Book",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["occurrences"],
+  "properties": {
+    "occurrences": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/occurrence" }
+    }
+  },
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 },
+    "nullableText": { "type": ["string", "null"], "minLength": 1 },
+    "textArray": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+    "occurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manualId", "sourceFileName", "sourceTitle", "page", "section", "code",
+        "normalizedCode", "codeKind", "equipmentSide", "displayContext", "series",
+        "meaning", "canBecomeDiagnosticCase", "promotionReadiness", "evidenceLevel"
+      ],
+      "properties": {
+        "manualId": { "$ref": "#/$defs/text" },
+        "sourceFileName": { "$ref": "#/$defs/text" },
+        "sourceTitle": { "$ref": "#/$defs/text" },
+        "sourceDocumentCode": { "$ref": "#/$defs/nullableText" },
+        "sourceVersion": { "$ref": "#/$defs/nullableText" },
+        "page": { "$ref": "#/$defs/text" },
+        "section": { "$ref": "#/$defs/text" },
+        "code": { "$ref": "#/$defs/text" },
+        "normalizedCode": { "$ref": "#/$defs/text" },
+        "codeKind": { "enum": ["Fault", "Protection", "Status", "Debugging", "Query", "Setting", "DisplayPattern", "NonFault", "Parameter", "ToolFunction", "Unknown"] },
+        "equipmentSide": { "enum": ["Indoor", "Outdoor", "Controller", "CommissioningTool", "System", "OwnerManual", "TechnicalGuide"] },
+        "displayContext": { "enum": ["WiredController", "OduMainBoardLed", "IduDisplay", "PortableCommissioningTool", "CentralizedController", "RemoteController", "TechnicalDocument", "Unknown"] },
+        "series": { "$ref": "#/$defs/text" },
+        "meaning": { "$ref": "#/$defs/text" },
+        "judgmentConditionSummary": { "$ref": "#/$defs/nullableText" },
+        "possibleCauseSummary": { "$ref": "#/$defs/nullableText" },
+        "troubleshootingSummary": { "$ref": "#/$defs/nullableText" },
+        "nonFaultExplanation": { "$ref": "#/$defs/nullableText" },
+        "requiredMeasurements": { "$ref": "#/$defs/textArray" },
+        "safetyNotes": { "$ref": "#/$defs/textArray" },
+        "limitations": { "$ref": "#/$defs/textArray" },
+        "canBecomeDiagnosticCase": { "type": "boolean" },
+        "promotionReadiness": { "enum": ["ReferenceOnly", "NeedsTroubleshootingEvidence", "ReadyForStagingCandidate", "ReadyForEngineeringReview", "Blocked"] },
+        "evidenceLevel": { "enum": ["ErrorIndicationTable", "TroubleshootingSection", "DebuggingProcedure", "ControllerOperationSection", "TechnicalGuideApplicability", "OwnerManualCommonMalfunction", "Unknown"] },
+        "shortQuote": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/text", "maxLength": 180 }] },
+        "notes": { "$ref": "#/$defs/nullableText" }
+      }
+    }
+  }
+}

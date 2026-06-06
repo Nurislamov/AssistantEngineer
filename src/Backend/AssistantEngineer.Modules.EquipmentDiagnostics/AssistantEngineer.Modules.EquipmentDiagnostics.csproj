@@ -14,6 +14,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Knowledge\**\*.json" />
     <EmbeddedResource Remove="Knowledge\staging\**\*.json" />
+    <EmbeddedResource Remove="Knowledge\manual-codebook\**\*.json" />
   </ItemGroup>
 
 </Project>
