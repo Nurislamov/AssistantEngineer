@@ -43,6 +43,9 @@ public sealed class BranchReadinessPrBodyGenerator
         builder.AppendLine($"- Staging example/template files: `{report.EquipmentDiagnostics.StagingExampleFileCount}`");
         builder.AppendLine($"- Docs example files: `{report.EquipmentDiagnostics.DocsExampleFileCount}`");
         builder.AppendLine($"- ManualVerified runtime entries: `{report.EquipmentDiagnostics.RuntimeCatalog.ManualVerifiedEntries}`");
+        builder.AppendLine($"- Manual codebook occurrences: `{report.EquipmentDiagnostics.ManualCodeBookSummary.CodeOccurrenceCount}`");
+        builder.AppendLine($"- Manual codebook sources: `{report.EquipmentDiagnostics.ManualCodeBookSummary.SourceCount}`");
+        builder.AppendLine($"- Manual codebook duplicate/conflicts: `{report.EquipmentDiagnostics.ManualCodeBookSummary.DuplicateOrConflictCount}`");
         builder.AppendLine();
         builder.AppendLine("## Verification Commands");
         builder.AppendLine();

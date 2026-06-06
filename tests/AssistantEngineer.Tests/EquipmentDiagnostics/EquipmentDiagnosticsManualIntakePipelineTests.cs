@@ -549,6 +549,7 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
         Directory.GetFiles(KnowledgeRoot, "*.json", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .Where(path => !HasPathSegment(path, "staging"))
+            .Where(path => !HasPathSegment(path, "manual-codebook"))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
 

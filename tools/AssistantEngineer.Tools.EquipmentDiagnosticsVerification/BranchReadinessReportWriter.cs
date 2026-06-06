@@ -58,6 +58,12 @@ internal static class BranchReadinessReportWriter
         builder.AppendLine($"- Runtime duplicate keys: `{report.EquipmentDiagnostics.RuntimeCatalog.DuplicateKeys.Count}`");
         builder.AppendLine($"- Staging candidate files: `{report.EquipmentDiagnostics.StagingCandidateFileCount}`");
         builder.AppendLine($"- Docs example files: `{report.EquipmentDiagnostics.DocsExampleFileCount}`");
+        builder.AppendLine($"- Manual codebook sources: `{report.EquipmentDiagnostics.ManualCodeBookSummary.SourceCount}`");
+        builder.AppendLine($"- Manual codebook occurrences: `{report.EquipmentDiagnostics.ManualCodeBookSummary.CodeOccurrenceCount}`");
+        builder.AppendLine($"- Manual codebook promotable candidates: `{report.EquipmentDiagnostics.ManualCodeBookSummary.PromotableCandidatesCount}`");
+        builder.AppendLine($"- Manual codebook reference-only: `{report.EquipmentDiagnostics.ManualCodeBookSummary.ReferenceOnlyCount}`");
+        builder.AppendLine($"- Manual codebook blocked/needs-review: `{report.EquipmentDiagnostics.ManualCodeBookSummary.BlockedOrNeedsReviewCount}`");
+        builder.AppendLine($"- Manual codebook duplicate/conflicts: `{report.EquipmentDiagnostics.ManualCodeBookSummary.DuplicateOrConflictCount}`");
         builder.AppendLine($"- Blocking issues: `{report.EquipmentDiagnostics.HasBlockingIssues}`");
         builder.AppendLine();
         builder.AppendLine("## Command Checks");

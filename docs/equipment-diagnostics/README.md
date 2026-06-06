@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-14A manual codebook
+
+The non-runtime [manual codebook](manual-codebook.md) inventories reviewed code occurrences from the local Gree manual corpus. It separates fault/protection references from status, debugging, query, setting, controller/tool, and applicability contexts. Codebook entries are not runtime diagnostic cases and are never promoted automatically.
+
 Equipment Diagnostics is an early backend module for deterministic diagnostic support around equipment error codes, likely causes, required measurements, safety notes, and manual references.
 
 ## Purpose

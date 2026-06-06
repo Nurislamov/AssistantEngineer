@@ -18,6 +18,9 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
         var stagingDocuments = GetStagingFiles(repoRoot)
             .Select(path => ReadDocument(repoRoot, path, GetStagingDocumentKind(path)))
             .ToArray();
+        var manualCodeBookDocuments = GetManualCodeBookFiles(repoRoot)
+            .Select(path => ReadDocument(repoRoot, path, EquipmentDiagnosticsVerificationDocumentKind.ManualCodeBook))
+            .ToArray();
         var docsExampleDocuments = GetDocsExampleFiles(repoRoot)
             .Select(path => ReadDocument(repoRoot, path, EquipmentDiagnosticsVerificationDocumentKind.DocsExample))
             .ToArray();
@@ -27,7 +30,8 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
             RuntimeDocuments: runtimeDocuments,
             StagingDocuments: stagingDocuments,
             DocsExampleDocuments: docsExampleDocuments,
-            KnownManualIds: GetKnownManualIds(repoRoot));
+            KnownManualIds: GetKnownManualIds(repoRoot),
+            ManualCodeBookDocuments: manualCodeBookDocuments);
     }
 
     private static IReadOnlyList<string> GetRuntimeCatalogFiles(string repoRoot)
@@ -42,6 +46,18 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
         return Directory.GetFiles(knowledgeRoot, "*.json", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .Where(path => !HasPathSegment(path, "staging"))
+            .Where(path => !HasPathSegment(path, "manual-codebook"))
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static IReadOnlyList<string> GetManualCodeBookFiles(string repoRoot)
+    {
+        var root = Path.Combine(repoRoot, "src", "Backend",
+            "AssistantEngineer.Modules.EquipmentDiagnostics", "Knowledge", "manual-codebook");
+
+        return Directory.GetFiles(root, "*.json", SearchOption.AllDirectories)
+            .Where(path => !path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
     }

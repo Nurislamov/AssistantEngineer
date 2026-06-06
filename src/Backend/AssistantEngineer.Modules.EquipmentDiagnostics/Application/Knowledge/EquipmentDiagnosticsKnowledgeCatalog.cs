@@ -8,5 +8,6 @@ public static class EquipmentDiagnosticsKnowledgeCatalog
         resourceName.Contains(ResourcePathFragment, StringComparison.Ordinal) &&
         resourceName.EndsWith(".json", StringComparison.OrdinalIgnoreCase) &&
         !resourceName.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase) &&
-        !resourceName.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase);
+        !resourceName.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase) &&
+        !resourceName.Contains(".Knowledge.manual-codebook.", StringComparison.OrdinalIgnoreCase);
 }
