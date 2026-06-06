@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Diagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Verification;
@@ -361,6 +362,107 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
         Assert.Equal(first, second);
     }
 
+    [Fact]
+    public void PrBodyGeneratorRendersPassingReportDeterministicallyWithRequiredChecklist()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput([]));
+        var generator = new BranchReadinessPrBodyGenerator();
+
+        var first = generator.Render(report, "artifacts/verification/branch-readiness/branch-readiness-report.json");
+        var second = generator.Render(report, "artifacts/verification/branch-readiness/branch-readiness-report.json");
+
+        Assert.Equal(first, second);
+        Assert.Contains("Readiness status: **PASS**", first, StringComparison.Ordinal);
+        Assert.Contains("Allowed: `0`", first, StringComparison.Ordinal);
+        Assert.Contains("Suspicious: `0`", first, StringComparison.Ordinal);
+        Assert.Contains("Forbidden: `0`", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No calculation physics changed.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No public calculation API route changed.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No EF/DB changes.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No Telegram integration.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No AI/RAG/vector search.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] No staging/docs example runtime pollution.", first, StringComparison.Ordinal);
+        Assert.Contains("- [x] Branch readiness report is PASS.", first, StringComparison.Ordinal);
+        Assert.DoesNotContain("raw log", first, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PrBodyGeneratorRendersFailReportWithBlockerSummary()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "src/Backend/AssistantEngineer.Modules.Calculations/Synthetic.cs",
+                    "Modified",
+                    true,
+                    false,
+                    false,
+                    false,
+                    "namespace Synthetic;")
+            ]));
+
+        var body = new BranchReadinessPrBodyGenerator().Render(
+            report,
+            "artifacts/verification/branch-readiness/branch-readiness-report.json");
+
+        Assert.Contains("Readiness status: **FAIL**", body, StringComparison.Ordinal);
+        Assert.Contains("## Blockers", body, StringComparison.Ordinal);
+        Assert.Contains("ForbiddenChangedPath", body, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Branch readiness report is PASS.", body, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PreparePrBodyCommandFailsWhenReportIsMissing()
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "dotnet",
+            WorkingDirectory = TestPaths.RepoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        foreach (var argument in new[]
+                 {
+                     "run",
+                     "--project",
+                     VerificationToolProjectPath,
+                     "--no-build",
+                     "--",
+                     "prepare-pr-body",
+                     "--repo-root",
+                     TestPaths.RepoRoot,
+                     "--report",
+                     "artifacts/verification/branch-readiness/missing-report.json"
+                 })
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+
+        using var process = Process.Start(startInfo);
+        Assert.NotNull(process);
+        process.WaitForExit();
+
+        Assert.NotEqual(0, process.ExitCode);
+        Assert.Contains("not found", process.StandardError.ReadToEnd(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void PrAutomationScriptsRemainThinWrappers()
+    {
+        var prepareScript = File.ReadAllText(PreparePrBodyScriptPath);
+        var combinedScript = File.ReadAllText(VerifyAndPreparePrScriptPath);
+
+        Assert.Contains("prepare-pr-body", prepareScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConvertFrom-Json", prepareScript, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("git diff", prepareScript, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("verify-branch-readiness.ps1", combinedScript, StringComparison.Ordinal);
+        Assert.Contains("prepare-pr-body.ps1", combinedScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("ConvertFrom-Json", combinedScript, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("git diff", combinedScript, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static EquipmentDiagnosticsVerificationService CreateService() => new();
 
     private static BranchReadinessVerificationService CreateBranchReadinessService() => new();
@@ -551,4 +653,17 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
             "scripts",
             "dev",
             "verify-branch-readiness.ps1");
+
+    private static string PreparePrBodyScriptPath =>
+        Path.Combine(TestPaths.RepoRoot, "scripts", "dev", "prepare-pr-body.ps1");
+
+    private static string VerifyAndPreparePrScriptPath =>
+        Path.Combine(TestPaths.RepoRoot, "scripts", "dev", "verify-and-prepare-pr.ps1");
+
+    private static string VerificationToolProjectPath =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "tools",
+            "AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
+            "AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj");
 }

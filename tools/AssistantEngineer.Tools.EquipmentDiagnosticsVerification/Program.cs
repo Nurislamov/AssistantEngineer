@@ -31,6 +31,14 @@ internal static class Program
                 return VerifyBranch(repoRoot, options);
             }
 
+            if (options.Command == "prepare-pr-body")
+            {
+                var outputPath = BranchReadinessPrBodyWriter.Write(repoRoot, options.ReportPath, options.OutputPath);
+                Console.WriteLine("PASS");
+                Console.WriteLine($"PR body: {Path.GetRelativePath(repoRoot, outputPath).Replace('\\', '/')}");
+                return 0;
+            }
+
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
             var report = new EquipmentDiagnosticsVerificationService().Verify(input);
             var selectedReport = SelectCommandReport(report, options.Command);
@@ -133,12 +141,15 @@ internal static class Program
         Console.WriteLine("  validate-doc-examples");
         Console.WriteLine("  full-report");
         Console.WriteLine("  verify-branch");
+        Console.WriteLine("  prepare-pr-body");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --repo-root <path>");
         Console.WriteLine("  --base-ref <git-ref>              Default: origin/master");
         Console.WriteLine("  --scope <scope>                    Default: EquipmentDiagnostics");
         Console.WriteLine("  --output-directory <path>");
+        Console.WriteLine("  --report <path>                    Branch readiness JSON report");
+        Console.WriteLine("  --output <path>                    Generated PR body Markdown");
         Console.WriteLine("  --skip-command-checks              Skip restore/build/test (for focused development only)");
     }
 }

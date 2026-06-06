@@ -517,6 +517,29 @@ Developers do not need to manually copy diff, file-content, or search output int
 passes, the reviewed PR diff and GitHub checks remain the final promotion boundary. Staging candidates are never
 promoted automatically. DB persistence, Telegram, AI/RAG, and vector search remain future work.
 
+## ED-12A PR Automation And CI Readiness
+
+Prepare a verified PR package with one command:
+
+```powershell
+.\scripts\dev\verify-and-prepare-pr.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics
+```
+
+The command fails fast unless branch readiness passes, then generates:
+
+- `artifacts/verification/branch-readiness/branch-readiness-report.json`
+- `artifacts/verification/branch-readiness/branch-readiness-report.md`
+- `artifacts/verification/branch-readiness/pr-body.md`
+
+The PR body is deterministic and derived from the readiness report. It contains bounded summaries, verification
+commands, and the required safety/scope checklist without embedding raw command logs.
+
+The focused `EquipmentDiagnostics Branch Readiness` GitHub Actions workflow reruns the same readiness policy for
+relevant pull requests and uploads the ignored reports as CI artifacts. Developer flow is: create a feature
+branch, implement, run the combined command, commit/push, use the generated PR body, and review the GitHub PR
+diff/checks. Manual diff copy/paste is no longer required. Runtime catalog promotion still requires a reviewed
+PR; DB, Telegram, AI/RAG, and vector search remain future stages.
+
 ## API Routes
 
 ### Search Error Codes

@@ -1,0 +1,59 @@
+name: EquipmentDiagnostics Branch Readiness
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - "docs/equipment-diagnostics/**"
+      - "src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/**"
+      - "tests/AssistantEngineer.Tests/EquipmentDiagnostics/**"
+      - "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/**"
+      - "scripts/dev/**"
+      - "scripts/equipment-diagnostics/**"
+      - "docs/architecture/scripts-tools-inventory.*"
+      - "docs/architecture/module-boundary-matrix.json"
+      - "AssistantEngineer.sln"
+      - ".github/workflows/equipment-diagnostics-branch-readiness.yml"
+  workflow_dispatch:
+
+jobs:
+  verify-equipment-diagnostics-readiness:
+    name: Verify EquipmentDiagnostics branch readiness
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore solution
+        run: dotnet restore .\AssistantEngineer.sln
+
+      - name: Build solution
+        run: dotnet build .\AssistantEngineer.sln --no-restore
+
+      - name: Run EquipmentDiagnostics tests
+        run: dotnet test .\AssistantEngineer.sln --filter EquipmentDiagnostics --no-build
+
+      - name: Verify branch readiness
+        shell: pwsh
+        run: .\scripts\dev\verify-branch-readiness.ps1 -BaseRef "origin/${{ github.base_ref || 'master' }}" -Scope EquipmentDiagnostics
+
+      - name: Prepare PR body artifact
+        shell: pwsh
+        run: .\scripts\dev\prepare-pr-body.ps1
+
+      - name: Upload readiness reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: equipment-diagnostics-branch-readiness
+          path: artifacts/verification/branch-readiness/
