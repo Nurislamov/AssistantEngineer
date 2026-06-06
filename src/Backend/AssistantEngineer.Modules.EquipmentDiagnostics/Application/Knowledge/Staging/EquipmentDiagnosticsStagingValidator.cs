@@ -59,26 +59,34 @@ public sealed class EquipmentDiagnosticsStagingValidator : IEquipmentDiagnostics
             var file = JsonSerializer.Deserialize<EquipmentDiagnosticsStagingCandidateFile>(json, JsonOptions);
             if (file?.Candidates is null)
             {
-                return new EquipmentDiagnosticsStagingValidationResult(
-                [
+                var issues = new[]
+                {
                     Error(
                         "MissingCandidates",
                         sourceName,
                         "Staging JSON must contain a candidates array.")
-                ]);
+                };
+
+                return new EquipmentDiagnosticsStagingValidationResult(
+                    issues,
+                    BuildReport(candidateCount: 0, [], [], issues, new Dictionary<string, string>(StringComparer.Ordinal)));
             }
 
             return ValidateCandidates(file.Candidates, productionEntries, sourceName);
         }
         catch (JsonException exception)
         {
-            return new EquipmentDiagnosticsStagingValidationResult(
-            [
+            var issues = new[]
+            {
                 Error(
                     "InvalidJson",
                     sourceName,
                     $"Staging JSON is invalid: {exception.Message}")
-            ]);
+            };
+
+            return new EquipmentDiagnosticsStagingValidationResult(
+                issues,
+                BuildReport(candidateCount: 0, [], [], issues, new Dictionary<string, string>(StringComparer.Ordinal)));
         }
     }
 
@@ -95,7 +103,9 @@ public sealed class EquipmentDiagnosticsStagingValidator : IEquipmentDiagnostics
                 "MissingCandidates",
                 sourceName,
                 "Staging candidate list must contain at least one candidate."));
-            return new EquipmentDiagnosticsStagingValidationResult(issues);
+            return new EquipmentDiagnosticsStagingValidationResult(
+                issues,
+                BuildReport(candidateCount: 0, [], [], issues, new Dictionary<string, string>(StringComparer.Ordinal)));
         }
 
         var productionKeys = productionEntries
@@ -103,11 +113,16 @@ public sealed class EquipmentDiagnosticsStagingValidator : IEquipmentDiagnostics
             .ToHashSet(StringComparer.Ordinal);
 
         var candidateKeys = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var candidateKeyByPath = new Dictionary<string, string>(StringComparer.Ordinal);
+        var reviewStatuses = new List<string?>();
 
         var index = 0;
         foreach (var candidate in candidates)
         {
             var path = $"{sourceName}:candidates[{index}]";
+            var reportKey = TryCreateCandidateKeyForReport(candidate) ?? $"{sourceName}:candidates[{index}]";
+            candidateKeyByPath.Add(path, reportKey);
+            reviewStatuses.Add(candidate.ReviewStatus);
             ValidateCandidate(candidate, path, productionKeys, candidateKeys, issues);
             index++;
         }
@@ -122,12 +137,15 @@ public sealed class EquipmentDiagnosticsStagingValidator : IEquipmentDiagnostics
                 $"Staging candidates contain duplicate manufacturer/series/category/modelCode/code key '{duplicate.Key}'."));
         }
 
-        return new EquipmentDiagnosticsStagingValidationResult(
-            issues
+        var sortedIssues = issues
                 .OrderBy(issue => issue.Severity)
                 .ThenBy(issue => issue.Path, StringComparer.Ordinal)
                 .ThenBy(issue => issue.Code, StringComparer.Ordinal)
-                .ToArray());
+                .ToArray();
+
+        return new EquipmentDiagnosticsStagingValidationResult(
+            sortedIssues,
+            BuildReport(candidates.Count, candidateKeyByPath.Values, reviewStatuses, sortedIssues, candidateKeyByPath));
     }
 
     private static void ValidateCandidate(
@@ -594,6 +612,84 @@ public sealed class EquipmentDiagnosticsStagingValidator : IEquipmentDiagnostics
             entry.Category,
             NormalizeText(entry.ModelCode) ?? string.Empty,
             NormalizeCode(entry.Code));
+
+    private static string? TryCreateCandidateKeyForReport(EquipmentDiagnosticsStagingCandidate candidate)
+    {
+        if (string.IsNullOrWhiteSpace(candidate.Manufacturer) ||
+            string.IsNullOrWhiteSpace(candidate.Series) ||
+            string.IsNullOrWhiteSpace(candidate.Category) ||
+            string.IsNullOrWhiteSpace(candidate.Code) ||
+            !Enum.TryParse<EquipmentCategory>(candidate.Category, ignoreCase: false, out var category))
+        {
+            return null;
+        }
+
+        return string.Join(
+            "/",
+            NormalizeText(candidate.Manufacturer),
+            NormalizeText(candidate.Series),
+            category,
+            NormalizeText(candidate.ModelCode) ?? string.Empty,
+            NormalizeCode(candidate.Code));
+    }
+
+    private static EquipmentDiagnosticsStagingValidationReport BuildReport(
+        int candidateCount,
+        IEnumerable<string> candidateKeys,
+        IReadOnlyCollection<string?> reviewStatuses,
+        IReadOnlyList<EquipmentDiagnosticsStagingValidationIssue> issues,
+        IReadOnlyDictionary<string, string> candidateKeyByPath)
+    {
+        var sortedCandidateKeys = candidateKeys
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(key => key, StringComparer.Ordinal)
+            .ToArray();
+
+        var issueGroups = issues
+            .GroupBy(issue => ResolveIssueCandidateKey(issue, candidateKeyByPath), StringComparer.Ordinal)
+            .Select(group => new EquipmentDiagnosticsStagingValidationIssueGroup(
+                CandidateKey: group.Key,
+                Issues: group
+                    .OrderBy(issue => issue.Severity)
+                    .ThenBy(issue => issue.Path, StringComparer.Ordinal)
+                    .ThenBy(issue => issue.Code, StringComparer.Ordinal)
+                    .ToArray()))
+            .OrderBy(group => group.CandidateKey, StringComparer.Ordinal)
+            .ToArray();
+
+        var errorCount = issues.Count(issue => issue.Severity == EquipmentDiagnosticsStagingValidationIssueSeverity.Error);
+        var warningCount = issues.Count(issue => issue.Severity == EquipmentDiagnosticsStagingValidationIssueSeverity.Warning);
+        var infoCount = issues.Count(issue => issue.Severity == EquipmentDiagnosticsStagingValidationIssueSeverity.Info);
+
+        return new EquipmentDiagnosticsStagingValidationReport(
+            TotalCandidates: candidateCount,
+            ErrorCount: errorCount,
+            WarningCount: warningCount,
+            InfoCount: infoCount,
+            CandidateKeys: sortedCandidateKeys,
+            IssuesByCandidateKey: issueGroups,
+            PromotionReady: errorCount == 0 &&
+                issues.All(issue => issue.Code != "CandidateNotReadyForRuntimeCatalog") &&
+                reviewStatuses.Count > 0 &&
+                reviewStatuses.All(status => status == "ApprovedForCatalog") &&
+                candidateCount > 0,
+            HasBlockingIssues: errorCount > 0);
+    }
+
+    private static string ResolveIssueCandidateKey(
+        EquipmentDiagnosticsStagingValidationIssue issue,
+        IReadOnlyDictionary<string, string> candidateKeyByPath)
+    {
+        foreach (var pair in candidateKeyByPath.OrderByDescending(pair => pair.Key.Length))
+        {
+            if (issue.Path.StartsWith(pair.Key, StringComparison.Ordinal))
+            {
+                return pair.Value;
+            }
+        }
+
+        return "__file__";
+    }
 
     private static string? NormalizeText(string? value)
     {
