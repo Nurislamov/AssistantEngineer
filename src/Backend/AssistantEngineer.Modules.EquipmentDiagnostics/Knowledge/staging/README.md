@@ -6,6 +6,8 @@ Staging files are review artifacts only. They are excluded from embedded runtime
 
 This staging area is part of the ED-10 manual-ingestion and bot-readiness pack. It supports reviewed catalog growth, but it is not a runtime catalog, API endpoint, database import path, Telegram integration, or AI/RAG/vector search layer.
 
+ED-11A adds a deterministic verification pipeline over this staging area. The pipeline reports readiness and blockers but never copies candidates into production JSON automatically.
+
 ## Runtime Boundary
 
 The approved runtime catalog remains under production knowledge folders such as:
@@ -68,6 +70,14 @@ Validation results include a report summary:
 
 `PromotionReady` is true only for error-free `ApprovedForCatalog` candidates. It is false for `Draft`, `NeedsManualCheck`, and `ReadyForReview` because those statuses still require review before runtime promotion.
 
+Run the full intake/readiness report:
+
+```powershell
+.\scripts\equipment-diagnostics\verify-equipment-diagnostics.ps1
+```
+
+The underlying C# tool supports `validate-staging`, `validate-runtime-catalog`, `validate-doc-examples`, and `full-report`. See `docs/equipment-diagnostics/manual-intake-pipeline.md`.
+
 ## Promotion Checklist
 
 1. Capture the manual observation as a staging candidate.
@@ -100,3 +110,5 @@ Staging does not add Telegram, AI, RAG, vector search, or public endpoints. Futu
 The current runtime Gree entries remain `SeededEngineeringKnowledge` / `UnverifiedSeed` / `Low` unless exact source evidence is promoted through production JSON review.
 
 Future UI, Telegram, or assistant integrations must consume approved runtime DTO fields or the deterministic formatter output. They must not promote staging text directly and must not generate new diagnosis text outside the reviewed runtime response.
+
+Even when the verification report marks a candidate `ReadyForCatalogPromotion`, promotion still requires copying the reviewed entry into production JSON and submitting it through a reviewed pull request.

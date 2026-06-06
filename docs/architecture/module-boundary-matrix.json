@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewedDate": "2026-05-20",
+  "lastReviewedDate": "2026-06-06",
   "stage": "P8-02",
   "components": [
     {
@@ -299,6 +299,20 @@
       "forbiddenDependencies": [],
       "allowedNamespacePrefixes": [
         "AssistantEngineer.Tools.EngineeringCoreEvidence."
+      ],
+      "forbiddenNamespacePrefixes": [],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
+      "assembly": "AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
+      "layer": "Tool",
+      "allowedDependencies": [
+        "AssistantEngineer.Modules.EquipmentDiagnostics"
+      ],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.EquipmentDiagnosticsVerification."
       ],
       "forbiddenNamespacePrefixes": [],
       "knownExceptions": []
