@@ -175,6 +175,17 @@ ED-10D finalizes the ED-10 manual-ingestion and bot-readiness pack with consiste
 
 ED-10A, ED-10B, ED-10C, and ED-10D together form a manual-ingestion and bot-readiness pack. They do not add persistence, admin import, Telegram/UI integration, AI/RAG/vector search, or new public endpoints.
 
+ED-11A adds a deterministic manual-intake and promotion-readiness pipeline:
+
+- application-level verification report models and report engine;
+- dedicated `AssistantEngineer.Tools.EquipmentDiagnosticsVerification` C# CLI;
+- thin `scripts/equipment-diagnostics/verify-equipment-diagnostics.ps1` wrapper;
+- runtime catalog, staging candidate, staging example, and docs example QA sections;
+- candidate readiness states and generic next actions;
+- release-readiness and blocking-issue summary.
+
+The pipeline validates and reports only. It never automatically writes or promotes runtime catalog entries. Runtime changes still require production JSON edits, full verification, and a reviewed pull request.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:
@@ -459,6 +470,53 @@ The existing public EquipmentDiagnostics API remains:
 
 No security endpoint inventory change is required because no route is added.
 
+## ED-11A Manual Intake Pipeline
+
+ED-11A turns the staging workflow into a repeatable local/CI engineering process without adding runtime infrastructure.
+
+Run the full pipeline:
+
+```powershell
+.\scripts\equipment-diagnostics\verify-equipment-diagnostics.ps1
+```
+
+Available direct CLI commands:
+
+- `validate-staging`
+- `validate-runtime-catalog`
+- `validate-doc-examples`
+- `full-report`
+
+The report includes runtime catalog totals, staging/docs file counts, normalized duplicate keys, candidate readiness, blocking issues, provenance/safety findings, and generic next actions. It intentionally omits nondeterministic timestamps.
+
+Candidate readiness is one of:
+
+- `NotReady`
+- `ReadyForEngineeringReview`
+- `ReadyForCatalogPromotion`
+- `Blocked`
+
+`ReadyForCatalogPromotion` means deterministic checks passed. It does not write runtime JSON and does not replace engineering review or a reviewed PR.
+
+See [manual-intake-pipeline.md](manual-intake-pipeline.md) for the complete workflow.
+
+## Automated Branch Readiness Verification
+
+ED-11A+ adds one-command branch readiness verification for EquipmentDiagnostics work:
+
+```powershell
+.\scripts\dev\verify-branch-readiness.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics
+```
+
+The thin wrapper calls the EquipmentDiagnostics verification tool. It discovers branch, staged, unstaged,
+and untracked files; applies the EquipmentDiagnostics scope policy; scans changed content for unsafe wording;
+runs runtime/staging/docs QA; runs restore/build/test checks; and writes deterministic JSON and Markdown reports
+under ignored `artifacts/verification/branch-readiness/`.
+
+Developers do not need to manually copy diff, file-content, or search output into review notes. After the command
+passes, the reviewed PR diff and GitHub checks remain the final promotion boundary. Staging candidates are never
+promoted automatically. DB persistence, Telegram, AI/RAG, and vector search remain future work.
+
 ## API Routes
 
 ### Search Error Codes
@@ -692,6 +750,7 @@ Example response excerpt:
 - ED-10B adds an application-level deterministic operator guidance formatter over existing diagnostic case DTO fields. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, DTO contract changes, or manual-backed runtime claims.
 - ED-10C adds deterministic contract examples and release-readiness guards for EquipmentDiagnostics API DTOs, formatter output, staging reports, and runtime/example separation. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
 - ED-10D adds final consistency, runtime-pollution, safety/provenance, formatter, and route-surface QA guards. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
+- ED-11A adds a deterministic C# manual-intake verification/report pipeline and thin script wrapper. It does not automatically promote entries or add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed claims without evidence.
 
 ## Future Stages
 

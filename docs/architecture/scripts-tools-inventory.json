@@ -1,6 +1,6 @@
 {
     "version":  2,
-    "lastReviewedDate":  "2026-05-22",
+    "lastReviewedDate":  "2026-06-06",
     "stage":  "P8-06",
     "entries":  [
                     {
@@ -1099,6 +1099,38 @@
                         "riskIfChanged":  "Wrapper contract drift can break CI/operator flows or release-readiness gate expectations."
                     },
                     {
+                        "id":  "SCR-069",
+                        "path":  "scripts/equipment-diagnostics/verify-equipment-diagnostics.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Thin wrapper for deterministic EquipmentDiagnostics catalog and manual-intake verification.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the wrapper thin and preserve verifier exit-code semantics.",
+                        "proposedStage":  "ED-11A",
+                        "riskIfChanged":  "Wrapper drift can hide blocking catalog, provenance, safety, or manual-intake validation findings."
+                    },
+                    {
+                        "id":  "SCR-070",
+                        "path":  "scripts/dev/verify-branch-readiness.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Thin wrapper for automated EquipmentDiagnostics branch readiness verification.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the wrapper thin and preserve branch-readiness exit-code semantics.",
+                        "proposedStage":  "ED-11A+",
+                        "riskIfChanged":  "Wrapper drift can hide forbidden scope changes, unsafe wording, or failed build/test checks."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
@@ -1318,6 +1350,23 @@
                         "recommendedAction":  "Keep tool CLI contract stable and wrapper-compatible.",
                         "proposedStage":  "P8-06",
                         "riskIfChanged":  "Tool contract drift can break scripts/workflows and invalidate governance artifacts."
+                    },
+                    {
+                        "id":  "TOOL-014",
+                        "path":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Deterministic EquipmentDiagnostics runtime catalog, staging intake, documentation example, and promotion-readiness verifier.",
+                        "invokedBy":  [
+                                          "scripts/equipment-diagnostics/verify-equipment-diagnostics.ps1",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep verifier rules deterministic and preserve blocking exit-code semantics.",
+                        "proposedStage":  "ED-11A",
+                        "riskIfChanged":  "Verifier drift can admit duplicate, unsafe, weakly sourced, or promotion-ineligible diagnostic knowledge."
                     },
                     {
                         "id":  "WF-001",
