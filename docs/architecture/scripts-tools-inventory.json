@@ -1131,6 +1131,40 @@
                         "riskIfChanged":  "Wrapper drift can hide forbidden scope changes, unsafe wording, or failed build/test checks."
                     },
                     {
+                        "id":  "SCR-071",
+                        "path":  "scripts/dev/prepare-pr-body.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Thin wrapper for deterministic PR body generation from a branch readiness report.",
+                        "invokedBy":  [
+                                          ".github/workflows/equipment-diagnostics-branch-readiness.yml",
+                                          "scripts/dev/verify-and-prepare-pr.ps1",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the wrapper thin and preserve deterministic PR body generation.",
+                        "proposedStage":  "ED-12A",
+                        "riskIfChanged":  "Wrapper drift can produce stale or incomplete PR readiness summaries."
+                    },
+                    {
+                        "id":  "SCR-072",
+                        "path":  "scripts/dev/verify-and-prepare-pr.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Thin developer-flow wrapper that verifies branch readiness before preparing a PR body.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "scripts/dev/verify-branch-readiness.ps1 + scripts/dev/prepare-pr-body.ps1",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep fail-fast orchestration thin and preserve child-script exit codes.",
+                        "proposedStage":  "ED-12A",
+                        "riskIfChanged":  "Wrapper drift can prepare PR metadata from a failing or stale readiness report."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
@@ -1463,6 +1497,22 @@
                         "recommendedAction":  "Keep workflow invocation semantics stable; update only with matching governance tests.",
                         "proposedStage":  "P8-06",
                         "riskIfChanged":  "Workflow trigger/step drift can hide required checks or weaken release-gate visibility."
+                    },
+                    {
+                        "id":  "WF-007",
+                        "path":  ".github/workflows/equipment-diagnostics-branch-readiness.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Focused pull-request workflow for EquipmentDiagnostics branch readiness verification and PR body evidence.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/dev/verify-branch-readiness.ps1 + scripts/dev/prepare-pr-body.ps1",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep PR path filters and readiness verification aligned with the local developer command.",
+                        "proposedStage":  "ED-12A",
+                        "riskIfChanged":  "Workflow drift can allow EquipmentDiagnostics PRs to omit local readiness policy or lose report evidence."
                     }
                 ],
     "nonClaims":  [

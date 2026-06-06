@@ -6,6 +6,8 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
     string BaseRef,
     string Scope,
     string? OutputDirectory,
+    string? ReportPath,
+    string? OutputPath,
     bool SkipCommandChecks,
     bool ShowHelp)
 {
@@ -13,12 +15,12 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
     {
         if (args.Count == 0)
         {
-            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, false, false);
+            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, false, false);
         }
 
         if (args.Any(arg => arg is "-h" or "--help" or "help"))
         {
-            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, false, true);
+            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, false, true);
         }
 
         var command = args[0];
@@ -26,6 +28,8 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
         var baseRef = "origin/master";
         var scope = "EquipmentDiagnostics";
         string? outputDirectory = null;
+        string? reportPath = null;
+        string? outputPath = null;
         var skipCommandChecks = false;
 
         for (var index = 1; index < args.Count; index++)
@@ -80,9 +84,31 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
                 continue;
             }
 
+            if (args[index] == "--report")
+            {
+                if (index + 1 >= args.Count)
+                {
+                    throw new InvalidOperationException("--report requires a path.");
+                }
+
+                reportPath = args[++index];
+                continue;
+            }
+
+            if (args[index] == "--output")
+            {
+                if (index + 1 >= args.Count)
+                {
+                    throw new InvalidOperationException("--output requires a path.");
+                }
+
+                outputPath = args[++index];
+                continue;
+            }
+
             throw new InvalidOperationException($"Unsupported option '{args[index]}'.");
         }
 
-        return new(command, repositoryRoot, baseRef, scope, outputDirectory, skipCommandChecks, false);
+        return new(command, repositoryRoot, baseRef, scope, outputDirectory, reportPath, outputPath, skipCommandChecks, false);
     }
 }

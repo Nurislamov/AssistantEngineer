@@ -48,6 +48,7 @@ public sealed class BranchReadinessVerificationService
         "docs/architecture/module-boundary-matrix.json",
         "docs/architecture/scripts-tools-inventory.json",
         "docs/architecture/scripts-tools-inventory.md",
+        ".github/workflows/equipment-diagnostics-branch-readiness.yml",
         ".gitignore"
     ];
 

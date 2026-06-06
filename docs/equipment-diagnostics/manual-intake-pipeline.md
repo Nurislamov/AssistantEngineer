@@ -122,3 +122,20 @@ Deterministic reports are written to:
 The `/artifacts/` tree is ignored. Reports are local/CI evidence and must not be committed. A passing report does
 not promote a staging candidate; runtime catalog changes still require a reviewed PR. Future admin import,
 database persistence, Telegram, UI, or RAG consumers must remain downstream of the same validation boundary.
+
+## PR Automation And CI Readiness
+
+Run:
+
+```powershell
+.\scripts\dev\verify-and-prepare-pr.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics
+```
+
+The combined wrapper first runs full branch readiness and stops on failure. On PASS it generates the deterministic
+ignored PR body at `artifacts/verification/branch-readiness/pr-body.md`. The readiness report remains the source
+of truth; the PR body is a bounded summary and checklist derived from it.
+
+The focused GitHub Actions workflow repeats EquipmentDiagnostics tests and branch readiness for relevant pull
+requests, then uploads the readiness report and PR body as workflow artifacts. Review uses the GitHub diff and
+checks rather than manually copied local diff/log output. Staging/manual candidates remain non-runtime until a
+reviewed promotion PR.
