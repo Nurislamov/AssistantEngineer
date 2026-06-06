@@ -1,0 +1,49 @@
+{
+  "manualSources": [
+    {
+      "manualId": "gree-gmv6-service-manual-gc202001-i",
+      "manufacturer": "Gree",
+      "title": "Gree GMV6 DC Inverter VRF Units Service Manual",
+      "documentCode": "GC202001-I",
+      "version": "2020.09",
+      "fileName": "Service Manual for GMV6 v_2020.09.pdf",
+      "equipmentFamily": "GMV6 outdoor VRF",
+      "scope": "GMV6 outdoor VRF troubleshooting, commissioning, and maintenance",
+      "language": "English",
+      "pageCount": 305,
+      "usage": "PrimaryTroubleshootingSource",
+      "notes": "Local manual intake source. The PDF remains an ignored artifact and is not committed.",
+      "commitPolicy": "PDF files are local artifacts and must not be committed."
+    },
+    {
+      "manualId": "gree-gmv6-owners-manual",
+      "manufacturer": "Gree",
+      "title": "Owner's Manual Original Instructions Commercial Air Conditioners GMV DC Inverter VRF",
+      "documentCode": null,
+      "version": null,
+      "fileName": "Owners-Manual-for GMV6.pdf",
+      "equipmentFamily": "GMV6",
+      "scope": "User safety, owner-level troubleshooting, and error indication confirmation",
+      "language": "English",
+      "pageCount": null,
+      "usage": "SecondarySafetySource",
+      "notes": "Secondary source only; not the primary troubleshooting source for manual-backed candidates.",
+      "commitPolicy": "PDF files are local artifacts and must not be committed."
+    },
+    {
+      "manualId": "gree-gmv5-indoor-service-manual-gc201711-v",
+      "manufacturer": "Gree",
+      "title": "Multi Variable Air Conditioners Indoor Units Service Manual",
+      "documentCode": "GC201711-V",
+      "version": null,
+      "fileName": "Сервис мануал GREE VRF.pdf",
+      "equipmentFamily": "GMV indoor units",
+      "scope": "Indoor unit troubleshooting and installation",
+      "language": "English",
+      "pageCount": null,
+      "usage": "IndoorFutureSource",
+      "notes": "Registry-only source for a future indoor diagnostics pack.",
+      "commitPolicy": "PDF files are local artifacts and must not be committed."
+    }
+  ]
+}

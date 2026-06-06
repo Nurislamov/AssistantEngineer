@@ -26,7 +26,8 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
             RuntimeEntries: runtimeEntries,
             RuntimeDocuments: runtimeDocuments,
             StagingDocuments: stagingDocuments,
-            DocsExampleDocuments: docsExampleDocuments);
+            DocsExampleDocuments: docsExampleDocuments,
+            KnownManualIds: GetKnownManualIds(repoRoot));
     }
 
     private static IReadOnlyList<string> GetRuntimeCatalogFiles(string repoRoot)
@@ -68,6 +69,38 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
         return Directory.GetFiles(examplesRoot, "*.json", SearchOption.AllDirectories)
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static IReadOnlySet<string> GetKnownManualIds(string repoRoot)
+    {
+        var registryRoot = Path.Combine(repoRoot, "docs", "equipment-diagnostics", "manual-sources");
+        if (!Directory.Exists(registryRoot))
+        {
+            return new HashSet<string>(StringComparer.Ordinal);
+        }
+
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var path in Directory.GetFiles(registryRoot, "*.json", SearchOption.AllDirectories))
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+            if (!document.RootElement.TryGetProperty("manualSources", out var sources) ||
+                sources.ValueKind != System.Text.Json.JsonValueKind.Array)
+            {
+                continue;
+            }
+
+            foreach (var source in sources.EnumerateArray())
+            {
+                if (source.TryGetProperty("manualId", out var manualId) &&
+                    manualId.ValueKind == System.Text.Json.JsonValueKind.String &&
+                    !string.IsNullOrWhiteSpace(manualId.GetString()))
+                {
+                    ids.Add(manualId.GetString()!);
+                }
+            }
+        }
+
+        return ids;
     }
 
     private static EquipmentDiagnosticsVerificationDocumentKind GetStagingDocumentKind(string path)

@@ -540,6 +540,21 @@ branch, implement, run the combined command, commit/push, use the generated PR b
 diff/checks. Manual diff copy/paste is no longer required. Runtime catalog promotion still requires a reviewed
 PR; DB, Telegram, AI/RAG, and vector search remain future stages.
 
+## ED-13A GMV6 Manual-Backed Staging Pack
+
+ED-13A begins real manual-backed intake for GMV6 outdoor diagnostics without changing the runtime catalog.
+
+- Primary troubleshooting source: `Gree GMV6 DC Inverter VRF Units Service Manual`, document code `GC202001-I`.
+- Secondary safety/owner confirmation source: GMV6 owner's manual.
+- Indoor service manual `GC201711-V` is registry-only for a future indoor pack.
+- Eight GMV6 outdoor candidates (`E1`, `E3`, `E4`, `F0`, `F1`, `F3`, `C5`, `C7`) remain `ReadyForReview` staging entries.
+- Exact PDF/manual page and section anchors are recorded; long manual quotes are not stored.
+- Local PDF files remain ignored under `artifacts/manual-intake/sources/` and are never committed.
+
+The non-runtime source registry lives under `docs/equipment-diagnostics/manual-sources/`. Staging candidates are
+not API/runtime knowledge and require a future reviewed promotion PR. No DB, Telegram, AI/RAG, or vector search
+is introduced.
+
 ## API Routes
 
 ### Search Error Codes

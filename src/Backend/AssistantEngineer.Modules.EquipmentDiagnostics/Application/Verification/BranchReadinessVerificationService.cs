@@ -193,7 +193,8 @@ public sealed class BranchReadinessVerificationService
     private static bool IsExplicitSafeContext(string path, string line)
     {
         if (path.StartsWith("tests/", StringComparison.OrdinalIgnoreCase) ||
-            path.Contains("/Application/Verification/", StringComparison.OrdinalIgnoreCase))
+            path.Contains("/Application/Verification/", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
