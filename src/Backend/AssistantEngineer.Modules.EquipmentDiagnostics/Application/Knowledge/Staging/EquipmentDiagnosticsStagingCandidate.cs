@@ -44,6 +44,8 @@ public sealed class EquipmentDiagnosticsStagingCandidate
 
 public sealed class EquipmentDiagnosticsStagingSourceInfo
 {
+    public string? ManualId { get; set; }
+
     public string? SourceType { get; set; }
 
     public string? EvidenceLevel { get; set; }

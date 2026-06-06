@@ -252,6 +252,20 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
                     EquipmentDiagnosticsVerificationSeverity.Error));
             }
 
+            if (!isExample && input.KnownManualIds is not null)
+            {
+                foreach (var manualId in ReadCandidateManualIds(document.Json).Where(manualId =>
+                             !input.KnownManualIds.Contains(manualId)))
+                {
+                    targetIssues.Add(new EquipmentDiagnosticsVerificationIssue(
+                        "UnknownManualId",
+                        "staging-candidates",
+                        document.SourceName,
+                        $"Staging candidate references unknown manualId '{manualId}'.",
+                        EquipmentDiagnosticsVerificationSeverity.Error));
+                }
+            }
+
             summaries.Add(BuildCandidateSummary(document, result));
         }
 
@@ -579,6 +593,35 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
                         ? status.GetString() ?? string.Empty
                         : string.Empty)
                 .Where(status => !string.IsNullOrWhiteSpace(status))
+                .ToArray();
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static IReadOnlyList<string> ReadCandidateManualIds(string json)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+            if (!document.RootElement.TryGetProperty("candidates", out var candidates) ||
+                candidates.ValueKind != JsonValueKind.Array)
+            {
+                return [];
+            }
+
+            return candidates
+                .EnumerateArray()
+                .Where(candidate => candidate.TryGetProperty("source", out _))
+                .Select(candidate => candidate.GetProperty("source"))
+                .Where(source => source.TryGetProperty("manualId", out var manualId) &&
+                    manualId.ValueKind == JsonValueKind.String)
+                .Select(source => source.GetProperty("manualId").GetString() ?? string.Empty)
+                .Where(manualId => !string.IsNullOrWhiteSpace(manualId))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(manualId => manualId, StringComparer.Ordinal)
                 .ToArray();
         }
         catch (JsonException)

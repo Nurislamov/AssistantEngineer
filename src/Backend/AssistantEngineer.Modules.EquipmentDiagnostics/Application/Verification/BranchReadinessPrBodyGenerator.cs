@@ -88,8 +88,12 @@ public sealed class BranchReadinessPrBodyGenerator
 
     private static string CreateTitleSuggestion(BranchReadinessReport report) =>
         report.Passed
-            ? $"ED-12A: {report.Scope} PR automation and CI readiness"
+            ? $"{report.Scope}: {CreateBranchDescription(report.CurrentBranch)}"
             : $"WIP: {report.Scope} readiness blockers";
+
+    private static string CreateBranchDescription(string branch) =>
+        (branch.StartsWith("feature/", StringComparison.Ordinal) ? branch["feature/".Length..] : branch)
+        .Replace('-', ' ');
 
     private static void AppendChecklist(StringBuilder builder, bool complete, string text) =>
         builder.AppendLine($"- [{(complete ? "x" : " ")}] {text}");

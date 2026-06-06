@@ -36,7 +36,8 @@ public sealed record EquipmentDiagnosticsVerificationInput(
     IReadOnlyList<EquipmentDiagnosticsVerificationDocument> RuntimeDocuments,
     IReadOnlyList<EquipmentDiagnosticsVerificationDocument> StagingDocuments,
     IReadOnlyList<EquipmentDiagnosticsVerificationDocument> DocsExampleDocuments,
-    int MinimumRuntimeCatalogCount = 23);
+    int MinimumRuntimeCatalogCount = 23,
+    IReadOnlySet<string>? KnownManualIds = null);
 
 public sealed record EquipmentDiagnosticsVerificationIssue(
     string Code,

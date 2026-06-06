@@ -321,6 +321,25 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     }
 
     [Fact]
+    public void BranchReadinessAllowsValidationSchemaDenylistContext()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Knowledge/staging/synthetic.schema.json",
+                    "Modified",
+                    false,
+                    false,
+                    true,
+                    false,
+                    """{"not":{"pattern":"(?i)(bypass|disable protection|force run)"}}""")
+            ]));
+
+        Assert.True(report.Passed);
+        Assert.DoesNotContain(report.Issues, issue => issue.Code == "UnsafeChangedWording");
+    }
+
+    [Fact]
     public void BranchReadinessFailsWhenCommandCheckFails()
     {
         var report = CreateBranchReadinessService().Verify(CreateBranchInput(
@@ -372,6 +391,7 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
         var second = generator.Render(report, "artifacts/verification/branch-readiness/branch-readiness-report.json");
 
         Assert.Equal(first, second);
+        Assert.Contains("# EquipmentDiagnostics: equipment diagnostics manual intake pipeline", first, StringComparison.Ordinal);
         Assert.Contains("Readiness status: **PASS**", first, StringComparison.Ordinal);
         Assert.Contains("Allowed: `0`", first, StringComparison.Ordinal);
         Assert.Contains("Suspicious: `0`", first, StringComparison.Ordinal);

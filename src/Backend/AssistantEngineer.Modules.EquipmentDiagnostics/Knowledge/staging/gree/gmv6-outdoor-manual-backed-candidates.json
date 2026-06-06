@@ -1,0 +1,117 @@
+{
+  "candidates": [
+    {
+      "manufacturer": "Gree",
+      "series": "GMV6",
+      "category": "VrfOutdoorUnit",
+      "modelCode": null,
+      "code": "E1",
+      "title": "High-pressure protection",
+      "meaning": "The GMV6 outdoor unit has stopped after detecting system high-pressure protection conditions.",
+      "severity": "Protection shutdown requiring qualified technician investigation",
+      "proposedConfidence": "Medium",
+      "source": {
+        "manualId": "gree-gmv6-service-manual-gc202001-i",
+        "sourceType": "ServiceManual",
+        "evidenceLevel": "ManualPageVerified",
+        "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual",
+        "manualVersion": "2020.09",
+        "manualDocumentCode": "GC202001-I",
+        "page": "PDF 109-110; manual 107-108",
+        "section": "2.57 E1 Protection in Case of Too High Pressure",
+        "quote": null,
+        "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.",
+        "limitations": [
+          "GMV6 outdoor units only.",
+          "Verify the exact installed model and controller display.",
+          "Staging candidate only; not a final diagnosis.",
+          "Qualified technician investigation is required."
+        ],
+        "applicableModels": [],
+        "applicableSeries": ["GMV6", "GMV"]
+      },
+      "likelyCauses": ["Abnormal pressure-sensor indication, restricted heat exchange or airflow, valve position, fan operation, or refrigerant condition requires review."],
+      "diagnosticSteps": [
+        {"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed E1 code.", "expectedResult": "Equipment identity and E1 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."},
+        {"order": 2, "title": "Review pressure-protection conditions", "instruction": "A qualified technician should compare measured pressure with sensor indication and inspect supported airflow, fan, valve, and heat-exchanger conditions while keeping protections active.", "expectedResult": "Measured and indicated conditions identify the next manual-supported review step.", "ifFailedAction": "Stop and escalate for engineering review."}
+      ],
+      "requiredMeasurements": [
+        {"name": "High-side pressure", "unit": "MPa", "description": "Record external gauge pressure and controller/sensor indication.", "requiredBeforeConclusion": true}
+      ],
+      "safetyNotes": ["Refrigerant-circuit, electrical, fan, and compressor checks require a qualified technician; keep all safety protections active."],
+      "tags": ["gree", "gmv6", "outdoor", "manual-backed", "high-pressure"],
+      "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."],
+      "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "E3",
+      "title": "Low-pressure protection", "meaning": "The GMV6 outdoor unit has stopped after detecting system low-pressure protection conditions.",
+      "severity": "Protection shutdown requiring qualified technician investigation", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 112-113; manual 110-111", "section": "2.59 E3 System Low Pressure Protection", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor units only.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Abnormal low-pressure sensor indication, valve position, airflow/filter/fan condition, expansion-valve operation, piping condition, or refrigerant condition requires review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed E3 code.", "expectedResult": "Equipment identity and E3 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Review low-pressure conditions", "instruction": "A qualified technician should compare measured pressure with sensor indication and inspect supported valve, airflow, filter, fan, expansion-valve, and piping conditions while keeping protections active.", "expectedResult": "Measured and indicated conditions identify the next manual-supported review step.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "Low-side pressure", "unit": "MPa", "description": "Record external gauge pressure and controller/sensor indication.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Refrigerant-circuit, electrical, fan, and compressor checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "low-pressure"], "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "E4",
+      "title": "High compressor discharge temperature protection", "meaning": "The GMV6 outdoor unit has stopped after detecting excessive compressor discharge temperature.",
+      "severity": "Protection shutdown requiring qualified technician investigation", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 114; manual 112", "section": "2.60 E4 Protection in Case of Too High Air Discharge Temperature of Compressor", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor units only.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Discharge-temperature sensing, valve operation, piping/refrigerant condition, or compressor operating condition requires review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed E4 code.", "expectedResult": "Equipment identity and E4 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Review discharge-temperature conditions", "instruction": "A qualified technician should record discharge-temperature indications and inspect supported sensor, valve, piping, and refrigerant conditions while keeping protections active.", "expectedResult": "Recorded conditions identify the next manual-supported review step.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "Compressor discharge temperature", "unit": "°C", "description": "Record controller and supported sensor temperature indications.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Electrical, refrigerant-circuit, and compressor checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "discharge-temperature"], "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "F0",
+      "title": "Poor main board of outdoor unit", "meaning": "The GMV6 outdoor unit reports an abnormal main-board chip read condition.",
+      "severity": "Service fault requiring qualified technician investigation", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 115; manual 113", "section": "2.61 F0 Poor Main Board of Outdoor Unit", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor units only.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Outdoor main-board address, memory, or clock chip condition requires qualified review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed F0 code.", "expectedResult": "Equipment identity and F0 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Inspect main-board condition", "instruction": "A qualified technician should inspect board condition, connectors, and supported chip-read diagnostics while keeping protections active.", "expectedResult": "The board condition is documented for engineering review.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "Outdoor main-board supply voltage", "unit": "V", "description": "Record the supported board supply voltage before conclusion.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Electrical and main-board checks require a qualified technician; isolate power according to the exact service procedure and keep safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "main-board"], "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "F1",
+      "title": "High-pressure sensor fault", "meaning": "The GMV6 outdoor unit reports a high-pressure sensor detection-circuit value outside the expected range.",
+      "severity": "Service fault requiring qualified technician investigation", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 116; manual 114", "section": "2.62 F1 High-pressure Sensor Fault", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor units only.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["High-pressure sensor contact, wiring, sensor, or outdoor main-board detection circuit requires review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed F1 code.", "expectedResult": "Equipment identity and F1 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Compare sensor and measured pressure", "instruction": "A qualified technician should inspect supported sensor connections and compare sensor indication with measured high-side pressure while keeping protections active.", "expectedResult": "Sensor, wiring, and pressure observations are documented.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "High-pressure sensor indication and gauge pressure", "unit": "MPa", "description": "Record sensor/controller indication and external gauge pressure.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Electrical and refrigerant-pressure checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "high-pressure-sensor"], "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "F3",
+      "title": "Low-pressure sensor fault", "meaning": "The GMV6 outdoor unit reports a low-pressure sensor detection-circuit value outside the expected range.",
+      "severity": "Service fault requiring qualified technician investigation", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 117; manual 115", "section": "2.63 F3 Low Pressure Sensor Fault", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor units only.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Low-pressure sensor contact, wiring, sensor, or outdoor main-board detection circuit requires review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed F3 code.", "expectedResult": "Equipment identity and F3 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Compare sensor and measured pressure", "instruction": "A qualified technician should inspect supported sensor connections and compare sensor indication with measured low-side pressure while keeping protections active.", "expectedResult": "Sensor, wiring, and pressure observations are documented.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "Low-pressure sensor indication and gauge pressure", "unit": "MPa", "description": "Record sensor/controller indication and external gauge pressure.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Electrical and refrigerant-pressure checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "low-pressure-sensor"], "promotionNotes": ["Engineering review and installed-model applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "C5",
+      "title": "Indoor unit engineering serial-number conflict", "meaning": "The GMV6 system reports inconsistent or conflicting indoor-unit project code settings.",
+      "severity": "Commissioning fault requiring qualified technician review", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 95; manual 93", "section": "2.31 C5 Indoor Unit Engineering SN Conflict", "quote": null, "notes": "Evidence extracted from the local manual intake file and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor-system commissioning context only.", "Verify the exact installed indoor-unit family and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Indoor-unit engineering serial-number or project-code settings require commissioning review."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm system identity and indication", "instruction": "Confirm the GMV6 system identity and record the displayed C5 code and affected indoor units.", "expectedResult": "System identity, C5 indication, and affected units are recorded.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Review commissioning settings", "instruction": "A qualified technician should compare supported indoor-unit project-code or engineering serial-number settings against the commissioned system record.", "expectedResult": "Conflicting or inconsistent settings are documented for engineering review.", "ifFailedAction": "Stop and escalate for commissioning review."}],
+      "requiredMeasurements": [{"name": "Indoor-unit project code inventory", "unit": "code", "description": "Record the displayed/project-code settings for affected indoor units.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Commissioning and electrical/control checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor-system", "manual-backed", "commissioning"], "promotionNotes": ["Engineering review and installed-system applicability confirmation are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    },
+    {
+      "manufacturer": "Gree", "series": "GMV6", "category": "VrfOutdoorUnit", "modelCode": null, "code": "C7",
+      "title": "Abnormal communication of converter", "meaning": "The GMV6 debugging/status indication table identifies abnormal converter communication.",
+      "severity": "Debugging status requiring qualified technician review", "proposedConfidence": "Medium",
+      "source": {"manualId": "gree-gmv6-service-manual-gc202001-i", "sourceType": "ServiceManual", "evidenceLevel": "ManualPageVerified", "manualTitle": "Gree GMV6 DC Inverter VRF Units Service Manual", "manualVersion": "2020.09", "manualDocumentCode": "GC202001-I", "page": "PDF 77; manual 75", "section": "Debugging/status indication table: C7 Abnormal communication of converter", "quote": null, "notes": "Table evidence extracted from the local manual intake file; a detailed troubleshooting section was not identified and requires engineering review before runtime promotion.", "limitations": ["GMV6 outdoor debugging/status table evidence only.", "Detailed troubleshooting section still requires review.", "Verify the exact installed model and controller display.", "Staging candidate only; not a final diagnosis.", "Qualified technician investigation is required."], "applicableModels": [], "applicableSeries": ["GMV6", "GMV"]},
+      "likelyCauses": ["Converter communication path, connectors, wiring, supply, or control-board condition requires qualified review; detailed manual flow remains unverified."],
+      "diagnosticSteps": [{"order": 1, "title": "Confirm identity and indication", "instruction": "Confirm the installed GMV6 outdoor unit identity and record the displayed C7 debugging/status indication.", "expectedResult": "Equipment identity and C7 indication are confirmed.", "ifFailedAction": "Keep the candidate unconfirmed and verify the exact service manual."}, {"order": 2, "title": "Document communication context", "instruction": "A qualified technician should document converter communication status, supported connector/wiring observations, and relevant supply indications while keeping protections active.", "expectedResult": "Communication context is documented for detailed engineering review.", "ifFailedAction": "Stop and escalate for engineering review."}],
+      "requiredMeasurements": [{"name": "Converter communication and supply status", "unit": "status/V", "description": "Record supported communication status and relevant supply indications.", "requiredBeforeConclusion": true}],
+      "safetyNotes": ["Electrical, converter, and control-board checks require a qualified technician; keep all safety protections active."], "tags": ["gree", "gmv6", "outdoor", "manual-backed", "converter-communication", "table-evidence"], "promotionNotes": ["Detailed troubleshooting evidence and engineering review are required before any runtime promotion."], "reviewStatus": "ReadyForReview"
+    }
+  ]
+}

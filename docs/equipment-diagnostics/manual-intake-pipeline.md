@@ -139,3 +139,19 @@ The focused GitHub Actions workflow repeats EquipmentDiagnostics tests and branc
 requests, then uploads the readiness report and PR body as workflow artifacts. Review uses the GitHub diff and
 checks rather than manually copied local diff/log output. Staging/manual candidates remain non-runtime until a
 reviewed promotion PR.
+
+## ED-13A GMV6 Outdoor Manual Intake
+
+The first real manual-backed staging pack uses the locally supplied GMV6 service manual:
+
+- Manual ID: `gree-gmv6-service-manual-gc202001-i`
+- Title: `Gree GMV6 DC Inverter VRF Units Service Manual`
+- Document code: `GC202001-I`
+- Usage: primary GMV6 outdoor troubleshooting evidence
+
+The source registry is committed as metadata under `docs/equipment-diagnostics/manual-sources/`; PDF source files
+remain ignored local artifacts. The owner manual is registered as a secondary safety/indication source. The indoor
+service manual is registered only for a future indoor pack and is not referenced by GMV6 outdoor candidates.
+
+Candidates remain `ReadyForReview` in staging. Exact page/section anchors support engineering review, but no
+candidate is promoted automatically and no runtime entry becomes `ManualVerified` in ED-13A.

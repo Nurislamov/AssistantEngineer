@@ -21,5 +21,5 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "PASS"
 Write-Host "Readiness report: artifacts/verification/branch-readiness/branch-readiness-report.json"
 Write-Host "PR body: artifacts/verification/branch-readiness/pr-body.md"
-Write-Host "Next: git add <reviewed-files>; git commit -m `"feat(equipment-diagnostics): add PR automation and CI readiness`"; git push -u origin HEAD"
+Write-Host "Next: git add <reviewed-files>; git commit -m `"<scope-specific verified change>`"; git push -u origin HEAD"
 exit 0

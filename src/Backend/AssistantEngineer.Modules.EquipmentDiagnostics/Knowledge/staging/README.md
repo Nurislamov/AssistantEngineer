@@ -112,3 +112,9 @@ The current runtime Gree entries remain `SeededEngineeringKnowledge` / `Unverifi
 Future UI, Telegram, or assistant integrations must consume approved runtime DTO fields or the deterministic formatter output. They must not promote staging text directly and must not generate new diagnosis text outside the reviewed runtime response.
 
 Even when the verification report marks a candidate `ReadyForCatalogPromotion`, promotion still requires copying the reviewed entry into production JSON and submitting it through a reviewed pull request.
+
+## GMV6 Outdoor Manual-Backed Pack
+
+`gree/gmv6-outdoor-manual-backed-candidates.json` contains the ED-13A GMV6 outdoor `ReadyForReview` candidates.
+They reference the non-runtime manual source registry in `docs/equipment-diagnostics/manual-sources/` by
+`source.manualId`. The source PDFs remain ignored local artifacts and are not embedded or committed.
