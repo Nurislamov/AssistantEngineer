@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using AssistantEngineer.Api.Controllers.Equipment;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Guidance;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
@@ -142,6 +143,31 @@ public class EquipmentDiagnosticsFinalQaTests
         Assert.Equal("api/v{version:apiVersion}/equipment-diagnostics", route.Template);
         Assert.Equal(["cases", "catalog", "error-codes"], getTemplates);
         Assert.Equal(["bot/diagnose"], postTemplates);
+    }
+
+    [Fact]
+    public void BotEndpointHardeningArtifactsAndPolicyRemainPresent()
+    {
+        Assert.Equal(80, EquipmentDiagnosticBotRequestLimits.Manufacturer);
+        Assert.Equal(32, EquipmentDiagnosticBotRequestLimits.Code);
+        Assert.Equal(500, EquipmentDiagnosticBotRequestLimits.FreeText);
+        Assert.Equal(20, EquipmentDiagnosticBotRequestLimits.MeasurementCount);
+        Assert.Equal(80, EquipmentDiagnosticBotRequestLimits.MeasurementName);
+        Assert.Equal(120, EquipmentDiagnosticBotRequestLimits.MeasurementValue);
+        Assert.Equal(40, EquipmentDiagnosticBotRequestLimits.MeasurementUnit);
+
+        Assert.True(File.Exists(Path.Combine(
+            TestPaths.RepoRoot,
+            "scripts", "equipment-diagnostics", "smoke-bot-diagnostic-endpoint.ps1")));
+        Assert.True(File.Exists(Path.Combine(
+            TestPaths.RepoRoot,
+            "docs", "equipment-diagnostics", "bot-beta-release-readiness.md")));
+
+        var inventory = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "docs", "security", "api-endpoint-protection-inventory.md"));
+        Assert.Contains("ED-15C", inventory, StringComparison.Ordinal);
+        Assert.Contains("production auth/rate limiting is not claimed", inventory, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> GetRuntimeSeedProvenanceViolations(

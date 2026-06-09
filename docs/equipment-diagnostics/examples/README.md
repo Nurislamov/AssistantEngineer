@@ -22,3 +22,5 @@ Rules for examples:
 - Future Telegram/UI clients should consume the runtime DTO fields or deterministic formatter output instead of generating their own diagnostic prose.
 - Bot response examples document `Answer`, `ClarificationRequired`, `ReferenceOnly`, and `NotFound` shapes from the runtime-only ED-15B endpoint.
 - Bot examples must never present staging candidates, manual codebook occurrences, generated previews, or local manuals as final diagnostic answers.
+- ED-15C contract tests require explicit manufacturer/code in the request and validate status, message/title, verification, confidence, safety, source where relevant, clarification options, and safe next steps.
+- Examples must remain within endpoint request limits and must not expose internal artifact or filesystem paths.

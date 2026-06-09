@@ -181,7 +181,12 @@ public sealed class EquipmentDiagnosticBotServiceTests
             await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "E1")),
             await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "ZZ99"))
         };
-        var forbidden = new[] { "bypass", "disable protection", "force run", "short protection", "ignore protection", "DraftPreview" };
+        var forbidden = new[]
+        {
+            "bypass", "disable protection", "force run", "short protection", "ignore protection",
+            "DraftPreview", "artifacts/verification", "Knowledge/manual-codebook", "Knowledge/staging",
+            "staging-candidate-preview", "D:\\", "C:\\", "/src/"
+        };
 
         foreach (var response in responses)
         {

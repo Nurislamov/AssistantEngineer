@@ -125,7 +125,23 @@ public sealed class EquipmentDiagnosticsController : ControllerBase
                 "Request body is required.");
         }
 
-        var response = await _equipmentDiagnosticBot.DiagnoseAsync(request, cancellationToken);
+        var validation = EquipmentDiagnosticBotRequestPolicy.ValidateAndNormalize(request);
+        if (!validation.IsValid)
+        {
+            foreach (var error in validation.Errors)
+            {
+                foreach (var message in error.Value)
+                {
+                    ModelState.AddModelError(error.Key, message);
+                }
+            }
+
+            return ApiProblemDetailsFactory.CreateValidationResult(
+                ControllerContext,
+                "The bot diagnostic request is invalid.");
+        }
+
+        var response = await _equipmentDiagnosticBot.DiagnoseAsync(validation.Request, cancellationToken);
 
         return Ok(response);
     }
