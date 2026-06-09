@@ -40,3 +40,11 @@ The command writes ignored JSON and Markdown reports under `artifacts/verificati
 - Same-context conflicts must be resolved before staging or runtime work.
 
 The report is analysis and recommendation only. It does not create production staging files, alter the runtime catalog, or grant `ManualVerified` confidence.
+
+## ED-14C Evidence Rules And Preview
+
+`TroubleshootingSection` evidence from a registered primary troubleshooting source is required before a codebook occurrence can enter the generated staging preview. Error-indication tables, owner manuals, technical guides, controllers, and commissioning tools are supporting/reference evidence only. Status, debugging, query, and setting entries remain reference-only.
+
+The preview uses `DraftPreview`, preserves exact source anchors, and is generated only in ignored artifacts. A preview candidate still requires engineering review. ED-14D may convert reviewed preview candidates into real staging files through a separate explicit change.
+
+The current corpus includes exact GMV6 service-manual troubleshooting occurrences for E1, E3, E4, and F5. E1, E3, and E4 are excluded from generated preview because production staging already covers them. F5 is the first generated preview candidate; it remains an artifact-only draft and is not runtime or production staging knowledge.

@@ -82,7 +82,12 @@ public sealed record EquipmentDiagnosticsCodebookCoverageReport(
     IReadOnlyList<EquipmentDiagnosticsCodeCoverageEntry> TopPriorityRecommendations,
     IReadOnlyList<string> NextActions)
 {
+    public EquipmentDiagnosticsEvidenceAssessmentSummary? EvidenceAssessmentSummary { get; init; }
+    public string PreviewArtifactPath { get; init; } = "artifacts/verification/equipment-diagnostics/staging-candidate-preview.json";
+    public IReadOnlyList<string> TopPreviewCandidateCodes { get; init; } = [];
     public int BlockerCount => Conflicts.Count(conflict => conflict.Severity == EquipmentDiagnosticsVerificationSeverity.Error);
-    public int WarningCount => Conflicts.Count(conflict => conflict.Severity == EquipmentDiagnosticsVerificationSeverity.Warning);
+    public int WarningCount =>
+        Conflicts.Count(conflict => conflict.Severity == EquipmentDiagnosticsVerificationSeverity.Warning) +
+        (EvidenceAssessmentSummary?.ReadyForStagingCandidateCount == 0 ? 1 : 0);
     public bool Passed => BlockerCount == 0;
 }

@@ -40,6 +40,10 @@ internal static class CodebookCoverageReportWriter
         builder.AppendLine($"- Ready for staging: `{report.Summary.ReadyForStagingCandidateCount}`");
         builder.AppendLine($"- Reference-only: `{report.Summary.ReferenceOnlyCount}`");
         builder.AppendLine($"- Conflicts: `{report.Summary.ConflictCount}`");
+        builder.AppendLine($"- Evidence ready: `{report.EvidenceAssessmentSummary?.ReadyForStagingCandidateCount ?? 0}`");
+        builder.AppendLine($"- Needs troubleshooting section: `{report.EvidenceAssessmentSummary?.NeedsTroubleshootingSectionCount ?? 0}`");
+        builder.AppendLine($"- Evidence blocked: `{report.EvidenceAssessmentSummary?.BlockedCount ?? 0}`");
+        builder.AppendLine($"- Preview artifact: `{report.PreviewArtifactPath}`");
         builder.AppendLine();
         builder.AppendLine("## Top Recommendations");
         builder.AppendLine();

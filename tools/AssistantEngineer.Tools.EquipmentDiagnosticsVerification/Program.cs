@@ -44,8 +44,17 @@ internal static class Program
             if (options.Command == "codebook-coverage")
             {
                 var paths = CodebookCoverageReportWriter.Write(repoRoot, report.CodebookCoverage);
+                StagingPreviewReportWriter.Write(repoRoot, report.StagingPreview);
                 PrintCoverageSummary(repoRoot, paths.JsonPath, report.CodebookCoverage);
                 return report.CodebookCoverage.Passed ? 0 : 1;
+            }
+            if (options.Command == "preview-staging-candidates")
+            {
+                var paths = StagingPreviewReportWriter.Write(repoRoot, report.StagingPreview);
+                Console.WriteLine("PASS");
+                Console.WriteLine($"Staging preview: {Path.GetRelativePath(repoRoot, paths.JsonPath).Replace('\\', '/')}");
+                Console.WriteLine($"Ready for staging candidates: {report.StagingPreview.CandidateCount}");
+                return 0;
             }
             var selectedReport = SelectCommandReport(report, options.Command);
 
@@ -67,6 +76,7 @@ internal static class Program
         var equipmentInput = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
         var equipmentReport = new EquipmentDiagnosticsVerificationService().Verify(equipmentInput);
         CodebookCoverageReportWriter.Write(repoRoot, equipmentReport.CodebookCoverage);
+        StagingPreviewReportWriter.Write(repoRoot, equipmentReport.StagingPreview);
         var commands = options.SkipCommandChecks
             ? Array.Empty<BranchReadinessCommandResult>()
             : BranchReadinessCommandRunner.RunRequiredChecks(repoRoot);
@@ -160,6 +170,7 @@ internal static class Program
         Console.WriteLine("  validate-doc-examples");
         Console.WriteLine("  full-report");
         Console.WriteLine("  codebook-coverage");
+        Console.WriteLine("  preview-staging-candidates");
         Console.WriteLine("  verify-branch");
         Console.WriteLine("  prepare-pr-body");
         Console.WriteLine();

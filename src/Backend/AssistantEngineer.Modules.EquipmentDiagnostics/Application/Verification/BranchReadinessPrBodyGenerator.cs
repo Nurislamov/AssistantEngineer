@@ -59,6 +59,14 @@ public sealed class BranchReadinessPrBodyGenerator
             builder.AppendLine($"- `{recommendation.Code}` ({recommendation.Series}/{recommendation.EquipmentSide}): {recommendation.RecommendedNextAction}");
         }
         builder.AppendLine();
+        builder.AppendLine("## Evidence rules and staging preview");
+        builder.AppendLine();
+        builder.AppendLine($"- Evidence assessments: `{report.EquipmentDiagnostics.EvidenceAssessment.Summary.TotalAssessments}`");
+        builder.AppendLine($"- Needs troubleshooting section: `{report.EquipmentDiagnostics.EvidenceAssessment.Summary.NeedsTroubleshootingSectionCount}`");
+        builder.AppendLine($"- Evidence blocked: `{report.EquipmentDiagnostics.EvidenceAssessment.Summary.BlockedCount}`");
+        builder.AppendLine($"- Preview candidates: `{report.EquipmentDiagnostics.StagingPreview.CandidateCount}`");
+        builder.AppendLine($"- Preview policy: {report.EquipmentDiagnostics.StagingPreview.ArtifactPolicy}");
+        builder.AppendLine();
         builder.AppendLine("## Verification Commands");
         builder.AppendLine();
         foreach (var command in report.Commands.OrderBy(command => command.Name, StringComparer.Ordinal))
