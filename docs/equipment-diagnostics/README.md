@@ -396,6 +396,18 @@ Example deterministic query prompts:
 
 ED-10B provides an application-level formatter for future Telegram, UI, or assistant clients. It is intentionally small: clients should still call the existing search and case endpoints, then pass the returned `EquipmentDiagnosticCaseDto` through the formatter if they need a structured operator message.
 
+## ED-15A Bot Diagnostic Application Flow
+
+ED-15A adds `IEquipmentDiagnosticBotService` and `IEquipmentDiagnosticBotFacade` as deterministic application/public-module contracts for future adapters. It adds no Telegram or web adapter and no public API endpoint.
+
+- Final diagnostic answers use the approved runtime catalog only.
+- Multiple runtime contexts return deterministic clarification options.
+- Known status, debug, query, setting, and controller patterns remain reference-only or unsupported without a runtime diagnostic case.
+- Seed/unverified answers explicitly require verification against the exact installed equipment service manual.
+- Staging candidates, manual codebook entries, generated previews, and local manuals are never loaded as final bot diagnoses.
+
+See [bot-diagnostic-flow.md](bot-diagnostic-flow.md) for the decision flow and safety boundary.
+
 Formatter output:
 
 - `Title`
@@ -803,10 +815,11 @@ Example response excerpt:
 - ED-10C adds deterministic contract examples and release-readiness guards for EquipmentDiagnostics API DTOs, formatter output, staging reports, and runtime/example separation. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
 - ED-10D adds final consistency, runtime-pollution, safety/provenance, formatter, and route-surface QA guards. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
 - ED-11A adds a deterministic C# manual-intake verification/report pipeline and thin script wrapper. It does not automatically promote entries or add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed claims without evidence.
+- ED-15A adds deterministic runtime-only bot application contracts, clarification, reference-only classification, and safety/verification responses. It does not add adapters or public API routes.
 
 ## Future Stages
 
-- ED-11: Telegram, assistant, or UI UX on top of the existing facade/API and deterministic formatter, without moving diagnostics into the Equipment catalog module.
+- ED-15B: reviewed public endpoint or Telegram/web adapter over the runtime-only bot facade, without moving diagnostics into the Equipment catalog module.
 - ED-12: database projection and admin/manual import through a dedicated Infrastructure adapter and migration.
 - ED-13: RAG/manual evidence search only after deterministic source-backed data, safety/provenance rules, and manual evidence governance justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.

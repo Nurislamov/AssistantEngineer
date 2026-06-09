@@ -1,3 +1,4 @@
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
@@ -12,7 +13,9 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
     {
         services.AddSingleton<IEquipmentDiagnosticsKnowledgeSource, EquipmentDiagnosticsJsonKnowledgeSource>();
         services.AddSingleton<IEquipmentDiagnosticsService, InMemoryEquipmentDiagnosticsService>();
+        services.AddSingleton<IEquipmentDiagnosticBotService, EquipmentDiagnosticBotService>();
         services.AddSingleton<IEquipmentDiagnosticsFacade, EquipmentDiagnosticsFacade>();
+        services.AddSingleton<IEquipmentDiagnosticBotFacade, EquipmentDiagnosticBotFacade>();
 
         return services;
     }
