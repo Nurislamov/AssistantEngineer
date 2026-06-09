@@ -48,3 +48,5 @@ The report is analysis and recommendation only. It does not create production st
 The preview uses `DraftPreview`, preserves exact source anchors, and is generated only in ignored artifacts. A preview candidate still requires engineering review. ED-14D may convert reviewed preview candidates into real staging files through a separate explicit change.
 
 The current corpus includes exact GMV6 service-manual troubleshooting occurrences for E1, E3, E4, and F5. E1, E3, and E4 are excluded from generated preview because production staging already covers them. F5 is the first generated preview candidate; it remains an artifact-only draft and is not runtime or production staging knowledge.
+
+ED-15A bot application responses do not read this codebook as diagnostic truth. A codebook-only occurrence may inform a future reviewed promotion, but until then the bot returns a generic runtime-not-found or reference-only response.
