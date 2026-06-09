@@ -47,6 +47,18 @@ public sealed class BranchReadinessPrBodyGenerator
         builder.AppendLine($"- Manual codebook sources: `{report.EquipmentDiagnostics.ManualCodeBookSummary.SourceCount}`");
         builder.AppendLine($"- Manual codebook duplicate/conflicts: `{report.EquipmentDiagnostics.ManualCodeBookSummary.DuplicateOrConflictCount}`");
         builder.AppendLine();
+        builder.AppendLine("## Manual codebook coverage");
+        builder.AppendLine();
+        builder.AppendLine($"- Coverage status: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.Status}`");
+        builder.AppendLine($"- Ready for staging candidates: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.ReadyForStagingCandidateCount}`");
+        builder.AppendLine($"- Reference-only: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.ReferenceOnlyCount}`");
+        builder.AppendLine($"- Conflicts: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.ConflictCount}`");
+        builder.AppendLine($"- Top recommendations: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.TopRecommendationsCount}`");
+        foreach (var recommendation in report.EquipmentDiagnostics.CodebookCoverage.TopPriorityRecommendations.Take(5))
+        {
+            builder.AppendLine($"- `{recommendation.Code}` ({recommendation.Series}/{recommendation.EquipmentSide}): {recommendation.RecommendedNextAction}");
+        }
+        builder.AppendLine();
         builder.AppendLine("## Verification Commands");
         builder.AppendLine();
         foreach (var command in report.Commands.OrderBy(command => command.Name, StringComparer.Ordinal))

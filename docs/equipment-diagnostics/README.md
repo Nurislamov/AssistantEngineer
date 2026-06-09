@@ -4,6 +4,12 @@
 
 The non-runtime [manual codebook](manual-codebook.md) inventories reviewed code occurrences from the local Gree manual corpus. It separates fault/protection references from status, debugging, query, setting, controller/tool, and applicability contexts. Codebook entries are not runtime diagnostic cases and are never promoted automatically.
 
+## ED-14B manual codebook coverage and staging readiness
+
+The verification tool now compares the runtime catalog, production staging candidates, manual codebook occurrences, and registered manual identifiers. The deterministic non-runtime coverage report is generated under `artifacts/verification/equipment-diagnostics/`.
+
+Coverage distinguishes already-covered codes, evidence gaps, reference-only status/debug/query/setting/tool entries, and same-context conflicts. It recommends reviewed next actions but never writes runtime or staging knowledge automatically. No database, Telegram integration, AI, RAG, or vector search is involved.
+
 Equipment Diagnostics is an early backend module for deterministic diagnostic support around equipment error codes, likely causes, required measurements, safety notes, and manual references.
 
 ## Purpose

@@ -41,6 +41,12 @@ internal static class Program
 
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
             var report = new EquipmentDiagnosticsVerificationService().Verify(input);
+            if (options.Command == "codebook-coverage")
+            {
+                var paths = CodebookCoverageReportWriter.Write(repoRoot, report.CodebookCoverage);
+                PrintCoverageSummary(repoRoot, paths.JsonPath, report.CodebookCoverage);
+                return report.CodebookCoverage.Passed ? 0 : 1;
+            }
             var selectedReport = SelectCommandReport(report, options.Command);
 
             Console.WriteLine(JsonSerializer.Serialize(selectedReport, ReportJsonOptions));
@@ -60,6 +66,7 @@ internal static class Program
         var (currentBranch, files) = BranchReadinessGitCollector.Collect(repoRoot, options.BaseRef);
         var equipmentInput = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
         var equipmentReport = new EquipmentDiagnosticsVerificationService().Verify(equipmentInput);
+        CodebookCoverageReportWriter.Write(repoRoot, equipmentReport.CodebookCoverage);
         var commands = options.SkipCommandChecks
             ? Array.Empty<BranchReadinessCommandResult>()
             : BranchReadinessCommandRunner.RunRequiredChecks(repoRoot);
@@ -81,6 +88,18 @@ internal static class Program
         }
 
         return report.Passed ? 0 : 1;
+    }
+
+    private static void PrintCoverageSummary(
+        string repoRoot,
+        string jsonPath,
+        EquipmentDiagnosticsCodebookCoverageReport report)
+    {
+        Console.WriteLine(report.Passed ? "PASS" : "FAIL");
+        Console.WriteLine($"Blockers: {report.BlockerCount}; warnings: {report.WarningCount}");
+        Console.WriteLine($"Coverage report: {Path.GetRelativePath(repoRoot, jsonPath).Replace('\\', '/')}");
+        Console.WriteLine($"Ready for staging candidates: {report.Summary.ReadyForStagingCandidateCount}");
+        Console.WriteLine($"Conflicts: {report.Summary.ConflictCount}");
     }
 
     private static EquipmentDiagnosticsVerificationReport SelectCommandReport(
@@ -140,6 +159,7 @@ internal static class Program
         Console.WriteLine("  validate-runtime-catalog");
         Console.WriteLine("  validate-doc-examples");
         Console.WriteLine("  full-report");
+        Console.WriteLine("  codebook-coverage");
         Console.WriteLine("  verify-branch");
         Console.WriteLine("  prepare-pr-body");
         Console.WriteLine();

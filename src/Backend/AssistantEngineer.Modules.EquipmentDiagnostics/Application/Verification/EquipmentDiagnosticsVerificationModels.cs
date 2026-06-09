@@ -86,6 +86,7 @@ public sealed record EquipmentDiagnosticsVerificationSection(
 public sealed record EquipmentDiagnosticsVerificationReport(
     EquipmentDiagnosticsRuntimeCatalogSummary RuntimeCatalog,
     EquipmentDiagnosticsManualCodeBookSummary ManualCodeBookSummary,
+    EquipmentDiagnosticsCodebookCoverageReport CodebookCoverage,
     int StagingCandidateFileCount,
     int StagingExampleFileCount,
     int DocsExampleFileCount,

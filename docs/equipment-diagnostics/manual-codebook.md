@@ -22,3 +22,21 @@ A code occurrence is not automatically a diagnostic case. Error-indication table
 Future staging candidates may be created only after the exact manual, page, section, equipment family, meaning, and troubleshooting evidence are reviewed. Promotion is manual and reviewed; the codebook never loads into the runtime catalog.
 
 No PDFs are committed. No database, Telegram integration, AI, RAG, or vector search is part of this layer.
+
+## ED-14B Coverage And Readiness
+
+Run:
+
+```powershell
+dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- codebook-coverage --repo-root .
+```
+
+The command writes ignored JSON and Markdown reports under `artifacts/verification/equipment-diagnostics/`. It compares runtime, production staging, codebook, and manual registry validation context.
+
+- Runtime and matching staging coverage take precedence.
+- Fault/protection occurrences backed only by an error-indication table require a troubleshooting section.
+- A troubleshooting-backed fault may be recommended for a future reviewed staging candidate.
+- Status, debugging, query, setting, parameter, controller, and tool occurrences remain reference-only.
+- Same-context conflicts must be resolved before staging or runtime work.
+
+The report is analysis and recommendation only. It does not create production staging files, alter the runtime catalog, or grant `ManualVerified` confidence.
