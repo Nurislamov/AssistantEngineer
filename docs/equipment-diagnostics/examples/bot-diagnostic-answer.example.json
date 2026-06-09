@@ -1,0 +1,72 @@
+{
+  "status": 0,
+  "title": "Gree GMV H5 diagnostic guidance",
+  "message": "Gree GMV H5 preliminary diagnostic guidance. Verify the exact installed model and service manual before final conclusion.",
+  "normalizedManufacturer": "GREE",
+  "normalizedCode": "H5",
+  "equipmentContext": {
+    "manufacturer": "Gree",
+    "series": "GMV",
+    "modelCode": null,
+    "category": 0,
+    "equipmentSide": 1,
+    "displayContext": 1
+  },
+  "observedCode": {
+    "code": "H5",
+    "normalizedCode": "H5",
+    "freeText": null
+  },
+  "answerCard": {
+    "title": "Gree GMV H5 diagnostic guidance",
+    "summary": "Preliminary runtime diagnostic guidance for Gree GMV H5.",
+    "verificationBanner": "Verification required: seed knowledge.",
+    "likelyCauses": [
+      "Outdoor unit protection condition reported by the control board."
+    ],
+    "diagnosticSteps": [],
+    "requiredMeasurements": [],
+    "recommendedChecks": [
+      "Confirm the installed equipment identity and displayed code."
+    ],
+    "operatorNotes": [
+      "Verify the exact installed model and service manual before final conclusion."
+    ]
+  },
+  "clarificationQuestion": null,
+  "sourceCard": {
+    "sourceType": "SeededEngineeringKnowledge",
+    "evidenceLevel": "UnverifiedSeed",
+    "summary": "SeededEngineeringKnowledge / UnverifiedSeed. No manual title/page evidence is attached to this runtime entry.",
+    "manualTitle": null,
+    "manualVersion": null,
+    "manualDocumentCode": null,
+    "page": null,
+    "section": null,
+    "limitations": [
+      "Use as preliminary diagnostic guidance only."
+    ]
+  },
+  "safetyCard": {
+    "boundary": "Electrical, refrigerant-circuit, and compressor checks require a qualified technician; keep safety protections active.",
+    "notes": [
+      "Stop and escalate when safe access cannot be confirmed."
+    ]
+  },
+  "verificationRequired": true,
+  "confidence": 1,
+  "isManualVerified": false,
+  "isSeedKnowledge": true,
+  "operatorNextSteps": [
+    "Verify against the exact installed equipment service manual."
+  ],
+  "warnings": [
+    "Seed knowledge requires verification against the exact installed equipment service manual."
+  ],
+  "internalDecisionTrace": [
+    "RequestNormalized",
+    "RuntimeCatalogOnly",
+    "RuntimeMatches:1",
+    "RuntimeDiagnosticAnswer"
+  ]
+}

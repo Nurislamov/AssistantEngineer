@@ -44,7 +44,11 @@ public sealed class BranchReadinessVerificationService
     [
         "AssistantEngineer.sln",
         "tests/AssistantEngineer.Tests/Api/ApiIntegrationTests.cs",
+        "tests/AssistantEngineer.Tests/Api/EquipmentDiagnosticBotApiIntegrationTests.cs",
         "tests/AssistantEngineer.Tests/AssistantEngineer.Tests.csproj",
+        "src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsController.cs",
+        "docs/security/api-endpoint-protection-inventory.json",
+        "docs/security/api-endpoint-protection-inventory.md",
         "docs/architecture/module-boundary-matrix.json",
         "docs/architecture/scripts-tools-inventory.json",
         "docs/architecture/scripts-tools-inventory.md",
@@ -203,6 +207,7 @@ public sealed class BranchReadinessVerificationService
         {
             "do not",
             "must not",
+            "should not",
             "prohibited",
             "forbidden",
             "denylist",

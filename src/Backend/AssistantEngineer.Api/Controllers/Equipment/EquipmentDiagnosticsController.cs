@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Extensions.Http;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -13,10 +14,14 @@ namespace AssistantEngineer.Api.Controllers.Equipment;
 public sealed class EquipmentDiagnosticsController : ControllerBase
 {
     private readonly IEquipmentDiagnosticsFacade _equipmentDiagnostics;
+    private readonly IEquipmentDiagnosticBotFacade _equipmentDiagnosticBot;
 
-    public EquipmentDiagnosticsController(IEquipmentDiagnosticsFacade equipmentDiagnostics)
+    public EquipmentDiagnosticsController(
+        IEquipmentDiagnosticsFacade equipmentDiagnostics,
+        IEquipmentDiagnosticBotFacade equipmentDiagnosticBot)
     {
         _equipmentDiagnostics = equipmentDiagnostics;
+        _equipmentDiagnosticBot = equipmentDiagnosticBot;
     }
 
     [HttpGet("catalog")]
@@ -104,5 +109,24 @@ public sealed class EquipmentDiagnosticsController : ControllerBase
         }
 
         return Ok(diagnosticCase);
+    }
+
+    [HttpPost("bot/diagnose")]
+    public async Task<ActionResult<EquipmentDiagnosticBotResponse>> DiagnoseBotRequest(
+        [FromBody] EquipmentDiagnosticBotRequest? request,
+        CancellationToken cancellationToken)
+    {
+        if (request is null)
+        {
+            return ApiProblemDetailsFactory.CreateValidationResult(
+                this,
+                "Request body is required.",
+                "request",
+                "Request body is required.");
+        }
+
+        var response = await _equipmentDiagnosticBot.DiagnoseAsync(request, cancellationToken);
+
+        return Ok(response);
     }
 }

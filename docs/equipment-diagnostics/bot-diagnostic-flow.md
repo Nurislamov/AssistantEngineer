@@ -1,6 +1,12 @@
 # Equipment Diagnostics Bot Application Flow
 
-ED-15A adds a deterministic application contract for future bot and assistant adapters. It does not add Telegram, a web chat UI, or a new public API endpoint.
+ED-15A adds the deterministic application contract. ED-15B exposes it through one backend HTTP endpoint:
+
+```http
+POST /api/v1/equipment-diagnostics/bot/diagnose
+```
+
+The endpoint is a thin adapter over `IEquipmentDiagnosticBotFacade`. It does not add Telegram, a web chat UI, persistence, external calls, AI, RAG, or vector search.
 
 ## Runtime-Only Answer Boundary
 
@@ -40,4 +46,4 @@ Clarification options identify the manufacturer, series, category, equipment sid
 
 ## Future Adapter
 
-ED-15B may add a reviewed public endpoint or Telegram/web adapter over `IEquipmentDiagnosticBotFacade`. Any adapter must preserve the runtime-only answer boundary, reference-only handling, verification warnings, deterministic output, and safety rules.
+ED-15C may add a reviewed internal frontend or Telegram adapter over this endpoint. Any adapter must preserve the runtime-only answer boundary, reference-only handling, verification warnings, deterministic output, and safety rules.

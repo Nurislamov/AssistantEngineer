@@ -1,0 +1,64 @@
+{
+  "status": 1,
+  "title": "Equipment context required",
+  "message": "The displayed code matches multiple runtime equipment contexts. Select the installed equipment context.",
+  "normalizedManufacturer": "GREE",
+  "normalizedCode": "E1",
+  "equipmentContext": null,
+  "observedCode": {
+    "code": "E1",
+    "normalizedCode": "E1",
+    "freeText": null
+  },
+  "answerCard": null,
+  "clarificationQuestion": {
+    "prompt": "Which equipment context shows this code?",
+    "options": [
+      {
+        "label": "Gree Chiller (Chiller)",
+        "manufacturer": "Gree",
+        "series": "Chiller",
+        "category": 2,
+        "equipmentSide": 2,
+        "displayContext": 6,
+        "code": "E1",
+        "explanation": "E1 is present in the runtime catalog for Chiller Chiller.",
+        "followUpPrompt": "Confirm Gree Chiller (Chiller) and resend E1 with that context."
+      },
+      {
+        "label": "Gree GMV (Outdoor)",
+        "manufacturer": "Gree",
+        "series": "GMV",
+        "category": 0,
+        "equipmentSide": 1,
+        "displayContext": 1,
+        "code": "E1",
+        "explanation": "E1 is present in the runtime catalog for GMV Outdoor.",
+        "followUpPrompt": "Confirm Gree GMV (Outdoor) and resend E1 with that context."
+      }
+    ]
+  },
+  "sourceCard": null,
+  "safetyCard": {
+    "boundary": "Use this guidance for preliminary review only. Qualified technician review is required; keep safety protections active.",
+    "notes": [
+      "Stop and escalate when equipment identity cannot be confirmed."
+    ]
+  },
+  "verificationRequired": true,
+  "confidence": 0,
+  "isManualVerified": false,
+  "isSeedKnowledge": false,
+  "operatorNextSteps": [
+    "Confirm the installed equipment context."
+  ],
+  "warnings": [
+    "Do not select a diagnostic case until the equipment context is confirmed."
+  ],
+  "internalDecisionTrace": [
+    "RequestNormalized",
+    "RuntimeCatalogOnly",
+    "RuntimeMatches:3",
+    "ClarificationRequired"
+  ]
+}

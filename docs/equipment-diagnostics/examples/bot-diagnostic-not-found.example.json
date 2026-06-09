@@ -1,0 +1,40 @@
+{
+  "status": 2,
+  "title": "Runtime diagnostic case not found",
+  "message": "No runtime diagnostic case found. Verify equipment family, display context, and service manual.",
+  "normalizedManufacturer": "GREE",
+  "normalizedCode": "ZZ99",
+  "equipmentContext": null,
+  "observedCode": {
+    "code": "ZZ99",
+    "normalizedCode": "ZZ99",
+    "freeText": null
+  },
+  "answerCard": null,
+  "clarificationQuestion": null,
+  "sourceCard": null,
+  "safetyCard": {
+    "boundary": "Use this guidance for preliminary review only. Qualified technician review is required; keep safety protections active.",
+    "notes": [
+      "Stop and escalate when safe access cannot be confirmed."
+    ]
+  },
+  "verificationRequired": true,
+  "confidence": 0,
+  "isManualVerified": false,
+  "isSeedKnowledge": false,
+  "operatorNextSteps": [
+    "Confirm the equipment family and model.",
+    "Confirm where the code is displayed.",
+    "Verify against the exact service manual."
+  ],
+  "warnings": [
+    "Non-runtime staging, codebook, and preview knowledge is not used as a final diagnosis."
+  ],
+  "internalDecisionTrace": [
+    "RequestNormalized",
+    "RuntimeCatalogOnly",
+    "RuntimeMatches:0",
+    "RuntimeDiagnosticNotFound"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "status": 3,
+  "title": "Reference-only code pattern",
+  "message": "This looks like a status, debug, query, setting, or controller code, not a confirmed runtime diagnostic case.",
+  "normalizedManufacturer": "GREE",
+  "normalizedCode": "A0",
+  "equipmentContext": null,
+  "observedCode": {
+    "code": "A0",
+    "normalizedCode": "A0",
+    "freeText": null
+  },
+  "answerCard": null,
+  "clarificationQuestion": null,
+  "sourceCard": null,
+  "safetyCard": {
+    "boundary": "Use this guidance for preliminary review only. Qualified technician review is required; keep safety protections active.",
+    "notes": [
+      "Stop and escalate when safe access cannot be confirmed."
+    ]
+  },
+  "verificationRequired": true,
+  "confidence": 0,
+  "isManualVerified": false,
+  "isSeedKnowledge": false,
+  "operatorNextSteps": [
+    "Verify the display context and consult the exact equipment service manual."
+  ],
+  "warnings": [
+    "No runtime diagnostic case was used."
+  ],
+  "internalDecisionTrace": [
+    "RequestNormalized",
+    "RuntimeCatalogOnly",
+    "RuntimeMatches:0",
+    "ReferenceOnlyPatternRecognized"
+  ]
+}

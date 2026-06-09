@@ -122,7 +122,7 @@ public class EquipmentDiagnosticsFinalQaTests
     }
 
     [Fact]
-    public void EquipmentDiagnosticsControllerKeepsOnlyExpectedReadRoutes()
+    public void EquipmentDiagnosticsControllerKeepsExpectedRoutesAndOnlyOneBotPost()
     {
         var route = typeof(EquipmentDiagnosticsController).GetCustomAttribute<RouteAttribute>();
         var getTemplates = typeof(EquipmentDiagnosticsController)
@@ -131,10 +131,17 @@ public class EquipmentDiagnosticsFinalQaTests
             .Select(attribute => attribute.Template ?? string.Empty)
             .OrderBy(template => template, StringComparer.Ordinal)
             .ToArray();
+        var postTemplates = typeof(EquipmentDiagnosticsController)
+            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            .SelectMany(method => method.GetCustomAttributes<HttpPostAttribute>())
+            .Select(attribute => attribute.Template ?? string.Empty)
+            .OrderBy(template => template, StringComparer.Ordinal)
+            .ToArray();
 
         Assert.NotNull(route);
         Assert.Equal("api/v{version:apiVersion}/equipment-diagnostics", route.Template);
         Assert.Equal(["cases", "catalog", "error-codes"], getTemplates);
+        Assert.Equal(["bot/diagnose"], postTemplates);
     }
 
     private static IEnumerable<string> GetRuntimeSeedProvenanceViolations(
