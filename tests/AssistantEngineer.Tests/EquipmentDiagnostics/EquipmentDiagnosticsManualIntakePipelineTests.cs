@@ -340,6 +340,43 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     }
 
     [Fact]
+    public void BranchReadinessAllowsExplicitShouldNotSafetyContext()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "docs/security/api-endpoint-protection-inventory.json",
+                    "Modified",
+                    false,
+                    false,
+                    true,
+                    false,
+                    """{"risk":"Endpoint should not bypass staged authorization controls."}""")
+            ]));
+
+        Assert.True(report.Passed);
+        Assert.DoesNotContain(report.Issues, issue => issue.Code == "UnsafeChangedWording");
+        Assert.DoesNotContain(report.Issues, issue => issue.Code == "SuspiciousChangedPath");
+    }
+
+    [Theory]
+    [InlineData("src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsController.cs")]
+    [InlineData("tests/AssistantEngineer.Tests/Api/EquipmentDiagnosticBotApiIntegrationTests.cs")]
+    [InlineData("docs/security/api-endpoint-protection-inventory.json")]
+    [InlineData("docs/security/api-endpoint-protection-inventory.md")]
+    public void BranchReadinessAllowsRequiredBotEndpointGovernancePaths(string path)
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(path, "Modified", false, false, true, false, "ED-15B governed change.")
+            ]));
+
+        Assert.True(report.Passed);
+        Assert.Equal(1, report.ChangedFilesSummary.Allowed);
+        Assert.Empty(report.Issues);
+    }
+
+    [Fact]
     public void BranchReadinessFailsWhenCommandCheckFails()
     {
         var report = CreateBranchReadinessService().Verify(CreateBranchInput(

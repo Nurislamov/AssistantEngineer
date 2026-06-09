@@ -1,6 +1,6 @@
 # Equipment Diagnostics Contract Examples
 
-These files are deterministic documentation examples for API, formatter, and staging-validation consumers.
+These files are deterministic documentation examples for API, bot, formatter, and staging-validation consumers.
 
 They are part of the ED-10 manual-ingestion and bot-readiness pack. Their job is to document stable DTO and formatter shapes for future clients, not to provide diagnostic source material.
 
@@ -20,3 +20,5 @@ Rules for examples:
 - Do not include long copyrighted manual text.
 - Do not include protection-defeat or safeguard-deactivation instructions.
 - Future Telegram/UI clients should consume the runtime DTO fields or deterministic formatter output instead of generating their own diagnostic prose.
+- Bot response examples document `Answer`, `ClarificationRequired`, `ReferenceOnly`, and `NotFound` shapes from the runtime-only ED-15B endpoint.
+- Bot examples must never present staging candidates, manual codebook occurrences, generated previews, or local manuals as final diagnostic answers.

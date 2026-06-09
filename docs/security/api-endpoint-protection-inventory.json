@@ -1942,6 +1942,31 @@
                           "rolloutStage":  "ED-01"
                       },
                       {
+                          "risk":  "Operator-facing diagnostic guidance is safety-sensitive and must retain runtime-only source, provenance, verification, and safety warnings.",
+                          "endpointGroup":  "PublicRead",
+                          "auditCategory":  "System",
+                          "knownLimitations":  [
+                                                   "Current protection posture matches the existing explicitly public EquipmentDiagnostics endpoints.",
+                                                   "Final answers use the deterministic runtime catalog only; staging, manual-codebook, generated preview, and local PDF sources are not exposed as final diagnosis.",
+                                                   "No persistence, external calls, Telegram integration, web chat UI, AI, RAG, or vector search is introduced by this endpoint."
+                                               ],
+                          "currentAuthStatus":  "PublicAllowed",
+                          "tenantScope":  "NotApplicable",
+                          "action":  "InventoryRouteGroup",
+                          "routePattern":  "api/v{version:apiVersion}/equipment-diagnostics/bot/diagnose [POST]",
+                          "notes":  "Thin HTTP adapter over IEquipmentDiagnosticBotFacade for deterministic runtime-only diagnostic answers, clarification, reference-only, and not-found responses.",
+                          "publicClaim":  "ExplicitPublic",
+                          "permission":  "NotApplicable",
+                          "protectionStage":  "Public",
+                          "route":  "api/v{version:apiVersion}/equipment-diagnostics/bot/diagnose",
+                          "httpMethod":  "POST",
+                          "controller":  "EquipmentDiagnosticsController",
+                          "rateLimitCategory":  "ReferenceData",
+                          "targetPolicy":  "ReferenceData",
+                          "releaseBoundaryClaim":  "PublicOrCompatibilityByDesign",
+                          "rolloutStage":  "ED-15B"
+                      },
+                      {
                           "risk":  "Demand calculation endpoint is execution-sensitive and should stay explicitly staged for workflow execute protection.",
                           "endpointGroup":  "WorkflowExecute",
                           "auditCategory":  "Workflow",

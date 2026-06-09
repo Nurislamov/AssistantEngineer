@@ -408,6 +408,25 @@ ED-15A adds `IEquipmentDiagnosticBotService` and `IEquipmentDiagnosticBotFacade`
 
 See [bot-diagnostic-flow.md](bot-diagnostic-flow.md) for the decision flow and safety boundary.
 
+## ED-15B Bot Diagnostic API
+
+ED-15B adds one backend HTTP endpoint:
+
+```http
+POST /api/v1/equipment-diagnostics/bot/diagnose
+Content-Type: application/json
+
+{
+  "manufacturer": "Gree",
+  "code": "H5",
+  "series": "GMV"
+}
+```
+
+The controller performs only HTTP body validation and delegates to `IEquipmentDiagnosticBotFacade`. Responses may be `Answer`, `ClarificationRequired`, `ReferenceOnly`, `NotFound`, or `Unsupported`, while HTTP transport remains deterministic. Runtime catalog entries are the only source for final answers; staging candidates, manual codebook occurrences, generated previews, and local manuals remain non-runtime.
+
+Contract examples are under `docs/equipment-diagnostics/examples/`. ED-15B adds no Telegram/web UI, database, external calls, AI, RAG, vector search, or automatic knowledge promotion.
+
 Formatter output:
 
 - `Title`
@@ -816,10 +835,11 @@ Example response excerpt:
 - ED-10D adds final consistency, runtime-pollution, safety/provenance, formatter, and route-surface QA guards. It does not add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed runtime claims.
 - ED-11A adds a deterministic C# manual-intake verification/report pipeline and thin script wrapper. It does not automatically promote entries or add API routes, persistence, Telegram integration, AI/RAG/vector search, or manual-backed claims without evidence.
 - ED-15A adds deterministic runtime-only bot application contracts, clarification, reference-only classification, and safety/verification responses. It does not add adapters or public API routes.
+- ED-15B adds one thin deterministic backend bot endpoint and contract examples. It does not add Telegram/web UI, persistence, external calls, AI/RAG, or runtime promotion.
 
 ## Future Stages
 
-- ED-15B: reviewed public endpoint or Telegram/web adapter over the runtime-only bot facade, without moving diagnostics into the Equipment catalog module.
+- ED-15C: reviewed internal frontend or Telegram adapter over the runtime-only bot endpoint, without moving diagnostics into the Equipment catalog module.
 - ED-12: database projection and admin/manual import through a dedicated Infrastructure adapter and migration.
 - ED-13: RAG/manual evidence search only after deterministic source-backed data, safety/provenance rules, and manual evidence governance justify it.
 - Add audit and confidence rules for manual-backed content before any `ManualVerified` claim is allowed.
