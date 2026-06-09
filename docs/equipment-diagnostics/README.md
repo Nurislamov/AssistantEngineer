@@ -10,6 +10,10 @@ The verification tool now compares the runtime catalog, production staging candi
 
 Coverage distinguishes already-covered codes, evidence gaps, reference-only status/debug/query/setting/tool entries, and same-context conflicts. It recommends reviewed next actions but never writes runtime or staging knowledge automatically. No database, Telegram integration, AI, RAG, or vector search is involved.
 
+## ED-14C evidence rules and staging candidate preview
+
+Evidence rules require a fault/protection occurrence, an exact troubleshooting section from a primary indoor/outdoor troubleshooting source, source anchors, meaning, safety/limitations, and no coverage or conflict blocker. The generated preview is written only under `artifacts/verification/equipment-diagnostics/staging-candidate-preview.json`; it is not a production staging file or runtime promotion.
+
 Equipment Diagnostics is an early backend module for deterministic diagnostic support around equipment error codes, likely causes, required measurements, safety notes, and manual references.
 
 ## Purpose

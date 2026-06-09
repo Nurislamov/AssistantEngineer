@@ -67,6 +67,9 @@ internal static class BranchReadinessReportWriter
         builder.AppendLine($"- Codebook coverage status: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.Status}`");
         builder.AppendLine($"- Ready for staging candidates: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.ReadyForStagingCandidateCount}`");
         builder.AppendLine($"- Coverage conflicts: `{report.EquipmentDiagnostics.CodebookCoverage.Summary.ConflictCount}`");
+        builder.AppendLine($"- Evidence assessments: `{report.EquipmentDiagnostics.EvidenceAssessment.Summary.TotalAssessments}`");
+        builder.AppendLine($"- Needs troubleshooting section: `{report.EquipmentDiagnostics.EvidenceAssessment.Summary.NeedsTroubleshootingSectionCount}`");
+        builder.AppendLine($"- Staging preview candidates: `{report.EquipmentDiagnostics.StagingPreview.CandidateCount}`");
         builder.AppendLine($"- Blocking issues: `{report.EquipmentDiagnostics.HasBlockingIssues}`");
         builder.AppendLine();
         builder.AppendLine("## Command Checks");

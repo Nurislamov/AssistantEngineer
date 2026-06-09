@@ -31,7 +31,8 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
             StagingDocuments: stagingDocuments,
             DocsExampleDocuments: docsExampleDocuments,
             KnownManualIds: GetKnownManualIds(repoRoot),
-            ManualCodeBookDocuments: manualCodeBookDocuments);
+            ManualCodeBookDocuments: manualCodeBookDocuments,
+            ManualSourceUsages: GetManualSourceUsages(repoRoot));
     }
 
     private static IReadOnlyList<string> GetRuntimeCatalogFiles(string repoRoot)
@@ -117,6 +118,25 @@ internal static class EquipmentDiagnosticsVerificationInputLoader
         }
 
         return ids;
+    }
+
+    private static IReadOnlyDictionary<string, string> GetManualSourceUsages(string repoRoot)
+    {
+        var usages = new Dictionary<string, string>(StringComparer.Ordinal);
+        var registryRoot = Path.Combine(repoRoot, "docs", "equipment-diagnostics", "manual-sources");
+        foreach (var path in Directory.GetFiles(registryRoot, "*.json", SearchOption.AllDirectories))
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+            foreach (var source in document.RootElement.GetProperty("manualSources").EnumerateArray())
+            {
+                var manualId = source.GetProperty("manualId").GetString();
+                var usage = source.GetProperty("usage").GetString();
+                if (!string.IsNullOrWhiteSpace(manualId) && !string.IsNullOrWhiteSpace(usage))
+                    usages[manualId] = usage;
+            }
+        }
+
+        return usages;
     }
 
     private static EquipmentDiagnosticsVerificationDocumentKind GetStagingDocumentKind(string path)

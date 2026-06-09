@@ -62,13 +62,34 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
         var runtimeIssues = ValidateRuntimeCatalog(input);
         var (stagingIssues, stagingExampleIssues, candidateSummaries) = ValidateStaging(input);
         var (manualCodeBookIssues, manualCodeBookSummary) = ValidateManualCodeBook(input);
-        var coverage = new EquipmentDiagnosticsCodebookCoverageAnalyzer().Analyze(input);
+        var rawCoverage = new EquipmentDiagnosticsCodebookCoverageAnalyzer().Analyze(input);
+        var evidence = new EquipmentDiagnosticsEvidenceRuleEngine().Assess(input, rawCoverage);
+        var preview = new EquipmentDiagnosticsStagingPreviewGenerator().Generate(evidence);
+        var coverage = rawCoverage with
+        {
+            Summary = rawCoverage.Summary with
+            {
+                ReadyForStagingCandidateCount = evidence.Summary.ReadyForStagingCandidateCount,
+                ReferenceOnlyCount = evidence.Summary.ReferenceOnlyCount
+            },
+            EvidenceAssessmentSummary = evidence.Summary,
+            TopPreviewCandidateCodes = preview.CandidateCodes.Take(5).ToArray()
+        };
         var coverageIssues = coverage.Conflicts.Select(conflict => new EquipmentDiagnosticsVerificationIssue(
             "ManualCodebookCoverageConflict",
             "codebook-coverage",
             conflict.Key,
             conflict.Message,
-            conflict.Severity)).ToArray();
+            conflict.Severity)).ToList();
+        if (preview.CandidateCount == 0)
+        {
+            coverageIssues.Add(new EquipmentDiagnosticsVerificationIssue(
+                "NoReadyStagingPreviewCandidates",
+                "evidence-rules",
+                coverage.PreviewArtifactPath,
+                "No manual codebook occurrence currently satisfies all evidence rules for staging preview generation.",
+                EquipmentDiagnosticsVerificationSeverity.Warning));
+        }
         var docsIssues = ValidateDocsExamples(input.DocsExampleDocuments);
 
         var sections = new[]
@@ -86,7 +107,10 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
                         or EquipmentDiagnosticsVerificationDocumentKind.StagingTemplate),
                 stagingExampleIssues),
             CreateSection("manual-codebook", input.ManualCodeBookDocuments?.Count ?? 0, manualCodeBookIssues),
-            CreateSection("codebook-coverage", input.ManualCodeBookDocuments?.Count ?? 0, coverageIssues),
+            CreateSection("codebook-coverage", input.ManualCodeBookDocuments?.Count ?? 0,
+                coverageIssues.Where(issue => issue.Section == "codebook-coverage").ToArray()),
+            CreateSection("evidence-rules", input.ManualCodeBookDocuments?.Count ?? 0,
+                coverageIssues.Where(issue => issue.Section == "evidence-rules").ToArray()),
             CreateSection("docs-examples", input.DocsExampleDocuments.Count, docsIssues)
         };
         var duplicateKeys = GetDuplicateRuntimeKeys(input.RuntimeEntries);
@@ -105,6 +129,8 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
             RuntimeCatalog: runtimeSummary,
             ManualCodeBookSummary: manualCodeBookSummary,
             CodebookCoverage: coverage,
+            EvidenceAssessment: evidence,
+            StagingPreview: preview,
             StagingCandidateFileCount: sections.Single(section => section.Name == "staging-candidates").FileCount,
             StagingExampleFileCount: sections.Single(section => section.Name == "staging-examples").FileCount,
             DocsExampleFileCount: input.DocsExampleDocuments.Count,

@@ -8,6 +8,10 @@ After a local manual is registered and its cover identity is checked, reviewed c
 
 ED-14B adds a deterministic coverage gate between codebook extraction and staging review. It reports whether an occurrence is already covered, requires manual or troubleshooting evidence, must remain reference-only, or conflicts with another same-context source. Candidate readiness is only a recommendation; promotion remains a separate reviewed change.
 
+### Evidence assessment and preview
+
+ED-14C evaluates each occurrence against explicit source-usage and evidence-completeness rules. Ready assessments may appear in an ignored generated preview, never in production staging or runtime knowledge. Owner/controller/tool/technical-guide evidence remains supporting context, and unresolved conflicts or unsafe text block preview generation.
+
 ED-11A provides a deterministic manual-intake, validation, and promotion-readiness pipeline for EquipmentDiagnostics.
 
 The pipeline does not automatically modify the runtime catalog. A reviewed pull request remains required for every runtime catalog change.
