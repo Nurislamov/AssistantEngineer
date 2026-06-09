@@ -62,6 +62,13 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
         var runtimeIssues = ValidateRuntimeCatalog(input);
         var (stagingIssues, stagingExampleIssues, candidateSummaries) = ValidateStaging(input);
         var (manualCodeBookIssues, manualCodeBookSummary) = ValidateManualCodeBook(input);
+        var coverage = new EquipmentDiagnosticsCodebookCoverageAnalyzer().Analyze(input);
+        var coverageIssues = coverage.Conflicts.Select(conflict => new EquipmentDiagnosticsVerificationIssue(
+            "ManualCodebookCoverageConflict",
+            "codebook-coverage",
+            conflict.Key,
+            conflict.Message,
+            conflict.Severity)).ToArray();
         var docsIssues = ValidateDocsExamples(input.DocsExampleDocuments);
 
         var sections = new[]
@@ -79,6 +86,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
                         or EquipmentDiagnosticsVerificationDocumentKind.StagingTemplate),
                 stagingExampleIssues),
             CreateSection("manual-codebook", input.ManualCodeBookDocuments?.Count ?? 0, manualCodeBookIssues),
+            CreateSection("codebook-coverage", input.ManualCodeBookDocuments?.Count ?? 0, coverageIssues),
             CreateSection("docs-examples", input.DocsExampleDocuments.Count, docsIssues)
         };
         var duplicateKeys = GetDuplicateRuntimeKeys(input.RuntimeEntries);
@@ -96,6 +104,7 @@ public sealed class EquipmentDiagnosticsVerificationService : IEquipmentDiagnost
         return new EquipmentDiagnosticsVerificationReport(
             RuntimeCatalog: runtimeSummary,
             ManualCodeBookSummary: manualCodeBookSummary,
+            CodebookCoverage: coverage,
             StagingCandidateFileCount: sections.Single(section => section.Name == "staging-candidates").FileCount,
             StagingExampleFileCount: sections.Single(section => section.Name == "staging-examples").FileCount,
             DocsExampleFileCount: input.DocsExampleDocuments.Count,

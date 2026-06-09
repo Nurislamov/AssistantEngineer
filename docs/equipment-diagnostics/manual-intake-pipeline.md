@@ -4,6 +4,10 @@
 
 After a local manual is registered and its cover identity is checked, reviewed code occurrences may be recorded in `Knowledge/manual-codebook`. The codebook is non-runtime and preserves source/page/section plus classification and promotion readiness. Only occurrences with separately reviewed troubleshooting evidence may move into the staging-candidate workflow.
 
+### Coverage gate
+
+ED-14B adds a deterministic coverage gate between codebook extraction and staging review. It reports whether an occurrence is already covered, requires manual or troubleshooting evidence, must remain reference-only, or conflicts with another same-context source. Candidate readiness is only a recommendation; promotion remains a separate reviewed change.
+
 ED-11A provides a deterministic manual-intake, validation, and promotion-readiness pipeline for EquipmentDiagnostics.
 
 The pipeline does not automatically modify the runtime catalog. A reviewed pull request remains required for every runtime catalog change.
