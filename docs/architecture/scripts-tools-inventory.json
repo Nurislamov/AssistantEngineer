@@ -1165,6 +1165,22 @@
                         "riskIfChanged":  "Wrapper drift can prepare PR metadata from a failing or stale readiness report."
                     },
                     {
+                        "id":  "SCR-073",
+                        "path":  "scripts/equipment-diagnostics/smoke-bot-diagnostic-endpoint.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Thin local developer smoke for the deterministic EquipmentDiagnostics bot diagnostic endpoint.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the smoke thin, local-only, and independent of external services.",
+                        "proposedStage":  "ED-15C",
+                        "riskIfChanged":  "Smoke drift can hide bot endpoint transport or contract failures."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

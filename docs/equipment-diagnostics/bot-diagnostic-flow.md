@@ -8,6 +8,12 @@ POST /api/v1/equipment-diagnostics/bot/diagnose
 
 The endpoint is a thin adapter over `IEquipmentDiagnosticBotFacade`. It does not add Telegram, a web chat UI, persistence, external calls, AI, RAG, or vector search.
 
+## ED-15C Request Hardening
+
+The HTTP endpoint requires explicit `manufacturer` and `code`; current free text is context only and is not an identity parser. Inputs are trimmed and validated before facade delegation. Limits are: manufacturer 80, code 32, free text 500, series/model 120 each, site context 300, preferred language 16, and up to 20 operator-provided name/value measurements with names up to 80 and values up to 120 characters.
+
+Missing required identity, overlong input, and disallowed control characters return a deterministic validation problem. The endpoint rejects invalid input without truncation and does not log or persist the raw request.
+
 ## Runtime-Only Answer Boundary
 
 `IEquipmentDiagnosticBotService` searches the approved runtime catalog through `IEquipmentDiagnosticsService`. A final `Answer` is returned only when one runtime diagnostic match and its runtime diagnostic case are available.
@@ -46,4 +52,4 @@ Clarification options identify the manufacturer, series, category, equipment sid
 
 ## Future Adapter
 
-ED-15C may add a reviewed internal frontend or Telegram adapter over this endpoint. Any adapter must preserve the runtime-only answer boundary, reference-only handling, verification warnings, deterministic output, and safety rules.
+A future reviewed adapter may consume this endpoint. Any adapter must preserve the runtime-only answer boundary, reference-only handling, verification warnings, deterministic output, and safety rules.

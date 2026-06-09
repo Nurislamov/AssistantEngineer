@@ -107,6 +107,79 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
         Assert.Contains(problem.Errors.Keys, key => string.Equals(key, "request", StringComparison.OrdinalIgnoreCase));
     }
 
+    [Theory]
+    [InlineData(null, "H5")]
+    [InlineData("Gree", null)]
+    public async Task MissingRequiredIdentityReturnsValidationProblem(string? manufacturer, string? code)
+    {
+        await using var factory = new BotApiFactory();
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Endpoint,
+            new EquipmentDiagnosticBotRequest(manufacturer, code, FreeText: "Free-text inference is not enabled."));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.NotNull(await response.Content.ReadFromJsonAsync<ValidationProblemDetails>());
+    }
+
+    [Theory]
+    [InlineData("manufacturer")]
+    [InlineData("code")]
+    [InlineData("freeText")]
+    public async Task OverlongTextFieldsReturnValidationProblem(string field)
+    {
+        var request = field switch
+        {
+            "manufacturer" => new EquipmentDiagnosticBotRequest(new string('G', EquipmentDiagnosticBotRequestLimits.Manufacturer + 1), "H5"),
+            "code" => new EquipmentDiagnosticBotRequest("Gree", new string('H', EquipmentDiagnosticBotRequestLimits.Code + 1)),
+            _ => new EquipmentDiagnosticBotRequest("Gree", "H5", FreeText: new string('T', EquipmentDiagnosticBotRequestLimits.FreeText + 1))
+        };
+        await using var factory = new BotApiFactory();
+
+        var response = await factory.CreateClient().PostAsJsonAsync(Endpoint, request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task TooManyMeasurementsReturnValidationProblem()
+    {
+        var measurements = Enumerable.Range(1, EquipmentDiagnosticBotRequestLimits.MeasurementCount + 1)
+            .ToDictionary(index => $"m{index}", _ => "value");
+        await using var factory = new BotApiFactory();
+
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Endpoint,
+            new EquipmentDiagnosticBotRequest("Gree", "H5", OperatorProvidedMeasurements: measurements));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DisallowedControlCharactersReturnValidationProblem()
+    {
+        await using var factory = new BotApiFactory();
+
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Endpoint,
+            new EquipmentDiagnosticBotRequest("Gree\u0000", "H5"));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ValidMinimalTrimmedRequestReturnsAnswer()
+    {
+        await using var factory = new BotApiFactory();
+
+        var result = await ReadSuccessAsync(await factory.CreateClient().PostAsJsonAsync(
+            Endpoint,
+            new EquipmentDiagnosticBotRequest(" Gree ", " H5 ", Series: " GMV ")));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.Answer, result.Status);
+        Assert.Equal("GREE", result.NormalizedManufacturer);
+        Assert.Equal("H5", result.NormalizedCode);
+    }
+
     [Fact]
     public async Task EndpointResponsesDoNotExposeUnsafeOrNonRuntimeFinalDiagnosis()
     {
@@ -121,7 +194,9 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
         var forbidden = new[]
         {
             "bypass", "disable protection", "disable protections", "force run",
-            "short protection", "ignore protection", "DraftPreview"
+            "short protection", "ignore protection", "DraftPreview",
+            "artifacts/verification", "Knowledge/manual-codebook", "Knowledge/staging",
+            "staging-candidate-preview", "D:\\", "C:\\", "/src/"
         };
 
         foreach (var response in responses)
@@ -129,6 +204,8 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             Assert.All(forbidden, fragment => Assert.DoesNotContain(fragment, json, StringComparison.OrdinalIgnoreCase));
+            using var document = JsonDocument.Parse(json);
+            Assert.DoesNotContain(EnumerateStrings(document.RootElement), value => value.Length > 1000);
         }
     }
 
@@ -158,18 +235,30 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
         Assert.Equal("Gree", request.Manufacturer);
         Assert.Equal("H5", request.Code);
 
-        Assert.Equal(
-            EquipmentDiagnosticBotResponseStatus.Answer,
-            ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-answer.example.json").Status);
-        Assert.Equal(
-            EquipmentDiagnosticBotResponseStatus.ClarificationRequired,
-            ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-clarification.example.json").Status);
-        Assert.Equal(
-            EquipmentDiagnosticBotResponseStatus.ReferenceOnly,
-            ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-reference-only.example.json").Status);
-        Assert.Equal(
-            EquipmentDiagnosticBotResponseStatus.NotFound,
-            ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-not-found.example.json").Status);
+        var answer = ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-answer.example.json");
+        var clarification = ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-clarification.example.json");
+        var referenceOnly = ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-reference-only.example.json");
+        var notFound = ReadExample<EquipmentDiagnosticBotResponse>("bot-diagnostic-not-found.example.json");
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.Answer, answer.Status);
+        Assert.NotNull(answer.AnswerCard);
+        Assert.NotNull(answer.SourceCard);
+        Assert.NotNull(answer.SafetyCard);
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ClarificationRequired, clarification.Status);
+        Assert.NotEmpty(clarification.ClarificationQuestion!.Options);
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, referenceOnly.Status);
+        Assert.Null(referenceOnly.AnswerCard);
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.NotFound, notFound.Status);
+        Assert.Null(notFound.AnswerCard);
+        Assert.NotEmpty(notFound.OperatorNextSteps);
+
+        foreach (var response in new[] { answer, clarification, referenceOnly, notFound })
+        {
+            Assert.False(string.IsNullOrWhiteSpace(response.Title));
+            Assert.False(string.IsNullOrWhiteSpace(response.Message));
+            Assert.False(string.IsNullOrWhiteSpace(response.SafetyCard.Boundary));
+            Assert.True(response.VerificationRequired);
+        }
     }
 
     private static async Task<EquipmentDiagnosticBotResponse> ReadSuccessAsync(HttpResponseMessage response)
@@ -185,6 +274,30 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
                 TestPaths.RepoRoot,
                 "docs", "equipment-diagnostics", "examples", fileName)),
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }));
+
+    private static IEnumerable<string> EnumerateStrings(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.String)
+        {
+            yield return element.GetString() ?? string.Empty;
+        }
+        else if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                foreach (var value in EnumerateStrings(property.Value))
+                    yield return value;
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                foreach (var value in EnumerateStrings(item))
+                    yield return value;
+            }
+        }
+    }
 
     private sealed class BotApiFactory : WebApplicationFactory<Program>
     {
