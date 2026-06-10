@@ -433,6 +433,31 @@ ED-15C validates and trims the existing bot request before facade delegation. Ma
 
 Final answers remain runtime-catalog-only. Staging, manual codebook, generated preview, local manual, and verification-artifact content remains non-runtime and must not appear as user-facing diagnostic facts. This stage adds contract, integration, response-boundary, and smoke coverage without adding Telegram/web UI, persistence, external calls, AI/RAG, or production security claims.
 
+## ED-16A Frontend Equipment Diagnostics Panel
+
+ED-16A adds an internal React panel at `/equipment-diagnostics` over the existing `POST /api/v1/equipment-diagnostics/bot/diagnose` endpoint. The panel accepts explicit manufacturer and displayed code plus optional equipment context, then renders the backend response without inventing diagnostic content.
+
+- `Answer` shows verification, confidence, provenance, safety boundary, and operator next steps.
+- `ClarificationRequired` shows deterministic options; selecting one fills visible context and waits for the operator to submit again.
+- `ReferenceOnly`, `NotFound`, `Unsupported`, and `UnsafeOrOutOfScope` remain non-answer states with safe next steps.
+- The frontend client rejects responses containing internal artifact paths or unsafe diagnostic text instead of displaying partial content.
+
+Run frontend checks:
+
+```powershell
+cd src/Frontend
+npm test
+npm run build
+```
+
+The backend smoke remains:
+
+```powershell
+.\scripts\equipment-diagnostics\smoke-bot-diagnostic-endpoint.ps1 -BaseUrl http://localhost:5000
+```
+
+The panel adds no Telegram adapter, AI/RAG, database/admin UI, audit log, feedback loop, new backend endpoint, or production auth/role claim.
+
 Formatter output:
 
 - `Title`
@@ -843,6 +868,7 @@ Example response excerpt:
 - ED-15A adds deterministic runtime-only bot application contracts, clarification, reference-only classification, and safety/verification responses. It does not add adapters or public API routes.
 - ED-15B adds one thin deterministic backend bot endpoint and contract examples. It does not add Telegram/web UI, persistence, external calls, AI/RAG, or runtime promotion.
 - ED-15C adds deterministic request limits, response-boundary regression guards, beta-backend readiness documentation, and a local smoke script. It does not claim production authentication, roles, or endpoint-specific rate limiting.
+- ED-16A adds an internal frontend panel over the existing runtime-only bot endpoint. It does not add Telegram, AI/RAG, persistence, or new backend routes.
 
 ## Future Stages
 

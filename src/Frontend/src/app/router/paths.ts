@@ -9,4 +9,5 @@ export const paths = {
     `/calculations/buildings/${buildingId}/latest`,
   roomCalculationResult: (roomId: number | string) => `/calculations/rooms/${roomId}/latest`,
   equipmentSelection: "/equipment-selection",
+  equipmentDiagnostics: "/equipment-diagnostics",
 } as const;

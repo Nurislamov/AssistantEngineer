@@ -53,9 +53,21 @@ The script sends one minimal runtime request and fails when HTTP is not 200 or t
 - safety/provenance warnings and regression guards;
 - local developer smoke script.
 
+## ED-16A Internal UI
+
+The internal frontend now includes `/equipment-diagnostics`, a deterministic panel over the existing backend endpoint. It supports answers, clarification, reference-only, not-found, unsupported, validation, and network-error states while preserving the runtime-only final-answer boundary.
+
+Frontend verification:
+
+```powershell
+cd src/Frontend
+npm test
+npm run build
+```
+
 ## Not Ready Or Not Claimed
 
-- Telegram adapter or web chat UI;
+- Telegram adapter or external/public chat UI;
 - production authentication, roles, or endpoint-specific rate limiting;
 - audit log and operator feedback loop;
 - database-backed administration;

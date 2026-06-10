@@ -62,6 +62,9 @@ export const apiRoutes = {
     update: (id: number) => `${apiPrefix}/equipment-catalog/${id}`,
     delete: (id: number) => `${apiPrefix}/equipment-catalog/${id}`,
   },
+  equipmentDiagnostics: {
+    botDiagnose: () => `${apiPrefix}/equipment-diagnostics/bot/diagnose`,
+  },
   calculations: {
     buildingCoolingLoad: (buildingId: number) =>
       `${apiPrefix}/buildings/${buildingId}/load-calculations/cooling-load`,

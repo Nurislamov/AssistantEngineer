@@ -170,6 +170,23 @@ public class EquipmentDiagnosticsFinalQaTests
         Assert.Contains("production auth/rate limiting is not claimed", inventory, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void FrontendBotPanelUsesExistingEndpointAndKeepsEquipmentCatalogSeparate()
+    {
+        var frontendRoot = Path.Combine(TestPaths.RepoRoot, "src", "Frontend", "src");
+        var routes = File.ReadAllText(Path.Combine(frontendRoot, "shared", "api", "apiRoutes.ts"));
+        var router = File.ReadAllText(Path.Combine(frontendRoot, "app", "router", "AppRouter.tsx"));
+        var client = File.ReadAllText(Path.Combine(
+            frontendRoot,
+            "entities", "equipment-diagnostics", "api", "equipmentDiagnosticBotClient.ts"));
+
+        Assert.Contains("/equipment-diagnostics/bot/diagnose", routes, StringComparison.Ordinal);
+        Assert.Contains("EquipmentDiagnosticsPage", router, StringComparison.Ordinal);
+        Assert.DoesNotContain("equipmentCatalog", client, StringComparison.Ordinal);
+        Assert.Contains("assertSafeResponse", client, StringComparison.Ordinal);
+        Assert.DoesNotContain("fetch(", client, StringComparison.Ordinal);
+    }
+
     private static IEnumerable<string> GetRuntimeSeedProvenanceViolations(
         EquipmentDiagnosticsKnowledgeEntry entry)
     {

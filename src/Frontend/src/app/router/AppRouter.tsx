@@ -8,6 +8,7 @@ import { CalculationResultsPage } from "@/pages/calculation-results/ui/Calculati
 import { DashboardPage } from "@/pages/dashboard/ui/DashboardPage";
 import { EngineeringWorkflowPage } from "@/pages/engineering-workflow/ui/EngineeringWorkflowPage";
 import { EquipmentSelectionPage } from "@/pages/equipment-selection/ui/EquipmentSelectionPage";
+import { EquipmentDiagnosticsPage } from "@/pages/equipment-diagnostics/ui/EquipmentDiagnosticsPage";
 import { ReportsPage } from "@/pages/reports/ui/ReportsPage";
 
 export function AppRouter(): JSX.Element {
@@ -35,6 +36,7 @@ export function AppRouter(): JSX.Element {
         />
         <Route path="/calculations/rooms/:roomId/latest" element={<CalculationResultsPage />} />
         <Route path={paths.equipmentSelection} element={<EquipmentSelectionPage />} />
+        <Route path={paths.equipmentDiagnostics} element={<EquipmentDiagnosticsPage />} />
         <Route path="*" element={<Navigate to={paths.dashboard} replace />} />
       </Route>
     </Routes>
