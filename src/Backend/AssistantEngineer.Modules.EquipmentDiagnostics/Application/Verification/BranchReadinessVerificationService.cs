@@ -37,7 +37,10 @@ public sealed class BranchReadinessVerificationService
         "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/",
         "tools/AssistantEngineer.Tools.BranchReadinessVerification/",
         "scripts/equipment-diagnostics/",
-        "scripts/dev/"
+        "scripts/dev/",
+        "src/Frontend/src/entities/equipment-diagnostics/",
+        "src/Frontend/src/pages/equipment-diagnostics/",
+        "src/Frontend/src/widgets/equipment-diagnostics/"
     ];
 
     private static readonly string[] AllowedExactPaths =
@@ -47,6 +50,10 @@ public sealed class BranchReadinessVerificationService
         "tests/AssistantEngineer.Tests/Api/EquipmentDiagnosticBotApiIntegrationTests.cs",
         "tests/AssistantEngineer.Tests/AssistantEngineer.Tests.csproj",
         "src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsController.cs",
+        "src/Frontend/src/app/router/AppRouter.tsx",
+        "src/Frontend/src/app/router/paths.ts",
+        "src/Frontend/src/shared/api/apiRoutes.ts",
+        "src/Frontend/src/widgets/app-sidebar/ui/AppSidebar.tsx",
         "docs/security/api-endpoint-protection-inventory.json",
         "docs/security/api-endpoint-protection-inventory.md",
         "docs/architecture/module-boundary-matrix.json",
@@ -198,6 +205,7 @@ public sealed class BranchReadinessVerificationService
     {
         if (path.StartsWith("tests/", StringComparison.OrdinalIgnoreCase) ||
             path.Contains("/Application/Verification/", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith("/entities/equipment-diagnostics/api/equipmentDiagnosticBotClient.ts", StringComparison.OrdinalIgnoreCase) ||
             path.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase))
         {
             return true;

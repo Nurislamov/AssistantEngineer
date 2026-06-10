@@ -14,6 +14,14 @@ The HTTP endpoint requires explicit `manufacturer` and `code`; current free text
 
 Missing required identity, overlong input, and disallowed control characters return a deterministic validation problem. The endpoint rejects invalid input without truncation and does not log or persist the raw request.
 
+## ED-16A Internal Frontend Panel
+
+The internal `/equipment-diagnostics` page calls the existing bot endpoint through the shared frontend HTTP client. It mirrors the deterministic response states and does not diagnose from free text, staging candidates, codebook occurrences, previews, or local manuals.
+
+Clarification selection updates visible manufacturer, series, equipment side, display context, and code fields. It does not perform a hidden follow-up request; the operator reviews the context and explicitly submits again.
+
+The client treats internal artifact/path or unsafe diagnostic response content as a display-boundary failure and shows a controlled error without stack traces or internal details.
+
 ## Runtime-Only Answer Boundary
 
 `IEquipmentDiagnosticBotService` searches the approved runtime catalog through `IEquipmentDiagnosticsService`. A final `Answer` is returned only when one runtime diagnostic match and its runtime diagnostic case are available.

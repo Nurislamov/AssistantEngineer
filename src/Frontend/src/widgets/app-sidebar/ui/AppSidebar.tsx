@@ -3,6 +3,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import RouteIcon from "@mui/icons-material/Route";
 import {
   Box,
@@ -41,6 +42,11 @@ const navItems = [
     label: "Equipment",
     to: paths.equipmentSelection,
     icon: <PrecisionManufacturingIcon />,
+  },
+  {
+    label: "Diagnostics",
+    to: paths.equipmentDiagnostics,
+    icon: <TroubleshootIcon />,
   },
 ] as const;
 
