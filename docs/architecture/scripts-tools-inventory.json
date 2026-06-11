@@ -1181,6 +1181,22 @@
                         "riskIfChanged":  "Smoke drift can hide bot endpoint transport or contract failures."
                     },
                     {
+                        "id":  "SCR-074",
+                        "path":  "scripts/equipment-diagnostics/run-bot-scenario-smoke.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Optional local deterministic smoke runner for source-controlled EquipmentDiagnostics bot field scenarios.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the runner local-only and aligned with the source-controlled scenario contract.",
+                        "proposedStage":  "ED-16B",
+                        "riskIfChanged":  "Runner drift can hide facade/API scenario status or response-boundary mismatches."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

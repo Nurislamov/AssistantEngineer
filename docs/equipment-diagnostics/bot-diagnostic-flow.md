@@ -22,6 +22,12 @@ Clarification selection updates visible manufacturer, series, equipment side, di
 
 The client treats internal artifact/path or unsafe diagnostic response content as a display-boundary failure and shows a controlled error without stack traces or internal details.
 
+## ED-16B Field Acceptance
+
+The source-controlled scenario pack records current runtime decisions for common operator inputs. Acceptance tests execute each request twice through the facade, verify core requests through HTTP, and render equivalent frontend states. Scenarios never act as a runtime data source and cannot convert staging, codebook, preview, or manual review material into a final answer.
+
+Current anchors include H5 answer, current single-context C5 answer, F5 not-found, A0/n6/db reference-only, unknown-code fallback, and E1 clarification.
+
 ## Runtime-Only Answer Boundary
 
 `IEquipmentDiagnosticBotService` searches the approved runtime catalog through `IEquipmentDiagnosticsService`. A final `Answer` is returned only when one runtime diagnostic match and its runtime diagnostic case are available.

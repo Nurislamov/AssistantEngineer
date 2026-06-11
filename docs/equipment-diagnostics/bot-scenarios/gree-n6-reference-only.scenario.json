@@ -1,0 +1,10 @@
+{
+  "scenarioId": "gree-n6-reference-only", "title": "Gree n6 reference-only pattern", "description": "n6 is not an approved runtime diagnostic answer.",
+  "request": { "manufacturer": "Gree", "code": "n6", "series": null, "modelCode": null, "equipmentSide": null, "displayContext": null, "freeText": null },
+  "expected": {
+    "responseStatus": "ReferenceOnly", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": false,
+    "mustContainText": ["Reference-only code pattern", "not a confirmed runtime diagnostic case"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": null,
+    "uiExpectation": { "showAnswerCard": false, "showClarificationOptions": false, "showReferenceOnlyNotice": true, "showNotFoundFallback": false, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}

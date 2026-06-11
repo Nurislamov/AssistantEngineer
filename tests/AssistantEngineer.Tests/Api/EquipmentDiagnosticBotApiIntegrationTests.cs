@@ -7,6 +7,7 @@ using AssistantEngineer.Api;
 using AssistantEngineer.Api.Controllers.Equipment;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using AssistantEngineer.Tests.EquipmentDiagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -207,6 +208,30 @@ public sealed class EquipmentDiagnosticBotApiIntegrationTests
             using var document = JsonDocument.Parse(json);
             Assert.DoesNotContain(EnumerateStrings(document.RootElement), value => value.Length > 1000);
         }
+    }
+
+    [Theory]
+    [InlineData("gree-h5-answer")]
+    [InlineData("gree-c5-clarification")]
+    [InlineData("gree-a0-reference-only")]
+    [InlineData("gree-unknown-not-found")]
+    public async Task CoreFieldScenariosReturnHttp200WithExpectedSafeStatus(string scenarioId)
+    {
+        var scenario = BotScenarioTestCatalog.Get(scenarioId);
+        await using var factory = new BotApiFactory();
+
+        var response = await factory.CreateClient().PostAsJsonAsync(
+            Endpoint,
+            BotScenarioTestCatalog.ToRequest(scenario));
+        var result = await ReadSuccessAsync(response);
+        var json = JsonSerializer.Serialize(result);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(scenario.Expected.ResponseStatus, result.Status);
+        Assert.All(BotScenarioTestCatalog.UnsafeFragments, fragment =>
+            Assert.DoesNotContain(fragment, json, StringComparison.OrdinalIgnoreCase));
+        Assert.All(BotScenarioTestCatalog.InternalArtifactFragments, fragment =>
+            Assert.DoesNotContain(fragment, json, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

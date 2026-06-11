@@ -1,0 +1,12 @@
+{
+  "scenarioId": "gree-c5-clarification",
+  "title": "Gree C5 current runtime behavior",
+  "description": "C5 is context-sensitive, but the current approved runtime catalog has one Indoor match.",
+  "request": { "manufacturer": "Gree", "code": "C5", "series": null, "modelCode": null, "equipmentSide": null, "displayContext": null, "freeText": null },
+  "expected": {
+    "responseStatus": "Answer", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": true,
+    "mustContainText": ["C5", "SeededEngineeringKnowledge"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": null,
+    "uiExpectation": { "showAnswerCard": true, "showClarificationOptions": false, "showReferenceOnlyNotice": false, "showNotFoundFallback": false, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}

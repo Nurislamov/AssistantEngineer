@@ -1,0 +1,12 @@
+{
+  "scenarioId": "gree-f5-answer-or-not-found",
+  "title": "Gree F5 non-runtime fallback",
+  "description": "F5 has no approved runtime case and must not use non-runtime review sources.",
+  "request": { "manufacturer": "Gree", "code": "F5", "series": "GMV", "modelCode": null, "equipmentSide": "Outdoor", "displayContext": "OduMainBoardLed", "freeText": null },
+  "expected": {
+    "responseStatus": "NotFound", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": false,
+    "mustContainText": ["No runtime diagnostic case found", "Verify equipment family"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": null,
+    "uiExpectation": { "showAnswerCard": false, "showClarificationOptions": false, "showReferenceOnlyNotice": false, "showNotFoundFallback": true, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}

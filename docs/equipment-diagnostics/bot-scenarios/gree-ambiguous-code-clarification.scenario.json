@@ -1,0 +1,10 @@
+{
+  "scenarioId": "gree-ambiguous-code-clarification", "title": "Gree E1 ambiguous runtime contexts", "description": "E1 requires deterministic equipment-context clarification.",
+  "request": { "manufacturer": "Gree", "code": "E1", "series": null, "modelCode": null, "equipmentSide": null, "displayContext": null, "freeText": null },
+  "expected": {
+    "responseStatus": "ClarificationRequired", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": false,
+    "mustContainText": ["Equipment context required", "Which equipment context shows this code"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": 3,
+    "uiExpectation": { "showAnswerCard": false, "showClarificationOptions": true, "showReferenceOnlyNotice": false, "showNotFoundFallback": false, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}

@@ -118,6 +118,30 @@ describe("EquipmentDiagnosticBotPanel", () => {
     expect(await screen.findByText("The diagnostic service is unavailable.")).toBeInTheDocument();
   });
 
+  it.each([
+    ["H5", 0, "Gree GMV H5 diagnostic guidance", "Verify equipment identity."],
+    ["C5", 0, "Gree Indoor C5 diagnostic guidance", "Verify equipment identity."],
+    ["A0", 3, "Reference-only code pattern", "Verify display context."],
+    ["n6", 3, "Reference-only code pattern", "Verify display context."],
+    ["ZZ99", 2, "Runtime diagnostic case not found", "Verify manufacturer and service manual."],
+  ])("renders field scenario %s with deterministic UI state", async (code, status, title, nextStep) => {
+    diagnoseMock.mockResolvedValue({
+      ...answer(),
+      status,
+      title,
+      answerCard: status === 0 ? answer().answerCard : null,
+      sourceCard: status === 0 ? answer().sourceCard : null,
+      operatorNextSteps: [nextStep],
+    });
+    renderAndSubmit(code);
+
+    expect(await screen.findByText(title)).toBeInTheDocument();
+    expect(screen.getByText(nextStep)).toBeInTheDocument();
+    expect(screen.getByText("Qualified technician review required.")).toBeInTheDocument();
+    if (status !== 0)
+      expect(screen.queryByText("Preliminary runtime guidance.")).not.toBeInTheDocument();
+  });
+
   it("disables submit while loading to prevent duplicate requests", async () => {
     let resolveRequest!: (response: EquipmentDiagnosticBotResponse) => void;
     diagnoseMock.mockReturnValue(new Promise((resolve) => {
