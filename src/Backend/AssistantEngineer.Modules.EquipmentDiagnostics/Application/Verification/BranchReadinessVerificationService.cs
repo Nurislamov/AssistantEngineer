@@ -43,6 +43,13 @@ public sealed class BranchReadinessVerificationService
         "src/Frontend/src/widgets/equipment-diagnostics/"
     ];
 
+    private static readonly string[] AllowedTelegramSkeletonPathPrefixes =
+    [
+        "src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/",
+        "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegram",
+        "docs/equipment-diagnostics/telegram-adapter.md"
+    ];
+
     private static readonly string[] AllowedExactPaths =
     [
         "AssistantEngineer.sln",
@@ -139,6 +146,14 @@ public sealed class BranchReadinessVerificationService
             return (
                 BranchReadinessScopeClassification.GeneratedIgnoredCandidate,
                 "Generated verification/build artifacts must remain ignored and uncommitted.");
+        }
+
+        if (AllowedTelegramSkeletonPathPrefixes.Any(prefix =>
+                path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+        {
+            return (
+                BranchReadinessScopeClassification.Allowed,
+                "Path is part of the narrowly allowed deterministic Telegram adapter skeleton.");
         }
 
         var forbidden = ForbiddenPathFragments.FirstOrDefault(fragment =>

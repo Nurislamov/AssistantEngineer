@@ -75,9 +75,19 @@ The beta boundary now includes eight deterministic field scenarios accepted thro
 
 Passing these scenarios means the existing runtime-only bot behavior is ready to be consumed by a future reviewed adapter. It does not mean Telegram, audit, authentication/roles, feedback, database administration, or broad manual-backed coverage is complete.
 
+## ED-17A Telegram Adapter Skeleton
+
+ED-17A adds a disabled-by-default, deterministic Telegram-like parser, formatter, and update handler over the
+existing bot facade. It has no Telegram package, token, webhook, long polling, hosted service, external call, or
+new public endpoint. Direct tests use fake updates and in-memory options.
+
+The skeleton preserves the runtime-only diagnosis boundary and formats answer, clarification, reference-only,
+not-found, unsupported, and validation states as bounded plain text. See
+[telegram-adapter.md](telegram-adapter.md).
+
 ## Not Ready Or Not Claimed
 
-- Telegram adapter or external/public chat UI;
+- production Telegram transport or external/public chat UI;
 - production authentication, roles, or endpoint-specific rate limiting;
 - audit log and operator feedback loop;
 - database-backed administration;

@@ -376,6 +376,41 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
         Assert.Empty(report.Issues);
     }
 
+    [Theory]
+    [InlineData("src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramAdapter.cs")]
+    [InlineData("tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramAdapterTests.cs")]
+    [InlineData("docs/equipment-diagnostics/telegram-adapter.md")]
+    public void BranchReadinessNarrowlyAllowsTelegramAdapterSkeletonPaths(string path)
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(path, "Added", false, false, false, true, "Deterministic adapter skeleton.")
+            ]));
+
+        Assert.True(report.Passed);
+        Assert.Equal(1, report.ChangedFilesSummary.Allowed);
+        Assert.Empty(report.Issues);
+    }
+
+    [Fact]
+    public void BranchReadinessStillBlocksTelegramTransportOutsideSkeletonAllowlist()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "src/Backend/AssistantEngineer.Api/Telegram/ProductionTransport.cs",
+                    "Added",
+                    false,
+                    false,
+                    false,
+                    true,
+                    "Synthetic transport.")
+            ]));
+
+        Assert.False(report.Passed);
+        Assert.Contains(report.Issues, issue => issue.Code == "ForbiddenChangedPath");
+    }
+
     [Fact]
     public void BranchReadinessFailsWhenCommandCheckFails()
     {
