@@ -87,3 +87,10 @@ message limits, safety/provenance/verification visibility, and internal-source d
 A separately reviewed ED-17B may add one production transport choice, secret management, deployment
 configuration, stronger authorization, rate controls, and an audit/logging policy. None of those capabilities
 are active in ED-17A.
+
+## ED-17B Webhook Transport
+
+ED-17B adds the separately reviewed, disabled-by-default webhook shell and outbound send abstraction. The endpoint,
+secret-header boundary, safe configuration, and deployment helper are documented in
+[telegram-webhook-deployment.md](telegram-webhook-deployment.md). No long polling, committed secret, database,
+queue, or audit log is introduced.

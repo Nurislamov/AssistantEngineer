@@ -43,11 +43,15 @@ public sealed class BranchReadinessVerificationService
         "src/Frontend/src/widgets/equipment-diagnostics/"
     ];
 
-    private static readonly string[] AllowedTelegramSkeletonPathPrefixes =
+    private static readonly string[] AllowedTelegramPathPrefixes =
     [
         "src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/",
         "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegram",
-        "docs/equipment-diagnostics/telegram-adapter.md"
+        "tests/AssistantEngineer.Tests/Api/EquipmentDiagnosticTelegram",
+        "src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsTelegram",
+        "src/Backend/AssistantEngineer.Api/Services/EquipmentDiagnostics/EquipmentDiagnosticTelegram",
+        "scripts/equipment-diagnostics/set-telegram-webhook.ps1",
+        "docs/equipment-diagnostics/telegram-"
     ];
 
     private static readonly string[] AllowedExactPaths =
@@ -57,6 +61,8 @@ public sealed class BranchReadinessVerificationService
         "tests/AssistantEngineer.Tests/Api/EquipmentDiagnosticBotApiIntegrationTests.cs",
         "tests/AssistantEngineer.Tests/AssistantEngineer.Tests.csproj",
         "src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsController.cs",
+        "src/Backend/AssistantEngineer.Api/Configuration/ApplicationModulesRegistration.cs",
+        "src/Backend/AssistantEngineer.Api/appsettings.json",
         "src/Frontend/src/app/router/AppRouter.tsx",
         "src/Frontend/src/app/router/paths.ts",
         "src/Frontend/src/shared/api/apiRoutes.ts",
@@ -148,7 +154,7 @@ public sealed class BranchReadinessVerificationService
                 "Generated verification/build artifacts must remain ignored and uncommitted.");
         }
 
-        if (AllowedTelegramSkeletonPathPrefixes.Any(prefix =>
+        if (AllowedTelegramPathPrefixes.Any(prefix =>
                 path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
         {
             return (

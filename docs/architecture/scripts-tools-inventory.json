@@ -1197,6 +1197,22 @@
                         "riskIfChanged":  "Runner drift can hide facade/API scenario status or response-boundary mismatches."
                     },
                     {
+                        "id":  "SCR-075",
+                        "path":  "scripts/equipment-diagnostics/set-telegram-webhook.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Operator helper for configuring the reviewed EquipmentDiagnostics Telegram webhook without printing the bot token.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep secret validation, HTTPS validation, token redaction, and WhatIf behavior intact.",
+                        "proposedStage":  "ED-17B",
+                        "riskIfChanged":  "Script drift can expose Telegram secrets or configure an unintended webhook target."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

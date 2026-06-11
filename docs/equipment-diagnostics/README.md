@@ -472,6 +472,13 @@ external call, or public API endpoint.
 See [telegram-adapter.md](telegram-adapter.md) for supported messages, options, security boundaries, tests, and
 the separately reviewed ED-17B transport path.
 
+## ED-17B Telegram Webhook Transport
+
+ED-17B adds one disabled-by-default webhook endpoint and a built-in `HttpClient` outbound sender abstraction. The
+transport validates `X-Telegram-Bot-Api-Secret-Token`, delegates only to the existing Telegram adapter, and keeps
+token/secret values outside source control. It adds no long polling, database, queue, AI/RAG, runtime catalog
+promotion, or calculation changes. See [telegram-webhook-deployment.md](telegram-webhook-deployment.md).
+
 The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
 
 ```powershell

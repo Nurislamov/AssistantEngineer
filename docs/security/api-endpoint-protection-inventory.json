@@ -1970,6 +1970,32 @@
                           "rolloutStage":  "ED-15C"
                       },
                       {
+                          "risk":  "Inbound Telegram webhook can be abused if the bot token, webhook secret, or allowed-chat configuration is compromised.",
+                          "endpointGroup":  "IntegrationInbound",
+                          "auditCategory":  "System",
+                          "knownLimitations":  [
+                                                   "Transport is disabled by default and fails closed when enabled without a valid configured webhook secret.",
+                                                   "Production deployment must configure HTTPS, bot token, webhook secret, and allowed chat or username policy through a secret store.",
+                                                   "No audit log, queue, retry persistence, admin UI, or endpoint-specific rate-limit claim is introduced.",
+                                                   "No database persistence, AI, RAG, vector search, manual PDF access, or generated artifact exposure is introduced."
+                                               ],
+                          "currentAuthStatus":  "AuthPlanned",
+                          "tenantScope":  "NotApplicable",
+                          "action":  "InventoryRouteGroup",
+                          "routePattern":  "api/v{version:apiVersion}/equipment-diagnostics/telegram/webhook [POST]",
+                          "notes":  "Disabled-by-default Telegram webhook transport with secret-header validation, allowed-chat filtering through the existing adapter, and outbound sendMessage through an HttpClient abstraction.",
+                          "publicClaim":  "NotPublicByDefault",
+                          "permission":  "NotApplicable",
+                          "protectionStage":  "Compatibility",
+                          "route":  "api/v{version:apiVersion}/equipment-diagnostics/telegram/webhook",
+                          "httpMethod":  "POST",
+                          "controller":  "EquipmentDiagnosticsTelegramWebhookController",
+                          "rateLimitCategory":  "ReferenceData",
+                          "targetPolicy":  "TelegramWebhookSecret",
+                          "releaseBoundaryClaim":  "StagedProtectionOnly",
+                          "rolloutStage":  "ED-17B"
+                      },
+                      {
                           "risk":  "Demand calculation endpoint is execution-sensitive and should stay explicitly staged for workflow execute protection.",
                           "endpointGroup":  "WorkflowExecute",
                           "auditCategory":  "Workflow",

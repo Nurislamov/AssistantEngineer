@@ -93,4 +93,11 @@ not-found, unsupported, and validation states as bounded plain text. See
 - database-backed administration;
 - broad manual-backed runtime promotion.
 
+## ED-17B Webhook Transport
+
+The beta transport now includes one disabled-by-default Telegram webhook endpoint with a required secret header
+when enabled and an outbound `HttpClient` abstraction. Tests replace outbound delivery with fakes. Production
+deployment still requires HTTPS, secret-store configuration, allowed-chat review, monitoring, and an audit/rate
+control decision. See [telegram-webhook-deployment.md](telegram-webhook-deployment.md).
+
 The endpoint remains classified according to the broader API security setup. Operator-facing diagnostic guidance requires a trained, qualified technician.
