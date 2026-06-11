@@ -1,0 +1,208 @@
+using System.Reflection;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace AssistantEngineer.Tests.EquipmentDiagnostics;
+
+public sealed class EquipmentDiagnosticTelegramAdapterTests
+{
+    [Theory]
+    [InlineData("/start")]
+    [InlineData("/help")]
+    public async Task HelpCommandsReturnHelpWithoutCallingFacade(string text)
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions());
+
+        var response = await adapter.HandleAsync(Update(text));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Equipment diagnostics", response.Text, StringComparison.Ordinal);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task H5CallsFacadeOnceAndFormatsSafetyProvenanceAndVerification()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Verification required", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Source:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Safety:", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AmbiguousCodeFormatsDeterministicClarificationOptions()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var first = await adapter.HandleAsync(Update("Gree E1"));
+        var second = await adapter.HandleAsync(Update("Gree E1"));
+
+        Assert.Equal(first.Text, second.Text);
+        Assert.Contains("context", first.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("reply with Outdoor context", first.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ReferenceOnlyCodeIsNotFormattedAsFaultDiagnosis()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree A0"));
+
+        Assert.Contains("Reference-only indication", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Confidence:", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task UnknownCodeFormatsSafeFallback()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree ZZ99"));
+
+        Assert.Contains("Verify the manufacturer, equipment family, display context", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Safety:", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task DisabledAdapterIsDeterministicallyIgnored()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, new EquipmentDiagnosticTelegramOptions());
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Empty(response.Text);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task ChatOutsideConfiguredAllowlistIsIgnored()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions() with { AllowedChatIds = [42] });
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task AdapterResponsesDoNotExposeUnsafeInternalOrSecretText()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var responses = new[]
+        {
+            await adapter.HandleAsync(Update("Gree H5")),
+            await adapter.HandleAsync(Update("Gree E1")),
+            await adapter.HandleAsync(Update("Gree A0")),
+            await adapter.HandleAsync(Update("Gree ZZ99"))
+        };
+        var forbidden = ForbiddenFragments();
+
+        foreach (var response in responses)
+        {
+            Assert.All(forbidden, fragment =>
+                Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
+            Assert.Null(response.ParseMode);
+            Assert.True(response.DisableWebPagePreview);
+            Assert.Null(response.InternalDecisionTrace);
+        }
+    }
+
+    [Fact]
+    public void AdapterDependsOnlyOnFacadeParserFormatterAndOptions()
+    {
+        var constructor = Assert.Single(typeof(EquipmentDiagnosticTelegramAdapter).GetConstructors());
+        var dependencyTypes = constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+        Assert.Equal(
+            [
+                typeof(IEquipmentDiagnosticBotFacade),
+                typeof(EquipmentDiagnosticTelegramMessageParser),
+                typeof(EquipmentDiagnosticTelegramResponseFormatter),
+                typeof(EquipmentDiagnosticTelegramOptions)
+            ],
+            dependencyTypes);
+
+        var moduleRoot = Path.Combine(
+            TestPaths.RepoRoot,
+            "src", "Backend", "AssistantEngineer.Modules.EquipmentDiagnostics", "Application", "Telegram");
+        var source = string.Join(
+            Environment.NewLine,
+            Directory.GetFiles(moduleRoot, "*.cs").Select(File.ReadAllText));
+        Assert.DoesNotContain("File" + ".", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("Directory" + ".", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("HttpClient", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("Bot" + "Token", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("web" + "hook", source, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static EquipmentDiagnosticTelegramAdapter CreateAdapter(
+        IEquipmentDiagnosticBotFacade facade,
+        EquipmentDiagnosticTelegramOptions options) =>
+        new(facade, new EquipmentDiagnosticTelegramMessageParser(), new EquipmentDiagnosticTelegramResponseFormatter(), options);
+
+    private static ServiceProvider CreateProvider(EquipmentDiagnosticTelegramOptions options)
+    {
+        var services = new ServiceCollection();
+        services.AddEquipmentDiagnosticsModule();
+        services.AddSingleton(options);
+        return services.BuildServiceProvider();
+    }
+
+    private static EquipmentDiagnosticTelegramOptions EnabledOptions() => new()
+    {
+        IsEnabled = true,
+        DefaultManufacturer = "Gree",
+        MaxMessageLength = 900
+    };
+
+    private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
+        new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text);
+
+    private static IReadOnlyList<string> ForbiddenFragments() =>
+    [
+        "arti" + "facts/verification",
+        "Knowledge/" + "staging",
+        "Knowledge/" + "manual-codebook",
+        "staging-candidate-" + "preview",
+        "manual-" + "codebook",
+        "by" + "pass",
+        "disable " + "protection",
+        "force " + "run",
+        "short " + "protection",
+        "ignore " + "protection",
+        "Bot" + "Token",
+        "secret",
+        ".pdf"
+    ];
+
+    private sealed class CountingFacade : IEquipmentDiagnosticBotFacade
+    {
+        public int CallCount { get; private set; }
+
+        public Task<EquipmentDiagnosticBotResponse> DiagnoseAsync(
+            EquipmentDiagnosticBotRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            throw new InvalidOperationException("The facade should not be called by this test.");
+        }
+    }
+}

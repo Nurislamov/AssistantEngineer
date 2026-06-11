@@ -33,17 +33,18 @@ Start the API separately, then run:
 
 The script reads the source-controlled scenarios, sends them to the existing endpoint, prints per-scenario PASS/FAIL, and exits non-zero on mismatch.
 
-## Ready For A Future Telegram Adapter
+## Ready For A Future Telegram Transport
 
 - deterministic request and response contracts;
 - runtime-only final-answer boundary;
 - field scenarios accepted through facade, API, and frontend;
 - clarification and reference-only behavior explicitly covered;
 - safety, provenance, verification, and internal-artifact guards retained.
+- ED-17A parser/formatter/adapter skeleton delegates only to the existing bot facade.
 
 ## Remaining Limitations
 
-- no Telegram adapter;
+- no production Telegram transport, webhook, or long polling;
 - no production auth/roles claim beyond the current API setup;
 - no audit log or operator feedback loop;
 - no database/admin review UI;

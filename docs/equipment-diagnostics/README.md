@@ -462,6 +462,16 @@ The panel adds no Telegram adapter, AI/RAG, database/admin UI, audit log, feedba
 
 ED-16B adds eight source-controlled operator scenarios under `docs/equipment-diagnostics/bot-scenarios/`. They describe current safe runtime behavior rather than desired future coverage: H5 and current C5 resolve to runtime answers, F5 and unknown codes return safe not-found results, A0/n6/db remain reference-only, and E1 requires deterministic clarification.
 
+## ED-17A Telegram Adapter Skeleton
+
+ED-17A adds an internal deterministic Telegram-like adapter under `Application/Telegram`. It parses a deliberately
+small operator message grammar, calls only `IEquipmentDiagnosticBotFacade`, and formats bounded plain-text
+responses. The adapter is disabled by default and adds no Telegram package, token, webhook, polling service,
+external call, or public API endpoint.
+
+See [telegram-adapter.md](telegram-adapter.md) for supported messages, options, security boundaries, tests, and
+the separately reviewed ED-17B transport path.
+
 The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
 
 ```powershell
@@ -882,6 +892,7 @@ Example response excerpt:
 - ED-15C adds deterministic request limits, response-boundary regression guards, beta-backend readiness documentation, and a local smoke script. It does not claim production authentication, roles, or endpoint-specific rate limiting.
 - ED-16A adds an internal frontend panel over the existing runtime-only bot endpoint. It does not add Telegram, AI/RAG, persistence, or new backend routes.
 - ED-16B adds deterministic field scenario acceptance across facade, API, and frontend without changing runtime catalog behavior.
+- ED-17A adds a disabled-by-default deterministic Telegram adapter skeleton over the bot facade without adding a production transport or secret.
 
 ## Future Stages
 

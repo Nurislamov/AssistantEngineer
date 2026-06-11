@@ -63,9 +63,27 @@ internal static class Program
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine(exception.Message);
+            Console.Error.WriteLine(FormatExpectedError(exception));
             return 1;
         }
+    }
+
+    private static string FormatExpectedError(Exception exception)
+    {
+        var root = exception;
+        while (root.InnerException is not null)
+        {
+            root = root.InnerException;
+        }
+
+        return root switch
+        {
+            FileNotFoundException missingFile =>
+                $"Required file was not found: {missingFile.FileName ?? missingFile.Message}",
+            DirectoryNotFoundException missingDirectory =>
+                $"Required directory was not found: {missingDirectory.Message}",
+            _ => root.Message
+        };
     }
 
     private static int VerifyBranch(

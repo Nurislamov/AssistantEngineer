@@ -130,10 +130,13 @@ public sealed class EquipmentDiagnosticsGmv6ManualBackedStagingTests
     public void PdfFilesAreIgnoredAndNotEmbeddedResources()
     {
         var project = File.ReadAllText(ModuleProjectPath);
+        var localPdfFiles = Directory.Exists(LocalManualSourceRoot)
+            ? Directory.GetFiles(LocalManualSourceRoot, "*.pdf")
+            : [];
 
         Assert.DoesNotContain(".pdf", project, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("manual-intake/sources", project, StringComparison.OrdinalIgnoreCase);
-        Assert.All(Directory.GetFiles(LocalManualSourceRoot, "*.pdf"), path =>
+        Assert.All(localPdfFiles, path =>
             Assert.False(File.Exists(Path.Combine(TestPaths.RepoRoot, Path.GetRelativePath(LocalManualSourceRoot, path)))));
     }
 
