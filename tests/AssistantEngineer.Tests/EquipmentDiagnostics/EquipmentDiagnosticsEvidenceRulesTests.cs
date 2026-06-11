@@ -104,6 +104,7 @@ public sealed class EquipmentDiagnosticsEvidenceRulesTests
     [Fact]
     public void RepositoryPreviewCommandWritesArtifactsOnlyAndReportsEvidenceReadyCandidatesHonestly()
     {
+        var runtimeBefore = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
         var stagingFiles = Directory.GetFiles(StagingRoot, "*.json", SearchOption.AllDirectories)
             .ToDictionary(path => path, File.ReadAllText, StringComparer.Ordinal);
         var start = new ProcessStartInfo("dotnet")
@@ -123,10 +124,15 @@ public sealed class EquipmentDiagnosticsEvidenceRulesTests
         Assert.Equal(stagingFiles, Directory.GetFiles(StagingRoot, "*.json", SearchOption.AllDirectories)
             .ToDictionary(path => path, File.ReadAllText, StringComparer.Ordinal));
         using var preview = JsonDocument.Parse(File.ReadAllText(PreviewPath));
-        Assert.True(preview.RootElement.GetProperty("candidateCount").GetInt32() > 0);
-        Assert.Contains(preview.RootElement.GetProperty("candidateCodes").EnumerateArray(),
-            value => value.GetString() == "F5");
-        Assert.DoesNotContain(new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries(), entry => entry.Confidence == DiagnosticConfidence.ManualVerified);
+        var readyCodes = preview.RootElement.GetProperty("candidateCodes").EnumerateArray()
+            .Select(value => value.GetString() ?? string.Empty)
+            .ToArray();
+        var runtimeAfter = new EquipmentDiagnosticsJsonKnowledgeSource().GetEntries();
+
+        Assert.Equal(1, preview.RootElement.GetProperty("candidateCount").GetInt32());
+        Assert.Equal(["F5"], readyCodes);
+        Assert.Equal(JsonSerializer.Serialize(runtimeBefore), JsonSerializer.Serialize(runtimeAfter));
+        Assert.DoesNotContain(runtimeAfter, entry => entry.Confidence == DiagnosticConfidence.ManualVerified);
     }
 
     [Fact]
@@ -139,18 +145,24 @@ public sealed class EquipmentDiagnosticsEvidenceRulesTests
             RedirectStandardError = true,
             UseShellExecute = false
         };
-        foreach (var argument in new[] { "run", "--project", ToolProject, "--no-build", "--", "preview-staging-candidates", "--repo-root", TestPaths.RepoRoot })
+        foreach (var argument in new[] { "run", "--project", ToolProject, "--no-build", "--", "codebook-coverage", "--repo-root", TestPaths.RepoRoot })
             start.ArgumentList.Add(argument);
         using var process = Process.Start(start)!;
         process.WaitForExit();
 
         Assert.Equal(0, process.ExitCode);
         using var preview = JsonDocument.Parse(File.ReadAllText(PreviewPath));
-        var codes = preview.RootElement.GetProperty("candidateCodes").EnumerateArray().Select(value => value.GetString()).ToArray();
+        var codes = preview.RootElement.GetProperty("candidateCodes").EnumerateArray()
+            .Select(value => value.GetString() ?? string.Empty)
+            .ToArray();
         Assert.DoesNotContain("E1", codes);
         Assert.DoesNotContain("E3", codes);
         Assert.DoesNotContain("E4", codes);
-        Assert.Contains("F5", codes);
+        Assert.Equal(["F5"], codes);
+        using var coverage = JsonDocument.Parse(File.ReadAllText(CoveragePath));
+        Assert.Equal(1, coverage.RootElement.GetProperty("summary").GetProperty("readyForStagingCandidateCount").GetInt32());
+        Assert.Equal(0, coverage.RootElement.GetProperty("summary").GetProperty("conflictCount").GetInt32());
+        Assert.Empty(coverage.RootElement.GetProperty("conflicts").EnumerateArray());
     }
 
     private static EquipmentDiagnosticsVerificationInput CreateInput(
@@ -174,5 +186,6 @@ public sealed class EquipmentDiagnosticsEvidenceRulesTests
     private static readonly string[] UnsafeFragments = ["bypass", "disable protection", "force run", "short protection", "ignore protection"];
     private static string StagingRoot => Path.Combine(TestPaths.RepoRoot, "src", "Backend", "AssistantEngineer.Modules.EquipmentDiagnostics", "Knowledge", "staging");
     private static string PreviewPath => Path.Combine(TestPaths.RepoRoot, "artifacts", "verification", "equipment-diagnostics", "staging-candidate-preview.json");
+    private static string CoveragePath => Path.Combine(TestPaths.RepoRoot, "artifacts", "verification", "equipment-diagnostics", "codebook-coverage-report.json");
     private static string ToolProject => Path.Combine(TestPaths.RepoRoot, "tools", "AssistantEngineer.Tools.EquipmentDiagnosticsVerification");
 }

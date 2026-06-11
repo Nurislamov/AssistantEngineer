@@ -520,7 +520,6 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
                      "run",
                      "--project",
                      VerificationToolProjectPath,
-                     "--no-build",
                      "--",
                      "prepare-pr-body",
                      "--repo-root",
