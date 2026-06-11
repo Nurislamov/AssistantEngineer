@@ -1,0 +1,10 @@
+{
+  "scenarioId": "gree-unknown-not-found", "title": "Gree unknown code fallback", "description": "Unknown code must return a safe runtime-only fallback.",
+  "request": { "manufacturer": "Gree", "code": "ZZ99", "series": null, "modelCode": null, "equipmentSide": null, "displayContext": null, "freeText": null },
+  "expected": {
+    "responseStatus": "NotFound", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": false,
+    "mustContainText": ["No runtime diagnostic case found", "Confirm the equipment family", "Confirm where the code is displayed", "Verify against the exact service manual"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": null,
+    "uiExpectation": { "showAnswerCard": false, "showClarificationOptions": false, "showReferenceOnlyNotice": false, "showNotFoundFallback": true, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}

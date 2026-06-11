@@ -25,3 +25,4 @@ Rules for examples:
 - ED-15C contract tests require explicit manufacturer/code in the request and validate status, message/title, verification, confidence, safety, source where relevant, clarification options, and safe next steps.
 - Examples must remain within endpoint request limits and must not expose internal artifact or filesystem paths.
 - ED-16A frontend types mirror these bot request/response examples, while the runtime UI always uses the existing backend endpoint rather than loading examples as diagnostic data.
+- ED-16B field scenarios live separately under `docs/equipment-diagnostics/bot-scenarios/`; they are acceptance inputs and expectations, not runtime knowledge or response examples.

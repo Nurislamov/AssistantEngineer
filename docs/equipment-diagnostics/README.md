@@ -458,6 +458,18 @@ The backend smoke remains:
 
 The panel adds no Telegram adapter, AI/RAG, database/admin UI, audit log, feedback loop, new backend endpoint, or production auth/role claim.
 
+## ED-16B Bot Field Acceptance Scenarios
+
+ED-16B adds eight source-controlled operator scenarios under `docs/equipment-diagnostics/bot-scenarios/`. They describe current safe runtime behavior rather than desired future coverage: H5 and current C5 resolve to runtime answers, F5 and unknown codes return safe not-found results, A0/n6/db remain reference-only, and E1 requires deterministic clarification.
+
+The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
+
+```powershell
+.\scripts\equipment-diagnostics\run-bot-scenario-smoke.ps1 -BaseUrl http://localhost:5000
+```
+
+See [bot-field-acceptance-checklist.md](bot-field-acceptance-checklist.md). This stage adds no runtime knowledge, Telegram integration, database, AI/RAG, or backend endpoint.
+
 Formatter output:
 
 - `Title`
@@ -869,6 +881,7 @@ Example response excerpt:
 - ED-15B adds one thin deterministic backend bot endpoint and contract examples. It does not add Telegram/web UI, persistence, external calls, AI/RAG, or runtime promotion.
 - ED-15C adds deterministic request limits, response-boundary regression guards, beta-backend readiness documentation, and a local smoke script. It does not claim production authentication, roles, or endpoint-specific rate limiting.
 - ED-16A adds an internal frontend panel over the existing runtime-only bot endpoint. It does not add Telegram, AI/RAG, persistence, or new backend routes.
+- ED-16B adds deterministic field scenario acceptance across facade, API, and frontend without changing runtime catalog behavior.
 
 ## Future Stages
 

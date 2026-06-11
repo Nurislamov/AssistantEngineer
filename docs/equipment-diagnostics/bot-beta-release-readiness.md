@@ -65,6 +65,16 @@ npm test
 npm run build
 ```
 
+## ED-16B Field Acceptance
+
+The beta boundary now includes eight deterministic field scenarios accepted through the module facade, core HTTP integration, and frontend state tests. The optional local runner is:
+
+```powershell
+.\scripts\equipment-diagnostics\run-bot-scenario-smoke.ps1 -BaseUrl http://localhost:5000
+```
+
+Passing these scenarios means the existing runtime-only bot behavior is ready to be consumed by a future reviewed adapter. It does not mean Telegram, audit, authentication/roles, feedback, database administration, or broad manual-backed coverage is complete.
+
 ## Not Ready Or Not Claimed
 
 - Telegram adapter or external/public chat UI;

@@ -1,0 +1,12 @@
+{
+  "scenarioId": "gree-h5-answer",
+  "title": "Gree GMV H5 runtime answer",
+  "description": "Exact runtime seed match that remains verification-required.",
+  "request": { "manufacturer": "Gree", "code": "H5", "series": "GMV", "modelCode": null, "equipmentSide": "Outdoor", "displayContext": "OduMainBoardLed", "freeText": null },
+  "expected": {
+    "responseStatus": "Answer", "verificationRequired": true, "requiresSafetyBoundary": true, "requiresSourceOrProvenance": true,
+    "mustContainText": ["preliminary", "SeededEngineeringKnowledge", "UnverifiedSeed"], "mustNotContainText": ["DraftPreview"],
+    "mustNotExposeInternalArtifacts": true, "mustNotExposeStagingOrCodebook": true, "mustNotUseUnsafeWording": true, "clarificationOptionsMinimum": null,
+    "uiExpectation": { "showAnswerCard": true, "showClarificationOptions": false, "showReferenceOnlyNotice": false, "showNotFoundFallback": false, "showVerificationBanner": true, "showSafetyCard": true }
+  }
+}
