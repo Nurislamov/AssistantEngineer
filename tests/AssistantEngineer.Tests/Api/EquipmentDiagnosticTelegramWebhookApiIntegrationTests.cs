@@ -80,6 +80,29 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
     }
 
     [Fact]
+    public async Task DeniedChatIsAcceptedAndIgnoredEvenWhenAllowed()
+    {
+        await using var factory = new WebhookApiFactory(enabled: true, allowedChatId: 3, deniedChatId: 3);
+
+        var response = await PostAsync(factory.CreateClient(), Update("Gree H5"), "test_webhook_secret");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(0, factory.Outbound.CallCount);
+    }
+
+    [Fact]
+    public async Task EnabledIdentityDiscoveryReturnsChatAndUserIdentity()
+    {
+        await using var factory = new WebhookApiFactory(enabled: true, enableChatIdDiscovery: true);
+
+        var response = await PostAsync(factory.CreateClient(), Update("/whoami"), "test_webhook_secret");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("chatId: 3", factory.Outbound.LastText, StringComparison.Ordinal);
+        Assert.Contains("userId: 4", factory.Outbound.LastText, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task ResponseNeverExposesSecretsOrInternalPaths()
     {
         await using var factory = new WebhookApiFactory(enabled: true);
@@ -110,9 +133,13 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
     }
 
     private static TelegramWebhookUpdateDto Update(string text) =>
-        new(1, new TelegramWebhookMessageDto(2, text, new TelegramWebhookChatDto(3, "operator"), null, 1_700_000_000));
+        new(1, new TelegramWebhookMessageDto(2, text, new TelegramWebhookChatDto(3, "operator"), new TelegramWebhookUserDto(4, "operator"), 1_700_000_000));
 
-    private sealed class WebhookApiFactory(bool enabled, long? allowedChatId = null) : WebApplicationFactory<Program>
+    private sealed class WebhookApiFactory(
+        bool enabled,
+        long? allowedChatId = null,
+        long? deniedChatId = null,
+        bool enableChatIdDiscovery = false) : WebApplicationFactory<Program>
     {
         public FakeOutbound Outbound { get; } = new();
 
@@ -131,7 +158,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                     ["AssistantEngineer:EquipmentDiagnostics:Telegram:IsEnabled"] = enabled.ToString(),
                     ["AssistantEngineer:EquipmentDiagnostics:Telegram:WebhookSecret"] = "test_webhook_secret",
                     ["AssistantEngineer:EquipmentDiagnostics:Telegram:BotToken"] = "test-token-value",
-                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:AllowedChatIds:0"] = allowedChatId?.ToString()
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:AllowedChatIds:0"] = allowedChatId?.ToString(),
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:DeniedChatIds:0"] = deniedChatId?.ToString(),
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:EnableChatIdDiscovery"] = enableChatIdDiscovery.ToString()
                 });
             });
             builder.ConfigureTestServices(services =>
@@ -140,17 +169,22 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                 services.RemoveAll<EquipmentDiagnosticTelegramWebhookOptions>();
                 services.RemoveAll<EquipmentDiagnosticTelegramOptions>();
                 var chatIds = allowedChatId is null ? Array.Empty<long>() : [allowedChatId.Value];
+                var deniedChatIds = deniedChatId is null ? Array.Empty<long>() : [deniedChatId.Value];
                 services.AddSingleton(new EquipmentDiagnosticTelegramWebhookOptions
                 {
                     IsEnabled = enabled,
                     WebhookSecret = "test_webhook_secret",
                     BotToken = "test-token-value",
-                    AllowedChatIds = chatIds
+                    AllowedChatIds = chatIds,
+                    DeniedChatIds = deniedChatIds,
+                    EnableChatIdDiscovery = enableChatIdDiscovery
                 });
                 services.AddSingleton(new EquipmentDiagnosticTelegramOptions
                 {
                     IsEnabled = enabled,
                     AllowedChatIds = chatIds,
+                    DeniedChatIds = deniedChatIds,
+                    EnableChatIdDiscovery = enableChatIdDiscovery,
                     DefaultManufacturer = "Gree"
                 });
                 services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient>(Outbound);

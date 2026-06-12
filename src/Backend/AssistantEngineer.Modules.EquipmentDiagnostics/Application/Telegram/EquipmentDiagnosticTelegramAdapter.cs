@@ -53,6 +53,19 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 EquipmentDiagnosticTelegramResponseKind.Reply);
         }
 
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
+        {
+            return _options.EnableChatIdDiscovery
+                ? Response(
+                    update.ChatId,
+                    _formatter.FormatIdentity(update, _options.MaxMessageLength),
+                    EquipmentDiagnosticTelegramResponseKind.Reply)
+                : Response(
+                    update.ChatId,
+                    _formatter.FormatUnsupported(_options.MaxMessageLength),
+                    EquipmentDiagnosticTelegramResponseKind.Unsupported);
+        }
+
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Unsupported ||
             parseResult.DiagnosticRequest is null)
         {
@@ -72,6 +85,13 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
     private bool IsAllowed(EquipmentDiagnosticTelegramUpdate update)
     {
+        if (_options.DeniedChatIds.Contains(update.ChatId) ||
+            update.Username is not null &&
+            _options.DeniedUsernames.Contains(update.Username, StringComparer.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
         if (_options.AllowedChatIds.Count > 0 && !_options.AllowedChatIds.Contains(update.ChatId))
         {
             return false;

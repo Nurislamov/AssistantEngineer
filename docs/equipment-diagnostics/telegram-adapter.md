@@ -94,3 +94,10 @@ ED-17B adds the separately reviewed, disabled-by-default webhook shell and outbo
 secret-header boundary, safe configuration, and deployment helper are documented in
 [telegram-webhook-deployment.md](telegram-webhook-deployment.md). No long polling, committed secret, database,
 queue, or audit log is introduced.
+
+## ED-17C Access Policy
+
+The adapter applies explicit deny lists before allow lists. `DeniedChatIds` and `DeniedUsernames` therefore win
+even when the same identity is allowed. `/id` and `/whoami` can return setup identity only while
+`EnableChatIdDiscovery=true`; the option is false by default and these commands never call the diagnostic facade.
+See [telegram-operations-checklist.md](telegram-operations-checklist.md).

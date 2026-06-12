@@ -1213,6 +1213,38 @@
                         "riskIfChanged":  "Script drift can expose Telegram secrets or configure an unintended webhook target."
                     },
                     {
+                        "id":  "SCR-076",
+                        "path":  "scripts/equipment-diagnostics/get-telegram-webhook-info.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Sanitized operator helper for inspecting Telegram webhook status without printing the bot token.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep token redaction, sanitized URL output, and WhatIf behavior intact.",
+                        "proposedStage":  "ED-17C",
+                        "riskIfChanged":  "Script drift can expose Telegram secrets or hide webhook delivery failures."
+                    },
+                    {
+                        "id":  "SCR-077",
+                        "path":  "scripts/equipment-diagnostics/delete-telegram-webhook.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Operator helper for deliberately deleting a Telegram webhook without printing the bot token.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep token redaction, explicit pending-update choice, and WhatIf behavior intact.",
+                        "proposedStage":  "ED-17C",
+                        "riskIfChanged":  "Script drift can expose Telegram secrets or unintentionally drop pending updates."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

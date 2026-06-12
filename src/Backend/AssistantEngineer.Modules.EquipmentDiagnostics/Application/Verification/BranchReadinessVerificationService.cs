@@ -51,6 +51,8 @@ public sealed class BranchReadinessVerificationService
         "src/Backend/AssistantEngineer.Api/Controllers/Equipment/EquipmentDiagnosticsTelegram",
         "src/Backend/AssistantEngineer.Api/Services/EquipmentDiagnostics/EquipmentDiagnosticTelegram",
         "scripts/equipment-diagnostics/set-telegram-webhook.ps1",
+        "scripts/equipment-diagnostics/get-telegram-webhook-info.ps1",
+        "scripts/equipment-diagnostics/delete-telegram-webhook.ps1",
         "docs/equipment-diagnostics/telegram-"
     ];
 

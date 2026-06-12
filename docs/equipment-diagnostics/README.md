@@ -479,6 +479,13 @@ transport validates `X-Telegram-Bot-Api-Secret-Token`, delegates only to the exi
 token/secret values outside source control. It adds no long polling, database, queue, AI/RAG, runtime catalog
 promotion, or calculation changes. See [telegram-webhook-deployment.md](telegram-webhook-deployment.md).
 
+## ED-17C Telegram Access And Operations Readiness
+
+ED-17C adds deny-first chat/username access policy, disabled-by-default `/id` and `/whoami` setup discovery, and
+sanitized `getWebhookInfo` / `deleteWebhook` operator helpers. Production setup must configure a non-empty
+allowlist, review deny lists, disable discovery after setup, and keep all Telegram secrets outside Git. See
+[telegram-operations-checklist.md](telegram-operations-checklist.md).
+
 The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
 
 ```powershell

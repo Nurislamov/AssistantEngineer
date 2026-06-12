@@ -54,6 +54,15 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Unsupported command or controller model name. Send /help or provide a manufacturer and displayed diagnostic code.",
             maxLength);
 
+    public string FormatIdentity(EquipmentDiagnosticTelegramUpdate update, int maxLength) =>
+        Truncate(
+            $"Telegram access identity\n" +
+            $"chatId: {update.ChatId}\n" +
+            $"userId: {update.UserId?.ToString() ?? "not available"}\n" +
+            $"username: {update.Username ?? "not available"}\n" +
+            "Add chatId to AllowedChatIds in environment configuration, then disable chat ID discovery.",
+            maxLength);
+
     private static void AppendAnswer(StringBuilder builder, EquipmentDiagnosticBotResponse response)
     {
         if (response.VerificationRequired)
