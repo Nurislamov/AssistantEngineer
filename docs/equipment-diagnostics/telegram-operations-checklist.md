@@ -35,6 +35,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.
 - Record and test the rollback command before enabling the webhook.
+- Confirm `/ready` stays healthy after reviewed Telegram activation; readiness never returns token, secret, chat ID, or message values.
 
 ## Remaining Risks
 

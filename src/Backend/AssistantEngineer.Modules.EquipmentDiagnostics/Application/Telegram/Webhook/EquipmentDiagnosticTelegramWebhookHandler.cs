@@ -6,17 +6,29 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
     private readonly EquipmentDiagnosticTelegramWebhookSecurityPolicy _securityPolicy;
     private readonly IEquipmentDiagnosticTelegramAdapter _adapter;
     private readonly IEquipmentDiagnosticTelegramOutboundClient _outboundClient;
+    private readonly EquipmentDiagnosticTelegramOperationalCounters _counters;
 
     public EquipmentDiagnosticTelegramWebhookHandler(
         EquipmentDiagnosticTelegramWebhookOptions options,
         EquipmentDiagnosticTelegramWebhookSecurityPolicy securityPolicy,
         IEquipmentDiagnosticTelegramAdapter adapter,
         IEquipmentDiagnosticTelegramOutboundClient outboundClient)
+        : this(options, securityPolicy, adapter, outboundClient, new EquipmentDiagnosticTelegramOperationalCounters())
+    {
+    }
+
+    public EquipmentDiagnosticTelegramWebhookHandler(
+        EquipmentDiagnosticTelegramWebhookOptions options,
+        EquipmentDiagnosticTelegramWebhookSecurityPolicy securityPolicy,
+        IEquipmentDiagnosticTelegramAdapter adapter,
+        IEquipmentDiagnosticTelegramOutboundClient outboundClient,
+        EquipmentDiagnosticTelegramOperationalCounters counters)
     {
         _options = options;
         _securityPolicy = securityPolicy;
         _adapter = adapter;
         _outboundClient = outboundClient;
+        _counters = counters;
     }
 
     public async Task<EquipmentDiagnosticTelegramWebhookResult> HandleAsync(
@@ -24,14 +36,25 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         string? suppliedSecret,
         CancellationToken cancellationToken = default)
     {
+        _counters.RecordReceived();
         var security = _securityPolicy.Validate(_options, suppliedSecret);
         if (security.Status != EquipmentDiagnosticTelegramWebhookStatus.Processed)
         {
+            if (security.Status is EquipmentDiagnosticTelegramWebhookStatus.Unauthorized or
+                EquipmentDiagnosticTelegramWebhookStatus.Rejected)
+            {
+                _counters.RecordRejectedSecret();
+            }
+            else
+            {
+                _counters.RecordIgnored();
+            }
             return security;
         }
 
         if (update.Message?.Chat is null || string.IsNullOrWhiteSpace(update.Message.Text))
         {
+            _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported text message.");
         }
 
@@ -51,11 +74,14 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)
         {
+            _counters.RecordIgnored();
+            _counters.RecordRejectedUnauthorized();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.Ignored, "Telegram update was ignored by adapter policy.");
         }
 
         if (string.IsNullOrWhiteSpace(adapterResponse.Text))
         {
+            _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram adapter produced no user-facing response.");
         }
 
@@ -66,9 +92,14 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             adapterResponse.DisableWebPagePreview,
             cancellationToken);
 
-        return outbound.Succeeded
-            ? Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.")
-            : Result(EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed, "Telegram outbound send failed.");
+        if (outbound.Succeeded)
+        {
+            _counters.RecordProcessed();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
+        }
+
+        _counters.RecordOutboundSendFailure();
+        return Result(EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed, "Telegram outbound send failed.");
     }
 
     private static EquipmentDiagnosticTelegramWebhookResult Result(

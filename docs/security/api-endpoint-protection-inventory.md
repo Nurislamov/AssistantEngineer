@@ -65,6 +65,10 @@ The inventory covers controller route groups for:
 
 Machine-readable canonical inventory is maintained in `docs/security/api-endpoint-protection-inventory.json`.
 
+Operational `/health` and `/ready` remain anonymous, compact framework health endpoints. ED-19A adds safe
+EquipmentDiagnostics/Telegram readiness checks without exposing secrets, chat IDs, message bodies, configuration,
+or internal paths; no broad operational diagnostics endpoint is added.
+
 ## Classification model
 
 Inventory classification and required metadata are defined in `docs/security/api-endpoint-classification-model.md`.

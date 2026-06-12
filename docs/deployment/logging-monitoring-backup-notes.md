@@ -22,3 +22,7 @@ database storage, or an audit log.
 
 Do not claim monitoring, backup, or audit coverage until the corresponding system is implemented and verified.
 The CI deployment dry run adds no deployment monitoring, registry, backup, or production audit capability.
+
+ED-19A adds existing `/health` and `/ready` alignment, an internal safe operational snapshot, and in-memory
+Telegram webhook counters. These counters reset on restart and do not implement Prometheus, external monitoring,
+alerting, an audit log, database persistence, or backup.

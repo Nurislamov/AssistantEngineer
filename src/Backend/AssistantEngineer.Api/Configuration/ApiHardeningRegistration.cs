@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using AssistantEngineer.Api.Security.RateLimiting;
 using AssistantEngineer.Api.Services.Calculations.Persistence;
 using AssistantEngineer.Api.Services.Calculations.Persistence.Durable;
+using AssistantEngineer.Api.Services.OperationalDiagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -174,6 +175,7 @@ internal static class ApiHardeningRegistration
         builder.Services
             .AddHealthChecks()
             .AddCheck("api_liveness", () => HealthCheckResult.Healthy("API process is running."), [LivenessTag, ReadinessTag])
+            .AddCheck<OperationalDiagnosticsReadinessHealthCheck>("operational_diagnostics_readiness", tags: [ReadinessTag])
             .AddCheck<WorkflowPersistenceReadinessHealthCheck>("workflow_persistence_readiness", tags: [ReadinessTag])
             .AddCheck<DatabaseRegistrationReadinessHealthCheck>("registered_db_contexts", tags: [ReadinessTag]);
 
@@ -316,6 +318,43 @@ internal static class ApiHardeningRegistration
             return canConnect
                 ? HealthCheckResult.Healthy("Workflow durable persistence provider is reachable.")
                 : HealthCheckResult.Unhealthy("Workflow durable persistence provider is not reachable.");
+        }
+    }
+
+    private sealed class OperationalDiagnosticsReadinessHealthCheck : IHealthCheck
+    {
+        private readonly IOperationalDiagnosticsService _diagnostics;
+
+        public OperationalDiagnosticsReadinessHealthCheck(IOperationalDiagnosticsService diagnostics)
+        {
+            _diagnostics = diagnostics;
+        }
+
+        public Task<HealthCheckResult> CheckHealthAsync(
+            HealthCheckContext context,
+            CancellationToken cancellationToken = default)
+        {
+            var snapshot = _diagnostics.GetSnapshot();
+            if (!snapshot.EquipmentDiagnostics.BotEndpointAvailable)
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy("EquipmentDiagnostics bot facade is unavailable."));
+            }
+
+            if (snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled)
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy("Telegram chat ID discovery must be disabled for readiness."));
+            }
+
+            if (snapshot.EquipmentDiagnostics.TelegramWebhookEnabled &&
+                !snapshot.EquipmentDiagnostics.TelegramWebhookConfigured)
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy("Enabled Telegram webhook configuration is incomplete."));
+            }
+
+            return Task.FromResult(HealthCheckResult.Healthy(
+                snapshot.EquipmentDiagnostics.TelegramWebhookEnabled
+                    ? "Operational diagnostics and enabled Telegram webhook configuration are ready."
+                    : "Operational diagnostics are ready; Telegram webhook transport is disabled."));
         }
     }
 
