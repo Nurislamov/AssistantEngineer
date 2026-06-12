@@ -1,0 +1,62 @@
+name: Deployment Dry Run
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - "deploy/**"
+      - "scripts/deployment/**"
+      - "docs/deployment/**"
+      - "tests/AssistantEngineer.Tests/Deployment/**"
+      - "docs/architecture/scripts-tools-inventory.*"
+      - "src/Backend/**"
+      - "src/Frontend/**"
+      - "AssistantEngineer.sln"
+      - ".dockerignore"
+      - ".github/workflows/deployment-dry-run.yml"
+  workflow_dispatch:
+
+jobs:
+  deployment-static-validation:
+    name: Validate deployment scaffold and environment example
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate deployment scaffold
+        shell: pwsh
+        run: ./scripts/deployment/validate-deployment-scaffold.ps1
+
+      - name: Validate production environment example
+        shell: pwsh
+        run: ./scripts/deployment/validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders
+
+  docker-compose-config-validation:
+    name: Validate Docker Compose config
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Compose config with placeholder environment
+        run: docker compose --env-file deploy/.env.example -f deploy/docker-compose.yml config --quiet
+
+  docker-image-build-dry-run:
+    name: Build deployment images without push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build backend image locally
+        run: docker build --file deploy/docker/backend/Dockerfile --tag assistantengineer-api:ci .
+
+      - name: Build frontend image locally
+        run: docker build --file deploy/docker/frontend/Dockerfile --tag assistantengineer-frontend:ci .

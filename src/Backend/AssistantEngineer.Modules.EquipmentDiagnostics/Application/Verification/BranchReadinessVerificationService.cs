@@ -79,6 +79,7 @@ public sealed class BranchReadinessVerificationService
         "docs/architecture/scripts-tools-inventory.json",
         "docs/architecture/scripts-tools-inventory.md",
         ".github/workflows/equipment-diagnostics-branch-readiness.yml",
+        ".github/workflows/deployment-dry-run.yml",
         ".gitignore",
         ".dockerignore"
     ];

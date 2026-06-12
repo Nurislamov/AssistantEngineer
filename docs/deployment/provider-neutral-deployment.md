@@ -35,6 +35,9 @@ Review the placeholders, then:
 The scaffold validator is static by default. Use `-RunDockerComposeConfig` only when the Docker Compose plugin is
 available; it does not require a running Docker daemon.
 
+The ED-18C [CI deployment dry run](ci-deployment-dry-run.md) applies these checks on relevant pull requests and
+builds local CI-tagged images without registry login, image push, or deployment.
+
 The Caddy example uses `example.com`; replace it only during a reviewed deployment after the real domain and DNS
 are ready. The direct local API and frontend ports exist for scaffold smoke checks.
 

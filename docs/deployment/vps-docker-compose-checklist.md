@@ -10,6 +10,7 @@
 - Create `deploy/.env` locally from `.env.example`; never commit it.
 - Run `validate-production-env.ps1` and `validate-deployment-scaffold.ps1`.
 - Run `validate-deployment-scaffold.ps1 -RunDockerComposeConfig` when Docker Compose is available.
+- Confirm the provider-neutral CI deployment dry-run workflow passed; it validates and builds but does not deploy.
 - Configure Telegram secrets only through the deployment secret/environment mechanism.
 - Keep Telegram `IsEnabled=false` until HTTPS, secrets, and access policy are ready.
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.

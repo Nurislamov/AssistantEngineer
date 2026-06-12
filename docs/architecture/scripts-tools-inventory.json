@@ -1341,6 +1341,22 @@
                         "riskIfChanged":  "Validation drift can hide broken routing, provider lock-in, database additions, or committed secrets."
                     },
                     {
+                        "id":  "SCR-084",
+                        "path":  "scripts/deployment/run-ci-deployment-dry-run.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Local equivalent of the provider-neutral deployment CI dry-run with optional Docker image builds.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "deployment validators + optional docker compose config and docker build",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep static validation daemon-independent and preserve explicit RequireDocker and BuildImages behavior.",
+                        "proposedStage":  "ED-18C",
+                        "riskIfChanged":  "Runner drift can diverge local deployment readiness checks from CI or accidentally introduce deployment behavior."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
@@ -1689,6 +1705,22 @@
                         "recommendedAction":  "Keep PR path filters and readiness verification aligned with the local developer command.",
                         "proposedStage":  "ED-12A",
                         "riskIfChanged":  "Workflow drift can allow EquipmentDiagnostics PRs to omit local readiness policy or lose report evidence."
+                    },
+                    {
+                        "id":  "WF-008",
+                        "path":  ".github/workflows/deployment-dry-run.yml",
+                        "type":  "GitHubWorkflow",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Provider-neutral deployment scaffold validation, Compose config verification, and local CI image build dry-run without deploy or push.",
+                        "invokedBy":  [
+                                          "GitHubActions"
+                                      ],
+                        "wrapsTool":  "scripts/deployment validators + docker compose config + docker build",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep workflow secret-free and prohibit deploy, SSH, registry login, and image push steps.",
+                        "proposedStage":  "ED-18C",
+                        "riskIfChanged":  "Workflow drift can hide broken deployment images or introduce unintended production deployment behavior."
                     }
                 ],
     "nonClaims":  [
