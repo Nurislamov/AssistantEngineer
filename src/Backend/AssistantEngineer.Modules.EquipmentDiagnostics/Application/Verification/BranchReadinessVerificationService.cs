@@ -37,7 +37,11 @@ public sealed class BranchReadinessVerificationService
         "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/",
         "tools/AssistantEngineer.Tools.BranchReadinessVerification/",
         "scripts/equipment-diagnostics/",
+        "scripts/deployment/",
         "scripts/dev/",
+        "deploy/",
+        "docs/deployment/",
+        "tests/AssistantEngineer.Tests/Deployment/",
         "src/Frontend/src/entities/equipment-diagnostics/",
         "src/Frontend/src/pages/equipment-diagnostics/",
         "src/Frontend/src/widgets/equipment-diagnostics/"
@@ -75,7 +79,8 @@ public sealed class BranchReadinessVerificationService
         "docs/architecture/scripts-tools-inventory.json",
         "docs/architecture/scripts-tools-inventory.md",
         ".github/workflows/equipment-diagnostics-branch-readiness.yml",
-        ".gitignore"
+        ".gitignore",
+        ".dockerignore"
     ];
 
     public BranchReadinessReport Verify(BranchReadinessInput input)

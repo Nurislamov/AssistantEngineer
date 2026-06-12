@@ -486,6 +486,12 @@ sanitized `getWebhookInfo` / `deleteWebhook` operator helpers. Production setup 
 allowlist, review deny lists, disable discovery after setup, and keep all Telegram secrets outside Git. See
 [telegram-operations-checklist.md](telegram-operations-checklist.md).
 
+## ED-18A Provider-Neutral Deployment Scaffold
+
+ED-18A adds example-only Dockerfiles, Docker Compose, Caddy routing, placeholder environment configuration, smoke
+scripts, and deployment checklists. It does not deploy production, select a provider, add a database, commit
+secrets, or enable Telegram. See [provider-neutral-deployment.md](../deployment/provider-neutral-deployment.md).
+
 The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
 
 ```powershell

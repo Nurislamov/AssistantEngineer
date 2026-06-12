@@ -32,6 +32,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
 - Send a deterministic smoke message and verify the expected reply.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
+- For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 
 ## Remaining Risks
 

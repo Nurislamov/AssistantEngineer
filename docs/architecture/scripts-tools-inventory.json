@@ -1245,6 +1245,70 @@
                         "riskIfChanged":  "Script drift can expose Telegram secrets or unintentionally drop pending updates."
                     },
                     {
+                        "id":  "SCR-078",
+                        "path":  "scripts/deployment/build-production-images.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Provider-neutral wrapper for building the example API, frontend, and reverse-proxy images.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "docker compose",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep compose-file override and failure propagation behavior intact.",
+                        "proposedStage":  "ED-18A",
+                        "riskIfChanged":  "Wrapper drift can build unintended images or hide failed image builds."
+                    },
+                    {
+                        "id":  "SCR-079",
+                        "path":  "scripts/deployment/start-production-stack.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Provider-neutral wrapper for starting the reviewed production-like Docker Compose scaffold.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "docker compose",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Preserve the ignored deploy/.env precondition and non-zero failure behavior.",
+                        "proposedStage":  "ED-18A",
+                        "riskIfChanged":  "Wrapper drift can start the stack with missing or unintended configuration."
+                    },
+                    {
+                        "id":  "SCR-080",
+                        "path":  "scripts/deployment/stop-production-stack.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Provider-neutral wrapper for stopping the production-like Docker Compose scaffold.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "docker compose",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep compose-file override and failure propagation behavior intact.",
+                        "proposedStage":  "ED-18A",
+                        "riskIfChanged":  "Wrapper drift can leave deployment services running or target the wrong compose project."
+                    },
+                    {
+                        "id":  "SCR-081",
+                        "path":  "scripts/deployment/smoke-production-stack.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Deterministic smoke wrapper for frontend, API health, bot response, and disabled Telegram webhook defaults.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep smoke checks secret-free and preserve disabled-by-default Telegram verification.",
+                        "proposedStage":  "ED-18A",
+                        "riskIfChanged":  "Smoke drift can miss broken routing or accidental Telegram enablement."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
