@@ -1,44 +1,79 @@
 param(
-    [string]$FrontendUrl = "http://localhost:8081",
-    [string]$ApiUrl = "http://localhost:8080"
+    [string]$BaseUrl = "http://localhost:8081",
+    [string]$ApiBaseUrl = "http://localhost:8080",
+    [switch]$TelegramExpectedEnabled
 )
 
 $ErrorActionPreference = "Stop"
+$results = [System.Collections.Generic.List[string]]::new()
+$failures = [System.Collections.Generic.List[string]]::new()
 
-function Assert-HttpSuccess([string]$Name, [string]$Url) {
+function Add-SmokeResult([string]$Name, [scriptblock]$Check) {
+    try {
+        & $Check
+        $results.Add("PASS: $Name")
+    } catch {
+        $failures.Add("FAIL: $Name - $($_.Exception.Message)")
+    }
+}
+
+function Assert-HttpSuccess([string]$Url) {
     $response = Invoke-WebRequest -Uri $Url -UseBasicParsing
     if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
-        throw "$Name smoke failed with HTTP $($response.StatusCode)."
+        throw "HTTP $($response.StatusCode)"
     }
-    Write-Host "PASS: $Name"
 }
 
-Assert-HttpSuccess "Frontend" $FrontendUrl
-Assert-HttpSuccess "API health" "$ApiUrl/health"
-
-$diagnosticBody = @{
-    manufacturer = "Gree"
-    code = "H5"
-} | ConvertTo-Json
-$diagnostic = Invoke-WebRequest `
-    -Method Post `
-    -Uri "$ApiUrl/api/v1/equipment-diagnostics/bot/diagnose" `
-    -ContentType "application/json" `
-    -Body $diagnosticBody `
-    -UseBasicParsing
-if ($diagnostic.StatusCode -ne 200) { throw "Equipment diagnostics bot smoke failed." }
-Write-Host "PASS: Equipment diagnostics bot"
-
-try {
-    Invoke-WebRequest `
+Add-SmokeResult "Frontend reachable" {
+    Assert-HttpSuccess $BaseUrl
+}
+Add-SmokeResult "API health reachable" {
+    Assert-HttpSuccess "$ApiBaseUrl/health"
+}
+Add-SmokeResult "Equipment diagnostics bot deterministic response" {
+    $diagnosticBody = @{
+        manufacturer = "Gree"
+        code = "H5"
+    } | ConvertTo-Json
+    $diagnostic = Invoke-WebRequest `
         -Method Post `
-        -Uri "$ApiUrl/api/v1/equipment-diagnostics/telegram/webhook" `
+        -Uri "$ApiBaseUrl/api/v1/equipment-diagnostics/bot/diagnose" `
         -ContentType "application/json" `
-        -Body '{"update_id":1}' `
-        -UseBasicParsing | Out-Null
-    throw "Telegram webhook must remain disabled for the default production-like scaffold."
+        -Body $diagnosticBody `
+        -UseBasicParsing
+    if ($diagnostic.StatusCode -ne 200) {
+        throw "HTTP $($diagnostic.StatusCode)"
+    }
+    $payload = $diagnostic.Content | ConvertFrom-Json
+    if ([string]::IsNullOrWhiteSpace($payload.responseStatus)) {
+        throw "Response status is missing."
+    }
 }
-catch {
-    if ($_.Exception.Response.StatusCode.value__ -ne 404) { throw }
+
+if (-not $TelegramExpectedEnabled) {
+    Add-SmokeResult "Telegram webhook disabled by default" {
+        try {
+            Invoke-WebRequest `
+                -Method Post `
+                -Uri "$ApiBaseUrl/api/v1/equipment-diagnostics/telegram/webhook" `
+                -ContentType "application/json" `
+                -Body '{"update_id":1}' `
+                -UseBasicParsing | Out-Null
+            throw "Webhook returned success while expected disabled."
+        } catch {
+            $statusCode = $_.Exception.Response.StatusCode.value__
+            if ($statusCode -ne 404) {
+                throw "Expected HTTP 404, received $statusCode."
+            }
+        }
+    }
+} else {
+    $results.Add("SKIP: Telegram disabled-default check (explicitly expected enabled)")
 }
-Write-Host "PASS: Telegram webhook disabled by default"
+
+$results | ForEach-Object { Write-Host $_ }
+$failures | ForEach-Object { Write-Host $_ }
+Write-Host "Summary: $($results.Count) passed/skipped; $($failures.Count) failed"
+if ($failures.Count -gt 0) {
+    exit 1
+}

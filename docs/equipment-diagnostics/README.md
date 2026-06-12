@@ -492,6 +492,12 @@ ED-18A adds example-only Dockerfiles, Docker Compose, Caddy routing, placeholder
 scripts, and deployment checklists. It does not deploy production, select a provider, add a database, commit
 secrets, or enable Telegram. See [provider-neutral-deployment.md](../deployment/provider-neutral-deployment.md).
 
+## ED-18B Production Deployment Hardening Checklist
+
+ED-18B adds static environment/scaffold validators, hardened stack smoke checks, and honest release, rollback,
+logging, monitoring, and backup checklists. It does not perform a deployment, select a provider, commit secrets,
+enable Telegram by default, or claim implemented monitoring, backups, database storage, or audit logging.
+
 The scenarios are validated and executed twice through the module facade, core scenarios are exercised through the existing HTTP endpoint, and equivalent frontend fixtures verify the panel states. Run the optional API smoke with:
 
 ```powershell
