@@ -89,3 +89,6 @@ HTTPS, configure secrets outside Git, and pass the operations checklist before c
 ED-18B adds static deployment and environment validation plus release and rollback checklists. Run both deployment
 validators before building images. Create/configure the BotFather token only at the final activation step, keep
 chat ID discovery disabled after setup, and never commit secrets.
+
+ED-19A adds in-memory webhook outcome counters and readiness validation. Counters expose no chat IDs, usernames,
+message bodies, bot token, or webhook secret and reset whenever the process restarts.

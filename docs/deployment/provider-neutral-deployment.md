@@ -38,6 +38,9 @@ available; it does not require a running Docker daemon.
 The ED-18C [CI deployment dry run](ci-deployment-dry-run.md) applies these checks on relevant pull requests and
 builds local CI-tagged images without registry login, image push, or deployment.
 
+Deployment smoke now checks the existing `/health` and `/ready` routes. See
+[runtime observability](../operations/runtime-observability.md) for their limited operational meaning.
+
 The Caddy example uses `example.com`; replace it only during a reviewed deployment after the real domain and DNS
 are ready. The direct local API and frontend ports exist for scaffold smoke checks.
 

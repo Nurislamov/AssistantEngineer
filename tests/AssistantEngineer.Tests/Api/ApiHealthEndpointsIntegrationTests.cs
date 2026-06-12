@@ -43,6 +43,23 @@ public class ApiHealthEndpointsIntegrationTests
         Assert.Equal(HttpStatusCode.OK, ready.StatusCode);
     }
 
+    [Fact]
+    public async Task HealthAndReadyResponsesDoNotExposeOperationalSecretsOrInternalPaths()
+    {
+        await using var factory = new HealthFactory(apiKeyEnabled: false);
+        var client = factory.CreateClient();
+
+        var health = await (await client.GetAsync("/health")).Content.ReadAsStringAsync();
+        var ready = await (await client.GetAsync("/ready")).Content.ReadAsStringAsync();
+        var responses = health + ready;
+
+        Assert.DoesNotContain("health_test_bot_token", responses, StringComparison.Ordinal);
+        Assert.DoesNotContain("health_test_webhook_secret", responses, StringComparison.Ordinal);
+        Assert.DoesNotContain("123456789", responses, StringComparison.Ordinal);
+        Assert.DoesNotContain("artifacts/verification", responses, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("manual-codebook", responses, StringComparison.OrdinalIgnoreCase);
+    }
+
     private sealed class HealthFactory : WebApplicationFactory<Program>
     {
         private readonly bool _apiKeyEnabled;
@@ -66,7 +83,10 @@ public class ApiHealthEndpointsIntegrationTests
                     ["Authentication:ApiKey:Enabled"] = _apiKeyEnabled ? "true" : "false",
                     ["Authentication:ApiKey:HeaderName"] = "X-AssistantEngineer-Api-Key",
                     ["Authentication:ApiKey:Key"] = "health-tests-api-key",
-                    ["ApiHardening:RateLimiting:Enabled"] = "false"
+                    ["ApiHardening:RateLimiting:Enabled"] = "false",
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:BotToken"] = "health_test_bot_token",
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:WebhookSecret"] = "health_test_webhook_secret",
+                    ["AssistantEngineer:EquipmentDiagnostics:Telegram:AllowedChatIds:0"] = "123456789"
                 };
 
                 configuration.AddInMemoryCollection(values);

@@ -16,6 +16,8 @@ The workflow:
 - keeps Telegram webhook transport and chat ID discovery disabled.
 
 There is no deploy job, SSH/SCP step, cloud-specific infrastructure, registry push, or production environment.
+The workflow validates build readiness only; runtime `/health` and `/ready` checks require a separately started
+stack and remain part of the deployment smoke script.
 
 ## Local Equivalent
 

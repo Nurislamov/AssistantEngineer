@@ -1,7 +1,8 @@
 param(
     [string]$BaseUrl = "http://localhost:8081",
     [string]$ApiBaseUrl = "http://localhost:8080",
-    [switch]$TelegramExpectedEnabled
+    [switch]$TelegramExpectedEnabled,
+    [switch]$ExplicitlyExpectTelegramEnabled
 )
 
 $ErrorActionPreference = "Stop"
@@ -30,6 +31,9 @@ Add-SmokeResult "Frontend reachable" {
 Add-SmokeResult "API health reachable" {
     Assert-HttpSuccess "$ApiBaseUrl/health"
 }
+Add-SmokeResult "API readiness reachable" {
+    Assert-HttpSuccess "$ApiBaseUrl/ready"
+}
 Add-SmokeResult "Equipment diagnostics bot deterministic response" {
     $diagnosticBody = @{
         manufacturer = "Gree"
@@ -50,7 +54,8 @@ Add-SmokeResult "Equipment diagnostics bot deterministic response" {
     }
 }
 
-if (-not $TelegramExpectedEnabled) {
+$expectTelegramEnabled = $TelegramExpectedEnabled -or $ExplicitlyExpectTelegramEnabled
+if (-not $expectTelegramEnabled) {
     Add-SmokeResult "Telegram webhook disabled by default" {
         try {
             Invoke-WebRequest `

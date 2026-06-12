@@ -24,6 +24,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<IEquipmentDiagnosticTelegramAdapter, EquipmentDiagnosticTelegramAdapter>();
         services.AddSingleton(new EquipmentDiagnosticTelegramWebhookOptions());
         services.AddSingleton<EquipmentDiagnosticTelegramWebhookSecurityPolicy>();
+        services.AddSingleton<EquipmentDiagnosticTelegramOperationalCounters>();
         services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient, DisabledEquipmentDiagnosticTelegramOutboundClient>();
         services.AddTransient<IEquipmentDiagnosticTelegramWebhookHandler, EquipmentDiagnosticTelegramWebhookHandler>();
 

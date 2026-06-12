@@ -9,6 +9,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhoo
 using AssistantEngineer.Modules.Identity;
 using AssistantEngineer.Modules.Reporting;
 using AssistantEngineer.Api.Services.EquipmentDiagnostics;
+using AssistantEngineer.Api.Services.OperationalDiagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AssistantEngineer.Api.Configuration;
@@ -47,6 +48,7 @@ internal static class ApplicationModulesRegistration
         });
         services.AddHttpClient<IEquipmentDiagnosticTelegramOutboundClient, EquipmentDiagnosticTelegramOutboundClient>(
             client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)));
+        services.AddSingleton<IOperationalDiagnosticsService, OperationalDiagnosticsService>();
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);
         services.AddEngineeringWorkflowModule(configuration);
