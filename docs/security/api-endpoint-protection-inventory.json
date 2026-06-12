@@ -1970,7 +1970,7 @@
                           "rolloutStage":  "ED-15C"
                       },
                       {
-                          "risk":  "Inbound Telegram webhook can be abused if the bot token, webhook secret, or allowed-chat configuration is compromised.",
+                          "risk":  "Inbound Telegram webhook can be abused if the bot token, webhook secret, allowed-chat configuration, reverse proxy, or HTTPS setup is compromised.",
                           "endpointGroup":  "IntegrationInbound",
                           "auditCategory":  "System",
                           "knownLimitations":  [
@@ -1978,6 +1978,7 @@
                                                    "Production deployment must configure HTTPS, bot token, webhook secret, and allowed chat or username policy through a secret store.",
                                                    "DeniedChatIds and DeniedUsernames are applied before allow lists, so deny wins over allow.",
                                                    "Chat ID discovery through /id or /whoami is disabled by default and must be explicitly enabled only for initial setup.",
+                                                   "The provider-neutral deployment scaffold still requires reviewed public HTTPS and reverse-proxy configuration before Telegram enablement.",
                                                    "No audit log, queue, retry persistence, allow/deny admin UI, or endpoint-specific rate-limit claim is introduced.",
                                                    "No database persistence, AI, RAG, vector search, manual PDF access, or generated artifact exposure is introduced."
                                                ],
@@ -1995,7 +1996,7 @@
                           "rateLimitCategory":  "ReferenceData",
                           "targetPolicy":  "TelegramWebhookSecret",
                           "releaseBoundaryClaim":  "StagedProtectionOnly",
-                          "rolloutStage":  "ED-17C"
+                          "rolloutStage":  "ED-18A"
                       },
                       {
                           "risk":  "Demand calculation endpoint is execution-sensitive and should stay explicitly staged for workflow execute protection.",

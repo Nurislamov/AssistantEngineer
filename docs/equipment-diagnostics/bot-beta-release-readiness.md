@@ -106,4 +106,10 @@ Telegram access now supports deny-first chat/username policy and explicitly cont
 discovery for initial allowlist setup. Discovery and the webhook transport remain disabled by default. There is
 still no audit log, admin UI, database persistence, or endpoint-specific rate-limit claim.
 
+## ED-18A Deployment Scaffold
+
+The provider-neutral Docker Compose and Caddy examples prepare a future VPS deployment without selecting a
+provider, committing secrets, or enabling Telegram. Production deployment, monitoring, backups, audit logging,
+and provider-specific hardening remain future work.
+
 The endpoint remains classified according to the broader API security setup. Operator-facing diagnostic guidance requires a trained, qualified technician.

@@ -1,0 +1,25 @@
+example.com {
+    handle /api/* {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle /health {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle /ready {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle {
+        reverse_proxy assistantengineer-frontend:80
+    }
+}
+
+# Optional API-subdomain pattern:
+# api.example.com {
+#     reverse_proxy assistantengineer-api:8080
+# }
+#
+# The Telegram webhook remains the existing API route:
+# https://example.com/api/v1/equipment-diagnostics/telegram/webhook

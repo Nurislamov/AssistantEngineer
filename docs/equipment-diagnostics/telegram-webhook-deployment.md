@@ -79,3 +79,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - no endpoint-specific rate limiter beyond the broader API setup;
 - no long polling;
 - no AI, RAG, vector search, or manual-PDF access.
+
+## Provider-Neutral Deployment Scaffold
+
+ED-18A adds an example Docker Compose and Caddy scaffold under `deploy/`. It does not deploy Telegram, configure a
+real domain, or enable the webhook. A future deployment must replace the placeholder domain, establish public
+HTTPS, configure secrets outside Git, and pass the operations checklist before calling `set-telegram-webhook.ps1`.
