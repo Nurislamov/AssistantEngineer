@@ -102,6 +102,92 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
+    public async Task AllowedChatPassesAccessPolicy()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions() with { AllowedChatIds = [7] });
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => adapter.HandleAsync(Update("Gree H5")));
+
+        Assert.Equal(1, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task DeniedChatIsIgnoredAndDenyWinsOverAllow()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(
+            facade,
+            EnabledOptions() with { AllowedChatIds = [7], DeniedChatIds = [7] });
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task DeniedUsernameIsIgnoredAndDenyWinsOverAllow()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(
+            facade,
+            EnabledOptions() with { AllowedUsernames = ["operator"], DeniedUsernames = ["OPERATOR"] });
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task EmptyAllowAndDenyListsPreserveCurrentAllowBehavior()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions());
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => adapter.HandleAsync(Update("Gree H5")));
+
+        Assert.Equal(1, facade.CallCount);
+    }
+
+    [Theory]
+    [InlineData("/id")]
+    [InlineData("/whoami")]
+    public async Task IdentityDiscoveryDisabledDoesNotExposeIdentityOrCallFacade(string command)
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions());
+
+        var response = await adapter.HandleAsync(Update(command));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Unsupported, response.ResponseKind);
+        Assert.DoesNotContain("chatId", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("userId", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Theory]
+    [InlineData("/id")]
+    [InlineData("/whoami")]
+    public async Task IdentityDiscoveryEnabledReturnsAccessIdentityWithoutCallingFacade(string command)
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(facade, EnabledOptions() with { EnableChatIdDiscovery = true });
+
+        var response = await adapter.HandleAsync(Update(command));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("chatId: 7", response.Text, StringComparison.Ordinal);
+        Assert.Contains("userId: 11", response.Text, StringComparison.Ordinal);
+        Assert.Contains("username: operator", response.Text, StringComparison.Ordinal);
+        Assert.Contains("AllowedChatIds", response.Text, StringComparison.Ordinal);
+        Assert.Equal(0, facade.CallCount);
+        Assert.All(ForbiddenFragments(), fragment =>
+            Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task AdapterResponsesDoNotExposeUnsafeInternalOrSecretText()
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -174,7 +260,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     };
 
     private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
-        new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text);
+        new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text, UserId: 11);
 
     private static IReadOnlyList<string> ForbiddenFragments() =>
     [

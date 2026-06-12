@@ -379,6 +379,8 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     [Theory]
     [InlineData("src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramAdapter.cs")]
     [InlineData("tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramAdapterTests.cs")]
+    [InlineData("scripts/equipment-diagnostics/get-telegram-webhook-info.ps1")]
+    [InlineData("scripts/equipment-diagnostics/delete-telegram-webhook.ps1")]
     [InlineData("docs/equipment-diagnostics/telegram-adapter.md")]
     public void BranchReadinessNarrowlyAllowsTelegramAdapterSkeletonPaths(string path)
     {

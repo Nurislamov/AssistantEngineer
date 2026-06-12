@@ -45,7 +45,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 update.Message.MessageId,
                 update.Message.Date is null
                     ? null
-                    : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value)),
+                    : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value),
+                update.Message.From?.Id),
             cancellationToken);
 
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)

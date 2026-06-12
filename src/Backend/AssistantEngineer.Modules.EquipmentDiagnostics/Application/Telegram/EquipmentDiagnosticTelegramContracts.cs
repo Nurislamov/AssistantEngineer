@@ -15,6 +15,7 @@ public enum EquipmentDiagnosticTelegramCommand
     Diagnose,
     Start,
     Help,
+    Identity,
     Unsupported
 }
 
@@ -23,6 +24,9 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public bool IsEnabled { get; init; }
     public IReadOnlyCollection<long> AllowedChatIds { get; init; } = [];
     public IReadOnlyCollection<string> AllowedUsernames { get; init; } = [];
+    public IReadOnlyCollection<long> DeniedChatIds { get; init; } = [];
+    public IReadOnlyCollection<string> DeniedUsernames { get; init; } = [];
+    public bool EnableChatIdDiscovery { get; init; }
     public int MaxMessageLength { get; init; } = 500;
     public string? DefaultManufacturer { get; init; } = "Gree";
     public string? PreferredLanguage { get; init; }
@@ -36,7 +40,8 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? Username,
     string? Text,
     long? MessageId = null,
-    DateTimeOffset? ReceivedAt = null);
+    DateTimeOffset? ReceivedAt = null,
+    long? UserId = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

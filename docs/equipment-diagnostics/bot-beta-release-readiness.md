@@ -100,4 +100,10 @@ when enabled and an outbound `HttpClient` abstraction. Tests replace outbound de
 deployment still requires HTTPS, secret-store configuration, allowed-chat review, monitoring, and an audit/rate
 control decision. See [telegram-webhook-deployment.md](telegram-webhook-deployment.md).
 
+## ED-17C Operations Readiness
+
+Telegram access now supports deny-first chat/username policy and explicitly controlled `/id` and `/whoami`
+discovery for initial allowlist setup. Discovery and the webhook transport remain disabled by default. There is
+still no audit log, admin UI, database persistence, or endpoint-specific rate-limit claim.
+
 The endpoint remains classified according to the broader API security setup. Operator-facing diagnostic guidance requires a trained, qualified technician.

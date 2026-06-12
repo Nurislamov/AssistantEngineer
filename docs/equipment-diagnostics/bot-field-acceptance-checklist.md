@@ -50,3 +50,5 @@ The script reads the source-controlled scenarios, sends them to the existing end
 - no database/admin review UI;
 - limited manual-backed runtime coverage.
 - webhook transport is disabled by default and production deployment still requires HTTPS and secret-store review.
+- deny lists are reviewed and deny wins over allow;
+- `EnableChatIdDiscovery=false` after initial chat ID setup;
