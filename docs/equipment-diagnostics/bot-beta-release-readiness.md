@@ -112,4 +112,10 @@ The provider-neutral Docker Compose and Caddy examples prepare a future VPS depl
 provider, committing secrets, or enabling Telegram. Production deployment, monitoring, backups, audit logging,
 and provider-specific hardening remain future work.
 
+## ED-18B Deployment Hardening Checklist
+
+Static environment/scaffold validators, hardened smoke checks, and production release/rollback checklists now
+prepare an operator-reviewed deployment. They do not perform a real deploy or implement monitoring, backups,
+audit logging, provider-specific infrastructure, or automatic Telegram activation.
+
 The endpoint remains classified according to the broader API security setup. Operator-facing diagnostic guidance requires a trained, qualified technician.

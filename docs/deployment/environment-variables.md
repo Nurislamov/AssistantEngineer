@@ -17,6 +17,21 @@ Git. Do not put real bot tokens, webhook secrets, domains, or credentials in sou
 | `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY` | Temporary `/id` setup switch | `false` |
 
 Telegram `BotToken`, `WebhookSecret`, `AllowedChatIds`, and `DeniedChatIds` use the existing nested ASP.NET
-environment variable names shown as comments in `.env.example`. They intentionally have no committed values.
+environment variable names shown in `.env.example`. They intentionally have empty committed values.
 
 No database variables are defined because ED-18A adds no database service or persistence stage.
+
+Validate the ignored production file without printing secrets:
+
+```powershell
+.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env
+```
+
+For source-controlled placeholder validation only:
+
+```powershell
+.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders
+```
+
+The production validator requires `ASPNETCORE_ENVIRONMENT=Production`, chat ID discovery disabled, and, when
+Telegram is explicitly enabled, a bot token, valid webhook secret, and non-empty allowed chat ID.

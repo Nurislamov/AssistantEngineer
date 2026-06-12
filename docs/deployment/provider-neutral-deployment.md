@@ -24,11 +24,16 @@ Copy-Item deploy/.env.example deploy/.env
 Review the placeholders, then:
 
 ```powershell
+.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env
+.\scripts\deployment\validate-deployment-scaffold.ps1
 .\scripts\deployment\build-production-images.ps1
 .\scripts\deployment\start-production-stack.ps1
 .\scripts\deployment\smoke-production-stack.ps1
 .\scripts\deployment\stop-production-stack.ps1
 ```
+
+The scaffold validator is static by default. Use `-RunDockerComposeConfig` only when the Docker Compose plugin is
+available; it does not require a running Docker daemon.
 
 The Caddy example uses `example.com`; replace it only during a reviewed deployment after the real domain and DNS
 are ready. The direct local API and frontend ports exist for scaffold smoke checks.
@@ -54,3 +59,7 @@ The frontend image uses the existing build-time `VITE_API_BASE_URL` setting. The
 - no audit log, backup strategy, or monitoring/alerting;
 - no CI/CD deployment pipeline;
 - no real secrets, domains, certificates, or Telegram enablement in Git.
+
+Before a reviewed release, follow [production-release-checklist.md](production-release-checklist.md) and record a
+rollback path using [rollback-checklist.md](rollback-checklist.md). Current logging, monitoring, and backup
+non-claims are documented in [logging-monitoring-backup-notes.md](logging-monitoring-backup-notes.md).

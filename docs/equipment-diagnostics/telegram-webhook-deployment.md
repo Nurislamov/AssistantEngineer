@@ -85,3 +85,7 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 ED-18A adds an example Docker Compose and Caddy scaffold under `deploy/`. It does not deploy Telegram, configure a
 real domain, or enable the webhook. A future deployment must replace the placeholder domain, establish public
 HTTPS, configure secrets outside Git, and pass the operations checklist before calling `set-telegram-webhook.ps1`.
+
+ED-18B adds static deployment and environment validation plus release and rollback checklists. Run both deployment
+validators before building images. Create/configure the BotFather token only at the final activation step, keep
+chat ID discovery disabled after setup, and never commit secrets.

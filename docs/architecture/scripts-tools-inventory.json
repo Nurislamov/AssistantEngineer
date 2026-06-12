@@ -1309,6 +1309,38 @@
                         "riskIfChanged":  "Smoke drift can miss broken routing or accidental Telegram enablement."
                     },
                     {
+                        "id":  "SCR-082",
+                        "path":  "scripts/deployment/validate-production-env.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Sanitized pre-deployment validation for the ignored production environment file and source-controlled placeholder example.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep required-key, Telegram enablement, discovery, allowlist, and secret-format checks intact without printing secret values.",
+                        "proposedStage":  "ED-18B",
+                        "riskIfChanged":  "Validation drift can permit incomplete production configuration or disclose Telegram secrets."
+                    },
+                    {
+                        "id":  "SCR-083",
+                        "path":  "scripts/deployment/validate-deployment-scaffold.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Static provider-neutral validation for deployment files, compose services, proxy routing, placeholders, and secret-free defaults.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "optional docker compose config",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep default validation daemon-independent and preserve optional Docker Compose config verification.",
+                        "proposedStage":  "ED-18B",
+                        "riskIfChanged":  "Validation drift can hide broken routing, provider lock-in, database additions, or committed secrets."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
