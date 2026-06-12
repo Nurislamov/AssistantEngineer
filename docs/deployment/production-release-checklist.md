@@ -19,6 +19,7 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Run `.\scripts\deployment\validate-production-env.ps1`.
 - Run `.\scripts\deployment\validate-deployment-scaffold.ps1`.
 - When Docker is available, run the scaffold validator with `-RunDockerComposeConfig`.
+- Run `run-ci-deployment-dry-run.ps1 -RequireDocker -BuildImages` or confirm its matching CI workflow passed.
 
 ## Release
 

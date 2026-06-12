@@ -35,3 +35,6 @@ For source-controlled placeholder validation only:
 
 The production validator requires `ASPNETCORE_ENVIRONMENT=Production`, chat ID discovery disabled, and, when
 Telegram is explicitly enabled, a bot token, valid webhook secret, and non-empty allowed chat ID.
+
+The CI deployment dry run uses only `.env.example`. It does not read a real production `.env`, enable Telegram, or
+send secret values to image builds.

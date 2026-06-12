@@ -21,3 +21,4 @@ database storage, or an audit log.
 - test restore and rollback procedures regularly.
 
 Do not claim monitoring, backup, or audit coverage until the corresponding system is implemented and verified.
+The CI deployment dry run adds no deployment monitoring, registry, backup, or production audit capability.

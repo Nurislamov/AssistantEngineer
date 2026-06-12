@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `83`
+- `PowerShell` scripts reviewed: `84`
 - `CSharpTool` projects reviewed: `14`
-- `GitHubWorkflow` wrappers reviewed: `7`
-- Total reviewed entries: `104`
+- `GitHubWorkflow` wrappers reviewed: `8`
+- Total reviewed entries: `106`
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
