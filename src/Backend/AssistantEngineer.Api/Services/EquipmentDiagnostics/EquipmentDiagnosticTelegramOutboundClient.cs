@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
+using AssistantEngineer.Api.Services.OperationalDiagnostics;
 
 namespace AssistantEngineer.Api.Services.EquipmentDiagnostics;
 
@@ -7,13 +8,19 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
 {
     private readonly HttpClient _httpClient;
     private readonly EquipmentDiagnosticTelegramWebhookOptions _options;
+    private readonly IOperationalCorrelationIdAccessor _correlation;
+    private readonly ILogger<EquipmentDiagnosticTelegramOutboundClient> _logger;
 
     public EquipmentDiagnosticTelegramOutboundClient(
         HttpClient httpClient,
-        EquipmentDiagnosticTelegramWebhookOptions options)
+        EquipmentDiagnosticTelegramWebhookOptions options,
+        IOperationalCorrelationIdAccessor correlation,
+        ILogger<EquipmentDiagnosticTelegramOutboundClient> logger)
     {
         _httpClient = httpClient;
         _options = options;
+        _correlation = correlation;
+        _logger = logger;
     }
 
     public async Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
@@ -46,9 +53,21 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                 parse_mode = parseMode
             })
         };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
 
         try
         {
+            using var scope = _logger.BeginScope(new Dictionary<string, object>
+            {
+                ["correlationId"] = _correlation.CorrelationId ?? "none",
+                ["chatIdPresent"] = true
+            });
+            _logger.LogInformation("Sending Telegram response");
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             return response.IsSuccessStatusCode
                 ? new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram message sent.")

@@ -20,3 +20,6 @@ Counters are thread-safe and in-process only. They reset when the process restar
 durable metric store, or delivery guarantee. New diagnostic/error paths should use `OperationalSecretRedactor`
 before emitting text that may contain token-like values, sensitive headers, query secrets, or connection-string
 passwords.
+
+ED-19B adds capability-only fields `correlationEnabled` and `correlationHeaderName`. The global snapshot never
+contains a current request correlation ID. Correlation remains request-scoped and is not an audit record.

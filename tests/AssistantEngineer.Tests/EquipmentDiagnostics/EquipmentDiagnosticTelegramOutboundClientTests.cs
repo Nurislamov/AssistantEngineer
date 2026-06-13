@@ -2,6 +2,8 @@ using System.Net;
 using System.Text.Json;
 using AssistantEngineer.Api.Services.EquipmentDiagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
+using AssistantEngineer.Api.Services.OperationalDiagnostics;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
@@ -22,6 +24,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         Assert.Equal(42, payload.RootElement.GetProperty("chat_id").GetInt64());
         Assert.Equal("Safe reply", payload.RootElement.GetProperty("text").GetString());
         Assert.True(payload.RootElement.GetProperty("disable_web_page_preview").GetBoolean());
+        Assert.Equal("outbound-test-id", handler.CorrelationId);
         Assert.DoesNotContain("test-token-value", result.Message, StringComparison.Ordinal);
     }
 
@@ -42,7 +45,11 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     private static EquipmentDiagnosticTelegramOutboundClient CreateClient(
         HttpMessageHandler handler,
         EquipmentDiagnosticTelegramWebhookOptions options) =>
-        new(new HttpClient(handler), options);
+        new(
+            new HttpClient(handler),
+            options,
+            new OperationalCorrelationIdAccessor { CorrelationId = "outbound-test-id" },
+            NullLogger<EquipmentDiagnosticTelegramOutboundClient>.Instance);
 
     private static EquipmentDiagnosticTelegramWebhookOptions EnabledOptions() => new()
     {
@@ -55,6 +62,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     {
         public Uri? RequestUri { get; private set; }
         public string? Body { get; private set; }
+        public string? CorrelationId { get; private set; }
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
@@ -62,6 +70,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         {
             RequestUri = request.RequestUri;
             Body = await request.Content!.ReadAsStringAsync(cancellationToken);
+            CorrelationId = request.Headers.GetValues("X-Correlation-ID").Single();
             return new HttpResponseMessage(statusCode);
         }
     }

@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhoo
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Tests.Operations;
 
@@ -23,6 +24,8 @@ public sealed class OperationalDiagnosticsTests
         Assert.True(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
         Assert.True(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
+        Assert.True(snapshot.CorrelationEnabled);
+        Assert.Equal("X-Correlation-ID", snapshot.CorrelationHeaderName);
         Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
         Assert.DoesNotContain("test_webhook_secret", serialized, StringComparison.Ordinal);
         Assert.DoesNotContain("123456789", serialized, StringComparison.Ordinal);
@@ -87,6 +90,8 @@ public sealed class OperationalDiagnosticsTests
             DeniedChatIds = [987654321]
         });
         services.AddSingleton<IOperationalDiagnosticsService, OperationalDiagnosticsService>();
+        services.AddSingleton<IOptions<OperationalCorrelationOptions>>(
+            Options.Create(new OperationalCorrelationOptions()));
         return services.BuildServiceProvider();
     }
 

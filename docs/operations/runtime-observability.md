@@ -22,5 +22,6 @@ traffic readiness.
 - No alerting, audit log, database persistence, or durable metrics storage is implemented.
 - No provider-specific monitoring or cloud infrastructure is added.
 
-Future ED-19B may add a reviewed structured logging provider, request correlation, metrics export, alerting, and
-audit/persistence only after the database decision.
+ED-19B adds safe request correlation and structured application log scopes without an external log sink. Future
+work may add reviewed JSON console formatting, metrics export, alerting, and audit/persistence only after the
+hosting and database decisions.

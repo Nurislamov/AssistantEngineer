@@ -26,3 +26,6 @@ The CI deployment dry run adds no deployment monitoring, registry, backup, or pr
 ED-19A adds existing `/health` and `/ready` alignment, an internal safe operational snapshot, and in-memory
 Telegram webhook counters. These counters reset on restart and do not implement Prometheus, external monitoring,
 alerting, an audit log, database persistence, or backup.
+
+ED-19B adds `X-Correlation-ID` propagation and safe structured request log scopes. It does not add an external log
+sink, retention policy, request/response body logging, Telegram payload logging, or audit persistence.

@@ -6,6 +6,8 @@ public sealed record OperationalDiagnosticsSnapshot(
     string Version,
     DateTimeOffset StartedAtUtc,
     long UptimeSeconds,
+    bool CorrelationEnabled,
+    string CorrelationHeaderName,
     EquipmentDiagnosticsOperationalSnapshot EquipmentDiagnostics);
 
 public sealed record EquipmentDiagnosticsOperationalSnapshot(

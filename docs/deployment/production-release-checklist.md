@@ -27,6 +27,7 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Start the stack with `start-production-stack.ps1`.
 - Run `smoke-production-stack.ps1` against the reviewed frontend and API URLs.
 - Verify HTTPS, frontend routing, `/health`, `/ready`, and the deterministic EquipmentDiagnostics bot response.
+- Record the non-secret `X-Correlation-ID` printed by deployment smoke when troubleshooting a failed check.
 
 ## Final Telegram Activation
 
