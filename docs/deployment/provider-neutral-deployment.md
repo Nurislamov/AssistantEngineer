@@ -40,6 +40,7 @@ builds local CI-tagged images without registry login, image push, or deployment.
 
 Deployment smoke now checks the existing `/health` and `/ready` routes. See
 [runtime observability](../operations/runtime-observability.md) for their limited operational meaning.
+It also sends one generated, non-secret `X-Correlation-ID` and verifies that reachable API endpoints echo it.
 
 The Caddy example uses `example.com`; replace it only during a reviewed deployment after the real domain and DNS
 are ready. The direct local API and frontend ports exist for scaffold smoke checks.

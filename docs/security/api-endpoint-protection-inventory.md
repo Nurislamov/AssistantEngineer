@@ -67,7 +67,8 @@ Machine-readable canonical inventory is maintained in `docs/security/api-endpoin
 
 Operational `/health` and `/ready` remain anonymous, compact framework health endpoints. ED-19A adds safe
 EquipmentDiagnostics/Telegram readiness checks without exposing secrets, chat IDs, message bodies, configuration,
-or internal paths; no broad operational diagnostics endpoint is added.
+or internal paths; no broad operational diagnostics endpoint is added. ED-19B adds the safe `X-Correlation-ID`
+response header across existing endpoints without changing route or authorization classifications.
 
 ## Classification model
 

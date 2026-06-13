@@ -36,6 +36,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.
 - Record and test the rollback command before enabling the webhook.
 - Confirm `/ready` stays healthy after reviewed Telegram activation; readiness never returns token, secret, chat ID, or message values.
+- Use a safe `X-Correlation-ID` when reproducing webhook delivery issues; logs never include Telegram message text or chat ID values.
 
 ## Remaining Risks
 

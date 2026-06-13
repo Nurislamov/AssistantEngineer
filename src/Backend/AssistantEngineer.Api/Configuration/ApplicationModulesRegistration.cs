@@ -47,7 +47,13 @@ internal static class ApplicationModulesRegistration
             RequireExplicitManufacturer = telegramOptions.RequireExplicitManufacturer
         });
         services.AddHttpClient<IEquipmentDiagnosticTelegramOutboundClient, EquipmentDiagnosticTelegramOutboundClient>(
-            client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)));
+                client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)))
+            .RemoveAllLoggers();
+        services.AddOptions<OperationalCorrelationOptions>()
+            .Bind(configuration.GetSection(OperationalCorrelationOptions.SectionName))
+            .Validate(options => options.MaxLength is > 0 and <= 256, "Operational correlation max length must be between 1 and 256.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.HeaderName), "Operational correlation header name is required.");
+        services.AddSingleton<IOperationalCorrelationIdAccessor, OperationalCorrelationIdAccessor>();
         services.AddSingleton<IOperationalDiagnosticsService, OperationalDiagnosticsService>();
         services.AddReportingModule();
         services.AddBenchmarksModule(configuration);

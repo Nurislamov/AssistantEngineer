@@ -1,4 +1,5 @@
 using AssistantEngineer.Api.Security.Authentication;
+using AssistantEngineer.Api.Services.OperationalDiagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -16,6 +17,7 @@ internal static class ApiPipelineConfiguration
 
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseMiddleware<OperationalCorrelationIdMiddleware>();
         app.UseCors(ApiHardeningRegistration.DefaultCorsPolicyName);
         app.UseRequestTimeouts();
         app.UseAuthentication();

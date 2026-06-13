@@ -1,6 +1,7 @@
 using System.Reflection;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using Microsoft.Extensions.Options;
 
 namespace AssistantEngineer.Api.Services.OperationalDiagnostics;
 
@@ -13,6 +14,7 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
     private readonly EquipmentDiagnosticTelegramWebhookOptions _telegramOptions;
     private readonly EquipmentDiagnosticTelegramWebhookSecurityPolicy _telegramSecurityPolicy;
     private readonly EquipmentDiagnosticTelegramOperationalCounters _telegramCounters;
+    private readonly OperationalCorrelationOptions _correlationOptions;
 
     public OperationalDiagnosticsService(
         TimeProvider timeProvider,
@@ -20,7 +22,8 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
         IEquipmentDiagnosticBotFacade botFacade,
         EquipmentDiagnosticTelegramWebhookOptions telegramOptions,
         EquipmentDiagnosticTelegramWebhookSecurityPolicy telegramSecurityPolicy,
-        EquipmentDiagnosticTelegramOperationalCounters telegramCounters)
+        EquipmentDiagnosticTelegramOperationalCounters telegramCounters,
+        IOptions<OperationalCorrelationOptions> correlationOptions)
     {
         _timeProvider = timeProvider;
         _environment = environment;
@@ -28,6 +31,7 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
         _telegramOptions = telegramOptions;
         _telegramSecurityPolicy = telegramSecurityPolicy;
         _telegramCounters = telegramCounters;
+        _correlationOptions = correlationOptions.Value;
         _startedAtUtc = timeProvider.GetUtcNow();
     }
 
@@ -47,6 +51,8 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
             Version: Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown",
             StartedAtUtc: _startedAtUtc,
             UptimeSeconds: Math.Max(0, (long)(now - _startedAtUtc).TotalSeconds),
+            CorrelationEnabled: _correlationOptions.Enabled,
+            CorrelationHeaderName: _correlationOptions.HeaderName,
             EquipmentDiagnostics: new EquipmentDiagnosticsOperationalSnapshot(
                 BotEndpointAvailable: _botFacade is not null,
                 TelegramWebhookConfigured: telegramConfigured,
