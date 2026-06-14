@@ -1,5 +1,9 @@
 # Operations
 
+## Goal Protocol
+
+Large engineering tasks and release-readiness work use the internal [AssistantEngineer Goal Protocol](../engineering-workflow/goal-protocol.md). It defines deterministic recon, roadmap, phase evidence, recovery, and final-audit practices without creating runtime automation.
+
 For EquipmentDiagnostics ED-20A, operations evidence supports a controlled closed beta only. Sanitize logs before review; no production monitoring or audit persistence is claimed.
 
 This section documents the current provider-neutral operational foundation:
