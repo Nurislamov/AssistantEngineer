@@ -1,5 +1,7 @@
 # Equipment Diagnostics Bot Beta Backend Readiness
 
+ED-20A adds a consolidated closed-beta report; see `beta-readiness-report.md`. This remains a closed beta only, not production or public release.
+
 ## ED-15C Scope
 
 The beta backend exposes the existing deterministic endpoint:

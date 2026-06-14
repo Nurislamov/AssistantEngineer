@@ -1,5 +1,7 @@
 # Operations
 
+For EquipmentDiagnostics ED-20A, operations evidence supports a controlled closed beta only. Sanitize logs before review; no production monitoring or audit persistence is claimed.
+
 This section documents the current provider-neutral operational foundation:
 
 - [runtime observability](runtime-observability.md);

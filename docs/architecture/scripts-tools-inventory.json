@@ -1390,6 +1390,23 @@
                         "riskIfChanged":  "Collector drift can write raw log dumps or expose operational secrets."
                     },
                     {
+                        "id":  "SCR-087",
+                        "path":  "scripts/equipment-diagnostics/prepare-beta-readiness-report.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Thin wrapper that generates ignored EquipmentDiagnostics closed-beta readiness JSON and Markdown reports.",
+                        "invokedBy":  [
+                                          "scripts/dev/verify-and-prepare-pr.ps1",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "AssistantEngineer.Tools.EquipmentDiagnosticsVerification beta-readiness",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the wrapper secret-free and aligned with the deterministic beta-readiness command.",
+                        "proposedStage":  "ED-20A",
+                        "riskIfChanged":  "Readiness drift can hide closed-beta blockers or imply unsupported production readiness."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
