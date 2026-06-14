@@ -29,3 +29,6 @@ alerting, an audit log, database persistence, or backup.
 
 ED-19B adds `X-Correlation-ID` propagation and safe structured request log scopes. It does not add an external log
 sink, retention policy, request/response body logging, Telegram payload logging, or audit persistence.
+
+ED-19C adds operator runbooks and local sanitized log collection. These scripts are not an external logging sink,
+monitoring service, retention policy, backup, or audit log.

@@ -37,6 +37,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Record and test the rollback command before enabling the webhook.
 - Confirm `/ready` stays healthy after reviewed Telegram activation; readiness never returns token, secret, chat ID, or message values.
 - Use a safe `X-Correlation-ID` when reproducing webhook delivery issues; logs never include Telegram message text or chat ID values.
+- Follow the Telegram webhook incident runbook and attach only sanitized log excerpts.
 
 ## Remaining Risks
 

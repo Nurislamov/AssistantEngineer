@@ -23,3 +23,7 @@ echoes it.
 This foundation does not add Seq, ELK, Grafana, Prometheus, OpenTelemetry exporters, an external log sink, log
 retention, alerting, or audit persistence. ED-19C may add reviewed structured JSON console logs, deploy-side
 retention, metrics export, and alerting after the hosting provider is chosen.
+
+For incident review, follow [correlation ID troubleshooting](incidents/correlation-id-troubleshooting.md) and use
+`scripts/operations/collect-sanitized-logs.ps1`. Generated sanitized excerpts remain local under ignored
+`artifacts/operations/`.

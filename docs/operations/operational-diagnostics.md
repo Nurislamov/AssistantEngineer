@@ -23,3 +23,6 @@ passwords.
 
 ED-19B adds capability-only fields `correlationEnabled` and `correlationHeaderName`. The global snapshot never
 contains a current request correlation ID. Correlation remains request-scoped and is not an audit record.
+
+During incidents, summarize counters and configuration-presence booleans only. Use the incident runbooks and
+sanitized log collector; never record actual chat IDs, message bodies, or secret values.
