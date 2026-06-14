@@ -1,6 +1,7 @@
 # Production Release Checklist
 
 EquipmentDiagnostics ED-20A does not satisfy this production checklist. Its separate `docs/equipment-diagnostics/closed-beta-release-checklist.md` is limited to a controlled closed beta.
+The ED-22C Telegram deployment activation dry-run is additional closed-beta pre-activation evidence; it does not satisfy or alter this production checklist.
 
 This checklist prepares a reviewed production deployment. It does not perform a deployment or select a provider.
 

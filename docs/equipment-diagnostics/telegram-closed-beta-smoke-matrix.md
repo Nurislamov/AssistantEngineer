@@ -1,6 +1,7 @@
 # Telegram Closed Beta Smoke Matrix
 
 Use this manual matrix only during a separately approved closed-beta activation rehearsal. Use placeholders and sanitized evidence; never place real credentials, domains, or chat IDs in this document.
+Review a passing ED-22C deployment activation dry-run before starting this manual matrix.
 
 | ID | Purpose | Setup | Input / action | Expected result | Evidence to collect | Pass / fail |
 |---|---|---|---|---|---|---|

@@ -61,6 +61,8 @@ public sealed class BranchReadinessVerificationService
         "scripts/equipment-diagnostics/set-telegram-webhook.ps1",
         "scripts/equipment-diagnostics/get-telegram-webhook-info.ps1",
         "scripts/equipment-diagnostics/delete-telegram-webhook.ps1",
+        "scripts/equipment-diagnostics/prepare-telegram-closed-beta-deployment-dry-run.ps1",
+        "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramDeploymentDryRunTests.cs",
         "docs/equipment-diagnostics/telegram-"
     ];
 

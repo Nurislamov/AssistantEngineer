@@ -31,6 +31,7 @@ Generated artifacts are not committed. They are local review evidence, not runti
 ## Manual Review Points
 
 - Review `telegram-closed-beta-release-candidate.md`, `telegram-closed-beta-operator-limitation-card.md`, and `telegram-closed-beta-smoke-matrix.md`.
+- Generate and review the ED-22C deployment activation dry-run before any separately approved activation.
 - Review every blocker, warning, skipped command, branch, base reference, and head SHA.
 - Confirm no generated artifact, raw log, PDF, manual file, chat ID, credential, or real domain is staged.
 - Confirm Telegram transport and chat ID discovery remain disabled by default.
