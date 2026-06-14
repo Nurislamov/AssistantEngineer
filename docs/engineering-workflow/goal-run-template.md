@@ -2,6 +2,8 @@
 
 This is a committed working template, not a generated report. Create generated run reports under ignored `artifacts/planning/` or `artifacts/verification/`.
 
+For machine-readable evidence, follow `goal-run-report.schema.json` and validate the generated JSON with the `goal-run-report` verification command.
+
 ## Goal Identity
 
 - Goal id:

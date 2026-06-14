@@ -1,0 +1,44 @@
+{
+  "goalId": "ED-TEST-INVALID",
+  "title": "Invalid goal-run report",
+  "sourceBranch": "feature/test-goal-run",
+  "targetBranch": "master",
+  "scope": ["Goal-run validation"],
+  "outOfScope": [],
+  "constraints": ["Keep generated evidence ignored"],
+  "preflight": {
+    "commands": [
+      {
+        "name": "Build",
+        "command": "dotnet build AssistantEngineer.sln",
+        "status": "fail",
+        "evidence": "Build failed."
+      }
+    ]
+  },
+  "phases": [
+    {
+      "number": 1,
+      "title": "Validation foundation",
+      "status": "not_run",
+      "deliverables": ["Validator"],
+      "acceptanceCriteria": ["Valid report passes"],
+      "mandatoryCommands": ["dotnet test AssistantEngineer.sln"],
+      "evidence": []
+    }
+  ],
+  "finalAudit": {
+    "status": "not_run",
+    "roadmapCoverage": "Pending.",
+    "phaseCompletion": "Pending.",
+    "changedFilesReview": "Pending.",
+    "forbiddenFilesReview": "Pending.",
+    "forbiddenClaimsReview": "Pending.",
+    "secretsScan": "Pending.",
+    "generatedArtifacts": "Pending.",
+    "mergeReadiness": "Pending."
+  },
+  "warnings": [],
+  "blockers": [],
+  "generatedArtifacts": ["artifacts/verification/goal-run-report.json"]
+}

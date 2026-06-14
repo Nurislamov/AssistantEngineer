@@ -7,7 +7,9 @@ public class EquipmentDiagnosticsGoalProtocolTests
         "goal-protocol.md",
         "goal-run-template.md",
         "phase-spec-template.md",
-        "final-audit-template.md"
+        "final-audit-template.md",
+        "goal-run-report-validator.md",
+        "goal-run-report.schema.json"
     ];
 
     [Fact]
@@ -116,6 +118,7 @@ public class EquipmentDiagnosticsGoalProtocolTests
         Assert.Contains("engineering-workflow/goal-protocol.md", ReadRepoFile("docs", "equipment-diagnostics", "README.md"), StringComparison.Ordinal);
         Assert.Contains("docs/engineering-workflow/goal-protocol.md", ReadRepoFile("docs", "architecture", "scripts-tools-inventory.json"), StringComparison.Ordinal);
         Assert.Contains("documentationReferences", ReadRepoFile("docs", "architecture", "scripts-tools-inventory.schema.json"), StringComparison.Ordinal);
+        Assert.Contains("goal-run-report-validator.md", ReadRepoFile("docs", "architecture", "scripts-tools-inventory.json"), StringComparison.Ordinal);
     }
 
     private static void AssertContainsAll(string content, params string[] fragments)

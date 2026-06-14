@@ -42,6 +42,8 @@ ED-20A adds one thin EquipmentDiagnostics wrapper for deterministic closed-beta 
 
 ED-21A adds committed goal-protocol governance templates under `docs/engineering-workflow/`. They are documentation, not scripts, tools, generated reports, or runtime automation, so inventory counts remain unchanged.
 
+ED-21B extends the existing EquipmentDiagnostics verification tool with the deterministic `goal-run-report` command and adds its committed validator documentation/schema references.
+
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
 ## Non-claims

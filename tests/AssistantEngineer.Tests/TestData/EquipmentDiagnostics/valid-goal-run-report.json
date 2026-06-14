@@ -1,0 +1,44 @@
+{
+  "goalId": "ED-TEST-VALID",
+  "title": "Validate deterministic goal-run report",
+  "sourceBranch": "feature/test-goal-run",
+  "targetBranch": "master",
+  "scope": ["Goal-run validation"],
+  "outOfScope": ["Runtime behavior"],
+  "constraints": ["Keep generated evidence ignored"],
+  "preflight": {
+    "commands": [
+      {
+        "name": "Build",
+        "command": "dotnet build AssistantEngineer.sln",
+        "status": "pass",
+        "evidence": "Build completed with zero errors."
+      }
+    ]
+  },
+  "phases": [
+    {
+      "number": 1,
+      "title": "Validation foundation",
+      "status": "pass",
+      "deliverables": ["Validator"],
+      "acceptanceCriteria": ["Valid report passes"],
+      "mandatoryCommands": ["dotnet test AssistantEngineer.sln"],
+      "evidence": ["Focused tests passed."]
+    }
+  ],
+  "finalAudit": {
+    "status": "pass",
+    "roadmapCoverage": "All planned items reviewed.",
+    "phaseCompletion": "All phases passed.",
+    "changedFilesReview": "Changed files reviewed.",
+    "forbiddenFilesReview": "No forbidden files found.",
+    "forbiddenClaimsReview": "No unsupported claims found.",
+    "secretsScan": "No configured secrets found.",
+    "generatedArtifacts": "Generated evidence remains ignored.",
+    "mergeReadiness": "Ready for human merge review."
+  },
+  "warnings": [],
+  "blockers": [],
+  "generatedArtifacts": ["artifacts/verification/goal-run-report.json"]
+}
