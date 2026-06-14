@@ -61,6 +61,29 @@ function Invoke-SafeValidation([string]$Name, [scriptblock]$Action) {
     }
 }
 
+function Invoke-GitText {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments,
+
+        [string]$Fallback = "unknown"
+    )
+
+    try {
+        $output = & git @Arguments 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $line = $output | Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace($line)) {
+                return $line.Trim()
+            }
+        }
+    } catch {
+        return $Fallback
+    }
+
+    return $Fallback
+}
+
 $requiredDeploymentFiles = @(
     "deploy/docker-compose.yml",
     "deploy/.env.example",
@@ -199,8 +222,21 @@ Add-Check "Docker Compose config" "not_run" $dockerEvidence
 
 $relativeSummaryPath = Convert-ToRepoRelativePath $summaryPath
 $relativeReportPath = Convert-ToRepoRelativePath $reportPath
-$branch = (& git branch --show-current).Trim()
-$head = (& git rev-parse HEAD).Trim()
+$branch = Invoke-GitText -Arguments @("branch", "--show-current") -Fallback ""
+if ([string]::IsNullOrWhiteSpace($branch)) {
+    $branch = Invoke-GitText -Arguments @("rev-parse", "--abbrev-ref", "HEAD") -Fallback ""
+}
+if ([string]::IsNullOrWhiteSpace($branch) -or $branch -eq "HEAD") {
+    $branch = $env:GITHUB_HEAD_REF
+}
+if ([string]::IsNullOrWhiteSpace($branch)) {
+    $branch = $env:GITHUB_REF_NAME
+}
+if ([string]::IsNullOrWhiteSpace($branch)) {
+    $branch = "detached"
+}
+
+$head = Invoke-GitText -Arguments @("rev-parse", "HEAD") -Fallback "unknown"
 $limitations = @(
     "Closed beta preparation only; not deployment, activation, production, or public release.",
     "No Telegram network call or webhook operation is executed.",

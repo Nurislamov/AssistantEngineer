@@ -47,6 +47,20 @@ public class EquipmentDiagnosticsTelegramDeploymentDryRunTests
     }
 
     [Fact]
+    public void ScriptHandlesDetachedHeadWithoutRequiringSpecificBranchName()
+    {
+        var script = File.ReadAllText(ScriptPath);
+        AssertContainsAll(script,
+            "function Invoke-GitText",
+            "GITHUB_HEAD_REF",
+            "GITHUB_REF_NAME",
+            "$branch = \"detached\"",
+            "$head = Invoke-GitText");
+        Assert.DoesNotContain("(& git branch --show-current).Trim()", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("(& git rev-parse HEAD).Trim()", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void DryRunDocContainsRequiredSafetyBoundary()
     {
         var doc = File.ReadAllText(DocPath);
@@ -92,19 +106,34 @@ public class EquipmentDiagnosticsTelegramDeploymentDryRunTests
     [Fact]
     public void FocusedDryRunCreatesIgnoredReportsAndExitsZero()
     {
-        var result = RunPowerShell(
-            ".\\scripts\\equipment-diagnostics\\prepare-telegram-closed-beta-deployment-dry-run.ps1 " +
-            "-BaseRef origin/master -SkipDockerComposeConfig -SkipDeploymentScaffoldValidation " +
-            "-SkipProductionEnvValidation -SkipReleaseEvidenceReference");
+        var outputRoot = Path.Combine(
+            "artifacts",
+            "verification",
+            "equipment-diagnostics",
+            "telegram-deployment-dry-run-test",
+            Guid.NewGuid().ToString("N"));
+        var fullOutputRoot = Path.Combine(TestPaths.RepoRoot, outputRoot);
 
-        Assert.True(result.ExitCode == 0, result.Output);
-        Assert.Contains("Status: PASS", result.Output, StringComparison.OrdinalIgnoreCase);
-        Assert.True(File.Exists(Path.Combine(
-            TestPaths.RepoRoot, "artifacts", "verification", "equipment-diagnostics",
-            "telegram-deployment-dry-run", "deployment-dry-run-summary.md")));
-        Assert.True(File.Exists(Path.Combine(
-            TestPaths.RepoRoot, "artifacts", "verification", "equipment-diagnostics",
-            "telegram-deployment-dry-run", "deployment-dry-run-report.json")));
+        try
+        {
+            var result = RunPowerShell(
+                ".\\scripts\\equipment-diagnostics\\prepare-telegram-closed-beta-deployment-dry-run.ps1 " +
+                $"-BaseRef origin/master -OutputRoot \"{outputRoot}\" " +
+                "-SkipDockerComposeConfig -SkipDeploymentScaffoldValidation " +
+                "-SkipProductionEnvValidation -SkipReleaseEvidenceReference");
+
+            Assert.True(result.ExitCode == 0, result.Output);
+            Assert.Contains("Status: PASS", result.Output, StringComparison.OrdinalIgnoreCase);
+            Assert.True(File.Exists(Path.Combine(fullOutputRoot, "deployment-dry-run-summary.md")));
+            Assert.True(File.Exists(Path.Combine(fullOutputRoot, "deployment-dry-run-report.json")));
+        }
+        finally
+        {
+            if (Directory.Exists(fullOutputRoot))
+            {
+                Directory.Delete(fullOutputRoot, recursive: true);
+            }
+        }
     }
 
     private static readonly string[] ForbiddenClaims =
