@@ -1796,7 +1796,10 @@
                                     "docs/engineering-workflow/final-audit-template.md",
                                     "docs/engineering-workflow/goal-run-report-validator.md",
                                     "docs/engineering-workflow/goal-run-report.schema.json",
-                                    "docs/equipment-diagnostics/telegram-closed-beta-release-evidence.md"
+                                    "docs/equipment-diagnostics/telegram-closed-beta-release-evidence.md",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-release-candidate.md",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-operator-limitation-card.md",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-smoke-matrix.md"
                                 ],
     "nonClaims":  [
                       "No release gate semantics change claim.",

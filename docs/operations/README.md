@@ -5,6 +5,7 @@
 Large engineering tasks and release-readiness work use the internal [AssistantEngineer Goal Protocol](../engineering-workflow/goal-protocol.md). It defines deterministic recon, roadmap, phase evidence, recovery, and final-audit practices without creating runtime automation.
 Generated goal-run evidence can be checked with the [Goal Run Report Validator](../engineering-workflow/goal-run-report-validator.md).
 Before a reviewed Telegram closed-beta activation, generate and manually review the [ED-22A release evidence pack](../equipment-diagnostics/telegram-closed-beta-release-evidence.md).
+Then review the [ED-22B release candidate](../equipment-diagnostics/telegram-closed-beta-release-candidate.md), [operator limitation card](../equipment-diagnostics/telegram-closed-beta-operator-limitation-card.md), and [smoke matrix](../equipment-diagnostics/telegram-closed-beta-smoke-matrix.md).
 
 For EquipmentDiagnostics ED-20A, operations evidence supports a controlled closed beta only. Sanitize logs before review; no production monitoring or audit persistence is claimed.
 

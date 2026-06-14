@@ -46,6 +46,8 @@ ED-21B extends the existing EquipmentDiagnostics verification tool with the dete
 
 ED-22A adds one secret-free local runner for ignored Telegram closed-beta release evidence packs.
 
+ED-22B adds committed Telegram closed-beta release-candidate, operator-limitation, and smoke-matrix documentation. It changes no script/tool counts or runtime behavior.
+
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
 ## Non-claims

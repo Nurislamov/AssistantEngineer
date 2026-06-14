@@ -9,5 +9,6 @@ This quickstart is for a controlled EquipmentDiagnostics closed beta, not produc
 5. Generate a webhook secret, configure `AllowedChatIds`, retain the `DeniedChatIds` policy, and verify access before enabling transport.
 6. Run `setWebhook` and `getWebhookInfo`, then smoke-test the closed beta.
 7. Keep chat identifier discovery disabled after setup and collect sanitized logs only.
+8. Give every beta operator `telegram-closed-beta-operator-limitation-card.md` and complete `telegram-closed-beta-smoke-matrix.md`.
 
 Telegram transport and chat identifier discovery are disabled by default. There is no production deploy, external monitoring stack, database/audit persistence, AI/RAG, or full vendor manual coverage claim.
