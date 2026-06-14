@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22A Telegram closed-beta release evidence
+
+Use the deterministic [Telegram closed-beta release evidence runner](telegram-closed-beta-release-evidence.md) to collect local pre-activation evidence under ignored artifacts. It does not activate Telegram, deploy the product, or establish production/public release readiness.
+
 Future ED stages should use the internal [AssistantEngineer Goal Protocol](../engineering-workflow/goal-protocol.md) for brownfield recon, explicit constraints, phased verification evidence, and final audit.
 Machine-readable run evidence can be validated with the [Goal Run Report Validator](../engineering-workflow/goal-run-report-validator.md).
 
