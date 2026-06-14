@@ -1,5 +1,7 @@
 # Equipment Diagnostics Bot Field Acceptance Checklist
 
+Passing this checklist contributes to ED-20A closed-beta readiness, but does not establish production readiness or full vendor manual coverage.
+
 ## ED-16B Purpose
 
 ED-16B defines deterministic field scenarios before any Telegram adapter work. The pack verifies the same operator request across the application facade, HTTP endpoint, and internal frontend panel without adding diagnostic knowledge or changing runtime behavior.

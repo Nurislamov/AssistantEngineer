@@ -30,13 +30,15 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `86`
+- `PowerShell` scripts reviewed: `87`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `108`
+- Total reviewed entries: `109`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
+
+ED-20A adds one thin EquipmentDiagnostics wrapper for deterministic closed-beta readiness reports under ignored artifacts.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 

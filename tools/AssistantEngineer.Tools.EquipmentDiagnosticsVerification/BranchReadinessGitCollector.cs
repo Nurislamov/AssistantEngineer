@@ -6,6 +6,8 @@ namespace AssistantEngineer.Tools.EquipmentDiagnosticsVerification;
 
 internal static class BranchReadinessGitCollector
 {
+    public static string GetHead(string repoRoot) => RunGit(repoRoot, "rev-parse", "HEAD").Trim();
+
     public static (string CurrentBranch, IReadOnlyList<BranchReadinessFileInput> Files) Collect(
         string repoRoot,
         string baseRef)

@@ -130,6 +130,8 @@ public sealed class BranchReadinessVerificationService
                     file.ScopeReason)))
             .Concat(ScanUnsafeWording(input.Files))
             .Concat(ScanIncidentArtifactHygiene(input.Files))
+            .Concat(ScanBetaReadinessGuards(input.Files))
+            .Concat(ScanUnsupportedReleaseClaims(input.Files))
             .OrderBy(issue => issue.Severity)
             .ThenBy(issue => issue.Path, StringComparer.Ordinal)
             .ThenBy(issue => issue.Code, StringComparer.Ordinal)
@@ -271,6 +273,58 @@ public sealed class BranchReadinessVerificationService
                 "Operational incident artifacts and log dumps must remain ignored and uncommitted."))
             .ToArray();
 
+    private static IReadOnlyList<BranchReadinessIssue> ScanBetaReadinessGuards(
+        IReadOnlyList<BranchReadinessFileInput> files)
+    {
+        var issues = new List<BranchReadinessIssue>();
+        foreach (var file in files)
+        {
+            var path = NormalizePath(file.Path);
+            if (path.StartsWith("artifacts/verification/equipment-diagnostics/beta-readiness-", StringComparison.OrdinalIgnoreCase))
+            {
+                issues.Add(Error(
+                    "CommittedBetaReadinessArtifact",
+                    path,
+                    "Generated beta readiness reports must remain ignored and uncommitted."));
+            }
+
+            if (path.StartsWith("scripts/engineering-core/verify-engineering-core-v1", StringComparison.OrdinalIgnoreCase))
+            {
+                issues.Add(Error(
+                    "EngineeringCoreVerificationScriptChanged",
+                    path,
+                    "EquipmentDiagnostics beta readiness work must not modify Engineering Core V1 verification scripts."));
+            }
+        }
+
+        return issues;
+    }
+
+    private static IReadOnlyList<BranchReadinessIssue> ScanUnsupportedReleaseClaims(
+        IReadOnlyList<BranchReadinessFileInput> files)
+    {
+        var unsupportedClaims = new[]
+        {
+            "production ready",
+            "production-ready",
+            "public release ready",
+            "full vendor manual coverage",
+            "AI/RAG enabled"
+        };
+        return files
+            .Where(file => file.Content is not null && NormalizePath(file.Path).StartsWith("docs/equipment-diagnostics/", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(file => file.Content!.Replace("\r\n", "\n", StringComparison.Ordinal)
+                .Split('\n')
+                .Select((line, index) => new { file.Path, Line = line, Number = index + 1 }))
+            .SelectMany(line => unsupportedClaims
+                .Where(claim => line.Line.Contains(claim, StringComparison.OrdinalIgnoreCase) && !IsExplicitSafeContext(line.Path, line.Line))
+                .Select(claim => Error(
+                    "UnsupportedBetaReleaseClaim",
+                    $"{NormalizePath(line.Path)}:{line.Number}",
+                    $"Closed-beta documentation contains unsupported claim '{claim}'.")))
+            .ToArray();
+    }
+
     private static bool IsExplicitSafeContext(string path, string line)
     {
         if (path.StartsWith("tests/", StringComparison.OrdinalIgnoreCase) ||
@@ -284,6 +338,7 @@ public sealed class BranchReadinessVerificationService
         var safeContextFragments = new[]
         {
             "do not",
+            "does not",
             "must not",
             "should not",
             "prohibited",
@@ -291,7 +346,9 @@ public sealed class BranchReadinessVerificationService
             "denylist",
             "unsafe wording",
             "should fail",
-            "blocked"
+            "blocked",
+            "no full",
+            "there is no"
         };
 
         return safeContextFragments.Any(fragment =>

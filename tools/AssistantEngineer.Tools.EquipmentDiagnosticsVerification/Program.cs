@@ -39,6 +39,11 @@ internal static class Program
                 return 0;
             }
 
+            if (options.Command == "beta-readiness")
+            {
+                return GenerateBetaReadiness(repoRoot, options);
+            }
+
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
             var report = new EquipmentDiagnosticsVerificationService().Verify(input);
             if (options.Command == "codebook-coverage")
@@ -66,6 +71,27 @@ internal static class Program
             Console.Error.WriteLine(FormatExpectedError(exception));
             return 1;
         }
+    }
+
+    private static int GenerateBetaReadiness(
+        string repoRoot,
+        EquipmentDiagnosticsVerificationOptions options)
+    {
+        var (branch, _) = BranchReadinessGitCollector.Collect(repoRoot, options.BaseRef);
+        var report = new EquipmentDiagnosticsBetaReadinessReportGenerator().Generate(
+            new EquipmentDiagnosticsBetaReadinessInput(
+                RepositoryRoot: repoRoot,
+                RepositoryBaseRef: options.BaseRef,
+                Branch: branch,
+                Head: BranchReadinessGitCollector.GetHead(repoRoot),
+                BranchReadinessReportPath: options.ReportPath));
+        var paths = BetaReadinessReportWriter.Write(repoRoot, options.OutputPath, options.MarkdownOutputPath, report);
+        Console.WriteLine($"Overall status: {report.OverallStatus}");
+        Console.WriteLine($"Blockers: {report.BlockerCount}");
+        Console.WriteLine($"Warnings: {report.WarningCount}");
+        Console.WriteLine($"Beta report: {Path.GetRelativePath(repoRoot, paths.JsonPath).Replace('\\', '/')}");
+        Console.WriteLine($"Beta summary: {Path.GetRelativePath(repoRoot, paths.MarkdownPath).Replace('\\', '/')}");
+        return report.BlockerCount == 0 ? 0 : 1;
     }
 
     private static string FormatExpectedError(Exception exception)
@@ -191,6 +217,7 @@ internal static class Program
         Console.WriteLine("  preview-staging-candidates");
         Console.WriteLine("  verify-branch");
         Console.WriteLine("  prepare-pr-body");
+        Console.WriteLine("  beta-readiness");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --repo-root <path>");
@@ -199,6 +226,7 @@ internal static class Program
         Console.WriteLine("  --output-directory <path>");
         Console.WriteLine("  --report <path>                    Branch readiness JSON report");
         Console.WriteLine("  --output <path>                    Generated PR body Markdown");
+        Console.WriteLine("  --markdown-output <path>           Generated beta readiness Markdown summary");
         Console.WriteLine("  --skip-command-checks              Skip restore/build/test (for focused development only)");
     }
 }

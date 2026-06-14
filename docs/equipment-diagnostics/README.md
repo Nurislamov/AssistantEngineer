@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-20A closed beta readiness
+
+ED-20A consolidates deterministic closed-beta readiness evidence without claiming production or public release. Run `.\scripts\equipment-diagnostics\prepare-beta-readiness-report.ps1 -BaseRef origin/master` or the integrated `.\scripts\dev\verify-and-prepare-pr.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics`. See [beta-readiness-report.md](beta-readiness-report.md), [closed-beta-operator-quickstart.md](closed-beta-operator-quickstart.md), and [closed-beta-release-checklist.md](closed-beta-release-checklist.md).
+
 ## ED-14A manual codebook
 
 The non-runtime [manual codebook](manual-codebook.md) inventories reviewed code occurrences from the local Gree manual corpus. It separates fault/protection references from status, debugging, query, setting, controller/tool, and applicability contexts. Codebook entries are not runtime diagnostic cases and are never promoted automatically.

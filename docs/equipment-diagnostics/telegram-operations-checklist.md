@@ -1,5 +1,7 @@
 # Telegram Operations Checklist
 
+ED-20A closed-beta preparation also requires the consolidated `closed-beta-release-checklist.md`. Keep Telegram transport and chat identifier discovery disabled by default.
+
 ## Access Policy
 
 - Keep `IsEnabled=false` until the public HTTPS endpoint, secrets, and access lists are reviewed.
