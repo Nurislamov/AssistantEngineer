@@ -1,6 +1,7 @@
 # Equipment Diagnostics Bot Field Acceptance Checklist
 
 Passing this checklist contributes to ED-20A closed-beta readiness, but does not establish production readiness or full vendor manual coverage.
+Before inviting Telegram beta operators, also complete `telegram-closed-beta-smoke-matrix.md`.
 
 ## ED-16B Purpose
 

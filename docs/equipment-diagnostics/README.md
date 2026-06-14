@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22B Telegram closed-beta release candidate docs
+
+Before inviting beta operators, review the [release candidate](telegram-closed-beta-release-candidate.md), give operators the [limitation card](telegram-closed-beta-operator-limitation-card.md), and complete the [manual smoke matrix](telegram-closed-beta-smoke-matrix.md).
+
 ## ED-22A Telegram closed-beta release evidence
 
 Use the deterministic [Telegram closed-beta release evidence runner](telegram-closed-beta-release-evidence.md) to collect local pre-activation evidence under ignored artifacts. It does not activate Telegram, deploy the product, or establish production/public release readiness.
