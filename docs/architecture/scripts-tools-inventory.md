@@ -40,6 +40,8 @@ They produce ignored local artifacts only and must never persist raw log input.
 
 ED-20A adds one thin EquipmentDiagnostics wrapper for deterministic closed-beta readiness reports under ignored artifacts.
 
+ED-21A adds committed goal-protocol governance templates under `docs/engineering-workflow/`. They are documentation, not scripts, tools, generated reports, or runtime automation, so inventory counts remain unchanged.
+
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
 ## Non-claims

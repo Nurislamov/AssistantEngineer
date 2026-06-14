@@ -1,5 +1,7 @@
 # Equipment Diagnostics
 
+Future ED stages should use the internal [AssistantEngineer Goal Protocol](../engineering-workflow/goal-protocol.md) for brownfield recon, explicit constraints, phased verification evidence, and final audit.
+
 ## ED-20A closed beta readiness
 
 ED-20A consolidates deterministic closed-beta readiness evidence without claiming production or public release. Run `.\scripts\equipment-diagnostics\prepare-beta-readiness-report.ps1 -BaseRef origin/master` or the integrated `.\scripts\dev\verify-and-prepare-pr.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics`. See [beta-readiness-report.md](beta-readiness-report.md), [closed-beta-operator-quickstart.md](closed-beta-operator-quickstart.md), and [closed-beta-release-checklist.md](closed-beta-release-checklist.md).

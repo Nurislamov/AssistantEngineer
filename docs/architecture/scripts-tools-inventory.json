@@ -1773,6 +1773,12 @@
                         "riskIfChanged":  "Workflow drift can hide broken deployment images or introduce unintended production deployment behavior."
                     }
                 ],
+    "documentationReferences":  [
+                                    "docs/engineering-workflow/goal-protocol.md",
+                                    "docs/engineering-workflow/goal-run-template.md",
+                                    "docs/engineering-workflow/phase-spec-template.md",
+                                    "docs/engineering-workflow/final-audit-template.md"
+                                ],
     "nonClaims":  [
                       "No release gate semantics change claim.",
                       "No calculation physics change claim.",

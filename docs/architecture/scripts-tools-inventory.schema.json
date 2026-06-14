@@ -6,6 +6,7 @@
     "lastReviewedDate",
     "stage",
     "entries",
+    "documentationReferences",
     "nonClaims"
   ],
   "entryRequiredFields": [
