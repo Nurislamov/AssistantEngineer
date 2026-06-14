@@ -6,6 +6,13 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
+[CollectionDefinition(Name, DisableParallelization = true)]
+public sealed class EquipmentDiagnosticsVerificationCliCollection
+{
+    public const string Name = "EquipmentDiagnostics verification CLI";
+}
+
+[Collection(EquipmentDiagnosticsVerificationCliCollection.Name)]
 public sealed class EquipmentDiagnosticsEvidenceRulesTests
 {
     [Fact]

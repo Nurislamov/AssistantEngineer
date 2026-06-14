@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Verification;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
+[Collection(EquipmentDiagnosticsVerificationCliCollection.Name)]
 public class EquipmentDiagnosticsGoalRunReportValidatorTests
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -102,7 +103,7 @@ public class EquipmentDiagnosticsGoalRunReportValidatorTests
     {
         var result = RunCli("valid-goal-run-report.json");
 
-        Assert.Equal(0, result.ExitCode);
+        Assert.True(result.ExitCode == 0, result.FailureDetails);
         Assert.Contains("PASS", result.Output, StringComparison.Ordinal);
         Assert.Contains("Blockers: 0", result.Output, StringComparison.Ordinal);
     }
@@ -112,7 +113,7 @@ public class EquipmentDiagnosticsGoalRunReportValidatorTests
     {
         var result = RunCli("invalid-goal-run-report.json");
 
-        Assert.NotEqual(0, result.ExitCode);
+        Assert.True(result.ExitCode != 0, result.FailureDetails);
         Assert.Contains("FAIL", result.Output, StringComparison.Ordinal);
         Assert.Contains("Blockers:", result.Output, StringComparison.Ordinal);
     }
@@ -148,17 +149,14 @@ public class EquipmentDiagnosticsGoalRunReportValidatorTests
             File.ReadAllText(FixturePath("valid-goal-run-report.json")),
             JsonOptions)!;
 
-    private static (int ExitCode, string Output) RunCli(string fixture)
+    private static (int ExitCode, string Output, string FailureDetails) RunCli(string fixture)
     {
-        var toolPath = Path.Combine(
+        var toolProject = Path.Combine(
             TestPaths.RepoRoot,
             "tools",
             "AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
-            "bin",
-            "Debug",
-            "net10.0",
-            "AssistantEngineer.Tools.EquipmentDiagnosticsVerification.dll");
-        Assert.True(File.Exists(toolPath), "Build the verification tool before running CLI contract tests.");
+            "AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj");
+        Assert.True(File.Exists(toolProject), $"Verification tool project was not found: {toolProject}");
 
         var startInfo = new ProcessStartInfo
         {
@@ -169,19 +167,34 @@ public class EquipmentDiagnosticsGoalRunReportValidatorTests
             UseShellExecute = false,
             CreateNoWindow = true
         };
-        startInfo.ArgumentList.Add(toolPath);
-        startInfo.ArgumentList.Add("goal-run-report");
-        startInfo.ArgumentList.Add("--repo-root");
-        startInfo.ArgumentList.Add(TestPaths.RepoRoot);
-        startInfo.ArgumentList.Add("--input");
-        startInfo.ArgumentList.Add(FixturePath(fixture));
+        foreach (var argument in new[]
+                 {
+                     "run",
+                     "--project",
+                     toolProject,
+                     "--no-restore",
+                     "--",
+                     "goal-run-report",
+                     "--repo-root",
+                     TestPaths.RepoRoot,
+                     "--input",
+                     FixturePath(fixture)
+                 })
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
 
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start goal-run validator CLI.");
         var output = process.StandardOutput.ReadToEnd();
         var error = process.StandardError.ReadToEnd();
         process.WaitForExit();
-        return (process.ExitCode, output + error);
+        var command = $"dotnet {string.Join(" ", startInfo.ArgumentList.Select(QuoteArgument))}";
+        var combinedOutput = output + error;
+        return (process.ExitCode, combinedOutput, $"Command: {command}{Environment.NewLine}{combinedOutput}");
     }
+
+    private static string QuoteArgument(string argument) =>
+        argument.Contains(' ') ? $"\"{argument}\"" : argument;
 
     private static string FixturePath(string name) =>
         Path.Combine(TestPaths.RepoRoot, "tests", "AssistantEngineer.Tests", "TestData", "EquipmentDiagnostics", name);
