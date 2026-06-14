@@ -1407,6 +1407,22 @@
                         "riskIfChanged":  "Readiness drift can hide closed-beta blockers or imply unsupported production readiness."
                     },
                     {
+                        "id":  "SCR-088",
+                        "path":  "scripts/equipment-diagnostics/prepare-telegram-closed-beta-release-evidence.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate an ignored deterministic Telegram closed-beta release evidence pack without activation or network access.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "dotnet CLI tests + prepare-beta-readiness-report.ps1 + AssistantEngineer.Tools.EquipmentDiagnosticsVerification goal-run-report",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep output under artifacts/verification and preserve secret-free non-activation semantics.",
+                        "proposedStage":  "ED-22A",
+                        "riskIfChanged":  "Runner drift can overstate release evidence, expose sensitive values, or accidentally activate external behavior."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
@@ -1779,7 +1795,8 @@
                                     "docs/engineering-workflow/phase-spec-template.md",
                                     "docs/engineering-workflow/final-audit-template.md",
                                     "docs/engineering-workflow/goal-run-report-validator.md",
-                                    "docs/engineering-workflow/goal-run-report.schema.json"
+                                    "docs/engineering-workflow/goal-run-report.schema.json",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-release-evidence.md"
                                 ],
     "nonClaims":  [
                       "No release gate semantics change claim.",

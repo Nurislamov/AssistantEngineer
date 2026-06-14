@@ -14,3 +14,5 @@ The command writes ignored local artifacts:
 The report uses repository files and disabled-by-default configuration only. It never requires or prints real secrets, a real domain, a VPS, Telegram network access, Docker, or external monitoring.
 
 Known limitations remain explicit: no production deploy, no public beta, no database or audit persistence, no external monitoring, no AI/RAG/vector search, and partial manual-backed coverage. The runtime catalog is the only source for final answers; manual-codebook, staging, and preview data are not final diagnosis.
+
+ED-22A can consume this ED-20A evidence through `prepare-telegram-closed-beta-release-evidence.ps1`; it does not change the readiness meaning or activate Telegram.

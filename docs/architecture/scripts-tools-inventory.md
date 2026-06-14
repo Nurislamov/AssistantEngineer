@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `87`
+- `PowerShell` scripts reviewed: `88`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `109`
+- Total reviewed entries: `110`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -43,6 +43,8 @@ ED-20A adds one thin EquipmentDiagnostics wrapper for deterministic closed-beta 
 ED-21A adds committed goal-protocol governance templates under `docs/engineering-workflow/`. They are documentation, not scripts, tools, generated reports, or runtime automation, so inventory counts remain unchanged.
 
 ED-21B extends the existing EquipmentDiagnostics verification tool with the deterministic `goal-run-report` command and adds its committed validator documentation/schema references.
+
+ED-22A adds one secret-free local runner for ignored Telegram closed-beta release evidence packs.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
