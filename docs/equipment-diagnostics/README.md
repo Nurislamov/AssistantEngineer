@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22C Telegram closed-beta deployment activation dry-run
+
+Use the deterministic [deployment activation dry-run](telegram-closed-beta-deployment-dry-run.md) as required pre-activation evidence. It validates committed deployment scaffolding and safe defaults without reading `deploy/.env`, requiring Docker, calling Telegram, or executing webhook operations.
+
 ## ED-22B Telegram closed-beta release candidate docs
 
 Before inviting beta operators, review the [release candidate](telegram-closed-beta-release-candidate.md), give operators the [limitation card](telegram-closed-beta-operator-limitation-card.md), and complete the [manual smoke matrix](telegram-closed-beta-smoke-matrix.md).

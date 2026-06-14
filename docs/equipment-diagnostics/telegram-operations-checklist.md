@@ -2,6 +2,7 @@
 
 ED-20A closed-beta preparation also requires the consolidated `closed-beta-release-checklist.md`. Keep Telegram transport and chat identifier discovery disabled by default.
 ED-22B additionally requires the reviewed release candidate, operator limitation card, and manual smoke matrix.
+ED-22C adds a secret-free deployment activation dry-run that must pass before any separately approved activation.
 
 ## Access Policy
 

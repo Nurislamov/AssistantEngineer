@@ -16,5 +16,6 @@ This checklist authorizes only a reviewed closed beta. It does not authorize pro
 - [ ] Partial manual-backed coverage and every other known limitation are communicated.
 - [ ] ED-22A Telegram closed-beta release evidence pack is generated and manually reviewed before activation.
 - [ ] ED-22B release candidate, operator limitation card, and smoke matrix are reviewed.
+- [ ] ED-22C deployment activation dry-run passes and its ignored generated evidence is manually reviewed.
 
 Before any later production release, add an approved hosting/domain plan, secret management, external monitoring, audit persistence, and a separate production security review.
