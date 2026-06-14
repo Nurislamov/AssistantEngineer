@@ -1357,6 +1357,39 @@
                         "riskIfChanged":  "Runner drift can diverge local deployment readiness checks from CI or accidentally introduce deployment behavior."
                     },
                     {
+                        "id":  "SCR-085",
+                        "path":  "scripts/operations/redact-log-file.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Offline deterministic sanitization of operational log text before incident review.",
+                        "invokedBy":  [
+                                          "scripts/operations/collect-sanitized-logs.ps1",
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep redaction rules aligned with OperationalSecretRedactor and never print raw input.",
+                        "proposedStage":  "ED-19C",
+                        "riskIfChanged":  "Redaction drift can expose secrets, chat IDs, or Telegram message bodies in incident artifacts."
+                    },
+                    {
+                        "id":  "SCR-086",
+                        "path":  "scripts/operations/collect-sanitized-logs.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Provider-neutral collection of recent Docker Compose logs into ignored sanitized incident artifacts.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "docker compose logs + scripts/operations/redact-log-file.ps1",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep raw logs in memory only and write exclusively sanitized output under artifacts/operations.",
+                        "proposedStage":  "ED-19C",
+                        "riskIfChanged":  "Collector drift can write raw log dumps or expose operational secrets."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

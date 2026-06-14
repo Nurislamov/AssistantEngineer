@@ -25,3 +25,6 @@ traffic readiness.
 ED-19B adds safe request correlation and structured application log scopes without an external log sink. Future
 work may add reviewed JSON console formatting, metrics export, alerting, and audit/persistence only after the
 hosting and database decisions.
+
+ED-19C adds operator incident runbooks and sanitized local log-review scripts. These workflows do not add external
+monitoring, durable incident storage, or an audit trail.

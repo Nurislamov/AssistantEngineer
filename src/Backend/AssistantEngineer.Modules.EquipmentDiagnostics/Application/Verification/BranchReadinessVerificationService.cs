@@ -38,6 +38,7 @@ public sealed class BranchReadinessVerificationService
         "tools/AssistantEngineer.Tools.BranchReadinessVerification/",
         "scripts/equipment-diagnostics/",
         "scripts/deployment/",
+        "scripts/operations/",
         "scripts/dev/",
         "deploy/",
         "docs/deployment/",
@@ -61,6 +62,13 @@ public sealed class BranchReadinessVerificationService
         "scripts/equipment-diagnostics/get-telegram-webhook-info.ps1",
         "scripts/equipment-diagnostics/delete-telegram-webhook.ps1",
         "docs/equipment-diagnostics/telegram-"
+    ];
+
+    private static readonly string[] AllowedOperationsPathPrefixes =
+    [
+        "docs/operations/",
+        "scripts/operations/",
+        "tests/AssistantEngineer.Tests/Operations/"
     ];
 
     private static readonly string[] AllowedExactPaths =
@@ -121,6 +129,7 @@ public sealed class BranchReadinessVerificationService
                     file.Path,
                     file.ScopeReason)))
             .Concat(ScanUnsafeWording(input.Files))
+            .Concat(ScanIncidentArtifactHygiene(input.Files))
             .OrderBy(issue => issue.Severity)
             .ThenBy(issue => issue.Path, StringComparer.Ordinal)
             .ThenBy(issue => issue.Code, StringComparer.Ordinal)
@@ -178,6 +187,14 @@ public sealed class BranchReadinessVerificationService
             return (
                 BranchReadinessScopeClassification.Allowed,
                 "Path is part of the narrowly allowed deterministic Telegram adapter skeleton.");
+        }
+
+        if (AllowedOperationsPathPrefixes.Any(prefix =>
+                path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+        {
+            return (
+                BranchReadinessScopeClassification.Allowed,
+                "Path is part of the narrowly allowed provider-neutral operations workflow.");
         }
 
         var forbidden = ForbiddenPathFragments.FirstOrDefault(fragment =>
@@ -239,6 +256,20 @@ public sealed class BranchReadinessVerificationService
 
         return issues;
     }
+
+    private static IReadOnlyList<BranchReadinessIssue> ScanIncidentArtifactHygiene(
+        IReadOnlyList<BranchReadinessFileInput> files) =>
+        files
+            .Select(file => NormalizePath(file.Path))
+            .Where(path =>
+                path.StartsWith("artifacts/operations/", StringComparison.OrdinalIgnoreCase) ||
+                path.EndsWith(".log", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(path => Error(
+                "CommittedIncidentArtifact",
+                path,
+                "Operational incident artifacts and log dumps must remain ignored and uncommitted."))
+            .ToArray();
 
     private static bool IsExplicitSafeContext(string path, string line)
     {

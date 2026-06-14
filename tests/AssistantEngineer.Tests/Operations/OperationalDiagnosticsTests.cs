@@ -59,6 +59,16 @@ public sealed class OperationalDiagnosticsTests
         Assert.Equal(message, OperationalSecretRedactor.Redact(message));
     }
 
+    [Theory]
+    [InlineData("AllowedChatIds=123,456", "AllowedChatIds=[REDACTED]")]
+    [InlineData("DeniedChatIds: 789", "DeniedChatIds:[REDACTED]")]
+    [InlineData("{\"chat_id\":123456}", "{\"chat_id\":\"[REDACTED]\"}")]
+    [InlineData("{\"text\":\"raw Telegram message\"}", "{\"text\":\"[REDACTED]\"}")]
+    public void RedactorMasksOperationalIncidentFields(string input, string expected)
+    {
+        Assert.Equal(expected, OperationalSecretRedactor.Redact(input));
+    }
+
     [Fact]
     public void OperationsDocumentationStatesObservabilityNonClaims()
     {

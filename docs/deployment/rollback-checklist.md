@@ -11,6 +11,7 @@ Use this checklist for a reviewed deployment rollback. Never commit secrets or r
 7. Run `smoke-production-stack.ps1` against the restored stack.
 8. Confirm frontend, API health, bot diagnostics, and expected Telegram-disabled state.
 9. Record the incident, deployed version, rollback command, and verification result outside Git secrets.
+10. Attach only sanitized log excerpts and correlation IDs; exclude chat IDs, Telegram message bodies, and secrets.
 
 There is no automated rollback controller, database restore workflow, or production audit log in the current
 scaffold.
