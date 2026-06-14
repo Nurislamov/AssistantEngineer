@@ -14,6 +14,11 @@ internal static class Program
         Converters = { new JsonStringEnumConverter() }
     };
 
+    private static readonly JsonSerializerOptions InputJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public static int Main(string[] args)
     {
         try
@@ -44,6 +49,11 @@ internal static class Program
                 return GenerateBetaReadiness(repoRoot, options);
             }
 
+            if (options.Command == "goal-run-report")
+            {
+                return ValidateGoalRunReport(repoRoot, options);
+            }
+
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
             var report = new EquipmentDiagnosticsVerificationService().Verify(input);
             if (options.Command == "codebook-coverage")
@@ -71,6 +81,36 @@ internal static class Program
             Console.Error.WriteLine(FormatExpectedError(exception));
             return 1;
         }
+    }
+
+    private static int ValidateGoalRunReport(
+        string repoRoot,
+        EquipmentDiagnosticsVerificationOptions options)
+    {
+        if (string.IsNullOrWhiteSpace(options.InputPath))
+        {
+            throw new InvalidOperationException("goal-run-report requires --input <path>.");
+        }
+
+        var inputPath = Path.GetFullPath(options.InputPath, repoRoot);
+        if (!File.Exists(inputPath))
+        {
+            throw new FileNotFoundException("Goal-run report input was not found.", inputPath);
+        }
+
+        var report = JsonSerializer.Deserialize<AssistantEngineerGoalRunReport>(
+            File.ReadAllText(inputPath),
+            InputJsonOptions) ?? throw new InvalidOperationException("Goal-run report JSON contains no report.");
+        var result = new AssistantEngineerGoalRunReportValidator().Validate(report);
+        Console.WriteLine(result.Status);
+        Console.WriteLine($"Blockers: {result.Blockers.Count}");
+        Console.WriteLine($"Warnings: {result.Warnings.Count}");
+        foreach (var blocker in result.Blockers)
+        {
+            Console.WriteLine($"Blocker: {blocker}");
+        }
+
+        return result.IsReady ? 0 : 1;
     }
 
     private static int GenerateBetaReadiness(
@@ -218,6 +258,7 @@ internal static class Program
         Console.WriteLine("  verify-branch");
         Console.WriteLine("  prepare-pr-body");
         Console.WriteLine("  beta-readiness");
+        Console.WriteLine("  goal-run-report");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --repo-root <path>");
@@ -227,6 +268,7 @@ internal static class Program
         Console.WriteLine("  --report <path>                    Branch readiness JSON report");
         Console.WriteLine("  --output <path>                    Generated PR body Markdown");
         Console.WriteLine("  --markdown-output <path>           Generated beta readiness Markdown summary");
+        Console.WriteLine("  --input <path>                     Goal-run report JSON input");
         Console.WriteLine("  --skip-command-checks              Skip restore/build/test (for focused development only)");
     }
 }

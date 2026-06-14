@@ -1632,7 +1632,7 @@
                         "path":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
                         "type":  "CSharpTool",
                         "category":  "ToolingCritical",
-                        "purpose":  "Deterministic EquipmentDiagnostics runtime catalog, staging intake, documentation example, and promotion-readiness verifier.",
+                        "purpose":  "Deterministic EquipmentDiagnostics catalog, staging, documentation, readiness, and goal-run report verifier.",
                         "invokedBy":  [
                                           "scripts/equipment-diagnostics/verify-equipment-diagnostics.ps1",
                                           "LocalManualOrCI"
@@ -1641,8 +1641,8 @@
                         "producesArtifacts":  false,
                         "safeToRemove":  false,
                         "recommendedAction":  "Keep verifier rules deterministic and preserve blocking exit-code semantics.",
-                        "proposedStage":  "ED-11A",
-                        "riskIfChanged":  "Verifier drift can admit duplicate, unsafe, weakly sourced, or promotion-ineligible diagnostic knowledge."
+                        "proposedStage":  "ED-21B",
+                        "riskIfChanged":  "Verifier drift can admit duplicate, unsafe, weakly sourced, promotion-ineligible diagnostic knowledge, or unsupported goal-run evidence."
                     },
                     {
                         "id":  "WF-001",
@@ -1777,7 +1777,9 @@
                                     "docs/engineering-workflow/goal-protocol.md",
                                     "docs/engineering-workflow/goal-run-template.md",
                                     "docs/engineering-workflow/phase-spec-template.md",
-                                    "docs/engineering-workflow/final-audit-template.md"
+                                    "docs/engineering-workflow/final-audit-template.md",
+                                    "docs/engineering-workflow/goal-run-report-validator.md",
+                                    "docs/engineering-workflow/goal-run-report.schema.json"
                                 ],
     "nonClaims":  [
                       "No release gate semantics change claim.",

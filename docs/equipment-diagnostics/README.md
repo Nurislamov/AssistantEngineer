@@ -1,6 +1,7 @@
 # Equipment Diagnostics
 
 Future ED stages should use the internal [AssistantEngineer Goal Protocol](../engineering-workflow/goal-protocol.md) for brownfield recon, explicit constraints, phased verification evidence, and final audit.
+Machine-readable run evidence can be validated with the [Goal Run Report Validator](../engineering-workflow/goal-run-report-validator.md).
 
 ## ED-20A closed beta readiness
 

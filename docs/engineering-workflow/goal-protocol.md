@@ -58,3 +58,5 @@ Committed protocol documents and templates live under `docs/engineering-workflow
 - Calculation physics, public calculation routes, and ISO52016 runtime behavior remain outside ED-21A.
 - `scripts/engineering-core/verify-engineering-core-v1.ps1` is protected and remains unchanged by goal-protocol work.
 - Evidence must never overstate verification, coverage, safety, or release readiness.
+
+Machine-readable goal-run reports can be checked with the [Goal Run Report Validator](goal-run-report-validator.md) and its committed [minimal schema](goal-run-report.schema.json).
