@@ -1455,6 +1455,22 @@
                         "riskIfChanged":  "Runner drift can expose activation values, invoke external behavior, or weaken closed-beta checklist evidence."
                     },
                     {
+                        "id":  "SCR-091",
+                        "path":  "scripts/equipment-diagnostics/prepare-telegram-closed-beta-final-go-no-go.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate ignored deterministic Telegram closed-beta final go/no-go evidence without activation, deployment, secrets, or network access.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "ED-22 evidence runners + branch readiness + focused dotnet tests",
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep output under artifacts/verification and preserve secret-free non-activation semantics.",
+                        "proposedStage":  "ED-22E",
+                        "riskIfChanged":  "Runner drift can invoke external behavior, hide blockers, or overstate closed-beta activation readiness."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
@@ -1834,7 +1850,9 @@
                                     "docs/equipment-diagnostics/telegram-closed-beta-smoke-matrix.md",
                                     "docs/equipment-diagnostics/telegram-closed-beta-deployment-dry-run.md",
                                     "docs/equipment-diagnostics/telegram-closed-beta-activation-runbook.md",
-                                    "docs/equipment-diagnostics/telegram-closed-beta-smoke-evidence-template.md"
+                                    "docs/equipment-diagnostics/telegram-closed-beta-smoke-evidence-template.md",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-final-go-no-go.md",
+                                    "docs/equipment-diagnostics/telegram-closed-beta-final-handoff-template.md"
                                 ],
     "nonClaims":  [
                       "No release gate semantics change claim.",

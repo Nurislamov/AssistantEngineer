@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22E Telegram closed-beta final go/no-go evidence
+
+Run the deterministic [final go/no-go evidence](telegram-closed-beta-final-go-no-go.md), then use the placeholder-only [final handoff template](telegram-closed-beta-final-handoff-template.md) before any separately approved manual activation. ED-22E performs no deployment, Telegram network call, or webhook operation.
+
 ## ED-22D Telegram closed-beta activation and smoke runbook
 
 Use the committed [activation runbook](telegram-closed-beta-activation-runbook.md), [smoke evidence template](telegram-closed-beta-smoke-evidence-template.md), and local activation-checklist generator before any separately approved manual closed-beta activation. ED-22D performs no activation, deployment, Telegram network call, or webhook operation.

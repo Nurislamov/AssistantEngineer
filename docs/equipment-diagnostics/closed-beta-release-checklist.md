@@ -18,5 +18,6 @@ This checklist authorizes only a reviewed closed beta. It does not authorize pro
 - [ ] ED-22B release candidate, operator limitation card, and smoke matrix are reviewed.
 - [ ] ED-22C deployment activation dry-run passes and its ignored generated evidence is manually reviewed.
 - [ ] ED-22D activation checklist passes; the activation runbook and smoke evidence template are reviewed.
+- [ ] ED-22E final go/no-go report has zero blockers, its decision and warnings are manually reviewed, and the final handoff remains placeholder-only.
 
 Before any later production release, add an approved hosting/domain plan, secret management, external monitoring, audit persistence, and a separate production security review.

@@ -11,6 +11,7 @@ Use this committed placeholder template for sanitized manual evidence. Closed be
 - Commit SHA: `<commit-sha>`
 - ED-22A evidence: `<sanitized-evidence-path>`
 - ED-22C evidence: `<sanitized-evidence-path>`
+- ED-22E final go/no-go and handoff evidence: `<sanitized-evidence-path>`
 - Reviewed endpoint placeholder: `https://bot.example.test`
 
 ## Activation Boundary
