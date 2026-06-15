@@ -75,4 +75,4 @@ The JSON report records generation time, base reference, branch, head, PASS/FAIL
 
 ## Relation To Earlier Evidence
 
-ED-22A collects deterministic release evidence and an ED-21B-compatible goal-run report. ED-22B defines the release-candidate review boundary, operator limitation card, and manual smoke matrix. ED-22C adds required pre-activation deployment-scaffold evidence without activating Telegram or replacing either earlier review.
+ED-22A collects deterministic release evidence and an ED-21B-compatible goal-run report. ED-22B defines the release-candidate review boundary, operator limitation card, and manual smoke matrix. ED-22C adds required pre-activation deployment-scaffold evidence without activating Telegram or replacing either earlier review. ED-22D adds the human activation runbook, sanitized smoke evidence template, and local activation checklist.

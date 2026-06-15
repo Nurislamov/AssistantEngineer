@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `89`
+- `PowerShell` scripts reviewed: `90`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `111`
+- Total reviewed entries: `112`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -49,6 +49,8 @@ ED-22A adds one secret-free local runner for ignored Telegram closed-beta releas
 ED-22B adds committed Telegram closed-beta release-candidate, operator-limitation, and smoke-matrix documentation. It changes no script/tool counts or runtime behavior.
 
 ED-22C adds one secret-free local deployment activation dry-run runner that produces ignored review evidence without Docker, Telegram network calls, webhook execution, or activation.
+
+ED-22D adds one secret-free local activation-checklist generator plus committed manual activation and sanitized smoke-evidence guidance. It performs no activation or network operation.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
