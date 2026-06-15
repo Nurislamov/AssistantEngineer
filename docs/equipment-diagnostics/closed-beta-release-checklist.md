@@ -19,5 +19,6 @@ This checklist authorizes only a reviewed closed beta. It does not authorize pro
 - [ ] ED-22C deployment activation dry-run passes and its ignored generated evidence is manually reviewed.
 - [ ] ED-22D activation checklist passes; the activation runbook and smoke evidence template are reviewed.
 - [ ] ED-22E final go/no-go report has zero blockers, its decision and warnings are manually reviewed, and the final handoff remains placeholder-only.
+- [ ] ED-22F release tag/handoff checklist passes; after merge into `master`, an authorized operator manually creates the reviewed annotated tag and archives evidence outside Git.
 
 Before any later production release, add an approved hosting/domain plan, secret management, external monitoring, audit persistence, and a separate production security review.

@@ -67,6 +67,8 @@ public sealed class BranchReadinessVerificationService
         "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramActivationRunbookTests.cs",
         "scripts/equipment-diagnostics/prepare-telegram-closed-beta-final-go-no-go.ps1",
         "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramFinalGoNoGoTests.cs",
+        "scripts/equipment-diagnostics/prepare-telegram-closed-beta-release-tag-handoff.ps1",
+        "tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramReleaseTagHandoffTests.cs",
         "docs/equipment-diagnostics/telegram-"
     ];
 

@@ -11,6 +11,7 @@ Use this placeholder-only handoff after ED-22E passes and before any real activa
 
 - ED-22E final go/no-go evidence: `<evidence-path>`
 - Prior release, dry-run, and checklist evidence: `<evidence-path>`
+- ED-22F release tag/handoff and release notes evidence: `<evidence-path>`
 
 ## Go/No-Go Decision
 
