@@ -6,7 +6,7 @@ This runbook defines the human-reviewed activation and smoke sequence for the Eq
 
 ## When To Use
 
-Use only after ED-22A release evidence, ED-22B release-candidate review, and ED-22C deployment dry-run evidence pass. Stop when a prerequisite, safety boundary, or access-policy review is incomplete.
+Use only after ED-22A release evidence, ED-22B release-candidate review, ED-22C deployment dry-run evidence, ED-22D activation-checklist evidence, and ED-22E final go/no-go evidence pass. Stop when a prerequisite, safety boundary, or access-policy review is incomplete.
 
 ## Prerequisites
 

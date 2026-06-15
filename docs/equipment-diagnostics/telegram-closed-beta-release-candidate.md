@@ -8,7 +8,7 @@ This document defines the reviewed release-candidate boundary before inviting Te
 
 - Existing deterministic EquipmentDiagnostics bot flow and Telegram webhook transport.
 - Existing access policy, safety/provenance boundaries, health/readiness checks, sanitized logging, and rollback scripts.
-- ED-20A beta readiness, ED-21B goal-run validation, ED-22A release evidence, ED-22C deployment activation dry-run, ED-22D activation checklist/runbook, operator limitation card, and manual smoke matrix.
+- ED-20A beta readiness, ED-21B goal-run validation, ED-22A release evidence, ED-22C deployment activation dry-run, ED-22D activation checklist/runbook, ED-22E final go/no-go evidence and handoff, operator limitation card, and manual smoke matrix.
 
 ## Out Of Scope
 
@@ -26,6 +26,8 @@ Generate locally and do not commit:
 - `artifacts/verification/equipment-diagnostics/telegram-deployment-dry-run/deployment-dry-run-report.json`
 - `artifacts/verification/equipment-diagnostics/telegram-activation-checklist/activation-checklist-summary.md`
 - `artifacts/verification/equipment-diagnostics/telegram-activation-checklist/activation-checklist-report.json`
+- `artifacts/verification/equipment-diagnostics/telegram-final-go-no-go/final-go-no-go-summary.md`
+- `artifacts/verification/equipment-diagnostics/telegram-final-go-no-go/final-go-no-go-report.json`
 
 ## Required Verification Before Activation
 
@@ -36,6 +38,7 @@ Generate locally and do not commit:
 - `prepare-telegram-closed-beta-release-evidence.ps1`
 - `prepare-telegram-closed-beta-deployment-dry-run.ps1 -SkipDockerComposeConfig`
 - `prepare-telegram-closed-beta-activation-checklist.ps1`
+- `prepare-telegram-closed-beta-final-go-no-go.ps1`
 - ED-20A beta readiness report
 - ED-21B `goal-run-report` validator
 - Manual smoke matrix review
@@ -58,6 +61,7 @@ Generate locally and do not commit:
 - Run `setWebhook` and `getWebhookInfo` during activation, not ED-22B.
 - Review ED-22C deployment dry-run evidence before any separately approved activation; ED-22C does not execute webhook operations.
 - Review the ED-22D activation runbook and use its smoke evidence template; ED-22D does not execute webhook operations.
+- Review the ED-22E final decision and complete the placeholder-only final handoff; ED-22E does not execute webhook operations.
 
 ## Rollback
 
