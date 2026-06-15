@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22D Telegram closed-beta activation and smoke runbook
+
+Use the committed [activation runbook](telegram-closed-beta-activation-runbook.md), [smoke evidence template](telegram-closed-beta-smoke-evidence-template.md), and local activation-checklist generator before any separately approved manual closed-beta activation. ED-22D performs no activation, deployment, Telegram network call, or webhook operation.
+
 ## ED-22C Telegram closed-beta deployment activation dry-run
 
 Use the deterministic [deployment activation dry-run](telegram-closed-beta-deployment-dry-run.md) as required pre-activation evidence. It validates committed deployment scaffolding and safe defaults without reading `deploy/.env`, requiring Docker, calling Telegram, or executing webhook operations.
