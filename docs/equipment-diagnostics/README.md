@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-22F Telegram closed-beta release tag and handoff
+
+Use the committed [release tag and handoff procedure](telegram-closed-beta-release-tag-and-handoff.md), placeholder-only [release notes template](telegram-closed-beta-release-notes-template.md), and local checklist generator after ED-22E review. ED-22F does not create or push a tag automatically and does not activate Telegram.
+
 ## ED-22E Telegram closed-beta final go/no-go evidence
 
 Run the deterministic [final go/no-go evidence](telegram-closed-beta-final-go-no-go.md), then use the placeholder-only [final handoff template](telegram-closed-beta-final-handoff-template.md) before any separately approved manual activation. ED-22E performs no deployment, Telegram network call, or webhook operation.

@@ -93,7 +93,7 @@ Generated artifacts, log dumps, PDFs, and manual files must not be committed.
 
 ## Transition To Real Activation
 
-A passing report permits only ED-22F release tag/handoff or manual activation planning. Real activation remains a separate, explicitly approved human operation following `telegram-closed-beta-activation-runbook.md`.
+A passing report permits only the committed ED-22F `telegram-closed-beta-release-tag-and-handoff.md` procedure or manual activation planning. ED-22F creates no tag automatically. Real activation remains a separate, explicitly approved human operation following `telegram-closed-beta-activation-runbook.md`.
 
 ## Rollback Readiness Expectations
 

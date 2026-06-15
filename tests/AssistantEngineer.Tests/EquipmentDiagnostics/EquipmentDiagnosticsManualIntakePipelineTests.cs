@@ -387,6 +387,8 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     [InlineData("tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramActivationRunbookTests.cs")]
     [InlineData("scripts/equipment-diagnostics/prepare-telegram-closed-beta-final-go-no-go.ps1")]
     [InlineData("tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramFinalGoNoGoTests.cs")]
+    [InlineData("scripts/equipment-diagnostics/prepare-telegram-closed-beta-release-tag-handoff.ps1")]
+    [InlineData("tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsTelegramReleaseTagHandoffTests.cs")]
     [InlineData("docs/equipment-diagnostics/telegram-adapter.md")]
     public void BranchReadinessNarrowlyAllowsTelegramAdapterSkeletonPaths(string path)
     {

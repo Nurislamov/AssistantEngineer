@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `91`
+- `PowerShell` scripts reviewed: `92`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `113`
+- Total reviewed entries: `114`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -53,6 +53,8 @@ ED-22C adds one secret-free local deployment activation dry-run runner that prod
 ED-22D adds one secret-free local activation-checklist generator plus committed manual activation and sanitized smoke-evidence guidance. It performs no activation or network operation.
 
 ED-22E adds one secret-free local final go/no-go evidence generator plus committed decision and placeholder-only handoff guidance. It performs no activation, deployment, or network operation.
+
+ED-22F adds one secret-free local release tag/handoff checklist generator plus committed manual annotated-tag and placeholder-only release-notes guidance. It creates and pushes no tag and performs no activation or network operation.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 

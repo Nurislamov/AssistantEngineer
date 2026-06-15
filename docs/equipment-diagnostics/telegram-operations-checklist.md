@@ -5,6 +5,7 @@ ED-22B additionally requires the reviewed release candidate, operator limitation
 ED-22C adds a secret-free deployment activation dry-run that must pass before any separately approved activation.
 ED-22D adds the reviewed manual activation runbook, sanitized smoke evidence template, and local activation checklist generator.
 ED-22E adds the final deterministic go/no-go evidence and placeholder-only handoff before any separately approved manual activation.
+ED-22F adds the committed manual annotated-tag and release-handoff procedure; its local checklist never creates or pushes a tag.
 
 ## Access Policy
 

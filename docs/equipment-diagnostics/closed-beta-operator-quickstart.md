@@ -4,7 +4,7 @@ This quickstart is for a controlled EquipmentDiagnostics closed beta, not produc
 
 1. Run `.\scripts\dev\verify-and-prepare-pr.ps1 -BaseRef origin/master -Scope EquipmentDiagnostics`.
 2. Review the branch readiness report, PR body, beta report, and beta summary under ignored `artifacts/verification/`.
-3. Run the ED-22C deployment activation dry-run, ED-22D activation checklist, and ED-22E final go/no-go evidence, then review the activation runbook and final handoff before deterministic bot scenario smoke tests.
+3. Run the ED-22C deployment activation dry-run, ED-22D activation checklist, ED-22E final go/no-go evidence, and ED-22F release tag/handoff checklist, then review the activation runbook and handoff before deterministic bot scenario smoke tests.
 4. Choose a VPS and domain later. Create the BotFather credential last: no real secrets in Git.
 5. Generate a webhook secret, configure `AllowedChatIds`, retain the `DeniedChatIds` policy, and verify access before enabling transport.
 6. Run `setWebhook` and `getWebhookInfo`, then smoke-test the closed beta.
