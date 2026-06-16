@@ -6,4 +6,8 @@ public interface IEquipmentDiagnosticTelegramWebhookHandler
         TelegramWebhookUpdateDto update,
         string? suppliedSecret,
         CancellationToken cancellationToken = default);
+
+    Task<EquipmentDiagnosticTelegramWebhookResult> HandleTrustedAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken = default);
 }

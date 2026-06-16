@@ -12,7 +12,9 @@
 - Run `validate-deployment-scaffold.ps1 -RunDockerComposeConfig` when Docker Compose is available.
 - Confirm the provider-neutral CI deployment dry-run workflow passed; it validates and builds but does not deploy.
 - Configure Telegram secrets only through the deployment secret/environment mechanism.
-- Keep Telegram `IsEnabled=false` until HTTPS, secrets, and access policy are ready.
+- Keep Telegram `IsEnabled=false` until secrets and access policy are ready.
+- For polling production mode, set `TELEGRAM_INBOUND_MODE=Polling`, `TELEGRAM_POLLING_ENABLED=true`, and
+  `TELEGRAM_DELETE_WEBHOOK_ON_STARTUP=true`.
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.
 - Configure `AllowedChatIds`; review `DeniedChatIds` and deny-wins-over-allow behavior.
 
@@ -21,8 +23,10 @@
 - Build and start the stack with the deployment scripts.
 - Run `smoke-production-stack.ps1`.
 - Confirm frontend, `/health`, and the deterministic bot endpoint are reachable.
-- Confirm the Telegram webhook is disabled until explicitly approved.
-- When Telegram is enabled later, run `set-telegram-webhook.ps1` and `get-telegram-webhook-info.ps1`.
+- Confirm Telegram delivery is disabled until explicitly approved.
+- For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
+  webhook URL should be empty.
+- For webhook fallback, run `set-telegram-webhook.ps1` and `get-telegram-webhook-info.ps1`.
 - Use `delete-telegram-webhook.ps1` during disablement or incident response.
 - Record the previous image tag/digest and reviewed rollback command before activation.
 

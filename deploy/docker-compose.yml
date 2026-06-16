@@ -12,6 +12,12 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: http://+:8080
       AssistantEngineer__EquipmentDiagnostics__Telegram__IsEnabled: ${TELEGRAM_IS_ENABLED:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__InboundMode: ${TELEGRAM_INBOUND_MODE:-Webhook}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__DeleteWebhookOnStartup: ${TELEGRAM_DELETE_WEBHOOK_ON_STARTUP:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Enabled: ${TELEGRAM_POLLING_ENABLED:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__TimeoutSeconds: ${TELEGRAM_POLLING_TIMEOUT_SECONDS:-50}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Limit: ${TELEGRAM_POLLING_LIMIT:-25}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSeconds: ${TELEGRAM_POLLING_DELAY_AFTER_ERROR_SECONDS:-10}
       AssistantEngineer__EquipmentDiagnostics__Telegram__EnableChatIdDiscovery: ${TELEGRAM_ENABLE_CHAT_ID_DISCOVERY:-false}
     expose:
       - "8080"

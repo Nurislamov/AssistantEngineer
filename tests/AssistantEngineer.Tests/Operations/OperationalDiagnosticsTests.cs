@@ -22,6 +22,8 @@ public sealed class OperationalDiagnosticsTests
         Assert.True(snapshot.EquipmentDiagnostics.BotEndpointAvailable);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramWebhookEnabled);
         Assert.True(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
         Assert.True(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
         Assert.True(snapshot.CorrelationEnabled);
@@ -31,6 +33,30 @@ public sealed class OperationalDiagnosticsTests
         Assert.DoesNotContain("123456789", serialized, StringComparison.Ordinal);
         Assert.DoesNotContain("artifacts/verification", serialized, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("manual-codebook", serialized, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void SnapshotSeparatesPollingConfigurationFromWebhookSecret()
+    {
+        using var services = CreateServices(new EquipmentDiagnosticTelegramWebhookOptions
+        {
+            IsEnabled = true,
+            InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling,
+            Polling = new EquipmentDiagnosticTelegramPollingOptions { Enabled = true },
+            BotToken = "test-token-value",
+            WebhookSecret = null,
+            AllowedChatIds = [123456789]
+        });
+        var diagnostics = services.GetRequiredService<IOperationalDiagnosticsService>();
+
+        var snapshot = diagnostics.GetSnapshot();
+        var serialized = System.Text.Json.JsonSerializer.Serialize(snapshot);
+
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
+        Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
+        Assert.DoesNotContain("123456789", serialized, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -84,14 +110,14 @@ public sealed class OperationalDiagnosticsTests
         Assert.Contains("public diagnostics endpoint", docs, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static ServiceProvider CreateServices()
+    private static ServiceProvider CreateServices(EquipmentDiagnosticTelegramWebhookOptions? telegramOptions = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IHostEnvironment>(new TestHostEnvironment());
         services.AddEquipmentDiagnosticsModule();
         services.RemoveAll<EquipmentDiagnosticTelegramWebhookOptions>();
-        services.AddSingleton(new EquipmentDiagnosticTelegramWebhookOptions
+        services.AddSingleton(telegramOptions ?? new EquipmentDiagnosticTelegramWebhookOptions
         {
             IsEnabled = false,
             BotToken = "test-token-value",

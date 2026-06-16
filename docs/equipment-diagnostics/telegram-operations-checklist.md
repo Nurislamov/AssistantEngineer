@@ -10,6 +10,8 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 ## Access Policy
 
 - Keep `IsEnabled=false` until the public HTTPS endpoint, secrets, and access lists are reviewed.
+- Use `InboundMode=Polling` and `Polling__Enabled=true` when production webhook delivery cannot reach the API.
+- Keep webhook delivery as an optional fallback only; do not run webhook and polling at the same time.
 - Configure `AllowedChatIds` through environment configuration.
 - Use `DeniedChatIds` for emergency or explicit blocks. Deny wins over allow.
 - Username allow/deny rules are optional; chat ID rules are preferred.
@@ -28,15 +30,18 @@ Discovery is disabled by default. Its response never includes the bot token, web
 
 ## Production Readiness
 
-- Domain and public HTTPS endpoint are ready.
-- Telegram-supported webhook port is used: `443`, `80`, `88`, or `8443`.
-- `BotToken` and `WebhookSecret` exist only in environment/secret-store configuration.
+- `BotToken` exists only in environment/secret-store configuration.
+- `WebhookSecret` exists only when webhook fallback is enabled.
 - No real token or webhook secret is present in `appsettings`, source control, or generated artifacts.
 - `IsEnabled=true` only in the reviewed production deployment.
+- Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
 - `AllowedChatIds` is non-empty and `DeniedChatIds` is reviewed.
 - `EnableChatIdDiscovery=false` after setup.
 - Telegram webhook and long polling are not used together.
-- Run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
+- Run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`.
+- Confirm `getWebhookInfo` shows no webhook URL.
+- Confirm `docker logs` for the API show `Telegram polling started`.
+- Send `/start` and confirm polling/update logs appear without token, secret, chat ID, username, or message text.
 - Send a deterministic smoke message and verify the expected reply.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
@@ -50,5 +55,12 @@ Discovery is disabled by default. Its response never includes the bot token, web
 
 - No audit log.
 - No admin UI for allow/deny lists.
-- No database persistence.
+- Polling offset persistence is file-based unless deployment mounts a durable volume or overrides the path.
 - No endpoint-specific rate limiting beyond the broader API setup.
+
+## Optional Webhook Fallback
+
+- Domain and public HTTPS endpoint are ready.
+- Telegram-supported webhook port is used: `443`, `80`, `88`, or `8443`.
+- `WebhookSecret` exists only in environment/secret-store configuration.
+- Run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.

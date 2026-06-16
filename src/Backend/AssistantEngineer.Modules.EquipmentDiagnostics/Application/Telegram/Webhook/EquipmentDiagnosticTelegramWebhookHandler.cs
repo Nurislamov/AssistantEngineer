@@ -52,6 +52,27 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             return security;
         }
 
+        return await ProcessAcceptedUpdateAsync(update, cancellationToken);
+    }
+
+    public async Task<EquipmentDiagnosticTelegramWebhookResult> HandleTrustedAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.IsEnabled)
+        {
+            _counters.RecordIgnored();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Disabled, "Telegram transport is disabled.");
+        }
+
+        _counters.RecordReceived();
+        return await ProcessAcceptedUpdateAsync(update, cancellationToken);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramWebhookResult> ProcessAcceptedUpdateAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken)
+    {
         if (update.Message?.Chat is null || string.IsNullOrWhiteSpace(update.Message.Text))
         {
             _counters.RecordInvalidUpdate();

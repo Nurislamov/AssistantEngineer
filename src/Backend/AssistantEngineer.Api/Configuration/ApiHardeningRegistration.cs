@@ -345,14 +345,23 @@ internal static class ApiHardeningRegistration
                 return Task.FromResult(HealthCheckResult.Unhealthy("Telegram chat ID discovery must be disabled for readiness."));
             }
 
-            if (snapshot.EquipmentDiagnostics.TelegramWebhookEnabled &&
+            if (snapshot.EquipmentDiagnostics.TelegramPollingEnabled &&
+                !snapshot.EquipmentDiagnostics.TelegramPollingConfigured)
+            {
+                return Task.FromResult(HealthCheckResult.Unhealthy("Enabled Telegram polling configuration is incomplete."));
+            }
+
+            if (!snapshot.EquipmentDiagnostics.TelegramPollingEnabled &&
+                snapshot.EquipmentDiagnostics.TelegramWebhookEnabled &&
                 !snapshot.EquipmentDiagnostics.TelegramWebhookConfigured)
             {
                 return Task.FromResult(HealthCheckResult.Unhealthy("Enabled Telegram webhook configuration is incomplete."));
             }
 
             return Task.FromResult(HealthCheckResult.Healthy(
-                snapshot.EquipmentDiagnostics.TelegramWebhookEnabled
+                snapshot.EquipmentDiagnostics.TelegramPollingEnabled
+                    ? "Operational diagnostics and enabled Telegram polling configuration are ready."
+                    : snapshot.EquipmentDiagnostics.TelegramWebhookEnabled
                     ? "Operational diagnostics and enabled Telegram webhook configuration are ready."
                     : "Operational diagnostics are ready; Telegram webhook transport is disabled."));
         }

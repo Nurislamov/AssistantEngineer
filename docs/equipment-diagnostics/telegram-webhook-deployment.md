@@ -1,16 +1,20 @@
-# Equipment Diagnostics Telegram Webhook Deployment
+# Equipment Diagnostics Telegram Delivery Deployment
 
 ## ED-17B Scope
 
-ED-17B adds one disabled-by-default inbound webhook transport:
+ED-17B added one disabled-by-default inbound webhook transport:
 
 ```http
 POST /api/v1/equipment-diagnostics/telegram/webhook
 ```
 
 The controller validates the Telegram secret header, delegates to the deterministic Telegram adapter, and sends
-reply text through an outbound `HttpClient` abstraction. It does not diagnose, read knowledge files, or add a
-long-polling service.
+reply text through an outbound `HttpClient` abstraction. The webhook endpoint remains available as an optional
+fallback mode.
+
+Production deployments that cannot receive Telegram inbound HTTPS reliably should use polling delivery through
+Telegram Bot API `getUpdates`. Polling preserves the same deterministic Telegram adapter and only replaces inbound
+transport.
 
 ## Required Secret Configuration
 
@@ -19,24 +23,46 @@ For deployment, use the platform secret store or environment configuration:
 
 ```text
 AssistantEngineer__EquipmentDiagnostics__Telegram__IsEnabled=true
+AssistantEngineer__EquipmentDiagnostics__Telegram__InboundMode=Polling
+AssistantEngineer__EquipmentDiagnostics__Telegram__DeleteWebhookOnStartup=true
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Enabled=true
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__TimeoutSeconds=50
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Limit=25
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSeconds=10
 AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=<secret>
-AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret=<secret>
 AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0=<blocked-chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__EnableChatIdDiscovery=false
 ```
 
-The webhook secret must contain 1-256 letters, digits, underscores, or hyphens. When enabled, a missing or invalid
-configured secret fails closed. The inbound request must provide the same value in
+For webhook fallback mode, also configure:
+
+```text
+AssistantEngineer__EquipmentDiagnostics__Telegram__InboundMode=Webhook
+AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret=<secret>
+```
+
+The webhook secret must contain 1-256 letters, digits, underscores, or hyphens. When webhook mode is enabled, a
+missing or invalid configured secret fails closed. The inbound request must provide the same value in
 `X-Telegram-Bot-Api-Secret-Token`.
 
 ## Configure Telegram
 
 The public webhook URL must use HTTPS. Telegram webhook delivery and `getUpdates` long polling are mutually
-exclusive operational modes; this project implements webhook transport only. Telegram supports webhook ports
-`443`, `80`, `88`, and `8443`.
+exclusive operational modes. For polling production mode, delete the Telegram webhook before or during startup:
 
-Dry run:
+```powershell
+.\scripts\equipment-diagnostics\delete-telegram-webhook.ps1 -DropPendingUpdates
+.\scripts\equipment-diagnostics\get-telegram-webhook-info.ps1
+```
+
+`getWebhookInfo` should show an empty or not configured webhook URL after deleteWebhook. The API container logs
+should contain `Telegram polling started`. After sending `/start` in Telegram, logs should contain safe polling
+update entries with update id and chat type, without token, webhook secret, message text, chat id, or username.
+
+Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
+
+Webhook dry run:
 
 ```powershell
 .\scripts\equipment-diagnostics\set-telegram-webhook.ps1 `
@@ -46,8 +72,8 @@ Dry run:
   -WhatIf
 ```
 
-Remove `-WhatIf` only during an approved deployment. The script prints the sanitized webhook URL and never prints
-the bot token.
+Remove `-WhatIf` only during an approved webhook fallback deployment. The script prints the sanitized webhook URL
+and never prints the bot token.
 
 Inspect or delete the configured webhook without printing the bot token:
 
@@ -62,22 +88,25 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 
 ## Production Checklist
 
-- Configure HTTPS and the exact public webhook URL.
-- Store bot token and webhook secret in the deployment secret store.
+- Set `InboundMode=Polling` and `Polling__Enabled=true` for production polling mode.
+- Store bot token in the deployment secret store.
+- Store webhook secret only when webhook fallback is enabled.
 - Configure allowed chat IDs and/or usernames.
 - Review denied chat IDs; deny wins over allow.
 - Keep chat ID discovery disabled except during initial access setup.
 - Keep transport disabled until configuration review is complete.
+- Delete the Telegram webhook before polling mode and verify `getWebhookInfo` has no URL.
+- Verify API logs contain `Telegram polling started`.
 - Confirm global API rate-limit behavior and monitoring.
 - Run webhook integration tests with fake outbound transport.
 - Review Telegram token rotation and incident response.
 
 ## Known Limitations
 
-- no database, audit log, message queue, or retry persistence;
+- polling offset persistence is a local operational file by default;
+- no database, audit log, or message queue;
 - no admin UI for allowed chats;
 - no endpoint-specific rate limiter beyond the broader API setup;
-- no long polling;
 - no AI, RAG, vector search, or manual-PDF access.
 
 ## Provider-Neutral Deployment Scaffold
@@ -92,3 +121,5 @@ chat ID discovery disabled after setup, and never commit secrets.
 
 ED-19A adds in-memory webhook outcome counters and readiness validation. Counters expose no chat IDs, usernames,
 message bodies, bot token, or webhook secret and reset whenever the process restarts.
+
+Polling mode uses the same counters because it calls the same Telegram update handler as the webhook endpoint.

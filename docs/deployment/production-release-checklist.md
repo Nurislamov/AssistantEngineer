@@ -18,7 +18,7 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 ## Configuration
 
 - Copy `deploy/.env.example` to ignored `deploy/.env`; never commit secrets to Git.
-- Keep Telegram webhook transport and chat ID discovery disabled during initial stack verification.
+- Keep Telegram transport and chat ID discovery disabled during initial stack verification.
 - Run `.\scripts\deployment\validate-production-env.ps1`.
 - Run `.\scripts\deployment\validate-deployment-scaffold.ps1`.
 - When Docker is available, run the scaffold validator with `-RunDockerComposeConfig`.
@@ -36,12 +36,15 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 ## Final Telegram Activation
 
 - Create the BotFather token only at the final approved activation step and store it outside Git.
-- Generate a new webhook secret using the documented character and length rules.
+- Use polling mode for providers where Telegram inbound HTTPS traffic times out.
+- Generate a new webhook secret using the documented character and length rules only when webhook fallback is used.
 - Configure a non-empty `AllowedChatIds` list.
 - Temporarily enable chat ID discovery only when required to identify an approved chat.
 - Disable chat ID discovery immediately after the allowlist is configured.
-- Explicitly enable the webhook transport only after all preceding checks pass.
-- Run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
+- Explicitly enable the reviewed Telegram transport only after all preceding checks pass.
+- For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
+  verify no webhook URL is configured and API logs show `Telegram polling started`.
+- For webhook fallback, run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
 - Send one deterministic Telegram smoke message and verify the bounded response.
 
 ## Closeout

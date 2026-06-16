@@ -21,5 +21,6 @@ example.com {
 #     reverse_proxy assistantengineer-api:8080
 # }
 #
-# The Telegram webhook remains the existing API route:
+# Optional Telegram webhook fallback remains the existing API route:
 # https://example.com/api/v1/equipment-diagnostics/telegram/webhook
+# Production polling mode does not require Telegram inbound traffic through Caddy.

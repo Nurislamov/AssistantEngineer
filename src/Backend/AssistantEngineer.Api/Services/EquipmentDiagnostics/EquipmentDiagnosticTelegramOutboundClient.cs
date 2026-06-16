@@ -69,16 +69,24 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
             });
             _logger.LogInformation("Sending Telegram response");
             using var response = await _httpClient.SendAsync(request, cancellationToken);
-            return response.IsSuccessStatusCode
-                ? new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram message sent.")
-                : Failed();
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram message sent.");
+            }
+
+            _logger.LogWarning("Telegram outbound send failed with non-success status code.");
+            return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
+            _logger.LogWarning("Telegram outbound send timed out.");
             return Failed();
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException exception)
         {
+            _logger.LogWarning(
+                "Telegram outbound send failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
             return Failed();
         }
     }

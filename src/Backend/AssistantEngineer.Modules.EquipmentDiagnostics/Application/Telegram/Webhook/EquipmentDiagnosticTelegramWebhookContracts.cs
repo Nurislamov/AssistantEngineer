@@ -5,6 +5,8 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.We
 public sealed record EquipmentDiagnosticTelegramWebhookOptions
 {
     public bool IsEnabled { get; init; }
+    public EquipmentDiagnosticTelegramInboundMode InboundMode { get; init; } = EquipmentDiagnosticTelegramInboundMode.Webhook;
+    public bool DeleteWebhookOnStartup { get; init; }
     public string? WebhookSecret { get; init; }
     public string? BotToken { get; init; }
     public IReadOnlyCollection<long> AllowedChatIds { get; init; } = [];
@@ -21,6 +23,27 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public string TelegramApiBaseUrl { get; init; } = "https://api.telegram.org";
     public bool DropPendingUpdatesOnSetWebhook { get; init; }
     public IReadOnlyCollection<string> AllowedUpdates { get; init; } = ["message"];
+    public EquipmentDiagnosticTelegramPollingOptions Polling { get; init; } = new();
+
+    public bool IsPollingDeliveryEnabled() =>
+        IsEnabled &&
+        !string.IsNullOrWhiteSpace(BotToken) &&
+        (InboundMode == EquipmentDiagnosticTelegramInboundMode.Polling || Polling.Enabled);
+}
+
+public enum EquipmentDiagnosticTelegramInboundMode
+{
+    Webhook,
+    Polling
+}
+
+public sealed record EquipmentDiagnosticTelegramPollingOptions
+{
+    public bool Enabled { get; init; }
+    public int TimeoutSeconds { get; init; } = 50;
+    public int Limit { get; init; } = 25;
+    public int DelayAfterErrorSeconds { get; init; } = 10;
+    public string OffsetStoreFilePath { get; init; } = "artifacts/operations/equipment-diagnostics-telegram-offset.txt";
 }
 
 public sealed record TelegramWebhookUpdateDto(
@@ -36,7 +59,8 @@ public sealed record TelegramWebhookMessageDto(
 
 public sealed record TelegramWebhookChatDto(
     [property: JsonPropertyName("id")] long Id,
-    [property: JsonPropertyName("username")] string? Username);
+    [property: JsonPropertyName("username")] string? Username,
+    [property: JsonPropertyName("type")] string? Type = null);
 
 public sealed record TelegramWebhookUserDto(
     [property: JsonPropertyName("id")] long Id,
@@ -58,5 +82,9 @@ public sealed record EquipmentDiagnosticTelegramWebhookResult(
     string Message);
 
 public sealed record EquipmentDiagnosticTelegramOutboundResult(
+    bool Succeeded,
+    string Message);
+
+public sealed record EquipmentDiagnosticTelegramDeleteWebhookResult(
     bool Succeeded,
     string Message);

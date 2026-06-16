@@ -6,10 +6,12 @@ ED-19A aligns the existing anonymous operational endpoints with deployment smoke
 
 - `GET /health` confirms the API process is alive.
 - `GET /ready` confirms registered readiness checks pass, the EquipmentDiagnostics bot facade resolves, and
-  Telegram webhook configuration is safe.
+  the selected Telegram inbound transport configuration is safe.
 
-Telegram being disabled is a healthy default. When Telegram is enabled, readiness requires a valid webhook secret,
-configured bot token, non-empty allowed chat IDs, and chat ID discovery disabled.
+Telegram being disabled is a healthy default. When Telegram webhook mode is enabled, readiness requires a valid
+webhook secret, configured bot token, non-empty allowed chat IDs, and chat ID discovery disabled. When Telegram
+polling mode is enabled, readiness requires a configured bot token, non-empty allowed chat IDs, and chat ID
+discovery disabled.
 
 Health responses remain compact and do not expose configuration values, internal paths, exception stacks, manual
 or staging artifacts, chat IDs, message bodies, bot tokens, or webhook secrets. Readiness proves only that current

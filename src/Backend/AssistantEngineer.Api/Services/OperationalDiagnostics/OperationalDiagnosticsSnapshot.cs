@@ -14,6 +14,8 @@ public sealed record EquipmentDiagnosticsOperationalSnapshot(
     bool BotEndpointAvailable,
     bool TelegramWebhookConfigured,
     bool TelegramWebhookEnabled,
+    bool TelegramPollingConfigured,
+    bool TelegramPollingEnabled,
     bool ChatIdDiscoveryEnabled,
     bool AllowedChatIdsConfigured,
     bool DeniedChatIdsConfigured,

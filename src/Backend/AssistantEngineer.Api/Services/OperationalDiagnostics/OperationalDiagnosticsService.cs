@@ -39,9 +39,14 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
     {
         var now = _timeProvider.GetUtcNow();
         var counters = _telegramCounters.GetSnapshot();
-        var telegramConfigured =
+        var telegramWebhookConfigured =
             !string.IsNullOrWhiteSpace(_telegramOptions.BotToken) &&
             _telegramSecurityPolicy.IsValidSecret(_telegramOptions.WebhookSecret) &&
+            _telegramOptions.AllowedChatIds.Count > 0 &&
+            !_telegramOptions.EnableChatIdDiscovery;
+        var telegramPollingEnabled = _telegramOptions.IsPollingDeliveryEnabled();
+        var telegramPollingConfigured =
+            telegramPollingEnabled &&
             _telegramOptions.AllowedChatIds.Count > 0 &&
             !_telegramOptions.EnableChatIdDiscovery;
 
@@ -55,8 +60,10 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
             CorrelationHeaderName: _correlationOptions.HeaderName,
             EquipmentDiagnostics: new EquipmentDiagnosticsOperationalSnapshot(
                 BotEndpointAvailable: _botFacade is not null,
-                TelegramWebhookConfigured: telegramConfigured,
+                TelegramWebhookConfigured: telegramWebhookConfigured,
                 TelegramWebhookEnabled: _telegramOptions.IsEnabled,
+                TelegramPollingConfigured: telegramPollingConfigured,
+                TelegramPollingEnabled: telegramPollingEnabled,
                 ChatIdDiscoveryEnabled: _telegramOptions.EnableChatIdDiscovery,
                 AllowedChatIdsConfigured: _telegramOptions.AllowedChatIds.Count > 0,
                 DeniedChatIdsConfigured: _telegramOptions.DeniedChatIds.Count > 0,

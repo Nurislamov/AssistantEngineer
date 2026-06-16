@@ -52,6 +52,12 @@ function Read-Boolean([hashtable]$Values, [string]$Key) {
 $keys = @{
     Environment = "ASPNETCORE_ENVIRONMENT"
     TelegramEnabled = "TELEGRAM_IS_ENABLED"
+    TelegramInboundMode = "TELEGRAM_INBOUND_MODE"
+    TelegramDeleteWebhookOnStartup = "TELEGRAM_DELETE_WEBHOOK_ON_STARTUP"
+    TelegramPollingEnabled = "TELEGRAM_POLLING_ENABLED"
+    TelegramPollingTimeout = "TELEGRAM_POLLING_TIMEOUT_SECONDS"
+    TelegramPollingLimit = "TELEGRAM_POLLING_LIMIT"
+    TelegramPollingDelayAfterError = "TELEGRAM_POLLING_DELAY_AFTER_ERROR_SECONDS"
     DiscoveryEnabled = "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY"
     BotToken = "AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken"
     WebhookSecret = "AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret"
@@ -69,6 +75,18 @@ foreach ($key in $keys.Values) {
 
 $telegramEnabled = Read-Boolean $values $keys.TelegramEnabled
 $discoveryEnabled = Read-Boolean $values $keys.DiscoveryEnabled
+$deleteWebhookOnStartup = Read-Boolean $values $keys.TelegramDeleteWebhookOnStartup
+$pollingEnabled = Read-Boolean $values $keys.TelegramPollingEnabled
+$inboundMode = $values[$keys.TelegramInboundMode]
+if ($inboundMode -notin @("Webhook", "Polling")) {
+    throw "TELEGRAM_INBOUND_MODE must be Webhook or Polling."
+}
+foreach ($numericKey in @($keys.TelegramPollingTimeout, $keys.TelegramPollingLimit, $keys.TelegramPollingDelayAfterError)) {
+    $parsed = 0
+    if (-not [int]::TryParse($values[$numericKey], [ref]$parsed) -or $parsed -lt 1) {
+        throw "$numericKey must be a positive integer."
+    }
+}
 
 if ($AllowPlaceholders) {
     if ($telegramEnabled) {
@@ -88,11 +106,14 @@ if ($AllowPlaceholders) {
         if ([string]::IsNullOrWhiteSpace($values[$keys.BotToken])) {
             throw "Telegram is enabled but BotToken is empty."
         }
-        if ([string]::IsNullOrWhiteSpace($values[$keys.WebhookSecret])) {
+        if ($inboundMode -eq "Webhook" -and [string]::IsNullOrWhiteSpace($values[$keys.WebhookSecret])) {
             throw "Telegram is enabled but WebhookSecret is empty."
         }
         if ([string]::IsNullOrWhiteSpace($values[$keys.AllowedChat])) {
             throw "Telegram is enabled but AllowedChatIds is empty."
+        }
+        if ($inboundMode -eq "Polling" -and -not $pollingEnabled) {
+            throw "Telegram polling mode requires TELEGRAM_POLLING_ENABLED=true."
         }
     }
 }
@@ -107,6 +128,9 @@ Write-Host "PASS: production environment validation"
 Write-Host "File: $([System.IO.Path]::GetFileName($resolvedEnvPath))"
 Write-Host "Environment: $($values[$keys.Environment])"
 Write-Host "Telegram enabled: $telegramEnabled"
+Write-Host "Telegram inbound mode: $inboundMode"
+Write-Host "Telegram polling enabled: $pollingEnabled"
+Write-Host "Delete webhook on startup: $deleteWebhookOnStartup"
 Write-Host "Chat ID discovery enabled: $discoveryEnabled"
 Write-Host "Bot token configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.BotToken]))"
 Write-Host "Webhook secret configured: $(-not [string]::IsNullOrWhiteSpace($webhookSecret))"

@@ -38,7 +38,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookFinalQaTests
     }
 
     [Fact]
-    public void TelegramTransportAddsNoLongPollingOrTelegramPackage()
+    public void TelegramTransportUsesBotApiPollingWithoutTelegramPackage()
     {
         var moduleRoot = Path.Combine(
             TestPaths.RepoRoot, "src", "Backend", "AssistantEngineer.Modules.EquipmentDiagnostics");
@@ -51,9 +51,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookFinalQaTests
         var project = File.ReadAllText(Path.Combine(moduleRoot, "AssistantEngineer.Modules.EquipmentDiagnostics.csproj"));
 
         Assert.DoesNotContain("Telegram.Bot", project, StringComparison.Ordinal);
-        Assert.DoesNotContain("BackgroundService", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("GetUpdates", source, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("IHostedService", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("TDLib", source, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("TdSharp", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("BackgroundService", source, StringComparison.Ordinal);
+        Assert.Contains("GetUpdates", source, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

@@ -49,6 +49,15 @@ internal static class ApplicationModulesRegistration
         services.AddHttpClient<IEquipmentDiagnosticTelegramOutboundClient, EquipmentDiagnosticTelegramOutboundClient>(
                 client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)))
             .RemoveAllLoggers();
+        services.AddHttpClient<IEquipmentDiagnosticTelegramInboundClient, EquipmentDiagnosticTelegramInboundClient>(
+                client =>
+                {
+                    var timeoutSeconds = Math.Clamp(telegramOptions.Polling.TimeoutSeconds, 1, 55);
+                    client.Timeout = TimeSpan.FromSeconds(timeoutSeconds + 10);
+                })
+            .RemoveAllLoggers();
+        services.AddSingleton<IEquipmentDiagnosticTelegramUpdateOffsetStore, FileEquipmentDiagnosticTelegramUpdateOffsetStore>();
+        services.AddHostedService<EquipmentDiagnosticTelegramPollingBackgroundService>();
         services.AddOptions<OperationalCorrelationOptions>()
             .Bind(configuration.GetSection(OperationalCorrelationOptions.SectionName))
             .Validate(options => options.MaxLength is > 0 and <= 256, "Operational correlation max length must be between 1 and 256.")
