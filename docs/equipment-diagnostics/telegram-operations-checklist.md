@@ -43,6 +43,11 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
   `NotFound` record, and intermediate brand/type/display prompts do not create records.
 - Verify `/history` returns the latest five records for the current user only; `/last` returns only the current user's
   latest record; Owner/Admin do not get global history in ED-23A.
+- Verify `/history` and `/last` display `Asia/Tashkent` local time by default: `сегодня`/`вчера` are relative to local
+  day, older rows include local date and time, and invalid `TELEGRAM_DISPLAY_TIME_ZONE` falls back without exposing
+  secrets in logs.
+- Verify Consumer `/last` displays the public-safe Russian summary and does not print saved English technical
+  summaries; Engineer/Owner/Admin `/last` may show the saved short technical summary.
 - Verify history output and stored records do not include phone numbers, chat IDs, Telegram user IDs, internal ids,
   token/secret values, full incoming text, or full bot response text.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,

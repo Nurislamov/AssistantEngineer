@@ -151,7 +151,16 @@ Stored fields are structured and bounded: Telegram user database id, optional co
 status, role at creation, response mode, code, optional manufacturer/type/display context, short result summary,
 candidate count, phone-saved flag, phone source, and timestamps. The store does not keep full Telegram message text,
 full bot response text, phone number, raw chat id, Telegram user id, token, or webhook secret. `/last` uses the saved
-short summary rather than a stored full response.
+short summary rather than a stored full response. For Consumer users, `/last` never prints a stored English technical
+summary; it renders the public-safe Russian summary
+`Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.`. Engineer, Owner, and
+Admin may see the saved short technical summary.
+
+`CreatedAt` remains stored in UTC. Telegram history display converts `/history` and `/last` timestamps to
+`AssistantEngineer:EquipmentDiagnostics:Telegram:DisplayTimeZone`, defaulting to `Asia/Tashkent`. Empty or invalid
+time zone configuration falls back to `Asia/Tashkent`, logs a sanitized warning, and does not block bot startup or
+history rendering. The relative labels `сегодня` and `вчера` are evaluated in the display time zone; older history
+rows include local date and time, for example `15.06.2026 18:10`.
 
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,

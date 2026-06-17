@@ -35,6 +35,7 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public string? PreferredLanguage { get; init; }
     public bool EnableFreeTextParsing { get; init; }
     public bool RequireExplicitManufacturer { get; init; }
+    public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
 }
 
 public sealed record EquipmentDiagnosticTelegramUpdate(

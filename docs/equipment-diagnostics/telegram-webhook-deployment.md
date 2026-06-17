@@ -87,7 +87,11 @@ ED-23A adds structured diagnostic history. Final completed diagnostics and not-f
 and admin commands are not saved as cases. `/history` returns the latest five cases for the current Telegram user,
 and `/last` returns only that user's latest case. Owner/Admin history is still self-only in ED-23A. Stored data excludes
 full incoming text, full bot response text, phone numbers, raw chat IDs, Telegram user IDs, tokens, and webhook
-secrets.
+secrets. `CreatedAt` is stored in UTC, while `/history` and `/last` render timestamps in
+`AssistantEngineer:EquipmentDiagnostics:Telegram:DisplayTimeZone` (`TELEGRAM_DISPLAY_TIME_ZONE` in Docker Compose),
+defaulting to `Asia/Tashkent`. Empty or invalid values fall back to `Asia/Tashkent` with a sanitized warning and do
+not crash the bot. Consumer `/last` uses the public-safe Russian summary instead of any saved English technical
+summary; Engineer, Owner, and Admin may see the saved short technical summary.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -131,6 +135,8 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   for Owner/Admin through `/help` or manual input.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
   phone numbers, chat IDs, internal ids, or full bot responses.
+- Confirm `/history` and `/last` display Asia/Tashkent local time: `сегодня`/`вчера` are local-day relative, and older
+  rows include local date and time. Confirm Consumer `/last` does not show saved English technical summaries.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
 - Confirm the contact sharing and manual phone buttons appear before the phone number is saved, manual phone
   validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.

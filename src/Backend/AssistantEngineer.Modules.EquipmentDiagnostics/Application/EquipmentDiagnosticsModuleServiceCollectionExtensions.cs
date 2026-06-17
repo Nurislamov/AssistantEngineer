@@ -25,6 +25,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<ITelegramUserStore, InMemoryTelegramUserStore>();
         services.AddSingleton<ITelegramConversationSessionStore, InMemoryTelegramConversationSessionStore>();
         services.AddSingleton<ITelegramDiagnosticCaseStore, InMemoryTelegramDiagnosticCaseStore>();
+        services.AddSingleton<TelegramDisplayTimeFormatter>();
         services.AddSingleton<TelegramDiagnosticHistoryService>();
         services.AddSingleton<ITelegramUserAccessService, TelegramUserAccessService>();
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();

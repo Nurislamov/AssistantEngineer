@@ -8,11 +8,18 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Histor
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using Microsoft.Extensions.Logging;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
 public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
 {
+    private static readonly DateTimeOffset FixedNowUtc = new(2026, 6, 17, 17, 30, 0, TimeSpan.Zero);
+    private const string ConsumerSafeSummaryText =
+        "Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.";
+    private const string TechnicalStoredSummary =
+        "Gree GMV H5: GMV protection alarm H5. Preliminary diagnostic entry. Verify the exact meaning.";
+
     [Fact]
     public async Task ConsumerCodeOnlyWithMultipleBrandsAsksBrandWithRussianButtons()
     {
@@ -413,7 +420,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([Summary("Gree", "H1", EquipmentCategory.VrfOutdoorUnit)]);
         var ownUser = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start", chatId: 7));
         var otherUser = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start", chatId: 8));
-        var history = new TelegramDiagnosticHistoryService(harness.HistoryStore);
+        var history = CreateHistoryService(harness.HistoryStore);
 
         await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H1", "one"), "Gree", "H1", "Наружный блок", "Плата/LED", 1);
         await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H2", "two"), "Gree", "H2", "Наружный блок", "Плата/LED", 1);
@@ -449,7 +456,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         var harness = CreateHarness([]);
         var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
-        var history = new TelegramDiagnosticHistoryService(harness.HistoryStore);
+        var history = CreateHistoryService(harness.HistoryStore);
 
         await history.RecordCompletedAsync(Access(user), null, Response("Gree", "H5", "Saved short summary."), "Gree", "H5", null, null, 1);
         var completed = await harness.Adapter.HandleAsync(Update("/last"));
@@ -458,10 +465,97 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
 
         Assert.Contains("Последняя диагностика", completed.Text, StringComparison.Ordinal);
         Assert.Contains("Gree H5", completed.Text, StringComparison.Ordinal);
-        Assert.Contains("Saved short summary", completed.Text, StringComparison.Ordinal);
+        Assert.Contains(ConsumerSafeSummaryText, completed.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Saved short summary", completed.Text, StringComparison.Ordinal);
         Assert.Contains("Последний запрос", notFound.Text, StringComparison.Ordinal);
         Assert.Contains("Gree ZZ99", notFound.Text, StringComparison.Ordinal);
         Assert.Contains("точная расшифровка не найдена", notFound.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ConsumerLastHidesStoredEnglishTechnicalSummaryAndFormatsLocalTime()
+    {
+        var harness = CreateHarness([]);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await CreateCaseAsync(
+            harness.HistoryStore,
+            user,
+            TelegramDiagnosticCaseStatus.Completed,
+            "H5",
+            "Gree",
+            TechnicalStoredSummary,
+            new DateTimeOffset(2026, 6, 17, 17, 20, 39, TimeSpan.Zero));
+
+        var response = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Дата: 17.06.2026 22:20", response.Text, StringComparison.Ordinal);
+        Assert.Contains(ConsumerSafeSummaryText, response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("GMV protection alarm", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Preliminary diagnostic", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Confidence", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("InternalDecisionTrace", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task EngineerLastShowsStoredTechnicalSummary()
+    {
+        var harness = CreateHarness([]);
+        await harness.UserStore.AllowAsync(7, TelegramUserRole.Engineer);
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        await CreateCaseAsync(
+            harness.HistoryStore,
+            user!,
+            TelegramDiagnosticCaseStatus.Completed,
+            "H5",
+            "Gree",
+            TechnicalStoredSummary,
+            new DateTimeOffset(2026, 6, 17, 17, 20, 39, TimeSpan.Zero),
+            TelegramDiagnosticCaseResponseMode.Technical,
+            TelegramUserRole.Engineer);
+
+        var response = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Дата: 17.06.2026 22:20", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV protection alarm", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("InternalDecisionTrace", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task HistoryFormatsTodayYesterdayAndOlderDatesInDisplayTimeZone()
+    {
+        var harness = CreateHarness([]);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await CreateCaseAsync(harness.HistoryStore, user, TelegramDiagnosticCaseStatus.Completed, "H1", "Gree", "one", new DateTimeOffset(2026, 6, 17, 17, 20, 0, TimeSpan.Zero));
+        await CreateCaseAsync(harness.HistoryStore, user, TelegramDiagnosticCaseStatus.Completed, "H2", "Gree", "two", new DateTimeOffset(2026, 6, 16, 17, 17, 0, TimeSpan.Zero));
+        await CreateCaseAsync(harness.HistoryStore, user, TelegramDiagnosticCaseStatus.Completed, "H3", "Gree", "three", new DateTimeOffset(2026, 6, 15, 13, 10, 0, TimeSpan.Zero));
+
+        var response = await harness.Adapter.HandleAsync(Update("/history"));
+
+        Assert.Contains("Gree H1 — сегодня 22:20", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree H2 — вчера 22:17", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree H3 — 15.06.2026 18:10", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task InvalidDisplayTimeZoneFallsBackToTashkentAndLogsWarning()
+    {
+        var logger = new CapturingLogger<TelegramDisplayTimeFormatter>();
+        var harness = CreateHarness([], Options() with { DisplayTimeZone = "Invalid/Zone" }, logger);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await CreateCaseAsync(
+            harness.HistoryStore,
+            user,
+            TelegramDiagnosticCaseStatus.Completed,
+            "H5",
+            "Gree",
+            "summary",
+            new DateTimeOffset(2026, 6, 17, 17, 20, 0, TimeSpan.Zero));
+
+        var response = await harness.Adapter.HandleAsync(Update("/history"));
+
+        Assert.Contains("сегодня 22:20", response.Text, StringComparison.Ordinal);
+        Assert.Contains(logger.Messages, message => message.Contains("Falling back", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(logger.Messages, message => message.Contains("Invalid/Zone", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -499,14 +593,15 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
 
     private static Harness CreateHarness(
         IReadOnlyList<EquipmentErrorCodeSummaryDto> summaries,
-        EquipmentDiagnosticTelegramOptions? options = null)
+        EquipmentDiagnosticTelegramOptions? options = null,
+        CapturingLogger<TelegramDisplayTimeFormatter>? logger = null)
     {
         var userStore = new InMemoryTelegramUserStore();
         var sessionStore = new InMemoryTelegramConversationSessionStore();
         var historyStore = new InMemoryTelegramDiagnosticCaseStore();
         var diagnostics = new FakeDiagnosticsService(summaries);
         var facade = new StaticFacade();
-        var adapter = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, options ?? Options());
+        var adapter = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, options ?? Options(), logger);
         return new Harness(adapter, userStore, sessionStore, historyStore, facade);
     }
 
@@ -516,12 +611,13 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         ITelegramDiagnosticCaseStore historyStore,
         IEquipmentDiagnosticsService diagnostics,
         IEquipmentDiagnosticBotFacade facade,
-        EquipmentDiagnosticTelegramOptions options)
+        EquipmentDiagnosticTelegramOptions options,
+        CapturingLogger<TelegramDisplayTimeFormatter>? logger = null)
     {
         var parser = new EquipmentDiagnosticTelegramMessageParser();
         var formatter = new EquipmentDiagnosticTelegramResponseFormatter();
         var access = new TelegramUserAccessService(userStore, options);
-        var history = new TelegramDiagnosticHistoryService(historyStore);
+        var history = CreateHistoryService(historyStore, options, logger: logger);
         var conversation = new TelegramDiagnosticConversationService(
             sessionStore,
             diagnostics,
@@ -547,8 +643,48 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         IsEnabled = true,
         MaxMessageLength = 1000,
-        DefaultManufacturer = "Gree"
+        DefaultManufacturer = "Gree",
+        DisplayTimeZone = "Asia/Tashkent"
     };
+
+    private static TelegramDiagnosticHistoryService CreateHistoryService(
+        ITelegramDiagnosticCaseStore store,
+        EquipmentDiagnosticTelegramOptions? options = null,
+        DateTimeOffset? utcNow = null,
+        CapturingLogger<TelegramDisplayTimeFormatter>? logger = null) =>
+        new(
+            store,
+            new TelegramDisplayTimeFormatter(
+                options ?? Options(),
+                new FixedTimeProvider(utcNow ?? FixedNowUtc),
+                logger));
+
+    private static Task<TelegramDiagnosticCaseSnapshot> CreateCaseAsync(
+        InMemoryTelegramDiagnosticCaseStore store,
+        TelegramUserSnapshot user,
+        TelegramDiagnosticCaseStatus status,
+        string code,
+        string? manufacturer,
+        string? resultSummary,
+        DateTimeOffset createdAt,
+        TelegramDiagnosticCaseResponseMode responseMode = TelegramDiagnosticCaseResponseMode.Consumer,
+        TelegramUserRole? userRole = null) =>
+        store.CreateAsync(new TelegramDiagnosticCaseCreate(
+            user.Id,
+            null,
+            status,
+            userRole ?? user.Role,
+            responseMode,
+            code,
+            manufacturer,
+            null,
+            null,
+            resultSummary,
+            null,
+            1,
+            false,
+            null,
+            createdAt));
 
     private static EquipmentDiagnosticTelegramUpdate Update(
         string? text,
@@ -628,6 +764,41 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         InMemoryTelegramConversationSessionStore SessionStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         StaticFacade Facade);
+
+    private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider
+    {
+        public override DateTimeOffset GetUtcNow() => utcNow;
+    }
+
+    private sealed class CapturingLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull =>
+            NullScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new();
+
+            public void Dispose()
+            {
+            }
+        }
+    }
 
     private sealed class FakeDiagnosticsService(
         IReadOnlyList<EquipmentErrorCodeSummaryDto> summaries) : IEquipmentDiagnosticsService

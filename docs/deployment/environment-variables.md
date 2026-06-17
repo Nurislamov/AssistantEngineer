@@ -16,6 +16,7 @@ Git. Do not put real bot tokens, webhook secrets, domains, or credentials in sou
 | `TELEGRAM_IS_ENABLED` | Explicit transport enable switch | `false` |
 | `TELEGRAM_INBOUND_MODE` | Telegram inbound transport | `Polling` |
 | `TELEGRAM_COMMANDS_SYNC_ON_STARTUP` | Sync the safe global Telegram command menu during startup when Telegram is enabled and token is configured | `true` |
+| `TELEGRAM_DISPLAY_TIME_ZONE` | Display time zone for Telegram `/history` and `/last`; invalid or empty values fall back to `Asia/Tashkent` | `Asia/Tashkent` |
 | `TELEGRAM_POLLING_ENABLED` | Polling worker enable switch | `false` |
 | `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY` | Temporary `/id` setup switch | `false` |
 | `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID` | Emergency owner bootstrap chat ID | empty placeholder |
@@ -35,6 +36,8 @@ No additional `.env` variable is required for ED-21B Russian UX, contact keyboar
 production SQL log suppression. Telegram command-menu sync can be disabled with
 `TELEGRAM_COMMANDS_SYNC_ON_STARTUP=false`; by default it runs only when Telegram is enabled and `BotToken` is
 configured. Rebuild the backend Docker image to pick up the GSSAPI runtime package.
+Telegram diagnostic `CreatedAt` values stay UTC in the database; only `/history` and `/last` rendering uses
+`TELEGRAM_DISPLAY_TIME_ZONE`.
 
 Validate the ignored production file without printing secrets:
 

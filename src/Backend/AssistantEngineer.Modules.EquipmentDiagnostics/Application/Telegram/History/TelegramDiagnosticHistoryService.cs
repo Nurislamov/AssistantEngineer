@@ -12,10 +12,14 @@ public sealed class TelegramDiagnosticHistoryService
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private readonly ITelegramDiagnosticCaseStore _store;
+    private readonly TelegramDisplayTimeFormatter _timeFormatter;
 
-    public TelegramDiagnosticHistoryService(ITelegramDiagnosticCaseStore store)
+    public TelegramDiagnosticHistoryService(
+        ITelegramDiagnosticCaseStore store,
+        TelegramDisplayTimeFormatter timeFormatter)
     {
         _store = store;
+        _timeFormatter = timeFormatter;
     }
 
     public Task<TelegramDiagnosticCaseSnapshot> RecordCompletedAsync(
@@ -83,7 +87,7 @@ public sealed class TelegramDiagnosticHistoryService
         for (var index = 0; index < cases.Count; index++)
         {
             var diagnosticCase = cases[index];
-            builder.AppendLine($"{index + 1}. {FormatCaseTitle(diagnosticCase)} — {FormatRelativeDate(diagnosticCase.CreatedAt)}");
+            builder.AppendLine($"{index + 1}. {FormatCaseTitle(diagnosticCase)} — {_timeFormatter.FormatRelative(diagnosticCase.CreatedAt)}");
         }
 
         builder.AppendLine();
@@ -106,18 +110,19 @@ public sealed class TelegramDiagnosticHistoryService
             return
                 "Последний запрос\n\n" +
                 $"Код: {FormatCaseTitle(diagnosticCase)}\n" +
-                $"Дата: {FormatAbsoluteDate(diagnosticCase.CreatedAt)}\n" +
+                $"Дата: {_timeFormatter.FormatAbsolute(diagnosticCase.CreatedAt)}\n" +
                 "Статус: точная расшифровка не найдена.";
         }
 
-        var summary = string.IsNullOrWhiteSpace(diagnosticCase.ResultSummary)
-            ? "Краткая расшифровка сохранена не была."
-            : diagnosticCase.ResultSummary;
+        var isConsumer = user.Role == TelegramUserRole.Consumer;
+        var summary = isConsumer
+            ? ConsumerSafeSummary()
+            : TechnicalSummary(diagnosticCase);
 
         return
             "Последняя диагностика\n\n" +
             $"{FormatCaseTitle(diagnosticCase)}\n" +
-            $"Дата: {FormatAbsoluteDate(diagnosticCase.CreatedAt)}\n" +
+            $"Дата: {_timeFormatter.FormatAbsolute(diagnosticCase.CreatedAt)}\n\n" +
             "Возможное значение:\n" +
             $"{summary}\n\n" +
             "Нажмите «Новый код», чтобы проверить другую ошибку.";
@@ -162,25 +167,13 @@ public sealed class TelegramDiagnosticHistoryService
             ? diagnosticCase.Code
             : $"{diagnosticCase.Manufacturer} {diagnosticCase.Code}";
 
-    private static string FormatRelativeDate(DateTimeOffset value)
-    {
-        var local = value.ToLocalTime();
-        var today = DateTimeOffset.Now.Date;
-        if (local.Date == today)
-        {
-            return $"сегодня {local:HH:mm}";
-        }
+    private static string ConsumerSafeSummary() =>
+        "Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.";
 
-        if (local.Date == today.AddDays(-1))
-        {
-            return $"вчера {local:HH:mm}";
-        }
-
-        return local.ToString("dd.MM.yyyy");
-    }
-
-    private static string FormatAbsoluteDate(DateTimeOffset value) =>
-        value.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
+    private static string TechnicalSummary(TelegramDiagnosticCaseSnapshot diagnosticCase) =>
+        string.IsNullOrWhiteSpace(diagnosticCase.ResultSummary)
+            ? ConsumerSafeSummary()
+            : diagnosticCase.ResultSummary;
 
     private static string? BuildNormalizedRequestJson(
         string? code,
