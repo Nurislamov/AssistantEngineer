@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
@@ -14,6 +15,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly EquipmentDiagnosticTelegramOptions _options;
     private readonly ITelegramUserAccessService _accessService;
     private readonly ITelegramUserStore _userStore;
+    private readonly TelegramDiagnosticConversationService? _conversationService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -21,7 +23,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         EquipmentDiagnosticTelegramResponseFormatter formatter,
         EquipmentDiagnosticTelegramOptions options,
         ITelegramUserAccessService accessService,
-        ITelegramUserStore userStore)
+        ITelegramUserStore userStore,
+        TelegramDiagnosticConversationService? conversationService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -29,6 +32,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _options = options;
         _accessService = accessService;
         _userStore = userStore;
+        _conversationService = conversationService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -57,6 +61,20 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 verified,
                 update.ReceivedAt ?? DateTimeOffset.UtcNow,
                 cancellationToken);
+            var repeatedPrompt = _conversationService is not null && access.User is not null
+                ? await _conversationService.RepeatActivePromptAsync(access.User, access, cancellationToken)
+                : null;
+            if (repeatedPrompt is not null)
+            {
+                return Response(
+                    update.ChatId,
+                    string.Join("\n\n", _formatter.FormatPhoneSaved(_options.MaxMessageLength), repeatedPrompt.Text),
+                    repeatedPrompt.ResponseKind,
+                    repeatedPrompt.Warnings,
+                    repeatedPrompt.ReplyMarkup,
+                    repeatedPrompt.Messages);
+            }
+
             return Response(
                 update.ChatId,
                 _formatter.FormatPhoneSaved(_options.MaxMessageLength),
@@ -87,11 +105,20 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         if (parseResult.Errors.Count > 0)
         {
+            var conversation = _conversationService is not null
+                ? await _conversationService.HandleTextAsync(update, access, access.User!, cancellationToken)
+                : new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, []);
+            if (conversation.Handled)
+            {
+                return FromConversation(update.ChatId, conversation);
+            }
+
             return Response(
                 update.ChatId,
                 _formatter.FormatValidation(parseResult.Errors, _options.MaxMessageLength),
                 EquipmentDiagnosticTelegramResponseKind.ValidationError,
-                parseResult.Errors);
+                parseResult.Errors,
+                replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
         }
 
         if (parseResult.Command is EquipmentDiagnosticTelegramCommand.Start or EquipmentDiagnosticTelegramCommand.Help)
@@ -101,7 +128,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 update.ChatId,
                 _formatter.FormatHelp(access.Role, phoneSaved, Math.Max(_options.MaxMessageLength, ConsumerMessageLength)),
                 EquipmentDiagnosticTelegramResponseKind.Reply,
-                replyMarkup: ShouldPromptForContact(access, phoneSaved) ? ContactRequestMarkup() : null);
+                replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
         }
 
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
@@ -120,10 +147,24 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Unsupported ||
             parseResult.DiagnosticRequest is null)
         {
-            return Response(
-                update.ChatId,
-                _formatter.FormatUnsupported(_options.MaxMessageLength),
-                EquipmentDiagnosticTelegramResponseKind.Unsupported);
+            var conversation = _conversationService is not null
+                ? await _conversationService.HandleTextAsync(update, access, access.User!, cancellationToken)
+                : new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, []);
+            return conversation.Handled
+                ? FromConversation(update.ChatId, conversation)
+                : Response(
+                    update.ChatId,
+                    _formatter.FormatUnsupported(_options.MaxMessageLength),
+                    EquipmentDiagnosticTelegramResponseKind.Unsupported,
+                    replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+        }
+
+        var conversationResponse = _conversationService is not null
+            ? await _conversationService.HandleTextAsync(update, access, access.User!, cancellationToken)
+            : new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, []);
+        if (conversationResponse.Handled)
+        {
+            return FromConversation(update.ChatId, conversationResponse);
         }
 
         var diagnosis = await _botFacade.DiagnoseAsync(parseResult.DiagnosticRequest, cancellationToken);
@@ -131,7 +172,9 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         {
             var technical = _formatter.FormatTechnical(diagnosis);
             var messages = SplitTelegramMessage(technical)
-                .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(chunk))
+                .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
+                    chunk,
+                    ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access)))
                 .ToArray();
 
             return Response(
@@ -148,7 +191,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             _formatter.FormatConsumer(diagnosis, consumerPhoneSaved, ConsumerMessageLength),
             EquipmentDiagnosticTelegramResponseKind.Reply,
             diagnosis.Warnings,
-            replyMarkup: ShouldPromptForContact(access, consumerPhoneSaved) ? ContactRequestMarkup() : null);
+            replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
     }
 
     private bool TryHandleMe(
@@ -240,26 +283,19 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         out TelegramUserRole role) =>
         Enum.TryParse(value, ignoreCase: true, out role);
 
-    private static bool ShouldPromptForContact(
-        TelegramUserAccessResult access,
-        bool phoneSaved) =>
-        access.Role == TelegramUserRole.Consumer && !phoneSaved;
-
-    private static EquipmentDiagnosticTelegramReplyMarkup ContactRequestMarkup() =>
-        new(
-            Keyboard:
-            [
-                [
-                    new EquipmentDiagnosticTelegramKeyboardButton(
-                        "📞 Поделиться номером",
-                        RequestContact: true)
-                ]
-            ],
-            ResizeKeyboard: true,
-            OneTimeKeyboard: true);
-
     private static EquipmentDiagnosticTelegramReplyMarkup RemoveKeyboardMarkup() =>
         new(RemoveKeyboard: true);
+
+    private static EquipmentDiagnosticTelegramResponse FromConversation(
+        long chatId,
+        TelegramDiagnosticConversationResult result) =>
+        Response(
+            chatId,
+            result.Text,
+            result.ResponseKind,
+            result.Warnings,
+            result.ReplyMarkup,
+            result.Messages);
 
     private static IReadOnlyList<string> SplitTelegramMessage(string text)
     {

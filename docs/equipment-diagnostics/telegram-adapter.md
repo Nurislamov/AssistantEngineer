@@ -59,14 +59,43 @@ Responses are deterministic plain text with no Markdown parse mode:
 
 The formatter prioritizes the safety boundary and applies deterministic message shortening.
 
+## ED-22A Conversation State Machine
+
+ED-22A adds a code-first Telegram conversation layer over the same deterministic bot facade. A normal Consumer no
+longer needs to know `/diagnose`: they can send only a displayed code such as `H5`, `h5`, `ошибка H5`, or `Gree H5`.
+The bot then narrows the runtime catalog candidates with reply-keyboard choices:
+
+```text
+Code -> Brand -> EquipmentType -> DisplayContext -> Result
+```
+
+The conversation asks only for dimensions that are actually ambiguous. If a code has one brand, one equipment type,
+or one display context, that step is skipped. If all dimensions are unique, the bot returns the result immediately.
+If the code is not found, the bot replies in Russian with guidance to check the code or include a brand, for example
+`Gree H5`.
+
+The session is stored in Postgres table `TelegramConversationSessions` and references `TelegramUsers`. Session rows
+carry the current state, current code, selected brand/type/display context, serialized candidate options,
+`UpdatedAt`, and a long `ExpiresAt` horizon for future cleanup. ED-22A does not aggressively expire active sessions.
+
+The reply keyboard always includes `🔎 Новый код`. Sending that button, `Новый код`, `/new`, `/reset`, or `/cancel`
+clears the current session and prompts for a new code. Sending a new diagnostic-looking text code also starts a new
+scenario even when the previous session was waiting for a button selection.
+
+Consumer replies continue to use the public-safe formatter. Owner, Admin, and Engineer get the same conversation
+flow but final results use the technical formatter, and `/admin ...` commands bypass any active session.
+
+Telegram contact messages are accepted from any state. The phone number is saved on `TelegramUsers`; if a diagnostic
+session is waiting for a brand/type/display-context selection, the bot preserves the session and repeats the active
+prompt.
+
 ## Security And Runtime Boundaries
 
-- No production webhook endpoint.
-- No long-polling or hosted transport service.
-- No external Telegram network calls.
 - No committed token or application setting containing a token.
 - No new public API endpoint.
 - No runtime catalog promotion or manual-verification promotion.
+- No diagnostic case history, CRM/ServiceLead creation, web admin UI, photo/OCR, AI, RAG, vector search, or manual-PDF
+  access is added by ED-22A.
 - Safety protections remain active during diagnosis.
 
 Runtime catalog data remains the only final diagnosis source. Review-only sources remain non-runtime.

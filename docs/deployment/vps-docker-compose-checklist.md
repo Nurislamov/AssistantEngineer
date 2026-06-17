@@ -18,7 +18,7 @@
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.
 - Configure `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` or direct `BootstrapOwnerChatId` binding; legacy
   `TELEGRAM_ALLOWED_CHAT_ID` remains only a bootstrap compatibility fallback.
-- Apply the `TelegramUsers` migration before enabling Telegram.
+- Apply the `TelegramUsers` and `TelegramConversationSessions` migrations before enabling Telegram.
 - Rebuild the backend image after ED-21B so the runtime includes `libgssapi-krb5-2`.
 - Review `DeniedChatIds` and deny-wins-over-allow behavior.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
@@ -33,7 +33,10 @@
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   webhook URL should be empty.
 - Confirm duplicate Telegram updates for one message produce one bot response and a sanitized duplicate-skip log.
-- Confirm Consumer `/start`, `/help`, `/me`, contact sharing, and diagnostic replies are Russian and public-safe.
+- Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic conversation, contact sharing, and diagnostic
+  replies are Russian and public-safe.
+- Confirm `🔎 Новый код`, `/new`, `/reset`, and `/cancel` reset the active conversation without disabling polling,
+  dedupe, TelegramUsers, roles, or contact flow.
 - Confirm production logs do not show EF/Npgsql SQL `SELECT`, `INSERT`, or `UPDATE` command text at Information level.
 - For webhook fallback, run `set-telegram-webhook.ps1` and `get-telegram-webhook-info.ps1`.
 - Use `delete-telegram-webhook.ps1` during disablement or incident response.

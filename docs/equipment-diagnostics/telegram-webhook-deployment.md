@@ -64,10 +64,11 @@ update entries with update id and chat type, without token, webhook secret, mess
 Duplicate Telegram updates for the same visible message are deduplicated by `chat.id + message.message_id` before
 the handler sends a response. The dedupe store writes SHA-256 message identity hashes, not raw chat IDs.
 
-Consumer-facing replies are Russian by default and use a Telegram reply keyboard with `request_contact=true` when a
-Consumer has not shared a phone number. After a contact message is accepted, the bot removes the keyboard. Owner,
-Admin, and Engineer technical replies may be split into multiple ordered `sendMessage` calls so Telegram's message
-limit is not hit. If any chunk fails, the update is reported as outbound failed.
+Consumer-facing replies are Russian by default and use a Telegram reply keyboard. ED-22A keeps `🔎 Новый код`
+available throughout the conversation and shows `request_contact=true` for `📞 Поделиться номером` while a Consumer
+has not shared a phone number. After a contact message is accepted, the number is saved and any active diagnostic
+session is preserved. Owner, Admin, and Engineer technical replies may be split into multiple ordered `sendMessage`
+calls so Telegram's message limit is not hit. If any chunk fails, the update is reported as outbound failed.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -101,11 +102,14 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store bot token in the deployment secret store.
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
-- Apply the `TelegramUsers` EF migration before enabling the bot.
+- Apply the `TelegramUsers` and `TelegramConversationSessions` EF migrations before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
-- Confirm Consumer `/start`, `/help`, `/me`, and diagnostic replies are Russian and do not list admin commands.
+- Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
+  list admin commands.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
 - Confirm the contact sharing button appears only before the phone number is saved and that the phone number is not logged.
+- Confirm sending `🔎 Новый код`, `/new`, `/reset`, or `/cancel` clears the active conversation and asks for a new
+  code.
 - Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Consumer>` from the bootstrap owner or an Admin.
 - Review denied chat IDs; deny wins over allow.
 - Keep chat ID discovery disabled except during initial access setup.
@@ -126,7 +130,7 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - polling offset and processed-message idempotency persistence are local operational files by default;
 - no audit log or message queue;
 - no web admin UI for users/roles;
-- no diagnostic history, conversation continuation, ServiceLead/CRM, or photo/OCR;
+- no diagnostic history, ServiceLead/CRM, web admin UI, or photo/OCR;
 - no endpoint-specific rate limiter beyond the broader API setup;
 - no AI, RAG, vector search, or manual-PDF access.
 

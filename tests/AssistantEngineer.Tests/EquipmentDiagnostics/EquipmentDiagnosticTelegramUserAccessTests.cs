@@ -173,7 +173,9 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 900));
 
         Assert.Contains("Ваш номер уже сохранен", response.Text, StringComparison.Ordinal);
-        Assert.Null(response.OutboundMessages.Single().ReplyMarkup);
+        var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text).ToArray();
+        Assert.Contains("🔎 Новый код", buttons);
+        Assert.DoesNotContain("📞 Поделиться номером", buttons);
     }
 
     private static EquipmentDiagnosticTelegramAdapter CreateAdapter(

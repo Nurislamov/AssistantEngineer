@@ -2,6 +2,7 @@ using AssistantEngineer.Infrastructure.Persistence.Repositories;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,6 +26,8 @@ internal static class RepositoryRegistration
         services.AddScoped<IEquipmentCatalogRepository, EquipmentCatalogRepository>();
         services.RemoveAll<ITelegramUserStore>();
         services.AddSingleton<ITelegramUserStore, EfTelegramUserStore>();
+        services.RemoveAll<ITelegramConversationSessionStore>();
+        services.AddSingleton<ITelegramConversationSessionStore, EfTelegramConversationSessionStore>();
 
         return services;
     }

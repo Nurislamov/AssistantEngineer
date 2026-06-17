@@ -110,6 +110,34 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             []);
     }
 
+    public bool TryExtractDiagnosticCode(
+        string? text,
+        out string code)
+    {
+        code = string.Empty;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        var trimmed = text.Trim();
+        if (trimmed.StartsWith('/'))
+        {
+            return false;
+        }
+
+        var tokens = TokenPattern().Matches(trimmed).Select(match => match.Value).ToArray();
+        var match = tokens.LastOrDefault(token => LooksLikeCode(token) && !IsHint(token));
+        if (match is null ||
+            ControllerModelNames.Contains(match, StringComparer.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        code = match.ToUpperInvariant();
+        return true;
+    }
+
     private static EquipmentDiagnosticBotEquipmentSide? FindEquipmentSide(string text)
     {
         if (ContainsHint(text, OutdoorHints)) return EquipmentDiagnosticBotEquipmentSide.Outdoor;

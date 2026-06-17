@@ -50,8 +50,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var second = await adapter.HandleAsync(Update("Gree E1"));
 
         Assert.Equal(first.Text, second.Text);
-        Assert.Contains("контекст", first.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ответьте с контекстом Outdoor", first.Text, StringComparison.Ordinal);
+        Assert.Contains("тип оборудования", first.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Наружный блок", first.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree ZZ99"));
 
-        Assert.Contains("Код не найден", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("🔎 Новый код", response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
     }
 
     [Fact]
@@ -259,7 +259,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
                 typeof(EquipmentDiagnosticTelegramResponseFormatter),
                 typeof(EquipmentDiagnosticTelegramOptions),
                 typeof(ITelegramUserAccessService),
-                typeof(ITelegramUserStore)
+                typeof(ITelegramUserStore),
+                typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations.TelegramDiagnosticConversationService)
             ],
             dependencyTypes);
 

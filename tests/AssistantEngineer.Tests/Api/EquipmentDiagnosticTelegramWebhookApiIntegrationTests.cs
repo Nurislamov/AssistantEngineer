@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.AspNetCore.Hosting;
@@ -169,6 +170,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
             {
                 services.RemoveAll<IEquipmentDiagnosticTelegramOutboundClient>();
                 services.RemoveAll<ITelegramUserStore>();
+                services.RemoveAll<ITelegramConversationSessionStore>();
                 services.RemoveAll<EquipmentDiagnosticTelegramWebhookOptions>();
                 services.RemoveAll<EquipmentDiagnosticTelegramOptions>();
                 var chatIds = allowedChatId is null ? Array.Empty<long>() : [allowedChatId.Value];
@@ -191,6 +193,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                     DefaultManufacturer = "Gree"
                 });
                 services.AddSingleton<ITelegramUserStore, InMemoryTelegramUserStore>();
+                services.AddSingleton<ITelegramConversationSessionStore, InMemoryTelegramConversationSessionStore>();
                 services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient>(Outbound);
             });
         }

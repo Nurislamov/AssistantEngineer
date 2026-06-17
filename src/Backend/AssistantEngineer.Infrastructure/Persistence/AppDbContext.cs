@@ -7,6 +7,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Schedules;
 using AssistantEngineer.Modules.Buildings.Domain.Settings;
 using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,6 +60,8 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<ThermalZone> ThermalZones { get; set; } = null!;
 
     public DbSet<TelegramUserEntity> TelegramUsers { get; set; } = null!;
+
+    public DbSet<TelegramConversationSessionEntity> TelegramConversationSessions { get; set; } = null!;
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
