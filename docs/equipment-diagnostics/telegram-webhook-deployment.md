@@ -64,6 +64,11 @@ update entries with update id and chat type, without token, webhook secret, mess
 Duplicate Telegram updates for the same visible message are deduplicated by `chat.id + message.message_id` before
 the handler sends a response. The dedupe store writes SHA-256 message identity hashes, not raw chat IDs.
 
+Consumer-facing replies are Russian by default and use a Telegram reply keyboard with `request_contact=true` when a
+Consumer has not shared a phone number. After a contact message is accepted, the bot removes the keyboard. Owner,
+Admin, and Engineer technical replies may be split into multiple ordered `sendMessage` calls so Telegram's message
+limit is not hit. If any chunk fails, the update is reported as outbound failed.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -98,6 +103,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
 - Apply the `TelegramUsers` EF migration before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
+- Confirm Consumer `/start`, `/help`, `/me`, and diagnostic replies are Russian and do not list admin commands.
+- Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
+- Confirm the contact sharing button appears only before the phone number is saved and that the phone number is not logged.
 - Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Consumer>` from the bootstrap owner or an Admin.
 - Review denied chat IDs; deny wins over allow.
 - Keep chat ID discovery disabled except during initial access setup.
@@ -109,6 +117,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Confirm global API rate-limit behavior and monitoring.
 - Run webhook integration tests with fake outbound transport.
 - Review Telegram token rotation and incident response.
+- Production logs should not show EF Core/Npgsql SQL `SELECT`, `INSERT`, or `UPDATE` command text at Information level.
+- Rebuild the backend image after ED-21B so the runtime image includes `libgssapi-krb5-2` and Npgsql no longer emits
+  `libgssapi_krb5.so.2` missing-library warnings.
 
 ## Known Limitations
 

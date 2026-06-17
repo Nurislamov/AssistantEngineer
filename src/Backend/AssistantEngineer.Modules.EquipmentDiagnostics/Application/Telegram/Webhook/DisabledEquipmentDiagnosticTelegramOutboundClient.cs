@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 
 public sealed class DisabledEquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagnosticTelegramOutboundClient
@@ -7,6 +9,7 @@ public sealed class DisabledEquipmentDiagnosticTelegramOutboundClient : IEquipme
         string text,
         string? parseMode,
         bool disableWebPagePreview,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default) =>
         Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
             false,

@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 
 public interface IEquipmentDiagnosticTelegramOutboundClient
@@ -7,5 +9,6 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
         string text,
         string? parseMode,
         bool disableWebPagePreview,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default);
 }

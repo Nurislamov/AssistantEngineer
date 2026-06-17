@@ -16,6 +16,10 @@ Application logs intentionally never include Authorization or Telegram secret he
 secrets, allow/deny chat ID values, Telegram message text, raw request/response bodies, query-string values, or
 internal artifact paths. Allow/deny username values and phone numbers are treated as sensitive too.
 
+Production logging suppresses EF Core and Npgsql SQL command noise below Warning. Application warnings/errors,
+Telegram polling lifecycle logs, and sanitized request/response operational logs remain visible. Development can
+still opt into detailed EF diagnostics separately.
+
 Operators can pass one safe correlation ID during smoke or incident reproduction and search the local application
 logs for that ID. `smoke-production-stack.ps1` generates and prints a non-secret smoke ID and verifies the API
 echoes it.

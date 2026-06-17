@@ -71,6 +71,27 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task HandlerSendsMultipleAdapterMessagesInOrder()
+    {
+        var messages = new[]
+        {
+            new EquipmentDiagnosticTelegramOutboundMessage("part 1"),
+            new EquipmentDiagnosticTelegramOutboundMessage("part 2")
+        };
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "part 1",
+            messages);
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(Update("Gree H5"), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(["part 1", "part 2"], outbound.Texts);
+    }
+
+    [Fact]
     public async Task UnauthorizedAndIgnoredUpdatesDoNotSendOutbound()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Ignored, string.Empty);
@@ -108,7 +129,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     private static TelegramWebhookUpdateDto Update(string? text) =>
         new(1, new TelegramWebhookMessageDto(2, text, new TelegramWebhookChatDto(3, "operator"), null, 1_700_000_000));
 
-    private sealed class FakeAdapter(EquipmentDiagnosticTelegramResponseKind kind, string text)
+    private sealed class FakeAdapter(
+        EquipmentDiagnosticTelegramResponseKind kind,
+        string text,
+        IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null)
         : IEquipmentDiagnosticTelegramAdapter
     {
         public int CallCount { get; private set; }
@@ -119,7 +143,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         {
             CallCount++;
             return Task.FromResult(new EquipmentDiagnosticTelegramResponse(
-                update.ChatId, text, kind, null, true, [], null));
+                update.ChatId, text, kind, null, true, [], null, messages));
         }
     }
 
@@ -127,16 +151,19 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     {
         public int CallCount { get; private set; }
         public string? Text { get; private set; }
+        public List<string> Texts { get; } = [];
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
             string text,
             string? parseMode,
             bool disableWebPagePreview,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
             Text = text;
+            Texts.Add(text);
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Sent."));
         }
     }

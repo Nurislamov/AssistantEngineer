@@ -29,6 +29,8 @@ For direct ASP.NET configuration, use
 `AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<telegram-chat-id>`.
 
 Telegram users are stored in the existing application PostgreSQL database through the `TelegramUsers` EF migration.
+No additional `.env` variable is required for ED-21B Russian UX, contact keyboard, technical response splitting, or
+production SQL log suppression. Rebuild the backend Docker image to pick up the GSSAPI runtime package.
 
 Validate the ignored production file without printing secrets:
 

@@ -78,7 +78,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(1, factory.Outbound.CallCount);
-        Assert.Contains("Safe next steps:", factory.Outbound.LastText, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", factory.Outbound.LastText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -206,6 +206,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
             string text,
             string? parseMode,
             bool disableWebPagePreview,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
             CancellationToken cancellationToken = default)
         {
             CallCount++;

@@ -137,7 +137,7 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         }
 
         await context.SaveChangesAsync(cancellationToken);
-        return new TelegramUserCommandResult(true, $"User {chatId} allowed as {role}.");
+        return new TelegramUserCommandResult(true, $"Пользователь {chatId} разрешен с ролью {role}.");
     }
 
     public async Task<TelegramUserCommandResult> SetRoleAsync(
@@ -150,12 +150,12 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         var user = await FindByChatIdAsync(context, chatId, cancellationToken);
         if (user is null)
         {
-            return new TelegramUserCommandResult(false, "User not found.");
+            return new TelegramUserCommandResult(false, "Пользователь не найден.");
         }
 
         user.Role = role;
         await context.SaveChangesAsync(cancellationToken);
-        return new TelegramUserCommandResult(true, $"User role set to {role}.");
+        return new TelegramUserCommandResult(true, $"Роль пользователя изменена на {role}.");
     }
 
     public async Task<TelegramUserCommandResult> SetEnabledAsync(
@@ -168,12 +168,12 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         var user = await FindByChatIdAsync(context, chatId, cancellationToken);
         if (user is null)
         {
-            return new TelegramUserCommandResult(false, "User not found.");
+            return new TelegramUserCommandResult(false, "Пользователь не найден.");
         }
 
         user.IsEnabled = isEnabled;
         await context.SaveChangesAsync(cancellationToken);
-        return new TelegramUserCommandResult(true, isEnabled ? "User enabled." : "User disabled.");
+        return new TelegramUserCommandResult(true, isEnabled ? "Доступ пользователя включен." : "Доступ пользователя выключен.");
     }
 
     public async Task<TelegramUserCommandResult> SetBlockedAsync(
@@ -186,12 +186,12 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         var user = await FindByChatIdAsync(context, chatId, cancellationToken);
         if (user is null)
         {
-            return new TelegramUserCommandResult(false, "User not found.");
+            return new TelegramUserCommandResult(false, "Пользователь не найден.");
         }
 
         user.IsBlocked = isBlocked;
         await context.SaveChangesAsync(cancellationToken);
-        return new TelegramUserCommandResult(true, isBlocked ? "User blocked." : "User unblocked.");
+        return new TelegramUserCommandResult(true, isBlocked ? "Пользователь заблокирован." : "Пользователь разблокирован.");
     }
 
     public async Task<TelegramUserCommandResult> SavePhoneAsync(
@@ -206,14 +206,14 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         var user = await FindByChatIdAsync(context, chatId, cancellationToken);
         if (user is null)
         {
-            return new TelegramUserCommandResult(false, "User not found.");
+            return new TelegramUserCommandResult(false, "Пользователь не найден.");
         }
 
         user.PhoneNumber = phoneNumber;
         user.PhoneNumberVerified = verified;
         user.PhoneNumberSharedAt = sharedAt;
         await context.SaveChangesAsync(cancellationToken);
-        return new TelegramUserCommandResult(true, "Phone number saved.");
+        return new TelegramUserCommandResult(true, "Номер телефона сохранен.");
     }
 
     private static Task<TelegramUserEntity?> FindByChatIdAsync(

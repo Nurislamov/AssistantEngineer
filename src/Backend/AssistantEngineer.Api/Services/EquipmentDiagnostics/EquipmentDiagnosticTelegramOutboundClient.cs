@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using AssistantEngineer.Api.Services.OperationalDiagnostics;
 
@@ -28,6 +29,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         string text,
         string? parseMode,
         bool disableWebPagePreview,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default)
     {
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(_options.BotToken))
@@ -52,6 +54,10 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         if (!string.IsNullOrWhiteSpace(parseMode))
         {
             payload["parse_mode"] = parseMode;
+        }
+        if (replyMarkup is not null)
+        {
+            payload["reply_markup"] = ToTelegramReplyMarkup(replyMarkup);
         }
 
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
@@ -98,4 +104,37 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
 
     private static EquipmentDiagnosticTelegramOutboundResult Failed() =>
         new(false, "Telegram outbound send failed.");
+
+    private static Dictionary<string, object?> ToTelegramReplyMarkup(
+        EquipmentDiagnosticTelegramReplyMarkup replyMarkup)
+    {
+        var payload = new Dictionary<string, object?>();
+        if (replyMarkup.Keyboard is { Count: > 0 })
+        {
+            payload["keyboard"] = replyMarkup.Keyboard
+                .Select(row => row
+                    .Select(button => new Dictionary<string, object?>
+                    {
+                        ["text"] = button.Text,
+                        ["request_contact"] = button.RequestContact
+                    })
+                    .ToArray())
+                .ToArray();
+        }
+
+        if (replyMarkup.ResizeKeyboard is not null)
+        {
+            payload["resize_keyboard"] = replyMarkup.ResizeKeyboard.Value;
+        }
+        if (replyMarkup.OneTimeKeyboard is not null)
+        {
+            payload["one_time_keyboard"] = replyMarkup.OneTimeKeyboard.Value;
+        }
+        if (replyMarkup.RemoveKeyboard is not null)
+        {
+            payload["remove_keyboard"] = replyMarkup.RemoveKeyboard.Value;
+        }
+
+        return payload;
+    }
 }

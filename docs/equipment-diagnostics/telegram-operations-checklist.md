@@ -17,6 +17,8 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Use `DeniedChatIds` for emergency or explicit blocks. Deny wins over allow.
 - Username allow/deny rules are optional; chat ID rules are preferred.
 - Unknown Telegram users are auto-created as `Consumer`, `IsEnabled=true`, `IsBlocked=false`.
+- Consumer receives Russian public-safe messages by default. Owner, Admin, and Engineer receive the more detailed
+  Russian technical response.
 - In `Production`, enabled Telegram without `BootstrapOwnerChatId` or legacy bootstrap fallback fails startup unless
   chat ID discovery is temporarily enabled for setup.
 
@@ -29,6 +31,12 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Keep `TELEGRAM_ALLOWED_USERNAME=` empty unless a reviewed username fallback is required.
 - Keep `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` after the chat ID is known.
 - Verify an unknown Telegram account is created as `Consumer` and receives only the simplified public-safe response.
+- Verify Consumer `/start` and `/help` are Russian, contain no `/admin` commands, and show the contact sharing
+  keyboard when the phone number is not saved.
+- Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,
+  `deterministic bot API`, or unsafe board/compressor/inverter/refrigerant/high-voltage instructions.
+- Verify sharing a Telegram contact saves the phone number, verifies it only when Telegram `contact.user_id` matches
+  `from.id`, and removes the contact keyboard.
 - Verify the bootstrap owner can use `/admin users`, `/admin block <chatId>`, `/admin unblock <chatId>`,
   `/admin disable <chatId>`, `/admin enable <chatId>`, and `/admin role <chatId> <Owner|Admin|Engineer|Consumer>`.
 
@@ -54,7 +62,12 @@ Discovery is disabled by default. Its response never includes the bot token, web
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
 - `BootstrapOwnerChatId` is configured, `TelegramUsers` migration has been applied, and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
-- Phone sharing uses Telegram contact messages; phone numbers are not logged and are not required for diagnostics.
+- Phone sharing uses a Telegram reply keyboard with `request_contact=true`; phone numbers are not logged and are not
+  required for diagnostics.
+- Production logging keeps application, polling, and request operational messages while suppressing EF Core/Npgsql SQL
+  command noise below Warning.
+- The backend Docker image includes the GSSAPI runtime dependency required by Npgsql so `libgssapi_krb5.so.2` missing
+  library warnings should not appear after image rebuild.
 - `EnableChatIdDiscovery=false` after setup.
 - Telegram webhook and long polling are not used together.
 - Run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`.

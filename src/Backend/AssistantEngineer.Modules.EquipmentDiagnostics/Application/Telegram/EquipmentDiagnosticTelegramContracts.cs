@@ -60,4 +60,33 @@ public sealed record EquipmentDiagnosticTelegramResponse(
     string? ParseMode,
     bool DisableWebPagePreview,
     IReadOnlyList<string> Warnings,
-    IReadOnlyList<string>? InternalDecisionTrace = null);
+    IReadOnlyList<string>? InternalDecisionTrace = null,
+    IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null)
+{
+    public IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage> OutboundMessages =>
+        Messages is { Count: > 0 }
+            ? Messages
+            :
+            [
+                new EquipmentDiagnosticTelegramOutboundMessage(
+                    Text,
+                    ParseMode,
+                    DisableWebPagePreview)
+            ];
+}
+
+public sealed record EquipmentDiagnosticTelegramOutboundMessage(
+    string Text,
+    string? ParseMode = null,
+    bool DisableWebPagePreview = true,
+    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null);
+
+public sealed record EquipmentDiagnosticTelegramReplyMarkup(
+    IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>? Keyboard = null,
+    bool? ResizeKeyboard = null,
+    bool? OneTimeKeyboard = null,
+    bool? RemoveKeyboard = null);
+
+public sealed record EquipmentDiagnosticTelegramKeyboardButton(
+    string Text,
+    bool RequestContact = false);

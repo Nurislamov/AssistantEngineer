@@ -70,7 +70,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, allow.ResponseKind);
         Assert.Equal(TelegramUserRole.Consumer, allowed?.Role);
-        Assert.Contains("Telegram users", users.Text, StringComparison.Ordinal);
+        Assert.Contains("Пользователи Telegram", users.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -87,6 +87,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, role.ResponseKind);
         Assert.Equal(TelegramUserRole.Engineer, user?.Role);
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Unsupported, engineerAdmin.ResponseKind);
+        Assert.Contains("Команда недоступна", engineerAdmin.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -98,9 +99,14 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var help = await adapter.HandleAsync(Update("/start", chatId: 600));
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 600));
 
+        Assert.Contains("Диагностика оборудования", help.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin", help.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Safe next steps:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Возможное значение", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Confidence:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Source:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Response shortened", diagnostic.Text, StringComparison.Ordinal);
+        Assert.NotNull(diagnostic.OutboundMessages.Single().ReplyMarkup);
     }
 
     [Fact]
@@ -112,8 +118,25 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 700));
 
-        Assert.Contains("Confidence:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Safety:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Безопасность:", diagnostic.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TechnicalResponseCanBeSplitIntoMultipleTelegramMessages()
+    {
+        var store = new InMemoryTelegramUserStore();
+        var adapter = CreateAdapter(
+            store,
+            Options() with { BootstrapOwnerChatId = 710 },
+            new LongTechnicalFacade());
+
+        var response = await adapter.HandleAsync(Update("Gree H5", chatId: 710));
+
+        Assert.True(response.OutboundMessages.Count > 1);
+        Assert.All(response.OutboundMessages, message =>
+            Assert.InRange(message.Text.Length, 1, 3500));
+        Assert.StartsWith("Диагностика", response.OutboundMessages[0].Text, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -133,17 +156,34 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var user = await store.GetByChatIdAsync(800);
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Спасибо, номер сохранен", response.Text, StringComparison.Ordinal);
         Assert.True(user?.HasPhoneNumber);
         Assert.Equal(expectedVerified, user?.PhoneNumberVerified);
+        Assert.True(response.OutboundMessages.Single().ReplyMarkup?.RemoveKeyboard);
+    }
+
+    [Fact]
+    public async Task ConsumerWithSavedPhoneDoesNotGetRepeatedPhonePromptOrKeyboard()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.GetOrCreateConsumerAsync(Update("/start", chatId: 900));
+        await store.SavePhoneAsync(900, "+998901234567", verified: true, DateTimeOffset.UtcNow);
+        var adapter = CreateAdapter(store, Options());
+
+        var response = await adapter.HandleAsync(Update("Gree H5", chatId: 900));
+
+        Assert.Contains("Ваш номер уже сохранен", response.Text, StringComparison.Ordinal);
+        Assert.Null(response.OutboundMessages.Single().ReplyMarkup);
     }
 
     private static EquipmentDiagnosticTelegramAdapter CreateAdapter(
         ITelegramUserStore store,
-        EquipmentDiagnosticTelegramOptions options)
+        EquipmentDiagnosticTelegramOptions options,
+        IEquipmentDiagnosticBotFacade? facade = null)
     {
         var access = new TelegramUserAccessService(store, options);
         return new(
-            new StaticFacade(),
+            facade ?? new StaticFacade(),
             new EquipmentDiagnosticTelegramMessageParser(),
             new EquipmentDiagnosticTelegramResponseFormatter(),
             options,
@@ -205,5 +245,37 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
                 OperatorNextSteps: ["Share the code with service."],
                 Warnings: [],
                 InternalDecisionTrace: null));
+    }
+
+    private sealed class LongTechnicalFacade : IEquipmentDiagnosticBotFacade
+    {
+        public Task<EquipmentDiagnosticBotResponse> DiagnoseAsync(
+            EquipmentDiagnosticBotRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            var longText = string.Join(
+                Environment.NewLine,
+                Enumerable.Range(1, 120).Select(index => $"Техническая строка {index}: проверка должна идти по документации и месту установки."));
+
+            return Task.FromResult(new EquipmentDiagnosticBotResponse(
+                EquipmentDiagnosticBotResponseStatus.Answer,
+                "Gree H5",
+                longText,
+                request.Manufacturer ?? "Gree",
+                request.Code ?? "H5",
+                null,
+                new EquipmentDiagnosticBotObservedCodeContext(request.Code ?? "H5", request.Code ?? "H5", request.FreeText),
+                null,
+                null,
+                null,
+                new EquipmentDiagnosticBotSafetyCard("Работы выполняет квалифицированный специалист.", []),
+                VerificationRequired: true,
+                Confidence: DiagnosticConfidence.Medium,
+                IsManualVerified: false,
+                IsSeedKnowledge: true,
+                OperatorNextSteps: [],
+                Warnings: [],
+                InternalDecisionTrace: null));
+        }
     }
 }

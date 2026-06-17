@@ -106,27 +106,32 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             return Result(EquipmentDiagnosticTelegramWebhookStatus.Ignored, "Telegram update was ignored by adapter policy.");
         }
 
-        if (string.IsNullOrWhiteSpace(adapterResponse.Text))
+        if (adapterResponse.OutboundMessages.Count == 0 ||
+            adapterResponse.OutboundMessages.Any(message => string.IsNullOrWhiteSpace(message.Text)))
         {
             _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram adapter produced no user-facing response.");
         }
 
-        var outbound = await _outboundClient.SendMessageAsync(
-            adapterResponse.ChatId,
-            adapterResponse.Text,
-            adapterResponse.ParseMode,
-            adapterResponse.DisableWebPagePreview,
-            cancellationToken);
-
-        if (outbound.Succeeded)
+        foreach (var message in adapterResponse.OutboundMessages)
         {
-            _counters.RecordProcessed();
-            return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
+            var outbound = await _outboundClient.SendMessageAsync(
+                adapterResponse.ChatId,
+                message.Text,
+                message.ParseMode,
+                message.DisableWebPagePreview,
+                message.ReplyMarkup,
+                cancellationToken);
+
+            if (!outbound.Succeeded)
+            {
+                _counters.RecordOutboundSendFailure();
+                return Result(EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed, "Telegram outbound send failed.");
+            }
         }
 
-        _counters.RecordOutboundSendFailure();
-        return Result(EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed, "Telegram outbound send failed.");
+        _counters.RecordProcessed();
+        return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
     }
 
     private static EquipmentDiagnosticTelegramWebhookResult Result(

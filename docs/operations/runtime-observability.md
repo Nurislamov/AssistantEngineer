@@ -19,6 +19,11 @@ or staging artifacts, chat IDs, usernames, phone numbers, message bodies, bot to
 in-process checks pass; it does not prove external Telegram delivery, DNS, HTTPS, provider health, or production
 traffic readiness.
 
+ED-21B keeps the same sanitized observability surface while polishing Telegram runtime behavior: Consumer replies are
+Russian and public-safe, contact sharing is handled through Telegram reply markup, technical replies may be split
+across ordered outbound messages, and production SQL command text from EF Core/Npgsql is suppressed below Warning.
+The backend Docker image installs `libgssapi-krb5-2` to avoid Npgsql GSSAPI missing-library noise.
+
 ## Non-Claims
 
 - No Prometheus, Seq, ELK, Grafana, or external monitoring service is implemented.

@@ -22,7 +22,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(text));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Equipment diagnostics", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Диагностика оборудования", response.Text, StringComparison.Ordinal);
         Assert.Equal(0, facade.CallCount);
     }
 
@@ -35,9 +35,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Verification required", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Source:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Safety:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Перед окончательным выводом нужна проверка", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Источник:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var second = await adapter.HandleAsync(Update("Gree E1"));
 
         Assert.Equal(first.Text, second.Text);
-        Assert.Contains("context", first.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("reply with Outdoor context", first.Text, StringComparison.Ordinal);
+        Assert.Contains("контекст", first.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ответьте с контекстом Outdoor", first.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree A0"));
 
-        Assert.Contains("Reference-only indication", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Confidence:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Справочное совпадение", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree ZZ99"));
 
-        Assert.Contains("Verify the manufacturer, equipment family, display context", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Safety:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Код не найден", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
         Assert.Equal(1, facade.CallCount);
     }
 
@@ -183,7 +183,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, identity.ResponseKind);
         Assert.Contains("chatId: 7", identity.Text, StringComparison.Ordinal);
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, diagnostic.ResponseKind);
-        Assert.Contains("Safe next steps:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", diagnostic.Text, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -216,7 +216,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("chatId: 7", response.Text, StringComparison.Ordinal);
         Assert.Contains("userId: 11", response.Text, StringComparison.Ordinal);
         Assert.Contains("username: operator", response.Text, StringComparison.Ordinal);
-        Assert.Contains("AllowedChatIds", response.Text, StringComparison.Ordinal);
+        Assert.Contains("BootstrapOwnerChatId", response.Text, StringComparison.Ordinal);
         Assert.Equal(0, facade.CallCount);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));

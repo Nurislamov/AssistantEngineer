@@ -5,6 +5,9 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 
 public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTelegramAdapter
 {
+    private const int TelegramTechnicalChunkLength = 3500;
+    private const int ConsumerMessageLength = 900;
+
     private readonly IEquipmentDiagnosticBotFacade _botFacade;
     private readonly EquipmentDiagnosticTelegramMessageParser _parser;
     private readonly EquipmentDiagnosticTelegramResponseFormatter _formatter;
@@ -57,7 +60,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return Response(
                 update.ChatId,
                 _formatter.FormatPhoneSaved(_options.MaxMessageLength),
-                EquipmentDiagnosticTelegramResponseKind.Reply);
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: RemoveKeyboardMarkup());
         }
 
         if (TryHandleMe(update, access, out var meResponse))
@@ -92,10 +96,12 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         if (parseResult.Command is EquipmentDiagnosticTelegramCommand.Start or EquipmentDiagnosticTelegramCommand.Help)
         {
+            var phoneSaved = access.User?.HasPhoneNumber == true;
             return Response(
                 update.ChatId,
-                _formatter.FormatHelp(access.Role, access.User?.HasPhoneNumber == true, _options.MaxMessageLength),
-                EquipmentDiagnosticTelegramResponseKind.Reply);
+                _formatter.FormatHelp(access.Role, phoneSaved, Math.Max(_options.MaxMessageLength, ConsumerMessageLength)),
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: ShouldPromptForContact(access, phoneSaved) ? ContactRequestMarkup() : null);
         }
 
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
@@ -121,13 +127,28 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         }
 
         var diagnosis = await _botFacade.DiagnoseAsync(parseResult.DiagnosticRequest, cancellationToken);
+        if (access.UsesTechnicalResponse)
+        {
+            var technical = _formatter.FormatTechnical(diagnosis);
+            var messages = SplitTelegramMessage(technical)
+                .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(chunk))
+                .ToArray();
+
+            return Response(
+                update.ChatId,
+                messages[0].Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                diagnosis.Warnings,
+                messages: messages);
+        }
+
+        var consumerPhoneSaved = access.User?.HasPhoneNumber == true;
         return Response(
             update.ChatId,
-            access.UsesTechnicalResponse
-                ? _formatter.Format(diagnosis, _options.MaxMessageLength)
-                : _formatter.FormatConsumer(diagnosis, access.User?.HasPhoneNumber == true, _options.MaxMessageLength),
+            _formatter.FormatConsumer(diagnosis, consumerPhoneSaved, ConsumerMessageLength),
             EquipmentDiagnosticTelegramResponseKind.Reply,
-            diagnosis.Warnings);
+            diagnosis.Warnings,
+            replyMarkup: ShouldPromptForContact(access, consumerPhoneSaved) ? ContactRequestMarkup() : null);
     }
 
     private bool TryHandleMe(
@@ -164,7 +185,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         {
             return Response(
                 update.ChatId,
-                "Command is not available.",
+                "Команда недоступна.",
                 EquipmentDiagnosticTelegramResponseKind.Unsupported);
         }
 
@@ -183,7 +204,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         if (!TryReadChatId(parts, 2, out var chatId))
         {
-            return Response(update.ChatId, "Admin command requires a numeric chat id.", EquipmentDiagnosticTelegramResponseKind.ValidationError);
+            return Response(update.ChatId, "Админ-команде нужен числовой chatId.", EquipmentDiagnosticTelegramResponseKind.ValidationError);
         }
 
         TelegramUserCommandResult result = command switch
@@ -200,7 +221,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         return Response(
             update.ChatId,
-            result.Message,
+            TranslateAdminCommandResult(command, chatId, result),
             result.Succeeded ? EquipmentDiagnosticTelegramResponseKind.Reply : EquipmentDiagnosticTelegramResponseKind.ValidationError);
     }
 
@@ -219,11 +240,88 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         out TelegramUserRole role) =>
         Enum.TryParse(value, ignoreCase: true, out role);
 
+    private static bool ShouldPromptForContact(
+        TelegramUserAccessResult access,
+        bool phoneSaved) =>
+        access.Role == TelegramUserRole.Consumer && !phoneSaved;
+
+    private static EquipmentDiagnosticTelegramReplyMarkup ContactRequestMarkup() =>
+        new(
+            Keyboard:
+            [
+                [
+                    new EquipmentDiagnosticTelegramKeyboardButton(
+                        "📞 Поделиться номером",
+                        RequestContact: true)
+                ]
+            ],
+            ResizeKeyboard: true,
+            OneTimeKeyboard: true);
+
+    private static EquipmentDiagnosticTelegramReplyMarkup RemoveKeyboardMarkup() =>
+        new(RemoveKeyboard: true);
+
+    private static IReadOnlyList<string> SplitTelegramMessage(string text)
+    {
+        if (text.Length <= TelegramTechnicalChunkLength)
+        {
+            return [text];
+        }
+
+        var chunks = new List<string>();
+        var remaining = text;
+        while (remaining.Length > TelegramTechnicalChunkLength)
+        {
+            var splitAt = remaining.LastIndexOf('\n', TelegramTechnicalChunkLength);
+            if (splitAt < TelegramTechnicalChunkLength / 2)
+            {
+                splitAt = TelegramTechnicalChunkLength;
+            }
+
+            chunks.Add(remaining[..splitAt].Trim());
+            remaining = remaining[splitAt..].Trim();
+        }
+
+        if (remaining.Length > 0)
+        {
+            chunks.Add(remaining);
+        }
+
+        return chunks;
+    }
+
+    private static string TranslateAdminCommandResult(
+        string command,
+        long chatId,
+        TelegramUserCommandResult result)
+    {
+        if (!result.Succeeded)
+        {
+            return result.Message.Contains("not found", StringComparison.OrdinalIgnoreCase) ||
+                result.Message.Contains("не найден", StringComparison.OrdinalIgnoreCase)
+                ? "Пользователь не найден."
+                : "Команда не выполнена.";
+        }
+
+        return command switch
+        {
+            "allow" => $"Пользователь {chatId} разрешен с ролью Пользователь.",
+            "block" => "Пользователь заблокирован.",
+            "unblock" => "Пользователь разблокирован.",
+            "disable" => "Доступ пользователя выключен.",
+            "enable" => "Доступ пользователя включен.",
+            "role" => "Роль пользователя обновлена.",
+            _ => "Команда выполнена."
+        };
+    }
+
     private static EquipmentDiagnosticTelegramResponse Response(
         long chatId,
         string text,
         EquipmentDiagnosticTelegramResponseKind responseKind,
-        IReadOnlyList<string>? warnings = null) =>
+        IReadOnlyList<string>? warnings = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null) =>
         new(
             chatId,
             text,
@@ -231,5 +329,16 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             ParseMode: null,
             DisableWebPagePreview: true,
             warnings ?? [],
-            InternalDecisionTrace: null);
+            InternalDecisionTrace: null,
+            Messages: messages ??
+                (replyMarkup is null
+                    ? null
+                    :
+                    [
+                        new EquipmentDiagnosticTelegramOutboundMessage(
+                            text,
+                            ParseMode: null,
+                            DisableWebPagePreview: true,
+                            replyMarkup)
+                    ]));
 }

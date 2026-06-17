@@ -45,8 +45,12 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Confirm unknown Telegram users are auto-created as `Consumer`, not Engineer/Admin.
 - Temporarily enable chat ID discovery only when required to identify an approved chat.
 - Disable chat ID discovery immediately after the allowlist is configured.
-- Verify an unknown Telegram account is ignored while the allowed chat can run `/start` and one deterministic smoke
-  diagnostic.
+- Verify an unknown Telegram account is auto-created as `Consumer`, sees Russian `/start` and `/help`, receives no
+  admin commands, and gets the contact sharing button before the phone is saved.
+- Verify Consumer diagnostic replies are Russian, short, public-safe, and do not include confidence/source/internal
+  traces or response-shortening markers.
+- Verify Owner/Admin `/start` shows admin commands in Russian and Engineer gets technical diagnostics without admin
+  commands.
 - Explicitly enable the reviewed Telegram transport only after all preceding checks pass.
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   verify no webhook URL is configured and API logs show `Telegram polling started`.
@@ -55,6 +59,8 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Send one deterministic Telegram smoke message and verify the bounded response.
 - From the bootstrap owner, verify `/admin users`, role promotion, block/unblock, disable/enable, and Consumer help
   hiding admin commands.
+- Confirm production logs do not print EF/Npgsql SQL command text at Information level and no
+  `libgssapi_krb5.so.2` missing-library warning appears after rebuilding the backend image.
 
 ## Closeout
 

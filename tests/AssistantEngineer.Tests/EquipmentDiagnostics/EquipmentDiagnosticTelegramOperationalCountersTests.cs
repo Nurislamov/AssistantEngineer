@@ -90,6 +90,7 @@ public sealed class EquipmentDiagnosticTelegramOperationalCountersTests
             string text,
             string? parseMode,
             bool disableWebPagePreview,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(succeeded, succeeded ? "Sent." : "Failed."));
     }

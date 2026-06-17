@@ -102,7 +102,7 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
                 return existing;
             });
 
-        return Task.FromResult(new TelegramUserCommandResult(true, $"User {user.TelegramChatId} allowed as {user.Role}."));
+        return Task.FromResult(new TelegramUserCommandResult(true, $"Пользователь {user.TelegramChatId} разрешен с ролью {user.Role}."));
     }
 
     public Task<TelegramUserCommandResult> SetRoleAsync(
@@ -112,11 +112,11 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
     {
         if (!_users.TryGetValue(chatId, out var user))
         {
-            return Task.FromResult(new TelegramUserCommandResult(false, "User not found."));
+            return Task.FromResult(new TelegramUserCommandResult(false, "Пользователь не найден."));
         }
 
         user.Role = role;
-        return Task.FromResult(new TelegramUserCommandResult(true, $"User role set to {role}."));
+        return Task.FromResult(new TelegramUserCommandResult(true, $"Роль пользователя изменена на {role}."));
     }
 
     public Task<TelegramUserCommandResult> SetEnabledAsync(
@@ -126,11 +126,11 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
     {
         if (!_users.TryGetValue(chatId, out var user))
         {
-            return Task.FromResult(new TelegramUserCommandResult(false, "User not found."));
+            return Task.FromResult(new TelegramUserCommandResult(false, "Пользователь не найден."));
         }
 
         user.IsEnabled = isEnabled;
-        return Task.FromResult(new TelegramUserCommandResult(true, isEnabled ? "User enabled." : "User disabled."));
+        return Task.FromResult(new TelegramUserCommandResult(true, isEnabled ? "Доступ пользователя включен." : "Доступ пользователя выключен."));
     }
 
     public Task<TelegramUserCommandResult> SetBlockedAsync(
@@ -140,11 +140,11 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
     {
         if (!_users.TryGetValue(chatId, out var user))
         {
-            return Task.FromResult(new TelegramUserCommandResult(false, "User not found."));
+            return Task.FromResult(new TelegramUserCommandResult(false, "Пользователь не найден."));
         }
 
         user.IsBlocked = isBlocked;
-        return Task.FromResult(new TelegramUserCommandResult(true, isBlocked ? "User blocked." : "User unblocked."));
+        return Task.FromResult(new TelegramUserCommandResult(true, isBlocked ? "Пользователь заблокирован." : "Пользователь разблокирован."));
     }
 
     public Task<TelegramUserCommandResult> SavePhoneAsync(
@@ -156,13 +156,13 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
     {
         if (!_users.TryGetValue(chatId, out var user))
         {
-            return Task.FromResult(new TelegramUserCommandResult(false, "User not found."));
+            return Task.FromResult(new TelegramUserCommandResult(false, "Пользователь не найден."));
         }
 
         user.PhoneNumber = phoneNumber;
         user.PhoneNumberVerified = verified;
         user.PhoneNumberSharedAt = sharedAt;
-        return Task.FromResult(new TelegramUserCommandResult(true, "Phone number saved."));
+        return Task.FromResult(new TelegramUserCommandResult(true, "Номер телефона сохранен."));
     }
 
     private TelegramUserEntity NewUser(

@@ -12,6 +12,7 @@ This checklist authorizes only a reviewed closed beta. It does not authorize pro
 - [ ] No real secrets in Git; real domains, PDFs, logs, and generated reports are also absent.
 - [ ] `BootstrapOwnerChatId` is explicitly configured, `TelegramUsers` migration is applied, and `DeniedChatIds` policy is reviewed.
 - [ ] Unknown Telegram users become `Consumer`; admin commands are hidden from Consumer help.
+- [ ] ED-21B UX smoke passes: Consumer Russian `/start`/`help`/diagnostic replies, contact sharing button, Russian `/me`, Owner/Admin admin commands, Engineer technical response, no SQL log noise, and no GSSAPI missing-library warning after image rebuild.
 - [ ] Webhook setup and status checks pass before inviting closed-beta operators.
 - [ ] Runtime catalog remains the only final-answer source.
 - [ ] Partial manual-backed coverage and every other known limitation are communicated.

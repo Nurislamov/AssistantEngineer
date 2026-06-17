@@ -89,6 +89,30 @@ public sealed class OperationalCorrelationTests
         Assert.DoesNotContain("_options.BotToken", outbound[(outbound.IndexOf("LogInformation", StringComparison.Ordinal))..], StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ProductionLoggingSuppressesEfAndNpgsqlSqlNoise()
+    {
+        var appsettings = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "src", "Backend", "AssistantEngineer.Api",
+            "appsettings.json"));
+
+        Assert.Contains("\"Microsoft.EntityFrameworkCore\"", appsettings, StringComparison.Ordinal);
+        Assert.Contains("\"Microsoft.EntityFrameworkCore.Database.Command\"", appsettings, StringComparison.Ordinal);
+        Assert.Contains("\"Npgsql\"", appsettings, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"Microsoft.EntityFrameworkCore.Database.Command\":  \"Information\"", appsettings, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void BackendDockerImageInstallsGssapiRuntimeDependency()
+    {
+        var dockerfile = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "deploy", "docker", "backend", "Dockerfile"));
+
+        Assert.Contains("libgssapi-krb5-2", dockerfile, StringComparison.Ordinal);
+    }
+
     private sealed class CapturingLogger<T> : ILogger<T>
     {
         public List<string> Messages { get; } = [];

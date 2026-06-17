@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using AssistantEngineer.Api.Services.EquipmentDiagnostics;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using AssistantEngineer.Api.Services.OperationalDiagnostics;
 using Microsoft.Extensions.Logging;
@@ -45,6 +46,44 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         using var includedPayload = JsonDocument.Parse(withParseMode.Body!);
         Assert.False(omittedPayload.RootElement.TryGetProperty("parse_mode", out _));
         Assert.Equal("MarkdownV2", includedPayload.RootElement.GetProperty("parse_mode").GetString());
+    }
+
+    [Fact]
+    public async Task SendMessageIncludesReplyMarkupOnlyWhenNeeded()
+    {
+        var withoutMarkup = new CapturingHandler(HttpStatusCode.OK);
+        var withMarkup = new CapturingHandler(HttpStatusCode.OK);
+
+        await CreateClient(withoutMarkup, EnabledOptions())
+            .SendMessageAsync(42, "Safe reply", null, true);
+        await CreateClient(withMarkup, EnabledOptions())
+            .SendMessageAsync(
+                42,
+                "Safe reply",
+                null,
+                true,
+                new EquipmentDiagnosticTelegramReplyMarkup(
+                    Keyboard:
+                    [
+                        [
+                            new EquipmentDiagnosticTelegramKeyboardButton(
+                                "📞 Поделиться номером",
+                                RequestContact: true)
+                        ]
+                    ],
+                    ResizeKeyboard: true,
+                    OneTimeKeyboard: true));
+
+        using var omittedPayload = JsonDocument.Parse(withoutMarkup.Body!);
+        using var includedPayload = JsonDocument.Parse(withMarkup.Body!);
+        Assert.False(omittedPayload.RootElement.TryGetProperty("reply_markup", out _));
+
+        var replyMarkup = includedPayload.RootElement.GetProperty("reply_markup");
+        Assert.True(replyMarkup.GetProperty("resize_keyboard").GetBoolean());
+        Assert.True(replyMarkup.GetProperty("one_time_keyboard").GetBoolean());
+        var button = replyMarkup.GetProperty("keyboard")[0][0];
+        Assert.Equal("📞 Поделиться номером", button.GetProperty("text").GetString());
+        Assert.True(button.GetProperty("request_contact").GetBoolean());
     }
 
     [Fact]
