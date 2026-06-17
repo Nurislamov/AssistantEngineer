@@ -30,12 +30,12 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
         }
 
-        if (!IsAllowed(update))
+        var parseResult = _parser.Parse(update.Text, _options);
+        if (!IsAllowed(update, parseResult.Command))
         {
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
         }
 
-        var parseResult = _parser.Parse(update.Text, _options);
         if (parseResult.Errors.Count > 0)
         {
             return Response(
@@ -83,7 +83,9 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             diagnosis.Warnings);
     }
 
-    private bool IsAllowed(EquipmentDiagnosticTelegramUpdate update)
+    private bool IsAllowed(
+        EquipmentDiagnosticTelegramUpdate update,
+        EquipmentDiagnosticTelegramCommand command)
     {
         if (_options.DeniedChatIds.Contains(update.ChatId) ||
             update.Username is not null &&
@@ -92,12 +94,19 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return false;
         }
 
-        if (_options.AllowedChatIds.Count > 0 && !_options.AllowedChatIds.Contains(update.ChatId))
+        if (_options.EnableChatIdDiscovery &&
+            command == EquipmentDiagnosticTelegramCommand.Identity)
+        {
+            return true;
+        }
+
+        if (_options.AllowedChatIds.Count == 0 &&
+            _options.AllowedUsernames.Count == 0)
         {
             return false;
         }
 
-        return _options.AllowedUsernames.Count == 0 ||
+        return _options.AllowedChatIds.Contains(update.ChatId) ||
                update.Username is not null &&
                _options.AllowedUsernames.Contains(update.Username, StringComparer.OrdinalIgnoreCase);
     }

@@ -12,12 +12,15 @@ public sealed record OperationalDiagnosticsSnapshot(
 
 public sealed record EquipmentDiagnosticsOperationalSnapshot(
     bool BotEndpointAvailable,
+    string TelegramInboundMode,
     bool TelegramWebhookConfigured,
     bool TelegramWebhookEnabled,
     bool TelegramPollingConfigured,
     bool TelegramPollingEnabled,
     bool ChatIdDiscoveryEnabled,
+    bool TelegramAllowlistConfigured,
     bool AllowedChatIdsConfigured,
+    bool AllowedUsernamesConfigured,
     bool DeniedChatIdsConfigured,
     long WebhookUpdatesReceived,
     long WebhookUpdatesProcessed,

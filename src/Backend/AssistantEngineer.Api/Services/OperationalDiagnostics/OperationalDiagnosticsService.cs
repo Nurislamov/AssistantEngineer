@@ -39,15 +39,18 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
     {
         var now = _timeProvider.GetUtcNow();
         var counters = _telegramCounters.GetSnapshot();
+        var telegramAllowlistConfigured =
+            _telegramOptions.AllowedChatIds.Count > 0 ||
+            _telegramOptions.AllowedUsernames.Count > 0;
         var telegramWebhookConfigured =
             !string.IsNullOrWhiteSpace(_telegramOptions.BotToken) &&
             _telegramSecurityPolicy.IsValidSecret(_telegramOptions.WebhookSecret) &&
-            _telegramOptions.AllowedChatIds.Count > 0 &&
+            telegramAllowlistConfigured &&
             !_telegramOptions.EnableChatIdDiscovery;
         var telegramPollingEnabled = _telegramOptions.IsPollingDeliveryEnabled();
         var telegramPollingConfigured =
             telegramPollingEnabled &&
-            _telegramOptions.AllowedChatIds.Count > 0 &&
+            telegramAllowlistConfigured &&
             !_telegramOptions.EnableChatIdDiscovery;
 
         return new OperationalDiagnosticsSnapshot(
@@ -60,12 +63,15 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
             CorrelationHeaderName: _correlationOptions.HeaderName,
             EquipmentDiagnostics: new EquipmentDiagnosticsOperationalSnapshot(
                 BotEndpointAvailable: _botFacade is not null,
+                TelegramInboundMode: _telegramOptions.InboundMode.ToString(),
                 TelegramWebhookConfigured: telegramWebhookConfigured,
                 TelegramWebhookEnabled: _telegramOptions.IsEnabled,
                 TelegramPollingConfigured: telegramPollingConfigured,
                 TelegramPollingEnabled: telegramPollingEnabled,
                 ChatIdDiscoveryEnabled: _telegramOptions.EnableChatIdDiscovery,
+                TelegramAllowlistConfigured: telegramAllowlistConfigured,
                 AllowedChatIdsConfigured: _telegramOptions.AllowedChatIds.Count > 0,
+                AllowedUsernamesConfigured: _telegramOptions.AllowedUsernames.Count > 0,
                 DeniedChatIdsConfigured: _telegramOptions.DeniedChatIds.Count > 0,
                 WebhookUpdatesReceived: counters.UpdatesReceived,
                 WebhookUpdatesProcessed: counters.UpdatesProcessed,

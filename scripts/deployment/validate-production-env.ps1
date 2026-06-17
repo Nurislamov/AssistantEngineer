@@ -61,9 +61,13 @@ $keys = @{
     TelegramProcessedMessageStorePath = "TELEGRAM_PROCESSED_MESSAGE_STORE_FILE_PATH"
     TelegramProcessedMessageStoreMaxEntries = "TELEGRAM_PROCESSED_MESSAGE_STORE_MAX_ENTRIES"
     DiscoveryEnabled = "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY"
+    TelegramAllowedChat = "TELEGRAM_ALLOWED_CHAT_ID"
+    TelegramAllowedUsername = "TELEGRAM_ALLOWED_USERNAME"
+    TelegramDeniedChat = "TELEGRAM_DENIED_CHAT_ID"
     BotToken = "AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken"
     WebhookSecret = "AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret"
     AllowedChat = "AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0"
+    AllowedUsername = "AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedUsernames__0"
     DeniedChat = "AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0"
     ApiUrl = "VITE_API_BASE_URL"
 }
@@ -80,6 +84,13 @@ $discoveryEnabled = Read-Boolean $values $keys.DiscoveryEnabled
 $deleteWebhookOnStartup = Read-Boolean $values $keys.TelegramDeleteWebhookOnStartup
 $pollingEnabled = Read-Boolean $values $keys.TelegramPollingEnabled
 $inboundMode = $values[$keys.TelegramInboundMode]
+$allowedChatConfigured =
+    -not [string]::IsNullOrWhiteSpace($values[$keys.TelegramAllowedChat]) -or
+    -not [string]::IsNullOrWhiteSpace($values[$keys.AllowedChat])
+$allowedUsernameConfigured =
+    -not [string]::IsNullOrWhiteSpace($values[$keys.TelegramAllowedUsername]) -or
+    -not [string]::IsNullOrWhiteSpace($values[$keys.AllowedUsername])
+$telegramAllowlistConfigured = $allowedChatConfigured -or $allowedUsernameConfigured
 if ($inboundMode -notin @("Webhook", "Polling")) {
     throw "TELEGRAM_INBOUND_MODE must be Webhook or Polling."
 }
@@ -109,7 +120,7 @@ if ($AllowPlaceholders) {
         throw "ASPNETCORE_ENVIRONMENT must be Production."
     }
     if ($discoveryEnabled) {
-        throw "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY must be false before production deployment."
+        Write-Warning "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=true is only for temporary initial setup and keeps readiness unsafe."
     }
     if ($telegramEnabled) {
         if ([string]::IsNullOrWhiteSpace($values[$keys.BotToken])) {
@@ -118,8 +129,8 @@ if ($AllowPlaceholders) {
         if ($inboundMode -eq "Webhook" -and [string]::IsNullOrWhiteSpace($values[$keys.WebhookSecret])) {
             throw "Telegram is enabled but WebhookSecret is empty."
         }
-        if ([string]::IsNullOrWhiteSpace($values[$keys.AllowedChat])) {
-            throw "Telegram is enabled but AllowedChatIds is empty."
+        if (-not $telegramAllowlistConfigured -and -not $discoveryEnabled) {
+            throw "Telegram is enabled but the allowlist is empty. Configure AllowedChatIds or AllowedUsernames."
         }
         if ($inboundMode -eq "Polling" -and -not $pollingEnabled) {
             throw "Telegram polling mode requires TELEGRAM_POLLING_ENABLED=true."
@@ -144,4 +155,6 @@ Write-Host "Delete webhook on startup: $deleteWebhookOnStartup"
 Write-Host "Chat ID discovery enabled: $discoveryEnabled"
 Write-Host "Bot token configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.BotToken]))"
 Write-Host "Webhook secret configured: $(-not [string]::IsNullOrWhiteSpace($webhookSecret))"
-Write-Host "Allowed chat configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.AllowedChat]))"
+Write-Host "Telegram allowlist configured: $telegramAllowlistConfigured"
+Write-Host "Allowed chat configured: $allowedChatConfigured"
+Write-Host "Allowed username configured: $allowedUsernameConfigured"

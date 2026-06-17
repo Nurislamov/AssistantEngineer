@@ -21,10 +21,13 @@ public sealed class OperationalDiagnosticsTests
 
         Assert.True(snapshot.EquipmentDiagnostics.BotEndpointAvailable);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramWebhookEnabled);
+        Assert.Equal("Webhook", snapshot.EquipmentDiagnostics.TelegramInboundMode);
         Assert.True(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
         Assert.True(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.AllowedUsernamesConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
         Assert.True(snapshot.CorrelationEnabled);
         Assert.Equal("X-Correlation-ID", snapshot.CorrelationHeaderName);
@@ -53,10 +56,58 @@ public sealed class OperationalDiagnosticsTests
         var serialized = System.Text.Json.JsonSerializer.Serialize(snapshot);
 
         Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
+        Assert.Equal("Polling", snapshot.EquipmentDiagnostics.TelegramInboundMode);
         Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
         Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
         Assert.DoesNotContain("123456789", serialized, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SnapshotSurfacesMissingTelegramAllowlistWithoutLeakingIdentifiers()
+    {
+        using var services = CreateServices(new EquipmentDiagnosticTelegramWebhookOptions
+        {
+            IsEnabled = true,
+            InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling,
+            Polling = new EquipmentDiagnosticTelegramPollingOptions { Enabled = true },
+            BotToken = "test-token-value",
+            AllowedChatIds = [],
+            AllowedUsernames = []
+        });
+        var diagnostics = services.GetRequiredService<IOperationalDiagnosticsService>();
+
+        var snapshot = diagnostics.GetSnapshot();
+        var serialized = System.Text.Json.JsonSerializer.Serialize(snapshot);
+
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.AllowedUsernamesConfigured);
+        Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SnapshotSurfacesChatIdDiscoveryAsUnsafeOperationalState()
+    {
+        using var services = CreateServices(new EquipmentDiagnosticTelegramWebhookOptions
+        {
+            IsEnabled = true,
+            InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling,
+            Polling = new EquipmentDiagnosticTelegramPollingOptions { Enabled = true },
+            BotToken = "test-token-value",
+            EnableChatIdDiscovery = true,
+            AllowedChatIds = []
+        });
+        var diagnostics = services.GetRequiredService<IOperationalDiagnosticsService>();
+
+        var snapshot = diagnostics.GetSnapshot();
+
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
+        Assert.True(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
     }
 
     [Theory]
@@ -88,7 +139,9 @@ public sealed class OperationalDiagnosticsTests
     [Theory]
     [InlineData("AllowedChatIds=123,456", "AllowedChatIds=[REDACTED]")]
     [InlineData("DeniedChatIds: 789", "DeniedChatIds:[REDACTED]")]
+    [InlineData("AllowedUsernames=operator", "AllowedUsernames=[REDACTED]")]
     [InlineData("{\"chat_id\":123456}", "{\"chat_id\":\"[REDACTED]\"}")]
+    [InlineData("{\"username\":\"operator\"}", "{\"username\":\"[REDACTED]\"}")]
     [InlineData("{\"text\":\"raw Telegram message\"}", "{\"text\":\"[REDACTED]\"}")]
     public void RedactorMasksOperationalIncidentFields(string input, string expected)
     {

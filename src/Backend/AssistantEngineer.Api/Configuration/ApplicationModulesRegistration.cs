@@ -72,4 +72,23 @@ internal static class ApplicationModulesRegistration
 
         return services;
     }
+
+    internal static void ValidateTelegramProductionAccessPolicy(
+        EquipmentDiagnosticTelegramWebhookOptions telegramOptions,
+        string? environmentName)
+    {
+        if (!string.Equals(environmentName, Environments.Production, StringComparison.OrdinalIgnoreCase) ||
+            !telegramOptions.IsEnabled ||
+            telegramOptions.EnableChatIdDiscovery)
+        {
+            return;
+        }
+
+        if (telegramOptions.AllowedChatIds.Count == 0 &&
+            telegramOptions.AllowedUsernames.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "Enabled Telegram EquipmentDiagnostics bot in Production requires AllowedChatIds or AllowedUsernames.");
+        }
+    }
 }

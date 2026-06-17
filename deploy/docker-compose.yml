@@ -12,7 +12,7 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
       ASPNETCORE_URLS: http://+:8080
       AssistantEngineer__EquipmentDiagnostics__Telegram__IsEnabled: ${TELEGRAM_IS_ENABLED:-false}
-      AssistantEngineer__EquipmentDiagnostics__Telegram__InboundMode: ${TELEGRAM_INBOUND_MODE:-Webhook}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__InboundMode: ${TELEGRAM_INBOUND_MODE:-Polling}
       AssistantEngineer__EquipmentDiagnostics__Telegram__DeleteWebhookOnStartup: ${TELEGRAM_DELETE_WEBHOOK_ON_STARTUP:-false}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Enabled: ${TELEGRAM_POLLING_ENABLED:-false}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__TimeoutSeconds: ${TELEGRAM_POLLING_TIMEOUT_SECONDS:-50}
@@ -21,6 +21,9 @@ services:
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath: ${TELEGRAM_PROCESSED_MESSAGE_STORE_FILE_PATH:-artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries: ${TELEGRAM_PROCESSED_MESSAGE_STORE_MAX_ENTRIES:-5000}
       AssistantEngineer__EquipmentDiagnostics__Telegram__EnableChatIdDiscovery: ${TELEGRAM_ENABLE_CHAT_ID_DISCOVERY:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0: ${TELEGRAM_ALLOWED_CHAT_ID:-}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedUsernames__0: ${TELEGRAM_ALLOWED_USERNAME:-}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0: ${TELEGRAM_DENIED_CHAT_ID:-}
     expose:
       - "8080"
     ports:

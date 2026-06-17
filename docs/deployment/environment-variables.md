@@ -14,10 +14,17 @@ Git. Do not put real bot tokens, webhook secrets, domains, or credentials in sou
 | `VITE_API_BASE_URL` | Existing frontend build-time API base URL | `http://localhost/` |
 | `VITE_API_VERSION` | API version used by frontend routes | `1` |
 | `TELEGRAM_IS_ENABLED` | Explicit transport enable switch | `false` |
+| `TELEGRAM_INBOUND_MODE` | Telegram inbound transport | `Polling` |
+| `TELEGRAM_POLLING_ENABLED` | Polling worker enable switch | `false` |
 | `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY` | Temporary `/id` setup switch | `false` |
+| `TELEGRAM_ALLOWED_CHAT_ID` | Docker Compose shortcut for one closed-beta chat allowlist entry | empty placeholder |
+| `TELEGRAM_ALLOWED_USERNAME` | Optional Docker Compose shortcut for one username allowlist entry | empty placeholder |
 
-Telegram `BotToken`, `WebhookSecret`, `AllowedChatIds`, and `DeniedChatIds` use the existing nested ASP.NET
-environment variable names shown in `.env.example`. They intentionally have empty committed values.
+Telegram `BotToken`, `WebhookSecret`, `AllowedChatIds`, `AllowedUsernames`, and `DeniedChatIds` use the nested
+ASP.NET environment variable names shown in `.env.example`. They intentionally have empty committed values. For
+Docker Compose deployments, prefer `TELEGRAM_ALLOWED_CHAT_ID=<telegram-chat-id>` for the single-user closed beta.
+For direct ASP.NET configuration, use
+`AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<telegram-chat-id>`.
 
 No database variables are defined because ED-18A adds no database service or persistence stage.
 
@@ -33,8 +40,9 @@ For source-controlled placeholder validation only:
 .\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders
 ```
 
-The production validator requires `ASPNETCORE_ENVIRONMENT=Production`, chat ID discovery disabled, and, when
-Telegram is explicitly enabled, a bot token, valid webhook secret, and non-empty allowed chat ID.
+The production validator requires `ASPNETCORE_ENVIRONMENT=Production`. When Telegram is explicitly enabled it
+requires a bot token, a webhook secret only for webhook mode, and at least one allowlist entry unless chat ID
+discovery is temporarily enabled for setup. Discovery emits a warning and keeps readiness unsafe until disabled.
 
 The CI deployment dry run uses only `.env.example`. It does not read a real production `.env`, enable Telegram, or
 send secret values to image builds.

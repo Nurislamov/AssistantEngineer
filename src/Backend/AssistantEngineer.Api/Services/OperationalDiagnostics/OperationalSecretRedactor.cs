@@ -19,6 +19,7 @@ public static partial class OperationalSecretRedactor
         redacted = ConnectionStringPasswordPattern().Replace(redacted, match => $"{match.Groups["name"].Value}={Redacted}");
         redacted = ChatListPattern().Replace(redacted, match => $"{match.Groups["prefix"].Value}{Redacted}");
         redacted = ChatIdPattern().Replace(redacted, match => $"{match.Groups["prefix"].Value}\"{Redacted}\"");
+        redacted = TelegramUsernameFieldPattern().Replace(redacted, match => $"{match.Groups["prefix"].Value}\"{Redacted}\"");
         redacted = TelegramMessageFieldPattern().Replace(redacted, match => $"{match.Groups["prefix"].Value}\"{Redacted}\"");
         return redacted;
     }
@@ -35,11 +36,14 @@ public static partial class OperationalSecretRedactor
     [GeneratedRegex(@"(?i)(?<name>Password|Pwd)=([^;\s]+)", RegexOptions.CultureInvariant)]
     private static partial Regex ConnectionStringPasswordPattern();
 
-    [GeneratedRegex(@"(?im)^(?<prefix>.*\b(?:AllowedChatIds|DeniedChatIds)\b\s*[=:]).*$", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"(?im)^(?<prefix>.*\b(?:AllowedChatIds|DeniedChatIds|AllowedUsernames|DeniedUsernames)\b\s*[=:]).*$", RegexOptions.CultureInvariant)]
     private static partial Regex ChatListPattern();
 
     [GeneratedRegex(@"(?i)(?<prefix>""?chat_id""?\s*[=:]\s*)""?-?\d+""?", RegexOptions.CultureInvariant)]
     private static partial Regex ChatIdPattern();
+
+    [GeneratedRegex(@"(?i)(?<prefix>""?(?:username|from_username|fromUsername)""?\s*[=:]\s*)""(?:\\.|[^""\\])*""", RegexOptions.CultureInvariant)]
+    private static partial Regex TelegramUsernameFieldPattern();
 
     [GeneratedRegex(@"(?i)(?<prefix>""?(?:text|message_body|messageBody|telegramMessage)""?\s*[=:]\s*)""(?:\\.|[^""\\])*""", RegexOptions.CultureInvariant)]
     private static partial Regex TelegramMessageFieldPattern();

@@ -137,7 +137,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
 
     private sealed class WebhookApiFactory(
         bool enabled,
-        long? allowedChatId = null,
+        long? allowedChatId = 3,
         long? deniedChatId = null,
         bool enableChatIdDiscovery = false) : WebApplicationFactory<Program>
     {

@@ -1,4 +1,6 @@
-﻿namespace AssistantEngineer.Api.Configuration;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
+
+namespace AssistantEngineer.Api.Configuration;
 
 internal static class ApplicationModuleRegistration
 {
@@ -7,6 +9,11 @@ internal static class ApplicationModuleRegistration
         IConfiguration configuration,
         string environmentName)
     {
+        var telegramOptions = configuration
+            .GetSection("AssistantEngineer:EquipmentDiagnostics:Telegram")
+            .Get<EquipmentDiagnosticTelegramWebhookOptions>() ?? new EquipmentDiagnosticTelegramWebhookOptions();
+        ApplicationModulesRegistration.ValidateTelegramProductionAccessPolicy(telegramOptions, environmentName);
+
         services.AddAssistantEngineerApplicationModules(configuration);
         services.AddAssistantEngineerInfrastructureAdapters(
             configuration,

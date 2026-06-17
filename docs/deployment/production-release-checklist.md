@@ -40,9 +40,12 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Keep the polling offset and processed-message idempotency files on durable operational storage; the deployment
   scaffold uses the `api_operations` named volume.
 - Generate a new webhook secret using the documented character and length rules only when webhook fallback is used.
-- Configure a non-empty `AllowedChatIds` list.
+- Configure a non-empty `AllowedChatIds` or `AllowedUsernames` list. Prefer one `AllowedChatIds` entry for the
+  closed beta operator.
 - Temporarily enable chat ID discovery only when required to identify an approved chat.
 - Disable chat ID discovery immediately after the allowlist is configured.
+- Verify an unknown Telegram account is ignored while the allowed chat can run `/start` and one deterministic smoke
+  diagnostic.
 - Explicitly enable the reviewed Telegram transport only after all preceding checks pass.
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   verify no webhook URL is configured and API logs show `Telegram polling started`.

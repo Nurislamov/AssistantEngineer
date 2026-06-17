@@ -132,7 +132,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var facade = new CountingFacade();
         var adapter = CreateAdapter(
             facade,
-            EnabledOptions() with { AllowedUsernames = ["operator"], DeniedUsernames = ["OPERATOR"] });
+            EnabledOptions() with { AllowedChatIds = [], AllowedUsernames = ["operator"], DeniedUsernames = ["OPERATOR"] });
 
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
@@ -141,14 +141,46 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
-    public async Task EmptyAllowAndDenyListsPreserveCurrentAllowBehavior()
+    public async Task EmptyAllowAndDenyListsRejectDiagnosticMessages()
     {
         var facade = new CountingFacade();
-        var adapter = CreateAdapter(facade, EnabledOptions());
+        var adapter = CreateAdapter(facade, EnabledOptions() with { AllowedChatIds = [] });
+
+        var response = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Empty(response.Text);
+        Assert.Equal(0, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task AllowedUsernamePassesAccessPolicy()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(
+            facade,
+            EnabledOptions() with { AllowedChatIds = [], AllowedUsernames = ["OPERATOR"] });
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => adapter.HandleAsync(Update("Gree H5")));
 
         Assert.Equal(1, facade.CallCount);
+    }
+
+    [Fact]
+    public async Task IdentityDiscoveryWithEmptyAllowlistAllowsOnlyIdentityCommands()
+    {
+        var facade = new CountingFacade();
+        var adapter = CreateAdapter(
+            facade,
+            EnabledOptions() with { AllowedChatIds = [], EnableChatIdDiscovery = true });
+
+        var identity = await adapter.HandleAsync(Update("/id"));
+        var diagnostic = await adapter.HandleAsync(Update("Gree H5"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, identity.ResponseKind);
+        Assert.Contains("chatId: 7", identity.Text, StringComparison.Ordinal);
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, diagnostic.ResponseKind);
+        Assert.Equal(0, facade.CallCount);
     }
 
     [Theory]
@@ -256,7 +288,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     {
         IsEnabled = true,
         DefaultManufacturer = "Gree",
-        MaxMessageLength = 900
+        MaxMessageLength = 900,
+        AllowedChatIds = [7]
     };
 
     private static EquipmentDiagnosticTelegramUpdate Update(string text) =>

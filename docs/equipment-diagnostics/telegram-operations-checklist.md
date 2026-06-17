@@ -12,19 +12,31 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Keep `IsEnabled=false` until the public HTTPS endpoint, secrets, and access lists are reviewed.
 - Use `InboundMode=Polling` and `Polling__Enabled=true` when production webhook delivery cannot reach the API.
 - Keep webhook delivery as an optional fallback only; do not run webhook and polling at the same time.
-- Configure `AllowedChatIds` through environment configuration.
+- Configure `AllowedChatIds` or `AllowedUsernames` through environment configuration before enabling production
+  Telegram. Chat ID allowlisting is preferred for closed beta.
 - Use `DeniedChatIds` for emergency or explicit blocks. Deny wins over allow.
 - Username allow/deny rules are optional; chat ID rules are preferred.
-- Empty allow and deny lists preserve the current permissive adapter behavior, so production must configure an allowlist.
+- Empty allowlists are deny-by-default. In `Production`, enabled Telegram without an allowlist fails startup unless
+  chat ID discovery is temporarily enabled for initial setup.
+
+## Closed Beta Single-Operator Mode
+
+- Use one explicit allowlist entry: `TELEGRAM_ALLOWED_CHAT_ID=<telegram-chat-id>` for Docker Compose, or
+  `AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<telegram-chat-id>` for direct ASP.NET
+  configuration.
+- Keep `TELEGRAM_ALLOWED_USERNAME=` empty unless a reviewed username fallback is required.
+- Keep `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` after the chat ID is known.
+- Verify an unknown Telegram account gets no diagnostic response while the allowed chat can use `/start` and a
+  deterministic diagnostic smoke message.
 
 ## Initial Chat ID Discovery
 
 1. Create the BotFather token last and store it only in the deployment secret store.
 2. Generate the webhook secret for this deployment and store it only in environment or secret-store configuration.
-3. Temporarily set `EnableChatIdDiscovery=true`.
+3. Temporarily set `EnableChatIdDiscovery=true` or `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=true`.
 4. Deploy/restart and send `/id` or `/whoami`.
 5. Add the returned `chatId` to `AllowedChatIds` in environment configuration.
-6. Set `EnableChatIdDiscovery=false` and deploy/restart again.
+6. Set `EnableChatIdDiscovery=false` or `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` and deploy/restart again.
 
 Discovery is disabled by default. Its response never includes the bot token, webhook secret, server paths, or diagnostic data.
 
@@ -37,7 +49,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
-- `AllowedChatIds` is non-empty and `DeniedChatIds` is reviewed.
+- `AllowedChatIds` or `AllowedUsernames` is non-empty and `DeniedChatIds` is reviewed.
 - `EnableChatIdDiscovery=false` after setup.
 - Telegram webhook and long polling are not used together.
 - Run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`.
