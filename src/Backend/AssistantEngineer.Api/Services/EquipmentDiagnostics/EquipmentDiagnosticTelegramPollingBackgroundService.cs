@@ -45,6 +45,7 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             updates.Count);
 
         var currentLastProcessed = lastProcessedUpdateId;
+        var seenMessageKeys = new HashSet<string>(StringComparer.Ordinal);
         foreach (var update in updates.OrderBy(item => item.UpdateId))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -52,6 +53,20 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
                 "Telegram polling update received. UpdateId: {UpdateId}; ChatType: {ChatType}.",
                 update.UpdateId,
                 SafeChatType(update.Message?.Chat?.Type));
+
+            var messageKey = update.Message?.Chat is null
+                ? null
+                : $"{update.Message.Chat.Id}:{update.Message.MessageId}";
+            if (!string.IsNullOrWhiteSpace(messageKey) && !seenMessageKeys.Add(messageKey))
+            {
+                _logger.LogInformation(
+                    "Telegram polling duplicate message skipped. UpdateId: {UpdateId}; ChatType: {ChatType}.",
+                    update.UpdateId,
+                    SafeChatType(update.Message?.Chat?.Type));
+                await _offsetStore.SaveLastProcessedUpdateIdAsync(update.UpdateId, cancellationToken);
+                currentLastProcessed = update.UpdateId;
+                continue;
+            }
 
             var result = await _handler.HandleTrustedAsync(update, cancellationToken);
             if (result.Status is EquipmentDiagnosticTelegramWebhookStatus.Processed or
