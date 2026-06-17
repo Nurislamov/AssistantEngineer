@@ -76,9 +76,9 @@ and Engineer technical replies may be split into multiple ordered `sendMessage` 
 not hit. If any chunk fails, the update is reported as outbound failed.
 
 ED-22C also registers a safe global command menu with Telegram Bot API `setMyCommands` during startup when Telegram
-is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, `/help`, and
-`/admin_help` only. It deliberately does not publish `/admin users`, `/admin allow`, `/admin block`, `/admin role`,
-or parameterized admin commands. Set
+is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, and `/help` only. It
+deliberately does not publish `/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or
+parameterized admin commands. Owner/Admin can still open `/admin_help` manually or through `/help`. Set
 `AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=false` to skip menu synchronization.
 Failure to sync the menu must log a warning and must not stop startup, polling, or webhook fallback.
 
@@ -119,9 +119,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
-- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, and `/admin_help`;
-  `/admin_help` is unavailable to Consumer and Engineer, and Owner/Admin `/help` points to `/admin_help` instead of
-  listing parameterized admin commands.
+- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, and `/help`; `/admin_help`
+  is hidden from the global menu, unavailable to Consumer and Engineer, and still reachable for Owner/Admin through
+  `/help` or manual input.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
 - Confirm the contact sharing and manual phone buttons appear before the phone number is saved, manual phone
   validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.

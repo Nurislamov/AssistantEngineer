@@ -127,8 +127,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
             new("new", "новый код ошибки"),
             new("phone", "указать номер телефона"),
             new("me", "мой доступ"),
-            new("help", "помощь"),
-            new("admin_help", "админ-команды")
+            new("help", "помощь")
         ]);
 
         Assert.True(result.Succeeded);
@@ -137,9 +136,11 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         using var payload = JsonDocument.Parse(handler.Body!);
         Assert.False(payload.RootElement.TryGetProperty("parse_mode", out _));
         var commands = payload.RootElement.GetProperty("commands").EnumerateArray().ToArray();
-        Assert.Equal(["start", "new", "phone", "me", "help", "admin_help"], commands.Select(command => command.GetProperty("command").GetString() ?? string.Empty).ToArray());
+        Assert.Equal(["start", "new", "phone", "me", "help"], commands.Select(command => command.GetProperty("command").GetString() ?? string.Empty).ToArray());
         Assert.Contains(commands, command => command.GetProperty("description").GetString() == "новый код ошибки");
+        Assert.DoesNotContain(handler.Body!, "admin_help", StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(handler.Body!, "admin users", StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(handler.Body!, "admin allow", StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(handler.Body!, "admin block", StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(handler.Body!, "admin role", StringComparison.OrdinalIgnoreCase);
     }

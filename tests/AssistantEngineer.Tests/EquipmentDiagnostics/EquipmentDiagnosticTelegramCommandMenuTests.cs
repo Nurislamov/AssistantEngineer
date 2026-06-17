@@ -16,9 +16,9 @@ public sealed class EquipmentDiagnosticTelegramCommandMenuTests
         await service.StartAsync(CancellationToken.None);
 
         Assert.Equal(1, outbound.SetCommandsCallCount);
-        Assert.Equal(["start", "new", "phone", "me", "help", "admin_help"], outbound.Commands.Select(command => command.Command).ToArray());
+        Assert.Equal(["start", "new", "phone", "me", "help"], outbound.Commands.Select(command => command.Command).ToArray());
         Assert.DoesNotContain(outbound.Commands, command => command.Command.Contains(' ', StringComparison.Ordinal));
-        Assert.DoesNotContain(outbound.Commands, command => command.Command is "admin" or "admin users" or "admin block" or "admin role");
+        Assert.DoesNotContain(outbound.Commands, command => command.Command is "admin_help" or "admin" or "admin users" or "admin allow" or "admin block" or "admin role");
     }
 
     [Fact]

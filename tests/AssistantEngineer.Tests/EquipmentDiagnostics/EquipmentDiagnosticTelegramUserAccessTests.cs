@@ -84,10 +84,14 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         await adapter.HandleAsync(Update("/admin allow 411", chatId: 410));
         await adapter.HandleAsync(Update("/admin role 411 Admin", chatId: 410));
         var admin = await adapter.HandleAsync(Update("/admin_help", chatId: 411));
+        await adapter.HandleAsync(Update("/admin allow 413", chatId: 410));
+        await adapter.HandleAsync(Update("/admin role 413 Engineer", chatId: 410));
+        var engineer = await adapter.HandleAsync(Update("/admin_help", chatId: 413));
         var consumer = await adapter.HandleAsync(Update("/admin_help", chatId: 412));
 
         Assert.Contains("/admin users", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/admin role <chatId>", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("Команда недоступна", engineer.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", consumer.Text, StringComparison.Ordinal);
     }
 
@@ -114,13 +118,14 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var store = new InMemoryTelegramUserStore();
         var adapter = CreateAdapter(store, Options());
 
-        var help = await adapter.HandleAsync(Update("/start", chatId: 600));
+        var help = await adapter.HandleAsync(Update("/help", chatId: 600));
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 600));
 
         Assert.Contains("Диагностика оборудования", help.Text, StringComparison.Ordinal);
         Assert.Contains("поделиться номером Telegram", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ввести другой номер", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("/admin", help.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("/admin_help", help.Text, StringComparison.Ordinal);
         Assert.Contains("Возможное значение", diagnostic.Text, StringComparison.Ordinal);
         Assert.Contains("Что можно сделать безопасно", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Confidence:", diagnostic.Text, StringComparison.Ordinal);
@@ -130,16 +135,22 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
-    public async Task OwnerHelpMentionsAdminHelpWithoutListingParameterizedAdminCommands()
+    public async Task OwnerAndAdminHelpMentionAdminHelpWithoutListingParameterizedAdminCommands()
     {
         var store = new InMemoryTelegramUserStore();
         var adapter = CreateAdapter(store, Options() with { BootstrapOwnerChatId = 610 });
 
-        var help = await adapter.HandleAsync(Update("/help", chatId: 610));
+        await adapter.HandleAsync(Update("/admin allow 612", chatId: 610));
+        await adapter.HandleAsync(Update("/admin role 612 Admin", chatId: 610));
+        var ownerHelp = await adapter.HandleAsync(Update("/help", chatId: 610));
+        var adminHelp = await adapter.HandleAsync(Update("/help", chatId: 612));
 
-        Assert.Contains("/admin_help", help.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("/admin users", help.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("/admin role", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin_help", ownerHelp.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin_help", adminHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin users", ownerHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin role", ownerHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin users", adminHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin role", adminHelp.Text, StringComparison.Ordinal);
     }
 
     [Fact]
