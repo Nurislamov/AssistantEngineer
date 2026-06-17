@@ -67,7 +67,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
                     [
                         [
                             new EquipmentDiagnosticTelegramKeyboardButton(
-                                "📞 Поделиться номером",
+                                "📞 Поделиться номером Telegram",
                                 RequestContact: true)
                         ]
                     ],
@@ -82,7 +82,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         Assert.True(replyMarkup.GetProperty("resize_keyboard").GetBoolean());
         Assert.True(replyMarkup.GetProperty("one_time_keyboard").GetBoolean());
         var button = replyMarkup.GetProperty("keyboard")[0][0];
-        Assert.Equal("📞 Поделиться номером", button.GetProperty("text").GetString());
+        Assert.Equal("📞 Поделиться номером Telegram", button.GetProperty("text").GetString());
         Assert.True(button.GetProperty("request_contact").GetBoolean());
     }
 

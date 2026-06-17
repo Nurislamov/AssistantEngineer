@@ -27,7 +27,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         Assert.Contains("Gree", buttons);
         Assert.Contains("Daikin", buttons);
         Assert.Contains(TelegramDiagnosticConversationService.NewCodeButton, buttons);
-        Assert.Contains(TelegramDiagnosticConversationService.SharePhoneButton, buttons);
+        Assert.DoesNotContain(TelegramDiagnosticConversationService.SharePhoneButton, buttons);
     }
 
     [Fact]
@@ -117,6 +117,107 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task ManualPhoneButtonEntersWaitingForPhoneNumber()
+    {
+        var harness = CreateHarness([]);
+
+        var response = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите номер телефона", response.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramConversationState.WaitingForPhoneNumber, session?.State);
+        var buttons = ButtonTexts(response);
+        Assert.Contains(TelegramDiagnosticConversationService.CancelButton, buttons);
+        Assert.Contains(TelegramDiagnosticConversationService.NewCodeButton, buttons);
+    }
+
+    [Fact]
+    public async Task ValidManualPhoneIsSavedAsManualAndUnverified()
+    {
+        var harness = CreateHarness([]);
+
+        await harness.Adapter.HandleAsync(Update("Ввести другой номер"));
+        var response = await harness.Adapter.HandleAsync(Update("+998 90 123 45 67"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+
+        Assert.Contains("номер сохранен", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.True(user?.HasPhoneNumber);
+        Assert.False(user?.PhoneNumberVerified);
+        Assert.Equal(TelegramUserPhoneNumberSource.Manual, user?.PhoneNumberSource);
+    }
+
+    [Fact]
+    public async Task InvalidManualPhoneKeepsWaitingForPhoneNumber()
+    {
+        var harness = CreateHarness([]);
+
+        await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var response = await harness.Adapter.HandleAsync(Update("12345"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Не получилось распознать номер", response.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramConversationState.WaitingForPhoneNumber, session?.State);
+    }
+
+    [Fact]
+    public async Task NewCodeButtonCancelsManualPhoneInput()
+    {
+        var harness = CreateHarness([]);
+
+        await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var response = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.NewCodeButton));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите код ошибки", response.Text, StringComparison.Ordinal);
+        Assert.Null(session);
+    }
+
+    [Theory]
+    [InlineData("/phone")]
+    [InlineData("Изменить номер")]
+    public async Task ManualPhoneTextAliasesEnterWaitingForPhoneNumber(string text)
+    {
+        var harness = CreateHarness([]);
+
+        var response = await harness.Adapter.HandleAsync(Update(text));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите номер телефона", response.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramConversationState.WaitingForPhoneNumber, session?.State);
+    }
+
+    [Fact]
+    public async Task CancelButtonCancelsManualPhoneInput()
+    {
+        var harness = CreateHarness([]);
+
+        await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var response = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.CancelButton));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите код ошибки", response.Text, StringComparison.Ordinal);
+        Assert.Null(session);
+    }
+
+    [Fact]
+    public async Task CodeTextDuringManualPhoneInputStartsNewDiagnosticScenario()
+    {
+        var harness = CreateHarness([
+            Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)
+        ]);
+
+        await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var response = await harness.Adapter.HandleAsync(Update("H5"));
+
+        Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task NewTextCodeOverridesUnfinishedBrandSelection()
     {
         var harness = CreateHarness([
@@ -181,6 +282,28 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task ManualPhoneFlowPreservesActiveSessionAndRestoresPrompt()
+    {
+        var harness = CreateHarness([
+            Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit),
+            Summary("Daikin", "H5", EquipmentCategory.VrfOutdoorUnit)
+        ]);
+        await harness.Adapter.HandleAsync(Update("H5"));
+
+        var phonePrompt = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
+        var saved = await harness.Adapter.HandleAsync(Update("998901234567"));
+        var afterPhone = await harness.Adapter.HandleAsync(Update("Gree"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите номер телефона", phonePrompt.Text, StringComparison.Ordinal);
+        Assert.Contains("Продолжим диагностику", saved.Text, StringComparison.Ordinal);
+        Assert.Contains("Выберите бренд", saved.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Что можно сделать безопасно", afterPhone.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramConversationState.ShowingResult, session?.State);
+    }
+
+    [Fact]
     public async Task UnknownCodeReturnsRussianNotFoundGuidanceAndMainKeyboard()
     {
         var harness = CreateHarness([]);
@@ -237,6 +360,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
             sessionStore,
             diagnostics,
             facade,
+            userStore,
             parser,
             formatter,
             options);

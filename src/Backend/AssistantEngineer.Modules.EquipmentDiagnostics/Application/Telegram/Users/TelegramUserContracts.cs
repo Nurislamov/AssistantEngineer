@@ -8,6 +8,12 @@ public enum TelegramUserRole
     Consumer
 }
 
+public enum TelegramUserPhoneNumberSource
+{
+    TelegramContact,
+    Manual
+}
+
 public sealed class TelegramUserEntity
 {
     public long Id { get; set; }
@@ -21,6 +27,7 @@ public sealed class TelegramUserEntity
     public bool IsBlocked { get; set; }
     public string? PhoneNumber { get; set; }
     public bool PhoneNumberVerified { get; set; }
+    public TelegramUserPhoneNumberSource? PhoneNumberSource { get; set; }
     public DateTimeOffset? PhoneNumberSharedAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? LastSeenAt { get; set; }
@@ -39,6 +46,7 @@ public sealed record TelegramUserSnapshot(
     bool IsBlocked,
     bool PhoneNumberVerified,
     bool HasPhoneNumber,
+    TelegramUserPhoneNumberSource? PhoneNumberSource,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastSeenAt,
     DateTimeOffset? LastAccessDeniedAt);
@@ -104,6 +112,7 @@ public interface ITelegramUserStore
         long chatId,
         string phoneNumber,
         bool verified,
+        TelegramUserPhoneNumberSource source,
         DateTimeOffset sharedAt,
         CancellationToken cancellationToken = default);
 }

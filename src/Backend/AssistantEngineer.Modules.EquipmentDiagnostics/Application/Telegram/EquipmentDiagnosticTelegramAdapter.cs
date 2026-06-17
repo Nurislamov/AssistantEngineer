@@ -59,10 +59,15 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 update.ChatId,
                 update.ContactPhoneNumber,
                 verified,
+                TelegramUserPhoneNumberSource.TelegramContact,
                 update.ReceivedAt ?? DateTimeOffset.UtcNow,
                 cancellationToken);
-            var repeatedPrompt = _conversationService is not null && access.User is not null
-                ? await _conversationService.RepeatActivePromptAsync(access.User, access, cancellationToken)
+            var updatedUser = await _userStore.GetByChatIdAsync(update.ChatId, cancellationToken) ?? access.User;
+            var updatedAccess = updatedUser is null
+                ? access
+                : new TelegramUserAccessResult(access.IsAllowed, updatedUser, updatedUser.Role, access.DenialReason);
+            var repeatedPrompt = _conversationService is not null && updatedAccess.User is not null
+                ? await _conversationService.RepeatActivePromptAsync(updatedAccess.User, updatedAccess, cancellationToken)
                 : null;
             if (repeatedPrompt is not null)
             {
@@ -79,7 +84,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 update.ChatId,
                 _formatter.FormatPhoneSaved(_options.MaxMessageLength),
                 EquipmentDiagnosticTelegramResponseKind.Reply,
-                replyMarkup: RemoveKeyboardMarkup());
+                replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(updatedAccess));
         }
 
         if (TryHandleMe(update, access, out var meResponse))
@@ -282,9 +287,6 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         string value,
         out TelegramUserRole role) =>
         Enum.TryParse(value, ignoreCase: true, out role);
-
-    private static EquipmentDiagnosticTelegramReplyMarkup RemoveKeyboardMarkup() =>
-        new(RemoveKeyboard: true);
 
     private static EquipmentDiagnosticTelegramResponse FromConversation(
         long chatId,

@@ -149,8 +149,16 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine("Пользователи Telegram");
         foreach (var user in users)
         {
+            var phone = user.HasPhoneNumber
+                ? user.PhoneNumberSource switch
+                {
+                    TelegramUserPhoneNumberSource.Manual => "да(manual)",
+                    TelegramUserPhoneNumberSource.TelegramContact => "да(telegram)",
+                    _ => "да"
+                }
+                : "нет";
             builder.AppendLine(
-                $"{user.TelegramChatId}: {RoleName(user.Role)}; доступ={(user.IsEnabled ? "включен" : "выключен")}; блокировка={(user.IsBlocked ? "да" : "нет")}; телефон={(user.HasPhoneNumber ? "да" : "нет")}");
+                $"{user.TelegramChatId}: {RoleName(user.Role)}; доступ={(user.IsEnabled ? "включен" : "выключен")}; блокировка={(user.IsBlocked ? "да" : "нет")}; телефон={phone}");
         }
 
         return Truncate(builder.ToString().Trim(), maxLength);
@@ -273,7 +281,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     private static string PhonePrompt(bool hasPhoneNumber) =>
         hasPhoneNumber
             ? "Ваш номер уже сохранен."
-            : "Если хотите, отправьте номер телефона - специалист сможет связаться с вами.";
+            : "Если хотите, оставьте номер телефона:\n" +
+              "- можно поделиться номером Telegram\n" +
+              "- или ввести другой номер для звонка.";
 
     private static string RoleName(TelegramUserRole role) =>
         role switch

@@ -151,6 +151,7 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
         long chatId,
         string phoneNumber,
         bool verified,
+        TelegramUserPhoneNumberSource source,
         DateTimeOffset sharedAt,
         CancellationToken cancellationToken = default)
     {
@@ -161,6 +162,7 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
 
         user.PhoneNumber = phoneNumber;
         user.PhoneNumberVerified = verified;
+        user.PhoneNumberSource = source;
         user.PhoneNumberSharedAt = sharedAt;
         return Task.FromResult(new TelegramUserCommandResult(true, "Номер телефона сохранен."));
     }
@@ -210,6 +212,7 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
             user.IsBlocked,
             user.PhoneNumberVerified,
             !string.IsNullOrWhiteSpace(user.PhoneNumber),
+            user.PhoneNumberSource,
             user.CreatedAt,
             user.LastSeenAt,
             user.LastAccessDeniedAt);

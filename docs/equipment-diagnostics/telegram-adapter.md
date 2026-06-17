@@ -89,6 +89,37 @@ Telegram contact messages are accepted from any state. The phone number is saved
 session is waiting for a brand/type/display-context selection, the bot preserves the session and repeats the active
 prompt.
 
+## ED-22B Manual Service Phone Flow
+
+ED-22B keeps the existing Telegram contact flow and adds a manual Consumer phone path for cases where the service
+should call a different number than the Telegram account number. The main Consumer keyboard shows `🔎 Новый код`;
+when no phone is saved it also shows `📞 Поделиться номером Telegram` with `request_contact=true` and
+`✏️ Ввести другой номер`. When a phone is already saved, the main keyboard keeps `🔎 Новый код` and offers
+`✏️ Изменить номер`.
+
+Manual phone input uses the conversation state `WaitingForPhoneNumber`. The bot asks:
+
+```text
+Введите номер телефона для связи с сервисом.
+Например: +998 90 123 45 67
+```
+
+Accepted input is normalized by removing spaces, parentheses, and hyphens, preserving a leading `+`, and requiring
+7-15 digits. Invalid input keeps `WaitingForPhoneNumber` and asks for the `+998 90 123 45 67` format. `🔎 Новый код`,
+`Новый код`, `/new`, `/reset`, or `/cancel` cancel phone input and start a fresh code prompt. If the user types a
+diagnostic-looking code such as `H5` instead of a phone number, a new diagnostic scenario starts.
+
+`TelegramUsers.PhoneNumberSource` records where the saved phone came from: `TelegramContact` for Telegram contact
+messages and `Manual` for typed numbers. Telegram contact numbers are marked verified only when Telegram
+`contact.user_id` matches `from.id`; manual numbers are saved as unverified. Phone numbers are not printed in
+Consumer `/me`, `/admin users`, logs, or diagnostics. Admin lists may show only `phone=yes(manual)` or
+`phone=yes(telegram)`.
+
+Entering phone input does not delete the active diagnostic session. If the user was choosing brand, equipment type,
+or display context, saving either a Telegram contact or manual phone restores the previous prompt when possible.
+ED-22B still does not create ServiceLead/CRM records, diagnostic history, web UI, photo/OCR, AI, RAG, vector search,
+or manual-PDF access.
+
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.

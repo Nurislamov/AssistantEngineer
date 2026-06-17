@@ -64,11 +64,15 @@ update entries with update id and chat type, without token, webhook secret, mess
 Duplicate Telegram updates for the same visible message are deduplicated by `chat.id + message.message_id` before
 the handler sends a response. The dedupe store writes SHA-256 message identity hashes, not raw chat IDs.
 
-Consumer-facing replies are Russian by default and use a Telegram reply keyboard. ED-22A keeps `🔎 Новый код`
-available throughout the conversation and shows `request_contact=true` for `📞 Поделиться номером` while a Consumer
-has not shared a phone number. After a contact message is accepted, the number is saved and any active diagnostic
-session is preserved. Owner, Admin, and Engineer technical replies may be split into multiple ordered `sendMessage`
-calls so Telegram's message limit is not hit. If any chunk fails, the update is reported as outbound failed.
+Consumer-facing replies are Russian by default and use a Telegram reply keyboard. ED-22B keeps `🔎 Новый код`
+available throughout the conversation. A Consumer without a saved phone sees `📞 Поделиться номером Telegram` with
+`request_contact=true` and `✏️ Ввести другой номер`; a Consumer with a saved phone can use `✏️ Изменить номер`.
+Telegram contact phones are saved with source `TelegramContact` and verified only when `contact.user_id` matches
+`from.id`; manual phone input is normalized, saved with source `Manual`, and remains unverified. Phone numbers are
+not printed in logs, `/me`, `/admin users`, or diagnostics. After either a contact message or manual phone is
+accepted, any active diagnostic session is preserved and the previous prompt is restored when possible. Owner, Admin,
+and Engineer technical replies may be split into multiple ordered `sendMessage` calls so Telegram's message limit is
+not hit. If any chunk fails, the update is reported as outbound failed.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -102,12 +106,14 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store bot token in the deployment secret store.
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
-- Apply the `TelegramUsers` and `TelegramConversationSessions` EF migrations before enabling the bot.
+- Apply the `TelegramUsers`, `TelegramConversationSessions`, and `AddTelegramUserPhoneSource` EF migrations before
+  enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
-- Confirm the contact sharing button appears only before the phone number is saved and that the phone number is not logged.
+- Confirm the contact sharing and manual phone buttons appear before the phone number is saved, manual phone
+  validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.
 - Confirm sending `🔎 Новый код`, `/new`, `/reset`, or `/cancel` clears the active conversation and asks for a new
   code.
 - Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Consumer>` from the bootstrap owner or an Admin.

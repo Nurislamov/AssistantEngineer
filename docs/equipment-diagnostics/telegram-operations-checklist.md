@@ -31,12 +31,18 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Keep `TELEGRAM_ALLOWED_USERNAME=` empty unless a reviewed username fallback is required.
 - Keep `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` after the chat ID is known.
 - Verify an unknown Telegram account is created as `Consumer` and receives only the simplified public-safe response.
-- Verify Consumer `/start` and `/help` are Russian, contain no `/admin` commands, and show the contact sharing
-  keyboard when the phone number is not saved.
+- Verify Consumer `/start` and `/help` are Russian, contain no `/admin` commands, and mention both phone options:
+  sharing the Telegram contact number and manually entering another number for a callback.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,
   `deterministic bot API`, or unsafe board/compressor/inverter/refrigerant/high-voltage instructions.
-- Verify sharing a Telegram contact saves the phone number, verifies it only when Telegram `contact.user_id` matches
-  `from.id`, and removes the contact keyboard.
+- Verify the main Consumer keyboard without a saved phone shows `📞 Поделиться номером Telegram` and
+  `✏️ Ввести другой номер`.
+- Verify sharing a Telegram contact saves the phone number with source `TelegramContact` and verifies it only when
+  Telegram `contact.user_id` matches `from.id`.
+- Verify manual phone input accepts common formats such as `+998 90 123 45 67`, saves source `Manual`, keeps
+  `PhoneNumberVerified=false`, and keeps invalid input in `WaitingForPhoneNumber`.
+- Verify phone entry does not delete an active brand/type/display-context diagnostic session and restores the previous
+  prompt when possible.
 - Verify the bootstrap owner can use `/admin users`, `/admin block <chatId>`, `/admin unblock <chatId>`,
   `/admin disable <chatId>`, `/admin enable <chatId>`, and `/admin role <chatId> <Owner|Admin|Engineer|Consumer>`.
 
@@ -60,10 +66,12 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
-- `BootstrapOwnerChatId` is configured, `TelegramUsers` migration has been applied, and `DeniedChatIds` is reviewed.
+- `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, and
+  `AddTelegramUserPhoneSource` migrations have been applied, and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
-- Phone sharing uses a Telegram reply keyboard with `request_contact=true`; phone numbers are not logged and are not
-  required for diagnostics.
+- Phone sharing uses a Telegram reply keyboard with `request_contact=true`; manual phone input is available through
+  `✏️ Ввести другой номер`; phone numbers are not logged, not printed in `/admin users`, and are not required for
+  diagnostics.
 - Production logging keeps application, polling, and request operational messages while suppressing EF Core/Npgsql SQL
   command noise below Warning.
 - The backend Docker image includes the GSSAPI runtime dependency required by Npgsql so `libgssapi_krb5.so.2` missing
@@ -89,7 +97,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 
 - No audit log.
 - No web admin UI.
-- No diagnostic case history, conversation continuation, CRM lead assignment, photo/OCR, or ServiceLead workflow.
+- No diagnostic case history, CRM lead assignment, photo/OCR, or ServiceLead workflow.
 - Polling offset and processed-message idempotency persistence are file-based unless deployment mounts a durable
   volume or overrides the paths.
 - No endpoint-specific rate limiting beyond the broader API setup.

@@ -48,6 +48,10 @@ public sealed class TelegramUserConfiguration : IEntityTypeConfiguration<Telegra
             .HasDefaultValue(false)
             .IsRequired();
 
+        builder.Property(user => user.PhoneNumberSource)
+            .HasConversion<string>()
+            .HasMaxLength(32);
+
         builder.Property(user => user.CreatedAt)
             .IsRequired();
 

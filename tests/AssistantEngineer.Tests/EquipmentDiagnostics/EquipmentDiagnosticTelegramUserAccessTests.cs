@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -100,6 +101,8 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 600));
 
         Assert.Contains("Диагностика оборудования", help.Text, StringComparison.Ordinal);
+        Assert.Contains("поделиться номером Telegram", help.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ввести другой номер", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("/admin", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Возможное значение", diagnostic.Text, StringComparison.Ordinal);
         Assert.Contains("Что можно сделать безопасно", diagnostic.Text, StringComparison.Ordinal);
@@ -159,7 +162,8 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("Спасибо, номер сохранен", response.Text, StringComparison.Ordinal);
         Assert.True(user?.HasPhoneNumber);
         Assert.Equal(expectedVerified, user?.PhoneNumberVerified);
-        Assert.True(response.OutboundMessages.Single().ReplyMarkup?.RemoveKeyboard);
+        Assert.Equal(TelegramUserPhoneNumberSource.TelegramContact, user?.PhoneNumberSource);
+        Assert.Contains("🔎 Новый код", response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
     }
 
     [Fact]
@@ -167,7 +171,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     {
         var store = new InMemoryTelegramUserStore();
         await store.GetOrCreateConsumerAsync(Update("/start", chatId: 900));
-        await store.SavePhoneAsync(900, "+998901234567", verified: true, DateTimeOffset.UtcNow);
+        await store.SavePhoneAsync(900, "+998901234567", verified: true, TelegramUserPhoneNumberSource.TelegramContact, DateTimeOffset.UtcNow);
         var adapter = CreateAdapter(store, Options());
 
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 900));
@@ -175,7 +179,50 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("Ваш номер уже сохранен", response.Text, StringComparison.Ordinal);
         var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text).ToArray();
         Assert.Contains("🔎 Новый код", buttons);
-        Assert.DoesNotContain("📞 Поделиться номером", buttons);
+        Assert.Contains(TelegramDiagnosticConversationService.ChangePhoneButton, buttons);
+        Assert.DoesNotContain(TelegramDiagnosticConversationService.SharePhoneButton, buttons);
+    }
+
+    [Fact]
+    public async Task ConsumerWithoutPhoneGetsTelegramAndManualPhoneButtons()
+    {
+        var store = new InMemoryTelegramUserStore();
+        var adapter = CreateAdapter(store, Options());
+
+        var response = await adapter.HandleAsync(Update("/start", chatId: 901));
+        var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text).ToArray();
+
+        Assert.Contains(TelegramDiagnosticConversationService.SharePhoneButton, buttons);
+        Assert.Contains(TelegramDiagnosticConversationService.ManualPhoneButton, buttons);
+    }
+
+    [Fact]
+    public async Task ConsumerMeShowsPhoneSavedAfterManualPhone()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.GetOrCreateConsumerAsync(Update("/start", chatId: 902));
+        await store.SavePhoneAsync(902, "+998901234567", verified: false, TelegramUserPhoneNumberSource.Manual, DateTimeOffset.UtcNow);
+        var adapter = CreateAdapter(store, Options());
+
+        var response = await adapter.HandleAsync(Update("/me", chatId: 902));
+
+        Assert.Contains("Телефон: сохранен", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("+998901234567", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AdminUsersShowsPhoneSourceWithoutRawPhoneNumber()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.GetOrCreateConsumerAsync(Update("/start", chatId: 904));
+        await store.SavePhoneAsync(904, "+998901234567", verified: false, TelegramUserPhoneNumberSource.Manual, DateTimeOffset.UtcNow);
+        var adapter = CreateAdapter(store, Options() with { BootstrapOwnerChatId = 903 });
+
+        var response = await adapter.HandleAsync(Update("/admin users", chatId: 903));
+
+        Assert.Contains("телефон=да(manual)", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("+998901234567", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("998901234567", response.Text, StringComparison.Ordinal);
     }
 
     private static EquipmentDiagnosticTelegramAdapter CreateAdapter(

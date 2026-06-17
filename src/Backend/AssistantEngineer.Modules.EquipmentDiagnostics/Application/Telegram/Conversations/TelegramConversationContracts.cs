@@ -8,6 +8,7 @@ public enum TelegramConversationState
     WaitingForBrand,
     WaitingForEquipmentType,
     WaitingForDisplayContext,
+    WaitingForPhoneNumber,
     ShowingResult
 }
 

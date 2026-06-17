@@ -680,6 +680,10 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("PhoneNumberSharedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("PhoneNumberSource")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
                     b.Property<bool>("PhoneNumberVerified")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")

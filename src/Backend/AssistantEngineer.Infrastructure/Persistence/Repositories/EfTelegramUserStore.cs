@@ -198,6 +198,7 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         long chatId,
         string phoneNumber,
         bool verified,
+        TelegramUserPhoneNumberSource source,
         DateTimeOffset sharedAt,
         CancellationToken cancellationToken = default)
     {
@@ -211,6 +212,7 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
 
         user.PhoneNumber = phoneNumber;
         user.PhoneNumberVerified = verified;
+        user.PhoneNumberSource = source;
         user.PhoneNumberSharedAt = sharedAt;
         await context.SaveChangesAsync(cancellationToken);
         return new TelegramUserCommandResult(true, "Номер телефона сохранен.");
@@ -266,6 +268,7 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
             user.IsBlocked,
             user.PhoneNumberVerified,
             !string.IsNullOrWhiteSpace(user.PhoneNumber),
+            user.PhoneNumberSource,
             user.CreatedAt,
             user.LastSeenAt,
             user.LastAccessDeniedAt);

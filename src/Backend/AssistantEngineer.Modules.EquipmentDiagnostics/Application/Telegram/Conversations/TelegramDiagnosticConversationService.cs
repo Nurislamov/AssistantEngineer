@@ -11,7 +11,10 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Co
 public sealed class TelegramDiagnosticConversationService
 {
     public const string NewCodeButton = "🔎 Новый код";
-    public const string SharePhoneButton = "📞 Поделиться номером";
+    public const string SharePhoneButton = "📞 Поделиться номером Telegram";
+    public const string ManualPhoneButton = "✏️ Ввести другой номер";
+    public const string ChangePhoneButton = "✏️ Изменить номер";
+    public const string CancelButton = "❌ Отмена";
     public const string UnknownButton = "Не знаю";
 
     private const int TelegramTechnicalChunkLength = 3500;
@@ -22,6 +25,7 @@ public sealed class TelegramDiagnosticConversationService
     private readonly ITelegramConversationSessionStore _sessionStore;
     private readonly IEquipmentDiagnosticsService _diagnosticsService;
     private readonly IEquipmentDiagnosticBotFacade _botFacade;
+    private readonly ITelegramUserStore _userStore;
     private readonly EquipmentDiagnosticTelegramMessageParser _parser;
     private readonly EquipmentDiagnosticTelegramResponseFormatter _formatter;
     private readonly EquipmentDiagnosticTelegramOptions _options;
@@ -30,6 +34,7 @@ public sealed class TelegramDiagnosticConversationService
         ITelegramConversationSessionStore sessionStore,
         IEquipmentDiagnosticsService diagnosticsService,
         IEquipmentDiagnosticBotFacade botFacade,
+        ITelegramUserStore userStore,
         EquipmentDiagnosticTelegramMessageParser parser,
         EquipmentDiagnosticTelegramResponseFormatter formatter,
         EquipmentDiagnosticTelegramOptions options)
@@ -37,6 +42,7 @@ public sealed class TelegramDiagnosticConversationService
         _sessionStore = sessionStore;
         _diagnosticsService = diagnosticsService;
         _botFacade = botFacade;
+        _userStore = userStore;
         _parser = parser;
         _formatter = formatter;
         _options = options;
@@ -45,7 +51,13 @@ public sealed class TelegramDiagnosticConversationService
     public static bool IsResetText(string? text)
     {
         var normalized = NormalizeText(text);
-        return normalized is "новыйкод" or "/new" or "/reset" or "/cancel";
+        return normalized is "новыйкод" or "new" or "reset" or "cancel" or "отмена";
+    }
+
+    public static bool IsManualPhoneText(string? text)
+    {
+        var normalized = NormalizeText(text);
+        return normalized is "ввестидругойномер" or "изменитьномер" or "phone";
     }
 
     public async Task<TelegramDiagnosticConversationResult> ResetAsync(
@@ -74,7 +86,20 @@ public sealed class TelegramDiagnosticConversationService
         }
 
         var candidates = ReadCandidates(session.CandidateOptionsJson);
-        return PromptForState(session, candidates, access);
+        var prompt = PromptForState(session, candidates, access);
+        if (prompt.Handled)
+        {
+            return prompt;
+        }
+
+        if (session.State == TelegramConversationState.WaitingForPhoneNumber &&
+            TryResolveDiagnosticPromptState(session, candidates, out var restoredState))
+        {
+            await SaveSessionAsync(session, restoredState, cancellationToken);
+            return PromptForState(session with { State = restoredState }, candidates, access);
+        }
+
+        return null;
     }
 
     public async Task<TelegramDiagnosticConversationResult> HandleTextAsync(
@@ -88,12 +113,32 @@ public sealed class TelegramDiagnosticConversationService
             return await ResetAsync(user, access, cancellationToken);
         }
 
+        if (IsManualPhoneText(update.Text))
+        {
+            return await BeginPhoneInputAsync(user, access, cancellationToken);
+        }
+
+        var session = await _sessionStore.GetByTelegramUserIdAsync(user.Id, cancellationToken);
+        if (session?.State == TelegramConversationState.WaitingForPhoneNumber)
+        {
+            if (TryNormalizePhoneNumber(update.Text, out var phoneNumber))
+            {
+                return await SaveManualPhoneAsync(update, access, user, session, phoneNumber, cancellationToken);
+            }
+
+            if (_parser.TryExtractDiagnosticCode(update.Text, out var phoneCode))
+            {
+                return await StartFromCodeAsync(update, access, user, phoneCode, cancellationToken);
+            }
+
+            return PhoneValidationError();
+        }
+
         if (_parser.TryExtractDiagnosticCode(update.Text, out var code))
         {
             return await StartFromCodeAsync(update, access, user, code, cancellationToken);
         }
 
-        var session = await _sessionStore.GetByTelegramUserIdAsync(user.Id, cancellationToken);
         if (session is null)
         {
             return new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, []);
@@ -109,6 +154,94 @@ public sealed class TelegramDiagnosticConversationService
                 await SelectDisplayContextAsync(session, access, update.Text, cancellationToken),
             _ => new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, [])
         };
+    }
+
+    private async Task<TelegramDiagnosticConversationResult> BeginPhoneInputAsync(
+        TelegramUserSnapshot user,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var session = await _sessionStore.GetByTelegramUserIdAsync(user.Id, cancellationToken);
+        var now = DateTimeOffset.UtcNow;
+        await _sessionStore.UpsertAsync(
+            new TelegramConversationSessionUpsert(
+                user.Id,
+                TelegramConversationState.WaitingForPhoneNumber,
+                session?.CurrentCode,
+                session?.SelectedManufacturer,
+                session?.SelectedEquipmentType,
+                session?.SelectedDisplayContext,
+                session?.CandidateOptionsJson,
+                session?.LastPromptMessageId,
+                now,
+                now.Add(SessionTtl)),
+            cancellationToken);
+
+        return new TelegramDiagnosticConversationResult(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Введите номер телефона для связи с сервисом.\nНапример: +998 90 123 45 67",
+            [],
+            PhoneInputKeyboard());
+    }
+
+    private async Task<TelegramDiagnosticConversationResult> SaveManualPhoneAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        TelegramUserSnapshot user,
+        TelegramConversationSessionSnapshot session,
+        string phoneNumber,
+        CancellationToken cancellationToken)
+    {
+        await _userStore.SavePhoneAsync(
+            update.ChatId,
+            phoneNumber,
+            verified: false,
+            TelegramUserPhoneNumberSource.Manual,
+            update.ReceivedAt ?? DateTimeOffset.UtcNow,
+            cancellationToken);
+
+        var updatedUser = await _userStore.GetByChatIdAsync(update.ChatId, cancellationToken) ?? user;
+        var updatedAccess = new TelegramUserAccessResult(
+            access.IsAllowed,
+            updatedUser,
+            updatedUser.Role,
+            access.DenialReason);
+
+        var resumePrompt = await ResumeDiagnosticPromptAsync(session, updatedAccess, cancellationToken);
+        if (resumePrompt is not null)
+        {
+            return new TelegramDiagnosticConversationResult(
+                true,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                string.Join("\n\n", _formatter.FormatPhoneSaved(_options.MaxMessageLength), "Продолжим диагностику.", resumePrompt.Text),
+                resumePrompt.Warnings,
+                resumePrompt.ReplyMarkup,
+                resumePrompt.Messages);
+        }
+
+        await _sessionStore.ClearAsync(user.Id, cancellationToken);
+        return new TelegramDiagnosticConversationResult(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            _formatter.FormatPhoneSaved(_options.MaxMessageLength),
+            [],
+            MainKeyboard(updatedAccess));
+    }
+
+    private async Task<TelegramDiagnosticConversationResult?> ResumeDiagnosticPromptAsync(
+        TelegramConversationSessionSnapshot session,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var candidates = ReadCandidates(session.CandidateOptionsJson);
+        if (!TryResolveDiagnosticPromptState(session, candidates, out var restoredState))
+        {
+            return null;
+        }
+
+        await SaveSessionAsync(session, restoredState, cancellationToken);
+        return PromptForState(session with { State = restoredState }, candidates, access);
     }
 
     private async Task<TelegramDiagnosticConversationResult> StartFromCodeAsync(
@@ -385,6 +518,27 @@ public sealed class TelegramDiagnosticConversationService
             cancellationToken);
     }
 
+    private async Task SaveSessionAsync(
+        TelegramConversationSessionSnapshot session,
+        TelegramConversationState state,
+        CancellationToken cancellationToken)
+    {
+        var now = DateTimeOffset.UtcNow;
+        await _sessionStore.UpsertAsync(
+            new TelegramConversationSessionUpsert(
+                session.TelegramUserId,
+                state,
+                session.CurrentCode,
+                session.SelectedManufacturer,
+                session.SelectedEquipmentType,
+                session.SelectedDisplayContext,
+                session.CandidateOptionsJson,
+                session.LastPromptMessageId,
+                now,
+                now.Add(SessionTtl)),
+            cancellationToken);
+    }
+
     private TelegramDiagnosticConversationResult FormatDiagnosis(
         EquipmentDiagnosticBotResponse diagnosis,
         TelegramUserAccessResult access)
@@ -450,6 +604,49 @@ public sealed class TelegramDiagnosticConversationService
             _ => new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, [])
         };
 
+    private static bool TryResolveDiagnosticPromptState(
+        TelegramConversationSessionSnapshot session,
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates,
+        out TelegramConversationState state)
+    {
+        state = TelegramConversationState.Idle;
+        if (string.IsNullOrWhiteSpace(session.CurrentCode) || candidates.Count == 0)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(session.SelectedManufacturer) &&
+            candidates.Select(candidate => candidate.Manufacturer).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1)
+        {
+            state = TelegramConversationState.WaitingForBrand;
+            return true;
+        }
+
+        var manufacturerFiltered = string.IsNullOrWhiteSpace(session.SelectedManufacturer)
+            ? candidates
+            : candidates.Where(candidate => string.Equals(candidate.Manufacturer, session.SelectedManufacturer, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        if (string.IsNullOrWhiteSpace(session.SelectedEquipmentType) &&
+            manufacturerFiltered.Select(candidate => candidate.EquipmentType).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1)
+        {
+            state = TelegramConversationState.WaitingForEquipmentType;
+            return true;
+        }
+
+        var typeFiltered = string.IsNullOrWhiteSpace(session.SelectedEquipmentType)
+            ? manufacturerFiltered
+            : manufacturerFiltered.Where(candidate => string.Equals(candidate.EquipmentType, session.SelectedEquipmentType, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        if (string.IsNullOrWhiteSpace(session.SelectedDisplayContext) &&
+            typeFiltered.Select(candidate => DisplayContextLabel(candidate.DisplayContext)).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1)
+        {
+            state = TelegramConversationState.WaitingForDisplayContext;
+            return true;
+        }
+
+        return false;
+    }
+
     private static TelegramDiagnosticConversationResult PromptBrand(
         IReadOnlyList<string> manufacturers,
         TelegramUserAccessResult access) =>
@@ -490,6 +687,11 @@ public sealed class TelegramDiagnosticConversationService
         if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
         {
             rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(SharePhoneButton, RequestContact: true)]);
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ManualPhoneButton)]);
+        }
+        else if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber == true)
+        {
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ChangePhoneButton)]);
         }
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
@@ -509,12 +711,54 @@ public sealed class TelegramDiagnosticConversationService
         rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(UnknownButton)]);
         rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton)]);
 
-        if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
+        return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
+    }
+
+    private static EquipmentDiagnosticTelegramReplyMarkup PhoneInputKeyboard() =>
+        new(
+            [
+                [new EquipmentDiagnosticTelegramKeyboardButton(CancelButton)],
+                [new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton)]
+            ],
+            ResizeKeyboard: true,
+            OneTimeKeyboard: false);
+
+    private static TelegramDiagnosticConversationResult PhoneValidationError() =>
+        new(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.ValidationError,
+            "Не получилось распознать номер.\nВведите номер в формате: +998 90 123 45 67",
+            [],
+            PhoneInputKeyboard());
+
+    private static bool TryNormalizePhoneNumber(
+        string? text,
+        out string phoneNumber)
+    {
+        phoneNumber = string.Empty;
+        if (string.IsNullOrWhiteSpace(text))
         {
-            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(SharePhoneButton, RequestContact: true)]);
+            return false;
         }
 
-        return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
+        var trimmed = text.Trim();
+        var startsWithPlus = trimmed.StartsWith('+');
+        var compact = new string(trimmed.Where(character => character is not ' ' and not '\t' and not '\r' and not '\n' and not '(' and not ')' and not '-').ToArray());
+        if (startsWithPlus)
+        {
+            compact = compact[1..];
+        }
+
+        if (compact.Contains('+', StringComparison.Ordinal) ||
+            compact.Length == 0 ||
+            compact.Any(character => !char.IsDigit(character)) ||
+            compact.Length is < 7 or > 15)
+        {
+            return false;
+        }
+
+        phoneNumber = startsWithPlus ? $"+{compact}" : compact;
+        return true;
     }
 
     private static IReadOnlyList<TelegramDiagnosticCandidate> ReadCandidates(string? json)
