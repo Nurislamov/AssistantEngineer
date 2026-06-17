@@ -59,6 +59,7 @@ internal static class ApplicationModulesRegistration
             .RemoveAllLoggers();
         services.AddSingleton<IEquipmentDiagnosticTelegramUpdateOffsetStore, FileEquipmentDiagnosticTelegramUpdateOffsetStore>();
         services.AddSingleton<IEquipmentDiagnosticTelegramProcessedMessageStore, FileEquipmentDiagnosticTelegramProcessedMessageStore>();
+        services.AddHostedService<EquipmentDiagnosticTelegramCommandMenuStartupService>();
         services.AddHostedService<EquipmentDiagnosticTelegramPollingBackgroundService>();
         services.AddOptions<OperationalCorrelationOptions>()
             .Bind(configuration.GetSection(OperationalCorrelationOptions.SectionName))

@@ -237,6 +237,11 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 EquipmentDiagnosticTelegramResponseKind.Unsupported);
         }
 
+        if (string.Equals(text, "/admin_help", StringComparison.OrdinalIgnoreCase))
+        {
+            return Response(update.ChatId, _formatter.FormatAdminHelp(_options.MaxMessageLength), EquipmentDiagnosticTelegramResponseKind.Reply);
+        }
+
         var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         if (parts.Length < 2)
         {

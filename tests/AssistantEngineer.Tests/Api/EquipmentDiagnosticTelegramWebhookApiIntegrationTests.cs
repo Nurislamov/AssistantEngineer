@@ -216,5 +216,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
             LastText = text;
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Sent."));
         }
+
+        public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+            IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Commands set."));
     }
 }

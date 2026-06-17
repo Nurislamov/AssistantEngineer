@@ -14,4 +14,11 @@ public sealed class DisabledEquipmentDiagnosticTelegramOutboundClient : IEquipme
         Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
             false,
             "Telegram outbound transport is not configured."));
+
+    public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+        IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(
+            false,
+            "Telegram outbound transport is not configured."));
 }

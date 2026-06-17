@@ -11,4 +11,8 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
         bool disableWebPagePreview,
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default);
+
+    Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+        IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+        CancellationToken cancellationToken = default);
 }

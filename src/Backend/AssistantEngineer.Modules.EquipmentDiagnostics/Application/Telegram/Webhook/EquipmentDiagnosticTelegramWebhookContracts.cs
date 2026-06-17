@@ -25,11 +25,17 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public bool DropPendingUpdatesOnSetWebhook { get; init; }
     public IReadOnlyCollection<string> AllowedUpdates { get; init; } = ["message"];
     public EquipmentDiagnosticTelegramPollingOptions Polling { get; init; } = new();
+    public EquipmentDiagnosticTelegramCommandMenuOptions Commands { get; init; } = new();
 
     public bool IsPollingDeliveryEnabled() =>
         IsEnabled &&
         !string.IsNullOrWhiteSpace(BotToken) &&
         (InboundMode == EquipmentDiagnosticTelegramInboundMode.Polling || Polling.Enabled);
+}
+
+public sealed record EquipmentDiagnosticTelegramCommandMenuOptions
+{
+    public bool SyncOnStartup { get; init; } = true;
 }
 
 public enum EquipmentDiagnosticTelegramInboundMode
@@ -98,3 +104,11 @@ public sealed record EquipmentDiagnosticTelegramOutboundResult(
 public sealed record EquipmentDiagnosticTelegramDeleteWebhookResult(
     bool Succeeded,
     string Message);
+
+public sealed record EquipmentDiagnosticTelegramSetCommandsResult(
+    bool Succeeded,
+    string Message);
+
+public sealed record EquipmentDiagnosticTelegramBotCommand(
+    string Command,
+    string Description);

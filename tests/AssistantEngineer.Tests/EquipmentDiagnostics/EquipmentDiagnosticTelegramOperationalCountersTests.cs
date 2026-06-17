@@ -93,5 +93,10 @@ public sealed class EquipmentDiagnosticTelegramOperationalCountersTests
             EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(succeeded, succeeded ? "Sent." : "Failed."));
+
+        public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+            IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Commands set."));
     }
 }

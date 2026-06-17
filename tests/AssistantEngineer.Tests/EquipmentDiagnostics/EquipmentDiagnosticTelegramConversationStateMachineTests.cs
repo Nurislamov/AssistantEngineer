@@ -117,6 +117,23 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task NewCommandClearsSessionAndPromptsForCode()
+    {
+        var harness = CreateHarness([
+            Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit),
+            Summary("Daikin", "H5", EquipmentCategory.VrfOutdoorUnit)
+        ]);
+        await harness.Adapter.HandleAsync(Update("H5"));
+
+        var response = await harness.Adapter.HandleAsync(Update("/new"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Введите код ошибки", response.Text, StringComparison.Ordinal);
+        Assert.Null(session);
+    }
+
+    [Fact]
     public async Task ManualPhoneButtonEntersWaitingForPhoneNumber()
     {
         var harness = CreateHarness([]);

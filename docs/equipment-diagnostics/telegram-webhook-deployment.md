@@ -31,6 +31,7 @@ AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Limit=25
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSeconds=10
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath=artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries=5000
+AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=true
 AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=<secret>
 AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0=<blocked-chat-id>
@@ -74,6 +75,13 @@ accepted, any active diagnostic session is preserved and the previous prompt is 
 and Engineer technical replies may be split into multiple ordered `sendMessage` calls so Telegram's message limit is
 not hit. If any chunk fails, the update is reported as outbound failed.
 
+ED-22C also registers a safe global command menu with Telegram Bot API `setMyCommands` during startup when Telegram
+is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, `/help`, and
+`/admin_help` only. It deliberately does not publish `/admin users`, `/admin allow`, `/admin block`, `/admin role`,
+or parameterized admin commands. Set
+`AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=false` to skip menu synchronization.
+Failure to sync the menu must log a warning and must not stop startup, polling, or webhook fallback.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -111,6 +119,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
+- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, and `/admin_help`;
+  `/admin_help` is unavailable to Consumer and Engineer, and Owner/Admin `/help` points to `/admin_help` instead of
+  listing parameterized admin commands.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
 - Confirm the contact sharing and manual phone buttons appear before the phone number is saved, manual phone
   validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.

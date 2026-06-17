@@ -12,6 +12,8 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
     private readonly IOperationalCorrelationIdAccessor _correlation;
     private readonly ILogger<EquipmentDiagnosticTelegramOutboundClient> _logger;
 
+    private string? BotToken => _options.BotToken;
+
     public EquipmentDiagnosticTelegramOutboundClient(
         HttpClient httpClient,
         EquipmentDiagnosticTelegramWebhookOptions options,
@@ -102,8 +104,80 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
     }
 
+    public async Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+        IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+        CancellationToken cancellationToken = default)
+    {
+        var botToken = BotToken;
+        if (!_options.IsEnabled || string.IsNullOrWhiteSpace(botToken))
+        {
+            return SetCommandsFailed();
+        }
+
+        if (!Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
+            baseUri.Scheme != Uri.UriSchemeHttps)
+        {
+            return SetCommandsFailed();
+        }
+
+        var endpoint = new Uri(
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{botToken}/setMyCommands");
+        var payload = new
+        {
+            commands = commands.Select(command => new
+            {
+                command = command.Command,
+                description = command.Description
+            }).ToArray()
+        };
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
+
+        try
+        {
+            using var scope = _logger.BeginScope(new Dictionary<string, object>
+            {
+                ["correlationId"] = _correlation.CorrelationId ?? "none",
+                ["commandCount"] = commands.Count
+            });
+            _logger.LogInformation("Synchronizing Telegram bot command menu.");
+            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramSetCommandsResult(true, "Telegram command menu synchronized.");
+            }
+
+            _logger.LogWarning("Telegram command menu synchronization failed with non-success status code.");
+            return SetCommandsFailed();
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Telegram command menu synchronization timed out.");
+            return SetCommandsFailed();
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                "Telegram command menu synchronization failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return SetCommandsFailed();
+        }
+    }
+
     private static EquipmentDiagnosticTelegramOutboundResult Failed() =>
         new(false, "Telegram outbound send failed.");
+
+    private static EquipmentDiagnosticTelegramSetCommandsResult SetCommandsFailed() =>
+        new(false, "Telegram command menu synchronization failed.");
 
     private static Dictionary<string, object?> ToTelegramReplyMarkup(
         EquipmentDiagnosticTelegramReplyMarkup replyMarkup)

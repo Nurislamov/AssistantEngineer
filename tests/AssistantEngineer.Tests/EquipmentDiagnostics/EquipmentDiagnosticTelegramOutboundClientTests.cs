@@ -115,6 +115,64 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         Assert.Equal("Telegram outbound send failed.", missingToken.Message);
     }
 
+    [Fact]
+    public async Task SetMyCommandsUsesSafePayloadWithoutParseMode()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK);
+        var client = CreateClient(handler, EnabledOptions());
+
+        var result = await client.SetMyCommandsAsync(
+        [
+            new("start", "начать"),
+            new("new", "новый код ошибки"),
+            new("phone", "указать номер телефона"),
+            new("me", "мой доступ"),
+            new("help", "помощь"),
+            new("admin_help", "админ-команды")
+        ]);
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(handler.RequestUri);
+        Assert.Contains("/bottest-token-value/setMyCommands", handler.RequestUri.AbsolutePath, StringComparison.Ordinal);
+        using var payload = JsonDocument.Parse(handler.Body!);
+        Assert.False(payload.RootElement.TryGetProperty("parse_mode", out _));
+        var commands = payload.RootElement.GetProperty("commands").EnumerateArray().ToArray();
+        Assert.Equal(["start", "new", "phone", "me", "help", "admin_help"], commands.Select(command => command.GetProperty("command").GetString() ?? string.Empty).ToArray());
+        Assert.Contains(commands, command => command.GetProperty("description").GetString() == "новый код ошибки");
+        Assert.DoesNotContain(handler.Body!, "admin users", StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(handler.Body!, "admin block", StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(handler.Body!, "admin role", StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SetMyCommandsNonSuccessAndMissingTokenReturnSafeFailure()
+    {
+        var failed = await CreateClient(new CapturingHandler(HttpStatusCode.BadRequest), EnabledOptions())
+            .SetMyCommandsAsync([new("start", "начать")]);
+        var missingToken = await CreateClient(new CapturingHandler(HttpStatusCode.OK), EnabledOptions() with { BotToken = null })
+            .SetMyCommandsAsync([new("start", "начать")]);
+
+        Assert.False(failed.Succeeded);
+        Assert.False(missingToken.Succeeded);
+        Assert.Equal("Telegram command menu synchronization failed.", failed.Message);
+        Assert.Equal("Telegram command menu synchronization failed.", missingToken.Message);
+    }
+
+    [Fact]
+    public async Task SetMyCommandsLogsDoNotExposeSecretsChatIdPhoneOrCommandParameters()
+    {
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramOutboundClient>();
+        var client = CreateClient(new CapturingHandler(HttpStatusCode.BadRequest), EnabledOptions() with { BotToken = "secret-token-value" }, logger);
+
+        await client.SetMyCommandsAsync([new("admin_help", "админ-команды")]);
+
+        var logged = string.Join(Environment.NewLine, logger.Messages.Concat(logger.Scopes));
+        Assert.DoesNotContain("secret-token-value", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("42", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("+998901234567", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin users", logged, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static EquipmentDiagnosticTelegramOutboundClient CreateClient(
         HttpMessageHandler handler,
         EquipmentDiagnosticTelegramWebhookOptions options,

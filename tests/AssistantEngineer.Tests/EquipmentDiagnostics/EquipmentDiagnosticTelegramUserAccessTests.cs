@@ -75,6 +75,23 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
+    public async Task AdminHelpReturnsAdminCommandsOnlyForOwnerOrAdmin()
+    {
+        var store = new InMemoryTelegramUserStore();
+        var adapter = CreateAdapter(store, Options() with { BootstrapOwnerChatId = 410 });
+
+        var owner = await adapter.HandleAsync(Update("/admin_help", chatId: 410));
+        await adapter.HandleAsync(Update("/admin allow 411", chatId: 410));
+        await adapter.HandleAsync(Update("/admin role 411 Admin", chatId: 410));
+        var admin = await adapter.HandleAsync(Update("/admin_help", chatId: 411));
+        var consumer = await adapter.HandleAsync(Update("/admin_help", chatId: 412));
+
+        Assert.Contains("/admin users", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin role <chatId>", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("Команда недоступна", consumer.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task AdminRoleCommandChangesRoleAndEngineerCannotUseAdminCommands()
     {
         var store = new InMemoryTelegramUserStore();
@@ -110,6 +127,32 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.DoesNotContain("Source:", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Response shortened", diagnostic.Text, StringComparison.Ordinal);
         Assert.NotNull(diagnostic.OutboundMessages.Single().ReplyMarkup);
+    }
+
+    [Fact]
+    public async Task OwnerHelpMentionsAdminHelpWithoutListingParameterizedAdminCommands()
+    {
+        var store = new InMemoryTelegramUserStore();
+        var adapter = CreateAdapter(store, Options() with { BootstrapOwnerChatId = 610 });
+
+        var help = await adapter.HandleAsync(Update("/help", chatId: 610));
+
+        Assert.Contains("/admin_help", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin users", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin role", help.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task EngineerHelpDoesNotShowAdminCommands()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.AllowAsync(611, TelegramUserRole.Engineer);
+        var adapter = CreateAdapter(store, Options());
+
+        var help = await adapter.HandleAsync(Update("/help", chatId: 611));
+
+        Assert.DoesNotContain("/admin_help", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin users", help.Text, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -33,6 +33,12 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Verify an unknown Telegram account is created as `Consumer` and receives only the simplified public-safe response.
 - Verify Consumer `/start` and `/help` are Russian, contain no `/admin` commands, and mention both phone options:
   sharing the Telegram contact number and manually entering another number for a callback.
+- Verify the Telegram command menu contains only `/start`, `/new`, `/phone`, `/me`, `/help`, and `/admin_help`;
+  it must not list parameterized admin commands such as `/admin users`, `/admin allow`, `/admin block`, or
+  `/admin role`.
+- Verify `/new` resets the current session and asks `Введите код ошибки, например: Gree H5.`; `/phone` opens the
+  existing phone flow; `/admin_help` returns admin help only for Owner/Admin and `Команда недоступна.` for Consumer
+  and Engineer.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,
   `deterministic bot API`, or unsafe board/compressor/inverter/refrigerant/high-voltage instructions.
 - Verify the main Consumer keyboard without a saved phone shows `📞 Поделиться номером Telegram` and
@@ -60,6 +66,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 ## Production Readiness
 
 - `BotToken` exists only in environment/secret-store configuration.
+- Command-menu sync is either left at the safe default or explicitly disabled with
+  `Commands__SyncOnStartup=false`; failures are warnings only and do not stop startup or polling.
 - `WebhookSecret` exists only when webhook fallback is enabled.
 - No real token or webhook secret is present in `appsettings`, source control, or generated artifacts.
 - `IsEnabled=true` only in the reviewed production deployment.

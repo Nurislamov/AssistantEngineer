@@ -67,7 +67,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         }
 
         var adminLine = role is TelegramUserRole.Owner or TelegramUserRole.Admin
-            ? "\n\nАдмин:\n/admin users\n/admin allow <chatId>\n/admin block <chatId>\n/admin unblock <chatId>\n/admin disable <chatId>\n/admin enable <chatId>\n/admin role <chatId> <Owner|Admin|Engineer|Consumer>"
+            ? "\n\nАдмин-команды: /admin_help"
             : string.Empty;
 
         return Truncate(

@@ -120,6 +120,22 @@ or display context, saving either a Telegram contact or manual phone restores th
 ED-22B still does not create ServiceLead/CRM records, diagnostic history, web UI, photo/OCR, AI, RAG, vector search,
 or manual-PDF access.
 
+## Telegram Command Menu
+
+The adapter synchronizes the Telegram Bot API command menu on application startup when Telegram is enabled, a bot token is
+configured, and `AssistantEngineer:EquipmentDiagnostics:Telegram:Commands:SyncOnStartup=true`. Startup continues if
+Telegram rejects or times out the `setMyCommands` request; logs stay sanitized and must not include token, chat ID,
+phone number, message text, or parameterized admin command text.
+
+The global menu contains only safe commands: `/start`, `/new`, `/phone`, `/me`, `/help`, and `/admin_help`. It does
+not list `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or any parameterized admin command. `/new`
+uses the same flow as `🔎 Новый код` and asks `Введите код ошибки, например: Gree H5.`. `/phone` opens the existing
+phone flow. `/admin_help` shows admin commands only for Owner/Admin; Consumer and Engineer receive
+`Команда недоступна.`.
+
+This is a BotFather-style command menu only. It does not add a Telegram Mini App, web UI, CRM lead creation, AI,
+RAG, vector search, photo/OCR, or manual-PDF access.
+
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.
