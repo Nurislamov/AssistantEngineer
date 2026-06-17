@@ -9,12 +9,13 @@ ED-19A aligns the existing anonymous operational endpoints with deployment smoke
   the selected Telegram inbound transport configuration is safe.
 
 Telegram being disabled is a healthy default. When Telegram webhook mode is enabled, readiness requires a valid
-webhook secret, configured bot token, at least one allowed chat ID or username, and chat ID discovery disabled.
-When Telegram polling mode is enabled, readiness requires a configured bot token, at least one allowed chat ID or
-username, and chat ID discovery disabled.
+webhook secret, configured bot token, configured bootstrap owner access, an available Telegram user store, and chat
+ID discovery disabled. When Telegram polling mode is enabled, readiness requires a configured bot token, configured
+bootstrap owner access, an available Telegram user store, and chat ID discovery disabled. Unknown user policy is
+reported only as `AutoConsumer`.
 
 Health responses remain compact and do not expose configuration values, internal paths, exception stacks, manual
-or staging artifacts, chat IDs, message bodies, bot tokens, or webhook secrets. Readiness proves only that current
+or staging artifacts, chat IDs, usernames, phone numbers, message bodies, bot tokens, or webhook secrets. Readiness proves only that current
 in-process checks pass; it does not prove external Telegram delivery, DNS, HTTPS, provider health, or production
 traffic readiness.
 

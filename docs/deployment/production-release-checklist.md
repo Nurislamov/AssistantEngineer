@@ -40,8 +40,9 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Keep the polling offset and processed-message idempotency files on durable operational storage; the deployment
   scaffold uses the `api_operations` named volume.
 - Generate a new webhook secret using the documented character and length rules only when webhook fallback is used.
-- Configure a non-empty `AllowedChatIds` or `AllowedUsernames` list. Prefer one `AllowedChatIds` entry for the
-  closed beta operator.
+- Configure `BootstrapOwnerChatId`; legacy `AllowedChatIds__0` may remain only as bootstrap compatibility fallback.
+- Apply the `TelegramUsers` EF migration and confirm the user store is available.
+- Confirm unknown Telegram users are auto-created as `Consumer`, not Engineer/Admin.
 - Temporarily enable chat ID discovery only when required to identify an approved chat.
 - Disable chat ID discovery immediately after the allowlist is configured.
 - Verify an unknown Telegram account is ignored while the allowed chat can run `/start` and one deterministic smoke
@@ -52,6 +53,8 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Verify a replayed duplicate update for the same Telegram `chat.id + message_id` does not send a second response.
 - For webhook fallback, run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
 - Send one deterministic Telegram smoke message and verify the bounded response.
+- From the bootstrap owner, verify `/admin users`, role promotion, block/unblock, disable/enable, and Consumer help
+  hiding admin commands.
 
 ## Closeout
 

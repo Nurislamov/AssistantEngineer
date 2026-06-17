@@ -10,7 +10,8 @@ This checklist authorizes only a reviewed closed beta. It does not authorize pro
 - [ ] Telegram transport remains disabled until intentionally configured.
 - [ ] Chat identifier discovery remains disabled after initial access setup.
 - [ ] No real secrets in Git; real domains, PDFs, logs, and generated reports are also absent.
-- [ ] `AllowedChatIds` or `AllowedUsernames` is explicitly configured, and `DeniedChatIds` policy is reviewed.
+- [ ] `BootstrapOwnerChatId` is explicitly configured, `TelegramUsers` migration is applied, and `DeniedChatIds` policy is reviewed.
+- [ ] Unknown Telegram users become `Consumer`; admin commands are hidden from Consumer help.
 - [ ] Webhook setup and status checks pass before inviting closed-beta operators.
 - [ ] Runtime catalog remains the only final-answer source.
 - [ ] Partial manual-backed coverage and every other known limitation are communicated.

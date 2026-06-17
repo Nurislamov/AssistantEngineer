@@ -5,14 +5,15 @@ in-memory Telegram webhook counters. It is consumed by readiness checks and test
 public diagnostics endpoint.
 
 Safe snapshot fields include application/environment/version, start time, uptime, bot-facade availability,
-Telegram inbound mode, enabled/configured/discovery booleans, allow/deny-list configured booleans, and counters
-for received, processed, ignored, secret-rejected, unauthorized, invalid, and outbound-failed updates.
+Telegram inbound mode, enabled/configured/discovery booleans, bootstrap-owner configured, user-store availability,
+unknown-user policy, allow/deny-list configured booleans, and counters for received, processed, ignored,
+secret-rejected, unauthorized, invalid, and outbound-failed updates.
 
 The snapshot intentionally does not contain:
 
 - bot token or webhook secret;
 - allowed or denied chat ID values;
-- usernames, chat IDs, or message bodies;
+- usernames, chat IDs, phone numbers, or message bodies;
 - Authorization or Telegram secret headers;
 - file-system, staging, codebook, preview, or generated-artifact paths.
 

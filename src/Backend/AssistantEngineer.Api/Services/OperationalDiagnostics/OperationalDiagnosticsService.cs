@@ -1,5 +1,6 @@
 using System.Reflection;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using Microsoft.Extensions.Options;
 
@@ -14,6 +15,7 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
     private readonly EquipmentDiagnosticTelegramWebhookOptions _telegramOptions;
     private readonly EquipmentDiagnosticTelegramWebhookSecurityPolicy _telegramSecurityPolicy;
     private readonly EquipmentDiagnosticTelegramOperationalCounters _telegramCounters;
+    private readonly ITelegramUserStore _telegramUserStore;
     private readonly OperationalCorrelationOptions _correlationOptions;
 
     public OperationalDiagnosticsService(
@@ -23,6 +25,7 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
         EquipmentDiagnosticTelegramWebhookOptions telegramOptions,
         EquipmentDiagnosticTelegramWebhookSecurityPolicy telegramSecurityPolicy,
         EquipmentDiagnosticTelegramOperationalCounters telegramCounters,
+        ITelegramUserStore telegramUserStore,
         IOptions<OperationalCorrelationOptions> correlationOptions)
     {
         _timeProvider = timeProvider;
@@ -31,6 +34,7 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
         _telegramOptions = telegramOptions;
         _telegramSecurityPolicy = telegramSecurityPolicy;
         _telegramCounters = telegramCounters;
+        _telegramUserStore = telegramUserStore;
         _correlationOptions = correlationOptions.Value;
         _startedAtUtc = timeProvider.GetUtcNow();
     }
@@ -42,15 +46,22 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
         var telegramAllowlistConfigured =
             _telegramOptions.AllowedChatIds.Count > 0 ||
             _telegramOptions.AllowedUsernames.Count > 0;
+        var telegramBootstrapOwnerConfigured =
+            _telegramOptions.BootstrapOwnerChatId is not null ||
+            _telegramOptions.AllowedChatIds.Count > 0;
+        var telegramUserAccessConfigured =
+            telegramBootstrapOwnerConfigured &&
+            _telegramUserStore is not null;
         var telegramWebhookConfigured =
             !string.IsNullOrWhiteSpace(_telegramOptions.BotToken) &&
             _telegramSecurityPolicy.IsValidSecret(_telegramOptions.WebhookSecret) &&
-            telegramAllowlistConfigured &&
+            telegramUserAccessConfigured &&
             !_telegramOptions.EnableChatIdDiscovery;
         var telegramPollingEnabled = _telegramOptions.IsPollingDeliveryEnabled();
         var telegramPollingConfigured =
             telegramPollingEnabled &&
-            telegramAllowlistConfigured &&
+            !string.IsNullOrWhiteSpace(_telegramOptions.BotToken) &&
+            telegramUserAccessConfigured &&
             !_telegramOptions.EnableChatIdDiscovery;
 
         return new OperationalDiagnosticsSnapshot(
@@ -70,6 +81,9 @@ public sealed class OperationalDiagnosticsService : IOperationalDiagnosticsServi
                 TelegramPollingEnabled: telegramPollingEnabled,
                 ChatIdDiscoveryEnabled: _telegramOptions.EnableChatIdDiscovery,
                 TelegramAllowlistConfigured: telegramAllowlistConfigured,
+                TelegramBootstrapOwnerConfigured: telegramBootstrapOwnerConfigured,
+                TelegramUserStoreAvailable: _telegramUserStore is not null,
+                TelegramUnknownUserPolicy: "AutoConsumer",
                 AllowedChatIdsConfigured: _telegramOptions.AllowedChatIds.Count > 0,
                 AllowedUsernamesConfigured: _telegramOptions.AllowedUsernames.Count > 0,
                 DeniedChatIdsConfigured: _telegramOptions.DeniedChatIds.Count > 0,

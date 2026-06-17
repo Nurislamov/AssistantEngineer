@@ -9,25 +9,28 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 
 ## Access Policy
 
-- Keep `IsEnabled=false` until the public HTTPS endpoint, secrets, and access lists are reviewed.
+- Keep `IsEnabled=false` until the public HTTPS endpoint, secrets, bootstrap owner, and user access policy are reviewed.
 - Use `InboundMode=Polling` and `Polling__Enabled=true` when production webhook delivery cannot reach the API.
 - Keep webhook delivery as an optional fallback only; do not run webhook and polling at the same time.
-- Configure `AllowedChatIds` or `AllowedUsernames` through environment configuration before enabling production
-  Telegram. Chat ID allowlisting is preferred for closed beta.
+- Configure `BootstrapOwnerChatId` before enabling production Telegram. Existing `AllowedChatIds__0` remains a
+  compatibility bootstrap owner fallback, but the DB-backed `TelegramUsers` table is the primary access model.
 - Use `DeniedChatIds` for emergency or explicit blocks. Deny wins over allow.
 - Username allow/deny rules are optional; chat ID rules are preferred.
-- Empty allowlists are deny-by-default. In `Production`, enabled Telegram without an allowlist fails startup unless
-  chat ID discovery is temporarily enabled for initial setup.
+- Unknown Telegram users are auto-created as `Consumer`, `IsEnabled=true`, `IsBlocked=false`.
+- In `Production`, enabled Telegram without `BootstrapOwnerChatId` or legacy bootstrap fallback fails startup unless
+  chat ID discovery is temporarily enabled for setup.
 
 ## Closed Beta Single-Operator Mode
 
-- Use one explicit allowlist entry: `TELEGRAM_ALLOWED_CHAT_ID=<telegram-chat-id>` for Docker Compose, or
-  `AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<telegram-chat-id>` for direct ASP.NET
+- Use one explicit bootstrap owner entry: `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` for Docker Compose,
+  or `AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<telegram-chat-id>` for direct ASP.NET
   configuration.
+- `TELEGRAM_ALLOWED_CHAT_ID=<telegram-chat-id>` remains accepted as compatibility fallback for the bootstrap owner.
 - Keep `TELEGRAM_ALLOWED_USERNAME=` empty unless a reviewed username fallback is required.
 - Keep `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` after the chat ID is known.
-- Verify an unknown Telegram account gets no diagnostic response while the allowed chat can use `/start` and a
-  deterministic diagnostic smoke message.
+- Verify an unknown Telegram account is created as `Consumer` and receives only the simplified public-safe response.
+- Verify the bootstrap owner can use `/admin users`, `/admin block <chatId>`, `/admin unblock <chatId>`,
+  `/admin disable <chatId>`, `/admin enable <chatId>`, and `/admin role <chatId> <Owner|Admin|Engineer|Consumer>`.
 
 ## Initial Chat ID Discovery
 
@@ -35,7 +38,7 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 2. Generate the webhook secret for this deployment and store it only in environment or secret-store configuration.
 3. Temporarily set `EnableChatIdDiscovery=true` or `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=true`.
 4. Deploy/restart and send `/id` or `/whoami`.
-5. Add the returned `chatId` to `AllowedChatIds` in environment configuration.
+5. Add the returned `chatId` to `BootstrapOwnerChatId` in environment configuration.
 6. Set `EnableChatIdDiscovery=false` or `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false` and deploy/restart again.
 
 Discovery is disabled by default. Its response never includes the bot token, webhook secret, server paths, or diagnostic data.
@@ -49,7 +52,9 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
-- `AllowedChatIds` or `AllowedUsernames` is non-empty and `DeniedChatIds` is reviewed.
+- `BootstrapOwnerChatId` is configured, `TelegramUsers` migration has been applied, and `DeniedChatIds` is reviewed.
+- Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
+- Phone sharing uses Telegram contact messages; phone numbers are not logged and are not required for diagnostics.
 - `EnableChatIdDiscovery=false` after setup.
 - Telegram webhook and long polling are not used together.
 - Run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`.
@@ -70,7 +75,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 ## Remaining Risks
 
 - No audit log.
-- No admin UI for allow/deny lists.
+- No web admin UI.
+- No diagnostic case history, conversation continuation, CRM lead assignment, photo/OCR, or ServiceLead workflow.
 - Polling offset and processed-message idempotency persistence are file-based unless deployment mounts a durable
   volume or overrides the paths.
 - No endpoint-specific rate limiting beyond the broader API setup.

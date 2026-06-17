@@ -26,6 +26,9 @@ public sealed class OperationalDiagnosticsTests
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
         Assert.True(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramBootstrapOwnerConfigured);
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramUserStoreAvailable);
+        Assert.Equal("AutoConsumer", snapshot.EquipmentDiagnostics.TelegramUnknownUserPolicy);
         Assert.True(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.AllowedUsernamesConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
@@ -58,13 +61,14 @@ public sealed class OperationalDiagnosticsTests
         Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
         Assert.Equal("Polling", snapshot.EquipmentDiagnostics.TelegramInboundMode);
         Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
+        Assert.True(snapshot.EquipmentDiagnostics.TelegramBootstrapOwnerConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramWebhookConfigured);
         Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
         Assert.DoesNotContain("123456789", serialized, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void SnapshotSurfacesMissingTelegramAllowlistWithoutLeakingIdentifiers()
+    public void SnapshotSurfacesMissingTelegramBootstrapOwnerWithoutLeakingIdentifiers()
     {
         using var services = CreateServices(new EquipmentDiagnosticTelegramWebhookOptions
         {
@@ -83,6 +87,7 @@ public sealed class OperationalDiagnosticsTests
         Assert.True(snapshot.EquipmentDiagnostics.TelegramPollingEnabled);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramBootstrapOwnerConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.AllowedChatIdsConfigured);
         Assert.False(snapshot.EquipmentDiagnostics.AllowedUsernamesConfigured);
         Assert.DoesNotContain("test-token-value", serialized, StringComparison.Ordinal);
@@ -108,6 +113,7 @@ public sealed class OperationalDiagnosticsTests
         Assert.False(snapshot.EquipmentDiagnostics.TelegramPollingConfigured);
         Assert.True(snapshot.EquipmentDiagnostics.ChatIdDiscoveryEnabled);
         Assert.False(snapshot.EquipmentDiagnostics.TelegramAllowlistConfigured);
+        Assert.False(snapshot.EquipmentDiagnostics.TelegramBootstrapOwnerConfigured);
     }
 
     [Theory]
@@ -142,6 +148,7 @@ public sealed class OperationalDiagnosticsTests
     [InlineData("AllowedUsernames=operator", "AllowedUsernames=[REDACTED]")]
     [InlineData("{\"chat_id\":123456}", "{\"chat_id\":\"[REDACTED]\"}")]
     [InlineData("{\"username\":\"operator\"}", "{\"username\":\"[REDACTED]\"}")]
+    [InlineData("{\"phone_number\":\"+998901234567\"}", "{\"phone_number\":\"[REDACTED]\"}")]
     [InlineData("{\"text\":\"raw Telegram message\"}", "{\"text\":\"[REDACTED]\"}")]
     public void RedactorMasksOperationalIncidentFields(string input, string expected)
     {

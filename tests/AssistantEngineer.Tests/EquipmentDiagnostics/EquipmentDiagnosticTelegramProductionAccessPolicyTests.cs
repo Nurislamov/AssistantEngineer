@@ -13,7 +13,7 @@ public sealed class EquipmentDiagnosticTelegramProductionAccessPolicyTests
         var exception = Assert.Throws<InvalidOperationException>(() =>
             ApplicationModulesRegistration.ValidateTelegramProductionAccessPolicy(options, "Production"));
 
-        Assert.Contains("requires AllowedChatIds or AllowedUsernames", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("requires BootstrapOwnerChatId, AllowedChatIds, or AllowedUsernames", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -22,6 +22,17 @@ public sealed class EquipmentDiagnosticTelegramProductionAccessPolicyTests
         var options = TelegramOptions(
             enableChatIdDiscovery: false,
             allowedUsername: "operator");
+
+        ApplicationModulesRegistration.ValidateTelegramProductionAccessPolicy(options, "Production");
+    }
+
+    [Fact]
+    public void ProductionEnabledTelegramWithBootstrapOwnerIsAccepted()
+    {
+        var options = TelegramOptions(enableChatIdDiscovery: false) with
+        {
+            BootstrapOwnerChatId = 123456789
+        };
 
         ApplicationModulesRegistration.ValidateTelegramProductionAccessPolicy(options, "Production");
     }

@@ -14,7 +14,7 @@ user-facing response.
 
 Application logs intentionally never include Authorization or Telegram secret headers, bot tokens, webhook
 secrets, allow/deny chat ID values, Telegram message text, raw request/response bodies, query-string values, or
-internal artifact paths. Allow/deny username values are treated as sensitive too.
+internal artifact paths. Allow/deny username values and phone numbers are treated as sensitive too.
 
 Operators can pass one safe correlation ID during smoke or incident reproduction and search the local application
 logs for that ID. `smoke-production-stack.ps1` generates and prints a non-secret smoke ID and verifies the API

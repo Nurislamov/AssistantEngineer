@@ -39,6 +39,7 @@ internal static class ApplicationModulesRegistration
             AllowedUsernames = telegramOptions.AllowedUsernames,
             DeniedChatIds = telegramOptions.DeniedChatIds,
             DeniedUsernames = telegramOptions.DeniedUsernames,
+            BootstrapOwnerChatId = telegramOptions.BootstrapOwnerChatId,
             EnableChatIdDiscovery = telegramOptions.EnableChatIdDiscovery,
             MaxMessageLength = telegramOptions.MaxMessageLength,
             DefaultManufacturer = telegramOptions.DefaultManufacturer,
@@ -84,11 +85,12 @@ internal static class ApplicationModulesRegistration
             return;
         }
 
-        if (telegramOptions.AllowedChatIds.Count == 0 &&
+        if (telegramOptions.BootstrapOwnerChatId is null &&
+            telegramOptions.AllowedChatIds.Count == 0 &&
             telegramOptions.AllowedUsernames.Count == 0)
         {
             throw new InvalidOperationException(
-                "Enabled Telegram EquipmentDiagnostics bot in Production requires AllowedChatIds or AllowedUsernames.");
+                "Enabled Telegram EquipmentDiagnostics bot in Production requires BootstrapOwnerChatId, AllowedChatIds, or AllowedUsernames.");
         }
     }
 }

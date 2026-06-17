@@ -39,6 +39,7 @@
         "AssistantEngineer.Modules.Buildings",
         "AssistantEngineer.Modules.Calculations",
         "AssistantEngineer.Modules.Equipment",
+        "AssistantEngineer.Modules.EquipmentDiagnostics",
         "AssistantEngineer.Modules.Reporting",
         "AssistantEngineer.SharedKernel"
       ],

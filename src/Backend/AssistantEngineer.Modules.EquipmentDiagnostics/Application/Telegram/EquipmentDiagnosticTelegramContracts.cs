@@ -26,6 +26,7 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public IReadOnlyCollection<string> AllowedUsernames { get; init; } = [];
     public IReadOnlyCollection<long> DeniedChatIds { get; init; } = [];
     public IReadOnlyCollection<string> DeniedUsernames { get; init; } = [];
+    public long? BootstrapOwnerChatId { get; init; }
     public bool EnableChatIdDiscovery { get; init; }
     public int MaxMessageLength { get; init; } = 500;
     public string? DefaultManufacturer { get; init; } = "Gree";
@@ -41,7 +42,11 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? Text,
     long? MessageId = null,
     DateTimeOffset? ReceivedAt = null,
-    long? UserId = null);
+    long? UserId = null,
+    string? FirstName = null,
+    string? LastName = null,
+    string? ContactPhoneNumber = null,
+    long? ContactUserId = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

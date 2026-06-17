@@ -73,10 +73,12 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         TelegramWebhookUpdateDto update,
         CancellationToken cancellationToken)
     {
-        if (update.Message?.Chat is null || string.IsNullOrWhiteSpace(update.Message.Text))
+        if (update.Message?.Chat is null ||
+            (string.IsNullOrWhiteSpace(update.Message.Text) &&
+             string.IsNullOrWhiteSpace(update.Message.Contact?.PhoneNumber)))
         {
             _counters.RecordInvalidUpdate();
-            return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported text message.");
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported message.");
         }
 
         var username = update.Message.From?.Username ?? update.Message.Chat.Username;
@@ -90,7 +92,11 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 update.Message.Date is null
                     ? null
                     : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value),
-                update.Message.From?.Id),
+                update.Message.From?.Id,
+                update.Message.From?.FirstName,
+                update.Message.From?.LastName,
+                update.Message.Contact?.PhoneNumber,
+                update.Message.Contact?.UserId),
             cancellationToken);
 
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)

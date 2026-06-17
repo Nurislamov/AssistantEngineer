@@ -13,6 +13,7 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public IReadOnlyCollection<string> AllowedUsernames { get; init; } = [];
     public IReadOnlyCollection<long> DeniedChatIds { get; init; } = [];
     public IReadOnlyCollection<string> DeniedUsernames { get; init; } = [];
+    public long? BootstrapOwnerChatId { get; init; }
     public bool EnableChatIdDiscovery { get; init; }
     public int MaxMessageLength { get; init; } = 500;
     public string? DefaultManufacturer { get; init; } = "Gree";
@@ -57,7 +58,8 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("text")] string? Text,
     [property: JsonPropertyName("chat")] TelegramWebhookChatDto? Chat,
     [property: JsonPropertyName("from")] TelegramWebhookUserDto? From,
-    [property: JsonPropertyName("date")] long? Date);
+    [property: JsonPropertyName("date")] long? Date,
+    [property: JsonPropertyName("contact")] TelegramWebhookContactDto? Contact = null);
 
 public sealed record TelegramWebhookChatDto(
     [property: JsonPropertyName("id")] long Id,
@@ -66,7 +68,13 @@ public sealed record TelegramWebhookChatDto(
 
 public sealed record TelegramWebhookUserDto(
     [property: JsonPropertyName("id")] long Id,
-    [property: JsonPropertyName("username")] string? Username);
+    [property: JsonPropertyName("username")] string? Username,
+    [property: JsonPropertyName("first_name")] string? FirstName = null,
+    [property: JsonPropertyName("last_name")] string? LastName = null);
+
+public sealed record TelegramWebhookContactDto(
+    [property: JsonPropertyName("phone_number")] string PhoneNumber,
+    [property: JsonPropertyName("user_id")] long? UserId);
 
 public enum EquipmentDiagnosticTelegramWebhookStatus
 {

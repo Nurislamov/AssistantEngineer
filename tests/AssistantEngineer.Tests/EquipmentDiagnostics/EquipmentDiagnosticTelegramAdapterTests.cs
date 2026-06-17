@@ -2,6 +2,8 @@ using System.Reflection;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -90,15 +92,15 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
-    public async Task ChatOutsideConfiguredAllowlistIsIgnored()
+    public async Task UnknownChatIsAutoCreatedAsConsumer()
     {
-        var facade = new CountingFacade();
+        var facade = new StaticFacade();
         var adapter = CreateAdapter(facade, EnabledOptions() with { AllowedChatIds = [42] });
 
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
-        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
-        Assert.Equal(0, facade.CallCount);
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -129,7 +131,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     [Fact]
     public async Task DeniedUsernameIsIgnoredAndDenyWinsOverAllow()
     {
-        var facade = new CountingFacade();
+        var facade = new StaticFacade();
         var adapter = CreateAdapter(
             facade,
             EnabledOptions() with { AllowedChatIds = [], AllowedUsernames = ["operator"], DeniedUsernames = ["OPERATOR"] });
@@ -141,35 +143,36 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
-    public async Task EmptyAllowAndDenyListsRejectDiagnosticMessages()
+    public async Task EmptyAllowAndDenyListsAutoCreateConsumer()
     {
-        var facade = new CountingFacade();
+        var facade = new StaticFacade();
         var adapter = CreateAdapter(facade, EnabledOptions() with { AllowedChatIds = [] });
 
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
-        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
-        Assert.Empty(response.Text);
-        Assert.Equal(0, facade.CallCount);
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task AllowedUsernamePassesAccessPolicy()
+    public async Task AllowedUsernameDoesNotElevateUnknownUserAboveConsumer()
     {
-        var facade = new CountingFacade();
+        var facade = new StaticFacade();
         var adapter = CreateAdapter(
             facade,
             EnabledOptions() with { AllowedChatIds = [], AllowedUsernames = ["OPERATOR"] });
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => adapter.HandleAsync(Update("Gree H5")));
+        var response = await adapter.HandleAsync(Update("Gree H5"));
 
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Safe next steps:", response.Text, StringComparison.Ordinal);
         Assert.Equal(1, facade.CallCount);
     }
 
     [Fact]
     public async Task IdentityDiscoveryWithEmptyAllowlistAllowsOnlyIdentityCommands()
     {
-        var facade = new CountingFacade();
+        var facade = new StaticFacade();
         var adapter = CreateAdapter(
             facade,
             EnabledOptions() with { AllowedChatIds = [], EnableChatIdDiscovery = true });
@@ -179,8 +182,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, identity.ResponseKind);
         Assert.Contains("chatId: 7", identity.Text, StringComparison.Ordinal);
-        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, diagnostic.ResponseKind);
-        Assert.Equal(0, facade.CallCount);
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, diagnostic.ResponseKind);
+        Assert.Contains("Safe next steps:", diagnostic.Text, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -254,7 +257,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
                 typeof(IEquipmentDiagnosticBotFacade),
                 typeof(EquipmentDiagnosticTelegramMessageParser),
                 typeof(EquipmentDiagnosticTelegramResponseFormatter),
-                typeof(EquipmentDiagnosticTelegramOptions)
+                typeof(EquipmentDiagnosticTelegramOptions),
+                typeof(ITelegramUserAccessService),
+                typeof(ITelegramUserStore)
             ],
             dependencyTypes);
 
@@ -273,8 +278,18 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
     private static EquipmentDiagnosticTelegramAdapter CreateAdapter(
         IEquipmentDiagnosticBotFacade facade,
-        EquipmentDiagnosticTelegramOptions options) =>
-        new(facade, new EquipmentDiagnosticTelegramMessageParser(), new EquipmentDiagnosticTelegramResponseFormatter(), options);
+        EquipmentDiagnosticTelegramOptions options)
+    {
+        var store = new InMemoryTelegramUserStore();
+        var access = new TelegramUserAccessService(store, options);
+        return new(
+            facade,
+            new EquipmentDiagnosticTelegramMessageParser(),
+            new EquipmentDiagnosticTelegramResponseFormatter(),
+            options,
+            access,
+            store);
+    }
 
     private static ServiceProvider CreateProvider(EquipmentDiagnosticTelegramOptions options)
     {
@@ -322,6 +337,45 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         {
             CallCount++;
             throw new InvalidOperationException("The facade should not be called by this test.");
+        }
+    }
+
+    private sealed class StaticFacade : IEquipmentDiagnosticBotFacade
+    {
+        public int CallCount { get; private set; }
+
+        public Task<EquipmentDiagnosticBotResponse> DiagnoseAsync(
+            EquipmentDiagnosticBotRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            return Task.FromResult(new EquipmentDiagnosticBotResponse(
+                EquipmentDiagnosticBotResponseStatus.Answer,
+                "Gree H5",
+                "Possible compressor overload indication.",
+                request.Manufacturer ?? "Gree",
+                request.Code ?? "H5",
+                null,
+                new EquipmentDiagnosticBotObservedCodeContext(request.Code ?? "H5", request.Code ?? "H5", request.FreeText),
+                new EquipmentDiagnosticBotAnswerCard(
+                    "Gree H5",
+                    "The unit reports a protected operating condition.",
+                    "Verification required.",
+                    [],
+                    [],
+                    [],
+                    [],
+                    []),
+                null,
+                null,
+                new EquipmentDiagnosticBotSafetyCard("Qualified technician required.", ["Do not bypass protections."]),
+                VerificationRequired: true,
+                Confidence: DiagnosticConfidence.Medium,
+                IsManualVerified: false,
+                IsSeedKnowledge: true,
+                OperatorNextSteps: ["Share the code with service."],
+                Warnings: [],
+                InternalDecisionTrace: null));
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -69,14 +70,15 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
     }
 
     [Fact]
-    public async Task UnauthorizedChatIsAcceptedAndIgnored()
+    public async Task UnknownChatIsAcceptedAsConsumerAndSendsReply()
     {
         await using var factory = new WebhookApiFactory(enabled: true, allowedChatId: 999);
 
         var response = await PostAsync(factory.CreateClient(), Update("Gree H5"), "test_webhook_secret");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(0, factory.Outbound.CallCount);
+        Assert.Equal(1, factory.Outbound.CallCount);
+        Assert.Contains("Safe next steps:", factory.Outbound.LastText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -166,6 +168,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
             builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll<IEquipmentDiagnosticTelegramOutboundClient>();
+                services.RemoveAll<ITelegramUserStore>();
                 services.RemoveAll<EquipmentDiagnosticTelegramWebhookOptions>();
                 services.RemoveAll<EquipmentDiagnosticTelegramOptions>();
                 var chatIds = allowedChatId is null ? Array.Empty<long>() : [allowedChatId.Value];
@@ -187,6 +190,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                     EnableChatIdDiscovery = enableChatIdDiscovery,
                     DefaultManufacturer = "Gree"
                 });
+                services.AddSingleton<ITelegramUserStore, InMemoryTelegramUserStore>();
                 services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient>(Outbound);
             });
         }

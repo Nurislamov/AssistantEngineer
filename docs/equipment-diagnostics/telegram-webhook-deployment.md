@@ -32,7 +32,7 @@ AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSecon
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath=artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries=5000
 AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=<secret>
-AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<chat-id>
+AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0=<blocked-chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__EnableChatIdDiscovery=false
 ```
@@ -95,7 +95,10 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Set `InboundMode=Polling` and `Polling__Enabled=true` for production polling mode.
 - Store bot token in the deployment secret store.
 - Store webhook secret only when webhook fallback is enabled.
-- Configure allowed chat IDs and/or usernames.
+- Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
+- Apply the `TelegramUsers` EF migration before enabling the bot.
+- Confirm unknown users become `Consumer`, not Engineer/Admin.
+- Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Consumer>` from the bootstrap owner or an Admin.
 - Review denied chat IDs; deny wins over allow.
 - Keep chat ID discovery disabled except during initial access setup.
 - Keep transport disabled until configuration review is complete.
@@ -110,8 +113,9 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 ## Known Limitations
 
 - polling offset and processed-message idempotency persistence are local operational files by default;
-- no database, audit log, or message queue;
-- no admin UI for allowed chats;
+- no audit log or message queue;
+- no web admin UI for users/roles;
+- no diagnostic history, conversation continuation, ServiceLead/CRM, or photo/OCR;
 - no endpoint-specific rate limiter beyond the broader API setup;
 - no AI, RAG, vector search, or manual-PDF access.
 

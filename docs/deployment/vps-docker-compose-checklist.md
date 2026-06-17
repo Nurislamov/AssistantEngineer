@@ -16,8 +16,10 @@
 - For polling production mode, set `TELEGRAM_INBOUND_MODE=Polling`, `TELEGRAM_POLLING_ENABLED=true`, and
   `TELEGRAM_DELETE_WEBHOOK_ON_STARTUP=true`.
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.
-- Configure one closed-beta allowlist entry with `TELEGRAM_ALLOWED_CHAT_ID=<telegram-chat-id>` or direct
-  `AllowedChatIds` binding; review `DeniedChatIds` and deny-wins-over-allow behavior.
+- Configure `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` or direct `BootstrapOwnerChatId` binding; legacy
+  `TELEGRAM_ALLOWED_CHAT_ID` remains only a bootstrap compatibility fallback.
+- Apply the `TelegramUsers` migration before enabling Telegram.
+- Review `DeniedChatIds` and deny-wins-over-allow behavior.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

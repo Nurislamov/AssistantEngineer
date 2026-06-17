@@ -21,6 +21,7 @@ services:
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath: ${TELEGRAM_PROCESSED_MESSAGE_STORE_FILE_PATH:-artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries: ${TELEGRAM_PROCESSED_MESSAGE_STORE_MAX_ENTRIES:-5000}
       AssistantEngineer__EquipmentDiagnostics__Telegram__EnableChatIdDiscovery: ${TELEGRAM_ENABLE_CHAT_ID_DISCOVERY:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId: ${TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID:-}
       AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0: ${TELEGRAM_ALLOWED_CHAT_ID:-}
       AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedUsernames__0: ${TELEGRAM_ALLOWED_USERNAME:-}
       AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0: ${TELEGRAM_DENIED_CHAT_ID:-}
