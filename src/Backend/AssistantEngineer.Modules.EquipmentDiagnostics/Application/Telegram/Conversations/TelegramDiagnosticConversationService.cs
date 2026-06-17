@@ -2,6 +2,7 @@ using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -11,6 +12,7 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Co
 public sealed class TelegramDiagnosticConversationService
 {
     public const string NewCodeButton = "🔎 Новый код";
+    public const string HistoryButton = "📋 История";
     public const string SharePhoneButton = "📞 Поделиться номером Telegram";
     public const string ManualPhoneButton = "✏️ Ввести другой номер";
     public const string ChangePhoneButton = "✏️ Изменить номер";
@@ -29,6 +31,7 @@ public sealed class TelegramDiagnosticConversationService
     private readonly EquipmentDiagnosticTelegramMessageParser _parser;
     private readonly EquipmentDiagnosticTelegramResponseFormatter _formatter;
     private readonly EquipmentDiagnosticTelegramOptions _options;
+    private readonly TelegramDiagnosticHistoryService? _historyService;
 
     public TelegramDiagnosticConversationService(
         ITelegramConversationSessionStore sessionStore,
@@ -37,7 +40,8 @@ public sealed class TelegramDiagnosticConversationService
         ITelegramUserStore userStore,
         EquipmentDiagnosticTelegramMessageParser parser,
         EquipmentDiagnosticTelegramResponseFormatter formatter,
-        EquipmentDiagnosticTelegramOptions options)
+        EquipmentDiagnosticTelegramOptions options,
+        TelegramDiagnosticHistoryService? historyService = null)
     {
         _sessionStore = sessionStore;
         _diagnosticsService = diagnosticsService;
@@ -46,6 +50,7 @@ public sealed class TelegramDiagnosticConversationService
         _parser = parser;
         _formatter = formatter;
         _options = options;
+        _historyService = historyService;
     }
 
     public static bool IsResetText(string? text)
@@ -58,6 +63,12 @@ public sealed class TelegramDiagnosticConversationService
     {
         var normalized = NormalizeText(text);
         return normalized is "ввестидругойномер" or "изменитьномер" or "phone";
+    }
+
+    public static bool IsHistoryText(string? text)
+    {
+        var normalized = NormalizeText(text);
+        return normalized is "история" or "history";
     }
 
     public async Task<TelegramDiagnosticConversationResult> ResetAsync(
@@ -116,6 +127,11 @@ public sealed class TelegramDiagnosticConversationService
         if (IsManualPhoneText(update.Text))
         {
             return await BeginPhoneInputAsync(user, access, cancellationToken);
+        }
+
+        if (IsHistoryText(update.Text))
+        {
+            return await FormatHistoryAsync(user, cancellationToken);
         }
 
         var session = await _sessionStore.GetByTelegramUserIdAsync(user.Id, cancellationToken);
@@ -264,10 +280,29 @@ public sealed class TelegramDiagnosticConversationService
                         FreeText: update.Text,
                         PreferredLanguage: _options.PreferredLanguage),
                     cancellationToken);
+                if (diagnosis.Status == EquipmentDiagnosticBotResponseStatus.NotFound)
+                {
+                    await RecordNotFoundAsync(access, conversationSessionId: null, code, _options.DefaultManufacturer, cancellationToken);
+                }
+                else
+                {
+                    await RecordCompletedAsync(
+                        access,
+                        conversationSessionId: null,
+                        diagnosis,
+                        _options.DefaultManufacturer,
+                        code,
+                        equipmentType: null,
+                        displayContext: null,
+                        candidateCount: 0,
+                        cancellationToken);
+                }
+
                 return FormatDiagnosis(diagnosis, access);
             }
 
             await _sessionStore.ClearAsync(user.Id, cancellationToken);
+            await RecordNotFoundAsync(access, conversationSessionId: null, code, ExtractManufacturer(update.Text, code), cancellationToken);
             return NotFound(access);
         }
 
@@ -391,6 +426,7 @@ public sealed class TelegramDiagnosticConversationService
 
         if (candidates.Count == 0)
         {
+            await RecordNotFoundAsync(access, conversationSessionId: null, code, selectedManufacturer, cancellationToken);
             return NotFound(access);
         }
 
@@ -430,7 +466,7 @@ public sealed class TelegramDiagnosticConversationService
             selectedDisplayContext = displayContexts[0];
         }
 
-        await SaveAsync(
+        var session = await SaveAsync(
             telegramUserId,
             TelegramConversationState.ShowingResult,
             code,
@@ -456,8 +492,20 @@ public sealed class TelegramDiagnosticConversationService
 
         if (diagnosis.Status == EquipmentDiagnosticBotResponseStatus.NotFound)
         {
+            await RecordNotFoundAsync(access, session.Id, code, selectedManufacturer, cancellationToken);
             return NotFound(access);
         }
+
+        await RecordCompletedAsync(
+            access,
+            session.Id,
+            diagnosis,
+            selectedManufacturer,
+            code,
+            selectedEquipmentType,
+            selectedDisplayContext,
+            allCandidates.Count,
+            cancellationToken);
 
         return FormatDiagnosis(diagnosis, access);
     }
@@ -492,7 +540,7 @@ public sealed class TelegramDiagnosticConversationService
             .ToArray();
     }
 
-    private async Task SaveAsync(
+    private async Task<TelegramConversationSessionSnapshot> SaveAsync(
         long telegramUserId,
         TelegramConversationState state,
         string code,
@@ -503,7 +551,7 @@ public sealed class TelegramDiagnosticConversationService
         CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
-        await _sessionStore.UpsertAsync(
+        return await _sessionStore.UpsertAsync(
             new TelegramConversationSessionUpsert(
                 telegramUserId,
                 state,
@@ -516,6 +564,61 @@ public sealed class TelegramDiagnosticConversationService
                 now,
                 now.Add(SessionTtl)),
             cancellationToken);
+    }
+
+    private Task RecordCompletedAsync(
+        TelegramUserAccessResult access,
+        long? conversationSessionId,
+        EquipmentDiagnosticBotResponse diagnosis,
+        string? manufacturer,
+        string code,
+        string? equipmentType,
+        string? displayContext,
+        int? candidateCount,
+        CancellationToken cancellationToken) =>
+        _historyService is null
+            ? Task.CompletedTask
+            : _historyService.RecordCompletedAsync(
+                access,
+                conversationSessionId,
+                diagnosis,
+                manufacturer,
+                code,
+                equipmentType,
+                displayContext,
+                candidateCount,
+                cancellationToken);
+
+    private Task RecordNotFoundAsync(
+        TelegramUserAccessResult access,
+        long? conversationSessionId,
+        string code,
+        string? manufacturer,
+        CancellationToken cancellationToken) =>
+        _historyService is null
+            ? Task.CompletedTask
+            : _historyService.RecordNotFoundAsync(
+                access,
+                conversationSessionId,
+                code,
+                manufacturer,
+                candidateCount: 0,
+                cancellationToken);
+
+    private async Task<TelegramDiagnosticConversationResult> FormatHistoryAsync(
+        TelegramUserSnapshot user,
+        CancellationToken cancellationToken)
+    {
+        var text = _historyService is null
+            ? "История пока пустая. Отправьте код ошибки, например: Gree H5."
+            : await _historyService.FormatHistoryAsync(user, cancellationToken);
+
+        return new TelegramDiagnosticConversationResult(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            text,
+            [],
+            MainKeyboard(new TelegramUserAccessResult(true, user, user.Role)));
     }
 
     private async Task SaveSessionAsync(
@@ -681,7 +784,8 @@ public sealed class TelegramDiagnosticConversationService
     {
         var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>
         {
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton) }
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton) },
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton) }
         };
 
         if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
@@ -816,6 +920,18 @@ public sealed class TelegramDiagnosticConversationService
             .Select(candidate => candidate.Manufacturer)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .FirstOrDefault(manufacturer => normalizedText.Contains(NormalizeText(manufacturer), StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string? ExtractManufacturer(string? text, string code)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        var tokens = text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var codeIndex = Array.FindIndex(tokens, token => string.Equals(token, code, StringComparison.OrdinalIgnoreCase));
+        return codeIndex > 0 ? tokens[0] : null;
     }
 
     private static string? SingleOrNull(IEnumerable<string> values)

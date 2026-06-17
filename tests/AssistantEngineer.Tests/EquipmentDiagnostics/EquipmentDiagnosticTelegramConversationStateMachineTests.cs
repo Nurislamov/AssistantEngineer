@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -36,10 +37,21 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
 
         var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
         Assert.DoesNotContain("Выберите бренд", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
         Assert.Equal(1, harness.Facade.CallCount);
+        Assert.NotNull(diagnosticCase);
+        Assert.Equal(TelegramDiagnosticCaseStatus.Completed, diagnosticCase.Status);
+        Assert.Equal("H5", diagnosticCase.Code);
+        Assert.Equal("Gree", diagnosticCase.Manufacturer);
+        Assert.Equal(TelegramDiagnosticCaseResponseMode.Consumer, diagnosticCase.ResponseMode);
+        Assert.False(diagnosticCase.PhoneWasSaved);
+        Assert.Null(diagnosticCase.PhoneNumberSource);
+        Assert.Contains("protected operating condition", diagnosticCase.ResultSummary, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Что можно сделать безопасно", diagnosticCase.ResultSummary, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -86,6 +98,26 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         Assert.Contains("Плата/LED", buttons);
         Assert.Contains("Приложение/шлюз", buttons);
         Assert.Contains(TelegramDiagnosticConversationService.NewCodeButton, buttons);
+        Assert.Empty(await harness.HistoryStore.GetLatestForTelegramUserAsync(user.Id, 5));
+    }
+
+    [Fact]
+    public async Task StartHelpMePhoneAndIntermediatePromptsDoNotCreateDiagnosticCase()
+    {
+        var harness = CreateHarness([
+            Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit),
+            Summary("Daikin", "H5", EquipmentCategory.VrfOutdoorUnit)
+        ]);
+
+        await harness.Adapter.HandleAsync(Update("/start"));
+        await harness.Adapter.HandleAsync(Update("/help"));
+        await harness.Adapter.HandleAsync(Update("/me"));
+        await harness.Adapter.HandleAsync(Update("/phone"));
+        await harness.Adapter.HandleAsync(Update("H5"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+
+        Assert.NotNull(user);
+        Assert.Empty(await harness.HistoryStore.GetLatestForTelegramUserAsync(user.Id, 5));
     }
 
     [Fact]
@@ -258,9 +290,12 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         await harness.UserStore.AllowAsync(7, TelegramUserRole.Engineer);
 
         var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
         Assert.Contains("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramDiagnosticCaseResponseMode.Technical, diagnosticCase?.ResponseMode);
     }
 
     [Fact]
@@ -326,9 +361,119 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([]);
 
         var response = await harness.Adapter.HandleAsync(Update("ZZ99"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
         Assert.Contains("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(TelegramDiagnosticConversationService.NewCodeButton, ButtonTexts(response));
+        Assert.Equal(TelegramDiagnosticCaseStatus.NotFound, diagnosticCase?.Status);
+        Assert.Equal("ZZ99", diagnosticCase?.Code);
+        Assert.Equal(0, diagnosticCase?.CandidateCount);
+    }
+
+    [Fact]
+    public async Task CompletedDiagnosticStoresPhoneMetadataWithoutPhoneNumberOrFullResponse()
+    {
+        var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
+        await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await harness.UserStore.SavePhoneAsync(7, "+998901234567", verified: false, TelegramUserPhoneNumberSource.Manual, DateTimeOffset.UtcNow);
+
+        await harness.Adapter.HandleAsync(Update("H5"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
+        var stored = string.Join(" ", diagnosticCase!.Code, diagnosticCase.Manufacturer, diagnosticCase.ResultSummary, diagnosticCase.NormalizedRequestJson, diagnosticCase.PhoneNumberSource);
+
+        Assert.True(diagnosticCase.PhoneWasSaved);
+        Assert.Equal(TelegramUserPhoneNumberSource.Manual, diagnosticCase.PhoneNumberSource);
+        Assert.DoesNotContain("+998901234567", stored, StringComparison.Ordinal);
+        Assert.DoesNotContain("Что можно сделать безопасно", stored, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Передайте мастеру", stored, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task CompletedDiagnosticStoresTelegramContactPhoneSourceWithoutPhoneNumber()
+    {
+        var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
+        await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await harness.UserStore.SavePhoneAsync(7, "+998901234567", verified: true, TelegramUserPhoneNumberSource.TelegramContact, DateTimeOffset.UtcNow);
+
+        await harness.Adapter.HandleAsync(Update("H5"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
+        var stored = string.Join(" ", diagnosticCase!.Code, diagnosticCase.Manufacturer, diagnosticCase.ResultSummary, diagnosticCase.NormalizedRequestJson, diagnosticCase.PhoneNumberSource);
+
+        Assert.True(diagnosticCase.PhoneWasSaved);
+        Assert.Equal(TelegramUserPhoneNumberSource.TelegramContact, diagnosticCase.PhoneNumberSource);
+        Assert.DoesNotContain("+998901234567", stored, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task HistoryShowsLatestFiveOwnCasesAndHidesOtherUsers()
+    {
+        var harness = CreateHarness([Summary("Gree", "H1", EquipmentCategory.VrfOutdoorUnit)]);
+        var ownUser = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start", chatId: 7));
+        var otherUser = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start", chatId: 8));
+        var history = new TelegramDiagnosticHistoryService(harness.HistoryStore);
+
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H1", "one"), "Gree", "H1", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H2", "two"), "Gree", "H2", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H3", "three"), "Gree", "H3", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H4", "four"), "Gree", "H4", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H5", "five"), "Gree", "H5", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(ownUser), null, Response("Gree", "H6", "six"), "Gree", "H6", "Наружный блок", "Плата/LED", 1);
+        await history.RecordCompletedAsync(Access(otherUser), null, Response("Daikin", "E6", "other"), "Daikin", "E6", "Наружный блок", "Плата/LED", 1);
+
+        var response = await harness.Adapter.HandleAsync(Update("/history", chatId: 7));
+
+        Assert.Contains("История диагностик", response.Text, StringComparison.Ordinal);
+        Assert.Contains("1. Gree H6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("5. Gree H2", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree H1", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Daikin E6", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task HistoryAndLastEmptyStatesAreRussian()
+    {
+        var harness = CreateHarness([]);
+
+        var history = await harness.Adapter.HandleAsync(Update("/history"));
+        var last = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("История пока пустая", history.Text, StringComparison.Ordinal);
+        Assert.Contains("Отправьте код ошибки", last.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LastShowsLatestOwnCompletedOrNotFoundCase()
+    {
+        var harness = CreateHarness([]);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        var history = new TelegramDiagnosticHistoryService(harness.HistoryStore);
+
+        await history.RecordCompletedAsync(Access(user), null, Response("Gree", "H5", "Saved short summary."), "Gree", "H5", null, null, 1);
+        var completed = await harness.Adapter.HandleAsync(Update("/last"));
+        await history.RecordNotFoundAsync(Access(user), null, "ZZ99", "Gree", 0);
+        var notFound = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Последняя диагностика", completed.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree H5", completed.Text, StringComparison.Ordinal);
+        Assert.Contains("Saved short summary", completed.Text, StringComparison.Ordinal);
+        Assert.Contains("Последний запрос", notFound.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree ZZ99", notFound.Text, StringComparison.Ordinal);
+        Assert.Contains("точная расшифровка не найдена", notFound.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task HistoryButtonBehavesLikeHistoryCommand()
+    {
+        var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
+        await harness.Adapter.HandleAsync(Update("H5"));
+
+        var response = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.HistoryButton));
+
+        Assert.Contains("История диагностик", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree H5", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -336,13 +481,14 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         var userStore = new InMemoryTelegramUserStore();
         var sessionStore = new InMemoryTelegramConversationSessionStore();
+        var historyStore = new InMemoryTelegramDiagnosticCaseStore();
         var diagnostics = new FakeDiagnosticsService([
             Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit),
             Summary("Daikin", "H5", EquipmentCategory.VrfOutdoorUnit)
         ]);
         var facade = new StaticFacade();
-        var first = CreateAdapter(userStore, sessionStore, diagnostics, facade, Options());
-        var second = CreateAdapter(userStore, sessionStore, diagnostics, facade, Options());
+        var first = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, Options());
+        var second = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, Options());
 
         await first.HandleAsync(Update("H5"));
         var response = await second.HandleAsync(Update("Gree"));
@@ -357,15 +503,17 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         var userStore = new InMemoryTelegramUserStore();
         var sessionStore = new InMemoryTelegramConversationSessionStore();
+        var historyStore = new InMemoryTelegramDiagnosticCaseStore();
         var diagnostics = new FakeDiagnosticsService(summaries);
         var facade = new StaticFacade();
-        var adapter = CreateAdapter(userStore, sessionStore, diagnostics, facade, options ?? Options());
-        return new Harness(adapter, userStore, sessionStore, facade);
+        var adapter = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, options ?? Options());
+        return new Harness(adapter, userStore, sessionStore, historyStore, facade);
     }
 
     private static EquipmentDiagnosticTelegramAdapter CreateAdapter(
         ITelegramUserStore userStore,
         ITelegramConversationSessionStore sessionStore,
+        ITelegramDiagnosticCaseStore historyStore,
         IEquipmentDiagnosticsService diagnostics,
         IEquipmentDiagnosticBotFacade facade,
         EquipmentDiagnosticTelegramOptions options)
@@ -373,6 +521,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var parser = new EquipmentDiagnosticTelegramMessageParser();
         var formatter = new EquipmentDiagnosticTelegramResponseFormatter();
         var access = new TelegramUserAccessService(userStore, options);
+        var history = new TelegramDiagnosticHistoryService(historyStore);
         var conversation = new TelegramDiagnosticConversationService(
             sessionStore,
             diagnostics,
@@ -380,7 +529,8 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
             userStore,
             parser,
             formatter,
-            options);
+            options,
+            history);
 
         return new EquipmentDiagnosticTelegramAdapter(
             facade,
@@ -389,7 +539,8 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
             options,
             access,
             userStore,
-            conversation);
+            conversation,
+            history);
     }
 
     private static EquipmentDiagnosticTelegramOptions Options() => new()
@@ -401,16 +552,52 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
 
     private static EquipmentDiagnosticTelegramUpdate Update(
         string? text,
+        long chatId = 7,
         string? contactPhone = null,
         long? contactUserId = null) =>
         new(
             UpdateId: 1,
-            ChatId: 7,
+            ChatId: chatId,
             Username: "operator",
             Text: text,
             UserId: 11,
             ContactPhoneNumber: contactPhone,
             ContactUserId: contactUserId);
+
+    private static TelegramUserAccessResult Access(TelegramUserSnapshot user) =>
+        new(true, user, user.Role);
+
+    private static EquipmentDiagnosticBotResponse Response(
+        string manufacturer,
+        string code,
+        string summary) =>
+        new(
+            EquipmentDiagnosticBotResponseStatus.Answer,
+            $"{manufacturer} {code}",
+            "Short diagnostic message.",
+            manufacturer,
+            code,
+            null,
+            new EquipmentDiagnosticBotObservedCodeContext(code, code, null),
+            new EquipmentDiagnosticBotAnswerCard(
+                $"{manufacturer} {code}",
+                summary,
+                "Verification required.",
+                [],
+                [],
+                [],
+                [],
+                []),
+            null,
+            null,
+            new EquipmentDiagnosticBotSafetyCard("Qualified technician required.", []),
+            VerificationRequired: false,
+            Confidence: DiagnosticConfidence.Low,
+            IsManualVerified: false,
+            IsSeedKnowledge: true,
+            OperatorNextSteps: [],
+            Warnings: [],
+            InternalDecisionTrace: null);
 
     private static EquipmentErrorCodeSummaryDto Summary(
         string manufacturer,
@@ -439,6 +626,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         EquipmentDiagnosticTelegramAdapter Adapter,
         InMemoryTelegramUserStore UserStore,
         InMemoryTelegramConversationSessionStore SessionStore,
+        InMemoryTelegramDiagnosticCaseStore HistoryStore,
         StaticFacade Facade);
 
     private sealed class FakeDiagnosticsService(

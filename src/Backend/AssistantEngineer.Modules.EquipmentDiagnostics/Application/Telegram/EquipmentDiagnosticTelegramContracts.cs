@@ -15,6 +15,8 @@ public enum EquipmentDiagnosticTelegramCommand
     Diagnose,
     Start,
     Help,
+    History,
+    Last,
     Identity,
     Unsupported
 }

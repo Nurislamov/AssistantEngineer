@@ -76,11 +76,18 @@ and Engineer technical replies may be split into multiple ordered `sendMessage` 
 not hit. If any chunk fails, the update is reported as outbound failed.
 
 ED-22C also registers a safe global command menu with Telegram Bot API `setMyCommands` during startup when Telegram
-is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, and `/help` only. It
-deliberately does not publish `/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or
-parameterized admin commands. Owner/Admin can still open `/admin_help` manually or through `/help`. Set
+is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`,
+and `/last` only. It deliberately does not publish `/admin_help`, `/admin users`, `/admin allow`, `/admin block`,
+`/admin role`, or parameterized admin commands. Owner/Admin can still open `/admin_help` manually or through `/help`. Set
 `AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=false` to skip menu synchronization.
 Failure to sync the menu must log a warning and must not stop startup, polling, or webhook fallback.
+
+ED-23A adds structured diagnostic history. Final completed diagnostics and not-found code requests are saved in
+`TelegramDiagnosticCases`; intermediate prompts, `/start`, `/help`, `/me`, `/phone`, contact messages, reset buttons,
+and admin commands are not saved as cases. `/history` returns the latest five cases for the current Telegram user,
+and `/last` returns only that user's latest case. Owner/Admin history is still self-only in ED-23A. Stored data excludes
+full incoming text, full bot response text, phone numbers, raw chat IDs, Telegram user IDs, tokens, and webhook
+secrets.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -114,14 +121,16 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store bot token in the deployment secret store.
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
-- Apply the `TelegramUsers`, `TelegramConversationSessions`, and `AddTelegramUserPhoneSource` EF migrations before
-  enabling the bot.
+- Apply the `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`, and
+  `AddTelegramDiagnosticCases` EF migrations before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
-- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, and `/help`; `/admin_help`
-  is hidden from the global menu, unavailable to Consumer and Engineer, and still reachable for Owner/Admin through
-  `/help` or manual input.
+- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and
+  `/last`; `/admin_help` is hidden from the global menu, unavailable to Consumer and Engineer, and still reachable
+  for Owner/Admin through `/help` or manual input.
+- Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
+  phone numbers, chat IDs, internal ids, or full bot responses.
 - Confirm Consumer diagnostic replies do not include confidence, source, internal traces, or `Response shortened`.
 - Confirm the contact sharing and manual phone buttons appear before the phone number is saved, manual phone
   validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.
@@ -147,7 +156,7 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - polling offset and processed-message idempotency persistence are local operational files by default;
 - no audit log or message queue;
 - no web admin UI for users/roles;
-- no diagnostic history, ServiceLead/CRM, web admin UI, or photo/OCR;
+- no ServiceLead/CRM, web admin UI, admin global diagnostic-history browser, or photo/OCR;
 - no endpoint-specific rate limiter beyond the broader API setup;
 - no AI, RAG, vector search, or manual-PDF access.
 

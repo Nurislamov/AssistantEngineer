@@ -33,12 +33,18 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Verify an unknown Telegram account is created as `Consumer` and receives only the simplified public-safe response.
 - Verify Consumer `/start` and `/help` are Russian, contain no `/admin` commands, and mention both phone options:
   sharing the Telegram contact number and manually entering another number for a callback.
-- Verify the Telegram command menu contains only `/start`, `/new`, `/phone`, `/me`, and `/help`; it must not list
-  `/admin_help` or parameterized admin commands such as `/admin users`, `/admin allow`, `/admin block`, or
-  `/admin role`.
+- Verify the Telegram command menu contains only `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and `/last`;
+  it must not list `/admin_help` or parameterized admin commands such as `/admin users`, `/admin allow`,
+  `/admin block`, or `/admin role`.
 - Verify `/new` resets the current session and asks `Введите код ошибки, например: Gree H5.`; `/phone` opens the
   existing phone flow; `/admin_help` remains available by manual input or Owner/Admin `/help`, returns admin help
   only for Owner/Admin, and returns `Команда недоступна.` for Consumer and Engineer.
+- Verify completed diagnostics create a private `TelegramDiagnosticCases` history record, not-found requests create a
+  `NotFound` record, and intermediate brand/type/display prompts do not create records.
+- Verify `/history` returns the latest five records for the current user only; `/last` returns only the current user's
+  latest record; Owner/Admin do not get global history in ED-23A.
+- Verify history output and stored records do not include phone numbers, chat IDs, Telegram user IDs, internal ids,
+  token/secret values, full incoming text, or full bot response text.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,
   `deterministic bot API`, or unsafe board/compressor/inverter/refrigerant/high-voltage instructions.
 - Verify the main Consumer keyboard without a saved phone shows `📞 Поделиться номером Telegram` and
@@ -74,12 +80,13 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
-- `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, and
-  `AddTelegramUserPhoneSource` migrations have been applied, and `DeniedChatIds` is reviewed.
+- `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`,
+  and `AddTelegramDiagnosticCases` migrations have been applied, and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
 - Phone sharing uses a Telegram reply keyboard with `request_contact=true`; manual phone input is available through
   `✏️ Ввести другой номер`; phone numbers are not logged, not printed in `/admin users`, and are not required for
   diagnostics.
+- Diagnostic history stores `PhoneWasSaved` and `PhoneNumberSource` only; it does not store phone number values.
 - Production logging keeps application, polling, and request operational messages while suppressing EF Core/Npgsql SQL
   command noise below Warning.
 - The backend Docker image includes the GSSAPI runtime dependency required by Npgsql so `libgssapi_krb5.so.2` missing

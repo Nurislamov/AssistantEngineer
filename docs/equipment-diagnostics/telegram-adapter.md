@@ -117,8 +117,7 @@ Consumer `/me`, `/admin users`, logs, or diagnostics. Admin lists may show only 
 
 Entering phone input does not delete the active diagnostic session. If the user was choosing brand, equipment type,
 or display context, saving either a Telegram contact or manual phone restores the previous prompt when possible.
-ED-22B still does not create ServiceLead/CRM records, diagnostic history, web UI, photo/OCR, AI, RAG, vector search,
-or manual-PDF access.
+ED-22B still does not create ServiceLead/CRM records, web UI, photo/OCR, AI, RAG, vector search, or manual-PDF access.
 
 ## Telegram Command Menu
 
@@ -127,22 +126,45 @@ configured, and `AssistantEngineer:EquipmentDiagnostics:Telegram:Commands:SyncOn
 Telegram rejects or times out the `setMyCommands` request; logs stay sanitized and must not include token, chat ID,
 phone number, message text, or parameterized admin command text.
 
-The global menu contains only safe public commands: `/start`, `/new`, `/phone`, `/me`, and `/help`. It does not list
-`/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or any parameterized admin command.
-`/new` uses the same flow as `🔎 Новый код` and asks `Введите код ошибки, например: Gree H5.`. `/phone` opens the
-existing phone flow. `/admin_help` remains a hidden manual/admin help command: Owner/Admin can reach it directly or
-from `/help`; Consumer and Engineer receive `Команда недоступна.`.
+The global menu contains only safe public commands: `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and
+`/last`. It does not list `/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or any
+parameterized admin command. `/new` uses the same flow as `🔎 Новый код` and asks
+`Введите код ошибки, например: Gree H5.`. `/phone` opens the existing phone flow. `/admin_help` remains a hidden
+manual/admin help command: Owner/Admin can reach it directly or from `/help`; Consumer and Engineer receive
+`Команда недоступна.`.
 
 This is a BotFather-style command menu only. It does not add a Telegram Mini App, web UI, CRM lead creation, AI,
 RAG, vector search, photo/OCR, or manual-PDF access.
+
+## ED-23A Diagnostic History
+
+ED-23A stores a structured history case when the Telegram bot reaches a final diagnostic outcome. `Completed` cases
+are created only after the final diagnostic result is shown. `NotFound` cases are created when the user enters a code
+that is not found in the runtime catalog, so future knowledge-base work can see missed codes. Intermediate brand,
+equipment-type, and display-context prompts do not create history cases.
+
+History is private per Telegram user. `/history` shows the latest five cases for the current user only, and `/last`
+shows that user's latest case. Consumer, Engineer, Owner, and Admin all see only their own history in ED-23A; global
+admin case browsing is intentionally deferred.
+
+Stored fields are structured and bounded: Telegram user database id, optional conversation session id, source,
+status, role at creation, response mode, code, optional manufacturer/type/display context, short result summary,
+candidate count, phone-saved flag, phone source, and timestamps. The store does not keep full Telegram message text,
+full bot response text, phone number, raw chat id, Telegram user id, token, or webhook secret. `/last` uses the saved
+short summary rather than a stored full response.
+
+The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
+for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
+service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or
+manual-PDF access.
 
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.
 - No new public API endpoint.
 - No runtime catalog promotion or manual-verification promotion.
-- No diagnostic case history, CRM/ServiceLead creation, web admin UI, photo/OCR, AI, RAG, vector search, or manual-PDF
-  access is added by ED-22A.
+- No CRM/ServiceLead creation, web admin UI, photo/OCR, AI, RAG, vector search, or manual-PDF access is added by
+  ED-23A.
 - Safety protections remain active during diagnosis.
 
 Runtime catalog data remains the only final diagnosis source. Review-only sources remain non-runtime.

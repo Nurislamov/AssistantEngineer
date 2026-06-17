@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
@@ -16,6 +17,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly ITelegramUserAccessService _accessService;
     private readonly ITelegramUserStore _userStore;
     private readonly TelegramDiagnosticConversationService? _conversationService;
+    private readonly TelegramDiagnosticHistoryService? _historyService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -24,7 +26,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         EquipmentDiagnosticTelegramOptions options,
         ITelegramUserAccessService accessService,
         ITelegramUserStore userStore,
-        TelegramDiagnosticConversationService? conversationService = null)
+        TelegramDiagnosticConversationService? conversationService = null,
+        TelegramDiagnosticHistoryService? historyService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -33,6 +36,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _accessService = accessService;
         _userStore = userStore;
         _conversationService = conversationService;
+        _historyService = historyService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -134,6 +138,16 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 _formatter.FormatHelp(access.Role, phoneSaved, Math.Max(_options.MaxMessageLength, ConsumerMessageLength)),
                 EquipmentDiagnosticTelegramResponseKind.Reply,
                 replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+        }
+
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.History)
+        {
+            return await FormatHistoryAsync(update, access, cancellationToken);
+        }
+
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Last)
+        {
+            return await FormatLastAsync(update, access, cancellationToken);
         }
 
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
@@ -276,6 +290,38 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             update.ChatId,
             TranslateAdminCommandResult(command, chatId, result),
             result.Succeeded ? EquipmentDiagnosticTelegramResponseKind.Reply : EquipmentDiagnosticTelegramResponseKind.ValidationError);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramResponse> FormatHistoryAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var text = access.User is null || _historyService is null
+            ? "История пока пустая. Отправьте код ошибки, например: Gree H5."
+            : await _historyService.FormatHistoryAsync(access.User, cancellationToken);
+
+        return Response(
+            update.ChatId,
+            text,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+    }
+
+    private async Task<EquipmentDiagnosticTelegramResponse> FormatLastAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var text = access.User is null || _historyService is null
+            ? "История пока пустая. Отправьте код ошибки, например: Gree H5."
+            : await _historyService.FormatLastAsync(access.User, cancellationToken);
+
+        return Response(
+            update.ChatId,
+            text,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
     }
 
     private static bool TryReadChatId(

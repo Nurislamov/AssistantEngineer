@@ -62,6 +62,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
                 "Напишите код ошибки, например:\n" +
                 "Gree H5\n\n" +
                 "Я покажу простую и безопасную расшифровку, которую можно передать сервисному специалисту.\n\n" +
+                "История: /history, последняя диагностика: /last.\n\n" +
                 PhonePrompt(hasPhoneNumber),
                 maxLength);
         }
@@ -74,6 +75,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Диагностика оборудования\n\n" +
             "Напишите производителя и код ошибки, например: Gree H5.\n" +
             "Можно добавить контекст: Gree C5 outdoor; Gree C5 indoor; /diagnose Gree H5.\n" +
+            "История: /history, последняя диагностика: /last.\n" +
             "Техническая подсказка требует проверки по точной модели и сервисной документации." +
             adminLine,
             maxLength);

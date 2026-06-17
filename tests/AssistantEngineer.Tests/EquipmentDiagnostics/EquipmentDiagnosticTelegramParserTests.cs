@@ -56,6 +56,8 @@ public sealed class EquipmentDiagnosticTelegramParserTests
     [Theory]
     [InlineData("/start", EquipmentDiagnosticTelegramCommand.Start)]
     [InlineData("/help", EquipmentDiagnosticTelegramCommand.Help)]
+    [InlineData("/history", EquipmentDiagnosticTelegramCommand.History)]
+    [InlineData("/last", EquipmentDiagnosticTelegramCommand.Last)]
     [InlineData("/id", EquipmentDiagnosticTelegramCommand.Identity)]
     [InlineData("/WHOAMI", EquipmentDiagnosticTelegramCommand.Identity)]
     public void HelpCommandsDoNotCreateDiagnosticRequest(

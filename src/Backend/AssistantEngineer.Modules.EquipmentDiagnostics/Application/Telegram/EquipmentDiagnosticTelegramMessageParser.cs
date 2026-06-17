@@ -44,6 +44,16 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             return Command(EquipmentDiagnosticTelegramCommand.Help);
         }
 
+        if (string.Equals(trimmed, "/history", StringComparison.OrdinalIgnoreCase))
+        {
+            return Command(EquipmentDiagnosticTelegramCommand.History);
+        }
+
+        if (string.Equals(trimmed, "/last", StringComparison.OrdinalIgnoreCase))
+        {
+            return Command(EquipmentDiagnosticTelegramCommand.Last);
+        }
+
         if (string.Equals(trimmed, "/id", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(trimmed, "/whoami", StringComparison.OrdinalIgnoreCase))
         {

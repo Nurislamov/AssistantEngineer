@@ -29,7 +29,8 @@ Docker Compose deployments, prefer `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-c
 For direct ASP.NET configuration, use
 `AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<telegram-chat-id>`.
 
-Telegram users are stored in the existing application PostgreSQL database through the `TelegramUsers` EF migration.
+Telegram users and diagnostic history are stored in the existing application PostgreSQL database through the
+`TelegramUsers` and `TelegramDiagnosticCases` EF migrations.
 No additional `.env` variable is required for ED-21B Russian UX, contact keyboard, technical response splitting, or
 production SQL log suppression. Telegram command-menu sync can be disabled with
 `TELEGRAM_COMMANDS_SYNC_ON_STARTUP=false`; by default it runs only when Telegram is enabled and `BotToken` is
