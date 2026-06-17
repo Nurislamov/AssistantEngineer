@@ -37,6 +37,8 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 
 - Create the BotFather token only at the final approved activation step and store it outside Git.
 - Use polling mode for providers where Telegram inbound HTTPS traffic times out.
+- Keep the polling offset and processed-message idempotency files on durable operational storage; the deployment
+  scaffold uses the `api_operations` named volume.
 - Generate a new webhook secret using the documented character and length rules only when webhook fallback is used.
 - Configure a non-empty `AllowedChatIds` list.
 - Temporarily enable chat ID discovery only when required to identify an approved chat.
@@ -44,6 +46,7 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Explicitly enable the reviewed Telegram transport only after all preceding checks pass.
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   verify no webhook URL is configured and API logs show `Telegram polling started`.
+- Verify a replayed duplicate update for the same Telegram `chat.id + message_id` does not send a second response.
 - For webhook fallback, run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
 - Send one deterministic Telegram smoke message and verify the bounded response.
 

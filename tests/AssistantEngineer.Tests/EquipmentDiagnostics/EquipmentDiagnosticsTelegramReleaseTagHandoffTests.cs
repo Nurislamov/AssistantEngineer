@@ -85,7 +85,7 @@ public class EquipmentDiagnosticsTelegramReleaseTagHandoffTests
             "no real chat IDs in Git",
             "Telegram disabled by default",
             "chat ID discovery disabled by default",
-            "no long polling",
+            "polling disabled by default",
             "no DB/audit persistence",
             "no external monitoring",
             "runtime catalog remains the only final-answer source",
@@ -135,11 +135,12 @@ public class EquipmentDiagnosticsTelegramReleaseTagHandoffTests
             var result = RunPowerShell(
                 ".\\scripts\\equipment-diagnostics\\prepare-telegram-closed-beta-release-tag-handoff.ps1 " +
                 $"-BaseRef origin/master -OutputRoot \"{outputRoot}\" " +
+                "-ReleaseTag equipment-diagnostics-telegram-closed-beta-v9.9.9 " +
                 "-SkipFinalGoNoGoReference -SkipBranchReadiness -SkipBackendTests -SkipEquipmentDiagnosticsTests");
 
             Assert.True(result.ExitCode == 0, result.Output);
             Assert.Contains("Status: PASS", result.Output, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Release tag: equipment-diagnostics-telegram-closed-beta-v0.1.0", result.Output, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Release tag: equipment-diagnostics-telegram-closed-beta-v9.9.9", result.Output, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Decision: READY_WITH_MANUAL_REVIEW", result.Output, StringComparison.OrdinalIgnoreCase);
             Assert.True(File.Exists(Path.Combine(fullOutputRoot, "release-tag-handoff-summary.md")));
             Assert.True(File.Exists(Path.Combine(fullOutputRoot, "release-tag-handoff-report.json")));

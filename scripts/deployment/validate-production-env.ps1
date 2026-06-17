@@ -58,6 +58,8 @@ $keys = @{
     TelegramPollingTimeout = "TELEGRAM_POLLING_TIMEOUT_SECONDS"
     TelegramPollingLimit = "TELEGRAM_POLLING_LIMIT"
     TelegramPollingDelayAfterError = "TELEGRAM_POLLING_DELAY_AFTER_ERROR_SECONDS"
+    TelegramProcessedMessageStorePath = "TELEGRAM_PROCESSED_MESSAGE_STORE_FILE_PATH"
+    TelegramProcessedMessageStoreMaxEntries = "TELEGRAM_PROCESSED_MESSAGE_STORE_MAX_ENTRIES"
     DiscoveryEnabled = "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY"
     BotToken = "AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken"
     WebhookSecret = "AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret"
@@ -81,11 +83,18 @@ $inboundMode = $values[$keys.TelegramInboundMode]
 if ($inboundMode -notin @("Webhook", "Polling")) {
     throw "TELEGRAM_INBOUND_MODE must be Webhook or Polling."
 }
-foreach ($numericKey in @($keys.TelegramPollingTimeout, $keys.TelegramPollingLimit, $keys.TelegramPollingDelayAfterError)) {
+foreach ($numericKey in @(
+    $keys.TelegramPollingTimeout,
+    $keys.TelegramPollingLimit,
+    $keys.TelegramPollingDelayAfterError,
+    $keys.TelegramProcessedMessageStoreMaxEntries)) {
     $parsed = 0
     if (-not [int]::TryParse($values[$numericKey], [ref]$parsed) -or $parsed -lt 1) {
         throw "$numericKey must be a positive integer."
     }
+}
+if ([string]::IsNullOrWhiteSpace($values[$keys.TelegramProcessedMessageStorePath])) {
+    throw "TELEGRAM_PROCESSED_MESSAGE_STORE_FILE_PATH must not be empty."
 }
 
 if ($AllowPlaceholders) {
@@ -130,6 +139,7 @@ Write-Host "Environment: $($values[$keys.Environment])"
 Write-Host "Telegram enabled: $telegramEnabled"
 Write-Host "Telegram inbound mode: $inboundMode"
 Write-Host "Telegram polling enabled: $pollingEnabled"
+Write-Host "Telegram processed message store configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.TelegramProcessedMessageStorePath]))"
 Write-Host "Delete webhook on startup: $deleteWebhookOnStartup"
 Write-Host "Chat ID discovery enabled: $discoveryEnabled"
 Write-Host "Bot token configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.BotToken]))"

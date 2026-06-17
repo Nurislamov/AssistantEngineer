@@ -6,6 +6,8 @@ namespace AssistantEngineer.Api.Services.EquipmentDiagnostics;
 
 public sealed class FileEquipmentDiagnosticTelegramUpdateOffsetStore : IEquipmentDiagnosticTelegramUpdateOffsetStore
 {
+    private static readonly Encoding Utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
     private readonly string _filePath;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -29,7 +31,9 @@ public sealed class FileEquipmentDiagnosticTelegramUpdateOffsetStore : IEquipmen
                 return null;
             }
 
-            var value = (await File.ReadAllTextAsync(_filePath, Encoding.UTF8, cancellationToken)).Trim();
+            var value = (await File.ReadAllTextAsync(_filePath, Encoding.UTF8, cancellationToken))
+                .Trim()
+                .Trim('\uFEFF');
             if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
@@ -65,7 +69,7 @@ public sealed class FileEquipmentDiagnosticTelegramUpdateOffsetStore : IEquipmen
             await File.WriteAllTextAsync(
                 temporaryPath,
                 updateId.ToString(CultureInfo.InvariantCulture),
-                Encoding.UTF8,
+                Utf8NoBom,
                 cancellationToken);
             File.Move(temporaryPath, _filePath, overwrite: true);
         }

@@ -207,14 +207,14 @@ $limitations = @(
     "No real secret, domain, chat ID, deploy environment value, raw log, PDF, or manual file is collected.",
     "Telegram and chat ID discovery remain disabled by default.",
     "Runtime catalog remains the only final-answer source; manual-codebook, staging, and preview are not final diagnosis.",
-    "No long polling, DB/audit persistence, external monitoring, AI, RAG, or vector search is added."
+    "Polling is disabled by default; no DB/audit persistence, external monitoring, AI, RAG, or vector search is added."
 )
 $outOfScope = @(
     "Automatic Git tag creation or push",
     "Real activation or deployment",
     "Telegram API calls",
     "setWebhook, getWebhookInfo, or deleteWebhook execution",
-    "Runtime, calculation, API route, appsettings, or Docker Compose changes",
+    "Calculation physics or public API route changes",
     "Public launch or complete vendor-manual claims"
 )
 $nextStep = if ($blockers.Count -gt 0) {

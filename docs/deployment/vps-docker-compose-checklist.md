@@ -17,6 +17,8 @@
   `TELEGRAM_DELETE_WEBHOOK_ON_STARTUP=true`.
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.
 - Configure `AllowedChatIds`; review `DeniedChatIds` and deny-wins-over-allow behavior.
+- Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
+  and processed-message idempotency files without secrets.
 
 ## Verification
 
@@ -26,6 +28,7 @@
 - Confirm Telegram delivery is disabled until explicitly approved.
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   webhook URL should be empty.
+- Confirm duplicate Telegram updates for one message produce one bot response and a sanitized duplicate-skip log.
 - For webhook fallback, run `set-telegram-webhook.ps1` and `get-telegram-webhook-info.ps1`.
 - Use `delete-telegram-webhook.ps1` during disablement or incident response.
 - Record the previous image tag/digest and reviewed rollback command before activation.

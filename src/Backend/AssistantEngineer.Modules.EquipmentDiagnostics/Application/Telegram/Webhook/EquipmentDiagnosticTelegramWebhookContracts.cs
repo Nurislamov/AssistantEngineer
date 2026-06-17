@@ -44,6 +44,8 @@ public sealed record EquipmentDiagnosticTelegramPollingOptions
     public int Limit { get; init; } = 25;
     public int DelayAfterErrorSeconds { get; init; } = 10;
     public string OffsetStoreFilePath { get; init; } = "artifacts/operations/equipment-diagnostics-telegram-offset.txt";
+    public string ProcessedMessageStoreFilePath { get; init; } = "artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt";
+    public int ProcessedMessageStoreMaxEntries { get; init; } = 5000;
 }
 
 public sealed record TelegramWebhookUpdateDto(

@@ -75,7 +75,7 @@ $requiredStatements = @(
     "closed beta only", "not for production or public launch", "no real secrets in Git",
     "no real domains in Git", "no real chat IDs in Git", "Telegram disabled by default",
     "chat ID discovery disabled by default", "chat ID discovery may be enabled only temporarily during setup",
-    "no long polling", "no DB/audit persistence", "no external monitoring",
+    "polling disabled by default", "no DB/audit persistence", "no external monitoring",
     "runtime catalog remains the only final-answer source", "manual-codebook/staging/preview are not final diagnosis",
     "do not claim complete vendor manual coverage", "do not bypass protections", "no hazardous electrical/refrigerant instructions"
 )
@@ -129,7 +129,7 @@ $limitations = @(
     "No Telegram API or webhook operation is executed.",
     "No real secret, domain, chat ID, deploy environment value, raw message body, PDF, or manual file is collected.",
     "Runtime catalog remains the only final-answer source; manual-codebook, staging, and preview are not final diagnosis.",
-    "No DB/audit persistence, external monitoring, long polling, AI, RAG, or vector search is added."
+    "Polling is disabled by default; no DB/audit persistence, external monitoring, AI, RAG, or vector search is added."
 )
 $report = [ordered]@{
     generatedAtUtc = [DateTimeOffset]::UtcNow.ToString("O"); baseRef = $BaseRef; branch = $branch; head = $head

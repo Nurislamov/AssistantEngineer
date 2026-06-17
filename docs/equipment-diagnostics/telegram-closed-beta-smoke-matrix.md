@@ -29,7 +29,7 @@ Follow the ED-22D activation runbook and record only sanitized results in the ED
 - Closed beta only; not production or public release.
 - No real secrets in Git; generated smoke evidence is not committed.
 - Telegram is disabled by default and chat ID discovery is disabled by default.
-- No long polling, database/audit persistence, or external monitoring.
+- Polling disabled by default; no database/audit persistence or external monitoring.
 - Runtime catalog is the only final-answer source.
 - Manual-codebook, staging, and preview are not final diagnosis.
 - Vendor manual coverage remains partial; no completeness claim is made.

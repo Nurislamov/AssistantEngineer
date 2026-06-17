@@ -58,7 +58,7 @@ public class EquipmentDiagnosticsTelegramActivationRunbookTests
             "Telegram disabled by default",
             "chat ID discovery disabled by default",
             "chat ID discovery may be enabled only temporarily during setup",
-            "no long polling",
+            "polling disabled by default",
             "no DB/audit persistence",
             "no external monitoring",
             "runtime catalog remains the only final-answer source",

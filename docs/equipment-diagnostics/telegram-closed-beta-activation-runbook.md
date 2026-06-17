@@ -34,7 +34,7 @@ Use only after ED-22A release evidence, ED-22B release-candidate review, ED-22C 
 1. Copy the committed placeholder environment example to the ignored server environment file.
 2. Set real values only on the reviewed server or secret store; do not paste or print them in this runbook.
 3. Keep Telegram transport disabled while validating health, readiness, allow/deny policy, and rollback access.
-4. Confirm no long polling is configured.
+4. Confirm polling remains disabled unless the reviewed polling production mode is explicitly selected.
 
 ## Temporary Chat ID Discovery Phase
 

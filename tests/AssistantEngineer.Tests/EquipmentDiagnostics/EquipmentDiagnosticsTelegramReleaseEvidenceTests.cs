@@ -61,7 +61,7 @@ public class EquipmentDiagnosticsTelegramReleaseEvidenceTests
                      "No real secrets in Git",
                      "Telegram is disabled by default",
                      "Chat ID discovery is disabled by default",
-                     "No long polling",
+                     "Polling disabled by default",
                      "No database or audit persistence",
                      "No external monitoring",
                      "Runtime catalog is the only final-answer source",

@@ -8,6 +8,7 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
     private readonly IEquipmentDiagnosticTelegramInboundClient _inboundClient;
     private readonly IEquipmentDiagnosticTelegramWebhookHandler _handler;
     private readonly IEquipmentDiagnosticTelegramUpdateOffsetStore _offsetStore;
+    private readonly IEquipmentDiagnosticTelegramProcessedMessageStore _processedMessageStore;
     private readonly ILogger<EquipmentDiagnosticTelegramPollingBackgroundService> _logger;
 
     public EquipmentDiagnosticTelegramPollingBackgroundService(
@@ -15,12 +16,14 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
         IEquipmentDiagnosticTelegramInboundClient inboundClient,
         IEquipmentDiagnosticTelegramWebhookHandler handler,
         IEquipmentDiagnosticTelegramUpdateOffsetStore offsetStore,
+        IEquipmentDiagnosticTelegramProcessedMessageStore processedMessageStore,
         ILogger<EquipmentDiagnosticTelegramPollingBackgroundService> logger)
     {
         _options = options;
         _inboundClient = inboundClient;
         _handler = handler;
         _offsetStore = offsetStore;
+        _processedMessageStore = processedMessageStore;
         _logger = logger;
     }
 
@@ -45,7 +48,6 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             updates.Count);
 
         var currentLastProcessed = lastProcessedUpdateId;
-        var seenMessageKeys = new HashSet<string>(StringComparer.Ordinal);
         foreach (var update in updates.OrderBy(item => item.UpdateId))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -54,10 +56,7 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
                 update.UpdateId,
                 SafeChatType(update.Message?.Chat?.Type));
 
-            var messageKey = update.Message?.Chat is null
-                ? null
-                : $"{update.Message.Chat.Id}:{update.Message.MessageId}";
-            if (!string.IsNullOrWhiteSpace(messageKey) && !seenMessageKeys.Add(messageKey))
+            if (await IsDuplicateMessageAsync(update, cancellationToken))
             {
                 _logger.LogInformation(
                     "Telegram polling duplicate message skipped. UpdateId: {UpdateId}; ChatType: {ChatType}.",
@@ -165,6 +164,23 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
 
     private static Task DelayAfterErrorAsync(int delayAfterErrorSeconds, CancellationToken cancellationToken) =>
         Task.Delay(TimeSpan.FromSeconds(Math.Clamp(delayAfterErrorSeconds, 1, 300)), cancellationToken);
+
+    private async Task<bool> IsDuplicateMessageAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken)
+    {
+        if (update.Message?.Chat is null)
+        {
+            return false;
+        }
+
+        var marked = await _processedMessageStore.TryMarkProcessedMessageAsync(
+            update.Message.Chat.Id,
+            update.Message.MessageId,
+            update.UpdateId,
+            cancellationToken);
+        return !marked;
+    }
 
     private static EquipmentDiagnosticTelegramPollingOptions NormalizePollingOptions(
         EquipmentDiagnosticTelegramPollingOptions options) =>

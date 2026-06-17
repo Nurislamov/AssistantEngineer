@@ -20,7 +20,7 @@ Use this committed placeholder template for sanitized manual evidence. Closed be
 - [ ] Chat ID discovery disabled by default was confirmed.
 - [ ] Chat ID discovery may be enabled only temporarily during setup, then was disabled.
 - [ ] No real secrets in Git, no real domains in Git, and no real chat IDs in Git.
-- [ ] No long polling, no DB/audit persistence, and no external monitoring.
+- [ ] Polling disabled by default, no DB/audit persistence, and no external monitoring.
 
 ## Webhook And Access Evidence
 

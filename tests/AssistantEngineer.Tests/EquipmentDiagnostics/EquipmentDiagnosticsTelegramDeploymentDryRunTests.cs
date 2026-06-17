@@ -74,7 +74,7 @@ public class EquipmentDiagnosticsTelegramDeploymentDryRunTests
             "chat ID discovery disabled by default",
             "No Telegram network calls",
             "no setWebhook execution",
-            "no long polling",
+            "polling disabled by default",
             "No DB/audit persistence",
             "external monitoring",
             "Runtime catalog is only final-answer source",

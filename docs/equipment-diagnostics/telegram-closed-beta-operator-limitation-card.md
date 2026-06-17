@@ -36,6 +36,6 @@ Stop field action and involve a qualified technician. Human verification is requ
 
 - Closed beta only; not production or public release.
 - Telegram and chat ID discovery are disabled by default outside approved activation/setup.
-- No long polling, database/audit persistence, or external monitoring.
+- Polling disabled by default; no database/audit persistence or external monitoring.
 - Runtime catalog is the only final-answer source.
 - Vendor manual coverage remains partial; human review remains mandatory.

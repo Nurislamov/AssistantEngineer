@@ -35,6 +35,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - No real token or webhook secret is present in `appsettings`, source control, or generated artifacts.
 - `IsEnabled=true` only in the reviewed production deployment.
 - Polling production mode has `InboundMode=Polling`, `Polling__Enabled=true`, and `DeleteWebhookOnStartup=true`.
+- Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
+  `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
 - `AllowedChatIds` is non-empty and `DeniedChatIds` is reviewed.
 - `EnableChatIdDiscovery=false` after setup.
 - Telegram webhook and long polling are not used together.
@@ -42,6 +44,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Confirm `getWebhookInfo` shows no webhook URL.
 - Confirm `docker logs` for the API show `Telegram polling started`.
 - Send `/start` and confirm polling/update logs appear without token, secret, chat ID, username, or message text.
+- Send or replay duplicate Telegram updates only in a controlled smoke; one response should be sent for the same
+  `chat.id + message_id`, and a sanitized `duplicate message skipped` log should appear.
 - Send a deterministic smoke message and verify the expected reply.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
@@ -55,7 +59,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 
 - No audit log.
 - No admin UI for allow/deny lists.
-- Polling offset persistence is file-based unless deployment mounts a durable volume or overrides the path.
+- Polling offset and processed-message idempotency persistence are file-based unless deployment mounts a durable
+  volume or overrides the paths.
 - No endpoint-specific rate limiting beyond the broader API setup.
 
 ## Optional Webhook Fallback

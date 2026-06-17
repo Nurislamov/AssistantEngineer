@@ -73,7 +73,7 @@ Generated artifacts, log dumps, PDFs, and manual files must not be committed.
 - Telegram disabled by default.
 - Chat ID discovery disabled by default.
 - Chat ID discovery may be enabled only temporarily during setup.
-- No long polling.
+- Polling disabled by default.
 - No DB/audit persistence.
 - No external monitoring.
 - Runtime catalog remains the only final-answer source.

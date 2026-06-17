@@ -78,7 +78,7 @@ After the annotated tag is manually created and the handoff is approved, proceed
 - No real chat IDs in Git.
 - Telegram disabled by default.
 - Chat ID discovery disabled by default.
-- No long polling.
+- Polling disabled by default.
 - No DB/audit persistence.
 - No external monitoring.
 - Runtime catalog remains the only final-answer source.
@@ -92,7 +92,7 @@ After the annotated tag is manually created and the handoff is approved, proceed
 
 ## What This Does Not Validate
 
-- Real server configuration, HTTPS, webhook delivery, external monitoring, audit persistence, or real smoke results.
+- Real server configuration, HTTPS, Telegram delivery, external monitoring, audit persistence, or real smoke results.
 - Production or public launch suitability.
 - Runtime, calculation physics, public calculation API routes, ISO52016 behavior, appsettings, or Docker Compose changes.
 

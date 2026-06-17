@@ -47,7 +47,7 @@ The script reads the source-controlled scenarios, sends them to the existing end
 
 ## Remaining Limitations
 
-- no production Telegram transport, webhook, or long polling;
+- no production Telegram transport or webhook; polling remains disabled by default;
 - no production auth/roles claim beyond the current API setup;
 - no audit log or operator feedback loop;
 - no database/admin review UI;

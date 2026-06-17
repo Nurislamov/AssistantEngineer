@@ -43,7 +43,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
 
         var endpoint = new Uri(
             $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{_options.BotToken}/sendMessage");
-        var payload = new System.Collections.Generic.Dictionary<string, object?>
+        var payload = new Dictionary<string, object?>
         {
             ["chat_id"] = chatId,
             ["text"] = text,

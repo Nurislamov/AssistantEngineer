@@ -29,6 +29,8 @@ AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Enabled=true
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__TimeoutSeconds=50
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Limit=25
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSeconds=10
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath=artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt
+AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries=5000
 AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=<secret>
 AssistantEngineer__EquipmentDiagnostics__Telegram__AllowedChatIds__0=<chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0=<blocked-chat-id>
@@ -59,6 +61,8 @@ exclusive operational modes. For polling production mode, delete the Telegram we
 `getWebhookInfo` should show an empty or not configured webhook URL after deleteWebhook. The API container logs
 should contain `Telegram polling started`. After sending `/start` in Telegram, logs should contain safe polling
 update entries with update id and chat type, without token, webhook secret, message text, chat id, or username.
+Duplicate Telegram updates for the same visible message are deduplicated by `chat.id + message.message_id` before
+the handler sends a response. The dedupe store writes SHA-256 message identity hashes, not raw chat IDs.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -97,13 +101,15 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Keep transport disabled until configuration review is complete.
 - Delete the Telegram webhook before polling mode and verify `getWebhookInfo` has no URL.
 - Verify API logs contain `Telegram polling started`.
+- Keep `artifacts/operations` on durable storage. The Docker Compose scaffold mounts a named `api_operations`
+  volume for the polling offset and processed-message dedupe files.
 - Confirm global API rate-limit behavior and monitoring.
 - Run webhook integration tests with fake outbound transport.
 - Review Telegram token rotation and incident response.
 
 ## Known Limitations
 
-- polling offset persistence is a local operational file by default;
+- polling offset and processed-message idempotency persistence are local operational files by default;
 - no database, audit log, or message queue;
 - no admin UI for allowed chats;
 - no endpoint-specific rate limiter beyond the broader API setup;

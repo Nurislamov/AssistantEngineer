@@ -14,7 +14,7 @@ ED-22C provides a deterministic local deployment activation dry-run before any s
 ## Out Of Scope
 
 - No Telegram network calls and no setWebhook execution.
-- No Telegram activation, real deployment, production/public release, long polling, DB/audit persistence, external monitoring, AI, RAG, or vector search.
+- No Telegram activation, real deployment, production/public release, DB/audit persistence, external monitoring, AI, RAG, or vector search.
 - No real secrets in Git, no real domains, and no real chat IDs.
 - No Docker requirement or Docker Compose execution.
 
@@ -67,7 +67,7 @@ The JSON report records generation time, base reference, branch, head, PASS/FAIL
 - [ ] Generated evidence remains ignored and uncommitted.
 - [ ] No real secrets in Git, no real domains, and no real chat IDs are present.
 - [ ] Telegram disabled by default and chat ID discovery disabled by default remain unchanged.
-- [ ] No Telegram network calls, no setWebhook execution, and no long polling occurred.
+- [ ] No Telegram network calls and no setWebhook execution occurred; polling disabled by default.
 - [ ] No DB/audit persistence or external monitoring is implied.
 - [ ] Runtime catalog is only final-answer source.
 - [ ] Manual-codebook/staging/preview are not final diagnosis.

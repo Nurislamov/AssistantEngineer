@@ -63,6 +63,7 @@ if ($proxy -match '\b\d{8,10}:[A-Za-z0-9_-]{30,}\b') {
 if ($envExample.IndexOf("TELEGRAM_IS_ENABLED=false", [StringComparison]::Ordinal) -lt 0 -or
     $envExample.IndexOf("TELEGRAM_INBOUND_MODE=Webhook", [StringComparison]::Ordinal) -lt 0 -or
     $envExample.IndexOf("TELEGRAM_POLLING_ENABLED=false", [StringComparison]::Ordinal) -lt 0 -or
+    $envExample.IndexOf("TELEGRAM_PROCESSED_MESSAGE_STORE_MAX_ENTRIES=5000", [StringComparison]::Ordinal) -lt 0 -or
     $envExample.IndexOf("TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false", [StringComparison]::Ordinal) -lt 0) {
     throw "Environment example must keep Telegram, polling, and chat ID discovery disabled."
 }

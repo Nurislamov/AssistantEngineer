@@ -3,6 +3,7 @@ using System.Text.Json;
 using AssistantEngineer.Api.Services.EquipmentDiagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using AssistantEngineer.Api.Services.OperationalDiagnostics;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
@@ -24,8 +25,41 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         Assert.Equal(42, payload.RootElement.GetProperty("chat_id").GetInt64());
         Assert.Equal("Safe reply", payload.RootElement.GetProperty("text").GetString());
         Assert.True(payload.RootElement.GetProperty("disable_web_page_preview").GetBoolean());
+        Assert.False(payload.RootElement.TryGetProperty("parse_mode", out _));
         Assert.Equal("outbound-test-id", handler.CorrelationId);
         Assert.DoesNotContain("test-token-value", result.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task SendMessageIncludesParseModeOnlyWhenNonEmpty()
+    {
+        var withoutParseMode = new CapturingHandler(HttpStatusCode.OK);
+        var withParseMode = new CapturingHandler(HttpStatusCode.OK);
+
+        await CreateClient(withoutParseMode, EnabledOptions())
+            .SendMessageAsync(42, "Safe reply", " ", true);
+        await CreateClient(withParseMode, EnabledOptions())
+            .SendMessageAsync(42, "Safe reply", "MarkdownV2", true);
+
+        using var omittedPayload = JsonDocument.Parse(withoutParseMode.Body!);
+        using var includedPayload = JsonDocument.Parse(withParseMode.Body!);
+        Assert.False(omittedPayload.RootElement.TryGetProperty("parse_mode", out _));
+        Assert.Equal("MarkdownV2", includedPayload.RootElement.GetProperty("parse_mode").GetString());
+    }
+
+    [Fact]
+    public async Task SendMessageLogsDoNotExposeSecretsChatIdOrText()
+    {
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramOutboundClient>();
+        var client = CreateClient(new CapturingHandler(HttpStatusCode.BadRequest), EnabledOptions(), logger);
+
+        await client.SendMessageAsync(42, "Sensitive message text", null, true);
+
+        var logged = string.Join(Environment.NewLine, logger.Messages.Concat(logger.Scopes));
+        Assert.DoesNotContain("test-token-value", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("42", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("Sensitive message text", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("sendMessage", logged, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -44,12 +78,13 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
 
     private static EquipmentDiagnosticTelegramOutboundClient CreateClient(
         HttpMessageHandler handler,
-        EquipmentDiagnosticTelegramWebhookOptions options) =>
+        EquipmentDiagnosticTelegramWebhookOptions options,
+        ILogger<EquipmentDiagnosticTelegramOutboundClient>? logger = null) =>
         new(
             new HttpClient(handler),
             options,
             new OperationalCorrelationIdAccessor { CorrelationId = "outbound-test-id" },
-            NullLogger<EquipmentDiagnosticTelegramOutboundClient>.Instance);
+            logger ?? NullLogger<EquipmentDiagnosticTelegramOutboundClient>.Instance);
 
     private static EquipmentDiagnosticTelegramWebhookOptions EnabledOptions() => new()
     {
@@ -72,6 +107,48 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
             Body = await request.Content!.ReadAsStringAsync(cancellationToken);
             CorrelationId = request.Headers.GetValues("X-Correlation-ID").Single();
             return new HttpResponseMessage(statusCode);
+        }
+    }
+
+    private sealed class CapturingLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = [];
+        public List<string> Scopes { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull
+        {
+            if (state is IEnumerable<KeyValuePair<string, object>> values)
+            {
+                Scopes.Add(string.Join(";", values.Select(value => $"{value.Key}={value.Value}")));
+            }
+            else
+            {
+                Scopes.Add(state.ToString() ?? string.Empty);
+            }
+
+            return NullScope.Instance;
+        }
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new();
+
+            public void Dispose()
+            {
+            }
         }
     }
 }

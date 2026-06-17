@@ -12,7 +12,7 @@ This document defines the reviewed release-candidate boundary before inviting Te
 
 ## Out Of Scope
 
-- Production/public release, automatic activation, real deployment, long polling, database or audit persistence, external monitoring, AI/RAG/vector search, or broad vendor-manual completeness.
+- Production/public release, automatic activation, real deployment, database or audit persistence, external monitoring, AI/RAG/vector search, or broad vendor-manual completeness.
 - Runtime answers from manual-codebook, staging, or preview data.
 
 ## Required Generated Evidence
@@ -80,7 +80,7 @@ Generate locally and do not commit:
 ## Required Limitations
 
 - Closed beta only; not production or public release.
-- No long polling, database/audit persistence, or external monitoring.
+- Polling disabled by default; no database/audit persistence or external monitoring.
 - Runtime catalog is the only final-answer source.
 - Manual-codebook, staging, and preview are not final diagnosis.
 - Vendor manual coverage is partial; no completeness claim is made.

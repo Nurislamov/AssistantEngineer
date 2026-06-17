@@ -243,7 +243,7 @@ $limitations = @(
     "No Docker Compose command is executed.",
     "No real secret, domain, chat ID, deploy environment value, raw log, PDF, or manual file is collected.",
     "Runtime catalog is the only final-answer source; manual-codebook, staging, and preview are not final diagnosis.",
-    "No database or audit persistence, external monitoring, long polling, AI, RAG, or vector search is added."
+    "Polling is disabled by default; no database or audit persistence, external monitoring, AI, RAG, or vector search is added."
 )
 $report = [ordered]@{
     generatedAtUtc = [DateTimeOffset]::UtcNow.ToString("O")

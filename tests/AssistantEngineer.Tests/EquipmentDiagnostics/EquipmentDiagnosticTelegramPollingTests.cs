@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using AssistantEngineer.Api.Services.EquipmentDiagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.Extensions.FileProviders;
@@ -35,7 +36,8 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             options: EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
             inbound,
             handler,
-            store);
+            store,
+            new FakeProcessedMessageStore());
 
         var lastProcessed = await service.PollOnceAsync(10);
 
@@ -59,7 +61,8 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             },
             inbound,
             new FakeWebhookHandler(),
-            new FakeOffsetStore());
+            new FakeOffsetStore(),
+            new FakeProcessedMessageStore());
 
         await service.StartAsync(CancellationToken.None);
         await inbound.DeleteWebhookCalled.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -89,6 +92,7 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             inbound,
             new FakeWebhookHandler(),
             new FakeOffsetStore(),
+            new FakeProcessedMessageStore(),
             logger);
 
         await service.StartAsync(CancellationToken.None);
@@ -142,7 +146,210 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             await store.SaveLastProcessedUpdateIdAsync(42);
 
             Assert.Equal(42, await store.GetLastProcessedUpdateIdAsync());
-            Assert.Equal("42", await File.ReadAllTextAsync(Path.Combine(root, "operations", "offset.txt")));
+            var path = Path.Combine(root, "operations", "offset.txt");
+            Assert.Equal("42", await File.ReadAllTextAsync(path));
+            Assert.False(await StartsWithUtf8BomAsync(path));
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task FileOffsetStoreReadsExistingBomPrefixedOffset()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"assistant-engineer-offset-{Guid.NewGuid():N}");
+        try
+        {
+            var path = Path.Combine(root, "operations", "offset.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await File.WriteAllBytesAsync(path, [0xEF, 0xBB, 0xBF, (byte)'4', (byte)'2']);
+            var store = new FileEquipmentDiagnosticTelegramUpdateOffsetStore(
+                new FakeHostEnvironment(root),
+                EnabledOptions() with
+                {
+                    Polling = new EquipmentDiagnosticTelegramPollingOptions
+                    {
+                        OffsetStoreFilePath = "operations/offset.txt"
+                    }
+                });
+
+            Assert.Equal(42, await store.GetLastProcessedUpdateIdAsync());
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task FileOffsetStoreFailsDeterministicallyForInvalidOffset()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"assistant-engineer-offset-{Guid.NewGuid():N}");
+        try
+        {
+            var path = Path.Combine(root, "operations", "offset.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await File.WriteAllTextAsync(path, "not-a-number", Encoding.UTF8);
+            var store = new FileEquipmentDiagnosticTelegramUpdateOffsetStore(
+                new FakeHostEnvironment(root),
+                EnabledOptions() with
+                {
+                    Polling = new EquipmentDiagnosticTelegramPollingOptions
+                    {
+                        OffsetStoreFilePath = "operations/offset.txt"
+                    }
+                });
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => store.GetLastProcessedUpdateIdAsync());
+            Assert.Contains("invalid value", exception.Message, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task PollOnceSkipsDuplicateMessagesInSameBatchAndAdvancesOffset()
+    {
+        var inbound = new FakeInboundClient(
+            [
+                Update(11, "private", chatId: 3, messageId: 7, text: "/start"),
+                Update(12, "private", chatId: 3, messageId: 7, text: "/start")
+            ],
+            blockGetUpdates: false);
+        var handler = new FakeWebhookHandler();
+        var offsetStore = new FakeOffsetStore();
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramPollingBackgroundService>();
+        var service = CreateService(
+            EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
+            inbound,
+            handler,
+            offsetStore,
+            new FakeProcessedMessageStore(),
+            logger);
+
+        var lastProcessed = await service.PollOnceAsync(10);
+
+        Assert.Equal(12, lastProcessed);
+        Assert.Equal(12, offsetStore.LastSavedUpdateId);
+        Assert.Equal([11], handler.HandledUpdateIds);
+        Assert.Contains(logger.Messages, message => message.Contains("duplicate message skipped", StringComparison.OrdinalIgnoreCase));
+        var logged = string.Join(Environment.NewLine, logger.Messages);
+        Assert.DoesNotContain("3", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("/start", logged, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PollOnceSkipsDuplicateMessagesAcrossStoreInstancesAndAdvancesOffset()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"assistant-engineer-processed-{Guid.NewGuid():N}");
+        try
+        {
+            var options = EnabledOptions() with
+            {
+                InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling,
+                Polling = new EquipmentDiagnosticTelegramPollingOptions
+                {
+                    ProcessedMessageStoreFilePath = "operations/processed.txt"
+                }
+            };
+            var firstHandler = new FakeWebhookHandler();
+            var firstService = CreateService(
+                options,
+                new FakeInboundClient([Update(11, "private", chatId: 3, messageId: 7, text: "/start")], false),
+                firstHandler,
+                new FakeOffsetStore(),
+                CreateProcessedStore(root, options));
+            await firstService.PollOnceAsync(10);
+
+            var secondOffsetStore = new FakeOffsetStore();
+            var secondHandler = new FakeWebhookHandler();
+            var secondService = CreateService(
+                options,
+                new FakeInboundClient([Update(12, "private", chatId: 3, messageId: 7, text: "/start")], false),
+                secondHandler,
+                secondOffsetStore,
+                CreateProcessedStore(root, options));
+
+            var lastProcessed = await secondService.PollOnceAsync(11);
+
+            Assert.Equal([11], firstHandler.HandledUpdateIds);
+            Assert.Empty(secondHandler.HandledUpdateIds);
+            Assert.Equal(12, lastProcessed);
+            Assert.Equal(12, secondOffsetStore.LastSavedUpdateId);
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task PollOnceProcessesDifferentMessageIdsAndDifferentChats()
+    {
+        var handler = new FakeWebhookHandler();
+        var service = CreateService(
+            EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
+            new FakeInboundClient(
+                [
+                    Update(11, "private", chatId: 3, messageId: 7, text: "/start"),
+                    Update(12, "private", chatId: 3, messageId: 8, text: "/start"),
+                    Update(13, "private", chatId: 4, messageId: 7, text: "/start")
+                ],
+                blockGetUpdates: false),
+            handler,
+            new FakeOffsetStore(),
+            new FakeProcessedMessageStore());
+
+        await service.PollOnceAsync(10);
+
+        Assert.Equal([11, 12, 13], handler.HandledUpdateIds);
+    }
+
+    [Fact]
+    public async Task FileProcessedMessageStoreWritesHashesWithoutBomAndTrimsOldEntries()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"assistant-engineer-processed-{Guid.NewGuid():N}");
+        try
+        {
+            var options = EnabledOptions() with
+            {
+                Polling = new EquipmentDiagnosticTelegramPollingOptions
+                {
+                    ProcessedMessageStoreFilePath = "operations/processed.txt",
+                    ProcessedMessageStoreMaxEntries = 2
+                }
+            };
+            var store = CreateProcessedStore(root, options);
+
+            Assert.True(await store.TryMarkProcessedMessageAsync(100, 1, 11));
+            Assert.True(await store.TryMarkProcessedMessageAsync(100, 2, 12));
+            Assert.True(await store.TryMarkProcessedMessageAsync(100, 3, 13));
+            Assert.False(await store.TryMarkProcessedMessageAsync(100, 3, 14));
+
+            var path = Path.Combine(root, "operations", "processed.txt");
+            var text = await File.ReadAllTextAsync(path);
+            var lines = text.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            Assert.Equal(2, lines.Length);
+            Assert.All(lines, line => Assert.Matches("^[A-F0-9]{64}\\|\\d+$", line));
+            Assert.DoesNotContain("100", text, StringComparison.Ordinal);
+            Assert.False(await StartsWithUtf8BomAsync(path));
         }
         finally
         {
@@ -158,12 +365,14 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
         IEquipmentDiagnosticTelegramInboundClient inbound,
         IEquipmentDiagnosticTelegramWebhookHandler handler,
         IEquipmentDiagnosticTelegramUpdateOffsetStore store,
+        IEquipmentDiagnosticTelegramProcessedMessageStore processedMessageStore,
         ILogger<EquipmentDiagnosticTelegramPollingBackgroundService>? logger = null) =>
         new(
             options,
             inbound,
             handler,
             store,
+            processedMessageStore,
             logger ?? NullLogger<EquipmentDiagnosticTelegramPollingBackgroundService>.Instance);
 
     private static EquipmentDiagnosticTelegramWebhookOptions EnabledOptions() => new()
@@ -174,15 +383,31 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
         AllowedUpdates = ["message"]
     };
 
-    private static TelegramWebhookUpdateDto Update(long updateId, string chatType) =>
+    private static TelegramWebhookUpdateDto Update(
+        long updateId,
+        string chatType,
+        long chatId = 3,
+        long messageId = 2,
+        string text = "/start") =>
         new(
             updateId,
             new TelegramWebhookMessageDto(
-                2,
-                "/start",
-                new TelegramWebhookChatDto(3, "operator", chatType),
+                messageId,
+                text,
+                new TelegramWebhookChatDto(chatId, "operator", chatType),
                 new TelegramWebhookUserDto(4, "operator"),
                 1_700_000_000));
+
+    private static FileEquipmentDiagnosticTelegramProcessedMessageStore CreateProcessedStore(
+        string root,
+        EquipmentDiagnosticTelegramWebhookOptions options) =>
+        new(new FakeHostEnvironment(root), options);
+
+    private static async Task<bool> StartsWithUtf8BomAsync(string path)
+    {
+        var bytes = await File.ReadAllBytesAsync(path);
+        return bytes is [0xEF, 0xBB, 0xBF, ..];
+    }
 
     private sealed class FakeInboundClient(
         IReadOnlyList<TelegramWebhookUpdateDto> updates,
@@ -274,6 +499,18 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             LastSavedUpdateId = updateId;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class FakeProcessedMessageStore : IEquipmentDiagnosticTelegramProcessedMessageStore
+    {
+        private readonly HashSet<(long ChatId, long MessageId)> _processed = [];
+
+        public Task<bool> TryMarkProcessedMessageAsync(
+            long chatId,
+            long messageId,
+            long updateId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_processed.Add((chatId, messageId)));
     }
 
     private sealed class CapturingTelegramApiHandler : HttpMessageHandler

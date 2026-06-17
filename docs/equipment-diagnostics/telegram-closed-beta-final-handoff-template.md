@@ -35,7 +35,7 @@ Use this placeholder-only handoff after ED-22E passes and before any real activa
 
 - No real secrets in Git, no real domains in Git, and no real chat IDs in Git.
 - Telegram disabled by default and chat ID discovery disabled by default remain unchanged.
-- No long polling, no DB/audit persistence, and no external monitoring.
+- Polling disabled by default, no DB/audit persistence, and no external monitoring.
 - Runtime catalog remains the only final-answer source.
 - Manual-codebook/staging/preview are not final diagnosis.
 - Do not claim complete vendor manual coverage.
