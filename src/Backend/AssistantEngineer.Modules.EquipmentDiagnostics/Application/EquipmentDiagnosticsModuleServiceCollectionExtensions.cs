@@ -30,6 +30,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<TelegramDisplayTimeFormatter>();
         services.AddSingleton<TelegramDiagnosticHistoryService>();
         services.AddSingleton<TelegramServiceRequestService>();
+        services.AddSingleton<TelegramServiceRequestQueueService>();
         services.AddSingleton<ITelegramUserAccessService, TelegramUserAccessService>();
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();
         services.AddSingleton<EquipmentDiagnosticTelegramResponseFormatter>();

@@ -66,6 +66,11 @@ public sealed record TelegramUserCommandResult(
     bool Succeeded,
     string Message);
 
+public sealed record TelegramUserPrivateContact(
+    long TelegramUserDatabaseId,
+    long PrivateChatId,
+    string PhoneNumber);
+
 public interface ITelegramUserStore
 {
     Task<TelegramUserSnapshot> EnsureBootstrapOwnerAsync(
@@ -78,6 +83,22 @@ public interface ITelegramUserStore
 
     Task<TelegramUserSnapshot?> GetByChatIdAsync(
         long chatId,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserSnapshot?> GetByIdAsync(
+        long telegramUserDatabaseId,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserSnapshot?> GetByTelegramUserIdAsync(
+        long telegramUserId,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserSnapshot?> GetByUsernameAsync(
+        string username,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserPrivateContact?> GetPrivateContactAsync(
+        long telegramUserDatabaseId,
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TelegramUserSnapshot>> ListUsersAsync(

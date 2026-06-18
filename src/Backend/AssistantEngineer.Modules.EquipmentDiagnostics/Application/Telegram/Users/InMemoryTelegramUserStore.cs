@@ -51,6 +51,43 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
         CancellationToken cancellationToken = default) =>
         Task.FromResult(_users.TryGetValue(chatId, out var user) ? ToSnapshot(user) : null);
 
+    public Task<TelegramUserSnapshot?> GetByIdAsync(
+        long telegramUserDatabaseId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = _users.Values.FirstOrDefault(item => item.Id == telegramUserDatabaseId);
+        return Task.FromResult(user is null ? null : ToSnapshot(user));
+    }
+
+    public Task<TelegramUserSnapshot?> GetByTelegramUserIdAsync(
+        long telegramUserId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = _users.Values.FirstOrDefault(item => item.TelegramUserId == telegramUserId);
+        return Task.FromResult(user is null ? null : ToSnapshot(user));
+    }
+
+    public Task<TelegramUserSnapshot?> GetByUsernameAsync(
+        string username,
+        CancellationToken cancellationToken = default)
+    {
+        var normalized = username.Trim().TrimStart('@');
+        var user = _users.Values.FirstOrDefault(item =>
+            string.Equals(item.Username, normalized, StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(user is null ? null : ToSnapshot(user));
+    }
+
+    public Task<TelegramUserPrivateContact?> GetPrivateContactAsync(
+        long telegramUserDatabaseId,
+        CancellationToken cancellationToken = default)
+    {
+        var user = _users.Values.FirstOrDefault(item => item.Id == telegramUserDatabaseId);
+        return Task.FromResult(
+            user is null || string.IsNullOrWhiteSpace(user.PhoneNumber)
+                ? null
+                : new TelegramUserPrivateContact(user.Id, user.TelegramChatId, user.PhoneNumber));
+    }
+
     public Task<IReadOnlyList<TelegramUserSnapshot>> ListUsersAsync(
         int limit,
         CancellationToken cancellationToken = default)

@@ -53,11 +53,16 @@ public sealed class TelegramServiceRequestConfiguration : IEntityTypeConfigurati
             .HasMaxLength(32)
             .IsRequired();
 
+        builder.Property(request => request.AssignedTelegramUserId);
+        builder.Property(request => request.AssignedByTelegramUserId);
+        builder.Property(request => request.StatusUpdatedByTelegramUserId);
+
         builder.Property(request => request.CreatedAt).IsRequired();
 
         builder.HasIndex(request => request.TelegramUserId);
         builder.HasIndex(request => new { request.DiagnosticCaseId, request.Status });
         builder.HasIndex(request => request.Status);
+        builder.HasIndex(request => request.AssignedTelegramUserId);
         builder.HasIndex(request => new { request.TelegramUserId, request.CreatedAt });
         builder.HasIndex(request => request.DiagnosticCaseId)
             .HasDatabaseName("IX_TelegramServiceRequests_ActiveDiagnosticCase")
@@ -73,5 +78,20 @@ public sealed class TelegramServiceRequestConfiguration : IEntityTypeConfigurati
             .WithMany()
             .HasForeignKey(request => request.DiagnosticCaseId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne<TelegramUserEntity>()
+            .WithMany()
+            .HasForeignKey(request => request.AssignedTelegramUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<TelegramUserEntity>()
+            .WithMany()
+            .HasForeignKey(request => request.AssignedByTelegramUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne<TelegramUserEntity>()
+            .WithMany()
+            .HasForeignKey(request => request.StatusUpdatedByTelegramUserId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

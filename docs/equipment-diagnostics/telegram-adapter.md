@@ -179,6 +179,31 @@ text, or bot response.
 ED-23B intentionally excludes assignment, engineer status buttons, a global admin queue, CRM workflow, web UI,
 Mini App, and photo/OCR.
 
+## ED-23C Service Queue Actions
+
+ED-23C adds text-command queue operations in the configured service Telegram group. It does not add inline callback
+buttons. The supported group commands are `/queue`, `/take <id>`, `/assign <id> @username`, `/done <id>`,
+`/cancel_request <id>`, `/request_status <id>`, and `/contact <id>`. Telegram group suffixes such as
+`/take@EquipmentBot 2` are accepted. These commands are intentionally excluded from the global BotFather menu.
+
+An engineer must first open the bot in a private chat and send `/start`. Owner/Admin then grants the `Engineer`
+role. Group commands resolve the operator by Telegram sender identity, not by the service group's chat id. Engineer,
+Admin, and Owner can view the queue and take work. Only Owner/Admin can assign another operator. Engineer can close,
+cancel, or request contact only for a request assigned to that engineer; Owner/Admin can perform those actions for
+any request.
+
+Assignment and status updates persist `AssignedTelegramUserId`, assignment time and actor, status-update time and
+actor, `UpdatedAt`, and `ClosedAt` for terminal states. Taking or assigning a request sends the customer a private
+status update and attempts to deliver the saved phone privately to the assigned operator. Resolution and
+cancellation also notify the customer privately. Telegram delivery failure never rolls back the committed request
+state.
+
+The full customer phone is available only through an authorized private bot message to the assigned Engineer or
+Owner/Admin. Group responses show only `Телефон: сохранён` or `Телефон: не сохранён`. Logs remain sanitized and do
+not include phone values, raw chat ids, Telegram user ids, incoming command text, or outgoing message text.
+
+ED-23C still excludes Mini App, web UI, inline buttons, comments, photos/OCR, SLA, priorities, and full CRM workflow.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

@@ -30,6 +30,11 @@ public sealed class TelegramServiceRequestEntity
     public TelegramUserPhoneNumberSource? PhoneNumberSource { get; set; }
     public string? ContactPhoneLast4 { get; set; }
     public TelegramUserRole UserRoleAtCreation { get; set; }
+    public long? AssignedTelegramUserId { get; set; }
+    public DateTimeOffset? AssignedAt { get; set; }
+    public long? AssignedByTelegramUserId { get; set; }
+    public DateTimeOffset? StatusUpdatedAt { get; set; }
+    public long? StatusUpdatedByTelegramUserId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
     public DateTimeOffset? ClosedAt { get; set; }
@@ -49,6 +54,11 @@ public sealed record TelegramServiceRequestSnapshot(
     TelegramUserPhoneNumberSource? PhoneNumberSource,
     string? ContactPhoneLast4,
     TelegramUserRole UserRoleAtCreation,
+    long? AssignedTelegramUserId,
+    DateTimeOffset? AssignedAt,
+    long? AssignedByTelegramUserId,
+    DateTimeOffset? StatusUpdatedAt,
+    long? StatusUpdatedByTelegramUserId,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,
     DateTimeOffset? ClosedAt);
@@ -69,6 +79,16 @@ public sealed record TelegramServiceRequestCreateResult(
     TelegramServiceRequestSnapshot Request,
     bool Created);
 
+public sealed record TelegramServiceRequestUpdate(
+    long Id,
+    TelegramServiceRequestStatus Status,
+    long? AssignedTelegramUserId,
+    DateTimeOffset? AssignedAt,
+    long? AssignedByTelegramUserId,
+    DateTimeOffset StatusUpdatedAt,
+    long StatusUpdatedByTelegramUserId,
+    DateTimeOffset? ClosedAt);
+
 public interface ITelegramServiceRequestStore
 {
     Task<TelegramServiceRequestCreateResult> CreateIfNoActiveAsync(
@@ -78,6 +98,18 @@ public interface ITelegramServiceRequestStore
     Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestForTelegramUserAsync(
         long telegramUserId,
         int limit,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramServiceRequestSnapshot?> GetByIdAsync(
+        long id,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetActiveAsync(
+        int limit,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramServiceRequestSnapshot?> UpdateAsync(
+        TelegramServiceRequestUpdate update,
         CancellationToken cancellationToken = default);
 }
 

@@ -60,6 +60,48 @@ public sealed class InMemoryTelegramServiceRequestStore : ITelegramServiceReques
         return Task.FromResult<IReadOnlyList<TelegramServiceRequestSnapshot>>(requests);
     }
 
+    public Task<TelegramServiceRequestSnapshot?> GetByIdAsync(
+        long id,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(_requests.TryGetValue(id, out var request) ? ToSnapshot(request) : null);
+
+    public Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetActiveAsync(
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        var requests = _requests.Values
+            .Where(item => item.Status is TelegramServiceRequestStatus.New or TelegramServiceRequestStatus.InProgress)
+            .OrderBy(item => item.CreatedAt)
+            .ThenBy(item => item.Id)
+            .Take(Math.Clamp(limit, 1, 100))
+            .Select(ToSnapshot)
+            .ToArray();
+        return Task.FromResult<IReadOnlyList<TelegramServiceRequestSnapshot>>(requests);
+    }
+
+    public Task<TelegramServiceRequestSnapshot?> UpdateAsync(
+        TelegramServiceRequestUpdate update,
+        CancellationToken cancellationToken = default)
+    {
+        lock (_gate)
+        {
+            if (!_requests.TryGetValue(update.Id, out var entity))
+            {
+                return Task.FromResult<TelegramServiceRequestSnapshot?>(null);
+            }
+
+            entity.Status = update.Status;
+            entity.AssignedTelegramUserId = update.AssignedTelegramUserId;
+            entity.AssignedAt = update.AssignedAt;
+            entity.AssignedByTelegramUserId = update.AssignedByTelegramUserId;
+            entity.StatusUpdatedAt = update.StatusUpdatedAt;
+            entity.StatusUpdatedByTelegramUserId = update.StatusUpdatedByTelegramUserId;
+            entity.UpdatedAt = update.StatusUpdatedAt;
+            entity.ClosedAt = update.ClosedAt;
+            return Task.FromResult<TelegramServiceRequestSnapshot?>(ToSnapshot(entity));
+        }
+    }
+
     private static TelegramServiceRequestSnapshot ToSnapshot(TelegramServiceRequestEntity entity) =>
         new(
             entity.Id,
@@ -75,6 +117,11 @@ public sealed class InMemoryTelegramServiceRequestStore : ITelegramServiceReques
             entity.PhoneNumberSource,
             entity.ContactPhoneLast4,
             entity.UserRoleAtCreation,
+            entity.AssignedTelegramUserId,
+            entity.AssignedAt,
+            entity.AssignedByTelegramUserId,
+            entity.StatusUpdatedAt,
+            entity.StatusUpdatedByTelegramUserId,
             entity.CreatedAt,
             entity.UpdatedAt,
             entity.ClosedAt);

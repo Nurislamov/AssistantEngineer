@@ -54,6 +54,18 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
   `Asia/Tashkent` display time, and never prints a phone number or internal identifier.
 - If `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` is configured, verify the service group receives a sanitized notification.
   If it is empty or Telegram delivery fails, verify the request remains created.
+- Onboard each service operator in this order: open the bot privately, send `/start`, then have Owner/Admin grant
+  role `Engineer`. Do not grant queue access to an unregistered group-only identity.
+- Verify `/queue` lists only `New` and `InProgress` requests in the configured service group.
+- Verify Engineer can `/take <id>`, and Owner/Admin can `/assign <id> @username`. Confirm assignment notifies the
+  customer privately and sends the contact only to the assigned operator's private bot chat.
+- Verify assigned Engineer or Owner/Admin can `/done <id>` and `/cancel_request <id>`, with private customer status
+  notification. Non-assigned Engineer must be denied.
+- Verify `/request_status <id>` is sanitized and `/contact <id>` sends the full phone only in an authorized private
+  chat. The service group must never contain the full phone.
+- Verify group command forms with bot suffixes, such as `/take@BotUsername 2`, work.
+- Verify `/queue`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact` are absent from
+  the global command menu.
 - Verify history output and stored records do not include phone numbers, chat IDs, Telegram user IDs, internal ids,
   token/secret values, full incoming text, or full bot response text.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,
@@ -92,8 +104,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
 - `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`,
-  `AddTelegramDiagnosticCases`, and `AddTelegramServiceRequests` migrations have been applied, and `DeniedChatIds`
-  is reviewed.
+  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, and `AddTelegramServiceRequestAssignments` migrations
+  have been applied, and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
 - Phone sharing uses a Telegram reply keyboard with `request_contact=true`; manual phone input is available through
   `✏️ Ввести другой номер`; phone numbers are not logged, not printed in `/admin users`, and are not required for

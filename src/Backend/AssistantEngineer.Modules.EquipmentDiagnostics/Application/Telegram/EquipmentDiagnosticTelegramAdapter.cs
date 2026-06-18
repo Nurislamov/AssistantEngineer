@@ -20,6 +20,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramDiagnosticConversationService? _conversationService;
     private readonly TelegramDiagnosticHistoryService? _historyService;
     private readonly TelegramServiceRequestService? _serviceRequestService;
+    private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -30,7 +31,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         ITelegramUserStore userStore,
         TelegramDiagnosticConversationService? conversationService = null,
         TelegramDiagnosticHistoryService? historyService = null,
-        TelegramServiceRequestService? serviceRequestService = null)
+        TelegramServiceRequestService? serviceRequestService = null,
+        TelegramServiceRequestQueueService? serviceRequestQueueService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -41,6 +43,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _conversationService = conversationService;
         _historyService = historyService;
         _serviceRequestService = serviceRequestService;
+        _serviceRequestQueueService = serviceRequestQueueService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -50,6 +53,17 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (!_options.IsEnabled)
         {
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+        }
+
+        if (TelegramServiceRequestQueueService.TryParse(update.Text, out var queueCommand))
+        {
+            var result = _serviceRequestQueueService is null
+                ? new TelegramServiceQueueCommandResult("Команда доступна в сервисной группе.")
+                : await _serviceRequestQueueService.HandleAsync(update, queueCommand, cancellationToken);
+            return Response(
+                update.ChatId,
+                result.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply);
         }
 
         var access = await _accessService.ResolveAccessAsync(update, cancellationToken);

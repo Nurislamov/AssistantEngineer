@@ -96,7 +96,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 update.Message.From?.FirstName,
                 update.Message.From?.LastName,
                 update.Message.Contact?.PhoneNumber,
-                update.Message.Contact?.UserId),
+                update.Message.Contact?.UserId,
+                update.Message.Chat.Type),
             cancellationToken);
 
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)

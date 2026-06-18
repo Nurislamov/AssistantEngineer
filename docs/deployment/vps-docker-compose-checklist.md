@@ -18,12 +18,14 @@
 - Use `EnableChatIdDiscovery=true` temporarily only for initial `/id` setup.
 - Configure `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` or direct `BootstrapOwnerChatId` binding; legacy
   `TELEGRAM_ALLOWED_CHAT_ID` remains only a bootstrap compatibility fallback.
-- Apply the Telegram user, conversation, phone, diagnostic history, and `AddTelegramServiceRequests` migrations
-  before enabling Telegram.
+- Apply the Telegram user, conversation, phone, diagnostic history, `AddTelegramServiceRequests`, and
+  `AddTelegramServiceRequestAssignments` migrations before enabling Telegram.
 - Optionally configure `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` for the service group; leave it empty to create requests
   without group notifications.
 - Rebuild the backend image after ED-21B so the runtime includes `libgssapi-krb5-2`.
 - Review `DeniedChatIds` and deny-wins-over-allow behavior.
+- Confirm each Engineer has opened the bot privately with `/start` and received the reviewed `Engineer` role before
+  using queue commands in the service group.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

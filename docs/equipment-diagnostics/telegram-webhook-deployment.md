@@ -103,6 +103,16 @@ delivery fails, the database request remains created. Group messages include onl
 phone source, never the full number. ED-23B does not add CRM, assignment, engineer status actions, a global admin
 queue, web UI, Mini App, or photo/OCR.
 
+ED-23C uses that same configured group for text-command queue actions: `/queue`, `/take`, `/assign`, `/done`,
+`/cancel_request`, `/request_status`, and `/contact`. They are not added to `setMyCommands`. Engineers must register
+in a private bot chat with `/start` before Owner/Admin grants the `Engineer` role. Group commands authenticate the
+message sender through `from.id`; the group chat itself is never registered as a Consumer.
+
+Taking or assigning a request sends customer status privately and attempts to send the full contact phone privately
+to the assigned operator. `/contact <id>` is restricted to the assigned Engineer or Owner/Admin. Full phone numbers
+are never sent to the group or logs. Failed private notifications do not roll back assignment or status changes.
+Apply the `AddTelegramServiceRequestAssignments` migration before using these commands.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -136,13 +146,18 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
 - Apply the `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`, and
-  `AddTelegramDiagnosticCases` and `AddTelegramServiceRequests` EF migrations before enabling the bot.
+  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, and `AddTelegramServiceRequestAssignments` EF
+  migrations before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
 - Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`,
   `/last`, and `/requests`; `/request` and `/admin_help` are hidden from the global menu, and `/admin_help` remains reachable
   for Owner/Admin through `/help` or manual input.
+- Confirm `/queue`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact` work only in
+  the configured service group and remain absent from the global command menu.
+- Confirm each Engineer opened the bot privately with `/start` before role assignment. Verify contact delivery goes
+  only to the assigned Engineer or Owner/Admin private chat and never displays the full phone in the service group.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
   phone numbers, chat IDs, internal ids, or full bot responses.
 - Confirm `/history` and `/last` display Asia/Tashkent local time: `сегодня`/`вчера` are local-day relative, and older

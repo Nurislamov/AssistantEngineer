@@ -58,7 +58,8 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? FirstName = null,
     string? LastName = null,
     string? ContactPhoneNumber = null,
-    long? ContactUserId = null);
+    long? ContactUserId = null,
+    string? ChatType = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

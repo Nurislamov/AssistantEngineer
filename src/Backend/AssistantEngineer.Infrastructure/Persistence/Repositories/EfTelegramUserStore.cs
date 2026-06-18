@@ -76,6 +76,58 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         return user is null ? null : ToSnapshot(user);
     }
 
+    public async Task<TelegramUserSnapshot?> GetByIdAsync(
+        long telegramUserDatabaseId,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var user = await context.TelegramUsers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(item => item.Id == telegramUserDatabaseId, cancellationToken);
+        return user is null ? null : ToSnapshot(user);
+    }
+
+    public async Task<TelegramUserSnapshot?> GetByTelegramUserIdAsync(
+        long telegramUserId,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var user = await context.TelegramUsers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(item => item.TelegramUserId == telegramUserId, cancellationToken);
+        return user is null ? null : ToSnapshot(user);
+    }
+
+    public async Task<TelegramUserSnapshot?> GetByUsernameAsync(
+        string username,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var normalized = username.Trim().TrimStart('@').ToLower();
+        var user = await context.TelegramUsers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                item => item.Username != null && item.Username.ToLower() == normalized,
+                cancellationToken);
+        return user is null ? null : ToSnapshot(user);
+    }
+
+    public async Task<TelegramUserPrivateContact?> GetPrivateContactAsync(
+        long telegramUserDatabaseId,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return await context.TelegramUsers
+            .AsNoTracking()
+            .Where(item => item.Id == telegramUserDatabaseId && item.PhoneNumber != null)
+            .Select(item => new TelegramUserPrivateContact(item.Id, item.TelegramChatId, item.PhoneNumber!))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<TelegramUserSnapshot>> ListUsersAsync(
         int limit,
         CancellationToken cancellationToken = default)
