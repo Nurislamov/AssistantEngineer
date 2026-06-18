@@ -123,6 +123,13 @@ delivery remains private to the assigned Engineer or Owner/Admin; no full phone 
 data. ED-23C commands remain operational fallback. No database migration or new environment variable is required for
 ED-23D.
 
+ED-23D.1 turns each notification into a live card. Apply
+`AddTelegramServiceRequestNotificationMessage`; it stores the Telegram chat/message identifiers and notification
+timestamps. Take, assign, done, cancel, status refresh, and matching text commands edit the stored card. Assign uses
+the same message for the engineer picker and provides `Назад`. Terminal cards expose only `Статус`. If editing fails,
+the committed database state remains and a replacement safe card is sent and stored when possible. Contact still goes
+only to the authorized private chat, and no new environment variable is required.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -156,8 +163,8 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
 - Apply the `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`, and
-  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, and `AddTelegramServiceRequestAssignments` EF
-  migrations before enabling the bot.
+  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, `AddTelegramServiceRequestAssignments`, and
+  `AddTelegramServiceRequestNotificationMessage` EF migrations before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
@@ -168,6 +175,10 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   the configured service group and remain absent from the global command menu.
 - Confirm new request cards contain inline actions and `/queue` includes compact request buttons. Press each action
   and verify Telegram clears the callback spinner.
+- Confirm take, assign, status, done, and cancel edit the existing request card without an extra group status message.
+- Confirm assign edits the card into an engineer picker, `Назад` restores it, and terminal cards retain only `Статус`.
+- Simulate an edit failure and confirm state remains committed while a replacement card is sent and its message id is
+  stored.
 - Confirm `Назначить` shows only enabled, non-blocked Engineer/Admin/Owner users and that every callback rechecks
   actor permissions.
 - Confirm each Engineer opened the bot privately with `/start` before role assignment. Verify contact delivery goes

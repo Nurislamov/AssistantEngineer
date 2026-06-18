@@ -140,15 +140,15 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
 
         var notification = Assert.Single(harness.Outbound.Messages);
         Assert.Equal(-1001234567890, notification.ChatId);
-        Assert.Contains("Новая сервисная заявка", notification.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервисная заявка #1", notification.Text, StringComparison.Ordinal);
         Assert.Contains("Gree H5", notification.Text, StringComparison.Ordinal);
-        Assert.Contains("17.06.2026 22:45", notification.Text, StringComparison.Ordinal);
+        Assert.Contains("Статус: новая", notification.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, notification.Text, StringComparison.Ordinal);
         var inlineButtons = notification.ReplyMarkup?.InlineKeyboard?
             .SelectMany(row => row)
             .ToArray() ?? [];
         Assert.Equal(
-            ["Взять в работу", "Назначить", "Статус", "Контакт", "Отменить"],
+            ["Взять в работу", "Назначить", "Контакт", "Статус", "Отменить"],
             inlineButtons.Select(button => button.Text).ToArray());
         Assert.All(inlineButtons, button =>
         {
@@ -156,6 +156,10 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             Assert.True(System.Text.Encoding.UTF8.GetByteCount(button.CallbackData) <= 64);
             Assert.DoesNotContain(FullPhone, button.CallbackData, StringComparison.Ordinal);
         });
+        var stored = Assert.Single(await harness.RequestStore.GetLatestForTelegramUserAsync(harness.User.Id, 5));
+        Assert.Equal(-1001234567890, stored.NotificationChatId);
+        Assert.Equal(700, stored.NotificationMessageId);
+        Assert.NotNull(stored.NotificationSentAt);
         Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
     }
 
@@ -244,7 +248,8 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             historyStore,
             outbound,
             options,
-            timeFormatter);
+            timeFormatter,
+            new TelegramServiceRequestCardRenderer(userStore, timeFormatter));
         var parser = new EquipmentDiagnosticTelegramMessageParser();
         var adapter = new EquipmentDiagnosticTelegramAdapter(
             new UnusedFacade(),
@@ -356,7 +361,10 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             CancellationToken cancellationToken = default)
         {
             Messages.Add((chatId, text, replyMarkup));
-            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(succeeds, succeeds ? "Sent." : "Failed."));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+                succeeds,
+                succeeds ? "Sent." : "Failed.",
+                succeeds ? 700 : null));
         }
 
         public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(

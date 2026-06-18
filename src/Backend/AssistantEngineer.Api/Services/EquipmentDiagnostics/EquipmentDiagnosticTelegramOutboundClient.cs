@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using AssistantEngineer.Api.Services.OperationalDiagnostics;
@@ -84,7 +85,10 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
-                return new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram message sent.");
+                return new EquipmentDiagnosticTelegramOutboundResult(
+                    true,
+                    "Telegram message sent.",
+                    await ReadMessageIdAsync(response, cancellationToken));
             }
 
             _logger.LogWarning("Telegram outbound send failed with non-success status code.");
@@ -236,11 +240,124 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
     }
 
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> EditMessageTextAsync(
+        long chatId,
+        long messageId,
+        string text,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
+            !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
+            baseUri.Scheme != Uri.UriSchemeHttps)
+        {
+            return Failed();
+        }
+
+        var endpoint = new Uri(
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/editMessageText");
+        var payload = new Dictionary<string, object?>
+        {
+            ["chat_id"] = chatId,
+            ["message_id"] = messageId,
+            ["text"] = text,
+            ["disable_web_page_preview"] = true
+        };
+        if (replyMarkup is not null)
+        {
+            payload["reply_markup"] = ToTelegramReplyMarkup(replyMarkup);
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
+
+        try
+        {
+            _logger.LogInformation("Editing Telegram message.");
+            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(
+                    true,
+                    "Telegram message edited.",
+                    await ReadMessageIdAsync(response, cancellationToken) ?? messageId);
+            }
+            if (await IsMessageNotModifiedAsync(response, cancellationToken))
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(
+                    true,
+                    "Telegram message is already current.",
+                    messageId);
+            }
+
+            _logger.LogWarning("Telegram message edit failed with non-success status code.");
+            return Failed();
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Telegram message edit timed out.");
+            return Failed();
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                "Telegram message edit failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return Failed();
+        }
+    }
+
     private static EquipmentDiagnosticTelegramOutboundResult Failed() =>
         new(false, "Telegram outbound send failed.");
 
     private static EquipmentDiagnosticTelegramSetCommandsResult SetCommandsFailed() =>
         new(false, "Telegram command menu synchronization failed.");
+
+    private static async Task<long?> ReadMessageIdAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            return document.RootElement.TryGetProperty("result", out var result) &&
+                result.ValueKind == JsonValueKind.Object &&
+                result.TryGetProperty("message_id", out var messageId) &&
+                messageId.TryGetInt64(out var value)
+                    ? value
+                    : null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static async Task<bool> IsMessageNotModifiedAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            using var document = JsonDocument.Parse(content);
+            return document.RootElement.TryGetProperty("description", out var description) &&
+                description.GetString()?.Contains("message is not modified", StringComparison.OrdinalIgnoreCase) == true;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
 
     private static Dictionary<string, object?> ToTelegramReplyMarkup(
         EquipmentDiagnosticTelegramReplyMarkup replyMarkup)

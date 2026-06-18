@@ -76,10 +76,14 @@ public sealed record EquipmentDiagnosticTelegramResponse(
     bool DisableWebPagePreview,
     IReadOnlyList<string> Warnings,
     IReadOnlyList<string>? InternalDecisionTrace = null,
-    IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null)
+    IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null,
+    string? CallbackAnswerText = null,
+    bool SuppressOutbound = false)
 {
     public IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage> OutboundMessages =>
-        Messages is { Count: > 0 }
+        SuppressOutbound
+            ? []
+            : Messages is { Count: > 0 }
             ? Messages
             :
             [

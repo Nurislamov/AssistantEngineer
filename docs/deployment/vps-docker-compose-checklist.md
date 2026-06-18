@@ -19,7 +19,8 @@
 - Configure `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` or direct `BootstrapOwnerChatId` binding; legacy
   `TELEGRAM_ALLOWED_CHAT_ID` remains only a bootstrap compatibility fallback.
 - Apply the Telegram user, conversation, phone, diagnostic history, `AddTelegramServiceRequests`, and
-  `AddTelegramServiceRequestAssignments` migrations before enabling Telegram.
+  `AddTelegramServiceRequestAssignments` and `AddTelegramServiceRequestNotificationMessage` migrations before
+  enabling Telegram.
 - Optionally configure `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` for the service group; leave it empty to create requests
   without group notifications.
 - Rebuild the backend image after ED-21B so the runtime includes `libgssapi-krb5-2`.
@@ -28,6 +29,8 @@
   using queue commands in the service group.
 - After ED-23D deployment, verify polling requests `callback_query` updates, new request cards show inline actions,
   and Telegram callback spinners clear after each press. No new environment value or migration is required.
+- After ED-23D.1 deployment, verify actions edit the stored card, assign uses the same card with `Назад`, terminal
+  cards retain only `Статус`, and edit failure sends a replacement safe card. No new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

@@ -102,6 +102,25 @@ public sealed class InMemoryTelegramServiceRequestStore : ITelegramServiceReques
         }
     }
 
+    public Task<TelegramServiceRequestSnapshot?> UpdateNotificationAsync(
+        TelegramServiceRequestNotificationUpdate update,
+        CancellationToken cancellationToken = default)
+    {
+        lock (_gate)
+        {
+            if (!_requests.TryGetValue(update.Id, out var entity))
+            {
+                return Task.FromResult<TelegramServiceRequestSnapshot?>(null);
+            }
+
+            entity.NotificationChatId = update.NotificationChatId;
+            entity.NotificationMessageId = update.NotificationMessageId;
+            entity.NotificationSentAt = update.NotificationSentAt;
+            entity.NotificationUpdatedAt = update.NotificationUpdatedAt;
+            return Task.FromResult<TelegramServiceRequestSnapshot?>(ToSnapshot(entity));
+        }
+    }
+
     private static TelegramServiceRequestSnapshot ToSnapshot(TelegramServiceRequestEntity entity) =>
         new(
             entity.Id,
@@ -124,5 +143,9 @@ public sealed class InMemoryTelegramServiceRequestStore : ITelegramServiceReques
             entity.StatusUpdatedByTelegramUserId,
             entity.CreatedAt,
             entity.UpdatedAt,
-            entity.ClosedAt);
+            entity.ClosedAt,
+            entity.NotificationChatId,
+            entity.NotificationMessageId,
+            entity.NotificationSentAt,
+            entity.NotificationUpdatedAt);
 }

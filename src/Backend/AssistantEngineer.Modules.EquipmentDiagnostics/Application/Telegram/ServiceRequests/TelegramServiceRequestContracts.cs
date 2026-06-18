@@ -38,6 +38,10 @@ public sealed class TelegramServiceRequestEntity
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? UpdatedAt { get; set; }
     public DateTimeOffset? ClosedAt { get; set; }
+    public long? NotificationChatId { get; set; }
+    public long? NotificationMessageId { get; set; }
+    public DateTimeOffset? NotificationSentAt { get; set; }
+    public DateTimeOffset? NotificationUpdatedAt { get; set; }
 }
 
 public sealed record TelegramServiceRequestSnapshot(
@@ -61,7 +65,11 @@ public sealed record TelegramServiceRequestSnapshot(
     long? StatusUpdatedByTelegramUserId,
     DateTimeOffset CreatedAt,
     DateTimeOffset? UpdatedAt,
-    DateTimeOffset? ClosedAt);
+    DateTimeOffset? ClosedAt,
+    long? NotificationChatId,
+    long? NotificationMessageId,
+    DateTimeOffset? NotificationSentAt,
+    DateTimeOffset? NotificationUpdatedAt);
 
 public sealed record TelegramServiceRequestCreate(
     long TelegramUserId,
@@ -89,6 +97,13 @@ public sealed record TelegramServiceRequestUpdate(
     long StatusUpdatedByTelegramUserId,
     DateTimeOffset? ClosedAt);
 
+public sealed record TelegramServiceRequestNotificationUpdate(
+    long Id,
+    long NotificationChatId,
+    long NotificationMessageId,
+    DateTimeOffset NotificationSentAt,
+    DateTimeOffset NotificationUpdatedAt);
+
 public interface ITelegramServiceRequestStore
 {
     Task<TelegramServiceRequestCreateResult> CreateIfNoActiveAsync(
@@ -110,6 +125,10 @@ public interface ITelegramServiceRequestStore
 
     Task<TelegramServiceRequestSnapshot?> UpdateAsync(
         TelegramServiceRequestUpdate update,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramServiceRequestSnapshot?> UpdateNotificationAsync(
+        TelegramServiceRequestNotificationUpdate update,
         CancellationToken cancellationToken = default);
 }
 

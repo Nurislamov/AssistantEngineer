@@ -225,6 +225,26 @@ never include them. ED-23D does not edit old request cards or store Telegram not
 deferred. It also does not add Mini App, web UI, button-based user/role administration, comments, photos/OCR, SLA, or
 priorities.
 
+## ED-23D.1 Live Service Request Cards
+
+ED-23D.1 stores `NotificationChatId`, `NotificationMessageId`, `NotificationSentAt`, and `NotificationUpdatedAt` on
+each service request. The service-group card is rendered from current database state and updated with
+`editMessageText` after take, assignment, resolution, cancellation, status refresh, and the equivalent fallback text
+commands. A successful edit does not post a separate group status message.
+
+Buttons follow the current state. `New` offers take, assign, contact, status, and cancel. `InProgress` offers contact,
+close, assign, status, and cancel. Terminal cards retain only status. The assign action edits the same card into an
+engineer picker with a `Назад` button; Back restores the current request card.
+
+Every callback is acknowledged with a short `answerCallbackQuery` message. Contact delivery remains private and never
+puts the full phone in the service group. If Telegram cannot edit a stored message, committed request state is kept and
+the bot sends the current safe card as fallback, storing the replacement message id when Telegram returns one.
+`message is not modified` is treated as an already-current card, not as a fallback condition.
+
+The `AddTelegramServiceRequestNotificationMessage` migration is required. No new environment variable is introduced.
+Commands remain operational fallback. ED-23D.1 does not include button-based user/role administration; that remains
+outside this change.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

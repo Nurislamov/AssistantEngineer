@@ -64,7 +64,9 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 update.ChatId,
                 result.Text,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
-                replyMarkup: result.ReplyMarkup);
+                replyMarkup: result.ReplyMarkup,
+                callbackAnswerText: result.CallbackAnswerText,
+                suppressOutbound: result.SuppressGroupMessage);
         }
 
         if (TelegramServiceRequestQueueService.TryParse(update.Text, out var queueCommand))
@@ -496,7 +498,9 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         EquipmentDiagnosticTelegramResponseKind responseKind,
         IReadOnlyList<string>? warnings = null,
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
-        IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null) =>
+        IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null,
+        string? callbackAnswerText = null,
+        bool suppressOutbound = false) =>
         new(
             chatId,
             text,
@@ -515,5 +519,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                             ParseMode: null,
                             DisableWebPagePreview: true,
                             replyMarkup)
-                    ]));
+                    ]),
+            CallbackAnswerText: callbackAnswerText,
+            SuppressOutbound: suppressOutbound);
 }

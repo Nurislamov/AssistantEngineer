@@ -132,6 +132,27 @@ public sealed class EfTelegramServiceRequestStore : ITelegramServiceRequestStore
         return ToSnapshot(entity);
     }
 
+    public async Task<TelegramServiceRequestSnapshot?> UpdateNotificationAsync(
+        TelegramServiceRequestNotificationUpdate update,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var entity = await context.TelegramServiceRequests
+            .FirstOrDefaultAsync(item => item.Id == update.Id, cancellationToken);
+        if (entity is null)
+        {
+            return null;
+        }
+
+        entity.NotificationChatId = update.NotificationChatId;
+        entity.NotificationMessageId = update.NotificationMessageId;
+        entity.NotificationSentAt = update.NotificationSentAt;
+        entity.NotificationUpdatedAt = update.NotificationUpdatedAt;
+        await context.SaveChangesAsync(cancellationToken);
+        return ToSnapshot(entity);
+    }
+
     private static IQueryable<TelegramServiceRequestEntity> ActiveQuery(
         AppDbContext context,
         long diagnosticCaseId) =>
@@ -165,5 +186,9 @@ public sealed class EfTelegramServiceRequestStore : ITelegramServiceRequestStore
             entity.StatusUpdatedByTelegramUserId,
             entity.CreatedAt,
             entity.UpdatedAt,
-            entity.ClosedAt);
+            entity.ClosedAt,
+            entity.NotificationChatId,
+            entity.NotificationMessageId,
+            entity.NotificationSentAt,
+            entity.NotificationUpdatedAt);
 }

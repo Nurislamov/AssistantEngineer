@@ -58,6 +58,8 @@ public sealed class TelegramServiceRequestConfiguration : IEntityTypeConfigurati
         builder.Property(request => request.StatusUpdatedByTelegramUserId);
 
         builder.Property(request => request.CreatedAt).IsRequired();
+        builder.Property(request => request.NotificationChatId);
+        builder.Property(request => request.NotificationMessageId);
 
         builder.HasIndex(request => request.TelegramUserId);
         builder.HasIndex(request => new { request.DiagnosticCaseId, request.Status });

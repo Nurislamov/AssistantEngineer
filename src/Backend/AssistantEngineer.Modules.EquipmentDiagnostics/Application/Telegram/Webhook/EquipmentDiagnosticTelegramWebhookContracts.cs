@@ -108,7 +108,8 @@ public sealed record EquipmentDiagnosticTelegramWebhookResult(
 
 public sealed record EquipmentDiagnosticTelegramOutboundResult(
     bool Succeeded,
-    string Message);
+    string Message,
+    long? MessageId = null);
 
 public sealed record EquipmentDiagnosticTelegramDeleteWebhookResult(
     bool Succeeded,

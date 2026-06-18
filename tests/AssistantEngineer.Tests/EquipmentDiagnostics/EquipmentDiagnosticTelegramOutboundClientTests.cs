@@ -32,6 +32,20 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     }
 
     [Fact]
+    public async Task SendMessageReturnsTelegramMessageId()
+    {
+        var handler = new CapturingHandler(
+            HttpStatusCode.OK,
+            """{"ok":true,"result":{"message_id":321}}""");
+
+        var result = await CreateClient(handler, EnabledOptions())
+            .SendMessageAsync(42, "Safe reply", null, true);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(321, result.MessageId);
+    }
+
+    [Fact]
     public async Task SendMessageIncludesParseModeOnlyWhenNonEmpty()
     {
         var withoutParseMode = new CapturingHandler(HttpStatusCode.OK);
@@ -133,6 +147,51 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         Assert.DoesNotContain("callback-secret-id", logged, StringComparison.Ordinal);
         Assert.DoesNotContain("Готово", logged, StringComparison.Ordinal);
         Assert.DoesNotContain("test-token-value", logged, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task EditMessageTextUsesCurrentCardAndInlineKeyboard()
+    {
+        var handler = new CapturingHandler(
+            HttpStatusCode.OK,
+            """{"ok":true,"result":{"message_id":88}}""");
+        var client = CreateClient(handler, EnabledOptions());
+
+        var result = await client.EditMessageTextAsync(
+            42,
+            88,
+            "Updated card",
+            new EquipmentDiagnosticTelegramReplyMarkup(
+                InlineKeyboard:
+                [
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton("Закрыть", "sr:d:1")]
+                ]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(88, result.MessageId);
+        Assert.Contains("/bottest-token-value/editMessageText", handler.RequestUri!.AbsolutePath, StringComparison.Ordinal);
+        using var payload = JsonDocument.Parse(handler.Body!);
+        Assert.Equal(42, payload.RootElement.GetProperty("chat_id").GetInt64());
+        Assert.Equal(88, payload.RootElement.GetProperty("message_id").GetInt64());
+        Assert.Equal("Updated card", payload.RootElement.GetProperty("text").GetString());
+        Assert.Equal(
+            "sr:d:1",
+            payload.RootElement.GetProperty("reply_markup").GetProperty("inline_keyboard")[0][0]
+                .GetProperty("callback_data").GetString());
+    }
+
+    [Fact]
+    public async Task EditMessageTextTreatsAlreadyCurrentCardAsSuccess()
+    {
+        var handler = new CapturingHandler(
+            HttpStatusCode.BadRequest,
+            """{"ok":false,"description":"Bad Request: message is not modified"}""");
+
+        var result = await CreateClient(handler, EnabledOptions())
+            .EditMessageTextAsync(42, 88, "Current card");
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(88, result.MessageId);
     }
 
     [Fact]
@@ -244,7 +303,9 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
         TelegramApiBaseUrl = "https://api.telegram.org"
     };
 
-    private sealed class CapturingHandler(HttpStatusCode statusCode) : HttpMessageHandler
+    private sealed class CapturingHandler(
+        HttpStatusCode statusCode,
+        string? responseBody = null) : HttpMessageHandler
     {
         public Uri? RequestUri { get; private set; }
         public string? Body { get; private set; }
@@ -257,7 +318,10 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
             RequestUri = request.RequestUri;
             Body = await request.Content!.ReadAsStringAsync(cancellationToken);
             CorrelationId = request.Headers.GetValues("X-Correlation-ID").Single();
-            return new HttpResponseMessage(statusCode);
+            return new HttpResponseMessage(statusCode)
+            {
+                Content = new StringContent(responseBody ?? string.Empty)
+            };
         }
     }
 

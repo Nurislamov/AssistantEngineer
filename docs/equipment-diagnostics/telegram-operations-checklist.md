@@ -112,8 +112,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Polling production mode has `ProcessedMessageStoreFilePath` configured on durable operational storage and
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
 - `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`,
-  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, and `AddTelegramServiceRequestAssignments` migrations
-  have been applied, and `DeniedChatIds` is reviewed.
+  `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, `AddTelegramServiceRequestAssignments`, and
+  `AddTelegramServiceRequestNotificationMessage` migrations have been applied, and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
 - Phone sharing uses a Telegram reply keyboard with `request_contact=true`; manual phone input is available through
   `✏️ Ввести другой номер`; phone numbers are not logged, not printed in `/admin users`, and are not required for
@@ -132,6 +132,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Send or replay duplicate Telegram updates only in a controlled smoke; one response should be sent for the same
   `chat.id + message_id`, and a sanitized `duplicate message skipped` log should appear.
 - Send a deterministic smoke message and verify the expected reply.
+- Verify service request callbacks edit the existing card, the assign picker has `Назад`, terminal cards keep only
+  `Статус`, and full phone values appear only in authorized private messages.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.

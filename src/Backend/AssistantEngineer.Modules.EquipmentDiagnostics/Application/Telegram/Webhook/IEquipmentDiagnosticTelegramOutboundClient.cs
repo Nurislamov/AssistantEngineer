@@ -24,4 +24,14 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
         Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
             false,
             "Telegram callback answer transport is not configured."));
+
+    Task<EquipmentDiagnosticTelegramOutboundResult> EditMessageTextAsync(
+        long chatId,
+        long messageId,
+        string text,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram message edit transport is not configured."));
 }

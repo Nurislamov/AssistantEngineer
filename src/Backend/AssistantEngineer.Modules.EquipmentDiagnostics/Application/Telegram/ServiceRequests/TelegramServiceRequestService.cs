@@ -16,6 +16,7 @@ public sealed class TelegramServiceRequestService
     private readonly IEquipmentDiagnosticTelegramOutboundClient _outboundClient;
     private readonly EquipmentDiagnosticTelegramOptions _options;
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
+    private readonly TelegramServiceRequestCardRenderer _cardRenderer;
     private readonly ILogger<TelegramServiceRequestService> _logger;
 
     public TelegramServiceRequestService(
@@ -24,6 +25,7 @@ public sealed class TelegramServiceRequestService
         IEquipmentDiagnosticTelegramOutboundClient outboundClient,
         EquipmentDiagnosticTelegramOptions options,
         TelegramDisplayTimeFormatter timeFormatter,
+        TelegramServiceRequestCardRenderer cardRenderer,
         ILogger<TelegramServiceRequestService>? logger = null)
     {
         _requestStore = requestStore;
@@ -31,6 +33,7 @@ public sealed class TelegramServiceRequestService
         _outboundClient = outboundClient;
         _options = options;
         _timeFormatter = timeFormatter;
+        _cardRenderer = cardRenderer;
         _logger = logger ?? NullLogger<TelegramServiceRequestService>.Instance;
     }
 
@@ -152,24 +155,7 @@ public sealed class TelegramServiceRequestService
             return;
         }
 
-        var userLabel = string.IsNullOrWhiteSpace(update.Username)
-            ? "Telegram user"
-            : $"@{update.Username.Trim().TrimStart('@')}";
-        var phoneSource = request.PhoneNumberSource switch
-        {
-            TelegramUserPhoneNumberSource.TelegramContact => "Telegram",
-            TelegramUserPhoneNumberSource.Manual => "вручную",
-            _ => "не указан"
-        };
-        var text =
-            "🛠 Новая сервисная заявка\n\n" +
-            $"Заявка: #{request.Id}\n" +
-            $"Ошибка: {Title(request)}\n" +
-            $"Пользователь: {userLabel}\n" +
-            "Телефон: сохранён\n" +
-            $"Источник номера: {phoneSource}\n" +
-            $"Время: {_timeFormatter.FormatAbsolute(request.CreatedAt)}\n" +
-            $"Статус: {StatusLabel(request.Status)}";
+        var text = await _cardRenderer.RenderAsync(request, cancellationToken);
 
         try
         {
@@ -178,10 +164,26 @@ public sealed class TelegramServiceRequestService
                 text,
                 parseMode: null,
                 disableWebPagePreview: true,
-                replyMarkup: TelegramServiceRequestQueueService.NewRequestKeyboard(request.Id),
+                replyMarkup: TelegramServiceRequestCardRenderer.Keyboard(request),
                 cancellationToken: cancellationToken);
             if (result.Succeeded)
             {
+                if (result.MessageId is not null)
+                {
+                    var now = DateTimeOffset.UtcNow;
+                    await _requestStore.UpdateNotificationAsync(
+                        new TelegramServiceRequestNotificationUpdate(
+                            request.Id,
+                            notificationChatId.Value,
+                            result.MessageId.Value,
+                            now,
+                            now),
+                        cancellationToken);
+                }
+                else
+                {
+                    _logger.LogWarning("Telegram service request notification returned without a message id.");
+                }
                 _logger.LogInformation("Telegram service request notification sent.");
             }
             else

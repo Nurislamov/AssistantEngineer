@@ -145,12 +145,12 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         CancellationToken cancellationToken)
     {
         var callback = update.CallbackQuery!;
-        await _outboundClient.AnswerCallbackQueryAsync(
-            callback.Id,
-            cancellationToken: cancellationToken);
-
         if (callback.Message?.Chat is null)
         {
+            await _outboundClient.AnswerCallbackQueryAsync(
+                callback.Id,
+                "Ошибка действия",
+                cancellationToken: cancellationToken);
             _counters.RecordInvalidUpdate();
             return Result(
                 EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate,
@@ -174,6 +174,16 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 callback.Id,
                 callback.Data),
             cancellationToken);
+
+        await _outboundClient.AnswerCallbackQueryAsync(
+            callback.Id,
+            adapterResponse.CallbackAnswerText ?? "Готово",
+            cancellationToken: cancellationToken);
+        if (adapterResponse.SuppressOutbound)
+        {
+            _counters.RecordProcessed();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram callback processed.");
+        }
 
         return await SendAdapterResponseAsync(adapterResponse, cancellationToken);
     }

@@ -25,7 +25,9 @@ public sealed record TelegramServiceQueueCommand(
 
 public sealed record TelegramServiceQueueCommandResult(
     string Text,
-    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null);
+    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null,
+    string? CallbackAnswerText = null,
+    bool SuppressGroupMessage = false);
 
 public sealed class TelegramServiceRequestQueueService
 {
@@ -37,6 +39,7 @@ public sealed class TelegramServiceRequestQueueService
     private readonly IEquipmentDiagnosticTelegramOutboundClient _outboundClient;
     private readonly EquipmentDiagnosticTelegramOptions _options;
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
+    private readonly TelegramServiceRequestCardRenderer _cardRenderer;
     private readonly ILogger<TelegramServiceRequestQueueService> _logger;
 
     public TelegramServiceRequestQueueService(
@@ -45,6 +48,7 @@ public sealed class TelegramServiceRequestQueueService
         IEquipmentDiagnosticTelegramOutboundClient outboundClient,
         EquipmentDiagnosticTelegramOptions options,
         TelegramDisplayTimeFormatter timeFormatter,
+        TelegramServiceRequestCardRenderer cardRenderer,
         ILogger<TelegramServiceRequestQueueService>? logger = null)
     {
         _requestStore = requestStore;
@@ -52,6 +56,7 @@ public sealed class TelegramServiceRequestQueueService
         _outboundClient = outboundClient;
         _options = options;
         _timeFormatter = timeFormatter;
+        _cardRenderer = cardRenderer;
         _logger = logger ?? NullLogger<TelegramServiceRequestQueueService>.Instance;
     }
 
@@ -147,12 +152,12 @@ public sealed class TelegramServiceRequestQueueService
         if (_options.ServiceRequests.NotificationChatId is null ||
             update.ChatId != _options.ServiceRequests.NotificationChatId.Value)
         {
-            return Result("Действие доступно в сервисной группе.");
+            return CallbackResult("Действие доступно в сервисной группе.", "Нет доступа");
         }
 
         if (!TryParseCallbackData(update.CallbackData, out var action, out var requestId, out var targetUserId))
         {
-            return Result("Действие недоступно или устарело.");
+            return CallbackResult("Действие недоступно или устарело.", "Ошибка действия");
         }
 
         var actor = update.UserId is null
@@ -160,20 +165,20 @@ public sealed class TelegramServiceRequestQueueService
             : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
         if (actor is null)
         {
-            return Result("Действие недоступно. Сначала откройте бота в личке и нажмите /start.");
+            return CallbackResult("Действие недоступно. Сначала откройте бота в личке и нажмите /start.", "Нет доступа");
         }
         if (!actor.IsEnabled || actor.IsBlocked)
         {
-            return Result("Действие недоступно.");
+            return CallbackResult("Действие недоступно.", "Нет доступа");
         }
         if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
         {
-            return Result(action is "a" or "as"
+            return CallbackResult(action is "a" or "as"
                 ? "Назначать инженера может только Owner или Admin."
-                : "Действие недоступно.");
+                : "Действие недоступно.", "Нет доступа");
         }
 
-        return action switch
+        var result = action switch
         {
             "t" => await TakeAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Take, requestId, null), actor, cancellationToken),
             "a" => await AssignMenuAsync(requestId, actor, cancellationToken),
@@ -182,15 +187,40 @@ public sealed class TelegramServiceRequestQueueService
             "d" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Done, requestId, null), actor, TelegramServiceRequestStatus.Resolved, cancellationToken),
             "x" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Cancel, requestId, null), actor, TelegramServiceRequestStatus.Cancelled, cancellationToken),
             "s" => await StatusAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Status, requestId, null), cancellationToken),
+            "b" => await BackToCardAsync(requestId, cancellationToken),
             _ => Result("Действие недоступно или устарело.")
         };
+
+        if (action == "a" && result.ReplyMarkup is not null)
+        {
+            await EditAssignmentMenuAsync(requestId, result, cancellationToken);
+        }
+        else if (action == "s")
+        {
+            await RefreshRequestCardAsync(requestId, cancellationToken);
+        }
+
+        var answer = action switch
+        {
+            "s" => "Статус обновлён",
+            "c" => result.Text.Contains("отправлен", StringComparison.OrdinalIgnoreCase)
+                ? "Контакт отправлен в личный чат"
+                : result.Text.Contains("Откройте", StringComparison.OrdinalIgnoreCase)
+                    ? "Откройте личный чат с ботом и нажмите /start"
+                    : "Контакт недоступен",
+            _ when result.Text.Contains("недоступ", StringComparison.OrdinalIgnoreCase) ||
+                result.Text.Contains("только", StringComparison.OrdinalIgnoreCase) ||
+                result.Text.Contains("не найден", StringComparison.OrdinalIgnoreCase) => "Ошибка действия",
+            _ => "Готово"
+        };
+        return result with { CallbackAnswerText = answer, SuppressGroupMessage = true };
     }
 
     public static EquipmentDiagnosticTelegramReplyMarkup NewRequestKeyboard(long requestId) =>
         InlineKeyboard(
         [
             [Button("Взять в работу", Callback("t", requestId)), Button("Назначить", Callback("a", requestId))],
-            [Button("Статус", Callback("s", requestId)), Button("Контакт", Callback("c", requestId))],
+            [Button("Контакт", Callback("c", requestId)), Button("Статус", Callback("s", requestId))],
             [Button("Отменить", Callback("x", requestId))]
         ]);
 
@@ -271,9 +301,17 @@ public sealed class TelegramServiceRequestQueueService
             [
                 Button(UserDisplayName(user), CallbackAssign(requestId, user.Id))
             ])
+            .Append(
+            [
+                Button("Назад", Callback("b", requestId))
+            ])
             .ToArray();
+        var assignee = await AssigneeLabelAsync(request.AssignedTelegramUserId, cancellationToken) ?? "не назначен";
         return Result(
-            $"Выберите инженера для заявки #{requestId}:",
+            $"Выберите инженера для заявки #{requestId}:\n\n" +
+            $"Ошибка: {Title(request)}\n" +
+            $"Текущий статус: {TelegramServiceRequestService.StatusLabel(request.Status)}\n" +
+            $"Текущий инженер: {assignee}",
             InlineKeyboard(rows));
     }
 
@@ -319,6 +357,7 @@ public sealed class TelegramServiceRequestQueueService
             "Telegram service request assigned by inline action. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
             contactDelivered);
+        await RefreshRequestCardAsync(updated.Id, cancellationToken);
 
         var text = $"Заявка #{updated.Id} назначена: {UserLabel(target)}.";
         if (!contactDelivered)
@@ -365,6 +404,7 @@ public sealed class TelegramServiceRequestQueueService
             "Telegram service request taken. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
             contactDelivered);
+        await RefreshRequestCardAsync(updated.Id, cancellationToken);
 
         var text = $"Заявка #{updated.Id} взята в работу: {UserLabel(actor)}.";
         if (!contactDelivered)
@@ -415,6 +455,7 @@ public sealed class TelegramServiceRequestQueueService
             "Telegram service request assigned. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
             contactDelivered);
+        await RefreshRequestCardAsync(updated.Id, cancellationToken);
 
         var text = $"Заявка #{updated.Id} назначена: {UserLabel(target)}.";
         if (!contactDelivered)
@@ -474,6 +515,7 @@ public sealed class TelegramServiceRequestQueueService
             "Telegram service request status changed. Status: {Status}; CustomerNotificationSent: {CustomerNotificationSent}.",
             terminalStatus,
             delivered);
+        await RefreshRequestCardAsync(updated.Id, cancellationToken);
         return Result(terminalStatus == TelegramServiceRequestStatus.Resolved
             ? $"Заявка #{request.Id} закрыта."
             : $"Заявка #{request.Id} отменена.");
@@ -628,6 +670,173 @@ public sealed class TelegramServiceRequestQueueService
         }
     }
 
+    private async Task<TelegramServiceQueueCommandResult> BackToCardAsync(
+        long requestId,
+        CancellationToken cancellationToken)
+    {
+        var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+        if (request is null)
+        {
+            return NotFound(requestId);
+        }
+
+        await RefreshRequestCardAsync(requestId, cancellationToken);
+        return Result(await _cardRenderer.RenderAsync(request, cancellationToken));
+    }
+
+    private async Task EditAssignmentMenuAsync(
+        long requestId,
+        TelegramServiceQueueCommandResult menu,
+        CancellationToken cancellationToken)
+    {
+        var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+        if (request is null)
+        {
+            return;
+        }
+
+        if (request.NotificationChatId is not null && request.NotificationMessageId is not null)
+        {
+            var edited = await TryEditAsync(
+                request.NotificationChatId.Value,
+                request.NotificationMessageId.Value,
+                menu.Text,
+                menu.ReplyMarkup,
+                cancellationToken);
+            if (edited)
+            {
+                return;
+            }
+        }
+
+        await SendGroupFallbackAsync(menu.Text, menu.ReplyMarkup, request, saveAsNotification: false, cancellationToken);
+    }
+
+    private async Task<bool> RefreshRequestCardAsync(
+        long requestId,
+        CancellationToken cancellationToken)
+    {
+        var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+        if (request is null)
+        {
+            return false;
+        }
+
+        var text = await _cardRenderer.RenderAsync(request, cancellationToken);
+        var keyboard = TelegramServiceRequestCardRenderer.Keyboard(request);
+        if (request.NotificationChatId is not null && request.NotificationMessageId is not null)
+        {
+            var edited = await TryEditAsync(
+                request.NotificationChatId.Value,
+                request.NotificationMessageId.Value,
+                text,
+                keyboard,
+                cancellationToken);
+            if (edited)
+            {
+                var now = DateTimeOffset.UtcNow;
+                await _requestStore.UpdateNotificationAsync(
+                    new TelegramServiceRequestNotificationUpdate(
+                        request.Id,
+                        request.NotificationChatId.Value,
+                        request.NotificationMessageId.Value,
+                        request.NotificationSentAt ?? now,
+                        now),
+                    cancellationToken);
+                return true;
+            }
+        }
+
+        return await SendGroupFallbackAsync(text, keyboard, request, saveAsNotification: true, cancellationToken);
+    }
+
+    private async Task<bool> TryEditAsync(
+        long chatId,
+        long messageId,
+        string text,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _outboundClient.EditMessageTextAsync(
+                chatId,
+                messageId,
+                text,
+                replyMarkup,
+                cancellationToken);
+            if (!result.Succeeded)
+            {
+                _logger.LogWarning("Telegram service request card edit failed; committed state remains unchanged.");
+            }
+            return result.Succeeded;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request card edit failed; committed state remains unchanged. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return false;
+        }
+    }
+
+    private async Task<bool> SendGroupFallbackAsync(
+        string text,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+        TelegramServiceRequestSnapshot request,
+        bool saveAsNotification,
+        CancellationToken cancellationToken)
+    {
+        var chatId = _options.ServiceRequests.NotificationChatId;
+        if (chatId is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var result = await _outboundClient.SendMessageAsync(
+                chatId.Value,
+                text,
+                parseMode: null,
+                disableWebPagePreview: true,
+                replyMarkup,
+                cancellationToken);
+            if (result.Succeeded && saveAsNotification && result.MessageId is not null)
+            {
+                var now = DateTimeOffset.UtcNow;
+                await _requestStore.UpdateNotificationAsync(
+                    new TelegramServiceRequestNotificationUpdate(
+                        request.Id,
+                        chatId.Value,
+                        result.MessageId.Value,
+                        request.NotificationSentAt ?? now,
+                        now),
+                    cancellationToken);
+            }
+            else if (!result.Succeeded)
+            {
+                _logger.LogWarning("Telegram service request card fallback send failed; committed state remains unchanged.");
+            }
+            return result.Succeeded;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request card fallback send failed; committed state remains unchanged. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return false;
+        }
+    }
+
     private async Task<string?> AssigneeLabelAsync(long? id, CancellationToken cancellationToken)
     {
         if (id is null)
@@ -677,7 +886,7 @@ public sealed class TelegramServiceRequestQueueService
             }
             targetUserId = parsedUserId;
         }
-        else if (parts.Length != 3 || action is not ("t" or "a" or "c" or "d" or "x" or "s"))
+        else if (parts.Length != 3 || action is not ("t" or "a" or "c" or "d" or "x" or "s" or "b"))
         {
             return false;
         }
@@ -714,6 +923,9 @@ public sealed class TelegramServiceRequestQueueService
         string text,
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null) =>
         new(text, replyMarkup);
+
+    private static TelegramServiceQueueCommandResult CallbackResult(string text, string answer) =>
+        new(text, CallbackAnswerText: answer, SuppressGroupMessage: true);
 
     private static string Title(TelegramServiceRequestSnapshot request) =>
         string.IsNullOrWhiteSpace(request.Manufacturer)
