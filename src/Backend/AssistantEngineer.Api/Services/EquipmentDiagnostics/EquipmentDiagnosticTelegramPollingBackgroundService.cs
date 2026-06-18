@@ -54,14 +54,14 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             _logger.LogInformation(
                 "Telegram polling update received. UpdateId: {UpdateId}; ChatType: {ChatType}.",
                 update.UpdateId,
-                SafeChatType(update.Message?.Chat?.Type));
+                SafeChatType(update.Message?.Chat?.Type ?? update.CallbackQuery?.Message?.Chat?.Type));
 
             if (await IsDuplicateMessageAsync(update, cancellationToken))
             {
                 _logger.LogInformation(
                     "Telegram polling duplicate message skipped. UpdateId: {UpdateId}; ChatType: {ChatType}.",
                     update.UpdateId,
-                    SafeChatType(update.Message?.Chat?.Type));
+                    SafeChatType(update.Message?.Chat?.Type ?? update.CallbackQuery?.Message?.Chat?.Type));
                 await _offsetStore.SaveLastProcessedUpdateIdAsync(update.UpdateId, cancellationToken);
                 currentLastProcessed = update.UpdateId;
                 continue;

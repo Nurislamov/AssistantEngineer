@@ -173,6 +173,69 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
     }
 
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
+        string callbackQueryId,
+        string? text = null,
+        bool showAlert = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
+            string.IsNullOrWhiteSpace(callbackQueryId) ||
+            !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
+            baseUri.Scheme != Uri.UriSchemeHttps)
+        {
+            return Failed();
+        }
+
+        var endpoint = new Uri(
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/answerCallbackQuery");
+        var payload = new Dictionary<string, object?>
+        {
+            ["callback_query_id"] = callbackQueryId,
+            ["show_alert"] = showAlert
+        };
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            payload["text"] = text;
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
+
+        try
+        {
+            _logger.LogInformation("Answering Telegram callback query.");
+            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram callback query answered.");
+            }
+
+            _logger.LogWarning("Telegram callback query answer failed with non-success status code.");
+            return Failed();
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Telegram callback query answer timed out.");
+            return Failed();
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                "Telegram callback query answer failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return Failed();
+        }
+    }
+
     private static EquipmentDiagnosticTelegramOutboundResult Failed() =>
         new(false, "Telegram outbound send failed.");
 
@@ -191,6 +254,18 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                     {
                         ["text"] = button.Text,
                         ["request_contact"] = button.RequestContact
+                    })
+                    .ToArray())
+                .ToArray();
+        }
+        if (replyMarkup.InlineKeyboard is { Count: > 0 })
+        {
+            payload["inline_keyboard"] = replyMarkup.InlineKeyboard
+                .Select(row => row
+                    .Select(button => new Dictionary<string, object?>
+                    {
+                        ["text"] = button.Text,
+                        ["callback_data"] = button.CallbackData
                     })
                     .ToArray())
                 .ToArray();

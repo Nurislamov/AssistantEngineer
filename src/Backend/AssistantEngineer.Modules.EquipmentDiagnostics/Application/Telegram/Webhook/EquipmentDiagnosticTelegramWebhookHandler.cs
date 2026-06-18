@@ -73,6 +73,11 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         TelegramWebhookUpdateDto update,
         CancellationToken cancellationToken)
     {
+        if (update.CallbackQuery is not null)
+        {
+            return await ProcessCallbackAsync(update, cancellationToken);
+        }
+
         if (update.Message?.Chat is null ||
             (string.IsNullOrWhiteSpace(update.Message.Text) &&
              string.IsNullOrWhiteSpace(update.Message.Contact?.PhoneNumber)))
@@ -100,6 +105,83 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 update.Message.Chat.Type),
             cancellationToken);
 
+        if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)
+        {
+            _counters.RecordIgnored();
+            _counters.RecordRejectedUnauthorized();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Ignored, "Telegram update was ignored by adapter policy.");
+        }
+
+        if (adapterResponse.OutboundMessages.Count == 0 ||
+            adapterResponse.OutboundMessages.Any(message => string.IsNullOrWhiteSpace(message.Text)))
+        {
+            _counters.RecordInvalidUpdate();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram adapter produced no user-facing response.");
+        }
+
+        foreach (var message in adapterResponse.OutboundMessages)
+        {
+            var outbound = await _outboundClient.SendMessageAsync(
+                adapterResponse.ChatId,
+                message.Text,
+                message.ParseMode,
+                message.DisableWebPagePreview,
+                message.ReplyMarkup,
+                cancellationToken);
+
+            if (!outbound.Succeeded)
+            {
+                _counters.RecordOutboundSendFailure();
+                return Result(EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed, "Telegram outbound send failed.");
+            }
+        }
+
+        _counters.RecordProcessed();
+        return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
+    }
+
+    private async Task<EquipmentDiagnosticTelegramWebhookResult> ProcessCallbackAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken)
+    {
+        var callback = update.CallbackQuery!;
+        await _outboundClient.AnswerCallbackQueryAsync(
+            callback.Id,
+            cancellationToken: cancellationToken);
+
+        if (callback.Message?.Chat is null)
+        {
+            _counters.RecordInvalidUpdate();
+            return Result(
+                EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate,
+                "Telegram callback query does not contain a supported message.");
+        }
+
+        var adapterResponse = await _adapter.HandleAsync(
+            new EquipmentDiagnosticTelegramUpdate(
+                update.UpdateId,
+                callback.Message.Chat.Id,
+                callback.From.Username,
+                Text: null,
+                callback.Message.MessageId,
+                ReceivedAt: null,
+                callback.From.Id,
+                callback.From.FirstName,
+                callback.From.LastName,
+                ContactPhoneNumber: null,
+                ContactUserId: null,
+                callback.Message.Chat.Type,
+                callback.Id,
+                callback.Data),
+            cancellationToken);
+
+        return await SendAdapterResponseAsync(adapterResponse, cancellationToken);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramWebhookResult> SendAdapterResponseAsync(
+        EquipmentDiagnosticTelegramResponse adapterResponse,
+        CancellationToken cancellationToken)
+    {
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)
         {
             _counters.RecordIgnored();

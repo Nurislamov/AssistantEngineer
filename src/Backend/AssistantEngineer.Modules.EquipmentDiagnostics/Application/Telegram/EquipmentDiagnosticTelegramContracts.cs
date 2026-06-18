@@ -59,7 +59,9 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? LastName = null,
     string? ContactPhoneNumber = null,
     long? ContactUserId = null,
-    string? ChatType = null);
+    string? ChatType = null,
+    string? CallbackQueryId = null,
+    string? CallbackData = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,
@@ -98,8 +100,13 @@ public sealed record EquipmentDiagnosticTelegramReplyMarkup(
     IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>? Keyboard = null,
     bool? ResizeKeyboard = null,
     bool? OneTimeKeyboard = null,
-    bool? RemoveKeyboard = null);
+    bool? RemoveKeyboard = null,
+    IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>>? InlineKeyboard = null);
 
 public sealed record EquipmentDiagnosticTelegramKeyboardButton(
     string Text,
     bool RequestContact = false);
+
+public sealed record EquipmentDiagnosticTelegramInlineKeyboardButton(
+    string Text,
+    string CallbackData);

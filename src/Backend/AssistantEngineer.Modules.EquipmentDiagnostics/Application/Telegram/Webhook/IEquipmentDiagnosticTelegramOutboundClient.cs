@@ -15,4 +15,13 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
     Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
         IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
         CancellationToken cancellationToken = default);
+
+    Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
+        string callbackQueryId,
+        string? text = null,
+        bool showAlert = false,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram callback answer transport is not configured."));
 }

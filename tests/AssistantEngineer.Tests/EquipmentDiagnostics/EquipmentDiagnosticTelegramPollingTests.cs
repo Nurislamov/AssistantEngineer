@@ -50,6 +50,44 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
     }
 
     [Fact]
+    public async Task PollOnceRoutesCallbackQueryThroughDurableUpdateOffset()
+    {
+        var callback = new TelegramWebhookUpdateDto(
+            12,
+            Message: null,
+            new TelegramWebhookCallbackQueryDto(
+                "callback-12",
+                new TelegramWebhookUserDto(4, "engineer"),
+                new TelegramWebhookMessageDto(
+                    7,
+                    Text: null,
+                    new TelegramWebhookChatDto(-1001, null, "supergroup"),
+                    From: null,
+                    Date: null),
+                "sr:s:1"));
+        var inbound = new FakeInboundClient([callback], blockGetUpdates: false);
+        var handler = new FakeWebhookHandler();
+        var offsetStore = new FakeOffsetStore();
+        var service = CreateService(
+            EnabledOptions() with
+            {
+                InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling,
+                AllowedUpdates = ["message", "callback_query"]
+            },
+            inbound,
+            handler,
+            offsetStore,
+            new FakeProcessedMessageStore());
+
+        var lastProcessed = await service.PollOnceAsync(11);
+
+        Assert.Equal(12, lastProcessed);
+        Assert.Equal(12, offsetStore.LastSavedUpdateId);
+        Assert.Equal([12], handler.HandledUpdateIds);
+        Assert.Equal(["message", "callback_query"], inbound.LastAllowedUpdates);
+    }
+
+    [Fact]
     public async Task PollingServiceDeletesWebhookOnStartupWhenConfigured()
     {
         var inbound = new FakeInboundClient([], blockGetUpdates: true);
@@ -421,6 +459,7 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
         public long? LastOffset { get; private set; }
         public int? LastLimit { get; private set; }
         public int? LastTimeoutSeconds { get; private set; }
+        public IReadOnlyCollection<string> LastAllowedUpdates { get; private set; } = [];
         public bool DeleteWebhookDropPendingUpdates { get; private set; }
 
         public async Task<IReadOnlyList<TelegramWebhookUpdateDto>> GetUpdatesAsync(
@@ -433,6 +472,7 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             LastOffset = offset;
             LastLimit = limit;
             LastTimeoutSeconds = timeoutSeconds;
+            LastAllowedUpdates = allowedUpdates;
             var call = Interlocked.Increment(ref _getUpdatesCalls);
             if (ThrowOnFirstGetUpdates && call == 1)
             {

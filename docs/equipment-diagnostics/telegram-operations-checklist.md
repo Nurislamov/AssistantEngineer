@@ -66,6 +66,14 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Verify group command forms with bot suffixes, such as `/take@BotUsername 2`, work.
 - Verify `/queue`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact` are absent from
   the global command menu.
+- Verify each new service request group notification has inline buttons for take, assign, status, contact, and
+  cancellation. Confirm callback payloads contain no phone, username, raw chat id, token, or secret.
+- Verify `/queue` remains readable text and adds compact inline controls for active requests.
+- Verify every inline press clears the Telegram spinner and enforces the same role, assignment, and service-group
+  checks as its ED-23C command fallback.
+- Verify the assign button lists only enabled, non-blocked Engineer/Admin/Owner records from `TelegramUsers`.
+- Verify malformed or stale callbacks are acknowledged safely without changing request state.
+- Verify ED-23D has no user/role administration buttons; that scope is deferred to ED-23E.
 - Verify history output and stored records do not include phone numbers, chat IDs, Telegram user IDs, internal ids,
   token/secret values, full incoming text, or full bot response text.
 - Verify Consumer diagnostic replies do not include confidence, source, internal traces, `Response shortened`,

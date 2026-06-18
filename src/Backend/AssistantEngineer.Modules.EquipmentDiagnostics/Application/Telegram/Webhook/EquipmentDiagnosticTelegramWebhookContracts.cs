@@ -25,7 +25,7 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public int SendMessageTimeoutSeconds { get; init; } = 10;
     public string TelegramApiBaseUrl { get; init; } = "https://api.telegram.org";
     public bool DropPendingUpdatesOnSetWebhook { get; init; }
-    public IReadOnlyCollection<string> AllowedUpdates { get; init; } = ["message"];
+    public IReadOnlyCollection<string> AllowedUpdates { get; init; } = ["message", "callback_query"];
     public EquipmentDiagnosticTelegramPollingOptions Polling { get; init; } = new();
     public EquipmentDiagnosticTelegramCommandMenuOptions Commands { get; init; } = new();
 
@@ -59,7 +59,8 @@ public sealed record EquipmentDiagnosticTelegramPollingOptions
 
 public sealed record TelegramWebhookUpdateDto(
     [property: JsonPropertyName("update_id")] long UpdateId,
-    [property: JsonPropertyName("message")] TelegramWebhookMessageDto? Message);
+    [property: JsonPropertyName("message")] TelegramWebhookMessageDto? Message,
+    [property: JsonPropertyName("callback_query")] TelegramWebhookCallbackQueryDto? CallbackQuery = null);
 
 public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("message_id")] long MessageId,
@@ -83,6 +84,12 @@ public sealed record TelegramWebhookUserDto(
 public sealed record TelegramWebhookContactDto(
     [property: JsonPropertyName("phone_number")] string PhoneNumber,
     [property: JsonPropertyName("user_id")] long? UserId);
+
+public sealed record TelegramWebhookCallbackQueryDto(
+    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("from")] TelegramWebhookUserDto From,
+    [property: JsonPropertyName("message")] TelegramWebhookMessageDto? Message,
+    [property: JsonPropertyName("data")] string? Data);
 
 public enum EquipmentDiagnosticTelegramWebhookStatus
 {

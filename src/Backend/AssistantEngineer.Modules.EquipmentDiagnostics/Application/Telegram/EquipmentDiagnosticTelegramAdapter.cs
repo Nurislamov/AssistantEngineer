@@ -55,6 +55,18 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
         }
 
+        if (!string.IsNullOrWhiteSpace(update.CallbackQueryId))
+        {
+            var result = _serviceRequestQueueService is null
+                ? new TelegramServiceQueueCommandResult("Действие недоступно или устарело.")
+                : await _serviceRequestQueueService.HandleCallbackAsync(update, cancellationToken);
+            return Response(
+                update.ChatId,
+                result.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: result.ReplyMarkup);
+        }
+
         if (TelegramServiceRequestQueueService.TryParse(update.Text, out var queueCommand))
         {
             var result = _serviceRequestQueueService is null
@@ -63,7 +75,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return Response(
                 update.ChatId,
                 result.Text,
-                EquipmentDiagnosticTelegramResponseKind.Reply);
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: result.ReplyMarkup);
         }
 
         var access = await _accessService.ResolveAccessAsync(update, cancellationToken);

@@ -204,6 +204,27 @@ not include phone values, raw chat ids, Telegram user ids, incoming command text
 
 ED-23C still excludes Mini App, web UI, inline buttons, comments, photos/OCR, SLA, priorities, and full CRM workflow.
 
+## ED-23D Inline Service Actions
+
+ED-23D adds Telegram inline keyboards to new service-request notifications and active `/queue` results. New request
+cards show `Взять в работу`, `Назначить`, `Статус`, `Контакт`, and `Отменить`. Queue output remains readable text and
+adds compact action rows for up to five active requests. Existing ED-23C text commands remain supported as fallback.
+
+Telegram `callback_query` updates are accepted by polling and webhook delivery, pass through the same durable update
+offset, and are acknowledged with `answerCallbackQuery` so the Telegram spinner is cleared. Callback data uses short
+deterministic values such as `sr:t:12` and `sr:as:12:34`; it contains no phone, username, chat id, token, or secret and
+stays within Telegram's 64-byte limit. Unknown or malformed callback data is acknowledged and handled safely.
+
+`Назначить` is available only to Owner/Admin and opens an inline list of enabled, non-blocked `Engineer`, `Admin`, and
+`Owner` users from `TelegramUsers`. Selecting a user performs the same assignment, customer notification, and private
+contact delivery as `/assign`. All other button actions reuse ED-23C authorization rules. Button visibility never
+grants access.
+
+Full customer phone values are sent only to an authorized private chat. Service-group messages and callback payloads
+never include them. ED-23D does not edit old request cards or store Telegram notification message ids; those are
+deferred. It also does not add Mini App, web UI, button-based user/role administration, comments, photos/OCR, SLA, or
+priorities.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

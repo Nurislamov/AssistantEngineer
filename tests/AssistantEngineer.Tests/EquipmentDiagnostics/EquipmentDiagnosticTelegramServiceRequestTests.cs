@@ -144,6 +144,18 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         Assert.Contains("Gree H5", notification.Text, StringComparison.Ordinal);
         Assert.Contains("17.06.2026 22:45", notification.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, notification.Text, StringComparison.Ordinal);
+        var inlineButtons = notification.ReplyMarkup?.InlineKeyboard?
+            .SelectMany(row => row)
+            .ToArray() ?? [];
+        Assert.Equal(
+            ["Взять в работу", "Назначить", "Статус", "Контакт", "Отменить"],
+            inlineButtons.Select(button => button.Text).ToArray());
+        Assert.All(inlineButtons, button =>
+        {
+            Assert.StartsWith("sr:", button.CallbackData, StringComparison.Ordinal);
+            Assert.True(System.Text.Encoding.UTF8.GetByteCount(button.CallbackData) <= 64);
+            Assert.DoesNotContain(FullPhone, button.CallbackData, StringComparison.Ordinal);
+        });
         Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
     }
 
@@ -333,7 +345,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
 
     private sealed class FakeOutbound(bool succeeds) : IEquipmentDiagnosticTelegramOutboundClient
     {
-        public List<(long ChatId, string Text)> Messages { get; } = [];
+        public List<(long ChatId, string Text, EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup)> Messages { get; } = [];
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -343,7 +355,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
             CancellationToken cancellationToken = default)
         {
-            Messages.Add((chatId, text));
+            Messages.Add((chatId, text, replyMarkup));
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(succeeds, succeeds ? "Sent." : "Failed."));
         }
 

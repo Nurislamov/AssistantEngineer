@@ -113,6 +113,16 @@ to the assigned operator. `/contact <id>` is restricted to the assigned Engineer
 are never sent to the group or logs. Failed private notifications do not roll back assignment or status changes.
 Apply the `AddTelegramServiceRequestAssignments` migration before using these commands.
 
+ED-23D adds inline action keyboards under new service request notifications and compact controls after `/queue`.
+Polling requests both `message` and `callback_query` update types. Every callback is acknowledged through
+`answerCallbackQuery`, then routed through the existing ED-23C role and service-group checks. The short callback
+payload contains only an action code plus internal request/user ids.
+
+The `Назначить` button lists enabled, non-blocked Telegram users with `Engineer`, `Admin`, or `Owner` roles. Contact
+delivery remains private to the assigned Engineer or Owner/Admin; no full phone is rendered in the group or callback
+data. ED-23C commands remain operational fallback. No database migration or new environment variable is required for
+ED-23D.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -156,6 +166,10 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   for Owner/Admin through `/help` or manual input.
 - Confirm `/queue`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact` work only in
   the configured service group and remain absent from the global command menu.
+- Confirm new request cards contain inline actions and `/queue` includes compact request buttons. Press each action
+  and verify Telegram clears the callback spinner.
+- Confirm `Назначить` shows only enabled, non-blocked Engineer/Admin/Owner users and that every callback rechecks
+  actor permissions.
 - Confirm each Engineer opened the bot privately with `/start` before role assignment. Verify contact delivery goes
   only to the assigned Engineer or Owner/Admin private chat and never displays the full phone in the service group.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print

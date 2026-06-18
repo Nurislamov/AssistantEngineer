@@ -87,6 +87,55 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     }
 
     [Fact]
+    public async Task SendMessageSerializesInlineKeyboardCallbackData()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK);
+        var client = CreateClient(handler, EnabledOptions());
+
+        await client.SendMessageAsync(
+            42,
+            "Service request",
+            null,
+            true,
+            new EquipmentDiagnosticTelegramReplyMarkup(
+                InlineKeyboard:
+                [
+                    [
+                        new EquipmentDiagnosticTelegramInlineKeyboardButton("Взять в работу", "sr:t:12"),
+                        new EquipmentDiagnosticTelegramInlineKeyboardButton("Статус", "sr:s:12")
+                    ]
+                ]));
+
+        using var payload = JsonDocument.Parse(handler.Body!);
+        var buttons = payload.RootElement.GetProperty("reply_markup").GetProperty("inline_keyboard")[0];
+        Assert.Equal("Взять в работу", buttons[0].GetProperty("text").GetString());
+        Assert.Equal("sr:t:12", buttons[0].GetProperty("callback_data").GetString());
+        Assert.Equal("sr:s:12", buttons[1].GetProperty("callback_data").GetString());
+        Assert.False(payload.RootElement.GetProperty("reply_markup").TryGetProperty("keyboard", out _));
+    }
+
+    [Fact]
+    public async Task AnswerCallbackQueryUsesSafePayloadAndDoesNotLogCallbackData()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK);
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramOutboundClient>();
+        var client = CreateClient(handler, EnabledOptions(), logger);
+
+        var result = await client.AnswerCallbackQueryAsync("callback-secret-id", "Готово");
+
+        Assert.True(result.Succeeded);
+        Assert.Contains("/bottest-token-value/answerCallbackQuery", handler.RequestUri!.AbsolutePath, StringComparison.Ordinal);
+        using var payload = JsonDocument.Parse(handler.Body!);
+        Assert.Equal("callback-secret-id", payload.RootElement.GetProperty("callback_query_id").GetString());
+        Assert.Equal("Готово", payload.RootElement.GetProperty("text").GetString());
+        Assert.False(payload.RootElement.GetProperty("show_alert").GetBoolean());
+        var logged = string.Join(Environment.NewLine, logger.Messages.Concat(logger.Scopes));
+        Assert.DoesNotContain("callback-secret-id", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("Готово", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("test-token-value", logged, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task SendMessageLogsDoNotExposeSecretsChatIdOrText()
     {
         var logger = new CapturingLogger<EquipmentDiagnosticTelegramOutboundClient>();

@@ -23,11 +23,14 @@ public sealed record TelegramServiceQueueCommand(
     long? RequestId,
     string? Username);
 
-public sealed record TelegramServiceQueueCommandResult(string Text);
+public sealed record TelegramServiceQueueCommandResult(
+    string Text,
+    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null);
 
 public sealed class TelegramServiceRequestQueueService
 {
-    private const int QueueLimit = 25;
+    private const int QueueLimit = 10;
+    private const int QueueButtonLimit = 5;
 
     private readonly ITelegramServiceRequestStore _requestStore;
     private readonly ITelegramUserStore _userStore;
@@ -126,7 +129,7 @@ public sealed class TelegramServiceRequestQueueService
 
         return command.Kind switch
         {
-            TelegramServiceQueueCommandKind.Queue => Result(await FormatQueueAsync(cancellationToken)),
+            TelegramServiceQueueCommandKind.Queue => await FormatQueueResultAsync(cancellationToken),
             TelegramServiceQueueCommandKind.Take => await TakeAsync(command, actor, cancellationToken),
             TelegramServiceQueueCommandKind.Assign => await AssignAsync(command, actor, cancellationToken),
             TelegramServiceQueueCommandKind.Done => await CloseAsync(command, actor, TelegramServiceRequestStatus.Resolved, cancellationToken),
@@ -137,14 +140,86 @@ public sealed class TelegramServiceRequestQueueService
         };
     }
 
-    private async Task<string> FormatQueueAsync(CancellationToken cancellationToken)
+    public async Task<TelegramServiceQueueCommandResult> HandleCallbackAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        CancellationToken cancellationToken = default)
+    {
+        if (_options.ServiceRequests.NotificationChatId is null ||
+            update.ChatId != _options.ServiceRequests.NotificationChatId.Value)
+        {
+            return Result("Действие доступно в сервисной группе.");
+        }
+
+        if (!TryParseCallbackData(update.CallbackData, out var action, out var requestId, out var targetUserId))
+        {
+            return Result("Действие недоступно или устарело.");
+        }
+
+        var actor = update.UserId is null
+            ? null
+            : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+        if (actor is null)
+        {
+            return Result("Действие недоступно. Сначала откройте бота в личке и нажмите /start.");
+        }
+        if (!actor.IsEnabled || actor.IsBlocked)
+        {
+            return Result("Действие недоступно.");
+        }
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        {
+            return Result(action is "a" or "as"
+                ? "Назначать инженера может только Owner или Admin."
+                : "Действие недоступно.");
+        }
+
+        return action switch
+        {
+            "t" => await TakeAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Take, requestId, null), actor, cancellationToken),
+            "a" => await AssignMenuAsync(requestId, actor, cancellationToken),
+            "as" => await AssignSelectedAsync(requestId, targetUserId, actor, cancellationToken),
+            "c" => await ContactAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Contact, requestId, null), actor, cancellationToken),
+            "d" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Done, requestId, null), actor, TelegramServiceRequestStatus.Resolved, cancellationToken),
+            "x" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Cancel, requestId, null), actor, TelegramServiceRequestStatus.Cancelled, cancellationToken),
+            "s" => await StatusAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Status, requestId, null), cancellationToken),
+            _ => Result("Действие недоступно или устарело.")
+        };
+    }
+
+    public static EquipmentDiagnosticTelegramReplyMarkup NewRequestKeyboard(long requestId) =>
+        InlineKeyboard(
+        [
+            [Button("Взять в работу", Callback("t", requestId)), Button("Назначить", Callback("a", requestId))],
+            [Button("Статус", Callback("s", requestId)), Button("Контакт", Callback("c", requestId))],
+            [Button("Отменить", Callback("x", requestId))]
+        ]);
+
+    private async Task<TelegramServiceQueueCommandResult> FormatQueueResultAsync(
+        CancellationToken cancellationToken)
     {
         var requests = await _requestStore.GetActiveAsync(QueueLimit, cancellationToken);
         if (requests.Count == 0)
         {
-            return "Активных сервисных заявок нет.";
+            return Result("Активных сервисных заявок нет.");
         }
 
+        var text = await FormatQueueAsync(requests, cancellationToken);
+        var rows = requests
+            .Take(QueueButtonLimit)
+            .Select(request => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+            [
+                Button($"#{request.Id} Статус", Callback("s", request.Id)),
+                Button($"#{request.Id} Взять", Callback("t", request.Id)),
+                Button($"#{request.Id} Назначить", Callback("a", request.Id))
+            ])
+            .ToArray();
+        return Result(text, InlineKeyboard(rows));
+    }
+
+    private async Task<string> FormatQueueAsync(
+        IReadOnlyList<TelegramServiceRequestSnapshot> requests,
+        CancellationToken cancellationToken)
+    {
         var builder = new StringBuilder("Сервисные заявки\n\n");
         foreach (var request in requests)
         {
@@ -159,6 +234,98 @@ public sealed class TelegramServiceRequestQueueService
         }
 
         return builder.ToString().TrimEnd();
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> AssignMenuAsync(
+        long requestId,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        {
+            return Result("Назначать инженера может только Owner или Admin.");
+        }
+        var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+        if (request is null)
+        {
+            return NotFound(requestId);
+        }
+        if (request.Status is TelegramServiceRequestStatus.Resolved or TelegramServiceRequestStatus.Cancelled)
+        {
+            return Result($"Заявка #{request.Id}: {TelegramServiceRequestService.StatusLabel(request.Status)}. Повторное открытие не поддерживается.");
+        }
+
+        var users = await _userStore.ListUsersAsync(100, cancellationToken);
+        var candidates = users
+            .Where(user => user.IsEnabled && !user.IsBlocked)
+            .Where(user => user.Role is TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner)
+            .OrderBy(UserDisplayName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        if (candidates.Length == 0)
+        {
+            return Result("Нет доступных инженеров. Попросите инженера открыть бота и нажать /start, затем назначьте роль Engineer.");
+        }
+
+        var rows = candidates
+            .Select(user => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+            [
+                Button(UserDisplayName(user), CallbackAssign(requestId, user.Id))
+            ])
+            .ToArray();
+        return Result(
+            $"Выберите инженера для заявки #{requestId}:",
+            InlineKeyboard(rows));
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> AssignSelectedAsync(
+        long requestId,
+        long? targetUserId,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        {
+            return Result("Назначать инженера может только Owner или Admin.");
+        }
+        if (targetUserId is null)
+        {
+            return Result("Инженер не найден.");
+        }
+
+        var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+        if (request is null)
+        {
+            return NotFound(requestId);
+        }
+        if (request.Status is TelegramServiceRequestStatus.Resolved or TelegramServiceRequestStatus.Cancelled)
+        {
+            return Result($"Заявка #{request.Id}: {TelegramServiceRequestService.StatusLabel(request.Status)}. Повторное открытие не поддерживается.");
+        }
+
+        var target = await _userStore.GetByIdAsync(targetUserId.Value, cancellationToken);
+        if (target is null || !target.IsEnabled || target.IsBlocked)
+        {
+            return Result("Инженер не найден. Попросите его открыть бота и нажать /start, затем назначьте роль Engineer.");
+        }
+        if (target.Role is not (TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner))
+        {
+            return Result("Пользователь найден, но не имеет роли Engineer.");
+        }
+
+        var updated = await AssignInternalAsync(request, target, actor, cancellationToken);
+        var customerDelivered = await NotifyCustomerAsync(updated, cancellationToken);
+        var contactDelivered = await SendContactPrivatelyAsync(updated, target, cancellationToken);
+        _logger.LogInformation(
+            "Telegram service request assigned by inline action. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
+            customerDelivered,
+            contactDelivered);
+
+        var text = $"Заявка #{updated.Id} назначена: {UserLabel(target)}.";
+        if (!contactDelivered)
+        {
+            text += $"\nИнженер должен открыть личный чат с ботом и нажать /start, затем нажать «Контакт» или выполнить /contact {updated.Id}.";
+        }
+        return Result(text);
     }
 
     private async Task<TelegramServiceQueueCommandResult> TakeAsync(
@@ -477,7 +644,76 @@ public sealed class TelegramServiceRequestQueueService
     private static TelegramServiceQueueCommandResult NotFound(long id) =>
         Result($"Заявка #{id} не найдена.");
 
-    private static TelegramServiceQueueCommandResult Result(string text) => new(text);
+    private static bool TryParseCallbackData(
+        string? data,
+        out string action,
+        out long requestId,
+        out long? targetUserId)
+    {
+        action = string.Empty;
+        requestId = 0;
+        targetUserId = null;
+        if (string.IsNullOrWhiteSpace(data) ||
+            System.Text.Encoding.UTF8.GetByteCount(data) > 64)
+        {
+            return false;
+        }
+
+        var parts = data.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length is < 3 or > 4 ||
+            parts[0] != "sr" ||
+            !long.TryParse(parts[2], out requestId) ||
+            requestId <= 0)
+        {
+            return false;
+        }
+
+        action = parts[1];
+        if (action == "as")
+        {
+            if (parts.Length != 4 || !long.TryParse(parts[3], out var parsedUserId) || parsedUserId <= 0)
+            {
+                return false;
+            }
+            targetUserId = parsedUserId;
+        }
+        else if (parts.Length != 3 || action is not ("t" or "a" or "c" or "d" or "x" or "s"))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static string Callback(string action, long requestId) => $"sr:{action}:{requestId}";
+
+    private static string CallbackAssign(long requestId, long userId) => $"sr:as:{requestId}:{userId}";
+
+    private static EquipmentDiagnosticTelegramInlineKeyboardButton Button(string text, string callbackData) =>
+        new(text, callbackData);
+
+    private static EquipmentDiagnosticTelegramReplyMarkup InlineKeyboard(
+        IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>> rows) =>
+        new(InlineKeyboard: rows);
+
+    private static string UserDisplayName(TelegramUserSnapshot user)
+    {
+        var fullName = string.Join(
+            " ",
+            new[] { user.FirstName, user.LastName }.Where(value => !string.IsNullOrWhiteSpace(value)));
+        if (!string.IsNullOrWhiteSpace(fullName))
+        {
+            return fullName;
+        }
+        return string.IsNullOrWhiteSpace(user.Username)
+            ? "Telegram user"
+            : $"@{user.Username.Trim().TrimStart('@')}";
+    }
+
+    private static TelegramServiceQueueCommandResult Result(
+        string text,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null) =>
+        new(text, replyMarkup);
 
     private static string Title(TelegramServiceRequestSnapshot request) =>
         string.IsNullOrWhiteSpace(request.Manufacturer)

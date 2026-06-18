@@ -178,6 +178,7 @@ public sealed class TelegramServiceRequestService
                 text,
                 parseMode: null,
                 disableWebPagePreview: true,
+                replyMarkup: TelegramServiceRequestQueueService.NewRequestKeyboard(request.Id),
                 cancellationToken: cancellationToken);
             if (result.Succeeded)
             {

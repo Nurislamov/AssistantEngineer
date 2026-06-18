@@ -26,6 +26,8 @@
 - Review `DeniedChatIds` and deny-wins-over-allow behavior.
 - Confirm each Engineer has opened the bot privately with `/start` and received the reviewed `Engineer` role before
   using queue commands in the service group.
+- After ED-23D deployment, verify polling requests `callback_query` updates, new request cards show inline actions,
+  and Telegram callback spinners clear after each press. No new environment value or migration is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

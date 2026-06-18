@@ -92,6 +92,62 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task CallbackQueryIsRoutedAndAnsweredBeforeGroupResponse()
+    {
+        var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "Заявка #1 взята в работу.");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+        var callbackUpdate = new TelegramWebhookUpdateDto(
+            7,
+            Message: null,
+            new TelegramWebhookCallbackQueryDto(
+                "callback-1",
+                new TelegramWebhookUserDto(77, "engineer", "Иван", "Иванов"),
+                new TelegramWebhookMessageDto(
+                    8,
+                    Text: null,
+                    new TelegramWebhookChatDto(-1001, null, "supergroup"),
+                    From: null,
+                    Date: null),
+                "sr:t:1"));
+
+        var result = await handler.HandleAsync(callbackUpdate, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal("callback-1", outbound.CallbackQueryId);
+        Assert.Equal(1, outbound.CallCount);
+        Assert.NotNull(adapter.LastUpdate);
+        Assert.Equal(-1001, adapter.LastUpdate.ChatId);
+        Assert.Equal(77, adapter.LastUpdate.UserId);
+        Assert.Equal("sr:t:1", adapter.LastUpdate.CallbackData);
+        Assert.Equal("callback-1", adapter.LastUpdate.CallbackQueryId);
+    }
+
+    [Fact]
+    public async Task CallbackWithoutMessageIsStillAnsweredAndRejectedSafely()
+    {
+        var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "unused");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+        var callbackUpdate = new TelegramWebhookUpdateDto(
+            7,
+            Message: null,
+            new TelegramWebhookCallbackQueryDto(
+                "callback-2",
+                new TelegramWebhookUserDto(77, "engineer"),
+                Message: null,
+                Data: "broken"));
+
+        var result = await handler.HandleAsync(callbackUpdate, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal(0, adapter.CallCount);
+        Assert.Equal(0, outbound.CallCount);
+    }
+
+    [Fact]
     public async Task UnauthorizedAndIgnoredUpdatesDoNotSendOutbound()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Ignored, string.Empty);
@@ -136,12 +192,14 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         : IEquipmentDiagnosticTelegramAdapter
     {
         public int CallCount { get; private set; }
+        public EquipmentDiagnosticTelegramUpdate? LastUpdate { get; private set; }
 
         public Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
             EquipmentDiagnosticTelegramUpdate update,
             CancellationToken cancellationToken = default)
         {
             CallCount++;
+            LastUpdate = update;
             return Task.FromResult(new EquipmentDiagnosticTelegramResponse(
                 update.ChatId, text, kind, null, true, [], null, messages));
         }
@@ -152,6 +210,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public int CallCount { get; private set; }
         public string? Text { get; private set; }
         public List<string> Texts { get; } = [];
+        public int AnswerCallbackCount { get; private set; }
+        public string? CallbackQueryId { get; private set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -171,5 +231,16 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
             IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Commands set."));
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
+            string callbackQueryId,
+            string? text = null,
+            bool showAlert = false,
+            CancellationToken cancellationToken = default)
+        {
+            AnswerCallbackCount++;
+            CallbackQueryId = callbackQueryId;
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Answered."));
+        }
     }
 }

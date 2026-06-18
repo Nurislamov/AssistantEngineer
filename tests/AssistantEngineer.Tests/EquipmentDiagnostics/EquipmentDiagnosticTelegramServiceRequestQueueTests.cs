@@ -34,6 +34,129 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
     }
 
     [Fact]
+    public async Task QueueResponseIncludesInlineActionsForActiveRequests()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCommandResultAsync("/queue", harness.Engineer);
+        var buttons = InlineButtons(result);
+
+        Assert.Contains(buttons, button => button.Text == $"#{request.Id} Статус" && button.CallbackData == $"sr:s:{request.Id}");
+        Assert.Contains(buttons, button => button.Text == $"#{request.Id} Взять" && button.CallbackData == $"sr:t:{request.Id}");
+        Assert.Contains(buttons, button => button.Text == $"#{request.Id} Назначить" && button.CallbackData == $"sr:a:{request.Id}");
+    }
+
+    [Fact]
+    public async Task CallbackTakeAssignsEngineerAndKeepsPhonePrivate()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCallbackAsync($"sr:t:{request.Id}", harness.Engineer);
+        var updated = await harness.RequestStore.GetByIdAsync(request.Id);
+
+        Assert.Contains("взята в работу", result.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(harness.Engineer.Id, updated?.AssignedTelegramUserId);
+        Assert.Contains(harness.Outbound.Messages, item =>
+            item.ChatId == harness.Customer.TelegramChatId &&
+            item.Text.Contains("Ваша заявка", StringComparison.Ordinal));
+        Assert.Contains(harness.Outbound.Messages, item =>
+            item.ChatId == harness.Engineer.TelegramChatId &&
+            item.Text.Contains(FullPhone, StringComparison.Ordinal));
+        Assert.DoesNotContain(FullPhone, result.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task CallbackAssignMenuAndSelectionEnforceAdminAndAssignPrivately()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+
+        var denied = await harness.HandleCallbackAsync($"sr:a:{request.Id}", harness.Engineer);
+        var consumerDenied = await harness.HandleCallbackAsync($"sr:a:{request.Id}", harness.Consumer);
+        var menu = await harness.HandleCallbackAsync($"sr:a:{request.Id}", harness.Admin);
+        var engineerButton = Assert.Single(
+            InlineButtons(menu),
+            button => button.CallbackData == $"sr:as:{request.Id}:{harness.Engineer.Id}");
+        var assigned = await harness.HandleCallbackAsync(engineerButton.CallbackData, harness.Admin);
+
+        Assert.Contains("только Owner или Admin", denied.Text, StringComparison.Ordinal);
+        Assert.Contains("только Owner или Admin", consumerDenied.Text, StringComparison.Ordinal);
+        Assert.Contains("Выберите инженера", menu.Text, StringComparison.Ordinal);
+        Assert.Equal("@engineer", engineerButton.Text);
+        Assert.Contains("@engineer", assigned.Text, StringComparison.Ordinal);
+        Assert.Equal(harness.Engineer.Id, (await harness.RequestStore.GetByIdAsync(request.Id))?.AssignedTelegramUserId);
+        Assert.Contains(harness.Outbound.Messages, item =>
+            item.ChatId == harness.Engineer.TelegramChatId &&
+            item.Text.Contains(FullPhone, StringComparison.Ordinal));
+        Assert.DoesNotContain(FullPhone, assigned.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task CallbackContactIsPrivateAndRestricted()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+        await harness.HandleCallbackAsync($"sr:t:{request.Id}", harness.Engineer);
+        harness.Outbound.Messages.Clear();
+
+        var denied = await harness.HandleCallbackAsync($"sr:c:{request.Id}", harness.OtherEngineer);
+        var assigned = await harness.HandleCallbackAsync($"sr:c:{request.Id}", harness.Engineer);
+        var admin = await harness.HandleCallbackAsync($"sr:c:{request.Id}", harness.Admin);
+
+        Assert.Contains("только назначенному инженеру", denied.Text, StringComparison.Ordinal);
+        Assert.Equal("Контакт отправлен в личный чат.", assigned.Text);
+        Assert.Equal("Контакт отправлен в личный чат.", admin.Text);
+        Assert.Contains(harness.Outbound.Messages, item => item.ChatId == harness.Engineer.TelegramChatId && item.Text.Contains(FullPhone));
+        Assert.Contains(harness.Outbound.Messages, item => item.ChatId == harness.Admin.TelegramChatId && item.Text.Contains(FullPhone));
+        Assert.DoesNotContain(FullPhone, assigned.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, admin.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task CallbackDoneCancelStatusAndGroupScopeFollowCommandRules()
+    {
+        var harness = await CreateHarnessAsync();
+        var first = await harness.CreateRequestAsync("H5");
+        await harness.HandleCallbackAsync($"sr:t:{first.Id}", harness.Engineer);
+
+        var denied = await harness.HandleCallbackAsync($"sr:d:{first.Id}", harness.OtherEngineer);
+        var status = await harness.HandleCallbackAsync($"sr:s:{first.Id}", harness.Engineer);
+        var resolved = await harness.HandleCallbackAsync($"sr:d:{first.Id}", harness.Engineer);
+
+        Assert.Contains("только назначенный инженер", denied.Text, StringComparison.Ordinal);
+        Assert.Contains("Статус: в работе", status.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, status.Text, StringComparison.Ordinal);
+        Assert.Contains("закрыта", resolved.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramServiceRequestStatus.Resolved, (await harness.RequestStore.GetByIdAsync(first.Id))?.Status);
+
+        var second = await harness.CreateRequestAsync("C5");
+        await harness.HandleCallbackAsync($"sr:t:{second.Id}", harness.Engineer);
+        var cancelled = await harness.HandleCallbackAsync($"sr:x:{second.Id}", harness.Engineer);
+        var outside = await harness.HandleCallbackAsync($"sr:s:{second.Id}", harness.Engineer, chatId: 42);
+
+        Assert.Contains("отменена", cancelled.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramServiceRequestStatus.Cancelled, (await harness.RequestStore.GetByIdAsync(second.Id))?.Status);
+        Assert.Equal("Действие доступно в сервисной группе.", outside.Text);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("bad")]
+    [InlineData("sr:t:nope")]
+    [InlineData("sr:unknown:1")]
+    public async Task InvalidCallbackDataIsHandledSafely(string? data)
+    {
+        var harness = await CreateHarnessAsync();
+
+        var result = await harness.HandleCallbackAsync(data, harness.Engineer);
+
+        Assert.Equal("Действие недоступно или устарело.", result.Text);
+    }
+
+    [Fact]
     public async Task TakeByEngineerAssignsRequestAndSendsCustomerAndContactPrivately()
     {
         var harness = await CreateHarnessAsync();
@@ -351,6 +474,39 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         public Task<string> HandleAsync(string text, TelegramUserSnapshot sender) =>
             HandleRawAsync(text, sender.TelegramUserId!.Value);
 
+        public Task<TelegramServiceQueueCommandResult> HandleCommandResultAsync(
+            string text,
+            TelegramUserSnapshot sender)
+        {
+            Assert.True(TelegramServiceRequestQueueService.TryParse(text, out var command));
+            return Service.HandleAsync(
+                new EquipmentDiagnosticTelegramUpdate(
+                    1,
+                    ServiceGroupId,
+                    sender.Username,
+                    text,
+                    ReceivedAt: FixedNowUtc,
+                    UserId: sender.TelegramUserId,
+                    ChatType: "supergroup"),
+                command);
+        }
+
+        public Task<TelegramServiceQueueCommandResult> HandleCallbackAsync(
+            string? data,
+            TelegramUserSnapshot sender,
+            long chatId = ServiceGroupId) =>
+            Service.HandleCallbackAsync(
+                new EquipmentDiagnosticTelegramUpdate(
+                    1,
+                    chatId,
+                    sender.Username,
+                    Text: null,
+                    ReceivedAt: FixedNowUtc,
+                    UserId: sender.TelegramUserId,
+                    ChatType: "supergroup",
+                    CallbackQueryId: "callback-id",
+                    CallbackData: data));
+
         public async Task<string> HandleRawAsync(string text, long senderTelegramUserId, long chatId = ServiceGroupId)
         {
             Assert.True(TelegramServiceRequestQueueService.TryParse(text, out var command));
@@ -367,6 +523,12 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             return result.Text;
         }
     }
+
+    private static IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton> InlineButtons(
+        TelegramServiceQueueCommandResult result) =>
+        result.ReplyMarkup?.InlineKeyboard?
+            .SelectMany(row => row)
+            .ToArray() ?? [];
 
     private sealed class FixedTimeProvider : TimeProvider
     {
