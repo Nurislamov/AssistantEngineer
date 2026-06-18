@@ -21,6 +21,7 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public bool EnableFreeTextParsing { get; init; }
     public bool RequireExplicitManufacturer { get; init; }
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
+    public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
     public int SendMessageTimeoutSeconds { get; init; } = 10;
     public string TelegramApiBaseUrl { get; init; } = "https://api.telegram.org";
     public bool DropPendingUpdatesOnSetWebhook { get; init; }

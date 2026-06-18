@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 
@@ -52,6 +53,18 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
         if (string.Equals(trimmed, "/last", StringComparison.OrdinalIgnoreCase))
         {
             return Command(EquipmentDiagnosticTelegramCommand.Last);
+        }
+
+        if (string.Equals(trimmed, "/request", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trimmed, TelegramDiagnosticConversationService.ServiceRequestButton, StringComparison.Ordinal))
+        {
+            return Command(EquipmentDiagnosticTelegramCommand.Request);
+        }
+
+        if (string.Equals(trimmed, "/requests", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trimmed, TelegramDiagnosticConversationService.RequestsButton, StringComparison.Ordinal))
+        {
+            return Command(EquipmentDiagnosticTelegramCommand.Requests);
         }
 
         if (string.Equals(trimmed, "/id", StringComparison.OrdinalIgnoreCase) ||

@@ -162,6 +162,23 @@ time zone configuration falls back to `Asia/Tashkent`, logs a sanitized warning,
 history rendering. The relative labels `сегодня` and `вчера` are evaluated in the display time zone; older history
 rows include local date and time, for example `15.06.2026 18:10`.
 
+## ED-23B Service Requests
+
+ED-23B adds a deliberately small service-request foundation, not a CRM. `🛠 Нужен мастер` and hidden `/request`
+create a PostgreSQL-backed `TelegramServiceRequests` row from the current user's latest diagnostic case when a phone
+is saved. `/requests` is in the global command menu and shows the latest five requests owned by the current user.
+Active `New` or `InProgress` requests are unique per diagnostic case.
+
+The optional service group is configured with
+`AssistantEngineer:EquipmentDiagnostics:Telegram:ServiceRequests:NotificationChatId`, or
+`TELEGRAM_SERVICE_REQUESTS_CHAT_ID` in Docker Compose. Request creation succeeds when the group is absent or message
+delivery fails. Notifications contain the diagnostic title, safe username label, phone-saved state, phone source,
+local time, and Russian status. They do not contain the full phone number, raw chat id, Telegram user id, incoming
+text, or bot response.
+
+ED-23B intentionally excludes assignment, engineer status buttons, a global admin queue, CRM workflow, web UI,
+Mini App, and photo/OCR.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

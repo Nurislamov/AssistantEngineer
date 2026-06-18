@@ -13,6 +13,8 @@ public sealed class TelegramDiagnosticConversationService
 {
     public const string NewCodeButton = "🔎 Новый код";
     public const string HistoryButton = "📋 История";
+    public const string ServiceRequestButton = "🛠 Нужен мастер";
+    public const string RequestsButton = "📄 Мои заявки";
     public const string SharePhoneButton = "📞 Поделиться номером Telegram";
     public const string ManualPhoneButton = "✏️ Ввести другой номер";
     public const string ChangePhoneButton = "✏️ Изменить номер";
@@ -69,6 +71,18 @@ public sealed class TelegramDiagnosticConversationService
     {
         var normalized = NormalizeText(text);
         return normalized is "история" or "history";
+    }
+
+    public static bool IsServiceRequestText(string? text)
+    {
+        var normalized = NormalizeText(text);
+        return normalized is "нуженмастер" or "request";
+    }
+
+    public static bool IsRequestsText(string? text)
+    {
+        var normalized = NormalizeText(text);
+        return normalized is "моизаявки" or "requests";
     }
 
     public async Task<TelegramDiagnosticConversationResult> ResetAsync(
@@ -785,7 +799,9 @@ public sealed class TelegramDiagnosticConversationService
         var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>
         {
             new[] { new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton) },
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton) }
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton) },
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(ServiceRequestButton) },
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(RequestsButton) }
         };
 
         if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
@@ -800,6 +816,33 @@ public sealed class TelegramDiagnosticConversationService
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
     }
+
+    public static EquipmentDiagnosticTelegramReplyMarkup ServiceRequestCreatedKeyboard(
+        TelegramUserAccessResult access)
+    {
+        var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>
+        {
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton) },
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton) },
+            new[] { new EquipmentDiagnosticTelegramKeyboardButton(RequestsButton) }
+        };
+        if (access.User?.HasPhoneNumber == true)
+        {
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ChangePhoneButton)]);
+        }
+
+        return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
+    }
+
+    public static EquipmentDiagnosticTelegramReplyMarkup ServiceRequestPhoneKeyboard() =>
+        new(
+            [
+                [new EquipmentDiagnosticTelegramKeyboardButton(SharePhoneButton, RequestContact: true)],
+                [new EquipmentDiagnosticTelegramKeyboardButton(ManualPhoneButton)],
+                [new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton)]
+            ],
+            ResizeKeyboard: true,
+            OneTimeKeyboard: false);
 
     private static EquipmentDiagnosticTelegramReplyMarkup ChoiceKeyboard(
         IReadOnlyList<string> options,

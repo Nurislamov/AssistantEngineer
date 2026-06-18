@@ -46,7 +46,8 @@ internal static class ApplicationModulesRegistration
             PreferredLanguage = telegramOptions.PreferredLanguage,
             EnableFreeTextParsing = telegramOptions.EnableFreeTextParsing,
             RequireExplicitManufacturer = telegramOptions.RequireExplicitManufacturer,
-            DisplayTimeZone = telegramOptions.DisplayTimeZone
+            DisplayTimeZone = telegramOptions.DisplayTimeZone,
+            ServiceRequests = telegramOptions.ServiceRequests
         });
         services.AddHttpClient<IEquipmentDiagnosticTelegramOutboundClient, EquipmentDiagnosticTelegramOutboundClient>(
                 client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)))

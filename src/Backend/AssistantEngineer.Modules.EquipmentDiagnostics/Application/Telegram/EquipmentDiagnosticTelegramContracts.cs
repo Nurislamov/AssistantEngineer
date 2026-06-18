@@ -17,6 +17,8 @@ public enum EquipmentDiagnosticTelegramCommand
     Help,
     History,
     Last,
+    Request,
+    Requests,
     Identity,
     Unsupported
 }
@@ -36,6 +38,13 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public bool EnableFreeTextParsing { get; init; }
     public bool RequireExplicitManufacturer { get; init; }
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
+    public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
+}
+
+public sealed record TelegramServiceRequestOptions
+{
+    public long? NotificationChatId { get; init; }
+    public bool NotifyOnCreate { get; init; } = true;
 }
 
 public sealed record EquipmentDiagnosticTelegramUpdate(

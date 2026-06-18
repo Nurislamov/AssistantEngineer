@@ -12,7 +12,8 @@ public sealed class EquipmentDiagnosticTelegramCommandMenuStartupService : IHost
         new("me", "мой доступ"),
         new("help", "помощь"),
         new("history", "история диагностик"),
-        new("last", "последняя диагностика")
+        new("last", "последняя диагностика"),
+        new("requests", "мои заявки")
     ];
 
     private readonly EquipmentDiagnosticTelegramWebhookOptions _options;

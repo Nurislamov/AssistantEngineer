@@ -32,6 +32,7 @@ AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__DelayAfterErrorSecon
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreFilePath=artifacts/operations/equipment-diagnostics-telegram-processed-messages.txt
 AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__ProcessedMessageStoreMaxEntries=5000
 AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=true
+AssistantEngineer__EquipmentDiagnostics__Telegram__ServiceRequests__NotificationChatId=<service-group-chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=<secret>
 AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<chat-id>
 AssistantEngineer__EquipmentDiagnostics__Telegram__DeniedChatIds__0=<blocked-chat-id>
@@ -77,7 +78,7 @@ not hit. If any chunk fails, the update is reported as outbound failed.
 
 ED-22C also registers a safe global command menu with Telegram Bot API `setMyCommands` during startup when Telegram
 is enabled and `BotToken` is configured. The menu contains `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`,
-and `/last` only. It deliberately does not publish `/admin_help`, `/admin users`, `/admin allow`, `/admin block`,
+`/last`, and `/requests`. It deliberately does not publish `/request`, `/admin_help`, `/admin users`, `/admin allow`, `/admin block`,
 `/admin role`, or parameterized admin commands. Owner/Admin can still open `/admin_help` manually or through `/help`. Set
 `AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup=false` to skip menu synchronization.
 Failure to sync the menu must log a warning and must not stop startup, polling, or webhook fallback.
@@ -92,6 +93,15 @@ secrets. `CreatedAt` is stored in UTC, while `/history` and `/last` render times
 defaulting to `Asia/Tashkent`. Empty or invalid values fall back to `Asia/Tashkent` with a sanitized warning and do
 not crash the bot. Consumer `/last` uses the public-safe Russian summary instead of any saved English technical
 summary; Engineer, Owner, and Admin may see the saved short technical summary.
+
+ED-23B adds the PostgreSQL-backed `TelegramServiceRequests` foundation. After a final diagnosis, the main keyboard
+offers `🛠 Нужен мастер`; hidden `/request` is an alias. A request requires the current user's latest diagnostic case
+and a saved phone. `/requests` shows that user's latest five requests only. Active `New`/`InProgress` requests are
+deduplicated per diagnostic case. The optional `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` Docker variable maps to
+`AssistantEngineer:EquipmentDiagnostics:Telegram:ServiceRequests:NotificationChatId`. If it is empty or notification
+delivery fails, the database request remains created. Group messages include only phone saved/not-saved state and
+phone source, never the full number. ED-23B does not add CRM, assignment, engineer status actions, a global admin
+queue, web UI, Mini App, or photo/OCR.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
@@ -126,12 +136,12 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Store webhook secret only when webhook fallback is enabled.
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
 - Apply the `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`, and
-  `AddTelegramDiagnosticCases` EF migrations before enabling the bot.
+  `AddTelegramDiagnosticCases` and `AddTelegramServiceRequests` EF migrations before enabling the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
-- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and
-  `/last`; `/admin_help` is hidden from the global menu, unavailable to Consumer and Engineer, and still reachable
+- Confirm the global Telegram command menu lists only `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`,
+  `/last`, and `/requests`; `/request` and `/admin_help` are hidden from the global menu, and `/admin_help` remains reachable
   for Owner/Admin through `/help` or manual input.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
   phone numbers, chat IDs, internal ids, or full bot responses.

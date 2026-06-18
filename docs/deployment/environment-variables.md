@@ -17,6 +17,8 @@ Git. Do not put real bot tokens, webhook secrets, domains, or credentials in sou
 | `TELEGRAM_INBOUND_MODE` | Telegram inbound transport | `Polling` |
 | `TELEGRAM_COMMANDS_SYNC_ON_STARTUP` | Sync the safe global Telegram command menu during startup when Telegram is enabled and token is configured | `true` |
 | `TELEGRAM_DISPLAY_TIME_ZONE` | Display time zone for Telegram `/history` and `/last`; invalid or empty values fall back to `Asia/Tashkent` | `Asia/Tashkent` |
+| `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` | Optional Telegram group chat for new service-request notifications | empty placeholder |
+| `TELEGRAM_SERVICE_REQUESTS_NOTIFY_ON_CREATE` | Send group notifications when the service-request chat is configured | `true` |
 | `TELEGRAM_POLLING_ENABLED` | Polling worker enable switch | `false` |
 | `TELEGRAM_ENABLE_CHAT_ID_DISCOVERY` | Temporary `/id` setup switch | `false` |
 | `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID` | Emergency owner bootstrap chat ID | empty placeholder |
@@ -30,14 +32,18 @@ Docker Compose deployments, prefer `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-c
 For direct ASP.NET configuration, use
 `AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId=<telegram-chat-id>`.
 
-Telegram users and diagnostic history are stored in the existing application PostgreSQL database through the
-`TelegramUsers` and `TelegramDiagnosticCases` EF migrations.
+Telegram users, diagnostic history, and service requests are stored in the existing application PostgreSQL database
+through the `TelegramUsers`, `TelegramDiagnosticCases`, and `TelegramServiceRequests` EF migrations.
 No additional `.env` variable is required for ED-21B Russian UX, contact keyboard, technical response splitting, or
 production SQL log suppression. Telegram command-menu sync can be disabled with
 `TELEGRAM_COMMANDS_SYNC_ON_STARTUP=false`; by default it runs only when Telegram is enabled and `BotToken` is
 configured. Rebuild the backend Docker image to pick up the GSSAPI runtime package.
 Telegram diagnostic `CreatedAt` values stay UTC in the database; only `/history` and `/last` rendering uses
 `TELEGRAM_DISPLAY_TIME_ZONE`.
+
+When `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` is empty, users can still create service requests and the application logs
+a sanitized warning. When configured, new requests are sent to that Telegram group without a full phone number,
+raw chat id, or Telegram user id.
 
 Validate the ignored production file without printing secrets:
 

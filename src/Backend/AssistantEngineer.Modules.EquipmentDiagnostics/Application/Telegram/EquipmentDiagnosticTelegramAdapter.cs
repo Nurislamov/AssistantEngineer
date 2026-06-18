@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
@@ -18,6 +19,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly ITelegramUserStore _userStore;
     private readonly TelegramDiagnosticConversationService? _conversationService;
     private readonly TelegramDiagnosticHistoryService? _historyService;
+    private readonly TelegramServiceRequestService? _serviceRequestService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -27,7 +29,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         ITelegramUserAccessService accessService,
         ITelegramUserStore userStore,
         TelegramDiagnosticConversationService? conversationService = null,
-        TelegramDiagnosticHistoryService? historyService = null)
+        TelegramDiagnosticHistoryService? historyService = null,
+        TelegramServiceRequestService? serviceRequestService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -37,6 +40,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _userStore = userStore;
         _conversationService = conversationService;
         _historyService = historyService;
+        _serviceRequestService = serviceRequestService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -148,6 +152,16 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Last)
         {
             return await FormatLastAsync(update, access, cancellationToken);
+        }
+
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Request)
+        {
+            return await CreateServiceRequestAsync(update, access, cancellationToken);
+        }
+
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Requests)
+        {
+            return await FormatServiceRequestsAsync(update, access, cancellationToken);
         }
 
         if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
@@ -317,6 +331,51 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             ? "История пока пустая. Отправьте код ошибки, например: Gree H5."
             : await _historyService.FormatLastAsync(access.User, cancellationToken);
 
+        return Response(
+            update.ChatId,
+            text,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+    }
+
+    private async Task<EquipmentDiagnosticTelegramResponse> CreateServiceRequestAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (_serviceRequestService is null)
+        {
+            return Response(
+                update.ChatId,
+                "Сначала отправьте код ошибки, например: Gree H5.",
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+        }
+
+        var result = await _serviceRequestService.CreateFromLatestAsync(update, access, cancellationToken);
+        var keyboard = result.Status switch
+        {
+            TelegramServiceRequestAttemptStatus.PhoneMissing =>
+                TelegramDiagnosticConversationService.ServiceRequestPhoneKeyboard(),
+            TelegramServiceRequestAttemptStatus.Created or TelegramServiceRequestAttemptStatus.Existing =>
+                TelegramDiagnosticConversationService.ServiceRequestCreatedKeyboard(access),
+            _ => TelegramDiagnosticConversationService.MainKeyboard(access)
+        };
+        return Response(
+            update.ChatId,
+            result.Text,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            replyMarkup: keyboard);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramResponse> FormatServiceRequestsAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var text = access.User is null || _serviceRequestService is null
+            ? "У вас пока нет сервисных заявок.\n\nОтправьте код ошибки, а после диагностики нажмите «Нужен мастер»."
+            : await _serviceRequestService.FormatRequestsAsync(access.User, cancellationToken);
         return Response(
             update.ChatId,
             text,
