@@ -69,6 +69,8 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     public DbSet<TelegramServiceRequestEntity> TelegramServiceRequests { get; set; } = null!;
 
+    public DbSet<TelegramServiceRequestEventEntity> TelegramServiceRequestEvents { get; set; } = null!;
+
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
     {

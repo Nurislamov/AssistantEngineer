@@ -137,6 +137,13 @@ user's full phone and all raw Telegram identifiers remain absent from the UI. Ex
 remain fallback and no admin command is added to the global command menu. ED-23E requires no migration or new
 environment variable.
 
+ED-23F adds the `TelegramServiceRequestEvents` audit table and requires the
+`AddTelegramServiceRequestEvents` migration. Request cards include `История`; `/request_events <id>` is the hidden
+command fallback. Owner/Admin may view any request history, while Engineer access is limited to the assigned request.
+History is rendered in the configured local display time zone. Contact events record only private delivery
+success/failure and internal database references—never the phone value, raw chat id, Telegram user id, callback data,
+token, or secret. Audit append failure is sanitized and does not roll back the already committed request action.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -171,7 +178,8 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Configure the bootstrap owner chat ID. Legacy `AllowedChatIds__0` is accepted only as compatibility fallback.
 - Apply the `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`, and
   `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, `AddTelegramServiceRequestAssignments`, and
-  `AddTelegramServiceRequestNotificationMessage` EF migrations before enabling the bot.
+  `AddTelegramServiceRequestNotificationMessage` and `AddTelegramServiceRequestEvents` EF migrations before enabling
+  the bot.
 - Confirm unknown users become `Consumer`, not Engineer/Admin.
 - Confirm Consumer `/start`, `/help`, `/me`, code-first diagnostic replies, and button prompts are Russian and do not
   list admin commands.
@@ -196,6 +204,10 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   Admin/Owner, Owner/self destructive actions are rejected, and callbacks clear the Telegram spinner.
 - Confirm `/admin_users`, `/admin_pending`, and `/engineers` are absent from the global command menu but present in
   `/admin_help`.
+- Confirm service request cards expose `История`, `/request_events <id>` shows local-time events, assigned Engineer
+  and Owner/Admin access succeeds, and non-assigned Engineer/Consumer access is denied.
+- Confirm contact and notification events contain no full phone, raw Telegram identifiers, callback data, token, or
+  secret.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
   phone numbers, chat IDs, internal ids, or full bot responses.
 - Confirm `/history` and `/last` display Asia/Tashkent local time: `сегодня`/`вчера` are local-day relative, and older

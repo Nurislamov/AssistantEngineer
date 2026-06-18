@@ -45,6 +45,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} Статус" && button.CallbackData == $"sr:s:{request.Id}");
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} Взять" && button.CallbackData == $"sr:t:{request.Id}");
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} Назначить" && button.CallbackData == $"sr:a:{request.Id}");
+        Assert.Contains(buttons, button => button.Text == $"#{request.Id} История" && button.CallbackData == $"sr:e:{request.Id}");
     }
 
     [Fact]
@@ -68,7 +69,12 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         var edit = Assert.Single(harness.Outbound.Edits);
         Assert.Contains("Статус: в работе", edit.Text, StringComparison.Ordinal);
         Assert.Contains(InlineButtons(edit.ReplyMarkup), button => button.Text == "Закрыть");
+        Assert.Contains(InlineButtons(edit.ReplyMarkup), button => button.Text == "История");
         Assert.DoesNotContain(harness.Outbound.Messages, item => item.ChatId == ServiceGroupId);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 20),
+            item => item.EventType == TelegramServiceRequestEventType.Taken &&
+                item.ActorTelegramUserId == harness.Engineer.Id);
     }
 
     [Fact]
@@ -115,6 +121,11 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             item.ChatId == harness.Engineer.TelegramChatId &&
             item.Text.Contains(FullPhone, StringComparison.Ordinal));
         Assert.DoesNotContain(FullPhone, assigned.Text, StringComparison.Ordinal);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 20),
+            item => item.EventType == TelegramServiceRequestEventType.Assigned &&
+                item.ActorTelegramUserId == harness.Admin.Id &&
+                item.TargetTelegramUserId == harness.Engineer.Id);
     }
 
     [Fact]
@@ -139,6 +150,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.DoesNotContain(FullPhone, admin.Text, StringComparison.Ordinal);
         Assert.Empty(harness.Outbound.Edits);
         Assert.DoesNotContain(harness.Outbound.Messages, item => item.ChatId == ServiceGroupId);
+        var events = await harness.EventStore.GetLatestAsync(request.Id, 50);
+        Assert.Contains(events, item => item.EventType == TelegramServiceRequestEventType.ContactRequested);
+        Assert.Contains(events, item => item.EventType == TelegramServiceRequestEventType.ContactSent);
     }
 
     [Fact]
@@ -168,10 +182,18 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Equal("Действие доступно в сервисной группе.", outside.Text);
         Assert.Contains(harness.Outbound.Edits, edit =>
             edit.Text.Contains("Статус: закрыта", StringComparison.Ordinal) &&
-            InlineButtons(edit.ReplyMarkup).All(button => button.Text == "Статус"));
+            InlineButtons(edit.ReplyMarkup).Select(button => button.Text).Order().SequenceEqual(
+                new[] { "История", "Статус" }.Order()));
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(first.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.Resolved);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(second.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.Cancelled);
         Assert.Contains(harness.Outbound.Edits, edit =>
             edit.Text.Contains("Статус: отменена", StringComparison.Ordinal) &&
-            InlineButtons(edit.ReplyMarkup).All(button => button.Text == "Статус"));
+            InlineButtons(edit.ReplyMarkup).Select(button => button.Text).Order().SequenceEqual(
+                new[] { "История", "Статус" }.Order()));
     }
 
     [Fact]
@@ -269,6 +291,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             item.ChatId == harness.Engineer.TelegramChatId &&
             item.Text.Contains(FullPhone, StringComparison.Ordinal));
         Assert.DoesNotContain(FullPhone, response, StringComparison.Ordinal);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 20),
+            item => item.EventType == TelegramServiceRequestEventType.Taken);
     }
 
     [Fact]
@@ -322,6 +347,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             item.ChatId == harness.Engineer.TelegramChatId &&
             item.Text.Contains(FullPhone, StringComparison.Ordinal));
         Assert.DoesNotContain(FullPhone, response, StringComparison.Ordinal);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 30),
+            item => item.EventType == TelegramServiceRequestEventType.Assigned);
     }
 
     [Fact]
@@ -366,6 +394,12 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains(harness.Outbound.Messages, item =>
             item.ChatId == harness.Customer.TelegramChatId &&
             item.Text.Contains("отменена", StringComparison.Ordinal));
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.Resolved);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(second.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.Cancelled);
     }
 
     [Fact]
@@ -414,6 +448,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains(harness.Outbound.Messages, item => item.ChatId == harness.Admin.TelegramChatId && item.Text.Contains(FullPhone));
         Assert.DoesNotContain(FullPhone, assigned, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, admin, StringComparison.Ordinal);
+        var events = await harness.EventStore.GetLatestAsync(request.Id, 50);
+        Assert.Contains(events, item => item.EventType == TelegramServiceRequestEventType.ContactRequested);
+        Assert.Contains(events, item => item.EventType == TelegramServiceRequestEventType.ContactSent);
     }
 
     [Fact]
@@ -429,6 +466,11 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains("Откройте личный чат с ботом", response, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, response, StringComparison.Ordinal);
         Assert.DoesNotContain(harness.Logger.Messages, item => item.Contains(FullPhone, StringComparison.Ordinal));
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.ContactFailed &&
+                !item.IsSuccessful &&
+                !string.Concat(item.Message, item.MetadataJson).Contains(FullPhone, StringComparison.Ordinal));
     }
 
     [Fact]
@@ -441,6 +483,122 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         await harness.HandleAsync($"/take {request.Id}", harness.Engineer);
 
         Assert.Equal(TelegramServiceRequestStatus.InProgress, (await harness.RequestStore.GetByIdAsync(request.Id))?.Status);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.CustomerNotificationFailed &&
+                !item.IsSuccessful);
+    }
+
+    [Fact]
+    public async Task ReassignWritesReassignedEvent()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+
+        await harness.HandleAsync($"/assign {request.Id} @engineer", harness.Admin);
+        await harness.HandleAsync($"/assign {request.Id} @otherengineer", harness.Admin);
+
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 50),
+            item => item.EventType == TelegramServiceRequestEventType.Reassigned &&
+                item.ActorTelegramUserId == harness.Admin.Id &&
+                item.TargetTelegramUserId == harness.OtherEngineer.Id);
+    }
+
+    [Fact]
+    public async Task RequestEventsUsesLocalTimeIsPrivateSafeAndEnforcesAccess()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+        await harness.EventStore.AppendAsync(new TelegramServiceRequestEventCreate(
+            request.Id,
+            TelegramServiceRequestEventType.Created,
+            harness.Customer.Id,
+            null,
+            null,
+            TelegramServiceRequestStatus.New,
+            true,
+            "safe",
+            null,
+            FixedNowUtc));
+        await harness.HandleAsync($"/take {request.Id}", harness.Engineer);
+
+        var assigned = await harness.HandleAsync($"/request_events {request.Id}", harness.Engineer);
+        var admin = await harness.HandleAsync($"/request_events {request.Id}", harness.Admin);
+        var deniedEngineer = await harness.HandleAsync($"/request_events {request.Id}", harness.OtherEngineer);
+        var consumer = await harness.HandleAsync($"/request_events {request.Id}", harness.Consumer);
+
+        Assert.Contains($"История заявки #{request.Id}", assigned, StringComparison.Ordinal);
+        Assert.Contains("18.06.2026 17:20", assigned, StringComparison.Ordinal);
+        Assert.Contains("@customer", assigned, StringComparison.Ordinal);
+        Assert.Contains("@engineer", assigned, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, assigned, StringComparison.Ordinal);
+        Assert.DoesNotContain(ServiceGroupId.ToString(), assigned, StringComparison.Ordinal);
+        Assert.Contains("История заявки", admin, StringComparison.Ordinal);
+        Assert.Contains("только назначенному инженеру", deniedEngineer, StringComparison.Ordinal);
+        Assert.Equal("Команда недоступна.", consumer);
+    }
+
+    [Fact]
+    public async Task HistoryCallbackReturnsCompactHistoryAndCallbackAnswer()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+        await harness.EventStore.AppendAsync(new TelegramServiceRequestEventCreate(
+            request.Id,
+            TelegramServiceRequestEventType.Created,
+            harness.Customer.Id,
+            null,
+            null,
+            TelegramServiceRequestStatus.New,
+            true,
+            null,
+            null,
+            FixedNowUtc));
+        await harness.HandleAsync($"/take {request.Id}", harness.Engineer);
+
+        var result = await harness.HandleCallbackAsync($"sr:e:{request.Id}", harness.Engineer);
+        var denied = await harness.HandleCallbackAsync($"sr:e:{request.Id}", harness.OtherEngineer);
+
+        Assert.Equal("История загружена", result.CallbackAnswerText);
+        Assert.False(result.SuppressGroupMessage);
+        Assert.Contains("История заявки", result.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, result.Text, StringComparison.Ordinal);
+        Assert.Contains("только назначенному инженеру", denied.Text, StringComparison.Ordinal);
+        Assert.Equal("Нет доступа", denied.CallbackAnswerText);
+        Assert.True(denied.SuppressGroupMessage);
+    }
+
+    [Fact]
+    public async Task EventServiceDropsSensitiveMessageAndMetadata()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+        var service = new TelegramServiceRequestEventService(
+            harness.EventStore,
+            harness.UserStore,
+            harness.TimeFormatter);
+
+        await service.AppendSafeAsync(new TelegramServiceRequestEventCreate(
+            request.Id,
+            TelegramServiceRequestEventType.ContactSent,
+            harness.Admin.Id,
+            harness.Engineer.Id,
+            null,
+            null,
+            true,
+            $"phone={FullPhone};chat={ServiceGroupId}",
+            $"{{\"token\":\"secret\",\"phone\":\"{FullPhone}\"}}",
+            FixedNowUtc));
+
+        var item = Assert.Single(
+            await harness.EventStore.GetLatestAsync(request.Id, 50),
+            value => value.EventType == TelegramServiceRequestEventType.ContactSent);
+        var stored = string.Concat(item.Message, item.MetadataJson);
+        Assert.DoesNotContain(FullPhone, stored, StringComparison.Ordinal);
+        Assert.DoesNotContain(ServiceGroupId.ToString(), stored, StringComparison.Ordinal);
+        Assert.DoesNotContain("secret", stored, StringComparison.Ordinal);
+        Assert.Null(item.MetadataJson);
     }
 
     [Fact]
@@ -480,10 +638,12 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         var admin = await CreateUserAsync(users, 30, 3030, "admin", TelegramUserRole.Admin);
         var consumer = await CreateUserAsync(users, 40, 4040, "consumer", TelegramUserRole.Consumer);
         var requests = new InMemoryTelegramServiceRequestStore();
+        var events = new InMemoryTelegramServiceRequestEventStore();
         var history = new InMemoryTelegramDiagnosticCaseStore();
         var outbound = new FakeOutbound();
         var formatter = new TelegramDisplayTimeFormatter(options, new FixedTimeProvider());
         var logger = new CapturingLogger<TelegramServiceRequestQueueService>();
+        var eventService = new TelegramServiceRequestEventService(events, users, formatter);
         var service = new TelegramServiceRequestQueueService(
             requests,
             users,
@@ -491,8 +651,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             options,
             formatter,
             new TelegramServiceRequestCardRenderer(users, formatter),
-            logger);
-        return new Harness(options, service, users, requests, history, outbound, formatter, logger, customer, engineer, otherEngineer, admin, consumer);
+            logger,
+            eventService);
+        return new Harness(options, service, users, requests, events, history, outbound, formatter, logger, customer, engineer, otherEngineer, admin, consumer);
     }
 
     private static async Task<TelegramUserSnapshot> CreateUserAsync(
@@ -531,6 +692,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         TelegramServiceRequestQueueService Service,
         InMemoryTelegramUserStore UserStore,
         InMemoryTelegramServiceRequestStore RequestStore,
+        InMemoryTelegramServiceRequestEventStore EventStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         FakeOutbound Outbound,
         TelegramDisplayTimeFormatter TimeFormatter,

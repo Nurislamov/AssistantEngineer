@@ -27,11 +27,13 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<ITelegramConversationSessionStore, InMemoryTelegramConversationSessionStore>();
         services.AddSingleton<ITelegramDiagnosticCaseStore, InMemoryTelegramDiagnosticCaseStore>();
         services.AddSingleton<ITelegramServiceRequestStore, InMemoryTelegramServiceRequestStore>();
+        services.AddSingleton<ITelegramServiceRequestEventStore, InMemoryTelegramServiceRequestEventStore>();
         services.AddSingleton<TelegramDisplayTimeFormatter>();
         services.AddSingleton<TelegramDiagnosticHistoryService>();
         services.AddSingleton<TelegramServiceRequestService>();
         services.AddSingleton<TelegramServiceRequestQueueService>();
         services.AddSingleton<TelegramServiceRequestCardRenderer>();
+        services.AddSingleton<TelegramServiceRequestEventService>();
         services.AddSingleton<TelegramAdminUserManagementService>();
         services.AddSingleton<ITelegramUserAccessService, TelegramUserAccessService>();
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();

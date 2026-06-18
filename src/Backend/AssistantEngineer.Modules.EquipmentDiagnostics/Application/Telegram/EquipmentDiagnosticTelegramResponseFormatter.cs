@@ -132,6 +132,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "/admin_users — управление пользователями кнопками\n" +
             "/admin_pending — новые пользователи\n" +
             "/engineers — инженеры\n\n" +
+            "История сервисной заявки: /request_events <id>\n\n" +
             "Команды с параметрами (fallback):\n" +
             "/admin users\n" +
             "/admin allow <chatId>\n" +

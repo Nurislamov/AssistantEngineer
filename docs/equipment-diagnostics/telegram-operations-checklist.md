@@ -113,7 +113,8 @@ Discovery is disabled by default. Its response never includes the bot token, web
   `ProcessedMessageStoreMaxEntries` sized for the expected duplicate window.
 - `BootstrapOwnerChatId` is configured, `TelegramUsers`, `TelegramConversationSessions`, `AddTelegramUserPhoneSource`,
   `AddTelegramDiagnosticCases`, `AddTelegramServiceRequests`, `AddTelegramServiceRequestAssignments`, and
-  `AddTelegramServiceRequestNotificationMessage` migrations have been applied, and `DeniedChatIds` is reviewed.
+  `AddTelegramServiceRequestNotificationMessage` and `AddTelegramServiceRequestEvents` migrations have been applied,
+  and `DeniedChatIds` is reviewed.
 - Unknown-user policy is `AutoConsumer`; Consumer help does not list admin commands.
 - Phone sharing uses a Telegram reply keyboard with `request_contact=true`; manual phone input is available through
   `✏️ Ввести другой номер`; phone numbers are not logged, not printed in `/admin users`, and are not required for
@@ -141,6 +142,12 @@ Discovery is disabled by default. Its response never includes the bot token, web
   callbacks are rejected.
 - Verify admin button commands remain absent from the global Telegram command menu; parameterized `/admin ...`
   commands remain fallback.
+- Verify request cards show `История` and `/request_events <id>` renders creation, notification, assignment/contact,
+  and terminal events in local time.
+- Verify Owner/Admin can view any audit history, assigned Engineer can view their request, and non-assigned
+  Engineer/Consumer are denied.
+- Inspect audit output and stored event samples: no full phone, raw chat id, raw Telegram user id, token, secret, or
+  callback payload may appear.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.

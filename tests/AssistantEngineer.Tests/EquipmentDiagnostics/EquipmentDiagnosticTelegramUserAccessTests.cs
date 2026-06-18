@@ -94,6 +94,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("/admin_users", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/admin_pending", admin.Text, StringComparison.Ordinal);
         Assert.Contains("/engineers", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("/request_events <id>", owner.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", engineer.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", consumer.Text, StringComparison.Ordinal);
     }

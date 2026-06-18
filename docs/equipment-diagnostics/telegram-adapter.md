@@ -272,6 +272,27 @@ immediately and is visible through `/me`.
 ED-23E adds no migration or environment variable and does not include Mini App, web UI, audit tables, SLA,
 priorities, teams, geolocation, or bulk operations.
 
+## ED-23F Service Request Audit Events
+
+ED-23F adds append-only `TelegramServiceRequestEvents` records for request creation, service-group notification
+success/failure, take, assignment/reassignment, contact request and private delivery success/failure, resolution,
+cancellation, and customer-notification success/failure. Routine status views are intentionally not stored so the
+audit stream remains meaningful.
+
+Events contain request id, safe event type, optional internal actor/target user database references, old/new status,
+success flag, controlled message, and UTC creation time. Runtime event writing discards arbitrary metadata and replaces
+messages with controlled safe values. Full phone numbers, raw chat ids, raw Telegram user ids, callback payloads,
+tokens, secrets, and exception traces are never stored or rendered.
+
+`/request_events <id>` and the `История` button show compact Russian history in the configured Telegram display time
+zone. Owner/Admin can view any request; Engineer can view only a request assigned to that Engineer. Consumer,
+unknown, disabled, blocked, and non-assigned Engineer access is denied. The history callback is acknowledged through
+`answerCallbackQuery` and sends one compact group message; it never changes request state.
+
+The `AddTelegramServiceRequestEvents` migration is required. `/request_events` remains hidden from the global command
+menu and is mentioned in `/admin_help`. ED-23F adds no environment variable and does not include Mini App, web UI,
+SLA, priorities, teams, geolocation, or full CRM behavior.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

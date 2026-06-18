@@ -54,17 +54,17 @@ public sealed class TelegramServiceRequestCardRenderer
             [
                 [Button("Взять в работу", Callback("t", request.Id)), Button("Назначить", Callback("a", request.Id))],
                 [Button("Контакт", Callback("c", request.Id)), Button("Статус", Callback("s", request.Id))],
-                [Button("Отменить", Callback("x", request.Id))]
+                [Button("История", Callback("e", request.Id)), Button("Отменить", Callback("x", request.Id))]
             ]),
             TelegramServiceRequestStatus.InProgress => InlineKeyboard(
             [
                 [Button("Контакт", Callback("c", request.Id)), Button("Закрыть", Callback("d", request.Id))],
                 [Button("Назначить", Callback("a", request.Id)), Button("Статус", Callback("s", request.Id))],
-                [Button("Отменить", Callback("x", request.Id))]
+                [Button("История", Callback("e", request.Id)), Button("Отменить", Callback("x", request.Id))]
             ]),
             _ => InlineKeyboard(
             [
-                [Button("Статус", Callback("s", request.Id))]
+                [Button("Статус", Callback("s", request.Id)), Button("История", Callback("e", request.Id))]
             ])
         };
 

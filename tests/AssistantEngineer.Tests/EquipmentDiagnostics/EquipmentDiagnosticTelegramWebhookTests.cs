@@ -179,6 +179,37 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task HistoryCallbackIsAnsweredAndSendsCompactHistory()
+    {
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "История заявки #4\n\n18.06.2026 22:36 — заявка создана",
+            callbackAnswerText: "История загружена");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+        var callbackUpdate = new TelegramWebhookUpdateDto(
+            8,
+            Message: null,
+            new TelegramWebhookCallbackQueryDto(
+                "callback-history",
+                new TelegramWebhookUserDto(77, "engineer"),
+                new TelegramWebhookMessageDto(
+                    9,
+                    Text: null,
+                    new TelegramWebhookChatDto(-1001, null, "supergroup"),
+                    From: null,
+                    Date: null),
+                "sr:e:4"));
+
+        var result = await handler.HandleAsync(callbackUpdate, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal("История загружена", outbound.CallbackAnswerText);
+        Assert.Equal(1, outbound.CallCount);
+        Assert.Contains("История заявки #4", outbound.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task UnauthorizedAndIgnoredUpdatesDoNotSendOutbound()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Ignored, string.Empty);

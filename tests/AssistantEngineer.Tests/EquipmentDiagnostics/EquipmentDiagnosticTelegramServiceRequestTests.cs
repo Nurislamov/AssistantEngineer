@@ -30,6 +30,11 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         Assert.Equal(TelegramServiceRequestStatus.New, request.Status);
         Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, response.Text, StringComparison.Ordinal);
+        var events = await harness.EventStore.GetLatestAsync(request.Id, 10);
+        Assert.Contains(events, item =>
+            item.EventType == TelegramServiceRequestEventType.Created &&
+            item.ActorTelegramUserId == harness.User.Id &&
+            item.NewStatus == TelegramServiceRequestStatus.New);
     }
 
     [Fact]
@@ -148,7 +153,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             .SelectMany(row => row)
             .ToArray() ?? [];
         Assert.Equal(
-            ["Взять в работу", "Назначить", "Контакт", "Статус", "Отменить"],
+            ["Взять в работу", "Назначить", "Контакт", "Статус", "История", "Отменить"],
             inlineButtons.Select(button => button.Text).ToArray());
         Assert.All(inlineButtons, button =>
         {
@@ -160,6 +165,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         Assert.Equal(-1001234567890, stored.NotificationChatId);
         Assert.Equal(700, stored.NotificationMessageId);
         Assert.NotNull(stored.NotificationSentAt);
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(stored.Id, 10),
+            item => item.EventType == TelegramServiceRequestEventType.NotificationSent && item.IsSuccessful);
         Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
     }
 
@@ -175,7 +183,10 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         var response = await harness.Adapter.HandleAsync(Update("/request"));
 
         Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
-        Assert.Single(await harness.RequestStore.GetLatestForTelegramUserAsync(harness.User.Id, 5));
+        var request = Assert.Single(await harness.RequestStore.GetLatestForTelegramUserAsync(harness.User.Id, 5));
+        Assert.Contains(
+            await harness.EventStore.GetLatestAsync(request.Id, 10),
+            item => item.EventType == TelegramServiceRequestEventType.NotificationFailed && !item.IsSuccessful);
     }
 
     [Fact]
@@ -219,6 +230,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         var userStore = new InMemoryTelegramUserStore();
         var historyStore = new InMemoryTelegramDiagnosticCaseStore();
         var requestStore = new InMemoryTelegramServiceRequestStore();
+        var eventStore = new InMemoryTelegramServiceRequestEventStore();
         var outbound = new FakeOutbound(outboundSucceeds);
         var user = await userStore.GetOrCreateConsumerAsync(Update("/start"));
         if (phoneSaved)
@@ -243,13 +255,15 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         }
 
         var timeFormatter = new TelegramDisplayTimeFormatter(options, new FixedTimeProvider());
+        var eventService = new TelegramServiceRequestEventService(eventStore, userStore, timeFormatter);
         var service = new TelegramServiceRequestService(
             requestStore,
             historyStore,
             outbound,
             options,
             timeFormatter,
-            new TelegramServiceRequestCardRenderer(userStore, timeFormatter));
+            new TelegramServiceRequestCardRenderer(userStore, timeFormatter),
+            eventService: eventService);
         var parser = new EquipmentDiagnosticTelegramMessageParser();
         var adapter = new EquipmentDiagnosticTelegramAdapter(
             new UnusedFacade(),
@@ -259,7 +273,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             new TelegramUserAccessService(userStore, options),
             userStore,
             serviceRequestService: service);
-        return new Harness(adapter, userStore, historyStore, requestStore, outbound, user);
+        return new Harness(adapter, userStore, historyStore, requestStore, eventStore, outbound, user);
     }
 
     private static Task<TelegramDiagnosticCaseSnapshot> CreateDiagnosticCaseAsync(
@@ -340,6 +354,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         InMemoryTelegramUserStore UserStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         InMemoryTelegramServiceRequestStore RequestStore,
+        InMemoryTelegramServiceRequestEventStore EventStore,
         FakeOutbound Outbound,
         TelegramUserSnapshot User);
 

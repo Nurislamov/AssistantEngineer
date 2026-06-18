@@ -18,6 +18,7 @@ public sealed class TelegramServiceRequestService
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
     private readonly TelegramServiceRequestCardRenderer _cardRenderer;
     private readonly ILogger<TelegramServiceRequestService> _logger;
+    private readonly TelegramServiceRequestEventService? _eventService;
 
     public TelegramServiceRequestService(
         ITelegramServiceRequestStore requestStore,
@@ -26,7 +27,8 @@ public sealed class TelegramServiceRequestService
         EquipmentDiagnosticTelegramOptions options,
         TelegramDisplayTimeFormatter timeFormatter,
         TelegramServiceRequestCardRenderer cardRenderer,
-        ILogger<TelegramServiceRequestService>? logger = null)
+        ILogger<TelegramServiceRequestService>? logger = null,
+        TelegramServiceRequestEventService? eventService = null)
     {
         _requestStore = requestStore;
         _diagnosticCaseStore = diagnosticCaseStore;
@@ -35,6 +37,7 @@ public sealed class TelegramServiceRequestService
         _timeFormatter = timeFormatter;
         _cardRenderer = cardRenderer;
         _logger = logger ?? NullLogger<TelegramServiceRequestService>.Instance;
+        _eventService = eventService;
     }
 
     public async Task<TelegramServiceRequestAttemptResult> CreateFromLatestAsync(
@@ -90,6 +93,20 @@ public sealed class TelegramServiceRequestService
             "Telegram service request created. Status: {Status}. NotificationConfigured: {NotificationConfigured}.",
             createResult.Request.Status,
             _options.ServiceRequests.NotificationChatId is not null);
+
+        await RecordEventAsync(
+            new TelegramServiceRequestEventCreate(
+                createResult.Request.Id,
+                TelegramServiceRequestEventType.Created,
+                user.Id,
+                null,
+                null,
+                TelegramServiceRequestStatus.New,
+                true,
+                "Service request created.",
+                null,
+                createResult.Request.CreatedAt),
+            cancellationToken);
 
         await NotifyGroupAsync(update, createResult.Request, cancellationToken);
 
@@ -185,10 +202,16 @@ public sealed class TelegramServiceRequestService
                     _logger.LogWarning("Telegram service request notification returned without a message id.");
                 }
                 _logger.LogInformation("Telegram service request notification sent.");
+                await RecordEventAsync(
+                    DeliveryEvent(request.Id, TelegramServiceRequestEventType.NotificationSent, true),
+                    cancellationToken);
             }
             else
             {
                 _logger.LogWarning("Telegram service request notification failed; request remains created.");
+                await RecordEventAsync(
+                    DeliveryEvent(request.Id, TelegramServiceRequestEventType.NotificationFailed, false),
+                    cancellationToken);
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -200,8 +223,32 @@ public sealed class TelegramServiceRequestService
             _logger.LogWarning(
                 "Telegram service request notification failed; request remains created. ExceptionType: {ExceptionType}.",
                 exception.GetType().Name);
+            await RecordEventAsync(
+                DeliveryEvent(request.Id, TelegramServiceRequestEventType.NotificationFailed, false),
+                cancellationToken);
         }
     }
+
+    private Task RecordEventAsync(
+        TelegramServiceRequestEventCreate request,
+        CancellationToken cancellationToken) =>
+        _eventService?.AppendSafeAsync(request, cancellationToken) ?? Task.CompletedTask;
+
+    private static TelegramServiceRequestEventCreate DeliveryEvent(
+        long requestId,
+        TelegramServiceRequestEventType type,
+        bool succeeded) =>
+        new(
+            requestId,
+            type,
+            null,
+            null,
+            null,
+            null,
+            succeeded,
+            succeeded ? "Service group notification sent." : "Service group notification failed.",
+            null,
+            DateTimeOffset.UtcNow);
 
     private static TelegramServiceRequestAttemptResult NoDiagnosticCase() =>
         new(

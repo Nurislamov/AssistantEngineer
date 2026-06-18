@@ -15,7 +15,8 @@ public enum TelegramServiceQueueCommandKind
     Done,
     Cancel,
     Status,
-    Contact
+    Contact,
+    Events
 }
 
 public sealed record TelegramServiceQueueCommand(
@@ -41,6 +42,7 @@ public sealed class TelegramServiceRequestQueueService
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
     private readonly TelegramServiceRequestCardRenderer _cardRenderer;
     private readonly ILogger<TelegramServiceRequestQueueService> _logger;
+    private readonly TelegramServiceRequestEventService? _eventService;
 
     public TelegramServiceRequestQueueService(
         ITelegramServiceRequestStore requestStore,
@@ -49,7 +51,8 @@ public sealed class TelegramServiceRequestQueueService
         EquipmentDiagnosticTelegramOptions options,
         TelegramDisplayTimeFormatter timeFormatter,
         TelegramServiceRequestCardRenderer cardRenderer,
-        ILogger<TelegramServiceRequestQueueService>? logger = null)
+        ILogger<TelegramServiceRequestQueueService>? logger = null,
+        TelegramServiceRequestEventService? eventService = null)
     {
         _requestStore = requestStore;
         _userStore = userStore;
@@ -58,6 +61,7 @@ public sealed class TelegramServiceRequestQueueService
         _timeFormatter = timeFormatter;
         _cardRenderer = cardRenderer;
         _logger = logger ?? NullLogger<TelegramServiceRequestQueueService>.Instance;
+        _eventService = eventService;
     }
 
     public static bool TryParse(string? text, out TelegramServiceQueueCommand command)
@@ -79,6 +83,7 @@ public sealed class TelegramServiceRequestQueueService
             "/cancel_request" => TelegramServiceQueueCommandKind.Cancel,
             "/request_status" => TelegramServiceQueueCommandKind.Status,
             "/contact" => TelegramServiceQueueCommandKind.Contact,
+            "/request_events" => TelegramServiceQueueCommandKind.Events,
             _ => (TelegramServiceQueueCommandKind?)null
         };
         if (kind is null)
@@ -141,6 +146,7 @@ public sealed class TelegramServiceRequestQueueService
             TelegramServiceQueueCommandKind.Cancel => await CloseAsync(command, actor, TelegramServiceRequestStatus.Cancelled, cancellationToken),
             TelegramServiceQueueCommandKind.Status => await StatusAsync(command, cancellationToken),
             TelegramServiceQueueCommandKind.Contact => await ContactAsync(command, actor, cancellationToken),
+            TelegramServiceQueueCommandKind.Events => await EventsAsync(command, actor, cancellationToken),
             _ => Result("Команда недоступна.")
         };
     }
@@ -187,6 +193,7 @@ public sealed class TelegramServiceRequestQueueService
             "d" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Done, requestId, null), actor, TelegramServiceRequestStatus.Resolved, cancellationToken),
             "x" => await CloseAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Cancel, requestId, null), actor, TelegramServiceRequestStatus.Cancelled, cancellationToken),
             "s" => await StatusAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Status, requestId, null), cancellationToken),
+            "e" => await EventsAsync(new TelegramServiceQueueCommand(TelegramServiceQueueCommandKind.Events, requestId, null), actor, cancellationToken),
             "b" => await BackToCardAsync(requestId, cancellationToken),
             _ => Result("Действие недоступно или устарело.")
         };
@@ -198,6 +205,17 @@ public sealed class TelegramServiceRequestQueueService
         else if (action == "s")
         {
             await RefreshRequestCardAsync(requestId, cancellationToken);
+        }
+
+        if (action == "e")
+        {
+            var denied = result.Text.Contains("доступна только", StringComparison.OrdinalIgnoreCase) ||
+                result.Text.Contains("недоступна", StringComparison.OrdinalIgnoreCase);
+            return result with
+            {
+                CallbackAnswerText = denied ? "Нет доступа" : "История загружена",
+                SuppressGroupMessage = denied
+            };
         }
 
         var answer = action switch
@@ -221,7 +239,7 @@ public sealed class TelegramServiceRequestQueueService
         [
             [Button("Взять в работу", Callback("t", requestId)), Button("Назначить", Callback("a", requestId))],
             [Button("Контакт", Callback("c", requestId)), Button("Статус", Callback("s", requestId))],
-            [Button("Отменить", Callback("x", requestId))]
+            [Button("История", Callback("e", requestId)), Button("Отменить", Callback("x", requestId))]
         ]);
 
     private async Task<TelegramServiceQueueCommandResult> FormatQueueResultAsync(
@@ -240,7 +258,8 @@ public sealed class TelegramServiceRequestQueueService
             [
                 Button($"#{request.Id} Статус", Callback("s", request.Id)),
                 Button($"#{request.Id} Взять", Callback("t", request.Id)),
-                Button($"#{request.Id} Назначить", Callback("a", request.Id))
+                Button($"#{request.Id} Назначить", Callback("a", request.Id)),
+                Button($"#{request.Id} История", Callback("e", request.Id))
             ])
             .ToArray();
         return Result(text, InlineKeyboard(rows));
@@ -351,8 +370,9 @@ public sealed class TelegramServiceRequestQueueService
         }
 
         var updated = await AssignInternalAsync(request, target, actor, cancellationToken);
-        var customerDelivered = await NotifyCustomerAsync(updated, cancellationToken);
-        var contactDelivered = await SendContactPrivatelyAsync(updated, target, cancellationToken);
+        await RecordAssignmentEventAsync(request, updated, actor, target, cancellationToken);
+        var customerDelivered = await NotifyCustomerAsync(updated, actor.Id, cancellationToken);
+        var contactDelivered = await SendContactPrivatelyAsync(updated, actor.Id, target, cancellationToken);
         _logger.LogInformation(
             "Telegram service request assigned by inline action. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
@@ -398,8 +418,18 @@ public sealed class TelegramServiceRequestQueueService
         }
 
         var updated = await AssignInternalAsync(request, actor, actor, cancellationToken);
-        var customerDelivered = await NotifyCustomerAsync(updated, cancellationToken);
-        var contactDelivered = await SendContactPrivatelyAsync(updated, actor, cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.Taken,
+                actor.Id,
+                actor.Id,
+                request.Status,
+                TelegramServiceRequestStatus.InProgress,
+                true),
+            cancellationToken);
+        var customerDelivered = await NotifyCustomerAsync(updated, actor.Id, cancellationToken);
+        var contactDelivered = await SendContactPrivatelyAsync(updated, actor.Id, actor, cancellationToken);
         _logger.LogInformation(
             "Telegram service request taken. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
@@ -449,8 +479,9 @@ public sealed class TelegramServiceRequestQueueService
         }
 
         var updated = await AssignInternalAsync(request, target, actor, cancellationToken);
-        var customerDelivered = await NotifyCustomerAsync(updated, cancellationToken);
-        var contactDelivered = await SendContactPrivatelyAsync(updated, target, cancellationToken);
+        await RecordAssignmentEventAsync(request, updated, actor, target, cancellationToken);
+        var customerDelivered = await NotifyCustomerAsync(updated, actor.Id, cancellationToken);
+        var contactDelivered = await SendContactPrivatelyAsync(updated, actor.Id, target, cancellationToken);
         _logger.LogInformation(
             "Telegram service request assigned. CustomerNotificationSent: {CustomerNotificationSent}; ContactSent: {ContactSent}.",
             customerDelivered,
@@ -510,7 +541,19 @@ public sealed class TelegramServiceRequestQueueService
                 actor.Id,
                 now),
             cancellationToken) ?? request;
-        var delivered = await NotifyCustomerAsync(updated, cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                terminalStatus == TelegramServiceRequestStatus.Resolved
+                    ? TelegramServiceRequestEventType.Resolved
+                    : TelegramServiceRequestEventType.Cancelled,
+                actor.Id,
+                null,
+                request.Status,
+                terminalStatus,
+                true),
+            cancellationToken);
+        var delivered = await NotifyCustomerAsync(updated, actor.Id, cancellationToken);
         _logger.LogInformation(
             "Telegram service request status changed. Status: {Status}; CustomerNotificationSent: {CustomerNotificationSent}.",
             terminalStatus,
@@ -545,6 +588,35 @@ public sealed class TelegramServiceRequestQueueService
             $"Телефон: {(request.PhoneWasSaved ? "сохранён" : "не сохранён")}");
     }
 
+    private async Task<TelegramServiceQueueCommandResult> EventsAsync(
+        TelegramServiceQueueCommand command,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        if (command.RequestId is null)
+        {
+            return Result("Использование: /request_events <id>");
+        }
+        var request = await _requestStore.GetByIdAsync(command.RequestId.Value, cancellationToken);
+        if (request is null)
+        {
+            return NotFound(command.RequestId.Value);
+        }
+        if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
+        {
+            return Result("История доступна только назначенному инженеру или администратору.");
+        }
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        {
+            return Result("Команда недоступна.");
+        }
+
+        var text = _eventService is null
+            ? $"История заявки #{request.Id}\n\nИстория заявки пока пустая."
+            : await _eventService.FormatHistoryAsync(request.Id, cancellationToken);
+        return Result(text);
+    }
+
     private async Task<TelegramServiceQueueCommandResult> ContactAsync(
         TelegramServiceQueueCommand command,
         TelegramUserSnapshot actor,
@@ -569,7 +641,17 @@ public sealed class TelegramServiceRequestQueueService
             return Result("Номер телефона по заявке не сохранён.");
         }
 
-        var delivered = await SendContactPrivatelyAsync(request, actor, cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.ContactRequested,
+                actor.Id,
+                actor.Id,
+                null,
+                null,
+                true),
+            cancellationToken);
+        var delivered = await SendContactPrivatelyAsync(request, actor.Id, actor, cancellationToken);
         return Result(delivered
             ? "Контакт отправлен в личный чат."
             : "Откройте личный чат с ботом и нажмите /start, затем повторите команду.");
@@ -597,11 +679,22 @@ public sealed class TelegramServiceRequestQueueService
 
     private async Task<bool> NotifyCustomerAsync(
         TelegramServiceRequestSnapshot request,
+        long? actorId,
         CancellationToken cancellationToken)
     {
         var customer = await _userStore.GetByIdAsync(request.TelegramUserId, cancellationToken);
         if (customer is null)
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.CustomerNotificationFailed,
+                    actorId,
+                    request.TelegramUserId,
+                    null,
+                    request.Status,
+                    false),
+                cancellationToken);
             return false;
         }
 
@@ -615,17 +708,41 @@ public sealed class TelegramServiceRequestQueueService
                 $"Ваша заявка #{request.Id} отменена.",
             _ => string.Empty
         };
-        return await SendPrivateAsync(customer.TelegramChatId, text, "customer status notification", cancellationToken);
+        var delivered = await SendPrivateAsync(customer.TelegramChatId, text, "customer status notification", cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                delivered
+                    ? TelegramServiceRequestEventType.CustomerNotificationSent
+                    : TelegramServiceRequestEventType.CustomerNotificationFailed,
+                actorId,
+                request.TelegramUserId,
+                null,
+                request.Status,
+                delivered),
+            cancellationToken);
+        return delivered;
     }
 
     private async Task<bool> SendContactPrivatelyAsync(
         TelegramServiceRequestSnapshot request,
+        long? actorId,
         TelegramUserSnapshot recipient,
         CancellationToken cancellationToken)
     {
         var contact = await _userStore.GetPrivateContactAsync(request.TelegramUserId, cancellationToken);
         if (contact is null)
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.ContactFailed,
+                    actorId,
+                    recipient.Id,
+                    null,
+                    null,
+                    false),
+                cancellationToken);
             return false;
         }
 
@@ -633,7 +750,20 @@ public sealed class TelegramServiceRequestQueueService
             $"Контакт по заявке #{request.Id}\n" +
             $"Ошибка: {Title(request)}\n" +
             $"Телефон: {contact.PhoneNumber}";
-        return await SendPrivateAsync(recipient.TelegramChatId, text, "private contact delivery", cancellationToken);
+        var delivered = await SendPrivateAsync(recipient.TelegramChatId, text, "private contact delivery", cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                delivered
+                    ? TelegramServiceRequestEventType.ContactSent
+                    : TelegramServiceRequestEventType.ContactFailed,
+                actorId,
+                recipient.Id,
+                null,
+                null,
+                delivered),
+            cancellationToken);
+        return delivered;
     }
 
     private async Task<bool> SendPrivateAsync(
@@ -847,6 +977,54 @@ public sealed class TelegramServiceRequestQueueService
         return user is null ? "специалист" : UserLabel(user);
     }
 
+    private Task RecordAssignmentEventAsync(
+        TelegramServiceRequestSnapshot previous,
+        TelegramServiceRequestSnapshot updated,
+        TelegramUserSnapshot actor,
+        TelegramUserSnapshot target,
+        CancellationToken cancellationToken)
+    {
+        var type = previous.AssignedTelegramUserId is not null &&
+            previous.AssignedTelegramUserId != target.Id
+                ? TelegramServiceRequestEventType.Reassigned
+                : TelegramServiceRequestEventType.Assigned;
+        return RecordEventAsync(
+            Event(
+                previous.Id,
+                type,
+                actor.Id,
+                target.Id,
+                previous.Status,
+                updated.Status,
+                true),
+            cancellationToken);
+    }
+
+    private Task RecordEventAsync(
+        TelegramServiceRequestEventCreate request,
+        CancellationToken cancellationToken) =>
+        _eventService?.AppendSafeAsync(request, cancellationToken) ?? Task.CompletedTask;
+
+    private static TelegramServiceRequestEventCreate Event(
+        long requestId,
+        TelegramServiceRequestEventType type,
+        long? actorId,
+        long? targetId,
+        TelegramServiceRequestStatus? oldStatus,
+        TelegramServiceRequestStatus? newStatus,
+        bool succeeded) =>
+        new(
+            requestId,
+            type,
+            actorId,
+            targetId,
+            oldStatus,
+            newStatus,
+            succeeded,
+            type.ToString(),
+            null,
+            DateTimeOffset.UtcNow);
+
     private static string UserLabel(TelegramUserSnapshot user) =>
         string.IsNullOrWhiteSpace(user.Username) ? "специалист" : $"@{user.Username.Trim().TrimStart('@')}";
 
@@ -886,7 +1064,7 @@ public sealed class TelegramServiceRequestQueueService
             }
             targetUserId = parsedUserId;
         }
-        else if (parts.Length != 3 || action is not ("t" or "a" or "c" or "d" or "x" or "s" or "b"))
+        else if (parts.Length != 3 || action is not ("t" or "a" or "c" or "d" or "x" or "s" or "e" or "b"))
         {
             return false;
         }

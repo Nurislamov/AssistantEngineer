@@ -22,7 +22,7 @@ public sealed class EquipmentDiagnosticTelegramCommandMenuTests
         Assert.DoesNotContain(outbound.Commands, command => command.Command.Contains(' ', StringComparison.Ordinal));
         Assert.DoesNotContain(outbound.Commands, command => command.Command is
             "admin_help" or "admin" or "admin_users" or "admin_pending" or "engineers" or
-            "admin users" or "admin allow" or "admin block" or "admin role");
+            "request_events" or "admin users" or "admin allow" or "admin block" or "admin role");
     }
 
     [Fact]

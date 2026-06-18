@@ -21,6 +21,7 @@
 - Apply the Telegram user, conversation, phone, diagnostic history, `AddTelegramServiceRequests`, and
   `AddTelegramServiceRequestAssignments` and `AddTelegramServiceRequestNotificationMessage` migrations before
   enabling Telegram.
+- Apply `AddTelegramServiceRequestEvents` before enabling ED-23F request history.
 - Optionally configure `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` for the service group; leave it empty to create requests
   without group notifications.
 - Rebuild the backend image after ED-21B so the runtime includes `libgssapi-krb5-2`.
@@ -34,6 +35,8 @@
 - After ED-23E deployment, verify `/admin_pending` promotes a registered Consumer to Engineer, `/admin_users` and
   `/engineers` contain no full phone/raw Telegram identifiers, and Admin/Owner/self protections hold. No migration or
   new environment value is required.
+- After ED-23F deployment, verify request-card `История`, `/request_events <id>`, local-time rendering, assigned
+  Engineer access, and privacy-safe contact/notification events. No new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 
