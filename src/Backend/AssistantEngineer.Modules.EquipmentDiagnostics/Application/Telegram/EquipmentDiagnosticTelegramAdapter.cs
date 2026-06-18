@@ -21,6 +21,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramDiagnosticHistoryService? _historyService;
     private readonly TelegramServiceRequestService? _serviceRequestService;
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
+    private readonly TelegramAdminUserManagementService? _adminUserManagementService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -32,7 +33,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramDiagnosticConversationService? conversationService = null,
         TelegramDiagnosticHistoryService? historyService = null,
         TelegramServiceRequestService? serviceRequestService = null,
-        TelegramServiceRequestQueueService? serviceRequestQueueService = null)
+        TelegramServiceRequestQueueService? serviceRequestQueueService = null,
+        TelegramAdminUserManagementService? adminUserManagementService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -44,6 +46,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _historyService = historyService;
         _serviceRequestService = serviceRequestService;
         _serviceRequestQueueService = serviceRequestQueueService;
+        _adminUserManagementService = adminUserManagementService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -57,6 +60,23 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         if (!string.IsNullOrWhiteSpace(update.CallbackQueryId))
         {
+            if (update.CallbackData?.StartsWith("au:", StringComparison.Ordinal) == true)
+            {
+                var adminResult = _adminUserManagementService is null
+                    ? new TelegramAdminUserManagementResult(
+                        "Действие недоступно или устарело.",
+                        CallbackAnswerText: "Ошибка действия",
+                        SuppressOutbound: true)
+                    : await _adminUserManagementService.HandleCallbackAsync(update, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    adminResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    replyMarkup: adminResult.ReplyMarkup,
+                    callbackAnswerText: adminResult.CallbackAnswerText,
+                    suppressOutbound: adminResult.SuppressOutbound);
+            }
+
             var result = _serviceRequestQueueService is null
                 ? new TelegramServiceQueueCommandResult("Действие недоступно или устарело.")
                 : await _serviceRequestQueueService.HandleCallbackAsync(update, cancellationToken);
@@ -85,6 +105,18 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (!access.IsAllowed)
         {
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+        }
+
+        if (TelegramAdminUserManagementService.IsCommand(update.Text))
+        {
+            var result = _adminUserManagementService is null
+                ? new TelegramAdminUserManagementResult("Команда недоступна.")
+                : await _adminUserManagementService.HandleCommandAsync(update, access, cancellationToken);
+            return Response(
+                update.ChatId,
+                result.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: result.ReplyMarkup);
         }
 
         if (!string.IsNullOrWhiteSpace(update.ContactPhoneNumber))

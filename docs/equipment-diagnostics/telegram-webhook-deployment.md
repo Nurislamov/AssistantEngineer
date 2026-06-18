@@ -130,6 +130,13 @@ the same message for the engineer picker and provides `Назад`. Terminal car
 the committed database state remains and a replacement safe card is sent and stored when possible. Contact still goes
 only to the authorized private chat, and no new environment variable is required.
 
+ED-23E adds private-chat button management for Telegram users. Owner/Admin can open `/admin_users`,
+`/admin_pending`, or `/engineers`; callbacks edit the same admin card and are always acknowledged. Admin cannot manage
+Admin/Owner accounts or assign Admin, while Owner accounts and destructive self-actions are protected. The affected
+user's full phone and all raw Telegram identifiers remain absent from the UI. Existing parameterized admin commands
+remain fallback and no admin command is added to the global command menu. ED-23E requires no migration or new
+environment variable.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
@@ -183,6 +190,12 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   actor permissions.
 - Confirm each Engineer opened the bot privately with `/start` before role assignment. Verify contact delivery goes
   only to the assigned Engineer or Owner/Admin private chat and never displays the full phone in the service group.
+- Confirm `/admin_pending` shows a newly registered Consumer, `Сделать инженером` updates the detail card, and the
+  engineer can then work in the service group.
+- Confirm `/admin_users` and `/engineers` expose no phone value or raw Telegram identifier; Admin cannot manage
+  Admin/Owner, Owner/self destructive actions are rejected, and callbacks clear the Telegram spinner.
+- Confirm `/admin_users`, `/admin_pending`, and `/engineers` are absent from the global command menu but present in
+  `/admin_help`.
 - Confirm `/history` and `/last` show only the current user's cases, include not-found requests, and do not print
   phone numbers, chat IDs, internal ids, or full bot responses.
 - Confirm `/history` and `/last` display Asia/Tashkent local time: `сегодня`/`вчера` are local-day relative, and older

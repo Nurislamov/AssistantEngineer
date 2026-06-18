@@ -136,7 +136,8 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var users = await context.TelegramUsers
             .AsNoTracking()
-            .OrderBy(user => user.CreatedAt)
+            .OrderByDescending(user => user.LastSeenAt ?? user.CreatedAt)
+            .ThenByDescending(user => user.CreatedAt)
             .Take(Math.Clamp(limit, 1, 100))
             .ToArrayAsync(cancellationToken);
 

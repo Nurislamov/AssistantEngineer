@@ -93,7 +93,8 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
         CancellationToken cancellationToken = default)
     {
         var users = _users.Values
-            .OrderBy(user => user.CreatedAt)
+            .OrderByDescending(user => user.LastSeenAt ?? user.CreatedAt)
+            .ThenByDescending(user => user.CreatedAt)
             .Take(Math.Clamp(limit, 1, 100))
             .Select(ToSnapshot)
             .ToArray();

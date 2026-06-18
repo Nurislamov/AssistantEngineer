@@ -134,6 +134,13 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Send a deterministic smoke message and verify the expected reply.
 - Verify service request callbacks edit the existing card, the assign picker has `Назад`, terminal cards keep only
   `Статус`, and full phone values appear only in authorized private messages.
+- For engineer onboarding, have the engineer send `/start`, then use `/admin_pending` as Owner/Admin and press
+  `Сделать инженером`.
+- Verify `/admin_users`, `/admin_pending`, and `/engineers` use inline cards without full phone or raw Telegram ids.
+- Verify Admin cannot manage Admin/Owner, Owner accounts have no destructive buttons, and self block/disable/demotion
+  callbacks are rejected.
+- Verify admin button commands remain absent from the global Telegram command menu; parameterized `/admin ...`
+  commands remain fallback.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.

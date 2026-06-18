@@ -245,6 +245,33 @@ The `AddTelegramServiceRequestNotificationMessage` migration is required. No new
 Commands remain operational fallback. ED-23D.1 does not include button-based user/role administration; that remains
 outside this change.
 
+## ED-23E Button-Based User Management
+
+Owner/Admin can use `/admin_users`, `/admin_pending`, and `/engineers` in a private bot chat. The commands render
+inline lists and user detail cards without full phone numbers, raw chat ids, Telegram user ids, tokens, or internal
+trace data. Detail cards show name, username, role, enabled/blocked state, phone-saved state, and local last activity.
+
+The onboarding flow is:
+
+1. The engineer opens a private chat with the bot and sends `/start`.
+2. Owner/Admin opens `/admin_pending`.
+3. Owner/Admin opens the new user and presses `Сделать инженером`.
+4. The engineer can then use the existing service-group queue and request actions.
+
+Owner can set Consumer, Engineer, or Admin and can manage Admin accounts. Admin can manage only Consumer/Engineer and
+cannot create Admins or manage Admin/Owner accounts. Engineer and Consumer have no user-management access. Owner
+accounts expose no destructive buttons, and self block, disable, or demotion actions are rejected.
+
+Every `au:*` callback is acknowledged through `answerCallbackQuery` and edits the same admin message where possible.
+If editing fails, the current safe card/list is sent as fallback. Existing `/admin users`, `/admin allow`,
+`/admin block`, `/admin unblock`, `/admin disable`, `/admin enable`, and `/admin role` commands remain fallback.
+The new admin commands are documented by `/admin_help` but are not added to the global `setMyCommands` menu.
+Role/access changes are not separately pushed to the affected user's private chat in ED-23E; the new access applies
+immediately and is visible through `/me`.
+
+ED-23E adds no migration or environment variable and does not include Mini App, web UI, audit tables, SLA,
+priorities, teams, geolocation, or bulk operations.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

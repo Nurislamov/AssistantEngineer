@@ -91,6 +91,9 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         Assert.Contains("/admin users", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/admin role <chatId>", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin_users", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin_pending", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("/engineers", admin.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", engineer.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", consumer.Text, StringComparison.Ordinal);
     }

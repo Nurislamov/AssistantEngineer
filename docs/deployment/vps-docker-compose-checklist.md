@@ -31,6 +31,9 @@
   and Telegram callback spinners clear after each press. No new environment value or migration is required.
 - After ED-23D.1 deployment, verify actions edit the stored card, assign uses the same card with `Назад`, terminal
   cards retain only `Статус`, and edit failure sends a replacement safe card. No new environment value is required.
+- After ED-23E deployment, verify `/admin_pending` promotes a registered Consumer to Engineer, `/admin_users` and
+  `/engineers` contain no full phone/raw Telegram identifiers, and Admin/Owner/self protections hold. No migration or
+  new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

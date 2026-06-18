@@ -263,7 +263,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations.TelegramDiagnosticConversationService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History.TelegramDiagnosticHistoryService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestService),
-                typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestQueueService)
+                typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestQueueService),
+                typeof(TelegramAdminUserManagementService)
             ],
             dependencyTypes);
 
