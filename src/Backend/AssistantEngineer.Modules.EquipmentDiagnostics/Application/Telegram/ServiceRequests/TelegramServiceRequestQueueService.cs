@@ -164,7 +164,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return Result("Команда недоступна.");
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        if (!TelegramUserRolePolicy.CanUseServiceQueue(actor.Role))
         {
             await AuditDeniedCommandSafeAsync(command, actor, "forbidden", cancellationToken);
             return Result("Команда недоступна.");
@@ -245,7 +245,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return CallbackResult("Действие недоступно.", "Нет доступа");
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        if (!TelegramUserRolePolicy.CanUseServiceQueue(actor.Role))
         {
             await AuditDeniedCallbackSafeAsync(
                 action,
@@ -383,7 +383,7 @@ public sealed class TelegramServiceRequestQueueService
             ? null
             : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
         if (actor is null || !actor.IsEnabled || actor.IsBlocked ||
-            actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+            !TelegramUserRolePolicy.CanUseServiceQueue(actor.Role))
         {
             return CallbackResult("Действие недоступно.", "Нет доступа");
         }
@@ -502,7 +502,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(requestId);
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        if (!TelegramUserRolePolicy.CanAssignServiceRequest(actor.Role))
         {
             await RecordActionDeniedAsync(
                 request,
@@ -526,7 +526,7 @@ public sealed class TelegramServiceRequestQueueService
         var users = await _userStore.ListUsersAsync(100, cancellationToken);
         var candidates = users
             .Where(user => user.IsEnabled && !user.IsBlocked)
-            .Where(user => user.Role is TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner)
+            .Where(user => TelegramUserRolePolicy.CanTakeServiceRequest(user.Role))
             .OrderBy(UserDisplayName, StringComparer.OrdinalIgnoreCase)
             .ToArray();
         if (candidates.Length == 0)
@@ -569,7 +569,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(requestId);
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        if (!TelegramUserRolePolicy.CanAssignServiceRequest(actor.Role))
         {
             await RecordActionDeniedAsync(
                 request,
@@ -595,7 +595,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return Result("Инженер не найден. Попросите его открыть бота и нажать /start, затем назначьте роль Engineer.");
         }
-        if (target.Role is not (TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner))
+        if (!TelegramUserRolePolicy.CanTakeServiceRequest(target.Role))
         {
             return Result("Пользователь найден, но не имеет роли Engineer.");
         }
@@ -717,7 +717,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(command.RequestId.Value);
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        if (!TelegramUserRolePolicy.CanAssignServiceRequest(actor.Role))
         {
             await RecordActionDeniedAsync(
                 request,
@@ -743,7 +743,7 @@ public sealed class TelegramServiceRequestQueueService
         {
             return Result("Инженер не найден. Попросите его открыть бота и нажать /start, затем назначьте роль Engineer.");
         }
-        if (target.Role is not (TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner))
+        if (!TelegramUserRolePolicy.CanTakeServiceRequest(target.Role))
         {
             return Result("Пользователь найден, но не имеет роли Engineer.");
         }
@@ -804,7 +804,8 @@ public sealed class TelegramServiceRequestQueueService
                 cancellationToken);
             return Result($"Заявка #{request.Id} отменена, действие недоступно.");
         }
-        if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
+        if (TelegramUserRolePolicy.IsServiceEngineerRole(actor.Role) &&
+            request.AssignedTelegramUserId != actor.Id)
         {
             await RecordActionDeniedAsync(
                 request,
@@ -913,7 +914,8 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(command.RequestId.Value);
         }
-        if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
+        if (TelegramUserRolePolicy.IsServiceEngineerRole(actor.Role) &&
+            request.AssignedTelegramUserId != actor.Id)
         {
             await RecordEventAsync(
                 Event(
@@ -937,7 +939,7 @@ public sealed class TelegramServiceRequestQueueService
                 cancellationToken);
             return Result("История доступна только назначенному инженеру или администратору.");
         }
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        if (!TelegramUserRolePolicy.CanViewServiceRequestHistory(actor.Role))
         {
             await RecordEventAsync(
                 Event(
@@ -983,7 +985,8 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(command.RequestId.Value);
         }
-        if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
+        if (TelegramUserRolePolicy.IsServiceEngineerRole(actor.Role) &&
+            request.AssignedTelegramUserId != actor.Id)
         {
             await RecordEventAsync(
                 Event(

@@ -17,7 +17,7 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Use `DeniedChatIds` for emergency or explicit blocks. Deny wins over allow.
 - Username allow/deny rules are optional; chat ID rules are preferred.
 - Unknown Telegram users are auto-created as `Consumer`, `IsEnabled=true`, `IsBlocked=false`.
-- Consumer receives Russian public-safe messages by default. Owner, Admin, and Engineer receive the more detailed
+- Consumer receives Russian public-safe messages by default. Owner, Admin, Engineer, and Installer receive the more detailed
   Russian technical response.
 - In `Production`, enabled Telegram without `BootstrapOwnerChatId` or legacy bootstrap fallback fails startup unless
   chat ID discovery is temporarily enabled for setup.
@@ -113,7 +113,8 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Verify phone entry does not delete an active brand/type/display-context diagnostic session and restores the previous
   prompt when possible.
 - Verify the bootstrap owner can use `/admin users`, `/admin block <chatId>`, `/admin unblock <chatId>`,
-  `/admin disable <chatId>`, `/admin enable <chatId>`, and `/admin role <chatId> <Owner|Admin|Engineer|Consumer>`.
+  `/admin disable <chatId>`, `/admin enable <chatId>`, and
+  `/admin role <chatId> <Owner|Admin|Engineer|Installer|Consumer>`.
 
 ## Initial Chat ID Discovery
 
@@ -162,7 +163,15 @@ Discovery is disabled by default. Its response never includes the bot token, web
 - Verify service request callbacks edit the existing card, the assign picker has `Назад`, terminal cards keep only
   `Статус`, and full phone values appear only in authorized private messages.
 - For engineer onboarding, have the engineer send `/start`, then use `/admin_pending` as Owner/Admin and press
-  `Сделать инженером`.
+  `Сделать сервис-инженером`.
+- Verify Owner/Admin can assign `Монтажник`, `/me` shows `Монтажник`, and `Engineer` is displayed as
+  `Сервис-инженер`.
+- Verify Installer receives technical diagnostics and can use `/history` and `/last`, but is denied `/queue`,
+  `/my_requests`, `/take`, `/assign`, `/done`, `/cancel_request`, `/contact`, service callbacks, admin commands, and
+  admin user-management callbacks.
+- Verify Installer never receives the full customer phone and role-change audit output/metadata contains no raw
+  Telegram identifiers, callback payload, phone, token, or secret.
+- ED-24B will expand the knowledge base with richer technical fields for Installer/Engineer/Admin/Owner.
 - Verify `/admin_users`, `/admin_pending`, and `/engineers` use inline cards without full phone or raw Telegram ids.
 - Verify Admin cannot manage Admin/Owner, Owner accounts have no destructive buttons, and self block/disable/demotion
   callbacks are rejected.

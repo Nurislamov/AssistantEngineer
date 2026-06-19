@@ -82,7 +82,7 @@ The reply keyboard always includes `🔎 Новый код`. Sending that button
 clears the current session and prompts for a new code. Sending a new diagnostic-looking text code also starts a new
 scenario even when the previous session was waiting for a button selection.
 
-Consumer replies continue to use the public-safe formatter. Owner, Admin, and Engineer get the same conversation
+Consumer replies continue to use the public-safe formatter. Owner, Admin, Engineer, and Installer get the same conversation
 flow but final results use the technical formatter, and `/admin ...` commands bypass any active session.
 
 Telegram contact messages are accepted from any state. The phone number is saved on `TelegramUsers`; if a diagnostic
@@ -144,7 +144,7 @@ that is not found in the runtime catalog, so future knowledge-base work can see 
 equipment-type, and display-context prompts do not create history cases.
 
 History is private per Telegram user. `/history` shows the latest five cases for the current user only, and `/last`
-shows that user's latest case. Consumer, Engineer, Owner, and Admin all see only their own history in ED-23A; global
+shows that user's latest case. Consumer, Installer, Engineer, Owner, and Admin all see only their own history in ED-23A; global
 admin case browsing is intentionally deferred.
 
 Stored fields are structured and bounded: Telegram user database id, optional conversation session id, source,
@@ -153,8 +153,32 @@ candidate count, phone-saved flag, phone source, and timestamps. The store does 
 full bot response text, phone number, raw chat id, Telegram user id, token, or webhook secret. `/last` uses the saved
 short summary rather than a stored full response. For Consumer users, `/last` never prints a stored English technical
 summary; it renders the public-safe Russian summary
-`Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.`. Engineer, Owner, and
-Admin may see the saved short technical summary.
+`Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.`. Installer, Engineer,
+Owner, and Admin may see the saved short technical summary.
+
+## ED-23R Installer Role
+
+ED-23R adds `Installer` as a technical-knowledge role with the Russian label `Монтажник`. The existing `Engineer`
+enum/database value remains unchanged for compatibility and is displayed as `Сервис-инженер`. Other role labels are
+`Владелец`, `Администратор`, and `Клиент`.
+
+The centralized `TelegramUserRolePolicy` defines the permission matrix:
+
+- Owner/Admin: admin management, service queue/actions, private contact, service history, and technical diagnostics.
+- Engineer (`Сервис-инженер`): service queue/actions under the existing assignment rules and technical diagnostics.
+- Installer (`Монтажник`): technical diagnostics only.
+- Consumer (`Клиент`): customer-safe diagnostics.
+
+Installer can use `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and `/last`. Installer cannot use service
+queue commands, request-action callbacks, private customer contact, admin commands, or admin user-management
+callbacks. Full customer phone numbers remain available only to authorized service roles in private bot messages.
+
+Owner/Admin can assign Installer through the existing user card or `/admin role <chatId> Installer`. Role changes
+to/from Installer use the existing `TelegramUserAuditEvents` `RoleChanged` event and safe metadata rules.
+
+No EF migration or environment variable is required because Telegram roles are stored as strings without a database
+constraint. ED-23R adds the access foundation only; richer technical knowledge fields/content are deferred to
+ED-24B Error knowledge base v2.
 
 `CreatedAt` remains stored in UTC. Telegram history display converts `/history` and `/last` timestamps to
 `AssistantEngineer:EquipmentDiagnostics:Telegram:DisplayTimeZone`, defaulting to `Asia/Tashkent`. Empty or invalid
@@ -255,11 +279,12 @@ The onboarding flow is:
 
 1. The engineer opens a private chat with the bot and sends `/start`.
 2. Owner/Admin opens `/admin_pending`.
-3. Owner/Admin opens the new user and presses `Сделать инженером`.
+3. Owner/Admin opens the new user and presses `Сделать сервис-инженером`.
 4. The engineer can then use the existing service-group queue and request actions.
 
-Owner can set Consumer, Engineer, or Admin and can manage Admin accounts. Admin can manage only Consumer/Engineer and
-cannot create Admins or manage Admin/Owner accounts. Engineer and Consumer have no user-management access. Owner
+Owner can set Consumer, Installer, Engineer, or Admin and can manage Admin accounts. Admin can manage
+Consumer/Installer/Engineer and
+cannot create Admins or manage Admin/Owner accounts. Installer, Engineer, and Consumer have no user-management access. Owner
 accounts expose no destructive buttons, and self block, disable, or demotion actions are rejected.
 
 Every `au:*` callback is acknowledged through `answerCallbackQuery` and edits the same admin message where possible.

@@ -306,6 +306,42 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task InstallerFinalResponseAndLastUseTechnicalMode()
+    {
+        var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
+        await harness.UserStore.AllowAsync(7, TelegramUserRole.Installer);
+
+        var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var last = await harness.Adapter.HandleAsync(Update("/last"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
+
+        Assert.Contains("Уверенность:", response.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramDiagnosticCaseResponseMode.Technical, diagnosticCase?.ResponseMode);
+        Assert.Contains("H5", last.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(ConsumerSafeSummaryText, last.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task InstallerCanUseNormalConversationCommands()
+    {
+        var harness = CreateHarness([]);
+        await harness.UserStore.AllowAsync(7, TelegramUserRole.Installer);
+
+        var start = await harness.Adapter.HandleAsync(Update("/start"));
+        var fresh = await harness.Adapter.HandleAsync(Update("/new"));
+        var phone = await harness.Adapter.HandleAsync(Update("/phone"));
+        var history = await harness.Adapter.HandleAsync(Update("/history"));
+        var last = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, start.ResponseKind);
+        Assert.Contains("Введите код ошибки", fresh.Text, StringComparison.Ordinal);
+        Assert.Contains("Введите номер телефона", phone.Text, StringComparison.Ordinal);
+        Assert.Contains("История пока пустая", history.Text, StringComparison.Ordinal);
+        Assert.Contains("Отправьте код ошибки", last.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task OwnerAdminCommandWorksWithActiveSession()
     {
         var harness = CreateHarness([

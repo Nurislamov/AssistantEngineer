@@ -220,7 +220,7 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   actor permissions.
 - Confirm each Engineer opened the bot privately with `/start` before role assignment. Verify contact delivery goes
   only to the assigned Engineer or Owner/Admin private chat and never displays the full phone in the service group.
-- Confirm `/admin_pending` shows a newly registered Consumer, `Сделать инженером` updates the detail card, and the
+- Confirm `/admin_pending` shows a newly registered Consumer, `Сделать сервис-инженером` updates the detail card, and the
   engineer can then work in the service group.
 - Confirm `/admin_users` and `/engineers` expose no phone value or raw Telegram identifier; Admin cannot manage
   Admin/Owner, Owner/self destructive actions are rejected, and callbacks clear the Telegram spinner.
@@ -239,7 +239,7 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
   validation keeps bad input in phone-entry state, and the phone number is not logged or printed in admin lists.
 - Confirm sending `🔎 Новый код`, `/new`, `/reset`, or `/cancel` clears the active conversation and asks for a new
   code.
-- Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Consumer>` from the bootstrap owner or an Admin.
+- Promote users with `/admin role <chatId> <Owner|Admin|Engineer|Installer|Consumer>` from the bootstrap owner or an Admin.
 - Review denied chat IDs; deny wins over allow.
 - Keep chat ID discovery disabled except during initial access setup.
 - Keep transport disabled until configuration review is complete.

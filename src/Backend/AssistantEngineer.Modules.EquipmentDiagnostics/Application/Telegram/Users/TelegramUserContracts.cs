@@ -5,6 +5,7 @@ public enum TelegramUserRole
     Owner,
     Admin,
     Engineer,
+    Installer,
     Consumer
 }
 
@@ -58,8 +59,9 @@ public sealed record TelegramUserAccessResult(
     string? DenialReason = null)
 {
     public bool IsConsumer => Role == TelegramUserRole.Consumer;
-    public bool CanUseAdminCommands => Role is TelegramUserRole.Owner or TelegramUserRole.Admin;
-    public bool UsesTechnicalResponse => Role is TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer;
+    public bool CanUseAdminCommands => TelegramUserRolePolicy.CanManageTelegramUsers(Role);
+    public bool UsesTechnicalResponse => TelegramUserRolePolicy.CanViewTechnicalDiagnostics(Role);
+    public bool CanUseServiceQueue => TelegramUserRolePolicy.CanUseServiceQueue(Role);
 }
 
 public sealed record TelegramUserCommandResult(

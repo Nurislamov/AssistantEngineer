@@ -139,6 +139,50 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
     }
 
     [Fact]
+    public async Task InstallerCannotUseServiceCommandsCallbacksOrReceiveContact()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+        var commands = new[]
+        {
+            "/queue",
+            "/queue active",
+            "/queue new",
+            "/queue in-progress",
+            "/queue closed",
+            "/queue all",
+            "/my_requests",
+            $"/take {request.Id}",
+            $"/assign {request.Id} @engineer",
+            $"/done {request.Id}",
+            $"/cancel_request {request.Id}",
+            $"/contact {request.Id}",
+            $"/request_events {request.Id}"
+        };
+
+        foreach (var command in commands)
+        {
+            Assert.Equal("Команда недоступна.", await harness.HandleAsync(command, harness.Installer));
+        }
+
+        var callback = await harness.HandleCallbackAsync(
+            $"sr:c:{request.Id}",
+            harness.Installer,
+            messageId: 777);
+        var queueCallback = await harness.HandleCallbackAsync(
+            "sq:a",
+            harness.Installer,
+            messageId: 778);
+
+        Assert.Equal("Нет доступа", callback.CallbackAnswerText);
+        Assert.Equal("Нет доступа", queueCallback.CallbackAnswerText);
+        Assert.DoesNotContain(harness.Outbound.Messages, message =>
+            message.ChatId == harness.Installer.TelegramChatId &&
+            message.Text.Contains(FullPhone, StringComparison.Ordinal));
+        Assert.Null((await harness.RequestStore.GetByIdAsync(request.Id))?.AssignedTelegramUserId);
+    }
+
+    [Fact]
     public async Task QueueResponseIncludesInlineActionsForActiveRequests()
     {
         var harness = await CreateHarnessAsync();
@@ -1166,6 +1210,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         var engineer = await CreateUserAsync(users, 20, 2020, "engineer", TelegramUserRole.Engineer);
         var otherEngineer = await CreateUserAsync(users, 21, 2121, "otherengineer", TelegramUserRole.Engineer);
         var admin = await CreateUserAsync(users, 30, 3030, "admin", TelegramUserRole.Admin);
+        var installer = await CreateUserAsync(users, 31, 3131, "installer", TelegramUserRole.Installer);
         var consumer = await CreateUserAsync(users, 40, 4040, "consumer", TelegramUserRole.Consumer);
         var requests = requestStore ?? new InMemoryTelegramServiceRequestStore();
         var events = eventStore ?? new InMemoryTelegramServiceRequestEventStore();
@@ -1184,7 +1229,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             new TelegramServiceRequestCardRenderer(users, formatter),
             logger,
             eventService);
-        return new Harness(options, service, users, requests, events, history, outbound, formatter, logger, eventLogger, customer, engineer, otherEngineer, admin, consumer);
+        return new Harness(options, service, users, requests, events, history, outbound, formatter, logger, eventLogger, customer, engineer, otherEngineer, admin, installer, consumer);
     }
 
     private static async Task<TelegramUserSnapshot> CreateUserAsync(
@@ -1233,6 +1278,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         TelegramUserSnapshot Engineer,
         TelegramUserSnapshot OtherEngineer,
         TelegramUserSnapshot Admin,
+        TelegramUserSnapshot Installer,
         TelegramUserSnapshot Consumer)
     {
         public async Task<TelegramServiceRequestSnapshot> CreateRequestAsync(string code)

@@ -67,7 +67,18 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
                 maxLength);
         }
 
-        var adminLine = role is TelegramUserRole.Owner or TelegramUserRole.Admin
+        if (role == TelegramUserRole.Installer)
+        {
+            return Truncate(
+                "Диагностика оборудования\n\n" +
+                "Напишите производителя и код ошибки, например: Gree H5.\n" +
+                "Доступны технические объяснения, история /history и последняя диагностика /last.\n" +
+                "Роль «Монтажник» не даёт доступа к сервисной очереди, контактам клиентов или админ-командам.\n" +
+                "Расширенная техническая база знаний будет добавлена на этапе ED-24B.",
+                maxLength);
+        }
+
+        var adminLine = TelegramUserRolePolicy.IsAdminRole(role)
             ? "\n\nАдмин-команды: /admin_help"
             : string.Empty;
 
@@ -76,7 +87,8 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Напишите производителя и код ошибки, например: Gree H5.\n" +
             "Можно добавить контекст: Gree C5 outdoor; Gree C5 indoor; /diagnose Gree H5.\n" +
             "История: /history, последняя диагностика: /last.\n" +
-            "Сервисная очередь: /queue, мои назначенные заявки: /my_requests.\n" +
+            "Сервисная очередь: /queue, мои назначенные заявки: /my_requests. " +
+            "Действия: /take, /done, /cancel_request, /contact.\n" +
             "Техническая подсказка требует проверки по точной модели и сервисной документации." +
             adminLine,
             maxLength);
@@ -133,7 +145,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "/admin_users — управление пользователями кнопками\n" +
             "/admin_pending — новые пользователи\n" +
             "/admin_audit — последние события управления пользователями\n" +
-            "/engineers — инженеры\n\n" +
+            "/engineers — сервис-инженеры\n\n" +
+            "Роли: Владелец, Администратор, Сервис-инженер, Монтажник, Клиент.\n" +
+            "Монтажник получает технические объяснения без доступа к сервисной очереди.\n\n" +
             "Очередь: /queue [active|new|in-progress|closed|all]\n" +
             "Мои назначенные заявки: /my_requests\n" +
             "История сервисной заявки: /request_events <id>\n\n" +
@@ -144,7 +158,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "/admin unblock <chatId>\n" +
             "/admin disable <chatId>\n" +
             "/admin enable <chatId>\n" +
-            "/admin role <chatId> <Owner|Admin|Engineer|Consumer>",
+            "/admin role <chatId> <Owner|Admin|Engineer|Installer|Consumer>",
             maxLength);
 
     public string FormatAdminUsers(
@@ -297,14 +311,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
               "- или ввести другой номер для звонка.";
 
     private static string RoleName(TelegramUserRole role) =>
-        role switch
-        {
-            TelegramUserRole.Owner => "Владелец",
-            TelegramUserRole.Admin => "Администратор",
-            TelegramUserRole.Engineer => "Инженер",
-            TelegramUserRole.Consumer => "Пользователь",
-            _ => role.ToString()
-        };
+        TelegramUserRolePolicy.DisplayName(role);
 
     private static string Compact(string text, int maxLength) =>
         text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 3).TrimEnd(), "...");

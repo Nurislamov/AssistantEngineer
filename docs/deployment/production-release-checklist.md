@@ -49,8 +49,10 @@ This checklist prepares a reviewed production deployment. It does not perform a 
   admin commands, and gets the contact sharing button before the phone is saved.
 - Verify Consumer diagnostic replies are Russian, short, public-safe, and do not include confidence/source/internal
   traces or response-shortening markers.
-- Verify Owner/Admin `/start` shows admin commands in Russian and Engineer gets technical diagnostics without admin
-  commands.
+- Verify Owner/Admin `/start` shows admin commands in Russian, Engineer is displayed as `Сервис-инженер`, and
+  Installer is displayed as `Монтажник`.
+- Verify Engineer and Installer get technical diagnostics; Installer receives no service queue/actions, customer
+  contact, or admin access.
 - Explicitly enable the reviewed Telegram transport only after all preceding checks pass.
 - For polling mode, run `delete-telegram-webhook.ps1 -DropPendingUpdates`, then `get-telegram-webhook-info.ps1`;
   verify no webhook URL is configured and API logs show `Telegram polling started`.

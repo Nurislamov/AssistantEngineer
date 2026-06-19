@@ -287,7 +287,7 @@ public sealed class TelegramAdminUserManagementService
                 .Where(user => user.Role == TelegramUserRole.Consumer && user.IsEnabled && !user.IsBlocked)
                 .ToArray(),
             AdminListKind.Engineers => users
-                .Where(user => user.Role == TelegramUserRole.Engineer)
+                .Where(user => TelegramUserRolePolicy.IsServiceEngineerRole(user.Role))
                 .ToArray(),
             _ => users
         };
@@ -295,7 +295,7 @@ public sealed class TelegramAdminUserManagementService
         var title = kind switch
         {
             AdminListKind.Pending => "Новые пользователи",
-            AdminListKind.Engineers => "Инженеры",
+            AdminListKind.Engineers => "Сервис-инженеры",
             _ => "Пользователи Telegram"
         };
         var builder = new StringBuilder(title);
@@ -326,7 +326,7 @@ public sealed class TelegramAdminUserManagementService
             [
                 Button("Пользователи", "au:all"),
                 Button("Новые", "au:p"),
-                Button("Инженеры", "au:eng")
+                Button("Сервис-инженеры", "au:eng")
             ])
             .Append([Button("Обновить", CallbackFor(kind))])
             .ToArray();
@@ -356,7 +356,7 @@ public sealed class TelegramAdminUserManagementService
 
         var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>>();
         var canManageTarget = actor.Role == TelegramUserRole.Owner ||
-            user.Role is TelegramUserRole.Consumer or TelegramUserRole.Engineer;
+            user.Role is TelegramUserRole.Consumer or TelegramUserRole.Engineer or TelegramUserRole.Installer;
         var isSelf = actor.Id == user.Id;
         var protectedOwner = user.Role == TelegramUserRole.Owner;
 
@@ -365,11 +365,15 @@ public sealed class TelegramAdminUserManagementService
             var roleButtons = new List<EquipmentDiagnosticTelegramInlineKeyboardButton>();
             if (user.Role != TelegramUserRole.Engineer)
             {
-                roleButtons.Add(Button("Сделать инженером", $"au:r:{user.Id}:e"));
+                roleButtons.Add(Button("Сделать сервис-инженером", $"au:r:{user.Id}:e"));
+            }
+            if (user.Role != TelegramUserRole.Installer)
+            {
+                roleButtons.Add(Button("Сделать монтажником", $"au:r:{user.Id}:i"));
             }
             if (user.Role != TelegramUserRole.Consumer)
             {
-                roleButtons.Add(Button("Сделать пользователем", $"au:r:{user.Id}:c"));
+                roleButtons.Add(Button("Сделать клиентом", $"au:r:{user.Id}:c"));
             }
             if (actor.Role == TelegramUserRole.Owner && user.Role != TelegramUserRole.Admin)
             {
@@ -377,7 +381,10 @@ public sealed class TelegramAdminUserManagementService
             }
             if (roleButtons.Count > 0)
             {
-                rows.Add(roleButtons);
+                foreach (var row in roleButtons.Chunk(2))
+                {
+                    rows.Add(row);
+                }
             }
 
             rows.Add(
@@ -597,6 +604,7 @@ public sealed class TelegramAdminUserManagementService
             role = parts[3] switch
             {
                 "e" => TelegramUserRole.Engineer,
+                "i" => TelegramUserRole.Installer,
                 "a" => TelegramUserRole.Admin,
                 "c" => TelegramUserRole.Consumer,
                 _ => null
@@ -609,7 +617,7 @@ public sealed class TelegramAdminUserManagementService
 
     private static bool CanManage(TelegramUserSnapshot? user) =>
         user is { IsEnabled: true, IsBlocked: false } &&
-        user.Role is TelegramUserRole.Owner or TelegramUserRole.Admin;
+        TelegramUserRolePolicy.CanManageTelegramUsers(user.Role);
 
     private static string CallbackFor(AdminListKind kind) =>
         kind switch
@@ -641,13 +649,7 @@ public sealed class TelegramAdminUserManagementService
     }
 
     private static string RoleLabel(TelegramUserRole role) =>
-        role switch
-        {
-            TelegramUserRole.Owner => "Owner",
-            TelegramUserRole.Admin => "Admin",
-            TelegramUserRole.Engineer => "Engineer",
-            _ => "Consumer"
-        };
+        TelegramUserRolePolicy.DisplayName(role);
 
     private static EquipmentDiagnosticTelegramInlineKeyboardButton Button(string text, string callbackData) =>
         new(text, callbackData);

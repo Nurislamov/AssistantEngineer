@@ -45,6 +45,9 @@
 - After ED-23F.2 deployment, verify contact requested/sent/denied, history viewed/denied, and safe action-denied audit
   records. Confirm allowlisted metadata only, compact Russian history labels, and best-effort behavior when audit
   persistence is unavailable. No migration or new environment value is required.
+- After ED-23R deployment, verify Owner/Admin can assign `Монтажник`, Engineer is shown as `Сервис-инженер`,
+  Installer receives technical diagnostics but cannot use service/admin actions or receive customer contact, and
+  role changes appear safely in `/admin_audit`. No migration or new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

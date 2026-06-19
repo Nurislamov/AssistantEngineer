@@ -55,14 +55,15 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
             Callback($"au:v:{harness.Consumer.Id}", harness.Owner));
 
         Assert.Contains("Пользователь Telegram", result.Text, StringComparison.Ordinal);
-        Assert.Contains("Роль: Consumer", result.Text, StringComparison.Ordinal);
+        Assert.Contains("Роль: Клиент", result.Text, StringComparison.Ordinal);
         Assert.Contains("Доступ: включён", result.Text, StringComparison.Ordinal);
         Assert.Contains("Блокировка: нет", result.Text, StringComparison.Ordinal);
         Assert.Contains("Телефон: сохранён", result.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, result.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(harness.Consumer.TelegramChatId.ToString(), result.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(harness.Consumer.TelegramUserId!.Value.ToString(), result.Text, StringComparison.Ordinal);
-        Assert.Contains(Buttons(result.ReplyMarkup), button => button.Text == "Сделать инженером");
+        Assert.Contains(Buttons(result.ReplyMarkup), button => button.Text == "Сделать сервис-инженером");
+        Assert.Contains(Buttons(result.ReplyMarkup), button => button.Text == "Сделать монтажником");
         Assert.Contains(Buttons(result.ReplyMarkup), button => button.Text == "Сделать админом");
         Assert.All(Buttons(result.ReplyMarkup), button =>
         {
@@ -84,7 +85,7 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         Assert.Equal(
             TelegramUserRole.Engineer,
             (await engineerHarness.Users.GetByIdAsync(engineerHarness.Consumer.Id))?.Role);
-        Assert.Contains("Роль: Engineer", Assert.Single(engineerHarness.Outbound.Edits).Text, StringComparison.Ordinal);
+        Assert.Contains("Роль: Сервис-инженер", Assert.Single(engineerHarness.Outbound.Edits).Text, StringComparison.Ordinal);
 
         var adminHarness = await CreateHarnessAsync();
         await adminHarness.Service.HandleCallbackAsync(
@@ -92,6 +93,54 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         Assert.Equal(
             TelegramUserRole.Admin,
             (await adminHarness.Users.GetByIdAsync(adminHarness.Consumer.Id))?.Role);
+    }
+
+    [Fact]
+    public async Task OwnerAndAdminCanAssignInstallerAndAuditRoleTransitions()
+    {
+        var ownerHarness = await CreateHarnessAsync();
+
+        await ownerHarness.Service.HandleCallbackAsync(
+            Callback($"au:r:{ownerHarness.Consumer.Id}:i", ownerHarness.Owner));
+        await ownerHarness.Service.HandleCallbackAsync(
+            Callback($"au:r:{ownerHarness.Consumer.Id}:c", ownerHarness.Owner));
+        await ownerHarness.Service.HandleCallbackAsync(
+            Callback($"au:r:{ownerHarness.Consumer.Id}:i", ownerHarness.Admin));
+        await ownerHarness.Service.HandleCallbackAsync(
+            Callback($"au:r:{ownerHarness.Consumer.Id}:e", ownerHarness.Admin));
+
+        Assert.Equal(
+            TelegramUserRole.Engineer,
+            (await ownerHarness.Users.GetByIdAsync(ownerHarness.Consumer.Id))?.Role);
+        var roleEvents = (await ownerHarness.AuditStore.GetLatestAsync(10))
+            .Where(item => item.EventType == TelegramUserAuditEventType.RoleChanged)
+            .Reverse()
+            .ToArray();
+        Assert.Collection(
+            roleEvents,
+            item =>
+            {
+                Assert.Equal(TelegramUserRole.Consumer, item.OldRole);
+                Assert.Equal(TelegramUserRole.Installer, item.NewRole);
+            },
+            item =>
+            {
+                Assert.Equal(TelegramUserRole.Installer, item.OldRole);
+                Assert.Equal(TelegramUserRole.Consumer, item.NewRole);
+            },
+            item =>
+            {
+                Assert.Equal(TelegramUserRole.Consumer, item.OldRole);
+                Assert.Equal(TelegramUserRole.Installer, item.NewRole);
+            },
+            item =>
+            {
+                Assert.Equal(TelegramUserRole.Installer, item.OldRole);
+                Assert.Equal(TelegramUserRole.Engineer, item.NewRole);
+            });
+        var auditText = await ownerHarness.AuditService.FormatLatestAsync();
+        Assert.Contains("Монтажник", auditText, StringComparison.Ordinal);
+        Assert.Contains("Сервис-инженер", auditText, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -121,11 +170,17 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
 
     [Theory]
     [InlineData(TelegramUserRole.Engineer)]
+    [InlineData(TelegramUserRole.Installer)]
     [InlineData(TelegramUserRole.Consumer)]
     public async Task EngineerAndConsumerCannotManageUsers(TelegramUserRole role)
     {
         var harness = await CreateHarnessAsync();
-        var actor = role == TelegramUserRole.Engineer ? harness.Engineer : harness.Consumer;
+        var actor = role switch
+        {
+            TelegramUserRole.Engineer => harness.Engineer,
+            TelegramUserRole.Installer => harness.Installer,
+            _ => harness.Consumer
+        };
 
         var result = await harness.Service.HandleCallbackAsync(
             Callback($"au:b:{harness.OtherConsumer.Id}", actor));
@@ -436,6 +491,7 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         var admin = await CreateUserAsync(users, 200, 2000, "admin", "Admin", TelegramUserRole.Admin);
         var otherAdmin = await CreateUserAsync(users, 201, 2001, "otheradmin", "Other Admin", TelegramUserRole.Admin);
         var engineer = await CreateUserAsync(users, 300, 3000, "engineer", "Engineer", TelegramUserRole.Engineer);
+        var installer = await CreateUserAsync(users, 301, 3001, "installer", "Installer", TelegramUserRole.Installer);
         var consumer = await CreateUserAsync(users, 400, 4000, "consumer", "Consumer", TelegramUserRole.Consumer);
         var otherConsumer = await CreateUserAsync(users, 401, 4001, "otherconsumer", "Other Consumer", TelegramUserRole.Consumer);
         await users.SavePhoneAsync(consumer.TelegramChatId, FullPhone, false, TelegramUserPhoneNumberSource.Manual, FixedNowUtc);
@@ -465,6 +521,7 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
             admin,
             otherAdmin,
             engineer,
+            installer,
             consumer,
             otherConsumer);
     }
@@ -549,6 +606,7 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         TelegramUserSnapshot Admin,
         TelegramUserSnapshot OtherAdmin,
         TelegramUserSnapshot Engineer,
+        TelegramUserSnapshot Installer,
         TelegramUserSnapshot Consumer,
         TelegramUserSnapshot OtherConsumer);
 

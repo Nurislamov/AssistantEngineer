@@ -98,6 +98,8 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("/queue [active|new|in-progress|closed|all]", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/my_requests", admin.Text, StringComparison.Ordinal);
         Assert.Contains("/request_events <id>", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("Монтажник", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервис-инженер", owner.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", engineer.Text, StringComparison.Ordinal);
         Assert.Contains("Команда недоступна", consumer.Text, StringComparison.Ordinal);
     }
@@ -174,6 +176,22 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
+    public async Task InstallerCannotUseAdminCommands()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.AllowAsync(613, TelegramUserRole.Installer);
+        var adapter = CreateAdapter(store, Options());
+
+        var help = await adapter.HandleAsync(Update("/admin_help", chatId: 613));
+        var users = await adapter.HandleAsync(Update("/admin_users", chatId: 613));
+        var fallback = await adapter.HandleAsync(Update("/admin users", chatId: 613));
+
+        Assert.Contains("Команда недоступна", help.Text, StringComparison.Ordinal);
+        Assert.Contains("Команда недоступна", users.Text, StringComparison.Ordinal);
+        Assert.Contains("Команда недоступна", fallback.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task EngineerReceivesTechnicalResponse()
     {
         var store = new InMemoryTelegramUserStore();
@@ -184,6 +202,42 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         Assert.Contains("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
         Assert.Contains("Безопасность:", diagnostic.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task InstallerReceivesTechnicalDiagnosticsAndRoleSpecificHelp()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.AllowAsync(701, TelegramUserRole.Installer);
+        var adapter = CreateAdapter(store, Options());
+
+        var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 701));
+        var help = await adapter.HandleAsync(Update("/help", chatId: 701));
+        var me = await adapter.HandleAsync(Update("/me", chatId: 701));
+        var history = await adapter.HandleAsync(Update("/history", chatId: 701));
+        var last = await adapter.HandleAsync(Update("/last", chatId: 701));
+
+        Assert.Contains("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Безопасность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Монтажник", help.Text, StringComparison.Ordinal);
+        Assert.Contains("технические объяснения", help.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("/queue", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin", help.Text, StringComparison.Ordinal);
+        Assert.Contains("Роль: Монтажник", me.Text, StringComparison.Ordinal);
+        Assert.Contains("История пока пустая", history.Text, StringComparison.Ordinal);
+        Assert.Contains("Отправьте код ошибки", last.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task EngineerMeUsesServiceEngineerLabel()
+    {
+        var store = new InMemoryTelegramUserStore();
+        await store.AllowAsync(702, TelegramUserRole.Engineer);
+        var adapter = CreateAdapter(store, Options());
+
+        var me = await adapter.HandleAsync(Update("/me", chatId: 702));
+
+        Assert.Contains("Роль: Сервис-инженер", me.Text, StringComparison.Ordinal);
     }
 
     [Fact]

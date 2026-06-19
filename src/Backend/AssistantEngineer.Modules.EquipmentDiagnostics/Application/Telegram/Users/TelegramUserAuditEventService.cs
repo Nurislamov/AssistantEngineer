@@ -108,7 +108,8 @@ public sealed class TelegramUserAuditEventService
         return "пользователь";
     }
 
-    private static string RoleLabel(TelegramUserRole? role) => role?.ToString() ?? "—";
+    private static string RoleLabel(TelegramUserRole? role) =>
+        role is null ? "—" : TelegramUserRolePolicy.DisplayName(role.Value);
 
     private static string SafeMessage(TelegramUserAuditEventType type) =>
         type switch
