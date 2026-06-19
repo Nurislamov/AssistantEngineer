@@ -34,6 +34,111 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
     }
 
     [Fact]
+    public async Task QueueDefaultsToActiveAndActiveShowsNewAndInProgressOnly()
+    {
+        var harness = await CreateHarnessAsync();
+        var fresh = await harness.CreateRequestAsync("H5");
+        var inProgress = await harness.CreateRequestAsync("C5");
+        var resolved = await harness.CreateRequestAsync("E6");
+        await harness.RequestStore.UpdateAsync(Update(
+            inProgress.Id,
+            TelegramServiceRequestStatus.InProgress,
+            harness.Engineer.Id));
+        await harness.RequestStore.UpdateAsync(Update(
+            resolved.Id,
+            TelegramServiceRequestStatus.Resolved,
+            harness.Engineer.Id));
+
+        var defaultQueue = await harness.HandleAsync("/queue", harness.Engineer);
+        var activeQueue = await harness.HandleAsync("/queue active", harness.Engineer);
+
+        Assert.Contains($"#{fresh.Id}", defaultQueue, StringComparison.Ordinal);
+        Assert.Contains($"#{inProgress.Id}", defaultQueue, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{resolved.Id}", defaultQueue, StringComparison.Ordinal);
+        Assert.Equal(defaultQueue, activeQueue);
+        Assert.DoesNotContain(FullPhone, defaultQueue, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task QueueStatusFiltersReturnOnlyMatchingRequests()
+    {
+        var harness = await CreateHarnessAsync();
+        var fresh = await harness.CreateRequestAsync("H5");
+        var inProgress = await harness.CreateRequestAsync("C5");
+        var resolved = await harness.CreateRequestAsync("E6");
+        var cancelled = await harness.CreateRequestAsync("F5");
+        await harness.RequestStore.UpdateAsync(Update(
+            inProgress.Id,
+            TelegramServiceRequestStatus.InProgress,
+            harness.Engineer.Id));
+        await harness.RequestStore.UpdateAsync(Update(
+            resolved.Id,
+            TelegramServiceRequestStatus.Resolved,
+            harness.Engineer.Id));
+        await harness.RequestStore.UpdateAsync(Update(
+            cancelled.Id,
+            TelegramServiceRequestStatus.Cancelled,
+            harness.Admin.Id));
+
+        var newOnly = await harness.HandleAsync("/queue new", harness.Admin);
+        var inProgressOnly = await harness.HandleAsync("/queue in-progress", harness.Admin);
+        var closed = await harness.HandleAsync("/queue closed", harness.Admin);
+        var all = await harness.HandleAsync("/queue all", harness.Admin);
+
+        Assert.Contains($"#{fresh.Id}", newOnly, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{inProgress.Id}", newOnly, StringComparison.Ordinal);
+        Assert.Contains($"#{inProgress.Id}", inProgressOnly, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{fresh.Id}", inProgressOnly, StringComparison.Ordinal);
+        Assert.Contains($"#{resolved.Id}", closed, StringComparison.Ordinal);
+        Assert.Contains($"#{cancelled.Id}", closed, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{fresh.Id}", closed, StringComparison.Ordinal);
+        Assert.Contains($"#{fresh.Id}", all, StringComparison.Ordinal);
+        Assert.Contains($"#{inProgress.Id}", all, StringComparison.Ordinal);
+        Assert.Contains($"#{resolved.Id}", all, StringComparison.Ordinal);
+        Assert.Contains($"#{cancelled.Id}", all, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task MyRequestsShowsOnlyAssignedActiveRequests()
+    {
+        var harness = await CreateHarnessAsync();
+        var mine = await harness.CreateRequestAsync("H5");
+        var other = await harness.CreateRequestAsync("C5");
+        var closedMine = await harness.CreateRequestAsync("E6");
+        await harness.RequestStore.UpdateAsync(Update(
+            mine.Id,
+            TelegramServiceRequestStatus.InProgress,
+            harness.Engineer.Id));
+        await harness.RequestStore.UpdateAsync(Update(
+            other.Id,
+            TelegramServiceRequestStatus.InProgress,
+            harness.OtherEngineer.Id));
+        await harness.RequestStore.UpdateAsync(Update(
+            closedMine.Id,
+            TelegramServiceRequestStatus.Resolved,
+            harness.Engineer.Id));
+
+        var result = await harness.HandleAsync("/my_requests", harness.Engineer);
+
+        Assert.Contains($"#{mine.Id}", result, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{other.Id}", result, StringComparison.Ordinal);
+        Assert.DoesNotContain($"#{closedMine.Id}", result, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, result, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ConsumerCannotUseQueueOrMyRequests()
+    {
+        var harness = await CreateHarnessAsync();
+
+        var queue = await harness.HandleAsync("/queue all", harness.Consumer);
+        var mine = await harness.HandleAsync("/my_requests", harness.Consumer);
+
+        Assert.Equal("Команда недоступна.", queue);
+        Assert.Equal("Команда недоступна.", mine);
+    }
+
+    [Fact]
     public async Task QueueResponseIncludesInlineActionsForActiveRequests()
     {
         var harness = await CreateHarnessAsync();
@@ -46,6 +151,64 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} Взять" && button.CallbackData == $"sr:t:{request.Id}");
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} Назначить" && button.CallbackData == $"sr:a:{request.Id}");
         Assert.Contains(buttons, button => button.Text == $"#{request.Id} История" && button.CallbackData == $"sr:e:{request.Id}");
+        Assert.Contains(buttons, button => button.Text == "Активные" && button.CallbackData == "sq:a");
+        Assert.Contains(buttons, button => button.Text == "Новые" && button.CallbackData == "sq:n");
+        Assert.Contains(buttons, button => button.Text == "В работе" && button.CallbackData == "sq:p");
+        Assert.Contains(buttons, button => button.Text == "Мои" && button.CallbackData == "sq:m");
+        Assert.Contains(buttons, button => button.Text == "Закрытые" && button.CallbackData == "sq:c");
+        Assert.Contains(buttons, button => button.Text == "Все" && button.CallbackData == "sq:l");
+    }
+
+    [Fact]
+    public async Task QueueFilterCallbackEditsMessageAndReturnsCallbackAnswer()
+    {
+        var harness = await CreateHarnessAsync();
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCallbackAsync("sq:n", harness.Admin);
+
+        Assert.Equal("Очередь обновлена", result.CallbackAnswerText);
+        Assert.True(result.SuppressGroupMessage);
+        var edit = Assert.Single(harness.Outbound.Edits);
+        Assert.Equal(777, edit.MessageId);
+        Assert.Contains($"#{request.Id}", edit.Text, StringComparison.Ordinal);
+        Assert.Contains("Новые сервисные заявки", edit.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, edit.Text, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("sq:")]
+    [InlineData("sq:unknown")]
+    [InlineData("sq:a:extra")]
+    public async Task MalformedQueueCallbackIsHandledSafely(string data)
+    {
+        var harness = await CreateHarnessAsync();
+
+        var result = await harness.HandleCallbackAsync(data, harness.Engineer);
+
+        Assert.Equal("Действие недоступно.", result.Text);
+        Assert.Equal("Действие недоступно.", result.CallbackAnswerText);
+        Assert.True(result.SuppressGroupMessage);
+        Assert.Empty(harness.Outbound.Edits);
+    }
+
+    [Fact]
+    public async Task QueueDatabaseFailureReturnsSafeFallback()
+    {
+        var harness = await CreateHarnessAsync(requestStore: new ThrowingQueueRequestStore());
+
+        var command = await harness.HandleCommandResultAsync("/queue all", harness.Admin);
+        var callback = await harness.HandleCallbackAsync("sq:l", harness.Admin);
+
+        Assert.Equal("Очередь временно недоступна. Попробуйте позже.", command.Text);
+        Assert.Equal("Очередь временно недоступна. Попробуйте позже.", callback.CallbackAnswerText);
+        Assert.True(callback.SuppressGroupMessage);
+        Assert.DoesNotContain(FullPhone, command.Text, StringComparison.Ordinal);
+        Assert.Contains(harness.Logger.Messages, message =>
+            message.Contains("queue query failed", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(harness.Logger.Messages, message =>
+            message.Contains(FullPhone, StringComparison.Ordinal) ||
+            message.Contains(ServiceGroupId.ToString(), StringComparison.Ordinal));
     }
 
     [Fact]
@@ -741,7 +904,8 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
 
     private static async Task<Harness> CreateHarnessAsync(
         ITelegramServiceRequestEventStore? eventStore = null,
-        CapturingLogger<TelegramServiceRequestEventService>? eventLogger = null)
+        CapturingLogger<TelegramServiceRequestEventService>? eventLogger = null,
+        ITelegramServiceRequestStore? requestStore = null)
     {
         var options = new EquipmentDiagnosticTelegramOptions
         {
@@ -758,7 +922,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         var otherEngineer = await CreateUserAsync(users, 21, 2121, "otherengineer", TelegramUserRole.Engineer);
         var admin = await CreateUserAsync(users, 30, 3030, "admin", TelegramUserRole.Admin);
         var consumer = await CreateUserAsync(users, 40, 4040, "consumer", TelegramUserRole.Consumer);
-        var requests = new InMemoryTelegramServiceRequestStore();
+        var requests = requestStore ?? new InMemoryTelegramServiceRequestStore();
         var events = eventStore ?? new InMemoryTelegramServiceRequestEventStore();
         var history = new InMemoryTelegramDiagnosticCaseStore();
         var outbound = new FakeOutbound();
@@ -813,7 +977,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         EquipmentDiagnosticTelegramOptions Options,
         TelegramServiceRequestQueueService Service,
         InMemoryTelegramUserStore UserStore,
-        InMemoryTelegramServiceRequestStore RequestStore,
+        ITelegramServiceRequestStore RequestStore,
         ITelegramServiceRequestEventStore EventStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         FakeOutbound Outbound,
@@ -894,6 +1058,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
                     chatId,
                     sender.Username,
                     Text: null,
+                    MessageId: 777,
                     ReceivedAt: FixedNowUtc,
                     UserId: sender.TelegramUserId,
                     ChatType: "supergroup",
@@ -1011,6 +1176,48 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
                 ? Task.FromException<IReadOnlyList<TelegramServiceRequestEventSnapshot>>(
                     new InvalidOperationException(exceptionMessage))
                 : Task.FromResult<IReadOnlyList<TelegramServiceRequestEventSnapshot>>([]);
+    }
+
+    private sealed class ThrowingQueueRequestStore : ITelegramServiceRequestStore
+    {
+        public Task<TelegramServiceRequestCreateResult> CreateIfNoActiveAsync(
+            TelegramServiceRequestCreate request,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestForTelegramUserAsync(
+            long telegramUserId,
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<TelegramServiceRequestSnapshot?> GetByIdAsync(
+            long id,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetActiveAsync(
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestAsync(
+            IReadOnlyCollection<TelegramServiceRequestStatus>? statuses,
+            long? assignedTelegramUserId,
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException<IReadOnlyList<TelegramServiceRequestSnapshot>>(
+                new InvalidOperationException($"phone={FullPhone};chat={ServiceGroupId}"));
+
+        public Task<TelegramServiceRequestSnapshot?> UpdateAsync(
+            TelegramServiceRequestUpdate update,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<TelegramServiceRequestSnapshot?> UpdateNotificationAsync(
+            TelegramServiceRequestNotificationUpdate update,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
     }
 
     private sealed class CapturingLogger<T> : ILogger<T>

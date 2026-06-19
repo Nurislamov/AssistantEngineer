@@ -179,6 +179,27 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task QueueFilterCallbackAnswersCallbackQueryWithoutGroupMessage()
+    {
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Новые сервисные заявки",
+            callbackAnswerText: "Очередь обновлена",
+            suppressOutbound: true);
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(
+            CallbackUpdate("callback-queue", "sq:n"),
+            "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal("Очередь обновлена", outbound.CallbackAnswerText);
+        Assert.Equal(0, outbound.CallCount);
+    }
+
+    [Fact]
     public async Task HistoryCallbackIsAnsweredAndSendsCompactHistory()
     {
         var adapter = new FakeAdapter(

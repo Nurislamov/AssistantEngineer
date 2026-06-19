@@ -302,6 +302,23 @@ uses the same text in `answerCallbackQuery` without adding group noise. Every ca
 the Telegram spinner running or fail the polling batch. Logs and audit metadata never include full phone numbers, raw
 chat ids, Telegram user ids, callback payloads, tokens, secrets, or full incoming text.
 
+## ED-23G Service Request Queue Filters
+
+ED-23G extends the service-group queue with `/queue active`, `/queue new`, `/queue in-progress`, `/queue closed`, and
+`/queue all`; plain `/queue` remains the active (`New` + `InProgress`) view. `/my_requests` shows only active requests
+assigned to the current Owner, Admin, or Engineer. Consumer, unknown, disabled, and blocked users retain the existing
+safe denial behavior.
+
+Queue responses include filter buttons for `Активные`, `Новые`, `В работе`, `Мои`, `Закрытые`, and `Все`. Filter
+callbacks use short `sq:*` payloads and edit the existing queue message when possible; edit failure falls back to a
+safe replacement message. Every callback is acknowledged. A database/query failure returns
+`Очередь временно недоступна. Попробуйте позже.` without breaking the polling batch.
+
+Queue output is limited to ten latest matching requests and contains only request id, code/manufacturer, status,
+assigned operator label, safe local display time, and `Телефон: сохранён` or `Телефон: не указан`. Full phone numbers
+remain restricted to authorized private contact delivery. ED-23G adds no migration or environment variable, and
+queue commands remain absent from the global command menu.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

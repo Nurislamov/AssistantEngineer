@@ -79,6 +79,31 @@ public sealed class InMemoryTelegramServiceRequestStore : ITelegramServiceReques
         return Task.FromResult<IReadOnlyList<TelegramServiceRequestSnapshot>>(requests);
     }
 
+    public Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestAsync(
+        IReadOnlyCollection<TelegramServiceRequestStatus>? statuses,
+        long? assignedTelegramUserId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _requests.Values.AsEnumerable();
+        if (statuses is { Count: > 0 })
+        {
+            query = query.Where(item => statuses.Contains(item.Status));
+        }
+        if (assignedTelegramUserId is not null)
+        {
+            query = query.Where(item => item.AssignedTelegramUserId == assignedTelegramUserId);
+        }
+
+        var requests = query
+            .OrderByDescending(item => item.UpdatedAt ?? item.CreatedAt)
+            .ThenByDescending(item => item.Id)
+            .Take(Math.Clamp(limit, 1, 100))
+            .Select(ToSnapshot)
+            .ToArray();
+        return Task.FromResult<IReadOnlyList<TelegramServiceRequestSnapshot>>(requests);
+    }
+
     public Task<TelegramServiceRequestSnapshot?> UpdateAsync(
         TelegramServiceRequestUpdate update,
         CancellationToken cancellationToken = default)

@@ -7,6 +7,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 {
     private const string GenericCallbackUnavailable = "Действие временно недоступно.";
     private const string HistoryCallbackUnavailable = "История временно недоступна. Попробуйте позже.";
+    private const string QueueCallbackUnavailable = "Очередь временно недоступна. Попробуйте позже.";
 
     private readonly EquipmentDiagnosticTelegramWebhookOptions _options;
     private readonly EquipmentDiagnosticTelegramWebhookSecurityPolicy _securityPolicy;
@@ -223,6 +224,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                     callback.Id,
                     IsHistoryCallback(callback.Data)
                         ? HistoryCallbackUnavailable
+                        : IsQueueCallback(callback.Data)
+                            ? QueueCallbackUnavailable
                         : GenericCallbackUnavailable,
                     cancellationToken);
             }
@@ -265,11 +268,18 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
     private static bool IsHistoryCallback(string? data) =>
         data?.StartsWith("sr:e:", StringComparison.Ordinal) == true;
 
+    private static bool IsQueueCallback(string? data) =>
+        data?.StartsWith("sq:", StringComparison.Ordinal) == true;
+
     private static string SafeCallbackAction(string? data)
     {
         if (IsHistoryCallback(data))
         {
             return "history";
+        }
+        if (IsQueueCallback(data))
+        {
+            return "queue";
         }
         if (data?.StartsWith("sr:", StringComparison.Ordinal) == true)
         {

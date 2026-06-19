@@ -76,6 +76,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Напишите производителя и код ошибки, например: Gree H5.\n" +
             "Можно добавить контекст: Gree C5 outdoor; Gree C5 indoor; /diagnose Gree H5.\n" +
             "История: /history, последняя диагностика: /last.\n" +
+            "Сервисная очередь: /queue, мои назначенные заявки: /my_requests.\n" +
             "Техническая подсказка требует проверки по точной модели и сервисной документации." +
             adminLine,
             maxLength);
@@ -132,6 +133,8 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "/admin_users — управление пользователями кнопками\n" +
             "/admin_pending — новые пользователи\n" +
             "/engineers — инженеры\n\n" +
+            "Очередь: /queue [active|new|in-progress|closed|all]\n" +
+            "Мои назначенные заявки: /my_requests\n" +
             "История сервисной заявки: /request_events <id>\n\n" +
             "Команды с параметрами (fallback):\n" +
             "/admin users\n" +

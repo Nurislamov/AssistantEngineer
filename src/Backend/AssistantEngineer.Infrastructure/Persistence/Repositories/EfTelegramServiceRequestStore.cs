@@ -107,6 +107,32 @@ public sealed class EfTelegramServiceRequestStore : ITelegramServiceRequestStore
         return requests.Select(ToSnapshot).ToArray();
     }
 
+    public async Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestAsync(
+        IReadOnlyCollection<TelegramServiceRequestStatus>? statuses,
+        long? assignedTelegramUserId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var query = context.TelegramServiceRequests.AsNoTracking();
+        if (statuses is { Count: > 0 })
+        {
+            query = query.Where(item => statuses.Contains(item.Status));
+        }
+        if (assignedTelegramUserId is not null)
+        {
+            query = query.Where(item => item.AssignedTelegramUserId == assignedTelegramUserId);
+        }
+
+        var requests = await query
+            .OrderByDescending(item => item.UpdatedAt ?? item.CreatedAt)
+            .ThenByDescending(item => item.Id)
+            .Take(Math.Clamp(limit, 1, 100))
+            .ToArrayAsync(cancellationToken);
+        return requests.Select(ToSnapshot).ToArray();
+    }
+
     public async Task<TelegramServiceRequestSnapshot?> UpdateAsync(
         TelegramServiceRequestUpdate update,
         CancellationToken cancellationToken = default)

@@ -10,6 +10,7 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Se
 public enum TelegramServiceQueueCommandKind
 {
     Queue,
+    MyRequests,
     Take,
     Assign,
     Done,
@@ -19,10 +20,21 @@ public enum TelegramServiceQueueCommandKind
     Events
 }
 
+public enum TelegramServiceQueueFilter
+{
+    Active,
+    New,
+    InProgress,
+    Closed,
+    All,
+    Mine
+}
+
 public sealed record TelegramServiceQueueCommand(
     TelegramServiceQueueCommandKind Kind,
     long? RequestId,
-    string? Username);
+    string? Username,
+    TelegramServiceQueueFilter? Filter = null);
 
 public sealed record TelegramServiceQueueCommandResult(
     string Text,
@@ -35,6 +47,7 @@ public sealed class TelegramServiceRequestQueueService
     private const int QueueLimit = 10;
     private const int QueueButtonLimit = 5;
     private const string HistoryUnavailable = "История временно недоступна. Попробуйте позже.";
+    private const string QueueUnavailable = "Очередь временно недоступна. Попробуйте позже.";
 
     private readonly ITelegramServiceRequestStore _requestStore;
     private readonly ITelegramUserStore _userStore;
@@ -78,6 +91,7 @@ public sealed class TelegramServiceRequestQueueService
         var kind = commandName switch
         {
             "/queue" => TelegramServiceQueueCommandKind.Queue,
+            "/my_requests" => TelegramServiceQueueCommandKind.MyRequests,
             "/take" => TelegramServiceQueueCommandKind.Take,
             "/assign" => TelegramServiceQueueCommandKind.Assign,
             "/done" => TelegramServiceQueueCommandKind.Done,
@@ -92,9 +106,26 @@ public sealed class TelegramServiceRequestQueueService
             return false;
         }
 
+        if (kind == TelegramServiceQueueCommandKind.Queue)
+        {
+            var filter = parts.Length < 2
+                ? TelegramServiceQueueFilter.Active
+                : ParseQueueFilter(parts[1]);
+            command = new TelegramServiceQueueCommand(kind.Value, null, null, filter);
+            return true;
+        }
+        if (kind == TelegramServiceQueueCommandKind.MyRequests)
+        {
+            command = new TelegramServiceQueueCommand(
+                kind.Value,
+                null,
+                null,
+                TelegramServiceQueueFilter.Mine);
+            return true;
+        }
+
         long? requestId = null;
-        if (kind != TelegramServiceQueueCommandKind.Queue &&
-            (parts.Length < 2 || !long.TryParse(parts[1].TrimStart('#'), out var parsedId) || parsedId <= 0))
+        if (parts.Length < 2 || !long.TryParse(parts[1].TrimStart('#'), out var parsedId) || parsedId <= 0)
         {
             command = new TelegramServiceQueueCommand(kind.Value, null, null);
             return true;
@@ -140,7 +171,14 @@ public sealed class TelegramServiceRequestQueueService
 
         return command.Kind switch
         {
-            TelegramServiceQueueCommandKind.Queue => await FormatQueueResultAsync(cancellationToken),
+            TelegramServiceQueueCommandKind.Queue => await FormatQueueResultSafeAsync(
+                command.Filter,
+                actor,
+                cancellationToken),
+            TelegramServiceQueueCommandKind.MyRequests => await FormatQueueResultSafeAsync(
+                TelegramServiceQueueFilter.Mine,
+                actor,
+                cancellationToken),
             TelegramServiceQueueCommandKind.Take => await TakeAsync(command, actor, cancellationToken),
             TelegramServiceQueueCommandKind.Assign => await AssignAsync(command, actor, cancellationToken),
             TelegramServiceQueueCommandKind.Done => await CloseAsync(command, actor, TelegramServiceRequestStatus.Resolved, cancellationToken),
@@ -160,6 +198,11 @@ public sealed class TelegramServiceRequestQueueService
             update.ChatId != _options.ServiceRequests.NotificationChatId.Value)
         {
             return CallbackResult("Действие доступно в сервисной группе.", "Нет доступа");
+        }
+
+        if (update.CallbackData?.StartsWith("sq:", StringComparison.Ordinal) == true)
+        {
+            return await HandleQueueCallbackAsync(update, cancellationToken);
         }
 
         if (!TryParseCallbackData(update.CallbackData, out var action, out var requestId, out var targetUserId))
@@ -251,17 +294,119 @@ public sealed class TelegramServiceRequestQueueService
             [Button("История", Callback("e", requestId)), Button("Отменить", Callback("x", requestId))]
         ]);
 
-    private async Task<TelegramServiceQueueCommandResult> FormatQueueResultAsync(
+    private async Task<TelegramServiceQueueCommandResult> HandleQueueCallbackAsync(
+        EquipmentDiagnosticTelegramUpdate update,
         CancellationToken cancellationToken)
     {
-        var requests = await _requestStore.GetActiveAsync(QueueLimit, cancellationToken);
-        if (requests.Count == 0)
+        try
         {
-            return Result("Активных сервисных заявок нет.");
+            return await HandleQueueCallbackCoreAsync(update, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request queue callback failed. Action: queue; ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return CallbackResult(QueueUnavailable, QueueUnavailable);
+        }
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> HandleQueueCallbackCoreAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        CancellationToken cancellationToken)
+    {
+        if (!TryParseQueueCallbackData(update.CallbackData, out var filter))
+        {
+            return CallbackResult("Действие недоступно.", "Действие недоступно.");
         }
 
-        var text = await FormatQueueAsync(requests, cancellationToken);
-        var rows = requests
+        var actor = update.UserId is null
+            ? null
+            : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+        if (actor is null || !actor.IsEnabled || actor.IsBlocked ||
+            actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
+        {
+            return CallbackResult("Действие недоступно.", "Нет доступа");
+        }
+
+        var result = await FormatQueueResultSafeAsync(filter, actor, cancellationToken);
+        if (string.Equals(result.Text, QueueUnavailable, StringComparison.Ordinal))
+        {
+            return result with
+            {
+                CallbackAnswerText = QueueUnavailable,
+                SuppressGroupMessage = true
+            };
+        }
+
+        var edited = update.MessageId is not null &&
+            await TryEditAsync(
+                update.ChatId,
+                update.MessageId.Value,
+                result.Text,
+                result.ReplyMarkup,
+                cancellationToken);
+        return result with
+        {
+            CallbackAnswerText = "Очередь обновлена",
+            SuppressGroupMessage = edited
+        };
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> FormatQueueResultSafeAsync(
+        TelegramServiceQueueFilter? filter,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await FormatQueueResultAsync(filter, actor, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request queue query failed. Action: queue; ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return Result(QueueUnavailable);
+        }
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> FormatQueueResultAsync(
+        TelegramServiceQueueFilter? requestedFilter,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        if (requestedFilter is null)
+        {
+            return Result(
+                "Использование: /queue [active|new|in-progress|closed|all]",
+                QueueFilterKeyboard());
+        }
+
+        var filter = requestedFilter.Value;
+        var statuses = QueueStatuses(filter);
+        long? assignedUserId = filter == TelegramServiceQueueFilter.Mine ? actor.Id : null;
+        var requests = await _requestStore.GetLatestAsync(
+            statuses,
+            assignedUserId,
+            QueueLimit,
+            cancellationToken);
+        if (requests.Count == 0)
+        {
+            return Result(QueueEmptyText(filter), QueueFilterKeyboard());
+        }
+
+        var text = await FormatQueueAsync(requests, filter, cancellationToken);
+        var rows = QueueFilterRows()
+            .Concat(requests
             .Take(QueueButtonLimit)
             .Select(request => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
             [
@@ -269,16 +414,17 @@ public sealed class TelegramServiceRequestQueueService
                 Button($"#{request.Id} Взять", Callback("t", request.Id)),
                 Button($"#{request.Id} Назначить", Callback("a", request.Id)),
                 Button($"#{request.Id} История", Callback("e", request.Id))
-            ])
+            ]))
             .ToArray();
         return Result(text, InlineKeyboard(rows));
     }
 
     private async Task<string> FormatQueueAsync(
         IReadOnlyList<TelegramServiceRequestSnapshot> requests,
+        TelegramServiceQueueFilter filter,
         CancellationToken cancellationToken)
     {
-        var builder = new StringBuilder("Сервисные заявки\n\n");
+        var builder = new StringBuilder($"{QueueTitle(filter)}\n\n");
         foreach (var request in requests)
         {
             var assignee = await AssigneeLabelAsync(request.AssignedTelegramUserId, cancellationToken);
@@ -287,8 +433,8 @@ public sealed class TelegramServiceRequestQueueService
             {
                 builder.Append($" — {assignee}");
             }
-            builder.Append($" — {_timeFormatter.FormatRelative(request.CreatedAt)} — Телефон: ");
-            builder.AppendLine(request.PhoneWasSaved ? "сохранён" : "не сохранён");
+            builder.Append($" — {_timeFormatter.FormatRelative(request.UpdatedAt ?? request.CreatedAt)} — Телефон: ");
+            builder.AppendLine(request.PhoneWasSaved ? "сохранён" : "не указан");
         }
 
         return builder.ToString().TrimEnd();
@@ -1103,6 +1249,96 @@ public sealed class TelegramServiceRequestQueueService
 
         return true;
     }
+
+    private static TelegramServiceQueueFilter? ParseQueueFilter(string value) =>
+        value.Trim().ToLowerInvariant() switch
+        {
+            "active" => TelegramServiceQueueFilter.Active,
+            "new" => TelegramServiceQueueFilter.New,
+            "in-progress" => TelegramServiceQueueFilter.InProgress,
+            "closed" => TelegramServiceQueueFilter.Closed,
+            "all" => TelegramServiceQueueFilter.All,
+            _ => null
+        };
+
+    private static bool TryParseQueueCallbackData(
+        string? data,
+        out TelegramServiceQueueFilter filter)
+    {
+        filter = default;
+        if (string.IsNullOrWhiteSpace(data) ||
+            System.Text.Encoding.UTF8.GetByteCount(data) > 64)
+        {
+            return false;
+        }
+
+        filter = data switch
+        {
+            "sq:a" => TelegramServiceQueueFilter.Active,
+            "sq:n" => TelegramServiceQueueFilter.New,
+            "sq:p" => TelegramServiceQueueFilter.InProgress,
+            "sq:m" => TelegramServiceQueueFilter.Mine,
+            "sq:c" => TelegramServiceQueueFilter.Closed,
+            "sq:l" => TelegramServiceQueueFilter.All,
+            _ => (TelegramServiceQueueFilter)(-1)
+        };
+        return Enum.IsDefined(filter);
+    }
+
+    private static IReadOnlyCollection<TelegramServiceRequestStatus>? QueueStatuses(
+        TelegramServiceQueueFilter filter) =>
+        filter switch
+        {
+            TelegramServiceQueueFilter.Active or TelegramServiceQueueFilter.Mine =>
+                [TelegramServiceRequestStatus.New, TelegramServiceRequestStatus.InProgress],
+            TelegramServiceQueueFilter.New => [TelegramServiceRequestStatus.New],
+            TelegramServiceQueueFilter.InProgress => [TelegramServiceRequestStatus.InProgress],
+            TelegramServiceQueueFilter.Closed =>
+                [TelegramServiceRequestStatus.Resolved, TelegramServiceRequestStatus.Cancelled],
+            TelegramServiceQueueFilter.All => null,
+            _ => []
+        };
+
+    private static string QueueTitle(TelegramServiceQueueFilter filter) =>
+        filter switch
+        {
+            TelegramServiceQueueFilter.Active => "Активные сервисные заявки",
+            TelegramServiceQueueFilter.New => "Новые сервисные заявки",
+            TelegramServiceQueueFilter.InProgress => "Сервисные заявки в работе",
+            TelegramServiceQueueFilter.Closed => "Закрытые сервисные заявки",
+            TelegramServiceQueueFilter.All => "Все сервисные заявки",
+            TelegramServiceQueueFilter.Mine => "Мои активные сервисные заявки",
+            _ => "Сервисные заявки"
+        };
+
+    private static string QueueEmptyText(TelegramServiceQueueFilter filter) =>
+        filter switch
+        {
+            TelegramServiceQueueFilter.Active => "Активных сервисных заявок нет.",
+            TelegramServiceQueueFilter.New => "Новых сервисных заявок нет.",
+            TelegramServiceQueueFilter.InProgress => "Заявок в работе нет.",
+            TelegramServiceQueueFilter.Closed => "Закрытых сервисных заявок нет.",
+            TelegramServiceQueueFilter.All => "Сервисных заявок пока нет.",
+            TelegramServiceQueueFilter.Mine => "У вас нет назначенных активных заявок.",
+            _ => "Сервисных заявок не найдено."
+        };
+
+    private static EquipmentDiagnosticTelegramReplyMarkup QueueFilterKeyboard() =>
+        InlineKeyboard(QueueFilterRows());
+
+    private static IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>> QueueFilterRows() =>
+    [
+        [
+            Button("Активные", "sq:a"),
+            Button("Новые", "sq:n"),
+            Button("В работе", "sq:p")
+        ],
+        [
+            Button("Мои", "sq:m"),
+            Button("Закрытые", "sq:c"),
+            Button("Все", "sq:l")
+        ]
+    ];
 
     private static string Callback(string action, long requestId) => $"sr:{action}:{requestId}";
 

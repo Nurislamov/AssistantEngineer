@@ -123,6 +123,12 @@ public interface ITelegramServiceRequestStore
         int limit,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<TelegramServiceRequestSnapshot>> GetLatestAsync(
+        IReadOnlyCollection<TelegramServiceRequestStatus>? statuses,
+        long? assignedTelegramUserId,
+        int limit,
+        CancellationToken cancellationToken = default);
+
     Task<TelegramServiceRequestSnapshot?> UpdateAsync(
         TelegramServiceRequestUpdate update,
         CancellationToken cancellationToken = default);

@@ -56,7 +56,10 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
   If it is empty or Telegram delivery fails, verify the request remains created.
 - Onboard each service operator in this order: open the bot privately, send `/start`, then have Owner/Admin grant
   role `Engineer`. Do not grant queue access to an unregistered group-only identity.
-- Verify `/queue` lists only `New` and `InProgress` requests in the configured service group.
+- Verify `/queue` and `/queue active` list only `New` and `InProgress`; `/queue new`, `/queue in-progress`,
+  `/queue closed`, and `/queue all` return only their matching latest requests.
+- Verify `/my_requests` lists only active requests assigned to the current Owner/Admin/Engineer, and Consumer access
+  to `/queue` and `/my_requests` is denied.
 - Verify Engineer can `/take <id>`, and Owner/Admin can `/assign <id> @username`. Confirm assignment notifies the
   customer privately and sends the contact only to the assigned operator's private bot chat.
 - Verify assigned Engineer or Owner/Admin can `/done <id>` and `/cancel_request <id>`, with private customer status
@@ -64,11 +67,14 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Verify `/request_status <id>` is sanitized and `/contact <id>` sends the full phone only in an authorized private
   chat. The service group must never contain the full phone.
 - Verify group command forms with bot suffixes, such as `/take@BotUsername 2`, work.
-- Verify `/queue`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact` are absent from
-  the global command menu.
+- Verify `/queue`, `/my_requests`, `/take`, `/assign`, `/done`, `/cancel_request`, `/request_status`, and `/contact`
+  are absent from the global command menu.
 - Verify each new service request group notification has inline buttons for take, assign, status, contact, and
   cancellation. Confirm callback payloads contain no phone, username, raw chat id, token, or secret.
-- Verify `/queue` remains readable text and adds compact inline controls for active requests.
+- Verify `/queue` remains readable text and includes `Активные`, `Новые`, `В работе`, `Мои`, `Закрытые`, and `Все`.
+- Press each queue filter and confirm the same message is edited when possible, the callback spinner clears, malformed
+  `sq:*` payloads are handled safely, and a simulated query failure returns
+  `Очередь временно недоступна. Попробуйте позже.`.
 - Verify every inline press clears the Telegram spinner and enforces the same role, assignment, and service-group
   checks as its ED-23C command fallback.
 - Verify the assign button lists only enabled, non-blocked Engineer/Admin/Owner records from `TelegramUsers`.
