@@ -166,6 +166,7 @@ public sealed class TelegramServiceRequestQueueService
         }
         if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
         {
+            await AuditDeniedCommandSafeAsync(command, actor, "forbidden", cancellationToken);
             return Result("Команда недоступна.");
         }
 
@@ -246,6 +247,12 @@ public sealed class TelegramServiceRequestQueueService
         }
         if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
         {
+            await AuditDeniedCallbackSafeAsync(
+                action,
+                requestId,
+                actor,
+                "forbidden",
+                cancellationToken);
             return CallbackResult(action is "a" or "as"
                 ? "Назначать инженера может только Owner или Admin."
                 : "Действие недоступно.", "Нет доступа");
@@ -490,17 +497,29 @@ public sealed class TelegramServiceRequestQueueService
         TelegramUserSnapshot actor,
         CancellationToken cancellationToken)
     {
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
-        {
-            return Result("Назначать инженера может только Owner или Admin.");
-        }
         var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
         if (request is null)
         {
             return NotFound(requestId);
         }
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "forbidden",
+                cancellationToken);
+            return Result("Назначать инженера может только Owner или Admin.");
+        }
         if (request.Status is TelegramServiceRequestStatus.Resolved or TelegramServiceRequestStatus.Cancelled)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id}: {TelegramServiceRequestService.StatusLabel(request.Status)}. Повторное открытие не поддерживается.");
         }
 
@@ -540,10 +559,6 @@ public sealed class TelegramServiceRequestQueueService
         TelegramUserSnapshot actor,
         CancellationToken cancellationToken)
     {
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
-        {
-            return Result("Назначать инженера может только Owner или Admin.");
-        }
         if (targetUserId is null)
         {
             return Result("Инженер не найден.");
@@ -554,8 +569,24 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(requestId);
         }
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "forbidden",
+                cancellationToken);
+            return Result("Назначать инженера может только Owner или Admin.");
+        }
         if (request.Status is TelegramServiceRequestStatus.Resolved or TelegramServiceRequestStatus.Cancelled)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id}: {TelegramServiceRequestService.StatusLabel(request.Status)}. Повторное открытие не поддерживается.");
         }
 
@@ -606,17 +637,41 @@ public sealed class TelegramServiceRequestQueueService
         {
             if (request.AssignedTelegramUserId == actor.Id)
             {
+                await RecordActionDeniedAsync(
+                    request,
+                    actor,
+                    "take",
+                    "already_assigned",
+                    cancellationToken);
                 return Result($"Заявка #{request.Id} уже назначена на вас.");
             }
 
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "take",
+                "assigned_to_another_engineer",
+                cancellationToken);
             return Result($"Заявка #{request.Id} уже назначена другому инженеру. Для переназначения используйте /assign.");
         }
         if (request.Status == TelegramServiceRequestStatus.Resolved)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "take",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id} уже закрыта.");
         }
         if (request.Status == TelegramServiceRequestStatus.Cancelled)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "take",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id} отменена, действие недоступно.");
         }
 
@@ -652,10 +707,6 @@ public sealed class TelegramServiceRequestQueueService
         TelegramUserSnapshot actor,
         CancellationToken cancellationToken)
     {
-        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
-        {
-            return Result("Назначать инженера может только Owner или Admin.");
-        }
         if (command.RequestId is null || string.IsNullOrWhiteSpace(command.Username))
         {
             return Result("Использование: /assign <id> @username");
@@ -666,8 +717,24 @@ public sealed class TelegramServiceRequestQueueService
         {
             return NotFound(command.RequestId.Value);
         }
+        if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin))
+        {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "forbidden",
+                cancellationToken);
+            return Result("Назначать инженера может только Owner или Admin.");
+        }
         if (request.Status is TelegramServiceRequestStatus.Resolved or TelegramServiceRequestStatus.Cancelled)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                "assign",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id}: {TelegramServiceRequestService.StatusLabel(request.Status)}. Повторное открытие не поддерживается.");
         }
 
@@ -719,14 +786,32 @@ public sealed class TelegramServiceRequestQueueService
         }
         if (request.Status == TelegramServiceRequestStatus.Resolved)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                terminalStatus == TelegramServiceRequestStatus.Resolved ? "close" : "cancel",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id} уже закрыта.");
         }
         if (request.Status == TelegramServiceRequestStatus.Cancelled)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                terminalStatus == TelegramServiceRequestStatus.Resolved ? "close" : "cancel",
+                "terminal_status",
+                cancellationToken);
             return Result($"Заявка #{request.Id} отменена, действие недоступно.");
         }
         if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
         {
+            await RecordActionDeniedAsync(
+                request,
+                actor,
+                terminalStatus == TelegramServiceRequestStatus.Resolved ? "close" : "cancel",
+                "assigned_to_another_engineer",
+                cancellationToken);
             return Result(request.Status == TelegramServiceRequestStatus.New
                 ? $"Сначала возьмите заявку #{request.Id} в работу командой /take {request.Id}."
                 : "Изменять статус может только назначенный инженер или администратор.");
@@ -830,16 +915,56 @@ public sealed class TelegramServiceRequestQueueService
         }
         if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.ContactRequested,
+                    actor.Id,
+                    actor.Id,
+                    request.Status,
+                    request.Status,
+                    true),
+                cancellationToken);
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.HistoryDenied,
+                    actor.Id,
+                    null,
+                    request.Status,
+                    request.Status,
+                    false),
+                cancellationToken);
             return Result("История доступна только назначенному инженеру или администратору.");
         }
         if (actor.Role is not (TelegramUserRole.Owner or TelegramUserRole.Admin or TelegramUserRole.Engineer))
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.HistoryDenied,
+                    actor.Id,
+                    null,
+                    request.Status,
+                    request.Status,
+                    false),
+                cancellationToken);
             return Result("Команда недоступна.");
         }
 
         var text = _eventService is null
             ? $"История заявки #{request.Id}\n\nИстория заявки пока пустая."
             : await _eventService.FormatHistoryAsync(request.Id, cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.HistoryViewed,
+                actor.Id,
+                null,
+                request.Status,
+                request.Status,
+                true),
+            cancellationToken);
         return Result(text);
     }
 
@@ -860,10 +985,40 @@ public sealed class TelegramServiceRequestQueueService
         }
         if (actor.Role == TelegramUserRole.Engineer && request.AssignedTelegramUserId != actor.Id)
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.ContactDenied,
+                    actor.Id,
+                    null,
+                    request.Status,
+                    request.Status,
+                    false),
+                cancellationToken);
             return Result("Контакт доступен только назначенному инженеру или администратору.");
         }
         if (!request.PhoneWasSaved)
         {
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.ContactRequested,
+                    actor.Id,
+                    actor.Id,
+                    request.Status,
+                    request.Status,
+                    true),
+                cancellationToken);
+            await RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.ContactFailed,
+                    actor.Id,
+                    actor.Id,
+                    request.Status,
+                    request.Status,
+                    false),
+                cancellationToken);
             return Result("Номер телефона по заявке не сохранён.");
         }
 
@@ -987,7 +1142,8 @@ public sealed class TelegramServiceRequestQueueService
                 recipient.Id,
                 null,
                 null,
-                delivered),
+                delivered,
+                delivered ? "{\"contact_delivered\":true}" : null),
             cancellationToken);
         return delivered;
     }
@@ -1289,6 +1445,149 @@ public sealed class TelegramServiceRequestQueueService
         CancellationToken cancellationToken) =>
         _eventService?.AppendSafeAsync(request, cancellationToken) ?? Task.CompletedTask;
 
+    private async Task AuditDeniedCommandSafeAsync(
+        TelegramServiceQueueCommand command,
+        TelegramUserSnapshot actor,
+        string reason,
+        CancellationToken cancellationToken)
+    {
+        if (command.RequestId is null ||
+            command.Kind is TelegramServiceQueueCommandKind.Queue or TelegramServiceQueueCommandKind.MyRequests)
+        {
+            return;
+        }
+
+        try
+        {
+            var request = await _requestStore.GetByIdAsync(command.RequestId.Value, cancellationToken);
+            if (request is null)
+            {
+                return;
+            }
+            await RecordDeniedEventAsync(
+                request,
+                actor,
+                CommandAction(command.Kind),
+                reason,
+                cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request denied-action audit context failed. Action: command; ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+        }
+    }
+
+    private async Task AuditDeniedCallbackSafeAsync(
+        string action,
+        long requestId,
+        TelegramUserSnapshot actor,
+        string reason,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = await _requestStore.GetByIdAsync(requestId, cancellationToken);
+            if (request is null)
+            {
+                return;
+            }
+            await RecordDeniedEventAsync(
+                request,
+                actor,
+                CallbackAction(action),
+                reason,
+                cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request denied-action audit context failed. Action: callback; ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+        }
+    }
+
+    private Task RecordDeniedEventAsync(
+        TelegramServiceRequestSnapshot request,
+        TelegramUserSnapshot actor,
+        string action,
+        string reason,
+        CancellationToken cancellationToken)
+    {
+        if (action == "contact")
+        {
+            return RecordContactDeniedAsync(request, actor, cancellationToken);
+        }
+        if (action == "history")
+        {
+            return RecordEventAsync(
+                Event(
+                    request.Id,
+                    TelegramServiceRequestEventType.HistoryDenied,
+                    actor.Id,
+                    null,
+                    request.Status,
+                    request.Status,
+                    false),
+                cancellationToken);
+        }
+        return RecordActionDeniedAsync(request, actor, action, reason, cancellationToken);
+    }
+
+    private async Task RecordContactDeniedAsync(
+        TelegramServiceRequestSnapshot request,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.ContactRequested,
+                actor.Id,
+                actor.Id,
+                request.Status,
+                request.Status,
+                true),
+            cancellationToken);
+        await RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.ContactDenied,
+                actor.Id,
+                null,
+                request.Status,
+                request.Status,
+                false),
+            cancellationToken);
+    }
+
+    private Task RecordActionDeniedAsync(
+        TelegramServiceRequestSnapshot request,
+        TelegramUserSnapshot actor,
+        string action,
+        string reason,
+        CancellationToken cancellationToken) =>
+        RecordEventAsync(
+            Event(
+                request.Id,
+                TelegramServiceRequestEventType.ActionDenied,
+                actor.Id,
+                null,
+                request.Status,
+                request.Status,
+                false,
+                DeniedMetadata(action, reason)),
+            cancellationToken);
+
     private static TelegramServiceRequestEventCreate Event(
         long requestId,
         TelegramServiceRequestEventType type,
@@ -1296,7 +1595,8 @@ public sealed class TelegramServiceRequestQueueService
         long? targetId,
         TelegramServiceRequestStatus? oldStatus,
         TelegramServiceRequestStatus? newStatus,
-        bool succeeded) =>
+        bool succeeded,
+        string? metadataJson = null) =>
         new(
             requestId,
             type,
@@ -1306,8 +1606,36 @@ public sealed class TelegramServiceRequestQueueService
             newStatus,
             succeeded,
             type.ToString(),
-            null,
+            metadataJson,
             DateTimeOffset.UtcNow);
+
+    private static string CommandAction(TelegramServiceQueueCommandKind kind) =>
+        kind switch
+        {
+            TelegramServiceQueueCommandKind.Take => "take",
+            TelegramServiceQueueCommandKind.Assign => "assign",
+            TelegramServiceQueueCommandKind.Done => "close",
+            TelegramServiceQueueCommandKind.Cancel => "cancel",
+            TelegramServiceQueueCommandKind.Contact => "contact",
+            TelegramServiceQueueCommandKind.Events => "history",
+            TelegramServiceQueueCommandKind.Status => "status",
+            _ => "status"
+        };
+
+    private static string CallbackAction(string action) =>
+        action switch
+        {
+            "t" => "take",
+            "a" or "as" => "assign",
+            "d" => "close",
+            "x" => "cancel",
+            "c" => "contact",
+            "e" => "history",
+            _ => "status"
+        };
+
+    private static string DeniedMetadata(string action, string reason) =>
+        System.Text.Json.JsonSerializer.Serialize(new { action, reason });
 
     private static string UserLabel(TelegramUserSnapshot user) =>
         string.IsNullOrWhiteSpace(user.Username) ? "специалист" : $"@{user.Username.Trim().TrimStart('@')}";

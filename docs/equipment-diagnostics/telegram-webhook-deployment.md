@@ -160,6 +160,12 @@ Stale terminal transitions, cross-Engineer take/close/contact attempts, malforme
 database failures are denied or handled with safe Russian messages. The callback spinner is always acknowledged and
 no migration or environment change is required.
 
+ED-23F.2 expands the existing request audit stream with contact denial, history viewed/denied, and lifecycle action
+denial events. Contact delivery metadata is boolean-only; denied-action metadata is restricted to allowlisted
+action/reason categories. Audit failures remain best-effort and cannot block contact, history, lifecycle actions,
+callbacks, or polling. Existing string-backed event storage supports the new event names, so no migration or
+environment change is required.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:

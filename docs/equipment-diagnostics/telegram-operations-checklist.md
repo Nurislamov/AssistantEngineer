@@ -86,6 +86,15 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Simulate a request-action database failure and verify
   `Действие временно недоступно. Попробуйте позже.` with no phone, chat id, Telegram user id, callback payload, token,
   secret, or full message text in logs.
+- Verify authorized `/contact <id>` and `Контакт` actions append `ContactRequested` followed by `ContactSent` or
+  `ContactFailed`; wrong-Engineer and Consumer attempts append `ContactRequested` plus `ContactDenied`.
+- Verify authorized `/request_events <id>` and `История` append `HistoryViewed`; wrong-Engineer and Consumer attempts
+  append `HistoryDenied`.
+- Trigger terminal-status, cross-Engineer, and role-denied request actions and verify `ActionDenied` stores only
+  allowlisted action/reason metadata. No full phone, raw chat/Telegram id, callback payload, token, secret, or raw
+  message text may appear in stored events, rendered history, or logs.
+- Simulate audit append failure for contact, history, take, assign, done, and cancel. The main action and callback
+  acknowledgement must continue normally.
 - Verify every inline press clears the Telegram spinner and enforces the same role, assignment, and service-group
   checks as its ED-23C command fallback.
 - Verify the assign button lists only enabled, non-blocked Engineer/Admin/Owner records from `TelegramUsers`.

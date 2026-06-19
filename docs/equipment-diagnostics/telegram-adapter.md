@@ -336,6 +336,24 @@ All request callbacks now have a local safe exception boundary in addition to th
 failures return `Действие временно недоступно. Попробуйте позже.`, callback acknowledgement is still attempted once,
 and logs contain only the action and exception type. ED-23G.1 adds no migration or environment variable.
 
+## ED-23F.2 Expanded Service Request Audit
+
+ED-23F.2 extends the existing `TelegramServiceRequestEvents` stream with `ContactDenied`, `HistoryViewed`,
+`HistoryDenied`, and `ActionDenied`. Existing `ContactRequested`, `ContactSent`, and `ContactFailed` remain
+compatible. Contact requests are recorded before delivery or denial; successful delivery stores only
+`contact_delivered=true`, never the phone value or private chat identifier.
+
+Authorized `/request_events <id>` and inline `История` access append `HistoryViewed` after the displayed history is
+loaded. Wrong-Engineer and Consumer attempts append `HistoryDenied`. Lifecycle and permission denials append
+`ActionDenied` with allowlisted metadata only: a compact action (`take`, `assign`, `close`, `cancel`, `contact`,
+`history`, or `status`) and reason category (`forbidden`, `terminal_status`, `assigned_to_another_engineer`,
+`already_assigned`, or `not_found`). Arbitrary metadata, callback payloads, raw text, phone numbers, Telegram ids,
+chat ids, tokens, and secrets are discarded.
+
+New audit events render as compact Russian history labels. Audit append remains best-effort: failure cannot block
+contact delivery, history display, lifecycle changes, queue callbacks, or polling. The existing event type is stored
+as a string in a 64-character column, so ED-23F.2 requires no migration or environment variable.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

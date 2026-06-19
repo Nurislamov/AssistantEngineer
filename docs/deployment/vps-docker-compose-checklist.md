@@ -42,6 +42,9 @@
 - After ED-23G.1 deployment, verify compact `Открыть #id` action cards, terminal-button removal, stale lifecycle
   guards, live-card plus queue-card refresh, safe edit fallback, and authorized-only contact/history. No migration or
   new environment value is required.
+- After ED-23F.2 deployment, verify contact requested/sent/denied, history viewed/denied, and safe action-denied audit
+  records. Confirm allowlisted metadata only, compact Russian history labels, and best-effort behavior when audit
+  persistence is unavailable. No migration or new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 
