@@ -93,6 +93,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("/admin role <chatId>", admin.Text, StringComparison.Ordinal);
         Assert.Contains("/admin_users", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/admin_pending", admin.Text, StringComparison.Ordinal);
+        Assert.Contains("/admin_audit", admin.Text, StringComparison.Ordinal);
         Assert.Contains("/engineers", admin.Text, StringComparison.Ordinal);
         Assert.Contains("/queue [active|new|in-progress|closed|all]", owner.Text, StringComparison.Ordinal);
         Assert.Contains("/my_requests", admin.Text, StringComparison.Ordinal);

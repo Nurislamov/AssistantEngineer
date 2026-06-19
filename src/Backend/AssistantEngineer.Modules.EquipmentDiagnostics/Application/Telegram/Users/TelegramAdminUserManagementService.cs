@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.Extensions.Logging;
@@ -19,17 +20,20 @@ public sealed class TelegramAdminUserManagementService
     private readonly ITelegramUserStore _userStore;
     private readonly IEquipmentDiagnosticTelegramOutboundClient _outboundClient;
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
+    private readonly TelegramUserAuditEventService? _auditService;
     private readonly ILogger<TelegramAdminUserManagementService> _logger;
 
     public TelegramAdminUserManagementService(
         ITelegramUserStore userStore,
         IEquipmentDiagnosticTelegramOutboundClient outboundClient,
         TelegramDisplayTimeFormatter timeFormatter,
+        TelegramUserAuditEventService? auditService = null,
         ILogger<TelegramAdminUserManagementService>? logger = null)
     {
         _userStore = userStore;
         _outboundClient = outboundClient;
         _timeFormatter = timeFormatter;
+        _auditService = auditService;
         _logger = logger ?? NullLogger<TelegramAdminUserManagementService>.Instance;
     }
 
@@ -39,6 +43,7 @@ public sealed class TelegramAdminUserManagementService
         return command is not null &&
             (command.Equals("/admin_users", StringComparison.OrdinalIgnoreCase) ||
              command.Equals("/admin_pending", StringComparison.OrdinalIgnoreCase) ||
+             command.Equals("/admin_audit", StringComparison.OrdinalIgnoreCase) ||
              command.Equals("/engineers", StringComparison.OrdinalIgnoreCase));
     }
 
@@ -57,6 +62,9 @@ public sealed class TelegramAdminUserManagementService
         {
             "/admin_pending" => await RenderListAsync(AdminListKind.Pending, cancellationToken),
             "/engineers" => await RenderListAsync(AdminListKind.Engineers, cancellationToken),
+            "/admin_audit" => Result(_auditService is null
+                ? "Аудит управления пользователями недоступен."
+                : await _auditService.FormatLatestAsync(cancellationToken)),
             _ => await RenderListAsync(AdminListKind.All, cancellationToken)
         };
     }
@@ -68,13 +76,31 @@ public sealed class TelegramAdminUserManagementService
         var actor = update.UserId is null
             ? null
             : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+        var parsed = TryParseCallback(update.CallbackData, out var action, out var targetId, out var role);
         if (!CanManage(actor))
         {
+            await AppendDeniedAsync(
+                actor,
+                targetId,
+                ActionName(action),
+                actor is { Role: TelegramUserRole.Owner or TelegramUserRole.Admin }
+                    ? "disabled_or_blocked_actor"
+                    : "insufficient_permissions",
+                update.ReceivedAt ?? DateTimeOffset.UtcNow,
+                cancellationToken);
             return Callback("Команда недоступна.", "Нет доступа");
         }
 
-        if (!TryParseCallback(update.CallbackData, out var action, out var targetId, out var role))
+        if (!parsed)
         {
+            var invalid = ClassifyInvalidCallback(update.CallbackData);
+            await AppendDeniedAsync(
+                actor,
+                invalid.TargetId,
+                invalid.Action,
+                invalid.Reason,
+                update.ReceivedAt ?? DateTimeOffset.UtcNow,
+                cancellationToken);
             return Callback("Действие недоступно или устарело.", "Ошибка действия");
         }
 
@@ -95,7 +121,13 @@ public sealed class TelegramAdminUserManagementService
         }
         else
         {
-            result = await MutateAsync(action, targetId, role, actor!, cancellationToken);
+            result = await MutateAsync(
+                action,
+                targetId,
+                role,
+                actor!,
+                update.ReceivedAt ?? DateTimeOffset.UtcNow,
+                cancellationToken);
         }
 
         if (result.ReplyMarkup is not null)
@@ -115,23 +147,49 @@ public sealed class TelegramAdminUserManagementService
         long? targetId,
         TelegramUserRole? requestedRole,
         TelegramUserSnapshot actor,
+        DateTimeOffset createdAt,
         CancellationToken cancellationToken)
     {
         if (targetId is null)
         {
+            await AppendDeniedAsync(
+                actor,
+                null,
+                ActionName(action),
+                "target_not_found",
+                createdAt,
+                cancellationToken);
             return Callback("Пользователь не найден.", "Ошибка действия");
         }
 
         var target = await _userStore.GetByIdAsync(targetId.Value, cancellationToken);
         if (target is null)
         {
+            await AppendDeniedAsync(
+                actor,
+                targetId,
+                ActionName(action),
+                "target_not_found",
+                createdAt,
+                cancellationToken);
             return Callback("Пользователь не найден.", "Ошибка действия");
         }
 
         var denied = ValidateMutation(actor, target, action, requestedRole);
         if (denied is not null)
         {
-            return Callback(denied, denied.StartsWith("Owner", StringComparison.Ordinal) ? denied : "Нет доступа");
+            await AppendDeniedAsync(
+                actor,
+                target.Id,
+                ActionName(action),
+                denied.Value.Reason,
+                createdAt,
+                cancellationToken);
+            return Callback(
+                denied.Value.Message,
+                denied.Value.Message.StartsWith("Owner", StringComparison.Ordinal)
+                    ? denied.Value.Message
+                    : "Нет доступа");
         }
 
         TelegramUserCommandResult mutation;
@@ -155,20 +213,35 @@ public sealed class TelegramAdminUserManagementService
         }
         else
         {
+            await AppendDeniedAsync(
+                actor,
+                target.Id,
+                ActionName(action),
+                "unsupported_action",
+                createdAt,
+                cancellationToken);
             return Callback("Действие недоступно или устарело.", "Ошибка действия");
         }
 
         if (!mutation.Succeeded)
         {
+            await AppendDeniedAsync(
+                actor,
+                target.Id,
+                ActionName(action),
+                "target_not_found",
+                createdAt,
+                cancellationToken);
             return Callback("Команда не выполнена.", "Ошибка действия");
         }
 
         var updated = await _userStore.GetByIdAsync(target.Id, cancellationToken) ?? target;
+        await AppendSuccessAsync(action, actor, target, updated, createdAt, cancellationToken);
         var card = await RenderUserAsync(updated.Id, actor, cancellationToken);
         return card with { CallbackAnswerText = answer };
     }
 
-    private static string? ValidateMutation(
+    private static (string Reason, string Message)? ValidateMutation(
         TelegramUserSnapshot actor,
         TelegramUserSnapshot target,
         string action,
@@ -178,26 +251,26 @@ public sealed class TelegramAdminUserManagementService
             action == "r" && requestedRole != target.Role;
         if (actor.Id == target.Id && destructive)
         {
-            return "Нельзя изменить собственный доступ через эту кнопку.";
+            return ("self_action_denied", "Нельзя изменить собственный доступ через эту кнопку.");
         }
         if (target.Role == TelegramUserRole.Owner && destructive)
         {
-            return "Owner защищён от этого действия.";
+            return ("owner_protected", "Owner защищён от этого действия.");
         }
         if (actor.Role == TelegramUserRole.Admin)
         {
             if (target.Role is TelegramUserRole.Owner or TelegramUserRole.Admin)
             {
-                return "Admin не может управлять Owner или Admin.";
+                return ("insufficient_permissions", "Admin не может управлять Owner или Admin.");
             }
             if (requestedRole is TelegramUserRole.Admin or TelegramUserRole.Owner)
             {
-                return "Назначить Admin может только Owner.";
+                return ("insufficient_permissions", "Назначить Admin может только Owner.");
             }
         }
         if (requestedRole == TelegramUserRole.Owner)
         {
-            return "Назначение Owner через кнопки недоступно.";
+            return ("invalid_role", "Назначение Owner через кнопки недоступно.");
         }
 
         return null;
@@ -395,6 +468,95 @@ public sealed class TelegramAdminUserManagementService
                 exception.GetType().Name);
         }
     }
+
+    private async Task AppendSuccessAsync(
+        string action,
+        TelegramUserSnapshot actor,
+        TelegramUserSnapshot before,
+        TelegramUserSnapshot after,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken)
+    {
+        if (_auditService is null)
+        {
+            return;
+        }
+
+        var eventType = action switch
+        {
+            "r" => TelegramUserAuditEventType.RoleChanged,
+            "en" => TelegramUserAuditEventType.UserEnabled,
+            "d" => TelegramUserAuditEventType.UserDisabled,
+            "b" => TelegramUserAuditEventType.UserBlocked,
+            "u" => TelegramUserAuditEventType.UserUnblocked,
+            _ => TelegramUserAuditEventType.UserActionDenied
+        };
+        await _auditService.AppendSafeAsync(
+            new TelegramUserAuditEventCreate(
+                eventType,
+                actor.Id,
+                before.Id,
+                before.Role,
+                after.Role,
+                before.IsEnabled,
+                after.IsEnabled,
+                before.IsBlocked,
+                after.IsBlocked,
+                true,
+                null,
+                JsonSerializer.Serialize(new { action = ActionName(action) }),
+                createdAt),
+            cancellationToken);
+    }
+
+    private Task AppendDeniedAsync(
+        TelegramUserSnapshot? actor,
+        long? targetId,
+        string action,
+        string reason,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken) =>
+        _auditService?.AppendSafeAsync(
+            new TelegramUserAuditEventCreate(
+                TelegramUserAuditEventType.UserActionDenied,
+                actor?.Id,
+                targetId,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                JsonSerializer.Serialize(new { action, reason }),
+                createdAt),
+            cancellationToken) ?? Task.CompletedTask;
+
+    private static (string Action, string Reason, long? TargetId) ClassifyInvalidCallback(string? data)
+    {
+        var parts = data?.Split(':', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
+        long? targetId = parts.Length >= 3 && long.TryParse(parts[2], out var parsedId) && parsedId > 0
+            ? parsedId
+            : null;
+        if (parts.Length >= 2 && parts[1] == "r")
+        {
+            return ("role", "invalid_role", targetId);
+        }
+
+        return ("unsupported", "unsupported_action", targetId);
+    }
+
+    private static string ActionName(string action) =>
+        action switch
+        {
+            "r" => "role",
+            "en" => "enable",
+            "d" => "disable",
+            "b" => "block",
+            "u" => "unblock",
+            _ => "unsupported"
+        };
 
     private static bool TryParseCallback(
         string? data,

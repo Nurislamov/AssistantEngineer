@@ -285,6 +285,143 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         Assert.DoesNotContain(FullPhone, fallback.Text, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task SuccessfulMutationsAppendDedicatedUserAuditEvents()
+    {
+        var harness = await CreateHarnessAsync();
+
+        await harness.Service.HandleCallbackAsync(Callback($"au:r:{harness.Consumer.Id}:e", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback($"au:b:{harness.Consumer.Id}", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback($"au:u:{harness.Consumer.Id}", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback($"au:d:{harness.Consumer.Id}", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback($"au:en:{harness.Consumer.Id}", harness.Owner));
+
+        var events = await harness.AuditStore.GetLatestAsync(10);
+
+        Assert.Equal(
+            [
+                TelegramUserAuditEventType.UserEnabled,
+                TelegramUserAuditEventType.UserDisabled,
+                TelegramUserAuditEventType.UserUnblocked,
+                TelegramUserAuditEventType.UserBlocked,
+                TelegramUserAuditEventType.RoleChanged
+            ],
+            events.Select(item => item.EventType).ToArray());
+        var role = events.Single(item => item.EventType == TelegramUserAuditEventType.RoleChanged);
+        Assert.Equal(harness.Owner.Id, role.ActorTelegramUserId);
+        Assert.Equal(harness.Consumer.Id, role.TargetTelegramUserId);
+        Assert.Equal(TelegramUserRole.Consumer, role.OldRole);
+        Assert.Equal(TelegramUserRole.Engineer, role.NewRole);
+        Assert.True(role.IsSuccessful);
+    }
+
+    [Fact]
+    public async Task DeniedMutationsAppendSafeReasonCodes()
+    {
+        var harness = await CreateHarnessAsync();
+
+        await harness.Service.HandleCallbackAsync(Callback($"au:b:{harness.Owner.Id}", harness.Admin));
+        await harness.Service.HandleCallbackAsync(Callback($"au:d:{harness.Admin.Id}", harness.Admin));
+        await harness.Service.HandleCallbackAsync(Callback($"au:r:{harness.OtherConsumer.Id}:a", harness.Admin));
+        await harness.Service.HandleCallbackAsync(Callback("au:r:999999:x", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback("au:b:999999", harness.Owner));
+        await harness.Service.HandleCallbackAsync(Callback("au:unsupported:999999", harness.Owner));
+        await harness.Users.SetEnabledAsync(harness.OtherAdmin.TelegramChatId, false);
+        await harness.Service.HandleCallbackAsync(Callback($"au:b:{harness.OtherConsumer.Id}", harness.OtherAdmin));
+
+        var events = await harness.AuditStore.GetLatestAsync(10);
+
+        Assert.All(events, item =>
+        {
+            Assert.Equal(TelegramUserAuditEventType.UserActionDenied, item.EventType);
+            Assert.False(item.IsSuccessful);
+            Assert.DoesNotContain(FullPhone, item.MetadataJson ?? string.Empty, StringComparison.Ordinal);
+            Assert.DoesNotContain(harness.Owner.TelegramChatId.ToString(), item.MetadataJson ?? string.Empty, StringComparison.Ordinal);
+        });
+        Assert.Contains(events, item => item.MetadataJson!.Contains("owner_protected", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("self_action_denied", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("insufficient_permissions", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("invalid_role", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("target_not_found", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("unsupported_action", StringComparison.Ordinal));
+        Assert.Contains(events, item => item.MetadataJson!.Contains("disabled_or_blocked_actor", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task AuditMetadataDropsUnapprovedAndSensitiveFields()
+    {
+        var harness = await CreateHarnessAsync();
+        await harness.AuditService.AppendSafeAsync(
+            new TelegramUserAuditEventCreate(
+                TelegramUserAuditEventType.UserActionDenied,
+                harness.Owner.Id,
+                harness.Consumer.Id,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                FullPhone,
+                $$"""{"action":"block","reason":"owner_protected","phone":"{{FullPhone}}","token":"test-token","callback":"au:b:1"}""",
+                FixedNowUtc));
+
+        var auditEvent = Assert.Single(await harness.AuditStore.GetLatestAsync(10));
+
+        Assert.Equal("Telegram user management action denied.", auditEvent.Message);
+        Assert.Equal("""{"action":"block","reason":"owner_protected"}""", auditEvent.MetadataJson);
+        Assert.DoesNotContain(FullPhone, auditEvent.MetadataJson, StringComparison.Ordinal);
+        Assert.DoesNotContain("test-token", auditEvent.MetadataJson, StringComparison.Ordinal);
+        Assert.DoesNotContain("callback", auditEvent.MetadataJson, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AdminAuditShowsLatestSafeEventsAndIsDeniedForConsumer()
+    {
+        var harness = await CreateHarnessAsync();
+        await harness.Service.HandleCallbackAsync(Callback($"au:b:{harness.Consumer.Id}", harness.Owner));
+
+        var owner = await harness.Adapter.HandleAsync(Command("/admin_audit", harness.Owner));
+        var admin = await harness.Adapter.HandleAsync(Command("/admin_audit", harness.Admin));
+        var consumer = await harness.Adapter.HandleAsync(Command("/admin_audit", harness.OtherConsumer));
+
+        Assert.Contains("Аудит управления пользователями", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("@owner", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("@consumer", owner.Text, StringComparison.Ordinal);
+        Assert.Contains("заблокирован", owner.Text, StringComparison.Ordinal);
+        Assert.Equal(owner.Text, admin.Text);
+        Assert.Equal("Команда недоступна.", consumer.Text);
+        Assert.DoesNotContain(FullPhone, owner.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(harness.Consumer.TelegramChatId.ToString(), owner.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(harness.Consumer.TelegramUserId!.Value.ToString(), owner.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AuditWriteFailureDoesNotRollbackUserMutation()
+    {
+        var harness = await CreateHarnessAsync();
+        var audit = new TelegramUserAuditEventService(
+            new ThrowingAuditStore(),
+            harness.Users,
+            new TelegramDisplayTimeFormatter(
+                new EquipmentDiagnosticTelegramOptions { DisplayTimeZone = "Asia/Tashkent" },
+                new FixedTimeProvider()));
+        var service = new TelegramAdminUserManagementService(
+            harness.Users,
+            harness.Outbound,
+            new TelegramDisplayTimeFormatter(
+                new EquipmentDiagnosticTelegramOptions { DisplayTimeZone = "Asia/Tashkent" },
+                new FixedTimeProvider()),
+            audit);
+
+        var result = await service.HandleCallbackAsync(
+            Callback($"au:b:{harness.Consumer.Id}", harness.Owner));
+
+        Assert.Equal("Пользователь заблокирован", result.CallbackAnswerText);
+        Assert.True((await harness.Users.GetByIdAsync(harness.Consumer.Id))?.IsBlocked);
+    }
+
     private static async Task<Harness> CreateHarnessAsync()
     {
         var options = new EquipmentDiagnosticTelegramOptions
@@ -306,7 +443,9 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
 
         var outbound = new FakeOutbound();
         var formatter = new TelegramDisplayTimeFormatter(options, new FixedTimeProvider());
-        var service = new TelegramAdminUserManagementService(users, outbound, formatter);
+        var auditStore = new InMemoryTelegramUserAuditEventStore();
+        var audit = new TelegramUserAuditEventService(auditStore, users, formatter);
+        var service = new TelegramAdminUserManagementService(users, outbound, formatter, audit);
         var adapter = new EquipmentDiagnosticTelegramAdapter(
             new StaticFacade(),
             new EquipmentDiagnosticTelegramMessageParser(),
@@ -317,6 +456,8 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
             adminUserManagementService: service);
         return new Harness(
             users,
+            auditStore,
+            audit,
             outbound,
             service,
             adapter,
@@ -399,6 +540,8 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
 
     private sealed record Harness(
         InMemoryTelegramUserStore Users,
+        InMemoryTelegramUserAuditEventStore AuditStore,
+        TelegramUserAuditEventService AuditService,
         FakeOutbound Outbound,
         TelegramAdminUserManagementService Service,
         EquipmentDiagnosticTelegramAdapter Adapter,
@@ -408,6 +551,19 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         TelegramUserSnapshot Engineer,
         TelegramUserSnapshot Consumer,
         TelegramUserSnapshot OtherConsumer);
+
+    private sealed class ThrowingAuditStore : ITelegramUserAuditEventStore
+    {
+        public Task<TelegramUserAuditEventSnapshot> AppendAsync(
+            TelegramUserAuditEventCreate request,
+            CancellationToken cancellationToken = default) =>
+            throw new InvalidOperationException("audit unavailable");
+
+        public Task<IReadOnlyList<TelegramUserAuditEventSnapshot>> GetLatestAsync(
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<TelegramUserAuditEventSnapshot>>([]);
+    }
 
     private sealed class FixedTimeProvider : TimeProvider
     {

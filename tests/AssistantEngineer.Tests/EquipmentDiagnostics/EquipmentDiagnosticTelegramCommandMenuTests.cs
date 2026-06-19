@@ -21,7 +21,7 @@ public sealed class EquipmentDiagnosticTelegramCommandMenuTests
         Assert.DoesNotContain(outbound.Commands, command => command.Command is "queue" or "my_requests" or "take" or "assign" or "done" or "cancel_request" or "request_status" or "contact");
         Assert.DoesNotContain(outbound.Commands, command => command.Command.Contains(' ', StringComparison.Ordinal));
         Assert.DoesNotContain(outbound.Commands, command => command.Command is
-            "admin_help" or "admin" or "admin_users" or "admin_pending" or "engineers" or
+            "admin_help" or "admin" or "admin_users" or "admin_pending" or "admin_audit" or "engineers" or
             "request_events" or "admin users" or "admin allow" or "admin block" or "admin role");
     }
 

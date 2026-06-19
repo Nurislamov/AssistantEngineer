@@ -132,6 +132,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Админ-команды\n" +
             "/admin_users — управление пользователями кнопками\n" +
             "/admin_pending — новые пользователи\n" +
+            "/admin_audit — последние события управления пользователями\n" +
             "/engineers — инженеры\n\n" +
             "Очередь: /queue [active|new|in-progress|closed|all]\n" +
             "Мои назначенные заявки: /my_requests\n" +
