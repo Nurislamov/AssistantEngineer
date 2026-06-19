@@ -75,6 +75,17 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
 - Press each queue filter and confirm the same message is edited when possible, the callback spinner clears, malformed
   `sq:*` payloads are handled safely, and a simulated query failure returns
   `Очередь временно недоступна. Попробуйте позже.`.
+- Verify each listed request uses compact `Открыть #id`; opening it edits the queue message into an action card and
+  `К активной очереди` restores the active queue.
+- Verify active action cards expose guarded take/status/contact/history/close/cancel actions as appropriate, while
+  resolved and cancelled cards expose no take, assign, contact, close, or cancel buttons.
+- Verify resolved/cancelled requests cannot be taken or moved to another terminal state, and an Engineer cannot take
+  a request already assigned to another Engineer. Owner/Admin reassignment must continue to work.
+- Verify action-card status changes refresh both the live request notification and the queue action message. Simulate
+  an old/deleted message and confirm the safe replacement path without a stuck callback.
+- Simulate a request-action database failure and verify
+  `Действие временно недоступно. Попробуйте позже.` with no phone, chat id, Telegram user id, callback payload, token,
+  secret, or full message text in logs.
 - Verify every inline press clears the Telegram spinner and enforces the same role, assignment, and service-group
   checks as its ED-23C command fallback.
 - Verify the assign button lists only enabled, non-blocked Engineer/Admin/Owner records from `TelegramUsers`.

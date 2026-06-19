@@ -319,6 +319,23 @@ assigned operator label, safe local display time, and `Телефон: сохр�
 remain restricted to authorized private contact delivery. ED-23G adds no migration or environment variable, and
 queue commands remain absent from the global command menu.
 
+## ED-23G.1 Request Lifecycle UX Hardening
+
+ED-23G.1 replaces the crowded per-request queue row with one compact `Открыть #id` action. It edits the queue message
+into the existing live request card layout and adds `К активной очереди`. Active cards expose the existing guarded
+take, assignment, contact, status, history, close, and cancel actions; resolved and cancelled cards expose only
+status, history, and the queue return action.
+
+Lifecycle callbacks refresh both the stored live notification card and a separate queue action card when applicable.
+If an old/deleted queue message cannot be edited, the existing safe replacement-message path is used. Resolved and
+cancelled requests cannot be taken or moved to another terminal status, `/take` cannot overwrite another Engineer's
+assignment, and reassignment remains Owner/Admin-only. Contact and history remain available only to Owner/Admin or
+the assigned Engineer.
+
+All request callbacks now have a local safe exception boundary in addition to the webhook boundary. Database/service
+failures return `Действие временно недоступно. Попробуйте позже.`, callback acknowledgement is still attempted once,
+and logs contain only the action and exception type. ED-23G.1 adds no migration or environment variable.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

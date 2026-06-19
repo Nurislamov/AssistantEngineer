@@ -39,6 +39,9 @@
   Engineer access, and privacy-safe contact/notification events. No new environment value is required.
 - After ED-23G deployment, verify `/queue` filters, `/my_requests`, inline queue message editing, callback
   acknowledgement, Consumer denial, and phone-safe output. No migration or new environment value is required.
+- After ED-23G.1 deployment, verify compact `Открыть #id` action cards, terminal-button removal, stale lifecycle
+  guards, live-card plus queue-card refresh, safe edit fallback, and authorized-only contact/history. No migration or
+  new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

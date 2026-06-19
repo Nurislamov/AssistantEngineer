@@ -154,6 +154,12 @@ ED-23G adds service-group queue views: `/queue` (active), `/queue active`, `/que
 `Очередь временно недоступна. Попробуйте позже.` without failing polling. Queue output remains phone-safe, the
 commands stay out of the global command menu, and ED-23G requires no migration or environment change.
 
+ED-23G.1 uses compact `Открыть #id` queue actions to render a guarded request action card in the same message. Active
+request actions refresh the live notification and the queue action card; terminal cards retain only status/history.
+Stale terminal transitions, cross-Engineer take/close/contact attempts, malformed callbacks, and request-action
+database failures are denied or handled with safe Russian messages. The callback spinner is always acknowledged and
+no migration or environment change is required.
+
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 
 Webhook dry run:
