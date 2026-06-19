@@ -171,7 +171,14 @@ Discovery is disabled by default. Its response never includes the bot token, web
   admin user-management callbacks.
 - Verify Installer never receives the full customer phone and role-change audit output/metadata contains no raw
   Telegram identifiers, callback payload, phone, token, or secret.
-- ED-24B will expand the knowledge base with richer technical fields for Installer/Engineer/Admin/Owner.
+- ED-24B provides the localized audience-aware foundation; large-set import/update remains deferred to ED-24C or later.
+- Verify Gree GMV H5 technical output uses Russian labels and Russian audience text for Installer, Engineer,
+  Admin, and Owner.
+- Verify Russian Telegram output contains no raw `Safety`, `Step`, `Source`, `Confidence`, `Low`, `Medium`, `High`,
+  `Preliminary diagnostic entry`, or `Recommended action` labels.
+- Verify an entry without `ru` audience text returns the controlled Russian localization fallback rather than the
+  original English source paragraphs.
+- Source documents may remain English; `/language` and runtime machine translation are not part of ED-24B.
 - Verify `/admin_users`, `/admin_pending`, and `/engineers` use inline cards without full phone or raw Telegram ids.
 - Verify Admin cannot manage Admin/Owner, Owner accounts have no destructive buttons, and self block/disable/demotion
   callbacks are rejected.

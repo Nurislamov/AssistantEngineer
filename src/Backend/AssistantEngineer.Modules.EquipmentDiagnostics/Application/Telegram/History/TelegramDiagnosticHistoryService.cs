@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
@@ -13,13 +14,16 @@ public sealed class TelegramDiagnosticHistoryService
 
     private readonly ITelegramDiagnosticCaseStore _store;
     private readonly TelegramDisplayTimeFormatter _timeFormatter;
+    private readonly IErrorKnowledgeLocalizationSource _localizationSource;
 
     public TelegramDiagnosticHistoryService(
         ITelegramDiagnosticCaseStore store,
-        TelegramDisplayTimeFormatter timeFormatter)
+        TelegramDisplayTimeFormatter timeFormatter,
+        IErrorKnowledgeLocalizationSource? localizationSource = null)
     {
         _store = store;
         _timeFormatter = timeFormatter;
+        _localizationSource = localizationSource ?? new InMemoryErrorKnowledgeLocalizationSource();
     }
 
     public Task<TelegramDiagnosticCaseSnapshot> RecordCompletedAsync(
@@ -117,7 +121,7 @@ public sealed class TelegramDiagnosticHistoryService
         var isConsumer = user.Role == TelegramUserRole.Consumer;
         var summary = isConsumer
             ? ConsumerSafeSummary()
-            : TechnicalSummary(diagnosticCase);
+            : TechnicalSummary(diagnosticCase, user.Role);
 
         return
             "Последняя диагностика\n\n" +
@@ -170,10 +174,38 @@ public sealed class TelegramDiagnosticHistoryService
     private static string ConsumerSafeSummary() =>
         "Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.";
 
-    private static string TechnicalSummary(TelegramDiagnosticCaseSnapshot diagnosticCase) =>
-        string.IsNullOrWhiteSpace(diagnosticCase.ResultSummary)
-            ? ConsumerSafeSummary()
-            : diagnosticCase.ResultSummary;
+    private string TechnicalSummary(
+        TelegramDiagnosticCaseSnapshot diagnosticCase,
+        TelegramUserRole role)
+    {
+        var response = new EquipmentDiagnosticBotResponse(
+            EquipmentDiagnosticBotResponseStatus.Answer,
+            string.Empty,
+            string.Empty,
+            diagnosticCase.Manufacturer ?? string.Empty,
+            diagnosticCase.Code,
+            EquipmentContext: null,
+            new EquipmentDiagnosticBotObservedCodeContext(
+                diagnosticCase.Code,
+                diagnosticCase.Code,
+                FreeText: null),
+            AnswerCard: null,
+            ClarificationQuestion: null,
+            SourceCard: null,
+            new EquipmentDiagnosticBotSafetyCard(string.Empty, []),
+            VerificationRequired: true,
+            Confidence: AssistantEngineer.Modules.EquipmentDiagnostics.Domain.DiagnosticConfidence.Unknown,
+            IsManualVerified: false,
+            IsSeedKnowledge: false,
+            OperatorNextSteps: [],
+            Warnings: [],
+            InternalDecisionTrace: null);
+        var audience = role == TelegramUserRole.Installer
+            ? ErrorKnowledgeAudience.Installer
+            : ErrorKnowledgeAudience.Engineer;
+        return _localizationSource.Select(response, "ru", audience)?.Text.Summary ??
+            "Техническое описание пока не локализовано. Проверьте код по сервисному руководству установленной модели.";
+    }
 
     private static string? BuildNormalizedRequestJson(
         string? code,

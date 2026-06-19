@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +11,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
 {
     [Theory]
     [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Уверенность:")]
-    [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "ответьте с контекстом")]
+    [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "укажите контекст")]
     [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Справочное совпадение")]
     [InlineData("ZZ99", EquipmentDiagnosticBotResponseStatus.NotFound, "Код не найден")]
     public async Task StatusFormatsAreDeterministic(string code, EquipmentDiagnosticBotResponseStatus status, string expected)
@@ -78,6 +79,50 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.DoesNotContain("Safe next steps", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("internal trace", text, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Theory]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    [InlineData(TelegramUserRole.Admin)]
+    [InlineData(TelegramUserRole.Owner)]
+    public async Task GreeH5TechnicalOutputIsRussianForTechnicalRoles(TelegramUserRole role)
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+        var response = await facade.DiagnoseAsync(
+            new EquipmentDiagnosticBotRequest("Gree", "H5", Series: "GMV"));
+
+        var text = formatter.FormatTechnical(response, role);
+
+        Assert.Contains("Диагностика GREE H5", text, StringComparison.Ordinal);
+        Assert.Contains("Кратко:", text, StringComparison.Ordinal);
+        Assert.Contains("Безопасность:", text, StringComparison.Ordinal);
+        Assert.Contains("Возможные причины:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Что не советовать клиенту:", text, StringComparison.Ordinal);
+        Assert.Contains("Рекомендованное действие:", text, StringComparison.Ordinal);
+        Assert.Contains("Уверенность: Низкая", text, StringComparison.Ordinal);
+        Assert.Contains("Источник: встроенный черновой каталог", text, StringComparison.Ordinal);
+        Assert.Contains("Черновик / непроверено", text, StringComparison.Ordinal);
+        foreach (var forbidden in EnglishTechnicalMarkers())
+        {
+            Assert.DoesNotContain(forbidden, text, StringComparison.Ordinal);
+        }
+    }
+
+    private static IReadOnlyList<string> EnglishTechnicalMarkers() =>
+    [
+        "Safety",
+        "Step ",
+        "Source:",
+        "Confidence:",
+        " Low",
+        " Medium",
+        " High",
+        "Preliminary diagnostic entry",
+        "Recommended action"
+    ];
 
     private static ServiceProvider CreateProvider()
     {

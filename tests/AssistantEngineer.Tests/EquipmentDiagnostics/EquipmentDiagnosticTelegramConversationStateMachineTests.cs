@@ -552,7 +552,8 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var response = await harness.Adapter.HandleAsync(Update("/last"));
 
         Assert.Contains("Дата: 17.06.2026 22:20", response.Text, StringComparison.Ordinal);
-        Assert.Contains("GMV protection alarm", response.Text, StringComparison.Ordinal);
+        Assert.Contains("H5 рассматривается как предварительный сигнал защиты GMV", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("GMV protection alarm", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("InternalDecisionTrace", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 

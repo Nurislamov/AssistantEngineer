@@ -180,6 +180,20 @@ No EF migration or environment variable is required because Telegram roles are s
 constraint. ED-23R adds the access foundation only; richer technical knowledge fields/content are deferred to
 ED-24B Error knowledge base v2.
 
+## ED-24B Localized Error Knowledge Foundation
+
+Telegram technical diagnostics now select Russian audience-aware text from the v2 localization source. Source
+documents and the existing embedded runtime catalog may remain English, but raw English summaries, safety paragraphs,
+and steps are not rendered into the Russian Telegram UI.
+
+Gree GMV H5 has Russian Consumer, Installer, and Engineer views. Owner/Admin reuse the Engineer view. When a Russian
+audience view is missing, the bot shows a controlled Russian localization fallback with a safe source label and
+generic safety boundary.
+
+The structure supports future `en` and `uz` locale records, but ED-24B does not expose `/language` or user locale
+preferences. The large-set import/update workflow is deferred to ED-24C or later. See
+`error-knowledge-v2-localization.md`.
+
 `CreatedAt` remains stored in UTC. Telegram history display converts `/history` and `/last` timestamps to
 `AssistantEngineer:EquipmentDiagnostics:Telegram:DisplayTimeZone`, defaulting to `Asia/Tashkent`. Empty or invalid
 time zone configuration falls back to `Asia/Tashkent`, logs a sanitized warning, and does not block bot startup or

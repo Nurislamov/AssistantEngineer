@@ -1,41 +1,56 @@
 using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 
 public sealed class EquipmentDiagnosticTelegramResponseFormatter
 {
-    public string Format(EquipmentDiagnosticBotResponse response, int maxLength) =>
-        Truncate(FormatTechnical(response), maxLength);
+    private const string RussianLocale = "ru";
+    private readonly IErrorKnowledgeLocalizationSource _localizationSource;
 
-    public string FormatTechnical(EquipmentDiagnosticBotResponse response)
+    public EquipmentDiagnosticTelegramResponseFormatter(
+        IErrorKnowledgeLocalizationSource? localizationSource = null)
+    {
+        _localizationSource = localizationSource ?? new InMemoryErrorKnowledgeLocalizationSource();
+    }
+
+    public string Format(EquipmentDiagnosticBotResponse response, int maxLength) =>
+        Truncate(FormatTechnical(response, TelegramUserRole.Engineer), maxLength);
+
+    public string FormatTechnical(
+        EquipmentDiagnosticBotResponse response,
+        TelegramUserRole role = TelegramUserRole.Engineer)
     {
         var builder = new StringBuilder();
         builder.AppendLine($"Диагностика {response.NormalizedManufacturer} {response.NormalizedCode}");
-        builder.AppendLine(response.Message);
-        AppendTechnicalSafety(builder, response);
 
         switch (response.Status)
         {
             case EquipmentDiagnosticBotResponseStatus.Answer:
-                AppendTechnicalAnswer(builder, response);
+                AppendTechnicalAnswer(builder, response, role);
                 break;
             case EquipmentDiagnosticBotResponseStatus.ClarificationRequired:
+                AppendGenericSafety(builder);
                 AppendTechnicalClarification(builder, response);
                 break;
             case EquipmentDiagnosticBotResponseStatus.ReferenceOnly:
+                AppendGenericSafety(builder);
                 builder.AppendLine("Справочное совпадение: это не подтвержденный диагноз неисправности.");
-                AppendTechnicalNextSteps(builder, response.OperatorNextSteps);
+                builder.AppendLine("Рекомендованное действие: уточнить модель и место отображения кода по документации оборудования.");
                 break;
             case EquipmentDiagnosticBotResponseStatus.NotFound:
+                AppendGenericSafety(builder);
                 builder.AppendLine("Код не найден в текущем проверенном каталоге. Проверьте производителя, семейство оборудования, место отображения кода и точную сервисную документацию.");
-                AppendTechnicalNextSteps(builder, response.OperatorNextSteps);
+                builder.AppendLine("Рекомендованное действие: записать точную модель и проверить код по сервисному руководству.");
                 break;
             case EquipmentDiagnosticBotResponseStatus.Unsupported:
             case EquipmentDiagnosticBotResponseStatus.UnsafeOrOutOfScope:
+                AppendGenericSafety(builder);
                 builder.AppendLine("Запрос вне поддерживаемого безопасного диагностического сценария.");
-                AppendTechnicalNextSteps(builder, response.OperatorNextSteps);
+                builder.AppendLine("Рекомендованное действие: передать данные квалифицированному специалисту.");
                 break;
         }
 
@@ -74,7 +89,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
                 "Напишите производителя и код ошибки, например: Gree H5.\n" +
                 "Доступны технические объяснения, история /history и последняя диагностика /last.\n" +
                 "Роль «Монтажник» не даёт доступа к сервисной очереди, контактам клиентов или админ-командам.\n" +
-                "Расширенная техническая база знаний будет добавлена на этапе ED-24B.",
+                "Технический текст выводится по-русски; непереведённые записи показываются безопасным русским сообщением.",
                 maxLength);
         }
 
@@ -242,27 +257,56 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             _ => error
         };
 
-    private static void AppendTechnicalAnswer(StringBuilder builder, EquipmentDiagnosticBotResponse response)
+    private void AppendTechnicalAnswer(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response,
+        TelegramUserRole role)
     {
-        if (response.VerificationRequired)
+        var selection = _localizationSource.Select(
+            response,
+            RussianLocale,
+            Audience(role));
+        if (selection is null)
         {
-            builder.AppendLine("Перед окончательным выводом нужна проверка по месту.");
+            AppendMissingLocalizationFallback(builder, response);
+            return;
         }
 
-        builder.AppendLine($"Уверенность: {response.Confidence}.");
-        if (response.SourceCard is not null)
+        var text = selection.Text;
+        builder.AppendLine(text.Title);
+        builder.AppendLine();
+        builder.AppendLine("Кратко:");
+        builder.AppendLine(text.Summary);
+        builder.AppendLine();
+        builder.AppendLine("Безопасность:");
+        builder.AppendLine(text.SafetyNote);
+        builder.AppendLine();
+        builder.AppendLine($"Уверенность: {ConfidenceLabel(response.Confidence)}.");
+        builder.AppendLine($"Источник: {SafeSourceLabel(response.SourceCard)}.");
+        if (!text.IsReviewed || response.IsSeedKnowledge || response.VerificationRequired)
         {
-            builder.AppendLine($"Источник: {response.SourceCard.SourceType} / {response.SourceCard.EvidenceLevel}.");
+            builder.AppendLine("Черновик / непроверено: точное значение необходимо сверить с документацией установленной модели.");
         }
+        AppendSection(builder, "Возможные причины", text.PossibleCauses);
+        AppendSection(builder, "Что проверить", text.CheckSteps);
+        AppendSection(builder, "Что не советовать клиенту", text.DoNotAdvise);
+        builder.AppendLine();
+        builder.AppendLine("Рекомендованное действие:");
+        builder.AppendLine(text.RecommendedAction);
+    }
 
-        if (response.AnswerCard is not null)
+    private static void AppendMissingLocalizationFallback(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response)
+    {
+        builder.AppendLine(
+            $"Техническое описание пока не локализовано. Источник: {SafeSourceLabel(response.SourceCard)}.");
+        AppendGenericSafety(builder);
+        builder.AppendLine($"Уверенность: {ConfidenceLabel(response.Confidence)}.");
+        if (response.IsSeedKnowledge || response.VerificationRequired)
         {
-            builder.AppendLine();
-            builder.AppendLine("Кратко:");
-            builder.AppendLine(response.AnswerCard.Summary);
+            builder.AppendLine("Черновик / непроверено: проверьте точное значение по сервисному руководству установленной модели.");
         }
-
-        AppendTechnicalNextSteps(builder, response.OperatorNextSteps);
     }
 
     private static void AppendTechnicalClarification(StringBuilder builder, EquipmentDiagnosticBotResponse response)
@@ -272,36 +316,73 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             return;
         }
 
-        builder.AppendLine(response.ClarificationQuestion.Prompt);
+        builder.AppendLine("Код найден для нескольких вариантов оборудования. Уточните установленный контекст:");
         foreach (var option in response.ClarificationQuestion.Options)
         {
-            builder.AppendLine($"- {option.Label}: ответьте с контекстом {option.EquipmentSide}.");
+            var family = string.IsNullOrWhiteSpace(option.Series)
+                ? option.Manufacturer
+                : $"{option.Manufacturer} {option.Series}";
+            builder.AppendLine($"- {family}: укажите контекст «{EquipmentSideLabel(option.EquipmentSide)}».");
         }
     }
 
-    private static void AppendTechnicalNextSteps(StringBuilder builder, IReadOnlyList<string> steps)
+    private static void AppendSection(
+        StringBuilder builder,
+        string title,
+        IReadOnlyList<string> values)
     {
-        if (steps.Count == 0)
+        if (values.Count == 0)
         {
             return;
         }
 
         builder.AppendLine();
-        builder.AppendLine("Следующие шаги:");
-        foreach (var step in steps.Take(4))
+        builder.AppendLine($"{title}:");
+        foreach (var value in values.Take(5))
         {
-            builder.AppendLine($"- {Compact(step, 180)}");
+            builder.AppendLine($"- {Compact(value, 220)}");
         }
     }
 
-    private static void AppendTechnicalSafety(StringBuilder builder, EquipmentDiagnosticBotResponse response)
+    private static void AppendGenericSafety(StringBuilder builder)
     {
-        builder.AppendLine($"Безопасность: {response.SafetyCard.Boundary}");
-        foreach (var note in response.SafetyCard.Notes.Take(2))
-        {
-            builder.AppendLine($"- {Compact(note, 180)}");
-        }
+        builder.AppendLine("Безопасность: электрические, компрессорные, инверторные и холодильные проверки выполняет только квалифицированный специалист. Защиты нельзя отключать или обходить.");
     }
+
+    private static ErrorKnowledgeAudience Audience(TelegramUserRole role) =>
+        role == TelegramUserRole.Installer
+            ? ErrorKnowledgeAudience.Installer
+            : ErrorKnowledgeAudience.Engineer;
+
+    private static string SafeSourceLabel(EquipmentDiagnosticBotSourceCard? source) =>
+        source?.SourceType switch
+        {
+            "ManufacturerDocumentation" or "ServiceManual" => "документация производителя",
+            "CrossCheckedManuals" => "сверенные руководства производителя",
+            "FieldObservation" => "полевое наблюдение, требующее проверки",
+            "SeededEngineeringKnowledge" => "встроенный черновой каталог",
+            _ => "внутренний диагностический каталог"
+        };
+
+    private static string ConfidenceLabel(DiagnosticConfidence confidence) =>
+        confidence switch
+        {
+            DiagnosticConfidence.Low => "Низкая",
+            DiagnosticConfidence.Medium => "Средняя",
+            DiagnosticConfidence.High or DiagnosticConfidence.ManualVerified => "Высокая",
+            _ => "Черновик / непроверено"
+        };
+
+    private static string EquipmentSideLabel(EquipmentDiagnosticBotEquipmentSide side) =>
+        side switch
+        {
+            EquipmentDiagnosticBotEquipmentSide.Indoor => "внутренний блок",
+            EquipmentDiagnosticBotEquipmentSide.Outdoor => "наружный блок",
+            EquipmentDiagnosticBotEquipmentSide.Chiller => "чиллер",
+            EquipmentDiagnosticBotEquipmentSide.Controller => "контроллер",
+            EquipmentDiagnosticBotEquipmentSide.CommissioningTool => "сервисный инструмент",
+            _ => "неуточнённое оборудование"
+        };
 
     private static string PhonePrompt(bool hasPhoneNumber) =>
         hasPhoneNumber

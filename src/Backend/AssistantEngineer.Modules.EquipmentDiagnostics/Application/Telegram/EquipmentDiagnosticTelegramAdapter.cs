@@ -264,7 +264,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         var diagnosis = await _botFacade.DiagnoseAsync(parseResult.DiagnosticRequest, cancellationToken);
         if (access.UsesTechnicalResponse)
         {
-            var technical = _formatter.FormatTechnical(diagnosis);
+            var technical = _formatter.FormatTechnical(diagnosis, access.Role);
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,

@@ -241,7 +241,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
-    public async Task TechnicalResponseCanBeSplitIntoMultipleTelegramMessages()
+    public async Task UnlocalizedTechnicalSourceDoesNotLeakLongEnglishContent()
     {
         var store = new InMemoryTelegramUserStore();
         var adapter = CreateAdapter(
@@ -251,10 +251,10 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 710));
 
-        Assert.True(response.OutboundMessages.Count > 1);
-        Assert.All(response.OutboundMessages, message =>
-            Assert.InRange(message.Text.Length, 1, 3500));
-        Assert.StartsWith("Диагностика", response.OutboundMessages[0].Text, StringComparison.Ordinal);
+        Assert.Single(response.OutboundMessages);
+        Assert.Contains("Техническое описание пока не локализовано", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Technical line", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Техническая строка 120", response.Text, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -423,12 +423,12 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
             return Task.FromResult(new EquipmentDiagnosticBotResponse(
                 EquipmentDiagnosticBotResponseStatus.Answer,
-                "Gree H5",
+                "Gree X1",
                 longText,
                 request.Manufacturer ?? "Gree",
-                request.Code ?? "H5",
+                "X1",
                 null,
-                new EquipmentDiagnosticBotObservedCodeContext(request.Code ?? "H5", request.Code ?? "H5", request.FreeText),
+                new EquipmentDiagnosticBotObservedCodeContext("X1", "X1", request.FreeText),
                 null,
                 null,
                 null,

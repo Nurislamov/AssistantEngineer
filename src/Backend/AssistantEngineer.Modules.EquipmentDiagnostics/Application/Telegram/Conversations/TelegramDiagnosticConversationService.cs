@@ -662,7 +662,7 @@ public sealed class TelegramDiagnosticConversationService
     {
         if (access.UsesTechnicalResponse)
         {
-            var technical = _formatter.FormatTechnical(diagnosis);
+            var technical = _formatter.FormatTechnical(diagnosis, access.Role);
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,
@@ -695,7 +695,7 @@ public sealed class TelegramDiagnosticConversationService
         var text = "Я не нашёл точную расшифровку этого кода. Проверьте код или укажите бренд, например: Gree H5.";
         if (access.UsesTechnicalResponse)
         {
-            text += "\n\nТехническая заметка: код не найден в runtime catalog.";
+            text += "\n\nТехническая заметка: код не найден в рабочем диагностическом каталоге.";
         }
 
         return new TelegramDiagnosticConversationResult(

@@ -48,6 +48,9 @@
 - After ED-23R deployment, verify Owner/Admin can assign `Монтажник`, Engineer is shown as `Сервис-инженер`,
   Installer receives technical diagnostics but cannot use service/admin actions or receive customer contact, and
   role changes appear safely in `/admin_audit`. No migration or new environment value is required.
+- After ED-24B deployment, verify Gree GMV H5 technical output is Russian for Installer/Engineer/Admin/Owner and an
+  unlocalized technical entry uses the Russian fallback without exposing raw English source text. No migration or
+  new environment value is required.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

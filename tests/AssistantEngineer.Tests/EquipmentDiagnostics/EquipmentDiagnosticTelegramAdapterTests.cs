@@ -35,7 +35,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Перед окончательным выводом нужна проверка", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Черновик / непроверено", response.Text, StringComparison.Ordinal);
         Assert.Contains("Источник:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
     }
