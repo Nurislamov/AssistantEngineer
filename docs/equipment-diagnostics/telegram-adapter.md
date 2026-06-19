@@ -190,8 +190,10 @@ Gree GMV H5 has Russian Consumer, Installer, and Engineer views. Owner/Admin reu
 audience view is missing, the bot shows a controlled Russian localization fallback with a safe source label and
 generic safety boundary.
 
-The structure supports future `en` and `uz` locale records, but ED-24B does not expose `/language` or user locale
-preferences. The large-set import/update workflow is deferred to ED-24C or later. See
+The structure supports future `en` and `uz` locale records, but no `/language` or user locale preference is exposed.
+ED-24C moves the localized entries to validated repository JSON under
+`data/equipment-diagnostics/error-knowledge/`; the files are embedded at build time and invalid or duplicate content
+blocks verification. See
 `error-knowledge-v2-localization.md`.
 
 `CreatedAt` remains stored in UTC. Telegram history display converts `/history` and `/last` timestamps to

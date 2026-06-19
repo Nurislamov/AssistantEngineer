@@ -231,6 +231,18 @@ ED-11A adds a deterministic manual-intake and promotion-readiness pipeline:
 
 The pipeline validates and reports only. It never automatically writes or promotes runtime catalog entries. Runtime changes still require production JSON edits, full verification, and a reviewed pull request.
 
+ED-24C adds a separate repository-backed localized error-knowledge workflow under
+`data/equipment-diagnostics/error-knowledge/`. These one-entry JSON files are the source of truth for audience-aware
+Consumer, Installer, and Engineer Telegram text. They are embedded at build time and validated with:
+
+```powershell
+dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge
+```
+
+See [Error Knowledge V2 Localization and Repository Workflow](error-knowledge-v2-localization.md) for the format,
+review rules, denylist, and safe procedure for adding a code. Owner/Admin reuse Engineer diagnostics. The structure
+allows a future `uz` locale, but Telegram still defaults to Russian and does not expose `/language`.
+
 ## JSON Catalog
 
 Each JSON file contains an `entries` array. Each entry has:

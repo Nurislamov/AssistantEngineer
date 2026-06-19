@@ -14,7 +14,7 @@ public sealed record ErrorKnowledgeEntryV2(
     string Manufacturer,
     string? EquipmentType,
     string? Series,
-    string? Model,
+    IReadOnlyList<string> Models,
     string Code,
     string SourceLanguage,
     string SourceType,

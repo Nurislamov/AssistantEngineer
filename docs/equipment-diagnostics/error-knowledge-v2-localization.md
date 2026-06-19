@@ -1,23 +1,23 @@
-# Error Knowledge V2 Localization Foundation
+# Error Knowledge V2 Localization and Repository Workflow
 
 ## Purpose
 
-ED-24B separates diagnostic source material from user-facing localized text. Existing runtime knowledge remains in
-the embedded JSON catalog, where manufacturer/manual source material may be English. Telegram output remains Russian.
+ED-24B separates diagnostic source material from user-facing localized text. ED-24C makes the localized error
+knowledge repository-backed JSON under `data/equipment-diagnostics/error-knowledge/`. Telegram output remains Russian.
 
-This stage does not add dynamic translation, `/language`, a large import pipeline, attachments, or a database-backed
-knowledge editor.
+This workflow does not add dynamic translation, `/language`, a large import, attachments, runtime editing, NoSQL, or
+a database-backed knowledge editor.
 
 ## Model
 
-`ErrorKnowledgeEntryV2` identifies the diagnostic case and its source:
+Each JSON file represents one `ErrorKnowledgeEntryV2` and identifies the diagnostic case and its source:
 
-- manufacturer, equipment type, series, model, and code;
+- `id`, `manufacturer`, `equipmentType`, `series`, `models`, and `code`;
 - source language, type, name, and reference;
 - confidence and verification status;
 - creation/update timestamps.
 
-`ErrorKnowledgeTextV2` contains one localized audience view:
+Its `texts` array contains one `ErrorKnowledgeTextV2` per localized audience view:
 
 - locale and audience;
 - title, summary, and safety note;
@@ -44,9 +44,9 @@ matrix.
 
 ## Source and output language
 
-The existing embedded runtime catalog is the source/original layer. Its English title, meaning, safety notes, and
-steps are retained for verification and future import work. They are not copied directly into Russian Telegram
-messages.
+The existing embedded runtime diagnostic catalog remains unchanged. The localized error-knowledge JSON is a separate
+audience/output layer. Source language can be English, but raw English summaries, labels, safety paragraphs, and steps
+are not copied directly into Russian Telegram messages.
 
 The Telegram formatter selects `ru` text for the current audience. If no matching localized text exists, it renders
 a controlled Russian fallback:
@@ -72,11 +72,64 @@ H5 as a preliminary protection signal, not as proof of a compressor, inverter, o
 The entry remains low-confidence and unreviewed because the current source is `SeededEngineeringKnowledge /
 UnverifiedSeed`.
 
+## Repository format and loading
+
+The source-of-truth directory is:
+
+```text
+data/equipment-diagnostics/error-knowledge/{manufacturer}/{series}/{code}.json
+```
+
+The initial entry is `gree/gmv/h5.json`. JSON uses camelCase. Arrays such as `models`, `possibleCauses`, `checkSteps`,
+and `doNotAdvise` must be present even when empty. Locale and audience values are case-sensitive.
+
+The EquipmentDiagnostics project embeds these files at build time. `JsonErrorKnowledgeLocalizationSource` lazily loads
+the embedded resources, validates the complete set, and exposes it through `IErrorKnowledgeLocalizationSource`.
+Invalid files or duplicate keys fail deterministically; they are never skipped. Owner and Admin continue to select
+the Engineer audience.
+
+The current allowed values are:
+
+- locales: `ru`, `en`, `uz` (`uz` is accepted by the format but is not required or exposed yet);
+- audiences: `Consumer`, `Installer`, `Engineer`;
+- confidence: `Low`, `Medium`, `High`, `ManualVerified`;
+- verification status: `UnverifiedSeed`, `PendingReview`, `Reviewed`, `Verified`.
+
+## Validation
+
+Run:
+
+```powershell
+dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge
+```
+
+The validator reports the repository-relative file and problem. It blocks:
+
+- missing identity, source language, confidence, verification status, timestamps, or localized fields;
+- missing Russian Consumer, Installer, or Engineer text;
+- invalid locale, audience, confidence, or verification status;
+- duplicate `manufacturer/equipmentType/series/code/locale/audience` keys;
+- English UI labels in Russian text;
+- unsafe Consumer instructions, using a documented initial English/Russian denylist;
+- phone-number-like values, raw chat/platform user IDs, token/webhook-secret-like values, and callback payloads.
+
+`doNotAdvise` is deliberately excluded from the unsafe-instruction scan because that field records explicit
+prohibitions. All user-visible Consumer instructions remain subject to the denylist.
+
+## Adding or updating an error code
+
+1. Create one file under the manufacturer/series path, using camelCase fields and the existing H5 file as the template.
+2. Preserve the original source language and provenance. Never claim an exact meaning without a verified source.
+3. Add Russian Consumer, Installer, and Engineer text. Consumer text must remain safe and must not instruct electrical,
+   refrigerant, compressor, inverter, or protection work.
+4. Set confidence and verification status conservatively. Mark unverified entries clearly.
+5. Keep Owner/Admin behavior out of JSON; they reuse Engineer diagnostics by policy.
+6. Run `verify-knowledge`, focused EquipmentDiagnostics tests, and the full repository quality gates.
+7. Review the JSON diff like code. Runtime Telegram editing is not supported.
+
 ## Persistence decision
 
 No EF migration is used. Production diagnostic knowledge is currently embedded static JSON, so a separate
-database-backed localization table would introduce a second ownership/update path before an import workflow exists.
-The in-code v2 source models the intended split while preserving the current catalog boundary.
+database-backed localization table would introduce a second ownership/update path and new backup/restore surface.
 
-ED-24C or a later stage should define the reviewed import/update workflow for large localized error-code sets and
-decide whether persistence moves to database tables or versioned generated artifacts.
+If online editing becomes necessary, PostgreSQL `jsonb` or normalized tables should be considered before NoSQL.

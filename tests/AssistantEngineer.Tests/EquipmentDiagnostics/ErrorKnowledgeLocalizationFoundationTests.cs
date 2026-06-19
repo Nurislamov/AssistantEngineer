@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
@@ -11,7 +12,7 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
     [Fact]
     public void SourceLanguageAndLocalizedAudienceTextsAreSeparated()
     {
-        var source = new InMemoryErrorKnowledgeLocalizationSource();
+        var source = new JsonErrorKnowledgeLocalizationSource();
         var entry = Assert.Single(source.GetEntries(), item => item.Id == "gree-gmv-h5");
 
         Assert.Equal("en", entry.SourceLanguage);
@@ -26,7 +27,7 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
     [Fact]
     public void AudienceSpecificRussianTextIsSelected()
     {
-        var source = new InMemoryErrorKnowledgeLocalizationSource();
+        var source = new JsonErrorKnowledgeLocalizationSource();
         var response = Response("Gree", "H5", "GMV");
 
         var installer = source.Select(response, "ru-RU", ErrorKnowledgeAudience.Installer);

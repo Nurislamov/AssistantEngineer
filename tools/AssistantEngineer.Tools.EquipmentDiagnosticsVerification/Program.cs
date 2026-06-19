@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Verification;
 
 namespace AssistantEngineer.Tools.EquipmentDiagnosticsVerification;
@@ -52,6 +53,11 @@ internal static class Program
             if (options.Command == "goal-run-report")
             {
                 return ValidateGoalRunReport(repoRoot, options);
+            }
+
+            if (options.Command == "verify-knowledge")
+            {
+                return VerifyErrorKnowledge(repoRoot);
             }
 
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
@@ -111,6 +117,37 @@ internal static class Program
         }
 
         return result.IsReady ? 0 : 1;
+    }
+
+    private static int VerifyErrorKnowledge(string repoRoot)
+    {
+        var directory = Path.Combine(
+            repoRoot,
+            "data",
+            "equipment-diagnostics",
+            "error-knowledge");
+        if (!Directory.Exists(directory))
+        {
+            throw new DirectoryNotFoundException($"Error knowledge directory was not found: {directory}");
+        }
+
+        var sources = Directory
+            .EnumerateFiles(directory, "*.json", SearchOption.AllDirectories)
+            .OrderBy(path => path, StringComparer.Ordinal)
+            .Select(path => new ErrorKnowledgeJsonSource(
+                Path.GetRelativePath(repoRoot, path).Replace('\\', '/'),
+                File.ReadAllText(path)))
+            .ToArray();
+        var result = new ErrorKnowledgeJsonValidator().Validate(sources);
+
+        Console.WriteLine(result.IsValid ? "PASS" : "FAIL");
+        Console.WriteLine($"Files: {sources.Length}; entries: {result.Entries.Count}; issues: {result.Issues.Count}");
+        foreach (var issue in result.Issues)
+        {
+            Console.WriteLine($"{issue.Path}: {issue.Problem}");
+        }
+
+        return result.IsValid ? 0 : 1;
     }
 
     private static int GenerateBetaReadiness(
@@ -259,6 +296,7 @@ internal static class Program
         Console.WriteLine("  prepare-pr-body");
         Console.WriteLine("  beta-readiness");
         Console.WriteLine("  goal-run-report");
+        Console.WriteLine("  verify-knowledge");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --repo-root <path>");

@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
@@ -23,7 +24,7 @@ public sealed class TelegramDiagnosticHistoryService
     {
         _store = store;
         _timeFormatter = timeFormatter;
-        _localizationSource = localizationSource ?? new InMemoryErrorKnowledgeLocalizationSource();
+        _localizationSource = localizationSource ?? new JsonErrorKnowledgeLocalizationSource();
     }
 
     public Task<TelegramDiagnosticCaseSnapshot> RecordCompletedAsync(

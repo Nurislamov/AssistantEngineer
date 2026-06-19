@@ -1,6 +1,7 @@
 using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 
@@ -14,7 +15,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     public EquipmentDiagnosticTelegramResponseFormatter(
         IErrorKnowledgeLocalizationSource? localizationSource = null)
     {
-        _localizationSource = localizationSource ?? new InMemoryErrorKnowledgeLocalizationSource();
+        _localizationSource = localizationSource ?? new JsonErrorKnowledgeLocalizationSource();
     }
 
     public string Format(EquipmentDiagnosticBotResponse response, int maxLength) =>
@@ -114,6 +115,15 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         bool hasPhoneNumber,
         int maxLength)
     {
+        var localized = _localizationSource.Select(
+            response,
+            RussianLocale,
+            ErrorKnowledgeAudience.Consumer);
+        if (localized is not null)
+        {
+            return FormatLocalizedConsumer(response, localized.Text, hasPhoneNumber, maxLength);
+        }
+
         var title = $"Внимание: ошибка {response.NormalizedManufacturer} {response.NormalizedCode}";
         var meaning = ConsumerMeaning(response);
 
@@ -133,6 +143,34 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine(PhonePrompt(hasPhoneNumber));
 
+        return TruncateConsumer(builder.ToString().Trim(), maxLength);
+    }
+
+    private static string FormatLocalizedConsumer(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeTextV2 text,
+        bool hasPhoneNumber,
+        int maxLength)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine($"Внимание: ошибка {response.NormalizedManufacturer} {response.NormalizedCode}");
+        builder.AppendLine();
+        builder.AppendLine(text.Title);
+        builder.AppendLine();
+        builder.AppendLine("Возможное значение:");
+        builder.AppendLine(text.Summary);
+        builder.AppendLine();
+        builder.AppendLine("Что можно сделать безопасно:");
+        builder.AppendLine(text.SafetyNote);
+        AppendSection(builder, "Возможные причины", text.PossibleCauses);
+        AppendSection(builder, "Что можно проверить безопасно", text.CheckSteps);
+        builder.AppendLine();
+        builder.AppendLine("Рекомендованное действие:");
+        builder.AppendLine(text.RecommendedAction);
+        builder.AppendLine();
+        builder.AppendLine($"Для сервиса: передайте код {response.NormalizedManufacturer} {response.NormalizedCode}.");
+        builder.AppendLine();
+        builder.AppendLine(PhonePrompt(hasPhoneNumber));
         return TruncateConsumer(builder.ToString().Trim(), maxLength);
     }
 

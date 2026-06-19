@@ -27,7 +27,10 @@ public sealed class EquipmentDiagnosticsJsonKnowledgeSource : IEquipmentDiagnost
             .GetManifestResourceNames()
             .Where(name =>
                 name.Contains(".Knowledge.", StringComparison.Ordinal) &&
-                name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                name.EndsWith(".json", StringComparison.OrdinalIgnoreCase) &&
+                !name.Contains(".Knowledge.ErrorKnowledge.", StringComparison.OrdinalIgnoreCase) &&
+                !name.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase) &&
+                !name.Contains(".Knowledge.manual-codebook.", StringComparison.OrdinalIgnoreCase))
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToArray();
 }
