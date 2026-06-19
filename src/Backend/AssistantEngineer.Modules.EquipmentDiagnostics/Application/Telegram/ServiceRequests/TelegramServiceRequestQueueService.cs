@@ -34,6 +34,7 @@ public sealed class TelegramServiceRequestQueueService
 {
     private const int QueueLimit = 10;
     private const int QueueButtonLimit = 5;
+    private const string HistoryUnavailable = "История временно недоступна. Попробуйте позже.";
 
     private readonly ITelegramServiceRequestStore _requestStore;
     private readonly ITelegramUserStore _userStore;
@@ -163,7 +164,7 @@ public sealed class TelegramServiceRequestQueueService
 
         if (!TryParseCallbackData(update.CallbackData, out var action, out var requestId, out var targetUserId))
         {
-            return CallbackResult("Действие недоступно или устарело.", "Ошибка действия");
+            return CallbackResult("Действие недоступно.", "Действие недоступно.");
         }
 
         var actor = update.UserId is null
@@ -209,6 +210,14 @@ public sealed class TelegramServiceRequestQueueService
 
         if (action == "e")
         {
+            if (string.Equals(result.Text, HistoryUnavailable, StringComparison.Ordinal))
+            {
+                return result with
+                {
+                    CallbackAnswerText = HistoryUnavailable,
+                    SuppressGroupMessage = true
+                };
+            }
             var denied = result.Text.Contains("доступна только", StringComparison.OrdinalIgnoreCase) ||
                 result.Text.Contains("недоступна", StringComparison.OrdinalIgnoreCase);
             return result with
@@ -589,6 +598,29 @@ public sealed class TelegramServiceRequestQueueService
     }
 
     private async Task<TelegramServiceQueueCommandResult> EventsAsync(
+        TelegramServiceQueueCommand command,
+        TelegramUserSnapshot actor,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await EventsCoreAsync(command, actor, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Telegram service request history query failed. RequestId: {RequestId}; ExceptionType: {ExceptionType}.",
+                command.RequestId,
+                exception.GetType().Name);
+            return Result(HistoryUnavailable);
+        }
+    }
+
+    private async Task<TelegramServiceQueueCommandResult> EventsCoreAsync(
         TelegramServiceQueueCommand command,
         TelegramUserSnapshot actor,
         CancellationToken cancellationToken)

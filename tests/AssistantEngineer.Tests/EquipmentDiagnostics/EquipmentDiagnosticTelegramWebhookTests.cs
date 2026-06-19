@@ -210,6 +210,64 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task HistoryCallbackAdapterFailureIsAnsweredOnceAndHandledAsProcessed()
+    {
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(
+            EnabledOptions(),
+            _policy,
+            new ThrowingAdapter(),
+            outbound);
+        var callbackUpdate = CallbackUpdate("callback-history-failure", "sr:e:4");
+
+        var result = await handler.HandleAsync(callbackUpdate, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal("История временно недоступна. Попробуйте позже.", outbound.CallbackAnswerText);
+        Assert.Equal(0, outbound.CallCount);
+    }
+
+    [Fact]
+    public async Task ServiceRequestCallbackAdapterFailureIsAnsweredOnceAndHandledAsProcessed()
+    {
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(
+            EnabledOptions(),
+            _policy,
+            new ThrowingAdapter(),
+            outbound);
+        var callbackUpdate = CallbackUpdate("callback-action-failure", "sr:t:4");
+
+        var result = await handler.HandleAsync(callbackUpdate, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal("Действие временно недоступно.", outbound.CallbackAnswerText);
+        Assert.Equal(0, outbound.CallCount);
+    }
+
+    [Fact]
+    public async Task AnswerCallbackQueryFailureDoesNotEscapeOrRetry()
+    {
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "internal result",
+            callbackAnswerText: "Готово",
+            suppressOutbound: true);
+        var outbound = new FakeOutbound { ThrowOnAnswer = true };
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(
+            CallbackUpdate("callback-answer-failure", "sr:s:4"),
+            "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal(0, outbound.CallCount);
+    }
+
+    [Fact]
     public async Task UnauthorizedAndIgnoredUpdatesDoNotSendOutbound()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Ignored, string.Empty);
@@ -246,6 +304,21 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
 
     private static TelegramWebhookUpdateDto Update(string? text) =>
         new(1, new TelegramWebhookMessageDto(2, text, new TelegramWebhookChatDto(3, "operator"), null, 1_700_000_000));
+
+    private static TelegramWebhookUpdateDto CallbackUpdate(string callbackId, string data) =>
+        new(
+            9,
+            Message: null,
+            new TelegramWebhookCallbackQueryDto(
+                callbackId,
+                new TelegramWebhookUserDto(77, "engineer"),
+                new TelegramWebhookMessageDto(
+                    10,
+                    Text: null,
+                    new TelegramWebhookChatDto(-1001, null, "supergroup"),
+                    From: null,
+                    Date: null),
+                data));
 
     private sealed class FakeAdapter(
         EquipmentDiagnosticTelegramResponseKind kind,
@@ -286,6 +359,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public int AnswerCallbackCount { get; private set; }
         public string? CallbackQueryId { get; private set; }
         public string? CallbackAnswerText { get; private set; }
+        public bool ThrowOnAnswer { get; set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -315,7 +389,20 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
             AnswerCallbackCount++;
             CallbackQueryId = callbackQueryId;
             CallbackAnswerText = text;
+            if (ThrowOnAnswer)
+            {
+                throw new InvalidOperationException("Telegram API unavailable.");
+            }
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Answered."));
         }
+    }
+
+    private sealed class ThrowingAdapter : IEquipmentDiagnosticTelegramAdapter
+    {
+        public Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
+            EquipmentDiagnosticTelegramUpdate update,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException<EquipmentDiagnosticTelegramResponse>(
+                new InvalidOperationException("database unavailable"));
     }
 }

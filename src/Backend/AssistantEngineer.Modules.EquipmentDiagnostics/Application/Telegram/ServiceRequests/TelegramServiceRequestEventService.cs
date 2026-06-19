@@ -46,7 +46,8 @@ public sealed class TelegramServiceRequestEventService
         catch (Exception exception)
         {
             _logger.LogWarning(
-                "Telegram service request audit event write failed; primary action remains committed. EventType: {EventType}; ExceptionType: {ExceptionType}.",
+                "Telegram service request audit event write failed; primary action remains committed. RequestId: {RequestId}; EventType: {EventType}; ExceptionType: {ExceptionType}.",
+                request.ServiceRequestId,
                 request.EventType,
                 exception.GetType().Name);
         }

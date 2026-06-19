@@ -268,7 +268,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
 
         var result = await harness.HandleCallbackAsync(data, harness.Engineer);
 
-        Assert.Equal("Действие недоступно или устарело.", result.Text);
+        Assert.Equal("Действие недоступно.", result.Text);
+        Assert.Equal("Действие недоступно.", result.CallbackAnswerText);
+        Assert.True(result.SuppressGroupMessage);
     }
 
     [Fact]
@@ -570,6 +572,123 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
     }
 
     [Fact]
+    public async Task RequestEventsDatabaseFailureReturnsSafeFallbackWithoutThrowing()
+    {
+        var eventStore = new ThrowingEventStore(throwOnRead: true);
+        var harness = await CreateHarnessAsync(eventStore);
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCommandResultAsync($"/request_events {request.Id}", harness.Admin);
+
+        Assert.Equal("История временно недоступна. Попробуйте позже.", result.Text);
+        Assert.DoesNotContain(FullPhone, result.Text, StringComparison.Ordinal);
+        Assert.Contains(harness.Logger.Messages, message =>
+            message.Contains("history query failed", StringComparison.OrdinalIgnoreCase) &&
+            message.Contains($"RequestId: {request.Id}", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task HistoryCallbackDatabaseFailureReturnsSafeAnswerWithoutThrowing()
+    {
+        var eventStore = new ThrowingEventStore(throwOnRead: true);
+        var harness = await CreateHarnessAsync(eventStore);
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCallbackAsync($"sr:e:{request.Id}", harness.Admin);
+
+        Assert.Equal("История временно недоступна. Попробуйте позже.", result.Text);
+        Assert.Equal("История временно недоступна. Попробуйте позже.", result.CallbackAnswerText);
+        Assert.True(result.SuppressGroupMessage);
+        Assert.DoesNotContain(FullPhone, result.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AuditEventWriteFailureDoesNotBlockInlineAssign()
+    {
+        var harness = await CreateHarnessAsync(new ThrowingEventStore(throwOnAppend: true));
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCallbackAsync(
+            $"sr:as:{request.Id}:{harness.Engineer.Id}",
+            harness.Admin);
+
+        Assert.Contains("@engineer", result.Text, StringComparison.Ordinal);
+        Assert.Equal(
+            harness.Engineer.Id,
+            (await harness.RequestStore.GetByIdAsync(request.Id))?.AssignedTelegramUserId);
+    }
+
+    [Fact]
+    public async Task AuditEventWriteFailureDoesNotBlockInlineDone()
+    {
+        var harness = await CreateHarnessAsync(new ThrowingEventStore(throwOnAppend: true));
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleCallbackAsync($"sr:d:{request.Id}", harness.Admin);
+
+        Assert.Contains("закрыта", result.Text, StringComparison.Ordinal);
+        Assert.Equal(
+            TelegramServiceRequestStatus.Resolved,
+            (await harness.RequestStore.GetByIdAsync(request.Id))?.Status);
+    }
+
+    [Fact]
+    public async Task AuditEventWriteFailureDoesNotBlockTakeCommand()
+    {
+        var harness = await CreateHarnessAsync(new ThrowingEventStore(throwOnAppend: true));
+        var request = await harness.CreateRequestAsync("H5");
+
+        var result = await harness.HandleAsync($"/take {request.Id}", harness.Engineer);
+
+        Assert.Contains("взята в работу", result, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(
+            TelegramServiceRequestStatus.InProgress,
+            (await harness.RequestStore.GetByIdAsync(request.Id))?.Status);
+    }
+
+    [Fact]
+    public async Task AuditEventWriteFailureDoesNotBlockContactCommand()
+    {
+        var harness = await CreateHarnessAsync(new ThrowingEventStore(throwOnAppend: true));
+        var request = await harness.CreateRequestAsync("H5");
+        await harness.RequestStore.UpdateAsync(Update(
+            request.Id,
+            TelegramServiceRequestStatus.InProgress,
+            harness.Engineer.Id));
+        harness.Outbound.Messages.Clear();
+
+        var result = await harness.HandleAsync($"/contact {request.Id}", harness.Engineer);
+
+        Assert.Equal("Контакт отправлен в личный чат.", result);
+        Assert.Contains(harness.Outbound.Messages, message =>
+            message.ChatId == harness.Engineer.TelegramChatId &&
+            message.Text.Contains(FullPhone, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task AuditEventWriteFailureLogIsSanitized()
+    {
+        var eventLogger = new CapturingLogger<TelegramServiceRequestEventService>();
+        var eventStore = new ThrowingEventStore(
+            throwOnAppend: true,
+            exceptionMessage: $"phone={FullPhone};chat={ServiceGroupId};callback=sr:t:1");
+        var harness = await CreateHarnessAsync(eventStore, eventLogger);
+        var request = await harness.CreateRequestAsync("H5");
+
+        await harness.HandleAsync($"/take {request.Id}", harness.Engineer);
+
+        Assert.NotEmpty(harness.EventLogger.Messages);
+        Assert.All(harness.EventLogger.Messages, message =>
+        {
+            Assert.Contains("audit event write failed", message, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"RequestId: {request.Id}", message, StringComparison.Ordinal);
+            Assert.DoesNotContain(FullPhone, message, StringComparison.Ordinal);
+            Assert.DoesNotContain(ServiceGroupId.ToString(), message, StringComparison.Ordinal);
+            Assert.DoesNotContain("sr:t:1", message, StringComparison.Ordinal);
+        });
+    }
+
+    [Fact]
     public async Task EventServiceDropsSensitiveMessageAndMetadata()
     {
         var harness = await CreateHarnessAsync();
@@ -620,7 +739,9 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains("Gree H5 — закрыта", text, StringComparison.Ordinal);
     }
 
-    private static async Task<Harness> CreateHarnessAsync()
+    private static async Task<Harness> CreateHarnessAsync(
+        ITelegramServiceRequestEventStore? eventStore = null,
+        CapturingLogger<TelegramServiceRequestEventService>? eventLogger = null)
     {
         var options = new EquipmentDiagnosticTelegramOptions
         {
@@ -638,12 +759,13 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         var admin = await CreateUserAsync(users, 30, 3030, "admin", TelegramUserRole.Admin);
         var consumer = await CreateUserAsync(users, 40, 4040, "consumer", TelegramUserRole.Consumer);
         var requests = new InMemoryTelegramServiceRequestStore();
-        var events = new InMemoryTelegramServiceRequestEventStore();
+        var events = eventStore ?? new InMemoryTelegramServiceRequestEventStore();
         var history = new InMemoryTelegramDiagnosticCaseStore();
         var outbound = new FakeOutbound();
         var formatter = new TelegramDisplayTimeFormatter(options, new FixedTimeProvider());
         var logger = new CapturingLogger<TelegramServiceRequestQueueService>();
-        var eventService = new TelegramServiceRequestEventService(events, users, formatter);
+        eventLogger ??= new CapturingLogger<TelegramServiceRequestEventService>();
+        var eventService = new TelegramServiceRequestEventService(events, users, formatter, eventLogger);
         var service = new TelegramServiceRequestQueueService(
             requests,
             users,
@@ -653,7 +775,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             new TelegramServiceRequestCardRenderer(users, formatter),
             logger,
             eventService);
-        return new Harness(options, service, users, requests, events, history, outbound, formatter, logger, customer, engineer, otherEngineer, admin, consumer);
+        return new Harness(options, service, users, requests, events, history, outbound, formatter, logger, eventLogger, customer, engineer, otherEngineer, admin, consumer);
     }
 
     private static async Task<TelegramUserSnapshot> CreateUserAsync(
@@ -692,11 +814,12 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         TelegramServiceRequestQueueService Service,
         InMemoryTelegramUserStore UserStore,
         InMemoryTelegramServiceRequestStore RequestStore,
-        InMemoryTelegramServiceRequestEventStore EventStore,
+        ITelegramServiceRequestEventStore EventStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         FakeOutbound Outbound,
         TelegramDisplayTimeFormatter TimeFormatter,
         CapturingLogger<TelegramServiceRequestQueueService> Logger,
+        CapturingLogger<TelegramServiceRequestEventService> EventLogger,
         TelegramUserSnapshot Customer,
         TelegramUserSnapshot Engineer,
         TelegramUserSnapshot OtherEngineer,
@@ -853,6 +976,41 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Synced."));
+    }
+
+    private sealed class ThrowingEventStore(
+        bool throwOnAppend = false,
+        bool throwOnRead = false,
+        string exceptionMessage = "database unavailable")
+        : ITelegramServiceRequestEventStore
+    {
+        public Task<TelegramServiceRequestEventSnapshot> AppendAsync(
+            TelegramServiceRequestEventCreate request,
+            CancellationToken cancellationToken = default) =>
+            throwOnAppend
+                ? Task.FromException<TelegramServiceRequestEventSnapshot>(
+                    new InvalidOperationException(exceptionMessage))
+                : Task.FromResult(new TelegramServiceRequestEventSnapshot(
+                    1,
+                    request.ServiceRequestId,
+                    request.EventType,
+                    request.ActorTelegramUserId,
+                    request.TargetTelegramUserId,
+                    request.OldStatus,
+                    request.NewStatus,
+                    request.IsSuccessful,
+                    request.Message,
+                    request.MetadataJson,
+                    request.CreatedAt));
+
+        public Task<IReadOnlyList<TelegramServiceRequestEventSnapshot>> GetLatestAsync(
+            long serviceRequestId,
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            throwOnRead
+                ? Task.FromException<IReadOnlyList<TelegramServiceRequestEventSnapshot>>(
+                    new InvalidOperationException(exceptionMessage))
+                : Task.FromResult<IReadOnlyList<TelegramServiceRequestEventSnapshot>>([]);
     }
 
     private sealed class CapturingLogger<T> : ILogger<T>

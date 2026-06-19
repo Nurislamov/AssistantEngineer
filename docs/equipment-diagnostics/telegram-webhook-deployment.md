@@ -143,6 +143,10 @@ command fallback. Owner/Admin may view any request history, while Engineer acces
 History is rendered in the configured local display time zone. Contact events record only private delivery
 success/failure and internal database references—never the phone value, raw chat id, Telegram user id, callback data,
 token, or secret. Audit append failure is sanitized and does not roll back the already committed request action.
+ED-23F.1 also makes history reads and callback acknowledgement best-effort: a missing audit table or transient query
+failure returns `История временно недоступна. Попробуйте позже.`, audit write failures do not block request workflows,
+and every callback attempts `answerCallbackQuery` once so polling can advance safely. No new migration or environment
+variable is required for ED-23F.1.
 
 Webhook fallback still requires a public HTTPS URL. Telegram supports webhook ports `443`, `80`, `88`, and `8443`.
 

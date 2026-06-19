@@ -293,6 +293,15 @@ The `AddTelegramServiceRequestEvents` migration is required. `/request_events` r
 menu and is mentioned in `/admin_help`. ED-23F adds no environment variable and does not include Mini App, web UI,
 SLA, priorities, teams, geolocation, or full CRM behavior.
 
+ED-23F.1 treats audit persistence and history rendering as best-effort. A failed event append is logged with only the
+request id, event type, action, and exception type; the service-request state change, private contact delivery, and
+customer notification continue independently. If the audit table or history query is temporarily unavailable,
+`/request_events <id>` returns `История временно недоступна. Попробуйте позже.`, while the inline history callback
+uses the same text in `answerCallbackQuery` without adding group noise. Every callback action attempts
+`answerCallbackQuery` exactly once, including malformed payloads and unexpected failures, so a callback cannot leave
+the Telegram spinner running or fail the polling batch. Logs and audit metadata never include full phone numbers, raw
+chat ids, Telegram user ids, callback payloads, tokens, secrets, or full incoming text.
+
 The main reply keyboard includes `🔎 Новый код` and `📋 История` after final or general bot replies. Choice prompts
 for brand/type/display-context remain focused on choices plus `🔎 Новый код`. ED-23A does not add CRM/ServiceLead,
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or

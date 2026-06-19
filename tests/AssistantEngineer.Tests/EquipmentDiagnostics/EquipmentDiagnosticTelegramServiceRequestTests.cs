@@ -201,6 +201,24 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         Assert.Single(await harness.RequestStore.GetLatestForTelegramUserAsync(harness.User.Id, 5));
     }
 
+    [Fact]
+    public async Task RequestCreationSucceedsWhenAuditEventWriteFails()
+    {
+        var harness = await CreateHarnessAsync(
+            phoneSaved: true,
+            diagnosticCases: [("H5", "Gree")],
+            notificationChatId: -1001234567890,
+            eventStore: new ThrowingEventStore());
+
+        var response = await harness.Adapter.HandleAsync(Update("/request"));
+
+        Assert.Contains("Заявка создана", response.Text, StringComparison.Ordinal);
+        var request = Assert.Single(await harness.RequestStore.GetLatestForTelegramUserAsync(harness.User.Id, 5));
+        Assert.Equal(700, request.NotificationMessageId);
+        Assert.Single(harness.Outbound.Messages);
+        Assert.DoesNotContain(FullPhone, response.Text, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData(TelegramServiceRequestStatus.New, "новая")]
     [InlineData(TelegramServiceRequestStatus.InProgress, "в работе")]
@@ -215,7 +233,8 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         bool phoneSaved,
         IReadOnlyList<(string Code, string Manufacturer)>? diagnosticCases = null,
         long? notificationChatId = null,
-        bool outboundSucceeds = true)
+        bool outboundSucceeds = true,
+        ITelegramServiceRequestEventStore? eventStore = null)
     {
         var options = new EquipmentDiagnosticTelegramOptions
         {
@@ -230,7 +249,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         var userStore = new InMemoryTelegramUserStore();
         var historyStore = new InMemoryTelegramDiagnosticCaseStore();
         var requestStore = new InMemoryTelegramServiceRequestStore();
-        var eventStore = new InMemoryTelegramServiceRequestEventStore();
+        eventStore ??= new InMemoryTelegramServiceRequestEventStore();
         var outbound = new FakeOutbound(outboundSucceeds);
         var user = await userStore.GetOrCreateConsumerAsync(Update("/start"));
         if (phoneSaved)
@@ -354,7 +373,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         InMemoryTelegramUserStore UserStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         InMemoryTelegramServiceRequestStore RequestStore,
-        InMemoryTelegramServiceRequestEventStore EventStore,
+        ITelegramServiceRequestEventStore EventStore,
         FakeOutbound Outbound,
         TelegramUserSnapshot User);
 
@@ -386,6 +405,21 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Synced."));
+    }
+
+    private sealed class ThrowingEventStore : ITelegramServiceRequestEventStore
+    {
+        public Task<TelegramServiceRequestEventSnapshot> AppendAsync(
+            TelegramServiceRequestEventCreate request,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException<TelegramServiceRequestEventSnapshot>(
+                new InvalidOperationException($"sensitive={FullPhone}"));
+
+        public Task<IReadOnlyList<TelegramServiceRequestEventSnapshot>> GetLatestAsync(
+            long serviceRequestId,
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<TelegramServiceRequestEventSnapshot>>([]);
     }
 
     private sealed class UnusedFacade : IEquipmentDiagnosticBotFacade

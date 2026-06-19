@@ -148,6 +148,13 @@ Discovery is disabled by default. Its response never includes the bot token, web
   Engineer/Consumer are denied.
 - Inspect audit output and stored event samples: no full phone, raw chat id, raw Telegram user id, token, secret, or
   callback payload may appear.
+- Verify a simulated audit append failure does not block create, assign, take, contact, resolve, cancel, or customer
+  notification workflows; only a sanitized warning with request id, event type/action, and exception type is emitted.
+- Verify a simulated missing `TelegramServiceRequestEvents` table makes `/request_events <id>` and the inline
+  `История` callback return `История временно недоступна. Попробуйте позже.` without group noise, an unhandled
+  exception, a stuck callback spinner, or a failed polling batch.
+- Verify malformed service-request callback data is acknowledged once with `Действие недоступно.` and its raw payload
+  is absent from logs.
 - Review incident response; use `delete-telegram-webhook.ps1` when disabling delivery.
 - For the ED-18A scaffold, replace the placeholder Caddy domain and verify public HTTPS before enabling Telegram.
 - Run the ED-18B environment and scaffold validators before image build or Telegram activation.
@@ -158,7 +165,7 @@ Discovery is disabled by default. Its response never includes the bot token, web
 
 ## Remaining Risks
 
-- No audit log.
+- No web UI for browsing the service-request audit log.
 - No web admin UI.
 - No diagnostic case history, CRM lead assignment, photo/OCR, or ServiceLead workflow.
 - Polling offset and processed-message idempotency persistence are file-based unless deployment mounts a durable
