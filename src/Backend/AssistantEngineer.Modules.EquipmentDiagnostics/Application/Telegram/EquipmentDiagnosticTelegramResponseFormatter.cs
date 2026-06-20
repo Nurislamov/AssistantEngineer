@@ -28,10 +28,21 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var builder = new StringBuilder();
         builder.AppendLine($"Диагностика {response.NormalizedManufacturer} {response.NormalizedCode}");
 
+        var localized = _localizationSource.Select(
+            response,
+            RussianLocale,
+            Audience(role));
+        if (localized is not null &&
+            response.Status != EquipmentDiagnosticBotResponseStatus.ClarificationRequired)
+        {
+            AppendTechnicalAnswer(builder, response, localized);
+            return builder.ToString().Trim();
+        }
+
         switch (response.Status)
         {
             case EquipmentDiagnosticBotResponseStatus.Answer:
-                AppendTechnicalAnswer(builder, response, role);
+                AppendMissingLocalizationFallback(builder, response);
                 break;
             case EquipmentDiagnosticBotResponseStatus.ClarificationRequired:
                 AppendGenericSafety(builder);
@@ -295,22 +306,13 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             _ => error
         };
 
-    private void AppendTechnicalAnswer(
+    private static void AppendTechnicalAnswer(
         StringBuilder builder,
         EquipmentDiagnosticBotResponse response,
-        TelegramUserRole role)
+        ErrorKnowledgeLocalizationSelection selection)
     {
-        var selection = _localizationSource.Select(
-            response,
-            RussianLocale,
-            Audience(role));
-        if (selection is null)
-        {
-            AppendMissingLocalizationFallback(builder, response);
-            return;
-        }
-
         var text = selection.Text;
+        var entry = selection.Entry;
         builder.AppendLine(text.Title);
         builder.AppendLine();
         builder.AppendLine("Кратко:");
@@ -319,9 +321,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine("Безопасность:");
         builder.AppendLine(text.SafetyNote);
         builder.AppendLine();
-        builder.AppendLine($"Уверенность: {ConfidenceLabel(response.Confidence)}.");
-        builder.AppendLine($"Источник: {SafeSourceLabel(response.SourceCard)}.");
-        if (!text.IsReviewed || response.IsSeedKnowledge || response.VerificationRequired)
+        builder.AppendLine($"Уверенность: {ConfidenceLabel(entry.Confidence)}.");
+        builder.AppendLine($"Источник: {SafeSourceLabel(entry.SourceType)}.");
+        if (!text.IsReviewed || !IsVerified(entry.VerificationStatus))
         {
             builder.AppendLine("Черновик / непроверено: точное значение необходимо сверить с документацией установленной модели.");
         }
@@ -400,6 +402,29 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "FieldObservation" => "полевое наблюдение, требующее проверки",
             "SeededEngineeringKnowledge" => "встроенный черновой каталог",
             _ => "внутренний диагностический каталог"
+        };
+
+    private static string SafeSourceLabel(string sourceType) =>
+        sourceType switch
+        {
+            "Manual" or "ManufacturerDocumentation" or "ServiceManual" =>
+                "руководство производителя",
+            "CrossCheckedManuals" => "сверенные руководства производителя",
+            "FieldObservation" => "полевое наблюдение, требующее проверки",
+            "SeededEngineeringKnowledge" => "встроенный черновой каталог",
+            _ => "внутренний диагностический каталог"
+        };
+
+    private static bool IsVerified(string verificationStatus) =>
+        verificationStatus is "ManualVerified" or "Verified" or "Reviewed";
+
+    private static string ConfidenceLabel(string confidence) =>
+        confidence switch
+        {
+            "High" or "ManualVerified" => "Высокая",
+            "Medium" => "Средняя",
+            "Low" => "Низкая",
+            _ => "Черновик / непроверено"
         };
 
     private static string ConfidenceLabel(DiagnosticConfidence confidence) =>

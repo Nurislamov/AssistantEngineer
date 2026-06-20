@@ -13,11 +13,11 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
     public void SourceLanguageAndLocalizedAudienceTextsAreSeparated()
     {
         var source = new JsonErrorKnowledgeLocalizationSource();
-        var entry = Assert.Single(source.GetEntries(), item => item.Id == "gree-gmv-h5");
+        var entry = Assert.Single(source.GetEntries(), item => item.Id == "gree-gmv6-outdoor-h5");
 
         Assert.Equal("en", entry.SourceLanguage);
-        Assert.Equal("SeededEngineeringKnowledge", entry.SourceType);
-        Assert.Contains(entry.Texts, item => item.Locale == "en" && item.Audience == ErrorKnowledgeAudience.Engineer);
+        Assert.Equal("Manual", entry.SourceType);
+        Assert.Equal("Over-current protection of inverter fan", entry.SourceMeaning);
         Assert.Contains(entry.Texts, item => item.Locale == "ru" && item.Audience == ErrorKnowledgeAudience.Consumer);
         Assert.Contains(entry.Texts, item => item.Locale == "ru" && item.Audience == ErrorKnowledgeAudience.Installer);
         Assert.Contains(entry.Texts, item => item.Locale == "ru" && item.Audience == ErrorKnowledgeAudience.Engineer);
@@ -35,8 +35,8 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
 
         Assert.NotNull(installer);
         Assert.NotNull(engineer);
-        Assert.Contains("предварительный сигнал защиты", installer.Text.Summary, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("не как подтверждённый отказ", engineer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("защиту инверторного вентилятора", installer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("двухразрядном индикаторе", engineer.Text.Summary, StringComparison.OrdinalIgnoreCase);
         Assert.NotEqual(installer.Text.Summary, engineer.Text.Summary);
     }
 

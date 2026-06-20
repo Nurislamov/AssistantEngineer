@@ -151,6 +151,7 @@ internal static class Program
         Console.WriteLine(result.IsValid ? "PASS" : "FAIL");
         Console.WriteLine(
             $"Files: {sources.Length}; packages: {result.Packages.Count}; entries: {result.Entries.Count}; issues: {result.Issues.Count}");
+        PrintCounts("Packages", result.Entries.GroupBy(entry => entry.PackageId));
         PrintCounts("Manufacturers", result.Entries.GroupBy(entry => entry.Manufacturer));
         PrintCounts("Equipment families", result.Entries.GroupBy(entry => entry.EquipmentFamily.ToString()));
         PrintCounts("Signal types", result.Entries.GroupBy(entry => entry.SignalType.ToString()));
@@ -208,23 +209,23 @@ internal static class Program
             var resource = assembly
                 .GetManifestResourceNames()
                 .SingleOrDefault(name => name.EndsWith(
-                    ".Knowledge.ErrorKnowledge.gree.gmv.h5.json",
+                    ".Knowledge.ErrorKnowledge.gree.gmv6.outdoor.h5.json",
                     StringComparison.Ordinal));
             if (resource is null)
             {
                 throw new InvalidOperationException(
-                    "Published assembly does not contain the Gree GMV H5 error knowledge resource.");
+                    "Published assembly does not contain the Gree GMV6 H5 error knowledge resource.");
             }
 
             var packageResource = assembly
                 .GetManifestResourceNames()
                 .SingleOrDefault(name => name.EndsWith(
-                    ".Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json",
+                    ".Knowledge.ErrorKnowledge.packages.gree-gmv6-outdoor-fault-protection-codes.json",
                     StringComparison.Ordinal));
             if (packageResource is null)
             {
                 throw new InvalidOperationException(
-                    "Published assembly does not contain the Gree GMV protection package manifest.");
+                    "Published assembly does not contain the Gree GMV6 outdoor package manifest.");
             }
 
             var sourceType = assembly.GetType(
@@ -237,19 +238,19 @@ internal static class Program
             var entry = entries.Cast<object>().SingleOrDefault(item =>
                 string.Equals(
                     item.GetType().GetProperty("Id")?.GetValue(item)?.ToString(),
-                    "gree-gmv-h5",
+                    "gree-gmv6-outdoor-h5",
                     StringComparison.Ordinal));
             if (entry is null)
             {
                 throw new InvalidOperationException(
-                    "Published assembly could not load the Gree GMV H5 error knowledge entry.");
+                    "Published assembly could not load the Gree GMV6 H5 error knowledge entry.");
             }
 
             Console.WriteLine("PASS");
             Console.WriteLine($"Assembly: {Path.GetRelativePath(repoRoot, assemblyPath).Replace('\\', '/')}");
             Console.WriteLine($"Resource: {resource}");
             Console.WriteLine($"Package resource: {packageResource}");
-            Console.WriteLine("Entry: gree-gmv-h5");
+            Console.WriteLine("Entry: gree-gmv6-outdoor-h5");
             return 0;
         }
         finally

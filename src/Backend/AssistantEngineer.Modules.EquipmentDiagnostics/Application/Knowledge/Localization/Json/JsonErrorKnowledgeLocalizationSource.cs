@@ -29,7 +29,7 @@ public sealed class JsonErrorKnowledgeLocalizationSource : IErrorKnowledgeLocali
         var entry = GetEntries().FirstOrDefault(item =>
             item.Manufacturer.Equals(response.NormalizedManufacturer, StringComparison.OrdinalIgnoreCase) &&
             item.Code.Equals(response.NormalizedCode, StringComparison.OrdinalIgnoreCase) &&
-            Matches(item.Series, response.EquipmentContext?.Series) &&
+            MatchesSeries(item.Series, response.EquipmentContext?.Series) &&
             Matches(item.Models, response.EquipmentContext?.ModelCode));
         var text = entry?.Texts.FirstOrDefault(item =>
             item.Locale.Equals(normalizedLocale, StringComparison.OrdinalIgnoreCase) &&
@@ -50,6 +50,11 @@ public sealed class JsonErrorKnowledgeLocalizationSource : IErrorKnowledgeLocali
         string.IsNullOrWhiteSpace(expected) ||
         string.IsNullOrWhiteSpace(actual) ||
         expected.Equals(actual, StringComparison.OrdinalIgnoreCase);
+
+    private static bool MatchesSeries(string? expected, string? actual) =>
+        Matches(expected, actual) ||
+        string.Equals(actual, "GMV", StringComparison.OrdinalIgnoreCase) &&
+        expected?.StartsWith("GMV", StringComparison.OrdinalIgnoreCase) == true;
 
     private static bool Matches(IReadOnlyCollection<string> expected, string? actual) =>
         expected.Count == 0 ||

@@ -99,6 +99,7 @@ public sealed record ErrorKnowledgeEntryV2(
     string SourceLanguage,
     string SourceType,
     string SourceName,
+    string? SourceMeaning,
     string? SourceReference,
     string Confidence,
     string VerificationStatus,

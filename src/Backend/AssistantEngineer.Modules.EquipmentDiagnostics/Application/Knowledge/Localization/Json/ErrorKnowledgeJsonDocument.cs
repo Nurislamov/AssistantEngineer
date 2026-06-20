@@ -36,6 +36,8 @@ public sealed class ErrorKnowledgeJsonDocument
 
     public string? SourceName { get; set; }
 
+    public string? SourceMeaning { get; set; }
+
     public string? SourceReference { get; set; }
 
     public string? Confidence { get; set; }

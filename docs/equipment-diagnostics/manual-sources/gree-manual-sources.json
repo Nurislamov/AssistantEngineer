@@ -12,7 +12,7 @@
       "language": "English",
       "pageCount": 305,
       "usage": "PrimaryTroubleshootingSource",
-      "notes": "Local manual intake source. The PDF remains an ignored artifact and is not committed.",
+      "notes": "Primary and exclusive source for the ED-24E.1 GMV6 Chapter 3 Error Indication import. The PDF remains an ignored artifact and is not committed.",
       "commitPolicy": "PDF files are local artifacts and must not be committed."
     },
     {

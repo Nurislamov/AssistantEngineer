@@ -15,7 +15,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
     private static readonly string[] AllowedLocales = ["ru", "en", "uz"];
     private static readonly string[] AllowedConfidences = ["Low", "Medium", "High", "ManualVerified"];
     private static readonly string[] AllowedVerificationStatuses =
-        ["UnverifiedSeed", "PendingReview", "Reviewed", "Verified"];
+        ["UnverifiedSeed", "PendingReview", "Reviewed", "Verified", "ManualVerified"];
     private static readonly string[] EnglishUiLeaks =
     [
         "Safety",
@@ -303,6 +303,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
             issues);
         var sourceType = Required(document.SourceType, path, "sourceType", issues);
         var sourceName = Required(document.SourceName, path, "sourceName", issues);
+        var sourceMeaning = Normalize(document.SourceMeaning);
         var confidence = Allowed(
             document.Confidence,
             path,
@@ -319,6 +320,16 @@ public sealed partial class ErrorKnowledgeJsonValidator
         if (document.RequiresQualifiedService is null)
         {
             issues.Add(new(path, "requiresQualifiedService is required."));
+        }
+
+        if (sourceType == "Manual" && sourceMeaning is null)
+        {
+            issues.Add(new(path, "sourceMeaning is required for Manual entries."));
+        }
+
+        if (sourceType == "Manual" && string.IsNullOrWhiteSpace(document.SourceReference))
+        {
+            issues.Add(new(path, "sourceReference is required for Manual entries."));
         }
 
         if (document.CreatedAt is null)
@@ -375,6 +386,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
             sourceLanguage,
             sourceType,
             sourceName,
+            sourceMeaning,
             Normalize(document.SourceReference),
             confidence,
             verificationStatus,

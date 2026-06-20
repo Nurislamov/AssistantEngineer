@@ -17,7 +17,8 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "equipment-diagnostics",
         "error-knowledge",
         "gree",
-        "gmv",
+        "gmv6",
+        "outdoor",
         "h5.json");
     private static readonly string PackagePath = Path.Combine(
         TestPaths.RepoRoot,
@@ -25,44 +26,48 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "equipment-diagnostics",
         "error-knowledge",
         "packages",
-        "gree-gmv-vrf-protection-codes.json");
+        "gree-gmv6-outdoor-fault-protection-codes.json");
 
     [Fact]
     public void GreeGmvH5JsonLoadsFromEmbeddedResource()
     {
         var source = new JsonErrorKnowledgeLocalizationSource();
 
-        var entry = Assert.Single(source.GetEntries());
+        var entries = source.GetEntries();
+        var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal("gree-gmv-h5", entry.Id);
+        Assert.Equal(253, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
-        Assert.Equal("GMV", entry.Series);
+        Assert.Equal("GMV6", entry.Series);
         Assert.Equal("H5", entry.Code);
         Assert.Equal(ErrorKnowledgeSignalType.Protection, entry.SignalType);
         Assert.Equal(ErrorKnowledgeDisplaySource.OutdoorBoard, entry.DisplaySource);
-        Assert.Equal(ErrorKnowledgeSystemPart.ProtectionCircuit, entry.SystemPart);
-        Assert.Equal(ErrorKnowledgeSeverity.Medium, entry.Severity);
+        Assert.Equal(ErrorKnowledgeSystemPart.Fan, entry.SystemPart);
+        Assert.Equal(ErrorKnowledgeSeverity.High, entry.Severity);
         Assert.True(entry.RequiresQualifiedService);
-        Assert.Null(entry.CanCustomerContinueOperation);
-        Assert.Equal("gree-gmv-vrf-protection-codes", entry.PackageId);
+        Assert.False(entry.CanCustomerContinueOperation);
+        Assert.Equal("gree-gmv6-outdoor-fault-protection-codes", entry.PackageId);
+        Assert.Equal("Over-current protection of inverter fan", entry.SourceMeaning);
+        Assert.Equal("ManualVerified", entry.VerificationStatus);
+        Assert.Equal("High", entry.Confidence);
         Assert.Contains(
             JsonErrorKnowledgeLocalizationSource.GetEmbeddedResourceNames(),
-            name => name.EndsWith(".gree.gmv.h5.json", StringComparison.OrdinalIgnoreCase));
+            name => name.EndsWith(".gree.gmv6.outdoor.h5.json", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
     public void ErrorKnowledgeResourceFilterRejectsUnrelatedEmbeddedJson()
     {
         Assert.True(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
-            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.gree.gmv.h5.json"));
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.gree.gmv6.outdoor.h5.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
             "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.gree.gree-gmv.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
-            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json"));
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv6-outdoor-fault-protection-codes.json"));
         Assert.True(ErrorKnowledgeJsonLoader.IsPackageResource(
-            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json"));
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv6-outdoor-fault-protection-codes.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
             "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.staging.example.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
@@ -131,7 +136,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 smoke.ExitCode == 0,
                 $"Published knowledge smoke failed.{Environment.NewLine}{smoke.Output}");
             Assert.Contains("PASS", smoke.Output, StringComparison.Ordinal);
-            Assert.Contains("Entry: gree-gmv-h5", smoke.Output, StringComparison.Ordinal);
+            Assert.Contains("Entry: gree-gmv6-outdoor-h5", smoke.Output, StringComparison.Ordinal);
             Assert.Contains("Package resource:", smoke.Output, StringComparison.Ordinal);
         }
         finally
@@ -146,27 +151,31 @@ public sealed class ErrorKnowledgeJsonValidationTests
     [Fact]
     public void RepositoryKnowledgeDirectoryLoadsSuccessfully()
     {
-        var directory = Path.GetDirectoryName(
-            Path.GetDirectoryName(
-                Path.GetDirectoryName(KnowledgePath)))!;
+        var directory = KnowledgeDirectory();
 
         var entries = new ErrorKnowledgeJsonLoader().LoadFromDirectory(directory);
 
-        Assert.Single(entries, entry => entry.Id == "gree-gmv-h5");
+        Assert.Equal(253, entries.Count);
+        Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
     }
 
     [Fact]
     public void GreeGmvProtectionPackageManifestLoadsSuccessfully()
     {
-        var result = Validate(File.ReadAllText(KnowledgePath));
+        var result = ValidateRepository();
 
-        var package = Assert.Single(result.Packages);
-        Assert.Equal("gree-gmv-vrf-protection-codes", package.PackageId);
+        Assert.True(result.IsValid);
+        Assert.Equal(4, result.Packages.Count);
+        var package = Assert.Single(
+            result.Packages,
+            item => item.PackageId == "gree-gmv6-outdoor-fault-protection-codes");
         Assert.Equal("Gree", package.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, package.EquipmentFamily);
-        Assert.Equal("GMV", package.Series);
-        Assert.Equal([ErrorKnowledgeSignalType.Protection], package.IntendedSignalTypes);
-        Assert.Equal(1, package.EntryCountExpected);
+        Assert.Equal("GMV6", package.Series);
+        Assert.Equal(
+            [ErrorKnowledgeSignalType.Fault, ErrorKnowledgeSignalType.Protection],
+            package.IntendedSignalTypes);
+        Assert.Equal(120, package.EntryCountExpected);
     }
 
     [Fact]
@@ -177,18 +186,19 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         var text = formatter.FormatConsumer(Response(), hasPhoneNumber: false, maxLength: 2000);
 
-        Assert.Contains("Сработала защита оборудования", text, StringComparison.Ordinal);
-        Assert.Contains("Код H5 указывает на защитное состояние системы", text, StringComparison.Ordinal);
+        Assert.Contains("защита инверторного вентилятора по току", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Gree GMV6", text, StringComparison.Ordinal);
         Assert.DoesNotContain("измерить напряжение", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("добавить хладагент", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("заменить компрессор", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("откройте панели", text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
-    [InlineData(TelegramUserRole.Installer, "Точное значение необходимо сверить")]
-    [InlineData(TelegramUserRole.Engineer, "не как подтверждённый отказ")]
-    [InlineData(TelegramUserRole.Admin, "не как подтверждённый отказ")]
-    [InlineData(TelegramUserRole.Owner, "не как подтверждённый отказ")]
+    [InlineData(TelegramUserRole.Installer, "кабелей UVW")]
+    [InlineData(TelegramUserRole.Engineer, "платы привода вентилятора")]
+    [InlineData(TelegramUserRole.Admin, "платы привода вентилятора")]
+    [InlineData(TelegramUserRole.Owner, "платы привода вентилятора")]
     public void GreeH5TechnicalRolesUseJsonRussianText(
         TelegramUserRole role,
         string expected)
@@ -200,6 +210,47 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         Assert.Contains(expected, text, StringComparison.Ordinal);
         Assert.DoesNotContain("Preliminary diagnostic entry", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("предварительный сигнал", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Черновик / непроверено", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Уверенность: Высокая", text, StringComparison.Ordinal);
+        Assert.Contains("Источник: руководство производителя", text, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("L0", "GMV6", "Malfunction of IDU")]
+    [InlineData("E1", "GMV6", "High-pressure protection")]
+    [InlineData("U0", "GMV6", "Preheat time of compressor is insufficient")]
+    [InlineData("A0", "GMV6", "Unit waiting for debugging")]
+    public void RepresentativeGmv6CodeResolvesFromManualCatalog(
+        string code,
+        string series,
+        string sourceMeaning)
+    {
+        var source = new JsonErrorKnowledgeLocalizationSource();
+        var response = Response(code, series);
+
+        var selection = source.Select(response, "ru", ErrorKnowledgeAudience.Engineer);
+
+        Assert.NotNull(selection);
+        Assert.Equal(sourceMeaning, selection.Entry.SourceMeaning);
+        Assert.Equal("ManualVerified", selection.Entry.VerificationStatus);
+        Assert.Equal("ru", selection.Text.Locale);
+    }
+
+    [Theory]
+    [InlineData("U0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly)]
+    [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly)]
+    public void ReferenceOnlyRuntimeResponseUsesImportedRussianKnowledge(
+        string code,
+        EquipmentDiagnosticBotResponseStatus status)
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
+            new JsonErrorKnowledgeLocalizationSource());
+
+        var text = formatter.FormatTechnical(Response(code, "GMV6", status), TelegramUserRole.Engineer);
+
+        Assert.Contains($"Gree GMV6 {code}", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Справочное совпадение", text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -300,6 +351,17 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Contains(result.Issues, issue =>
             issue.Problem.Contains($"{property} is required", StringComparison.Ordinal) ||
             issue.Problem.Contains($"{property} must be present", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ManualEntryRequiresExactSourceMeaning()
+    {
+        var json = Mutate(root => root.Remove("sourceMeaning"));
+
+        var result = Validate(json);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains("sourceMeaning is required for Manual entries", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -419,8 +481,33 @@ public sealed class ErrorKnowledgeJsonValidationTests
         new ErrorKnowledgeJsonValidator().Validate(
         [
             new("test.json", json),
-            new("packages/gree-gmv-vrf-protection-codes.json", packageJson ?? File.ReadAllText(PackagePath))
+            new(
+                "packages/gree-gmv6-outdoor-fault-protection-codes.json",
+                packageJson ?? SingleEntryPackage(File.ReadAllText(PackagePath)))
         ]);
+
+    private static ErrorKnowledgeValidationResult ValidateRepository()
+    {
+        var sources = Directory
+            .EnumerateFiles(KnowledgeDirectory(), "*.json", SearchOption.AllDirectories)
+            .Select(path => new ErrorKnowledgeJsonSource(path, File.ReadAllText(path)))
+            .ToArray();
+        return new ErrorKnowledgeJsonValidator().Validate(sources);
+    }
+
+    private static string KnowledgeDirectory() =>
+        Path.Combine(
+            TestPaths.RepoRoot,
+            "data",
+            "equipment-diagnostics",
+            "error-knowledge");
+
+    private static string SingleEntryPackage(string packageJson)
+    {
+        var root = JsonNode.Parse(packageJson)!.AsObject();
+        root["entryCountExpected"] = 1;
+        return root.ToJsonString();
+    }
 
     private static string Mutate(Action<JsonObject> mutation)
     {
@@ -437,7 +524,9 @@ public sealed class ErrorKnowledgeJsonValidationTests
     }
 
     private static ErrorKnowledgeJsonSource PackageSource() =>
-        new("packages/gree-gmv-vrf-protection-codes.json", File.ReadAllText(PackagePath));
+        new(
+            "packages/gree-gmv6-outdoor-fault-protection-codes.json",
+            SingleEntryPackage(File.ReadAllText(PackagePath)));
 
     private static JsonObject RussianConsumer(JsonObject root) =>
         root["texts"]!
@@ -447,21 +536,24 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 node["locale"]!.GetValue<string>() == "ru" &&
                 node["audience"]!.GetValue<string>() == "Consumer");
 
-    private static EquipmentDiagnosticBotResponse Response() =>
+    private static EquipmentDiagnosticBotResponse Response(
+        string code = "H5",
+        string series = "GMV",
+        EquipmentDiagnosticBotResponseStatus status = EquipmentDiagnosticBotResponseStatus.Answer) =>
         new(
-            EquipmentDiagnosticBotResponseStatus.Answer,
+            status,
             "English title",
             "English message",
             "Gree",
-            "H5",
+            code,
             new EquipmentDiagnosticBotEquipmentContext(
                 "Gree",
-                "GMV",
+                series,
                 null,
                 EquipmentCategory.VrfOutdoorUnit,
                 EquipmentDiagnosticBotEquipmentSide.Outdoor,
                 EquipmentDiagnosticBotDisplayContext.OduMainBoardLed),
-            new EquipmentDiagnosticBotObservedCodeContext("H5", "H5", null),
+            new EquipmentDiagnosticBotObservedCodeContext(code, code, null),
             new EquipmentDiagnosticBotAnswerCard(
                 "English title",
                 "English summary",

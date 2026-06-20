@@ -12,7 +12,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
     [Theory]
     [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Уверенность:")]
     [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "укажите контекст")]
-    [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Справочное совпадение")]
+    [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Gree GMV6 A0")]
     [InlineData("ZZ99", EquipmentDiagnosticBotResponseStatus.NotFound, "Код не найден")]
     public async Task StatusFormatsAreDeterministic(string code, EquipmentDiagnosticBotResponseStatus status, string expected)
     {
@@ -102,9 +102,9 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
         Assert.Contains("Что не советовать клиенту:", text, StringComparison.Ordinal);
         Assert.Contains("Рекомендованное действие:", text, StringComparison.Ordinal);
-        Assert.Contains("Уверенность: Низкая", text, StringComparison.Ordinal);
-        Assert.Contains("Источник: встроенный черновой каталог", text, StringComparison.Ordinal);
-        Assert.Contains("Черновик / непроверено", text, StringComparison.Ordinal);
+        Assert.Contains("Уверенность: Высокая", text, StringComparison.Ordinal);
+        Assert.Contains("Источник: руководство производителя", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Черновик / непроверено", text, StringComparison.Ordinal);
         foreach (var forbidden in EnglishTechnicalMarkers())
         {
             Assert.DoesNotContain(forbidden, text, StringComparison.Ordinal);

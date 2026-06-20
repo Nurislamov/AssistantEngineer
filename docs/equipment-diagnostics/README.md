@@ -243,6 +243,9 @@ See [Error Knowledge V2 Localization and Repository Workflow](error-knowledge-v2
 review rules, denylist, and safe procedure for adding a code. Owner/Admin reuse Engineer diagnostics. The structure
 allows a future `uz` locale, but Telegram still defaults to Russian and does not expose `/language`.
 
+The [Gree GMV6 manual import report](gree-gmv6-manual-import.md) records the single-manual source boundary, package
+counts, H5 correction, model scope, and deliberately unextracted troubleshooting details.
+
 ED-24D adds taxonomy and package manifests for controlled bulk expansion. Entries are classified by equipment family
 and type, signal type, display source, system part, severity, service boundary, and package. Manifests group coherent
 source/review batches and constrain compatible entries without adding runtime editing or database infrastructure.

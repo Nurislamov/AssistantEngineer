@@ -1,0 +1,28 @@
+{
+  "packageId": "gree-gmv6-debugging-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV6",
+  "title": "Gree GMV6 debugging and commissioning codes",
+  "description": "Manual-bound Chapter 3 Error Indication catalog for GMV6 debugging and commissioning codes.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Service Manual for GMV6 v_2020.09",
+  "sourceReference": "Chapter 3 Faults / Error Indication",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Commissioning",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "OutdoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "OutdoorBoard"
+  ],
+  "entryCountExpected": 37,
+  "notes": "One-manual source boundary: GC202001-I, GMV6 only. Exact table wording is stored in sourceMeaning. Detailed troubleshooting is imported for H5; other entries remain table-bound unless explicitly noted.",
+  "createdAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-20T00:00:00Z"
+}

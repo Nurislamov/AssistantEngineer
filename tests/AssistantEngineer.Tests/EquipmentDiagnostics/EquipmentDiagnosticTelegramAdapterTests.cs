@@ -35,8 +35,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Черновик / непроверено", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Источник:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Черновик / непроверено", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Источник: руководство производителя", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Уверенность: Высокая", response.Text, StringComparison.Ordinal);
         Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
     }
 
@@ -62,8 +63,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree A0"));
 
-        Assert.Contains("Справочное совпадение", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 A0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("ожидание наладки", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Уверенность: Высокая", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]

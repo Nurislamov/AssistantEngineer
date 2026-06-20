@@ -5,12 +5,15 @@ This directory is the source of truth for localized, audience-aware error knowle
 Use one entry per file:
 
 ```text
-{manufacturer}/{series}/{code}.json
+{manufacturer}/{series}/{category}/{code}.json
 ```
 
 Every entry includes product/signal/display/system taxonomy and a `packageId`. Package manifests live in
 `packages/{packageId}.json` and define source/review context plus the classifications and expected entry count allowed
 for that batch.
+
+The GMV6 manual import contains 253 entries split into Indoor, Outdoor, Debugging, and Status packages. Exact source
+wording is retained in `sourceMeaning`; Russian audience text never substitutes unsupported causes or repair steps.
 
 The current audiences are `Consumer`, `Installer`, and `Engineer`; Owner/Admin reuse Engineer output. Valid locale
 keys are `ru`, `en`, and future-ready `uz`; Uzbek content is not required or exposed yet.

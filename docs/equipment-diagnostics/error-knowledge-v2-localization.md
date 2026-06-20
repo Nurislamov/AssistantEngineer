@@ -15,7 +15,7 @@ Each entry JSON file represents one `ErrorKnowledgeEntryV2` and identifies the d
 - `id`, `manufacturer`, `equipmentFamily`, `equipmentType`, `series`, `models`, and `code`;
 - `signalType`, `displaySource`, `systemPart`, `severity`;
 - `requiresQualifiedService`, nullable `canCustomerContinueOperation`, and `packageId`;
-- source language, type, name, and reference;
+- source language, type, name, exact source meaning, and reference;
 - confidence and verification status;
 - creation/update timestamps.
 
@@ -60,29 +60,24 @@ a controlled Russian fallback:
 The fallback uses a generic Russian safety boundary and Russian confidence/source labels. It does not print the raw
 English source summary, steps, safety paragraphs, or internal source identifiers.
 
-## Initial localized entry
+## GMV6 manual-backed catalog
 
-The foundation includes Russian Consumer, Installer, and Engineer views for Gree GMV H5. The technical text treats
-H5 as a preliminary protection signal, not as proof of a compressor, inverter, or board failure. It requires:
+ED-24E.1 replaces the initial generic GMV H5 seed with a manual-bound GMV6 catalog from `GC202001-I`. It contains
+60 Indoor, 120 Outdoor, 37 Debugging, and 36 Status entries. Every entry retains the exact English table wording in
+`sourceMeaning` and has separate Russian Consumer, Installer, and Engineer views.
 
-- confirmation of the installed model, GMV series, controller, and displayed code;
-- qualified power-supply checks;
-- bounded visual inspection of protection wiring, connectors, and sensors;
-- verification against the exact installed-model service manual;
-- no protection bypass or unsupported forced operation.
-
-The entry remains low-confidence and unreviewed because the current source is `SeededEngineeringKnowledge /
-UnverifiedSeed`.
+H5 is manually verified as inverter-fan over-current protection. Its manual-derived cable, fan, blade/shaft, and
+fan-drive-board checks are bounded to qualified service; Consumer text does not expose repair or live-electrical steps.
 
 ## Repository format and loading
 
 The source-of-truth directory is:
 
 ```text
-data/equipment-diagnostics/error-knowledge/{manufacturer}/{series}/{code}.json
+data/equipment-diagnostics/error-knowledge/{manufacturer}/{series}/{category}/{code}.json
 ```
 
-The initial entry is `gree/gmv/h5.json`. JSON uses camelCase. Arrays such as `models`, `possibleCauses`, `checkSteps`,
+The corrected H5 entry is `gree/gmv6/outdoor/h5.json`. JSON uses camelCase. Arrays such as `models`, `possibleCauses`, `checkSteps`,
 and `doNotAdvise` must be present even when empty. Locale and audience values are case-sensitive.
 
 ## Taxonomy
@@ -106,8 +101,8 @@ source; use `Unknown` rather than inferring unsupported detail.
 - `canCustomerContinueOperation`: `true`, `false`, or `null` when the source does not establish safe continued
   operation.
 
-Gree GMV H5 is conservatively classified as VRF / OutdoorUnit / Protection / OutdoorBoard / ProtectionCircuit /
-Medium. It remains `Low` confidence and `UnverifiedSeed`; taxonomy does not claim an exact failed component.
+Gree GMV6 H5 is classified from the manual as VRF / OutdoorUnit / Protection / OutdoorBoard / Fan / High. It is
+`High` confidence and `ManualVerified`; the code does not by itself prove which component must be replaced.
 
 ## Package manifests
 
@@ -134,15 +129,12 @@ To add a package:
 4. Set `entryCountExpected` when the reviewed batch size is known.
 5. Add entries in small reviewed groups and run both repository validation and publish smoke.
 
-Recommended future Gree package splits:
+Current GMV6 package splits:
 
-- `gree-gmv-vrf-protection-codes`;
-- `gree-gmv-vrf-fault-codes`;
-- `gree-gmv-vrf-communication-codes`;
-- `gree-gmv-vrf-remote-controller-codes`;
-- `gree-gmv-vrf-debug-commissioning-codes`;
-- `gree-semiindustrial-fault-codes`;
-- `gree-chiller-fault-codes`.
+- `gree-gmv6-indoor-fault-codes`;
+- `gree-gmv6-outdoor-fault-protection-codes`;
+- `gree-gmv6-debugging-codes`;
+- `gree-gmv6-status-codes`.
 
 The EquipmentDiagnostics project embeds these files at build time. `JsonErrorKnowledgeLocalizationSource` lazily loads
 the embedded resources, validates the complete set, and exposes it through `IErrorKnowledgeLocalizationSource`.
@@ -154,7 +146,7 @@ The current allowed values are:
 - locales: `ru`, `en`, `uz` (`uz` is accepted by the format but is not required or exposed yet);
 - audiences: `Consumer`, `Installer`, `Engineer`;
 - confidence: `Low`, `Medium`, `High`, `ManualVerified`;
-- verification status: `UnverifiedSeed`, `PendingReview`, `Reviewed`, `Verified`.
+- verification status: `UnverifiedSeed`, `PendingReview`, `Reviewed`, `Verified`, `ManualVerified`.
 
 ## Validation
 
@@ -181,7 +173,7 @@ The validator reports the repository-relative file and problem. It blocks:
 prohibitions. All user-visible Consumer instructions remain subject to the denylist.
 
 The publish smoke builds the API publish output, loads the EquipmentDiagnostics assembly in a separate process, and
-verifies that the embedded Gree GMV H5 resource can be deserialized there. The backend Dockerfile must copy the
+verifies that the embedded Gree GMV6 H5 resource can be deserialized there. The backend Dockerfile must copy the
 repository `data/equipment-diagnostics/error-knowledge/` directory into its build context before `dotnet publish`.
 
 If knowledge loading or diagnostic formatting still fails at runtime, Telegram sends the controlled Russian fallback

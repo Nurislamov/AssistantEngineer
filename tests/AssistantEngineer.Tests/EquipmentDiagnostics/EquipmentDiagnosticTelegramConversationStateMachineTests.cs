@@ -18,7 +18,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     private const string ConsumerSafeSummaryText =
         "Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.";
     private const string TechnicalStoredSummary =
-        "Gree GMV H5: GMV protection alarm H5. Preliminary diagnostic entry. Verify the exact meaning.";
+        "Gree GMV6 H5: защита инверторного вентилятора наружного блока по превышению тока.";
 
     [Fact]
     public async Task ConsumerCodeOnlyWithMultipleBrandsAsksBrandWithRussianButtons()
@@ -552,7 +552,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var response = await harness.Adapter.HandleAsync(Update("/last"));
 
         Assert.Contains("Дата: 17.06.2026 22:20", response.Text, StringComparison.Ordinal);
-        Assert.Contains("H5 рассматривается как предварительный сигнал защиты GMV", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree H5", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("GMV protection alarm", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("InternalDecisionTrace", response.Text, StringComparison.OrdinalIgnoreCase);
     }
