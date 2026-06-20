@@ -228,6 +228,17 @@ internal static class Program
                     "Published assembly does not contain the Gree GMV6 outdoor package manifest.");
             }
 
+            var debuggingResource = assembly
+                .GetManifestResourceNames()
+                .SingleOrDefault(name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.gree.gmv6.debugging.u0.json",
+                    StringComparison.Ordinal));
+            if (debuggingResource is null)
+            {
+                throw new InvalidOperationException(
+                    "Published assembly does not contain the Gree GMV6 U0 debugging knowledge resource.");
+            }
+
             var sourceType = assembly.GetType(
                 "AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json.JsonErrorKnowledgeLocalizationSource",
                 throwOnError: true)!;
@@ -246,11 +257,24 @@ internal static class Program
                     "Published assembly could not load the Gree GMV6 H5 error knowledge entry.");
             }
 
+            var debuggingEntry = entries.Cast<object>().SingleOrDefault(item =>
+                string.Equals(
+                    item.GetType().GetProperty("Id")?.GetValue(item)?.ToString(),
+                    "gree-gmv6-debugging-u0",
+                    StringComparison.Ordinal));
+            if (debuggingEntry is null)
+            {
+                throw new InvalidOperationException(
+                    "Published assembly could not load the Gree GMV6 U0 debugging knowledge entry.");
+            }
+
             Console.WriteLine("PASS");
             Console.WriteLine($"Assembly: {Path.GetRelativePath(repoRoot, assemblyPath).Replace('\\', '/')}");
             Console.WriteLine($"Resource: {resource}");
             Console.WriteLine($"Package resource: {packageResource}");
+            Console.WriteLine($"Debugging resource: {debuggingResource}");
             Console.WriteLine("Entry: gree-gmv6-outdoor-h5");
+            Console.WriteLine("Debugging entry: gree-gmv6-debugging-u0");
             return 0;
         }
         finally

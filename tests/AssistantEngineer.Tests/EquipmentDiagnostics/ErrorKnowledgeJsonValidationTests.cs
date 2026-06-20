@@ -137,6 +137,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 $"Published knowledge smoke failed.{Environment.NewLine}{smoke.Output}");
             Assert.Contains("PASS", smoke.Output, StringComparison.Ordinal);
             Assert.Contains("Entry: gree-gmv6-outdoor-h5", smoke.Output, StringComparison.Ordinal);
+            Assert.Contains("Debugging entry: gree-gmv6-debugging-u0", smoke.Output, StringComparison.Ordinal);
             Assert.Contains("Package resource:", smoke.Output, StringComparison.Ordinal);
         }
         finally

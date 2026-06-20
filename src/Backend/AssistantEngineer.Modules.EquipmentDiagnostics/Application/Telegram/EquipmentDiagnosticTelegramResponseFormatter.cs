@@ -132,7 +132,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             ErrorKnowledgeAudience.Consumer);
         if (localized is not null)
         {
-            return FormatLocalizedConsumer(response, localized.Text, hasPhoneNumber, maxLength);
+            return FormatLocalizedConsumer(response, localized, hasPhoneNumber, maxLength);
         }
 
         var title = $"Внимание: ошибка {response.NormalizedManufacturer} {response.NormalizedCode}";
@@ -159,14 +159,16 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
 
     private static string FormatLocalizedConsumer(
         EquipmentDiagnosticBotResponse response,
-        ErrorKnowledgeTextV2 text,
+        ErrorKnowledgeLocalizationSelection selection,
         bool hasPhoneNumber,
         int maxLength)
     {
+        var text = selection.Text;
         var builder = new StringBuilder();
         builder.AppendLine($"Внимание: ошибка {response.NormalizedManufacturer} {response.NormalizedCode}");
         builder.AppendLine();
         builder.AppendLine(text.Title);
+        AppendKnowledgeCategory(builder, selection.Entry);
         builder.AppendLine();
         builder.AppendLine("Возможное значение:");
         builder.AppendLine(text.Summary);
@@ -314,6 +316,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var text = selection.Text;
         var entry = selection.Entry;
         builder.AppendLine(text.Title);
+        AppendKnowledgeCategory(builder, entry);
         builder.AppendLine();
         builder.AppendLine("Кратко:");
         builder.AppendLine(text.Summary);
@@ -333,6 +336,29 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine("Рекомендованное действие:");
         builder.AppendLine(text.RecommendedAction);
+    }
+
+    private static void AppendKnowledgeCategory(
+        StringBuilder builder,
+        ErrorKnowledgeEntryV2 entry)
+    {
+        var category = entry.SignalType switch
+        {
+            ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning =>
+                "Наладка / ввод в эксплуатацию",
+            ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance =>
+                "Статус",
+            _ when entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) =>
+                "Наладка / ввод в эксплуатацию",
+            _ when entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase) =>
+                "Статус",
+            _ => null
+        };
+
+        if (category is not null)
+        {
+            builder.AppendLine($"Категория: {category}.");
+        }
     }
 
     private static void AppendMissingLocalizationFallback(

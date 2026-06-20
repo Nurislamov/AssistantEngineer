@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Guidance;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 
@@ -11,10 +12,14 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
         "Use this guidance for preliminary review only. Electrical, refrigerant-circuit, and compressor checks require a qualified technician; keep safety protections active.";
 
     private readonly IEquipmentDiagnosticsService _diagnosticsService;
+    private readonly IErrorKnowledgeLocalizationSource _localizedKnowledge;
 
-    public EquipmentDiagnosticBotService(IEquipmentDiagnosticsService diagnosticsService)
+    public EquipmentDiagnosticBotService(
+        IEquipmentDiagnosticsService diagnosticsService,
+        IErrorKnowledgeLocalizationSource localizedKnowledge)
     {
         _diagnosticsService = diagnosticsService;
+        _localizedKnowledge = localizedKnowledge;
     }
 
     public async Task<EquipmentDiagnosticBotResponse> DiagnoseAsync(
@@ -92,6 +97,47 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                     request.FreeText,
                     ["Verify the display context and consult the exact equipment service manual."],
                     ["No runtime diagnostic case was used."],
+                    trace);
+            }
+
+            var localizedMatches = FindLocalizedMatches(request, manufacturer, code);
+            if (localizedMatches.Count == 1)
+            {
+                trace.Add("LocalizedKnowledgeMatch");
+                return LocalizedKnowledgeResponse(
+                    localizedMatches[0],
+                    manufacturer,
+                    code,
+                    request.FreeText,
+                    trace);
+            }
+
+            if (localizedMatches.Count > 1)
+            {
+                trace.Add($"LocalizedKnowledgeAmbiguity:{localizedMatches.Count}");
+                var options = localizedMatches
+                    .Select(ToClarificationOption)
+                    .ToArray();
+                return new EquipmentDiagnosticBotResponse(
+                    EquipmentDiagnosticBotResponseStatus.ClarificationRequired,
+                    "Equipment context required",
+                    "The displayed code matches multiple manual-backed equipment contexts.",
+                    manufacturer,
+                    code,
+                    EquipmentContext: null,
+                    new EquipmentDiagnosticBotObservedCodeContext(request.Code?.Trim() ?? code, code, request.FreeText),
+                    AnswerCard: null,
+                    new EquipmentDiagnosticBotClarificationQuestion(
+                        "Which equipment context shows this code?",
+                        options),
+                    SourceCard: null,
+                    Safety(),
+                    VerificationRequired: false,
+                    DiagnosticConfidence.High,
+                    IsManualVerified: true,
+                    IsSeedKnowledge: false,
+                    options.Select(option => option.FollowUpPrompt).ToArray(),
+                    [],
                     trace);
             }
 
@@ -247,6 +293,191 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             $"{match.Code} is present in the runtime catalog for {family} {side}.",
             $"Confirm {label} and resend {match.Code} with that context.");
     }
+
+    private IReadOnlyList<ErrorKnowledgeEntryV2> FindLocalizedMatches(
+        EquipmentDiagnosticBotRequest request,
+        string manufacturer,
+        string code)
+    {
+        var matches = _localizedKnowledge.GetEntries()
+            .Where(entry =>
+                entry.Manufacturer.Equals(manufacturer, StringComparison.OrdinalIgnoreCase) &&
+                entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
+            .Where(IsSearchableReferenceEntry)
+            .Where(entry => MatchesSeries(entry.Series, request.Series))
+            .Where(entry =>
+                entry.Models.Count == 0 ||
+                string.IsNullOrWhiteSpace(request.ModelCode) ||
+                entry.Models.Contains(request.ModelCode, StringComparer.OrdinalIgnoreCase))
+            .Where(entry =>
+                request.EquipmentSide is null or EquipmentDiagnosticBotEquipmentSide.Unknown ||
+                Side(entry.EquipmentType) == request.EquipmentSide)
+            .Where(entry =>
+                request.DisplayContext is null or EquipmentDiagnosticBotDisplayContext.Unknown ||
+                DisplayContext(entry.DisplaySource) == request.DisplayContext)
+            .ToArray();
+
+        if (matches.Length <= 1 || string.IsNullOrWhiteSpace(request.FreeText))
+        {
+            return matches;
+        }
+
+        var normalizedFreeText = Normalize(request.FreeText);
+        var hinted = matches.Where(entry =>
+            (!string.IsNullOrWhiteSpace(entry.Series) &&
+             normalizedFreeText.Contains(Normalize(entry.Series), StringComparison.Ordinal)) ||
+            IsSignalHintMatch(entry, normalizedFreeText)).ToArray();
+        return hinted.Length > 0 ? hinted : matches;
+    }
+
+    private static bool IsSearchableReferenceEntry(ErrorKnowledgeEntryV2 entry) =>
+        entry.SignalType is
+            ErrorKnowledgeSignalType.Status or
+            ErrorKnowledgeSignalType.Debug or
+            ErrorKnowledgeSignalType.Commissioning or
+            ErrorKnowledgeSignalType.Maintenance or
+            ErrorKnowledgeSignalType.RemoteDisplay ||
+        entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
+        entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSignalHintMatch(ErrorKnowledgeEntryV2 entry, string normalizedFreeText) =>
+        entry.SignalType switch
+        {
+            ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning =>
+                normalizedFreeText.Contains("DEBUG", StringComparison.Ordinal) ||
+                normalizedFreeText.Contains("НАЛАДК", StringComparison.Ordinal) ||
+                normalizedFreeText.Contains("ПУСКОНАЛАД", StringComparison.Ordinal),
+            ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance =>
+                normalizedFreeText.Contains("STATUS", StringComparison.Ordinal) ||
+                normalizedFreeText.Contains("СТАТУС", StringComparison.Ordinal) ||
+                normalizedFreeText.Contains("СОСТОЯНИ", StringComparison.Ordinal),
+            _ => false
+        };
+
+    private static EquipmentDiagnosticBotResponse LocalizedKnowledgeResponse(
+        ErrorKnowledgeEntryV2 entry,
+        string manufacturer,
+        string code,
+        string? freeText,
+        IReadOnlyList<string> trace)
+    {
+        var referenceOnly = entry.SignalType is
+            ErrorKnowledgeSignalType.Status or
+            ErrorKnowledgeSignalType.Debug or
+            ErrorKnowledgeSignalType.Commissioning or
+            ErrorKnowledgeSignalType.Maintenance or
+            ErrorKnowledgeSignalType.RemoteDisplay ||
+            entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase);
+        var verified = entry.VerificationStatus is "ManualVerified" or "Verified" or "Reviewed";
+        return new EquipmentDiagnosticBotResponse(
+            referenceOnly
+                ? EquipmentDiagnosticBotResponseStatus.ReferenceOnly
+                : EquipmentDiagnosticBotResponseStatus.Answer,
+            $"{entry.Manufacturer} {entry.Series} {entry.Code}",
+            entry.SourceMeaning ?? "Manual-backed diagnostic knowledge entry.",
+            manufacturer,
+            code,
+            new EquipmentDiagnosticBotEquipmentContext(
+                entry.Manufacturer,
+                entry.Series,
+                entry.Models.Count == 1 ? entry.Models[0] : null,
+                Category(entry.EquipmentType),
+                Side(entry.EquipmentType),
+                DisplayContext(entry.DisplaySource)),
+            new EquipmentDiagnosticBotObservedCodeContext(code, code, freeText),
+            AnswerCard: null,
+            ClarificationQuestion: null,
+            new EquipmentDiagnosticBotSourceCard(
+                entry.SourceType,
+                entry.VerificationStatus,
+                entry.SourceName,
+                entry.SourceName,
+                ManualVersion: null,
+                ManualDocumentCode: null,
+                Page: entry.SourceReference,
+                Section: entry.SourceReference,
+                Limitations: []),
+            Safety(),
+            VerificationRequired: !verified,
+            Confidence(entry.Confidence),
+            IsManualVerified: verified,
+            IsSeedKnowledge: false,
+            [],
+            [],
+            trace);
+    }
+
+    private static EquipmentDiagnosticBotClarificationOption ToClarificationOption(
+        ErrorKnowledgeEntryV2 entry)
+    {
+        var context = entry.SignalType is ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning
+            ? "debugging / commissioning"
+            : entry.SignalType is ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance
+                ? "status"
+                : Side(entry.EquipmentType).ToString();
+        var label = $"{entry.Manufacturer} {entry.Series} ({context})";
+        return new EquipmentDiagnosticBotClarificationOption(
+            label,
+            entry.Manufacturer,
+            entry.Series,
+            Category(entry.EquipmentType),
+            Side(entry.EquipmentType),
+            DisplayContext(entry.DisplaySource),
+            entry.Code,
+            $"{entry.Code} is present in manual-backed {context} knowledge.",
+            $"Confirm {label} and resend {entry.Code} with that context.");
+    }
+
+    private static bool MatchesSeries(string? expected, string? requested) =>
+        string.IsNullOrWhiteSpace(requested) ||
+        string.IsNullOrWhiteSpace(expected) ||
+        expected.Equals(requested, StringComparison.OrdinalIgnoreCase) ||
+        requested.Equals("GMV", StringComparison.OrdinalIgnoreCase) &&
+        expected.StartsWith("GMV", StringComparison.OrdinalIgnoreCase);
+
+    private static EquipmentCategory Category(ErrorKnowledgeEquipmentType equipmentType) =>
+        equipmentType switch
+        {
+            ErrorKnowledgeEquipmentType.IndoorUnit => EquipmentCategory.VrfIndoorUnit,
+            ErrorKnowledgeEquipmentType.WiredRemote or
+            ErrorKnowledgeEquipmentType.CentralController or
+            ErrorKnowledgeEquipmentType.Gateway => EquipmentCategory.Controller,
+            ErrorKnowledgeEquipmentType.Chiller => EquipmentCategory.Chiller,
+            _ => EquipmentCategory.VrfOutdoorUnit
+        };
+
+    private static EquipmentDiagnosticBotEquipmentSide Side(ErrorKnowledgeEquipmentType equipmentType) =>
+        equipmentType switch
+        {
+            ErrorKnowledgeEquipmentType.IndoorUnit => EquipmentDiagnosticBotEquipmentSide.Indoor,
+            ErrorKnowledgeEquipmentType.WiredRemote or
+            ErrorKnowledgeEquipmentType.CentralController or
+            ErrorKnowledgeEquipmentType.Gateway => EquipmentDiagnosticBotEquipmentSide.Controller,
+            ErrorKnowledgeEquipmentType.Chiller => EquipmentDiagnosticBotEquipmentSide.Chiller,
+            _ => EquipmentDiagnosticBotEquipmentSide.Outdoor
+        };
+
+    private static EquipmentDiagnosticBotDisplayContext DisplayContext(
+        ErrorKnowledgeDisplaySource displaySource) =>
+        displaySource switch
+        {
+            ErrorKnowledgeDisplaySource.IndoorUnit => EquipmentDiagnosticBotDisplayContext.IduDisplay,
+            ErrorKnowledgeDisplaySource.WiredRemote => EquipmentDiagnosticBotDisplayContext.WiredController,
+            ErrorKnowledgeDisplaySource.CentralController => EquipmentDiagnosticBotDisplayContext.CentralizedController,
+            ErrorKnowledgeDisplaySource.Gateway or ErrorKnowledgeDisplaySource.Software =>
+                EquipmentDiagnosticBotDisplayContext.MobileAppOrGateway,
+            _ => EquipmentDiagnosticBotDisplayContext.OduMainBoardLed
+        };
+
+    private static DiagnosticConfidence Confidence(string confidence) =>
+        confidence switch
+        {
+            "ManualVerified" => DiagnosticConfidence.ManualVerified,
+            "High" => DiagnosticConfidence.High,
+            "Medium" => DiagnosticConfidence.Medium,
+            "Low" => DiagnosticConfidence.Low,
+            _ => DiagnosticConfidence.Unknown
+        };
 
     private static EquipmentDiagnosticBotEquipmentContext ToEquipmentContext(EquipmentErrorCodeSummaryDto match) =>
         new(match.Manufacturer, match.SeriesName, match.ModelCode, match.Category, Side(match.Category), DisplayContext(match.Category));

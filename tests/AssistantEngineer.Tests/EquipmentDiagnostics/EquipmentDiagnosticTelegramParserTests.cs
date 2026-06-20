@@ -12,6 +12,9 @@ public sealed class EquipmentDiagnosticTelegramParserTests
     [InlineData("/diagnose Gree H5", "Gree", "H5")]
     [InlineData("H5", "Gree", "H5")]
     [InlineData("Gree A0", "Gree", "A0")]
+    [InlineData("Gree U0", "Gree", "U0")]
+    [InlineData("Gree GMV6 U0", "Gree", "U0")]
+    [InlineData("Gree debugging U0", "Gree", "U0")]
     [InlineData("n6", "Gree", "n6")]
     [InlineData("db", "Gree", "db")]
     public void DiagnosticMessagesParseDeterministically(string text, string manufacturer, string code)
@@ -22,6 +25,15 @@ public sealed class EquipmentDiagnosticTelegramParserTests
         Assert.Equal(EquipmentDiagnosticTelegramCommand.Diagnose, result.Command);
         Assert.Equal(manufacturer, result.DiagnosticRequest!.Manufacturer);
         Assert.Equal(code, result.DiagnosticRequest.Code);
+    }
+
+    [Fact]
+    public void Gmv6SeriesHintIsPreserved()
+    {
+        var result = _parser.Parse("Gree GMV6 U0", EnabledOptions());
+
+        Assert.Empty(result.Errors);
+        Assert.Equal("GMV6", result.DiagnosticRequest!.Series);
     }
 
     [Theory]

@@ -68,6 +68,39 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Уверенность: Высокая", response.Text, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("Gree U0")]
+    [InlineData("Gree GMV6 U0")]
+    [InlineData("Gree debugging U0")]
+    public async Task Gmv6DebuggingU0IsDiscoverable(string query)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Gree GMV6 U0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Категория: Наладка / ввод в эксплуатацию", response.Text, StringComparison.Ordinal);
+        Assert.Contains("предварительного прогрева компрессора", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Source:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Confidence:", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LastWorksAfterGmv6DebuggingDiagnostic()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("Gree GMV6 U0"));
+        var last = await adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Gree U0", last.Text, StringComparison.Ordinal);
+        Assert.Contains("предварительного прогрева компрессора", last.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public async Task UnknownCodeFormatsSafeFallback()
     {

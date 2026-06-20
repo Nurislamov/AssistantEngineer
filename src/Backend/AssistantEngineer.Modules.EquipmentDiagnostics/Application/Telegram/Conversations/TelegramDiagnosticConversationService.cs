@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
@@ -29,6 +30,7 @@ public sealed class TelegramDiagnosticConversationService
     private readonly ITelegramConversationSessionStore _sessionStore;
     private readonly IEquipmentDiagnosticsService _diagnosticsService;
     private readonly IEquipmentDiagnosticBotFacade _botFacade;
+    private readonly IErrorKnowledgeLocalizationSource _localizedKnowledge;
     private readonly ITelegramUserStore _userStore;
     private readonly EquipmentDiagnosticTelegramMessageParser _parser;
     private readonly EquipmentDiagnosticTelegramResponseFormatter _formatter;
@@ -39,6 +41,7 @@ public sealed class TelegramDiagnosticConversationService
         ITelegramConversationSessionStore sessionStore,
         IEquipmentDiagnosticsService diagnosticsService,
         IEquipmentDiagnosticBotFacade botFacade,
+        IErrorKnowledgeLocalizationSource localizedKnowledge,
         ITelegramUserStore userStore,
         EquipmentDiagnosticTelegramMessageParser parser,
         EquipmentDiagnosticTelegramResponseFormatter formatter,
@@ -48,6 +51,7 @@ public sealed class TelegramDiagnosticConversationService
         _sessionStore = sessionStore;
         _diagnosticsService = diagnosticsService;
         _botFacade = botFacade;
+        _localizedKnowledge = localizedKnowledge;
         _userStore = userStore;
         _parser = parser;
         _formatter = formatter;
@@ -292,25 +296,26 @@ public sealed class TelegramDiagnosticConversationService
                         _options.DefaultManufacturer,
                         code,
                         FreeText: update.Text,
+                        Series: ExtractSeries(update.Text),
                         PreferredLanguage: _options.PreferredLanguage),
                     cancellationToken);
                 if (diagnosis.Status == EquipmentDiagnosticBotResponseStatus.NotFound)
                 {
                     await RecordNotFoundAsync(access, conversationSessionId: null, code, _options.DefaultManufacturer, cancellationToken);
+                    await _sessionStore.ClearAsync(user.Id, cancellationToken);
+                    return NotFound(access);
                 }
-                else
-                {
-                    await RecordCompletedAsync(
-                        access,
-                        conversationSessionId: null,
-                        diagnosis,
-                        _options.DefaultManufacturer,
-                        code,
-                        equipmentType: null,
-                        displayContext: null,
-                        candidateCount: 0,
-                        cancellationToken);
-                }
+
+                await RecordCompletedAsync(
+                    access,
+                    conversationSessionId: null,
+                    diagnosis,
+                    _options.DefaultManufacturer,
+                    code,
+                    equipmentType: null,
+                    displayContext: null,
+                    candidateCount: 0,
+                    cancellationToken);
 
                 return FormatDiagnosis(diagnosis, access);
             }
@@ -537,7 +542,7 @@ public sealed class TelegramDiagnosticConversationService
                 Category: null),
             cancellationToken);
 
-        return matches
+        var runtimeCandidates = matches
             .Select(match => new TelegramDiagnosticCandidate(
                 match.Manufacturer,
                 match.SeriesName,
@@ -547,6 +552,36 @@ public sealed class TelegramDiagnosticConversationService
                 EquipmentTypeLabel(match.Category),
                 EquipmentSide(match.Category),
                 DisplayContext(match.Category)))
+            .Distinct()
+            .OrderBy(candidate => candidate.Manufacturer, StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
+            .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
+            .ToArray();
+        if (runtimeCandidates.Length > 0)
+        {
+            return runtimeCandidates;
+        }
+
+        return _localizedKnowledge.GetEntries()
+            .Where(entry => entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
+            .Where(entry =>
+                entry.SignalType is
+                    ErrorKnowledgeSignalType.Status or
+                    ErrorKnowledgeSignalType.Debug or
+                    ErrorKnowledgeSignalType.Commissioning or
+                    ErrorKnowledgeSignalType.Maintenance or
+                    ErrorKnowledgeSignalType.RemoteDisplay ||
+                entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
+                entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase))
+            .Select(entry => new TelegramDiagnosticCandidate(
+                entry.Manufacturer,
+                entry.Series,
+                entry.Models.Count == 1 ? entry.Models[0] : null,
+                entry.Code,
+                LocalizedCategory(entry.EquipmentType),
+                LocalizedEquipmentTypeLabel(entry),
+                LocalizedEquipmentSide(entry.EquipmentType),
+                LocalizedDisplayContext(entry.DisplaySource)))
             .Distinct()
             .OrderBy(candidate => candidate.Manufacturer, StringComparer.Ordinal)
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
@@ -977,6 +1012,17 @@ public sealed class TelegramDiagnosticConversationService
         return codeIndex > 0 ? tokens[0] : null;
     }
 
+    private static string? ExtractSeries(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        return text.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault(token => token.StartsWith("GMV", StringComparison.OrdinalIgnoreCase));
+    }
+
     private static string? SingleOrNull(IEnumerable<string> values)
     {
         var distinct = values.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
@@ -1031,6 +1077,49 @@ public sealed class TelegramDiagnosticConversationService
             EquipmentCategory.Controller => "Контроллер/пульт",
             EquipmentCategory.SplitSystem => "Сплит/полупром",
             _ => category.ToString()
+        };
+
+    private static string LocalizedEquipmentTypeLabel(ErrorKnowledgeEntryV2 entry) =>
+        entry.SignalType is ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning ||
+        entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase)
+            ? "Наладка / ввод в эксплуатацию"
+            : entry.SignalType is ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance
+                ? "Статус"
+                : EquipmentTypeLabel(LocalizedCategory(entry.EquipmentType));
+
+    private static EquipmentCategory LocalizedCategory(ErrorKnowledgeEquipmentType equipmentType) =>
+        equipmentType switch
+        {
+            ErrorKnowledgeEquipmentType.IndoorUnit => EquipmentCategory.VrfIndoorUnit,
+            ErrorKnowledgeEquipmentType.WiredRemote or
+            ErrorKnowledgeEquipmentType.CentralController or
+            ErrorKnowledgeEquipmentType.Gateway => EquipmentCategory.Controller,
+            ErrorKnowledgeEquipmentType.Chiller => EquipmentCategory.Chiller,
+            _ => EquipmentCategory.VrfOutdoorUnit
+        };
+
+    private static EquipmentDiagnosticBotEquipmentSide LocalizedEquipmentSide(
+        ErrorKnowledgeEquipmentType equipmentType) =>
+        equipmentType switch
+        {
+            ErrorKnowledgeEquipmentType.IndoorUnit => EquipmentDiagnosticBotEquipmentSide.Indoor,
+            ErrorKnowledgeEquipmentType.WiredRemote or
+            ErrorKnowledgeEquipmentType.CentralController or
+            ErrorKnowledgeEquipmentType.Gateway => EquipmentDiagnosticBotEquipmentSide.Controller,
+            ErrorKnowledgeEquipmentType.Chiller => EquipmentDiagnosticBotEquipmentSide.Chiller,
+            _ => EquipmentDiagnosticBotEquipmentSide.Outdoor
+        };
+
+    private static EquipmentDiagnosticBotDisplayContext LocalizedDisplayContext(
+        ErrorKnowledgeDisplaySource displaySource) =>
+        displaySource switch
+        {
+            ErrorKnowledgeDisplaySource.IndoorUnit => EquipmentDiagnosticBotDisplayContext.IduDisplay,
+            ErrorKnowledgeDisplaySource.WiredRemote => EquipmentDiagnosticBotDisplayContext.WiredController,
+            ErrorKnowledgeDisplaySource.CentralController => EquipmentDiagnosticBotDisplayContext.CentralizedController,
+            ErrorKnowledgeDisplaySource.Gateway or ErrorKnowledgeDisplaySource.Software =>
+                EquipmentDiagnosticBotDisplayContext.MobileAppOrGateway,
+            _ => EquipmentDiagnosticBotDisplayContext.OduMainBoardLed
         };
 
     private static EquipmentDiagnosticBotEquipmentSide EquipmentSide(EquipmentCategory category) =>

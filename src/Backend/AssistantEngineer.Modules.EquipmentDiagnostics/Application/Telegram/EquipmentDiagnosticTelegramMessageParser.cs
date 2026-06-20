@@ -10,6 +10,7 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
     private static readonly string[] IndoorHints = ["indoor", "idu", "внутренний", "внутрянка"];
     private static readonly string[] ChillerHints = ["chiller", "чиллер"];
     private static readonly string[] ControllerHints = ["controller", "пульт", "контроллер"];
+    private static readonly string[] KnowledgeHints = ["debugging", "commissioning", "status", "наладка", "статус"];
     private static readonly string[] LedHints = ["led", "board", "плата"];
     private static readonly string[] WiredControllerHints = ["wired controller", "пульт"];
     private static readonly string[] GatewayHints = ["app", "gateway", "шлюз"];
@@ -123,6 +124,7 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             Manufacturer: manufacturer,
             Code: code,
             FreeText: options.EnableFreeTextParsing ? trimmed : null,
+            Series: tokens.FirstOrDefault(token => token.StartsWith("GMV", StringComparison.OrdinalIgnoreCase)),
             EquipmentSide: equipmentSide,
             DisplayContext: displayContext,
             PreferredLanguage: options.PreferredLanguage);
@@ -188,6 +190,7 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
 
     private static bool IsHint(string token) =>
         OutdoorHints.Concat(IndoorHints).Concat(ChillerHints).Concat(ControllerHints)
+            .Concat(KnowledgeHints)
             .Concat(["led", "board", "app", "gateway", "wired"])
             .Contains(token, StringComparer.OrdinalIgnoreCase);
 

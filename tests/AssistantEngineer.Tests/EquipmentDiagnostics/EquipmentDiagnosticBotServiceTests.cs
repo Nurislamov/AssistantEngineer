@@ -2,6 +2,8 @@ using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -62,7 +64,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
             Summary("C5", "Indoor", EquipmentCategory.VrfIndoorUnit),
             Summary("C5", "GMV", EquipmentCategory.VrfOutdoorUnit)
         };
-        var service = new EquipmentDiagnosticBotService(new FakeDiagnosticsService(summaries));
+        var service = new EquipmentDiagnosticBotService(
+            new FakeDiagnosticsService(summaries),
+            new JsonErrorKnowledgeLocalizationSource());
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "C5"));
 
@@ -92,7 +96,8 @@ public sealed class EquipmentDiagnosticBotServiceTests
             }
         };
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService([Summary("H5", "GMV", EquipmentCategory.VrfOutdoorUnit)], verifiedCase));
+            new FakeDiagnosticsService([Summary("H5", "GMV", EquipmentCategory.VrfOutdoorUnit)], verifiedCase),
+            new JsonErrorKnowledgeLocalizationSource());
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "H5", Series: "GMV"));
 
@@ -127,7 +132,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
     [InlineData("P10")]
     public async Task ReferenceOnlyPatternsAreNotPresentedAsFaultDiagnosis(string code)
     {
-        var service = new EquipmentDiagnosticBotService(new FakeDiagnosticsService([]));
+        var service = new EquipmentDiagnosticBotService(
+            new FakeDiagnosticsService([]),
+            new JsonErrorKnowledgeLocalizationSource());
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", code));
 
@@ -142,7 +149,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
     [InlineData("CE52")]
     public async Task ControllerModelNamesAreNotParsedAsFaultCodes(string code)
     {
-        var service = new EquipmentDiagnosticBotService(new FakeDiagnosticsService([]));
+        var service = new EquipmentDiagnosticBotService(
+            new FakeDiagnosticsService([]),
+            new JsonErrorKnowledgeLocalizationSource());
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", code));
 
@@ -166,8 +175,32 @@ public sealed class EquipmentDiagnosticBotServiceTests
         Assert.Equal(before.TotalEntries, after.TotalEntries);
         Assert.DoesNotContain(after.Codes, code => code.Confidence == DiagnosticConfidence.ManualVerified);
         var constructor = Assert.Single(typeof(EquipmentDiagnosticBotService).GetConstructors());
-        var dependency = Assert.Single(constructor.GetParameters());
-        Assert.Equal(typeof(IEquipmentDiagnosticsService), dependency.ParameterType);
+        Assert.Equal(
+            [typeof(IEquipmentDiagnosticsService), typeof(IErrorKnowledgeLocalizationSource)],
+            constructor.GetParameters().Select(parameter => parameter.ParameterType));
+    }
+
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData("GMV6", null)]
+    [InlineData(null, "Gree debugging U0")]
+    public async Task Gmv6U0FallsBackToManualBackedDebuggingKnowledge(
+        string? series,
+        string? freeText)
+    {
+        using var provider = CreateProvider();
+        var service = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await service.DiagnoseAsync(
+            new EquipmentDiagnosticBotRequest("Gree", "U0", FreeText: freeText, Series: series));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
+        Assert.Equal("GMV6", response.EquipmentContext!.Series);
+        Assert.True(response.IsManualVerified);
+        Assert.False(response.VerificationRequired);
+        Assert.Equal(DiagnosticConfidence.High, response.Confidence);
+        Assert.Equal("Manual", response.SourceCard!.SourceType);
+        Assert.Contains("LocalizedKnowledgeMatch", response.InternalDecisionTrace!);
     }
 
     [Fact]

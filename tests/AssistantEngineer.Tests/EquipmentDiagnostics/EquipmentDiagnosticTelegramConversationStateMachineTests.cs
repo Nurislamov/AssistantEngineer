@@ -659,6 +659,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
             sessionStore,
             diagnostics,
             facade,
+            new AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json.JsonErrorKnowledgeLocalizationSource(),
             userStore,
             parser,
             formatter,
