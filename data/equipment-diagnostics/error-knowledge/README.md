@@ -8,6 +8,10 @@ Use one entry per file:
 {manufacturer}/{series}/{code}.json
 ```
 
+Every entry includes product/signal/display/system taxonomy and a `packageId`. Package manifests live in
+`packages/{packageId}.json` and define source/review context plus the classifications and expected entry count allowed
+for that batch.
+
 The current audiences are `Consumer`, `Installer`, and `Engineer`; Owner/Admin reuse Engineer output. Valid locale
 keys are `ru`, `en`, and future-ready `uz`; Uzbek content is not required or exposed yet.
 

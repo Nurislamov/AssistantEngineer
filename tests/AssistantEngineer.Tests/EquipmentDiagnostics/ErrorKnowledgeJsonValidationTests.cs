@@ -19,6 +19,13 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "gree",
         "gmv",
         "h5.json");
+    private static readonly string PackagePath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "equipment-diagnostics",
+        "error-knowledge",
+        "packages",
+        "gree-gmv-vrf-protection-codes.json");
 
     [Fact]
     public void GreeGmvH5JsonLoadsFromEmbeddedResource()
@@ -29,8 +36,17 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         Assert.Equal("gree-gmv-h5", entry.Id);
         Assert.Equal("Gree", entry.Manufacturer);
+        Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
+        Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
         Assert.Equal("GMV", entry.Series);
         Assert.Equal("H5", entry.Code);
+        Assert.Equal(ErrorKnowledgeSignalType.Protection, entry.SignalType);
+        Assert.Equal(ErrorKnowledgeDisplaySource.OutdoorBoard, entry.DisplaySource);
+        Assert.Equal(ErrorKnowledgeSystemPart.ProtectionCircuit, entry.SystemPart);
+        Assert.Equal(ErrorKnowledgeSeverity.Medium, entry.Severity);
+        Assert.True(entry.RequiresQualifiedService);
+        Assert.Null(entry.CanCustomerContinueOperation);
+        Assert.Equal("gree-gmv-vrf-protection-codes", entry.PackageId);
         Assert.Contains(
             JsonErrorKnowledgeLocalizationSource.GetEmbeddedResourceNames(),
             name => name.EndsWith(".gree.gmv.h5.json", StringComparison.OrdinalIgnoreCase));
@@ -43,6 +59,10 @@ public sealed class ErrorKnowledgeJsonValidationTests
             "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.gree.gmv.h5.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
             "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.gree.gree-gmv.json"));
+        Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json"));
+        Assert.True(ErrorKnowledgeJsonLoader.IsPackageResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
             "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.staging.example.json"));
         Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
@@ -112,6 +132,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 $"Published knowledge smoke failed.{Environment.NewLine}{smoke.Output}");
             Assert.Contains("PASS", smoke.Output, StringComparison.Ordinal);
             Assert.Contains("Entry: gree-gmv-h5", smoke.Output, StringComparison.Ordinal);
+            Assert.Contains("Package resource:", smoke.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -132,6 +153,20 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = new ErrorKnowledgeJsonLoader().LoadFromDirectory(directory);
 
         Assert.Single(entries, entry => entry.Id == "gree-gmv-h5");
+    }
+
+    [Fact]
+    public void GreeGmvProtectionPackageManifestLoadsSuccessfully()
+    {
+        var result = Validate(File.ReadAllText(KnowledgePath));
+
+        var package = Assert.Single(result.Packages);
+        Assert.Equal("gree-gmv-vrf-protection-codes", package.PackageId);
+        Assert.Equal("Gree", package.Manufacturer);
+        Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, package.EquipmentFamily);
+        Assert.Equal("GMV", package.Series);
+        Assert.Equal([ErrorKnowledgeSignalType.Protection], package.IntendedSignalTypes);
+        Assert.Equal(1, package.EntryCountExpected);
     }
 
     [Fact]
@@ -219,12 +254,118 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var result = new ErrorKnowledgeJsonValidator().Validate(
         [
             new("first.json", json),
-            new("second.json", json)
+            new("second.json", json),
+            PackageSource()
         ]);
 
         Assert.Contains(
             result.Issues,
-            issue => issue.Problem.Contains("duplicate knowledge key", StringComparison.Ordinal));
+            issue => issue.Problem.Contains("duplicate entry taxonomy key", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("equipmentFamily", "UnknownFamily", "equipmentFamily 'UnknownFamily' is invalid")]
+    [InlineData("equipmentType", "Condenser", "equipmentType 'Condenser' is invalid")]
+    [InlineData("signalType", "Alarm", "signalType 'Alarm' is invalid")]
+    [InlineData("displaySource", "Display", "displaySource 'Display' is invalid")]
+    [InlineData("systemPart", "Valve", "systemPart 'Valve' is invalid")]
+    [InlineData("severity", "Emergency", "severity 'Emergency' is invalid")]
+    public void UnknownTaxonomyValueFailsValidation(
+        string property,
+        string value,
+        string expected)
+    {
+        var json = Mutate(root => root[property] = value);
+
+        var result = Validate(json);
+
+        Assert.Contains(result.Issues, issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("equipmentFamily")]
+    [InlineData("equipmentType")]
+    [InlineData("signalType")]
+    [InlineData("displaySource")]
+    [InlineData("systemPart")]
+    [InlineData("severity")]
+    [InlineData("requiresQualifiedService")]
+    [InlineData("packageId")]
+    public void MissingTaxonomyFieldFailsValidation(string property)
+    {
+        var json = Mutate(root => root.Remove(property));
+
+        var result = Validate(json);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains($"{property} is required", StringComparison.Ordinal) ||
+            issue.Problem.Contains($"{property} must be present", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void EntryPackageIdMustExist()
+    {
+        var json = Mutate(root => root["packageId"] = "missing-package");
+
+        var result = Validate(json);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains("does not reference an existing package", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("manufacturer", "Other", "manufacturer does not match")]
+    [InlineData("equipmentFamily", "Chiller", "equipmentFamily does not match")]
+    [InlineData("series", "Other", "series does not match")]
+    public void PackageCompatibilityMismatchFailsValidation(
+        string property,
+        string value,
+        string expected)
+    {
+        var packageJson = MutatePackage(root => root[property] = value);
+
+        var result = Validate(File.ReadAllText(KnowledgePath), packageJson);
+
+        Assert.Contains(result.Issues, issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void EntrySignalTypeMustBeAllowedByPackage()
+    {
+        var packageJson = MutatePackage(root =>
+            root["intendedSignalTypes"] = new JsonArray("Fault"));
+
+        var result = Validate(File.ReadAllText(KnowledgePath), packageJson);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains("signalType Protection is not allowed", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void DuplicatePackageIdFailsValidation()
+    {
+        var packageJson = File.ReadAllText(PackagePath);
+
+        var result = new ErrorKnowledgeJsonValidator().Validate(
+        [
+            new("entry.json", File.ReadAllText(KnowledgePath)),
+            new("packages/first.json", packageJson),
+            new("packages/second.json", packageJson)
+        ]);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains("duplicate packageId", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void PackageEntryCountExpectedMismatchFailsValidation()
+    {
+        var packageJson = MutatePackage(root => root["entryCountExpected"] = 2);
+
+        var result = Validate(File.ReadAllText(KnowledgePath), packageJson);
+
+        Assert.Contains(result.Issues, issue =>
+            issue.Problem.Contains("actual package entry count is 1", StringComparison.Ordinal));
     }
 
     [Theory]
@@ -272,8 +413,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
             issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
     }
 
-    private static ErrorKnowledgeValidationResult Validate(string json) =>
-        new ErrorKnowledgeJsonValidator().Validate([new("test.json", json)]);
+    private static ErrorKnowledgeValidationResult Validate(
+        string json,
+        string? packageJson = null) =>
+        new ErrorKnowledgeJsonValidator().Validate(
+        [
+            new("test.json", json),
+            new("packages/gree-gmv-vrf-protection-codes.json", packageJson ?? File.ReadAllText(PackagePath))
+        ]);
 
     private static string Mutate(Action<JsonObject> mutation)
     {
@@ -281,6 +428,16 @@ public sealed class ErrorKnowledgeJsonValidationTests
         mutation(root);
         return root.ToJsonString();
     }
+
+    private static string MutatePackage(Action<JsonObject> mutation)
+    {
+        var root = JsonNode.Parse(File.ReadAllText(PackagePath))!.AsObject();
+        mutation(root);
+        return root.ToJsonString();
+    }
+
+    private static ErrorKnowledgeJsonSource PackageSource() =>
+        new("packages/gree-gmv-vrf-protection-codes.json", File.ReadAllText(PackagePath));
 
     private static JsonObject RussianConsumer(JsonObject root) =>
         root["texts"]!

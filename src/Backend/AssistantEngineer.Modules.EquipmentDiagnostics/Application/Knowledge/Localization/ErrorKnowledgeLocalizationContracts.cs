@@ -9,13 +9,93 @@ public enum ErrorKnowledgeAudience
     Engineer
 }
 
+public enum ErrorKnowledgeEquipmentFamily
+{
+    VRF,
+    SemiIndustrial,
+    Split,
+    Chiller,
+    Controller,
+    EnergyMonitoring
+}
+
+public enum ErrorKnowledgeEquipmentType
+{
+    OutdoorUnit,
+    IndoorUnit,
+    WiredRemote,
+    CentralController,
+    Gateway,
+    EnergyMeter,
+    Chiller,
+    Unknown
+}
+
+public enum ErrorKnowledgeSignalType
+{
+    Fault,
+    Protection,
+    Warning,
+    Status,
+    Debug,
+    Commissioning,
+    Maintenance,
+    Communication,
+    RemoteDisplay
+}
+
+public enum ErrorKnowledgeDisplaySource
+{
+    OutdoorBoard,
+    IndoorUnit,
+    WiredRemote,
+    CentralController,
+    Gateway,
+    Software,
+    Unknown
+}
+
+public enum ErrorKnowledgeSystemPart
+{
+    PowerSupply,
+    Communication,
+    Compressor,
+    Inverter,
+    RefrigerantCircuit,
+    ProtectionCircuit,
+    Sensor,
+    Fan,
+    WaterCircuit,
+    Controller,
+    Metering,
+    Unknown
+}
+
+public enum ErrorKnowledgeSeverity
+{
+    Info,
+    Low,
+    Medium,
+    High,
+    Critical,
+    Unknown
+}
+
 public sealed record ErrorKnowledgeEntryV2(
     string Id,
     string Manufacturer,
-    string? EquipmentType,
+    ErrorKnowledgeEquipmentFamily EquipmentFamily,
+    ErrorKnowledgeEquipmentType EquipmentType,
     string? Series,
     IReadOnlyList<string> Models,
     string Code,
+    ErrorKnowledgeSignalType SignalType,
+    ErrorKnowledgeDisplaySource DisplaySource,
+    ErrorKnowledgeSystemPart SystemPart,
+    ErrorKnowledgeSeverity Severity,
+    bool RequiresQualifiedService,
+    bool? CanCustomerContinueOperation,
+    string PackageId,
     string SourceLanguage,
     string SourceType,
     string SourceName,

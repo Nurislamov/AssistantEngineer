@@ -6,6 +6,8 @@ public sealed class ErrorKnowledgeJsonDocument
 
     public string? Manufacturer { get; set; }
 
+    public string? EquipmentFamily { get; set; }
+
     public string? EquipmentType { get; set; }
 
     public string? Series { get; set; }
@@ -13,6 +15,20 @@ public sealed class ErrorKnowledgeJsonDocument
     public List<string>? Models { get; set; }
 
     public string? Code { get; set; }
+
+    public string? SignalType { get; set; }
+
+    public string? DisplaySource { get; set; }
+
+    public string? SystemPart { get; set; }
+
+    public string? Severity { get; set; }
+
+    public bool? RequiresQualifiedService { get; set; }
+
+    public bool? CanCustomerContinueOperation { get; set; }
+
+    public string? PackageId { get; set; }
 
     public string? SourceLanguage { get; set; }
 
@@ -31,6 +47,47 @@ public sealed class ErrorKnowledgeJsonDocument
     public DateTimeOffset? UpdatedAt { get; set; }
 
     public List<ErrorKnowledgeJsonText>? Texts { get; set; }
+}
+
+public sealed class ErrorKnowledgePackageJsonDocument
+{
+    public string? PackageId { get; set; }
+
+    public string? Manufacturer { get; set; }
+
+    public string? EquipmentFamily { get; set; }
+
+    public string? Series { get; set; }
+
+    public string? Title { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? SourceLanguage { get; set; }
+
+    public string? SourceType { get; set; }
+
+    public string? SourceName { get; set; }
+
+    public string? SourceReference { get; set; }
+
+    public string? VerificationStatus { get; set; }
+
+    public string? Confidence { get; set; }
+
+    public List<string>? IntendedSignalTypes { get; set; }
+
+    public List<string>? IntendedEquipmentTypes { get; set; }
+
+    public List<string>? IntendedDisplaySources { get; set; }
+
+    public int? EntryCountExpected { get; set; }
+
+    public string? Notes { get; set; }
+
+    public DateTimeOffset? CreatedAt { get; set; }
+
+    public DateTimeOffset? UpdatedAt { get; set; }
 }
 
 public sealed class ErrorKnowledgeJsonText

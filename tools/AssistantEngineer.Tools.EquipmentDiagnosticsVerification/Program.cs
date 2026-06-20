@@ -149,13 +149,29 @@ internal static class Program
         var result = new ErrorKnowledgeJsonValidator().Validate(sources);
 
         Console.WriteLine(result.IsValid ? "PASS" : "FAIL");
-        Console.WriteLine($"Files: {sources.Length}; entries: {result.Entries.Count}; issues: {result.Issues.Count}");
+        Console.WriteLine(
+            $"Files: {sources.Length}; packages: {result.Packages.Count}; entries: {result.Entries.Count}; issues: {result.Issues.Count}");
+        PrintCounts("Manufacturers", result.Entries.GroupBy(entry => entry.Manufacturer));
+        PrintCounts("Equipment families", result.Entries.GroupBy(entry => entry.EquipmentFamily.ToString()));
+        PrintCounts("Signal types", result.Entries.GroupBy(entry => entry.SignalType.ToString()));
+        PrintCounts("Verification statuses", result.Entries.GroupBy(entry => entry.VerificationStatus));
         foreach (var issue in result.Issues)
         {
             Console.WriteLine($"{issue.Path}: {issue.Problem}");
         }
 
         return result.IsValid ? 0 : 1;
+    }
+
+    private static void PrintCounts<T>(
+        string label,
+        IEnumerable<IGrouping<string, T>> groups)
+    {
+        var values = groups
+            .OrderBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group => $"{group.Key}={group.Count()}")
+            .ToArray();
+        Console.WriteLine($"{label}: {(values.Length == 0 ? "none" : string.Join(", ", values))}");
     }
 
     private static int VerifyPublishedErrorKnowledge(
@@ -200,6 +216,17 @@ internal static class Program
                     "Published assembly does not contain the Gree GMV H5 error knowledge resource.");
             }
 
+            var packageResource = assembly
+                .GetManifestResourceNames()
+                .SingleOrDefault(name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.packages.gree-gmv-vrf-protection-codes.json",
+                    StringComparison.Ordinal));
+            if (packageResource is null)
+            {
+                throw new InvalidOperationException(
+                    "Published assembly does not contain the Gree GMV protection package manifest.");
+            }
+
             var sourceType = assembly.GetType(
                 "AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json.JsonErrorKnowledgeLocalizationSource",
                 throwOnError: true)!;
@@ -221,6 +248,7 @@ internal static class Program
             Console.WriteLine("PASS");
             Console.WriteLine($"Assembly: {Path.GetRelativePath(repoRoot, assemblyPath).Replace('\\', '/')}");
             Console.WriteLine($"Resource: {resource}");
+            Console.WriteLine($"Package resource: {packageResource}");
             Console.WriteLine("Entry: gree-gmv-h5");
             return 0;
         }

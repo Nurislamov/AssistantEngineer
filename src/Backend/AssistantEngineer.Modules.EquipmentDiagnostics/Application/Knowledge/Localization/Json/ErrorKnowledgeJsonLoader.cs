@@ -22,7 +22,7 @@ public sealed class ErrorKnowledgeJsonLoader
     {
         var sources = assembly
             .GetManifestResourceNames()
-            .Where(IsKnowledgeResource)
+            .Where(IsErrorKnowledgeResource)
             .OrderBy(name => name, StringComparer.Ordinal)
             .Select(name =>
             {
@@ -59,7 +59,15 @@ public sealed class ErrorKnowledgeJsonLoader
 
     public static bool IsKnowledgeResource(string resourceName) =>
         resourceName.Contains(ResourceMarker, StringComparison.Ordinal) &&
+        !resourceName.Contains(".Knowledge.ErrorKnowledge.packages.", StringComparison.OrdinalIgnoreCase) &&
         resourceName.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+
+    public static bool IsPackageResource(string resourceName) =>
+        resourceName.Contains(".Knowledge.ErrorKnowledge.packages.", StringComparison.OrdinalIgnoreCase) &&
+        resourceName.EndsWith(".json", StringComparison.OrdinalIgnoreCase);
+
+    public static bool IsErrorKnowledgeResource(string resourceName) =>
+        IsKnowledgeResource(resourceName) || IsPackageResource(resourceName);
 
     private static IReadOnlyCollection<ErrorKnowledgeEntryV2> RequireValid(
         ErrorKnowledgeValidationResult result)
