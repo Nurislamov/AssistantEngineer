@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
+using Microsoft.Extensions.Logging;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
@@ -68,6 +69,35 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         Assert.Equal(1, adapter.CallCount);
         Assert.Equal(1, outbound.CallCount);
         Assert.Equal("Safe deterministic reply", outbound.Text);
+    }
+
+    [Fact]
+    public async Task TextDiagnosticFailureSendsSafeFallbackAndLogsSafeContext()
+    {
+        var outbound = new FakeOutbound();
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramWebhookHandler>();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(
+            EnabledOptions(),
+            _policy,
+            new ThrowingAdapter(
+                "No embedded error knowledge JSON resources were found in production assembly. " +
+                "token=secret-value phone=+998 90 123 45 67"),
+            outbound,
+            new EquipmentDiagnosticTelegramOperationalCounters(),
+            logger);
+
+        var result = await handler.HandleAsync(Update("Gree H5"), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.CallCount);
+        Assert.Equal("Диагностика временно недоступна. Попробуйте позже.", outbound.Text);
+        var log = Assert.Single(logger.Messages);
+        Assert.Contains("InvalidOperationException", log, StringComparison.Ordinal);
+        Assert.Contains("No embedded error knowledge JSON resources were found", log, StringComparison.Ordinal);
+        Assert.Contains("Context:", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("secret-value", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("+998", log, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree H5", log, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -418,12 +448,42 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         }
     }
 
-    private sealed class ThrowingAdapter : IEquipmentDiagnosticTelegramAdapter
+    private sealed class ThrowingAdapter(string message = "database unavailable") : IEquipmentDiagnosticTelegramAdapter
     {
         public Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
             EquipmentDiagnosticTelegramUpdate update,
             CancellationToken cancellationToken = default) =>
             Task.FromException<EquipmentDiagnosticTelegramResponse>(
-                new InvalidOperationException("database unavailable"));
+                new InvalidOperationException(message));
+    }
+
+    private sealed class CapturingLogger<T> : ILogger<T>
+    {
+        public List<string> Messages { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull =>
+            NullScope.Instance;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
+        {
+            Messages.Add(formatter(state, exception));
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new();
+
+            public void Dispose()
+            {
+            }
+        }
     }
 }

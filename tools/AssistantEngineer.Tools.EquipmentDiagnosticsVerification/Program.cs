@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
@@ -58,6 +61,11 @@ internal static class Program
             if (options.Command == "verify-knowledge")
             {
                 return VerifyErrorKnowledge(repoRoot);
+            }
+
+            if (options.Command == "verify-published-knowledge")
+            {
+                return VerifyPublishedErrorKnowledge(repoRoot, options);
             }
 
             var input = EquipmentDiagnosticsVerificationInputLoader.Load(repoRoot);
@@ -148,6 +156,78 @@ internal static class Program
         }
 
         return result.IsValid ? 0 : 1;
+    }
+
+    private static int VerifyPublishedErrorKnowledge(
+        string repoRoot,
+        EquipmentDiagnosticsVerificationOptions options)
+    {
+        if (string.IsNullOrWhiteSpace(options.AssemblyPath))
+        {
+            throw new InvalidOperationException(
+                "verify-published-knowledge requires --assembly <path>.");
+        }
+
+        var assemblyPath = Path.GetFullPath(options.AssemblyPath, repoRoot);
+        if (!File.Exists(assemblyPath))
+        {
+            throw new FileNotFoundException("Published EquipmentDiagnostics assembly was not found.", assemblyPath);
+        }
+
+        var directory = Path.GetDirectoryName(assemblyPath)!;
+        var loadContext = new AssemblyLoadContext(
+            $"published-error-knowledge-{Guid.NewGuid():N}",
+            isCollectible: true);
+        loadContext.Resolving += (_, assemblyName) =>
+        {
+            var dependencyPath = Path.Combine(directory, $"{assemblyName.Name}.dll");
+            return File.Exists(dependencyPath)
+                ? loadContext.LoadFromAssemblyPath(dependencyPath)
+                : null;
+        };
+
+        try
+        {
+            var assembly = loadContext.LoadFromAssemblyPath(assemblyPath);
+            var resource = assembly
+                .GetManifestResourceNames()
+                .SingleOrDefault(name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.gree.gmv.h5.json",
+                    StringComparison.Ordinal));
+            if (resource is null)
+            {
+                throw new InvalidOperationException(
+                    "Published assembly does not contain the Gree GMV H5 error knowledge resource.");
+            }
+
+            var sourceType = assembly.GetType(
+                "AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json.JsonErrorKnowledgeLocalizationSource",
+                throwOnError: true)!;
+            var source = Activator.CreateInstance(sourceType)!;
+            var entries = (IEnumerable)sourceType
+                .GetMethod("GetEntries", BindingFlags.Instance | BindingFlags.Public)!
+                .Invoke(source, null)!;
+            var entry = entries.Cast<object>().SingleOrDefault(item =>
+                string.Equals(
+                    item.GetType().GetProperty("Id")?.GetValue(item)?.ToString(),
+                    "gree-gmv-h5",
+                    StringComparison.Ordinal));
+            if (entry is null)
+            {
+                throw new InvalidOperationException(
+                    "Published assembly could not load the Gree GMV H5 error knowledge entry.");
+            }
+
+            Console.WriteLine("PASS");
+            Console.WriteLine($"Assembly: {Path.GetRelativePath(repoRoot, assemblyPath).Replace('\\', '/')}");
+            Console.WriteLine($"Resource: {resource}");
+            Console.WriteLine("Entry: gree-gmv-h5");
+            return 0;
+        }
+        finally
+        {
+            loadContext.Unload();
+        }
     }
 
     private static int GenerateBetaReadiness(
@@ -297,6 +377,7 @@ internal static class Program
         Console.WriteLine("  beta-readiness");
         Console.WriteLine("  goal-run-report");
         Console.WriteLine("  verify-knowledge");
+        Console.WriteLine("  verify-published-knowledge");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --repo-root <path>");
@@ -307,6 +388,7 @@ internal static class Program
         Console.WriteLine("  --output <path>                    Generated PR body Markdown");
         Console.WriteLine("  --markdown-output <path>           Generated beta readiness Markdown summary");
         Console.WriteLine("  --input <path>                     Goal-run report JSON input");
+        Console.WriteLine("  --assembly <path>                  Published EquipmentDiagnostics assembly");
         Console.WriteLine("  --skip-command-checks              Skip restore/build/test (for focused development only)");
     }
 }

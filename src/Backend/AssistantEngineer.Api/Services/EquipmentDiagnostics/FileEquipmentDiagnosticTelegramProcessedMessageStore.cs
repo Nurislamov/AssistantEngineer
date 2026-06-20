@@ -24,7 +24,26 @@ public sealed class FileEquipmentDiagnosticTelegramProcessedMessageStore : IEqui
         _maxEntries = Math.Clamp(options.Polling.ProcessedMessageStoreMaxEntries, 1, 50_000);
     }
 
-    public async Task<bool> TryMarkProcessedMessageAsync(
+    public async Task<bool> IsProcessedMessageAsync(
+        long chatId,
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        var hash = CreateMessageHash(chatId, messageId);
+
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var entries = await ReadEntriesAsync(cancellationToken);
+            return entries.Any(entry => string.Equals(entry.Hash, hash, StringComparison.Ordinal));
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task MarkProcessedMessageAsync(
         long chatId,
         long messageId,
         long updateId,
@@ -38,7 +57,7 @@ public sealed class FileEquipmentDiagnosticTelegramProcessedMessageStore : IEqui
             var entries = await ReadEntriesAsync(cancellationToken);
             if (entries.Any(entry => string.Equals(entry.Hash, hash, StringComparison.Ordinal)))
             {
-                return false;
+                return;
             }
 
             entries.Add(new ProcessedMessageEntry(hash, updateId));
@@ -46,7 +65,6 @@ public sealed class FileEquipmentDiagnosticTelegramProcessedMessageStore : IEqui
                 ? entries
                 : entries.Skip(entries.Count - _maxEntries).ToList();
             await WriteEntriesAsync(trimmed, cancellationToken);
-            return true;
         }
         finally
         {

@@ -51,6 +51,9 @@
 - After ED-24B deployment, verify Gree GMV H5 technical output is Russian for Installer/Engineer/Admin/Owner and an
   unlocalized technical entry uses the Russian fallback without exposing raw English source text. No migration or
   new environment value is required.
+- Before ED-24C.1 deployment, run `verify-published-error-knowledge.ps1`; rebuild the backend image so the repository
+  error-knowledge JSON is copied into the Docker build and embedded in the published assembly. After deployment,
+  verify a failed diagnostic sends the safe temporary-unavailable response and is not pre-marked as a duplicate.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
   and processed-message idempotency files without secrets.
 

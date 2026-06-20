@@ -21,6 +21,12 @@ $proxy = Read-RequiredFile "deploy/reverse-proxy/Caddyfile.example"
 $envExample = Read-RequiredFile "deploy/.env.example"
 $deployIgnore = Read-RequiredFile "deploy/.gitignore"
 
+if ($backendDockerfile.IndexOf(
+        "COPY data/equipment-diagnostics/error-knowledge/ ./data/equipment-diagnostics/error-knowledge/",
+        [StringComparison]::Ordinal) -lt 0) {
+    throw "Backend Dockerfile must copy repository-backed error knowledge before publish."
+}
+
 foreach ($service in @("assistantengineer-api:", "assistantengineer-frontend:", "reverse-proxy:")) {
     if ($compose.IndexOf($service, [StringComparison]::Ordinal) -lt 0) {
         throw "Compose scaffold is missing expected service: $service"

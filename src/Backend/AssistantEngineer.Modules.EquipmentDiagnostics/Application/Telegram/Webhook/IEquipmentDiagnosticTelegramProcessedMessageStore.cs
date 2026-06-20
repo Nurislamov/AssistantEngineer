@@ -2,7 +2,12 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.We
 
 public interface IEquipmentDiagnosticTelegramProcessedMessageStore
 {
-    Task<bool> TryMarkProcessedMessageAsync(
+    Task<bool> IsProcessedMessageAsync(
+        long chatId,
+        long messageId,
+        CancellationToken cancellationToken = default);
+
+    Task MarkProcessedMessageAsync(
         long chatId,
         long messageId,
         long updateId,

@@ -1487,6 +1487,22 @@
                         "riskIfChanged":  "Runner drift can mutate tags, invoke external behavior, hide blockers, or overstate closed-beta handoff readiness."
                     },
                     {
+                        "id":  "SCR-093",
+                        "path":  "scripts/equipment-diagnostics/verify-published-error-knowledge.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ReleaseGateCritical",
+                        "purpose":  "Publish the API and verify that repository-backed error knowledge is embedded and loadable from the published EquipmentDiagnostics assembly.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification/AssistantEngineer.Tools.EquipmentDiagnosticsVerification.csproj",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the publish smoke aligned with the backend Docker build context and preserve fail-fast resource loading checks.",
+                        "proposedStage":  "ED-24C.1",
+                        "riskIfChanged":  "Packaging drift can ship an API assembly without embedded error knowledge and break Telegram diagnostics only after deployment."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

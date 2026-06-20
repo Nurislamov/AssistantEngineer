@@ -5,6 +5,7 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.We
 
 public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagnosticTelegramWebhookHandler
 {
+    private const string DiagnosticUnavailable = "Диагностика временно недоступна. Попробуйте позже.";
     private const string GenericCallbackUnavailable = "Действие временно недоступно.";
     private const string HistoryCallbackUnavailable = "История временно недоступна. Попробуйте позже.";
     private const string QueueCallbackUnavailable = "Очередь временно недоступна. Попробуйте позже.";
@@ -103,23 +104,61 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         }
 
         var username = update.Message.From?.Username ?? update.Message.Chat.Username;
-        var adapterResponse = await _adapter.HandleAsync(
-            new EquipmentDiagnosticTelegramUpdate(
+        EquipmentDiagnosticTelegramResponse adapterResponse;
+        try
+        {
+            adapterResponse = await _adapter.HandleAsync(
+                new EquipmentDiagnosticTelegramUpdate(
+                    update.UpdateId,
+                    update.Message.Chat.Id,
+                    username,
+                    update.Message.Text,
+                    update.Message.MessageId,
+                    update.Message.Date is null
+                        ? null
+                        : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value),
+                    update.Message.From?.Id,
+                    update.Message.From?.FirstName,
+                    update.Message.From?.LastName,
+                    update.Message.Contact?.PhoneNumber,
+                    update.Message.Contact?.UserId,
+                    update.Message.Chat.Type),
+                cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                "Telegram diagnostic processing failed and fallback was attempted. UpdateId: {UpdateId}; ChatType: {ChatType}; ExceptionType: {ExceptionType}; ExceptionMessage: {ExceptionMessage}; Context: {Context}.",
                 update.UpdateId,
+                SafeChatType(update.Message.Chat.Type),
+                exception.GetType().Name,
+                TelegramSafeExceptionDetails.Message(exception),
+                TelegramSafeExceptionDetails.Context(exception));
+
+            var fallback = await _outboundClient.SendMessageAsync(
                 update.Message.Chat.Id,
-                username,
-                update.Message.Text,
-                update.Message.MessageId,
-                update.Message.Date is null
-                    ? null
-                    : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value),
-                update.Message.From?.Id,
-                update.Message.From?.FirstName,
-                update.Message.From?.LastName,
-                update.Message.Contact?.PhoneNumber,
-                update.Message.Contact?.UserId,
-                update.Message.Chat.Type),
-            cancellationToken);
+                DiagnosticUnavailable,
+                parseMode: null,
+                disableWebPagePreview: true,
+                replyMarkup: null,
+                cancellationToken: cancellationToken);
+            if (!fallback.Succeeded)
+            {
+                _counters.RecordOutboundSendFailure();
+                return Result(
+                    EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed,
+                    "Telegram diagnostic fallback send failed.");
+            }
+
+            _counters.RecordProcessed();
+            return Result(
+                EquipmentDiagnosticTelegramWebhookStatus.Processed,
+                "Telegram diagnostic failure was handled safely.");
+        }
 
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)
         {
@@ -334,4 +373,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
     private static EquipmentDiagnosticTelegramWebhookResult Result(
         EquipmentDiagnosticTelegramWebhookStatus status,
         string message) => new(status, message);
+
+    private static string SafeChatType(string? chatType) =>
+        string.IsNullOrWhiteSpace(chatType) ? "unknown" : chatType;
 }

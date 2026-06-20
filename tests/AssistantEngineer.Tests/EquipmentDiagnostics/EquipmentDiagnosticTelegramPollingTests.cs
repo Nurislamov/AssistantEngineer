@@ -361,6 +361,55 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
     }
 
     [Fact]
+    public async Task FailedProcessingIsNotMarkedDuplicateAndRetryCanSucceed()
+    {
+        var inbound = new FakeInboundClient(
+            [Update(11, "private", chatId: 3, messageId: 7, text: "Gree H5")],
+            blockGetUpdates: false);
+        var handler = new FakeWebhookHandler { ThrowOnFirstHandle = true };
+        var offsetStore = new FakeOffsetStore();
+        var processedStore = new FakeProcessedMessageStore();
+        var service = CreateService(
+            EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
+            inbound,
+            handler,
+            offsetStore,
+            processedStore);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.PollOnceAsync(10));
+
+        Assert.Null(offsetStore.LastSavedUpdateId);
+        Assert.False(await processedStore.IsProcessedMessageAsync(3, 7));
+
+        var lastProcessed = await service.PollOnceAsync(10);
+
+        Assert.Equal(11, lastProcessed);
+        Assert.Equal([11], handler.HandledUpdateIds);
+        Assert.True(await processedStore.IsProcessedMessageAsync(3, 7));
+    }
+
+    [Fact]
+    public async Task RetryableFailureStatusDoesNotAdvanceOffsetOrMarkMessage()
+    {
+        var processedStore = new FakeProcessedMessageStore();
+        var offsetStore = new FakeOffsetStore();
+        var service = CreateService(
+            EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
+            new FakeInboundClient([Update(11, "private", chatId: 3, messageId: 7)], false),
+            new FakeWebhookHandler
+            {
+                ResultStatus = EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed
+            },
+            offsetStore,
+            processedStore);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.PollOnceAsync(10));
+
+        Assert.Null(offsetStore.LastSavedUpdateId);
+        Assert.False(await processedStore.IsProcessedMessageAsync(3, 7));
+    }
+
+    [Fact]
     public async Task FileProcessedMessageStoreWritesHashesWithoutBomAndTrimsOldEntries()
     {
         var root = Path.Combine(Path.GetTempPath(), $"assistant-engineer-processed-{Guid.NewGuid():N}");
@@ -376,10 +425,12 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             };
             var store = CreateProcessedStore(root, options);
 
-            Assert.True(await store.TryMarkProcessedMessageAsync(100, 1, 11));
-            Assert.True(await store.TryMarkProcessedMessageAsync(100, 2, 12));
-            Assert.True(await store.TryMarkProcessedMessageAsync(100, 3, 13));
-            Assert.False(await store.TryMarkProcessedMessageAsync(100, 3, 14));
+            Assert.False(await store.IsProcessedMessageAsync(100, 1));
+            await store.MarkProcessedMessageAsync(100, 1, 11);
+            await store.MarkProcessedMessageAsync(100, 2, 12);
+            await store.MarkProcessedMessageAsync(100, 3, 13);
+            await store.MarkProcessedMessageAsync(100, 3, 14);
+            Assert.True(await store.IsProcessedMessageAsync(100, 3));
 
             var path = Path.Combine(root, "operations", "processed.txt");
             var text = await File.ReadAllTextAsync(path);
@@ -504,7 +555,12 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
 
     private sealed class FakeWebhookHandler : IEquipmentDiagnosticTelegramWebhookHandler
     {
+        private int _handleCalls;
+
         public List<long> HandledUpdateIds { get; } = [];
+        public bool ThrowOnFirstHandle { get; init; }
+        public EquipmentDiagnosticTelegramWebhookStatus ResultStatus { get; init; } =
+            EquipmentDiagnosticTelegramWebhookStatus.Processed;
 
         public Task<EquipmentDiagnosticTelegramWebhookResult> HandleAsync(
             TelegramWebhookUpdateDto update,
@@ -518,9 +574,15 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             TelegramWebhookUpdateDto update,
             CancellationToken cancellationToken = default)
         {
+            if (ThrowOnFirstHandle && Interlocked.Increment(ref _handleCalls) == 1)
+            {
+                throw new InvalidOperationException(
+                    "No embedded error knowledge JSON resources were found in production assembly.");
+            }
+
             HandledUpdateIds.Add(update.UpdateId);
             return Task.FromResult(new EquipmentDiagnosticTelegramWebhookResult(
-                EquipmentDiagnosticTelegramWebhookStatus.Processed,
+                ResultStatus,
                 "Processed."));
         }
     }
@@ -545,12 +607,21 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
     {
         private readonly HashSet<(long ChatId, long MessageId)> _processed = [];
 
-        public Task<bool> TryMarkProcessedMessageAsync(
+        public Task<bool> IsProcessedMessageAsync(
+            long chatId,
+            long messageId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(_processed.Contains((chatId, messageId)));
+
+        public Task MarkProcessedMessageAsync(
             long chatId,
             long messageId,
             long updateId,
-            CancellationToken cancellationToken = default) =>
-            Task.FromResult(_processed.Add((chatId, messageId)));
+            CancellationToken cancellationToken = default)
+        {
+            _processed.Add((chatId, messageId));
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class CapturingTelegramApiHandler : HttpMessageHandler

@@ -68,24 +68,25 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             }
 
             var result = await _handler.HandleTrustedAsync(update, cancellationToken);
-            if (result.Status is EquipmentDiagnosticTelegramWebhookStatus.Processed or
-                EquipmentDiagnosticTelegramWebhookStatus.Ignored)
+            if (IsTerminalStatus(result.Status))
             {
                 _logger.LogInformation(
                     "Telegram polling update processed. UpdateId: {UpdateId}; Status: {Status}.",
                     update.UpdateId,
                     result.Status);
-            }
-            else
-            {
-                _logger.LogWarning(
-                    "Telegram polling update completed with failure status. UpdateId: {UpdateId}; Status: {Status}.",
-                    update.UpdateId,
-                    result.Status);
+                await MarkProcessedMessageAsync(update, cancellationToken);
+                await _offsetStore.SaveLastProcessedUpdateIdAsync(update.UpdateId, cancellationToken);
+                currentLastProcessed = update.UpdateId;
+                continue;
             }
 
-            await _offsetStore.SaveLastProcessedUpdateIdAsync(update.UpdateId, cancellationToken);
-            currentLastProcessed = update.UpdateId;
+            _logger.LogWarning(
+                "Telegram polling update completed with retryable failure status. UpdateId: {UpdateId}; ChatType: {ChatType}; Status: {Status}.",
+                update.UpdateId,
+                SafeChatType(update.Message?.Chat?.Type ?? update.CallbackQuery?.Message?.Chat?.Type),
+                result.Status);
+            throw new InvalidOperationException(
+                $"Telegram update processing returned retryable status {result.Status}.");
         }
 
         return currentLastProcessed;
@@ -124,8 +125,10 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             catch (Exception exception)
             {
                 _logger.LogWarning(
-                    "Telegram polling batch failed; retrying after configured delay. ExceptionType: {ExceptionType}.",
-                    exception.GetType().Name);
+                    "Telegram polling batch failed; retrying after configured delay. ExceptionType: {ExceptionType}; ExceptionMessage: {ExceptionMessage}; Context: {Context}.",
+                    exception.GetType().Name,
+                    TelegramSafeExceptionDetails.Message(exception),
+                    TelegramSafeExceptionDetails.Context(exception));
                 lastProcessedUpdateId = await _offsetStore.GetLastProcessedUpdateIdAsync(stoppingToken);
                 await DelayAfterErrorAsync(polling.DelayAfterErrorSeconds, stoppingToken);
             }
@@ -174,13 +177,28 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             return false;
         }
 
-        var marked = await _processedMessageStore.TryMarkProcessedMessageAsync(
+        return await _processedMessageStore.IsProcessedMessageAsync(
             update.Message.Chat.Id,
             update.Message.MessageId,
-            update.UpdateId,
             cancellationToken);
-        return !marked;
     }
+
+    private Task MarkProcessedMessageAsync(
+        TelegramWebhookUpdateDto update,
+        CancellationToken cancellationToken) =>
+        update.Message?.Chat is null
+            ? Task.CompletedTask
+            : _processedMessageStore.MarkProcessedMessageAsync(
+                update.Message.Chat.Id,
+                update.Message.MessageId,
+                update.UpdateId,
+                cancellationToken);
+
+    private static bool IsTerminalStatus(EquipmentDiagnosticTelegramWebhookStatus status) =>
+        status is EquipmentDiagnosticTelegramWebhookStatus.Processed or
+            EquipmentDiagnosticTelegramWebhookStatus.Ignored or
+            EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate or
+            EquipmentDiagnosticTelegramWebhookStatus.Disabled;
 
     private static EquipmentDiagnosticTelegramPollingOptions NormalizePollingOptions(
         EquipmentDiagnosticTelegramPollingOptions options) =>

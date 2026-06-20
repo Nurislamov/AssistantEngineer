@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
@@ -33,6 +34,92 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Contains(
             JsonErrorKnowledgeLocalizationSource.GetEmbeddedResourceNames(),
             name => name.EndsWith(".gree.gmv.h5.json", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void ErrorKnowledgeResourceFilterRejectsUnrelatedEmbeddedJson()
+    {
+        Assert.True(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.ErrorKnowledge.gree.gmv.h5.json"));
+        Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.gree.gree-gmv.json"));
+        Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.Knowledge.staging.example.json"));
+        Assert.False(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
+            "AssistantEngineer.Modules.EquipmentDiagnostics.some-other.json"));
+    }
+
+    [Fact]
+    public void BackendDockerBuildContextIncludesRepositoryErrorKnowledge()
+    {
+        var dockerfile = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "deploy",
+            "docker",
+            "backend",
+            "Dockerfile"));
+
+        Assert.Contains(
+            "COPY data/equipment-diagnostics/error-knowledge/ ./data/equipment-diagnostics/error-knowledge/",
+            dockerfile,
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PublishedApiAssemblyLoadsEmbeddedGreeH5()
+    {
+        var publishDirectory = Path.Combine(
+            Path.GetTempPath(),
+            $"assistant-engineer-published-knowledge-{Guid.NewGuid():N}");
+        try
+        {
+            var result = await RunProcessAsync(
+                "dotnet",
+                [
+                    "publish",
+                    "src/Backend/AssistantEngineer.Api/AssistantEngineer.Api.csproj",
+                    "--configuration",
+                    "Debug",
+                    "--no-restore",
+                    "--no-build",
+                    "--output",
+                    publishDirectory,
+                    "/p:UseAppHost=false"
+                ]);
+            Assert.True(
+                result.ExitCode == 0,
+                $"dotnet publish failed.{Environment.NewLine}{result.Output}");
+
+            var modulePath = Path.Combine(
+                publishDirectory,
+                "AssistantEngineer.Modules.EquipmentDiagnostics.dll");
+            Assert.True(File.Exists(modulePath), $"Published module was not found: {modulePath}");
+
+            var smoke = await RunProcessAsync(
+                "dotnet",
+                [
+                    "run",
+                    "--project",
+                    "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
+                    "--no-restore",
+                    "--",
+                    "verify-published-knowledge",
+                    "--assembly",
+                    modulePath
+                ]);
+            Assert.True(
+                smoke.ExitCode == 0,
+                $"Published knowledge smoke failed.{Environment.NewLine}{smoke.Output}");
+            Assert.Contains("PASS", smoke.Output, StringComparison.Ordinal);
+            Assert.Contains("Entry: gree-gmv-h5", smoke.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(publishDirectory))
+            {
+                Directory.Delete(publishDirectory, recursive: true);
+            }
+        }
     }
 
     [Fact]
@@ -246,4 +333,34 @@ public sealed class ErrorKnowledgeJsonValidationTests
             [],
             [],
             null);
+
+    private static async Task<ProcessResult> RunProcessAsync(
+        string fileName,
+        IReadOnlyList<string> arguments)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = fileName,
+            WorkingDirectory = TestPaths.RepoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        foreach (var argument in arguments)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException($"Failed to start {fileName}.");
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
+        return new ProcessResult(
+            process.ExitCode,
+            string.Concat(await outputTask, Environment.NewLine, await errorTask));
+    }
+
+    private sealed record ProcessResult(int ExitCode, string Output);
 }

@@ -101,6 +101,7 @@ Run:
 
 ```powershell
 dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge
+.\scripts\equipment-diagnostics\verify-published-error-knowledge.ps1
 ```
 
 The validator reports the repository-relative file and problem. It blocks:
@@ -115,6 +116,15 @@ The validator reports the repository-relative file and problem. It blocks:
 
 `doNotAdvise` is deliberately excluded from the unsafe-instruction scan because that field records explicit
 prohibitions. All user-visible Consumer instructions remain subject to the denylist.
+
+The publish smoke builds the API publish output, loads the EquipmentDiagnostics assembly in a separate process, and
+verifies that the embedded Gree GMV H5 resource can be deserialized there. The backend Dockerfile must copy the
+repository `data/equipment-diagnostics/error-knowledge/` directory into its build context before `dotnet publish`.
+
+If knowledge loading or diagnostic formatting still fails at runtime, Telegram sends the controlled Russian fallback
+`Диагностика временно недоступна. Попробуйте позже.`. Safe logs include update id, chat type, exception type, an
+allowlisted/redacted exception message, and method-only stack context. Message text, phone, raw Telegram identifiers,
+tokens, secrets, and callback payloads are not logged.
 
 ## Adding or updating an error code
 

@@ -10,6 +10,7 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
     string? OutputPath,
     string? MarkdownOutputPath,
     string? InputPath,
+    string? AssemblyPath,
     bool SkipCommandChecks,
     bool ShowHelp)
 {
@@ -17,12 +18,12 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
     {
         if (args.Count == 0)
         {
-            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, null, null, false, false);
+            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, null, null, null, false, false);
         }
 
         if (args.Any(arg => arg is "-h" or "--help" or "help"))
         {
-            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, null, null, false, true);
+            return new("full-report", null, "origin/master", "EquipmentDiagnostics", null, null, null, null, null, null, false, true);
         }
 
         var command = args[0];
@@ -34,6 +35,7 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
         string? outputPath = null;
         string? markdownOutputPath = null;
         string? inputPath = null;
+        string? assemblyPath = null;
         var skipCommandChecks = false;
 
         for (var index = 1; index < args.Count; index++)
@@ -132,9 +134,20 @@ internal sealed record EquipmentDiagnosticsVerificationOptions(
                 continue;
             }
 
+            if (args[index] == "--assembly")
+            {
+                if (index + 1 >= args.Count)
+                {
+                    throw new InvalidOperationException("--assembly requires a path.");
+                }
+
+                assemblyPath = args[++index];
+                continue;
+            }
+
             throw new InvalidOperationException($"Unsupported option '{args[index]}'.");
         }
 
-        return new(command, repositoryRoot, baseRef, scope, outputDirectory, reportPath, outputPath, markdownOutputPath, inputPath, skipCommandChecks, false);
+        return new(command, repositoryRoot, baseRef, scope, outputDirectory, reportPath, outputPath, markdownOutputPath, inputPath, assemblyPath, skipCommandChecks, false);
     }
 }
