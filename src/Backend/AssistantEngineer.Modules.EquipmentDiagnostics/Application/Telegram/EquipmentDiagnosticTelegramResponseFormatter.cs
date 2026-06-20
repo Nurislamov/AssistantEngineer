@@ -165,21 +165,21 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     {
         var text = selection.Text;
         var builder = new StringBuilder();
-        builder.AppendLine($"Внимание: ошибка {response.NormalizedManufacturer} {response.NormalizedCode}");
+        builder.AppendLine($"Код оборудования: {response.NormalizedManufacturer} {response.NormalizedCode}");
         builder.AppendLine();
-        builder.AppendLine(text.Title);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
         AppendKnowledgeCategory(builder, selection.Entry);
         builder.AppendLine();
         builder.AppendLine("Возможное значение:");
-        builder.AppendLine(text.Summary);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
         builder.AppendLine();
         builder.AppendLine("Что можно сделать безопасно:");
-        builder.AppendLine(text.SafetyNote);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote));
         AppendSection(builder, "Возможные причины", text.PossibleCauses);
         AppendSection(builder, "Что можно проверить безопасно", text.CheckSteps);
         builder.AppendLine();
         builder.AppendLine("Рекомендованное действие:");
-        builder.AppendLine(text.RecommendedAction);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
         builder.AppendLine();
         builder.AppendLine($"Для сервиса: передайте код {response.NormalizedManufacturer} {response.NormalizedCode}.");
         builder.AppendLine();
@@ -315,14 +315,14 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     {
         var text = selection.Text;
         var entry = selection.Entry;
-        builder.AppendLine(text.Title);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
         AppendKnowledgeCategory(builder, entry);
         builder.AppendLine();
         builder.AppendLine("Кратко:");
-        builder.AppendLine(text.Summary);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
         builder.AppendLine();
         builder.AppendLine("Безопасность:");
-        builder.AppendLine(text.SafetyNote);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote));
         builder.AppendLine();
         builder.AppendLine($"Уверенность: {ConfidenceLabel(entry.Confidence)}.");
         builder.AppendLine($"Источник: {SafeSourceLabel(entry.SourceType)}.");
@@ -335,30 +335,15 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         AppendSection(builder, "Что не советовать клиенту", text.DoNotAdvise);
         builder.AppendLine();
         builder.AppendLine("Рекомендованное действие:");
-        builder.AppendLine(text.RecommendedAction);
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
     }
 
     private static void AppendKnowledgeCategory(
         StringBuilder builder,
         ErrorKnowledgeEntryV2 entry)
     {
-        var category = entry.SignalType switch
-        {
-            ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning =>
-                "Наладка / ввод в эксплуатацию",
-            ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance =>
-                "Статус",
-            _ when entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) =>
-                "Наладка / ввод в эксплуатацию",
-            _ when entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase) =>
-                "Статус",
-            _ => null
-        };
-
-        if (category is not null)
-        {
-            builder.AppendLine($"Категория: {category}.");
-        }
+        builder.AppendLine($"Категория: {RussianDiagnosticTerminology.SignalTypeLabel(entry.SignalType)}.");
+        builder.AppendLine($"Оборудование: {RussianDiagnosticTerminology.EquipmentTypeLabel(entry.EquipmentType)}.");
     }
 
     private static void AppendMissingLocalizationFallback(
@@ -406,7 +391,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine($"{title}:");
         foreach (var value in values.Take(5))
         {
-            builder.AppendLine($"- {Compact(value, 220)}");
+            builder.AppendLine($"- {Compact(RussianDiagnosticTerminology.ImprovePhrase(value), 220)}");
         }
     }
 

@@ -1069,23 +1069,15 @@ public sealed class TelegramDiagnosticConversationService
         ["Пульт", "Внутренний блок", "Наружный блок", "Приложение/шлюз", "Плата/LED"];
 
     private static string EquipmentTypeLabel(EquipmentCategory category) =>
-        category switch
-        {
-            EquipmentCategory.VrfIndoorUnit => "Внутренний блок",
-            EquipmentCategory.VrfOutdoorUnit => "Наружный блок",
-            EquipmentCategory.Chiller => "Чиллер",
-            EquipmentCategory.Controller => "Контроллер/пульт",
-            EquipmentCategory.SplitSystem => "Сплит/полупром",
-            _ => category.ToString()
-        };
+        RussianDiagnosticTerminology.EquipmentTypeLabel(category);
 
     private static string LocalizedEquipmentTypeLabel(ErrorKnowledgeEntryV2 entry) =>
         entry.SignalType is ErrorKnowledgeSignalType.Debug or ErrorKnowledgeSignalType.Commissioning ||
         entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase)
-            ? "Наладка / ввод в эксплуатацию"
+            ? RussianDiagnosticTerminology.SignalTypeLabel(ErrorKnowledgeSignalType.Commissioning)
             : entry.SignalType is ErrorKnowledgeSignalType.Status or ErrorKnowledgeSignalType.Maintenance
-                ? "Статус"
-                : EquipmentTypeLabel(LocalizedCategory(entry.EquipmentType));
+                ? RussianDiagnosticTerminology.SignalTypeLabel(ErrorKnowledgeSignalType.Status)
+                : RussianDiagnosticTerminology.EquipmentTypeLabel(entry.EquipmentType);
 
     private static EquipmentCategory LocalizedCategory(ErrorKnowledgeEquipmentType equipmentType) =>
         equipmentType switch

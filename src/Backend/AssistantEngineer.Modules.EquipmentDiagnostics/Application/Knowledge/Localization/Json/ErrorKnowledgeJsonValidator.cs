@@ -28,6 +28,12 @@ public sealed partial class ErrorKnowledgeJsonValidator
         "Preliminary diagnostic entry",
         "Recommended action"
     ];
+    private static readonly string[] AwkwardRussianDuplicates =
+    [
+        "связи связи",
+        "ошибка ошибка",
+        "защита защиты"
+    ];
     private static readonly string[] UnsafeConsumerAdvice =
     [
         "bypass protection",
@@ -453,6 +459,14 @@ public sealed partial class ErrorKnowledgeJsonValidator
                              visibleText.Any(value => ContainsPhrase(value, leak))))
                 {
                     issues.Add(new(textPath, $"Russian text contains English UI label '{leak}'."));
+                }
+
+                foreach (var duplicate in AwkwardRussianDuplicates.Where(duplicate =>
+                             visibleText.Any(value => value.Contains(
+                                 duplicate,
+                                 StringComparison.OrdinalIgnoreCase))))
+                {
+                    issues.Add(new(textPath, $"Russian text contains awkward duplicate wording '{duplicate}'."));
                 }
             }
 

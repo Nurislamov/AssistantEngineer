@@ -476,6 +476,25 @@ public sealed class ErrorKnowledgeJsonValidationTests
             issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("Сообщение о связи связи и адресации.", "связи связи")]
+    [InlineData("Ошибка ошибка наружного блока.", "ошибка ошибка")]
+    [InlineData("Защита защиты компрессора.", "защита защиты")]
+    public void AwkwardRussianDuplicateWordingFailsValidation(
+        string text,
+        string expected)
+    {
+        var json = Mutate(root => RussianConsumer(root)["summary"] = text);
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue =>
+                issue.Problem.Contains("awkward duplicate wording", StringComparison.Ordinal) &&
+                issue.Problem.Contains(expected, StringComparison.Ordinal));
+    }
+
     private static ErrorKnowledgeValidationResult Validate(
         string json,
         string? packageJson = null) =>

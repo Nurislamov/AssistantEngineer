@@ -39,6 +39,13 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Источник: руководство производителя", response.Text, StringComparison.Ordinal);
         Assert.Contains("Уверенность: Высокая", response.Text, StringComparison.Ordinal);
         Assert.Contains("Безопасность:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Категория: Защита.", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Оборудование: Наружный блок.", response.Text, StringComparison.Ordinal);
+        Assert.Contains("защит", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("инверторного вентилятора", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ток", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("preliminary protection alarm", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("предварительный сигнал защиты", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -53,6 +60,12 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Equal(first.Text, second.Text);
         Assert.Contains("тип оборудования", first.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Наружный блок", first.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
+
+        var outdoor = await adapter.HandleAsync(Update("Наружный блок"));
+
+        Assert.Contains("Gree GMV6 E1", outdoor.Text, StringComparison.Ordinal);
+        Assert.Contains("высокому давлению", outdoor.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Категория: Защита.", outdoor.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -65,6 +78,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Contains("Gree GMV6 A0", response.Text, StringComparison.Ordinal);
         Assert.Contains("ожидание наладки", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Категория: Статус.", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Внимание: ошибка", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Уверенность: Высокая", response.Text, StringComparison.Ordinal);
     }
 
@@ -86,6 +101,20 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Source:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Confidence:", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Gmv6CommunicationTextUsesNaturalRussianWording()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree C0"));
+
+        Assert.Contains("Gree GMV6 C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Категория: Связь.", response.Text, StringComparison.Ordinal);
+        Assert.Contains("сообщение о связи и адресации", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("связи связи", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
