@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-24F.0 diagnostic manual coverage
+
+The non-runtime [manual coverage matrix](manual-coverage.md) and [future Telegram manual-library plan](telegram-manual-library-plan.md) track local source availability, imported scope, pending identity review, and role policy. The machine-readable registry is `data/equipment-diagnostics/manual-library/manuals.json`. It does not add runtime diagnostic knowledge or commit source manuals.
+
 ## ED-22F Telegram closed-beta release tag and handoff
 
 Use the committed [release tag and handoff procedure](telegram-closed-beta-release-tag-and-handoff.md), placeholder-only [release notes template](telegram-closed-beta-release-notes-template.md), and local checklist generator after ED-22E review. ED-22F does not create or push a tag automatically and does not activate Telegram.

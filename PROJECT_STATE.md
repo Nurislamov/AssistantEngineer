@@ -54,7 +54,7 @@ Expected next action:
 
 
 
-1\. User uploads or names the next manual.
+1\. Use `SERVICE_MANUAL_GMV_IDU.pdf` as the next recommended manual unless the user explicitly selects another source.
 
 2\. Assistant analyzes the manual identity, model scope, sections, code tables, and import boundaries.
 
@@ -109,6 +109,128 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24F.0 — CLOSED
+
+
+
+Title:
+
+
+
+`ED-24F.0 Add diagnostic manual coverage matrix`
+
+
+
+Purpose:
+
+
+
+Add non-runtime coverage tracking for local Gree manuals without importing diagnostic codes, changing Telegram behavior, or committing source binaries.
+
+
+
+Added:
+
+
+
+\* Machine-readable registry:
+
+&#x20; `data/equipment-diagnostics/manual-library/manuals.json`
+
+\* Human-readable coverage matrix:
+
+&#x20; `docs/equipment-diagnostics/manual-coverage.md`
+
+\* Future Telegram manual-library design:
+
+&#x20; `docs/equipment-diagnostics/telegram-manual-library-plan.md`
+
+\* Registry tests for unique IDs, GMV6 package/count consistency, access policy, next-manual priority, and ignored binary sources.
+
+
+
+Coverage snapshot:
+
+
+
+\* Local Gree source files tracked: 47
+
+\* Imported manuals: 1
+
+\* Imported diagnostic source: `Service Manual for GMV6 v_2020.09.pdf`
+
+\* GMV6 packages: 4
+
+\* GMV6 entries: 253
+
+\* Other manuals: not imported
+
+\* Next recommended source: `SERVICE_MANUAL_GMV_IDU.pdf`
+
+
+
+Manual-bound rule remains:
+
+
+
+`One manual = one source`
+
+
+
+No internet, model-memory additions, mixed-manual meanings, or cross-series generalization.
+
+
+
+Future Telegram manual-library access policy:
+
+
+
+\* Consumer: denied
+
+\* Installer: allowed
+
+\* Engineer: allowed
+
+\* Admin: allowed
+
+\* Owner: allowed
+
+
+
+This is a plan only. ED-24F.0 does not implement Telegram file storage or delivery.
+
+
+
+No PDF, DOC, XLS, or XLSX manual source files were committed.
+
+No new diagnostic codes, packages, entries, or sources were imported.
+
+No EF migration, DB schema, runtime, or env changes.
+
+
+
+Validation:
+
+
+
+\* Restore: PASS
+
+\* Build: PASS, 0 errors; 6 pre-existing nullable warnings in architecture tests
+
+\* Full tests: PASS — 4629
+
+\* EquipmentDiagnostics: PASS — 633
+
+\* Deployment validators: PASS
+
+\* Knowledge validator: PASS — 4 packages, 253 entries, 0 issues
+
+\* EF migration: none
+
+\* DB/env changes: none
 
 
 
@@ -1440,6 +1562,36 @@ Repo-backed JSON:
 
 
 
+Manual coverage registry:
+
+
+
+`data/equipment-diagnostics/manual-library/manuals.json`
+
+
+
+Coverage documentation:
+
+
+
+`docs/equipment-diagnostics/manual-coverage.md`
+
+
+
+Current registry snapshot:
+
+
+
+\* 47 local Gree source files tracked
+
+\* 1 imported manual
+
+\* 30 new/unanalysed records
+
+\* 16 records needing identity or duplicate review
+
+
+
 Current imported manual:
 
 
@@ -2018,13 +2170,17 @@ Do not add a huge unreviewed cross-series Gree list. Import by manual.
 
 \* `/last` normalization.
 
+\* Manual coverage registry and coverage matrix.
+
+\* Future Telegram manual-library access policy.
+
 
 
 \#### In progress / next
 
 
 
-\* Add next manual-bound package.
+\* Add next manual-bound package from `SERVICE_MANUAL_GMV_IDU.pdf`.
 
 \* Continue improving import tooling only when needed.
 
@@ -2036,7 +2192,7 @@ Do not add a huge unreviewed cross-series Gree list. Import by manual.
 
 \* Better import tooling from PDF/table extraction.
 
-\* Manual source registry improvements.
+\* Extend the manual coverage registry after each reviewed import.
 
 \* Knowledge quality reports.
 
