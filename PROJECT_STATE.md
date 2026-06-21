@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24F.1a Add series-aware diagnostic source disambiguation`
+`ED-24F.1a Add multi-source diagnostic manual references`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Resolve the collision found during `SERVICE_MANUAL_GMV_IDU.pdf` analysis before importing its 38 overlapping indoor-unit codes.
+Resolve the collision found during `SERVICE_MANUAL_GMV_IDU.pdf` analysis before importing its 38 overlapping indoor-unit codes, and use the ED-24H.0 catalog map to choose the next source-bound Gree VRF manual.
 
 
 
@@ -54,15 +54,15 @@ Expected next action:
 
 
 
-1\. Add series/model-family selection when candidates share manufacturer, equipment type, and display context.
+1\. Add multi-source diagnostic references so identical meanings for the same equipment type do not force the bot to choose one manual silently.
 
-2\. Persist selected series in the Telegram diagnostic conversation.
+2\. If a code has different meanings across equipment types, clarify only the equipment type shown by the code.
 
-3\. Define exact-series localization precedence for broad `GMV` versus specific `GMV6` sources.
+3\. When manuals are requested, return all reviewed manuals where the code is found.
 
 4\. Keep all existing GMV6 smoke behavior unchanged.
 
-5\. After disambiguation is production-safe, resume the manual-bound `GC202004-X` import.
+5\. After the reference model is production-safe, resume the manual-bound `GC202004-X` import or continue with the ED-24H manual backlog.
 
 
 
@@ -111,6 +111,136 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24H.0 — CLOSED
+
+
+
+Title:
+
+
+
+`ED-24H.0 Add Gree VRF equipment catalog map`
+
+
+
+Purpose:
+
+
+
+Create a non-runtime catalog-level map of Gree VRF/GMV series, indoor unit types, controls, commissioning tools, BMS/cloud/billing/remote gateways, and manual-search backlog items from local catalogues only.
+
+
+
+Sources:
+
+
+
+\* `artifacts/manual-intake/sources/gree/GMV6 Catalouge.pdf`
+
+\* `artifacts/manual-intake/sources/gree/141367.pdf`
+
+\* `artifacts/manual-intake/sources/gree/GMV6 2023 РУС.pdf`
+
+
+
+Added:
+
+
+
+\* Machine-readable registry:
+
+&#x20; `data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json`
+
+\* Registry README:
+
+&#x20; `data/equipment-diagnostics/equipment-catalog/README.md`
+
+\* Human-readable report:
+
+&#x20; `docs/equipment-diagnostics/gree-vrf-equipment-map.md`
+
+\* Deterministic registry tests.
+
+
+
+Catalog-identified series:
+
+
+
+\* GMV6
+
+\* GMV6 Anti-corrosion Series
+
+\* GMV6 HR
+
+\* GMV X
+
+\* GMV X PRO
+
+\* GMV9 Flex
+
+\* GMV5 MAX
+
+\* GMV Mini Star
+
+\* GMV5 Mini
+
+\* GMV5 Slim
+
+\* GMV5 Home
+
+
+
+Manual backlog:
+
+
+
+\* GMV X / GMV X PRO service manuals
+
+\* GMV6 HR service manual
+
+\* GMV9 Flex service manual
+
+\* GMV5 MAX service manual
+
+\* GMV Mini Star / GMV5 Mini / GMV5 Slim / GMV5 Home service manuals
+
+\* Controller, commissioning-tool, PC debugging, BMS/gateway, Wi-Fi/cloud, remote monitoring, and billing manuals
+
+
+
+Future Telegram manual-library policy remains plan-only:
+
+
+
+\* Consumer: denied
+
+\* Installer: allowed
+
+\* Engineer: allowed
+
+\* Admin: allowed
+
+\* Owner: allowed
+
+
+
+No new diagnostic codes, packages, entries, or runtime source selection were added.
+
+No Telegram role, lookup, database, EF migration, deployment, or env change was made.
+
+No PDF, DOC, XLS, or XLSX source file was committed.
+
+Packages and entries remain:
+
+
+
+\* Packages: 4
+
+\* Entries: 253
 
 
 

@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "manufacturer": "Gree",
+  "family": "VRF",
+  "registryPurpose": "Catalog-level Gree VRF equipment coverage map. This registry is planning evidence for manual intake and future manual-library work; it is not runtime diagnostic knowledge.",
+  "sourceCatalogs": [
+    {
+      "id": "gmv6-catalogue-en",
+      "fileName": "GMV6 Catalouge.pdf",
+      "language": "en",
+      "sourceType": "ProductCatalogue",
+      "committed": false,
+      "localIntakePath": "artifacts/manual-intake/sources/gree/GMV6 Catalouge.pdf"
+    },
+    {
+      "id": "gree-vrf-catalog-141367-ru",
+      "fileName": "141367.pdf",
+      "language": "ru",
+      "sourceType": "ProductCatalogue",
+      "committed": false,
+      "localIntakePath": "artifacts/manual-intake/sources/gree/141367.pdf"
+    },
+    {
+      "id": "gmv6-2023-ru",
+      "fileName": "GMV6 2023 РУС.pdf",
+      "language": "ru",
+      "sourceType": "ProductCatalogue",
+      "committed": false,
+      "localIntakePath": "artifacts/manual-intake/sources/gree/GMV6 2023 РУС.pdf"
+    }
+  ],
+  "futureTelegramManualLibraryPolicy": {
+    "implementationStatus": "PlanOnly",
+    "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"],
+    "deniedRoles": ["Consumer"],
+    "rule": "Consumers must not receive manuals. Eligible authenticated technical roles may receive reviewed manuals in a future Telegram manual library."
+  },
+  "coverageNotes": [
+    "No diagnostic error codes or diagnostic entries are imported by this map.",
+    "GMV6 is already partially Imported through service-manual-backed error knowledge: 4 packages and 253 entries.",
+    "SERVICE_MANUAL_GMV_IDU.pdf was analyzed in ED-24F.1, but import stopped because all 38 identified indoor codes overlap existing GMV6 indoor entries and need reviewed multi-source diagnostic references instead of silent source selection."
+  ],
+  "series": [
+    {
+      "id": "gmv6",
+      "displayName": "GMV6",
+      "aliases": ["GMV 6", "GMV6 DC Inverter VRF"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "coverageStatus": "Imported",
+      "notes": [
+        "Catalogs identify GMV6 outdoor units and GMV6 feature pages.",
+        "Runtime error knowledge has partial GMV6 manual-backed coverage from the imported GMV6 service manual."
+      ],
+      "relatedManualNeeds": ["Already imported: Service Manual for GMV6 v_2020.09.pdf; continue only through reviewed source-bound imports."]
+    },
+    {
+      "id": "gmv6_anti_corrosion",
+      "displayName": "GMV6 Anti-corrosion Series",
+      "aliases": ["GMV6 anticorrosion", "GMV6 anti-corrosion"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gmv6-catalogue-en"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["The English GMV6 catalogue lists an anti-corrosion GMV6 outdoor variant; exact diagnostic manual scope needs review."],
+      "relatedManualNeeds": ["Review whether the GMV6 service manual fully covers anti-corrosion variants."]
+    },
+    {
+      "id": "gmv6_hr",
+      "displayName": "GMV6 HR",
+      "aliases": ["GMV6 Heat Recovery", "GMV6 with heat recovery"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["heat_recovery_outdoor_unit", "hydromodule", "mode_exchanger", "branch_selector"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru", "gmv6-2023-ru", "gmv6-catalogue-en"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": [
+        "Russian catalogues identify GMV6 HR outdoor units, heat recovery, hydromodule context, and mode-exchanger/branching accessories.",
+        "No GMV6 HR service manual has been imported into runtime diagnostic knowledge."
+      ],
+      "relatedManualNeeds": ["GMV6 HR service manual", "GMV6 HR installation/owner manuals for hydromodule and mode exchanger scope"]
+    },
+    {
+      "id": "gmv_x",
+      "displayName": "GMV X",
+      "aliases": ["GMV X All DC Inverter VRF", "GMV X Heat Pump", "GMV X Cooling Only"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["Catalogues identify GMV X heat pump, cooling-only, and modular outdoor-unit lineups."],
+      "relatedManualNeeds": ["GMV X service manual", "GMV X owner/installation manuals"]
+    },
+    {
+      "id": "gmv_x_pro",
+      "displayName": "GMV X PRO",
+      "aliases": ["GMV X Pro", "GMV X Professional"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["The broad Russian catalogue identifies GMV X PRO as a separate outdoor series."],
+      "relatedManualNeeds": ["GMV X PRO service manual", "GMV X PRO owner/installation manuals"]
+    },
+    {
+      "id": "gmv9_flex",
+      "displayName": "GMV9 Flex",
+      "aliases": ["GMV 9 Flex"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["The broad Russian catalogue identifies GMV9 Flex compact/front-discharge modular outdoor units."],
+      "relatedManualNeeds": ["GMV9 Flex service manual", "GMV9 Flex installation/owner manuals"]
+    },
+    {
+      "id": "gmv5_max",
+      "displayName": "GMV5 MAX",
+      "aliases": ["GMV5 Max"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["The GMV6 2023 Russian catalogue identifies GMV5 MAX outdoor units."],
+      "relatedManualNeeds": ["GMV5 MAX service manual"]
+    },
+    {
+      "id": "gmv_mini_star",
+      "displayName": "GMV Mini Star",
+      "aliases": ["GMV MINI STAR", "GMV Mini"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["Russian catalogues identify GMV Mini Star under compact VRF outdoor units."],
+      "relatedManualNeeds": ["GMV Mini Star service manual"]
+    },
+    {
+      "id": "gmv5_mini",
+      "displayName": "GMV5 Mini",
+      "aliases": ["GMV5 MINI", "GMV Mini"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["Russian catalogues identify GMV5 Mini as a compact VRF outdoor series."],
+      "relatedManualNeeds": ["GMV5 Mini service manual"]
+    },
+    {
+      "id": "gmv5_slim",
+      "displayName": "GMV5 Slim",
+      "aliases": ["GMV5 SLIM", "GMV Slim"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["Russian catalogues identify GMV5 Slim non-modular outdoor units."],
+      "relatedManualNeeds": ["GMV5 Slim service manual"]
+    },
+    {
+      "id": "gmv5_home",
+      "displayName": "GMV5 Home",
+      "aliases": ["GMV5 HOME"],
+      "equipmentFamily": "VRF",
+      "equipmentTypes": ["outdoor_unit", "hydromodule"],
+      "sourceCatalogIds": ["gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "coverageStatus": "CatalogIdentified",
+      "notes": ["Russian catalogues identify GMV5 Home outdoor units and hydromodule scope."],
+      "relatedManualNeeds": ["GMV5 Home service manual", "GMV5 Home hydromodule manual"]
+    }
+  ],
+  "indoorUnitTypes": [
+    {
+      "id": "duct",
+      "displayName": "Duct / concealed duct indoor unit",
+      "aliases": ["Duct Type Indoor Unit", "Concealed duct", "Канальные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues list duct indoor units and self-diagnosis/controller display functions."]
+    },
+    {
+      "id": "high_static_duct",
+      "displayName": "High static pressure duct indoor unit",
+      "aliases": ["High Static Pressure Duct Type Indoor Unit", "Сверхвысоконапорные канальные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["High-static duct indoor units are listed as a distinct duct subtype."]
+    },
+    {
+      "id": "medium_static_duct",
+      "displayName": "Medium static pressure duct indoor unit",
+      "aliases": ["Medium Static Pressure Duct Type Indoor Unit"],
+      "sourceCatalogIds": ["gmv6-catalogue-en"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The English GMV6 catalogue identifies medium-static duct indoor units."]
+    },
+    {
+      "id": "low_static_duct",
+      "displayName": "Low static pressure duct indoor unit",
+      "aliases": ["Low Static Pressure Duct Type Indoor Unit", "Низконапорные канальные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Low-static duct indoor units are listed as a distinct duct subtype."]
+    },
+    {
+      "id": "vertical_duct",
+      "displayName": "Vertical duct indoor unit",
+      "aliases": ["Вертикальные канальные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The GMV6 2023 Russian catalogue identifies vertical duct indoor units."]
+    },
+    {
+      "id": "cassette",
+      "displayName": "Cassette indoor unit",
+      "aliases": ["Cassette Type Indoor Unit", "Кассетные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues group cassette indoor units and list cassette subtypes."]
+    },
+    {
+      "id": "cassette_360",
+      "displayName": "360 / round-flow cassette indoor unit",
+      "aliases": ["360° Air Discharge Cassette Indoor Unit", "8-поточные кассетные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Listed as 360-degree air-discharge or 8-flow cassette units."]
+    },
+    {
+      "id": "compact_cassette",
+      "displayName": "Compact cassette indoor unit",
+      "aliases": ["360° Air Discharge Compact Cassette Indoor Unit", "Compact cassette"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The catalogues distinguish compact cassette units."]
+    },
+    {
+      "id": "two_way_cassette",
+      "displayName": "Two-way cassette indoor unit",
+      "aliases": ["2-way Cassette Indoor Unit", "Кассетные 2-поточные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The catalogues identify two-way cassette units."]
+    },
+    {
+      "id": "one_way_cassette",
+      "displayName": "One-way cassette indoor unit",
+      "aliases": ["1-way Cassette Unit", "Кассетные однопоточные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The catalogues identify one-way cassette units."]
+    },
+    {
+      "id": "wall_mounted",
+      "displayName": "Wall-mounted indoor unit",
+      "aliases": ["Wall-mounted Type Indoor Unit", "Настенные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Wall-mounted indoor units are listed in all catalog sources."]
+    },
+    {
+      "id": "floor_ceiling",
+      "displayName": "Floor-ceiling indoor unit",
+      "aliases": ["Floor Ceiling Type Indoor Unit", "Напольно-потолочные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Floor-ceiling indoor units are listed as a type."]
+    },
+    {
+      "id": "console",
+      "displayName": "Console indoor unit",
+      "aliases": ["Console Indoor Unit", "Консольные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Console indoor units are listed as a type."]
+    },
+    {
+      "id": "column",
+      "displayName": "Column / floor-standing indoor unit",
+      "aliases": ["Floor Standing Type", "Column", "Колонные внутренние блоки"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues list floor-standing/column indoor units."]
+    },
+    {
+      "id": "concealed_floor_standing",
+      "displayName": "Concealed floor-standing indoor unit",
+      "aliases": ["Concealed Floor Standing Type", "Concealed Floor"],
+      "sourceCatalogIds": ["gmv6-catalogue-en"],
+      "expectedDiagnosticSource": true,
+      "notes": ["The English GMV6 catalogue lists concealed floor-standing units; exact Russian naming needs review."]
+    },
+    {
+      "id": "fresh_air_processing_unit",
+      "displayName": "Fresh air processing indoor unit",
+      "aliases": ["Fresh Air Processing Indoor Unit", "Блоки притока свежего воздуха"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues identify fresh-air processing indoor units connected to GMV systems."]
+    },
+    {
+      "id": "ahu_kit",
+      "displayName": "AHU-kit",
+      "aliases": ["AHU KIT", "AHU-kit", "Комплект AHU-kit"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues identify AHU-kit equipment for connecting an outdoor unit to an air-handling unit."]
+    },
+    {
+      "id": "erv_with_evaporator",
+      "displayName": "ERV with evaporator / DX coil",
+      "aliases": ["ERV+DX COIL", "ERV с испарителем", "heat recovery ventilation with evaporator"],
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "expectedDiagnosticSource": true,
+      "notes": ["Catalogues identify heat-recovery ventilation equipment with evaporator/DX coil connected to GMV systems."]
+    }
+  ],
+  "controlAndAccessoryDevices": [
+    {
+      "id": "infrared_remote_controllers",
+      "displayName": "Infrared remote controllers",
+      "modelPatterns": ["YAP1F", "YAP1F7"],
+      "deviceType": "InfraredController",
+      "canDisplayErrors": false,
+      "canQueryErrors": false,
+      "canLogErrors": false,
+      "canForwardErrors": false,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "notes": ["Catalogues list infrared remotes for local user control; no error-query/logging capability was identified at catalog level."]
+    },
+    {
+      "id": "infrared_receivers",
+      "displayName": "Infrared receiving panels",
+      "modelPatterns": ["JS05", "JS13"],
+      "deviceType": "InfraredReceiver",
+      "canDisplayErrors": null,
+      "canQueryErrors": false,
+      "canLogErrors": false,
+      "canForwardErrors": false,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify infrared receiving panels used with infrared remotes."]
+    },
+    {
+      "id": "wired_controllers",
+      "displayName": "Wired controllers",
+      "modelPatterns": ["XK46", "XK55", "XK79", "XK86", "XE7A-23/H", "XE7A-23/HC", "XE7C-24/H", "XE70-33/H", "XE73-23/HC"],
+      "deviceType": "WiredController",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": null,
+      "canForwardErrors": null,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues list multiple wired controllers; GMV6 materials specifically mention parameter inquiry, malfunction view, historical error inquiry, and error report functions for higher-end controllers."]
+    },
+    {
+      "id": "central_controllers",
+      "displayName": "Central controllers",
+      "modelPatterns": ["CE52-24/F(C)", "CE55-24/F(C)", "CE58-00/EF(CM)"],
+      "deviceType": "CentralController",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": true,
+      "canForwardErrors": null,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify centralized control, parameter query, error registration/history, and authority management functions."]
+    },
+    {
+      "id": "e_smart_zone_controller",
+      "displayName": "E-Smart zone controller",
+      "modelPatterns": ["CE54-24/F(C)"],
+      "deviceType": "ZoneController",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": null,
+      "canForwardErrors": null,
+      "sourceCatalogIds": ["gmv6-catalogue-en"],
+      "notes": ["The English GMV6 catalogue lists an E-Smart zone controller and notes malfunction view and engineering setting functions."]
+    },
+    {
+      "id": "portable_commissioning_tools",
+      "displayName": "Portable commissioning tools / debuggers",
+      "modelPatterns": ["CE42-24/F(C)", "DE43-00/EF(CM)"],
+      "deviceType": "CommissioningTool",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": true,
+      "canForwardErrors": null,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify portable debugging/commissioning tools for parameter inquiry, unit control, project debugging, and error checking."]
+    },
+    {
+      "id": "pc_debugging_software",
+      "displayName": "PC intelligent debugging software",
+      "modelPatterns": ["DE42-33/A(C)", "Intelligent Debugging Software"],
+      "deviceType": "PcDebuggingSoftware",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": true,
+      "canForwardErrors": null,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify PC debugging software with one-click/step-by-step debugging, status indication, and error review."]
+    },
+    {
+      "id": "protocol_converters",
+      "displayName": "Protocol converters / building protocol gateway",
+      "modelPatterns": ["Building Protocol Gateway", "CAN to building protocol"],
+      "deviceType": "ProtocolConverter",
+      "canDisplayErrors": null,
+      "canQueryErrors": true,
+      "canLogErrors": null,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru"],
+      "notes": ["Catalogues identify building protocol gateway functions for exposing VRF system data to BAS/BMS paths."]
+    },
+    {
+      "id": "bacnet_modbus_bms_gateways",
+      "displayName": "BACnet/Modbus BMS gateways",
+      "modelPatterns": ["ME30-24/D1(BM)", "ME30-24/E6(M)", "ME31-33/EH1(M)"],
+      "deviceType": "BmsGateway",
+      "canDisplayErrors": null,
+      "canQueryErrors": true,
+      "canLogErrors": null,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify Modbus RTU/TCP and BACnet gateways for BAS/BMS integration and remote monitoring of operating parameters/errors."]
+    },
+    {
+      "id": "knx_bms_path",
+      "displayName": "KNX-capable remote dispatching path",
+      "modelPatterns": ["KNX"],
+      "deviceType": "BmsGateway",
+      "canDisplayErrors": null,
+      "canQueryErrors": null,
+      "canLogErrors": null,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-2023-ru"],
+      "notes": ["The GMV6 2023 Russian catalogue overview mentions remote dispatching through Modbus, BACnet, or KNX. Exact Gree gateway model needs review."]
+    },
+    {
+      "id": "g_cloud_wifi_gateway",
+      "displayName": "G-Cloud Wi-Fi/cloud controller",
+      "modelPatterns": ["G-Cloud", "ME31-00/F13"],
+      "deviceType": "WifiGateway",
+      "canDisplayErrors": null,
+      "canQueryErrors": true,
+      "canLogErrors": null,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify G-Cloud as a Wi-Fi/cloud control path for GMV systems; Russian catalogue notes monitoring and error detection."]
+    },
+    {
+      "id": "intelligent_remote_eudemon",
+      "displayName": "Intelligent Remote Eudemon",
+      "modelPatterns": ["Intelligent Remote Eudemon"],
+      "deviceType": "RemoteMonitoringGateway",
+      "canDisplayErrors": true,
+      "canQueryErrors": true,
+      "canLogErrors": true,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru", "gmv6-2023-ru"],
+      "notes": ["Catalogues identify cloud-based operation/maintenance, one-stop debugging, physical examination, remote monitoring, and error/fault data output."]
+    },
+    {
+      "id": "intelligent_billing_eudemon",
+      "displayName": "Intelligent Billing Eudemon / energy billing",
+      "modelPatterns": ["Intelligent Billing", "Intelligent Billing Eudemon"],
+      "deviceType": "EnergyBillingGateway",
+      "canDisplayErrors": null,
+      "canQueryErrors": true,
+      "canLogErrors": true,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en", "gree-vrf-catalog-141367-ru"],
+      "notes": ["Catalogues identify energy billing and management functions linked with Intelligent Remote Eudemon and VRF operating data."]
+    },
+    {
+      "id": "linkage_and_key_card_modules",
+      "displayName": "Dry-contact, linkage, and key-card modules",
+      "modelPatterns": ["LE60-24/H1", "DQ01/A", "Key Card Interface Modules"],
+      "deviceType": "DryContactModule",
+      "canDisplayErrors": false,
+      "canQueryErrors": false,
+      "canLogErrors": false,
+      "canForwardErrors": true,
+      "sourceCatalogIds": ["gmv6-catalogue-en"],
+      "notes": ["Catalogues identify linkage/key-card/dry-contact accessories that can participate in control/status boundaries but are not diagnostic displays by themselves."]
+    }
+  ],
+  "manualSearchBacklog": [
+    {
+      "id": "gmv_x_and_x_pro_service_manuals",
+      "priority": 1,
+      "target": "GMV X and GMV X PRO service manuals",
+      "reason": "Catalogues identify GMV X and GMV X PRO as separate VRF outdoor series with no imported diagnostic packages.",
+      "relatedSeriesIds": ["gmv_x", "gmv_x_pro"],
+      "relatedDeviceIds": [],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gmv6_hr_service_manual",
+      "priority": 1,
+      "target": "GMV6 HR service manual",
+      "reason": "GMV6 HR includes heat recovery, hydromodule/mode-exchanger context, and likely different diagnostic scope from GMV6 heat-pump units.",
+      "relatedSeriesIds": ["gmv6_hr"],
+      "relatedDeviceIds": [],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gmv_idu_multi_source_review",
+      "priority": 1,
+      "target": "GMV IDU manual multi-source diagnostic reference model",
+      "reason": "ED-24F.1 analyzed SERVICE_MANUAL_GMV_IDU.pdf but stopped import because all 38 indoor codes overlap existing GMV6 indoor entries.",
+      "relatedSeriesIds": ["gmv6"],
+      "relatedDeviceIds": ["wired_controllers", "central_controllers"],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "controller_manuals",
+      "priority": 1,
+      "target": "Wired, infrared, central, and zone controller manuals",
+      "reason": "Catalogues identify controllers that can display/query/log errors; controller manuals are needed before Telegram manual library delivery.",
+      "relatedSeriesIds": ["gmv6", "gmv6_hr", "gmv_x", "gmv_x_pro"],
+      "relatedDeviceIds": ["infrared_remote_controllers", "infrared_receivers", "wired_controllers", "central_controllers", "e_smart_zone_controller"],
+      "desiredManualType": "ControllerManual",
+      "status": "Needed"
+    },
+    {
+      "id": "commissioning_tool_manuals",
+      "priority": 1,
+      "target": "Portable commissioning tool and PC debugging software manuals",
+      "reason": "Catalogues identify CE42/DE43 portable tools and DE42 PC software as diagnostic/commissioning surfaces.",
+      "relatedSeriesIds": ["gmv6", "gmv6_hr", "gmv_x"],
+      "relatedDeviceIds": ["portable_commissioning_tools", "pc_debugging_software"],
+      "desiredManualType": "CommissioningToolManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gmv9_flex_service_manual",
+      "priority": 2,
+      "target": "GMV9 Flex service manual",
+      "reason": "Catalogues identify GMV9 Flex as a separate outdoor series.",
+      "relatedSeriesIds": ["gmv9_flex"],
+      "relatedDeviceIds": [],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gmv5_max_service_manual",
+      "priority": 2,
+      "target": "GMV5 MAX service manual",
+      "reason": "GMV6 2023 Russian catalogue identifies GMV5 MAX as a separate outdoor series.",
+      "relatedSeriesIds": ["gmv5_max"],
+      "relatedDeviceIds": [],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gmv_mini_family_service_manuals",
+      "priority": 2,
+      "target": "GMV Mini Star, GMV5 Mini, GMV5 Slim, and GMV5 Home service manuals",
+      "reason": "Catalogues identify compact/non-modular/home VRF series that are not imported into runtime diagnostic knowledge.",
+      "relatedSeriesIds": ["gmv_mini_star", "gmv5_mini", "gmv5_slim", "gmv5_home"],
+      "relatedDeviceIds": [],
+      "desiredManualType": "ServiceManual",
+      "status": "Needed"
+    },
+    {
+      "id": "gateway_bms_manuals",
+      "priority": 2,
+      "target": "BMS, BACnet/Modbus/KNX, Wi-Fi/cloud, remote monitoring, and billing gateway manuals",
+      "reason": "Catalogues identify multiple gateway surfaces that can query, forward, or log operating status/errors.",
+      "relatedSeriesIds": ["gmv6", "gmv6_hr", "gmv_x", "gmv_x_pro"],
+      "relatedDeviceIds": ["protocol_converters", "bacnet_modbus_bms_gateways", "knx_bms_path", "g_cloud_wifi_gateway", "intelligent_remote_eudemon", "intelligent_billing_eudemon"],
+      "desiredManualType": "GatewayManual",
+      "status": "Needed"
+    }
+  ]
+}

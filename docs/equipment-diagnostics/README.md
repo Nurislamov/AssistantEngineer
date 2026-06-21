@@ -1,5 +1,11 @@
 # Equipment Diagnostics
 
+## ED-24H.0 Gree VRF equipment catalog map
+
+The non-runtime [Gree VRF equipment catalog map](gree-vrf-equipment-map.md) inventories catalog-identified Gree VRF/GMV series, indoor-unit types, controllers, commissioning tools, BMS/cloud/billing/remote gateways, and manual-search backlog items. The machine-readable registry is `data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json`.
+
+ED-24H.0 uses only the three local catalogues `GMV6 Catalouge.pdf`, `141367.pdf`, and `GMV6 2023 РУС.pdf`. It does not import diagnostic codes, change Telegram lookup behavior, change role policy, or commit PDF/DOC/XLS/XLSX source files.
+
 ## ED-24F.1 GMV IDU manual analysis
 
 The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. Import is intentionally blocked because all 38 codes overlap existing GMV6 indoor entries and the current Telegram flow cannot safely disambiguate identical indoor/display contexts by series.
