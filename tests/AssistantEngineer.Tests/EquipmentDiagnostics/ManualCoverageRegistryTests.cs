@@ -175,6 +175,58 @@ public sealed class ManualCoverageRegistryTests
     }
 
     [Fact]
+    public void GmvIduAnalysisRecordsTotalCollisionAndNoImportedEntries()
+    {
+        using var document = LoadRegistry();
+        var manual = document.RootElement
+            .GetProperty("manuals")
+            .EnumerateArray()
+            .Single(item =>
+                item.GetProperty("manualId").GetString() ==
+                "gree-gmv-idu-service-manual");
+        var analysis = manual.GetProperty("analysis");
+
+        Assert.Equal("GC202004-X", manual.GetProperty("documentCode").GetString());
+        Assert.Equal("en", manual.GetProperty("sourceLanguage").GetString());
+        Assert.Equal("NeedsReview", manual.GetProperty("importStatus").GetString());
+        Assert.Equal("DiagnosticSectionsIdentified", manual.GetProperty("coverageStatus").GetString());
+        Assert.Equal(0, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Empty(manual.GetProperty("importedPackageIds").EnumerateArray());
+        Assert.Equal(38, analysis.GetProperty("identifiedCodeCount").GetInt32());
+        Assert.Equal(19, analysis.GetProperty("detailedProcedureCodeCount").GetInt32());
+        Assert.Equal(38, analysis.GetProperty("existingGmv6IndoorOverlapCount").GetInt32());
+        Assert.Equal(
+            "BlockedPendingSeriesAwareDisambiguation",
+            analysis.GetProperty("importDecision").GetString());
+
+        var identifiedCodes = analysis
+            .GetProperty("identifiedCodes")
+            .EnumerateArray()
+            .Select(code => code.GetString()!)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var existingCodes = Directory
+            .EnumerateFiles(
+                Path.Combine(
+                    TestPaths.RepoRoot,
+                    "data",
+                    "equipment-diagnostics",
+                    "error-knowledge",
+                    "gree",
+                    "gmv6",
+                    "indoor"),
+                "*.json")
+            .Select(path =>
+            {
+                using var entry = JsonDocument.Parse(File.ReadAllText(path));
+                return entry.RootElement.GetProperty("code").GetString()!;
+            })
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        Assert.Equal(38, identifiedCodes.Count);
+        Assert.All(identifiedCodes, code => Assert.Contains(code, existingCodes));
+    }
+
+    [Fact]
     public void ManualSourceBinariesAreNotTrackedByGit()
     {
         var startInfo = new ProcessStartInfo("git")

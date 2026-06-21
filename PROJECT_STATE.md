@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24F.1 Import next manual-bound diagnostic knowledge package`
+`ED-24F.1a Add series-aware diagnostic source disambiguation`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Continue expanding the diagnostic knowledge base by importing the next uploaded manual, strictly using the rule:
+Resolve the collision found during `SERVICE_MANUAL_GMV_IDU.pdf` analysis before importing its 38 overlapping indoor-unit codes.
 
 
 
@@ -54,13 +54,15 @@ Expected next action:
 
 
 
-1\. Use `SERVICE_MANUAL_GMV_IDU.pdf` as the next recommended manual unless the user explicitly selects another source.
+1\. Add series/model-family selection when candidates share manufacturer, equipment type, and display context.
 
-2\. Assistant analyzes the manual identity, model scope, sections, code tables, and import boundaries.
+2\. Persist selected series in the Telegram diagnostic conversation.
 
-3\. Create a Codex prompt for the next manual-bound import.
+3\. Define exact-series localization precedence for broad `GMV` versus specific `GMV6` sources.
 
-4\. Do not import anything not present in that manual.
+4\. Keep all existing GMV6 smoke behavior unchanged.
+
+5\. After disambiguation is production-safe, resume the manual-bound `GC202004-X` import.
 
 
 
@@ -109,6 +111,144 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24F.1 — STOPPED FOR DESIGN REVIEW
+
+
+
+Title:
+
+
+
+`ED-24F.1 Import Gree GMV IDU manual knowledge`
+
+
+
+Source analyzed:
+
+
+
+`artifacts/manual-intake/sources/gree/SERVICE_MANUAL_GMV_IDU.pdf`
+
+
+
+Verified identity:
+
+
+
+\* Title: `Service Manual - Multi Variable Air Conditioners Indoor Units`
+
+\* Document code: `GC202004-X`
+
+\* Manufacturer: Gree
+
+\* Language: English
+
+\* PDF pages: 403
+
+\* Scope: broad GMV multi-variable indoor units
+
+\* Explicit version/date: not found on reviewed identity pages
+
+
+
+Diagnostic evidence:
+
+
+
+\* Malfunction table: manual page 173 / PDF page 178
+
+\* Troubleshooting: manual pages 173-185 / PDF pages 178-190
+
+\* Codes identified: 38
+
+\* Codes with detailed procedures: 19
+
+\* Display contexts: wired controller and IDU receive light board
+
+\* `db` is explicitly project-debugging status, not an error
+
+
+
+Collision:
+
+
+
+\* All 38 identified codes overlap existing GMV6 indoor entries.
+
+\* New unique codes relative to the GMV6 indoor package: 0.
+
+\* Validator taxonomy can separate `GMV` and `GMV6` by series.
+
+\* Current Telegram conversation cannot clarify two candidates that share Gree + Indoor Unit + display context but differ by series/manual source.
+
+\* Importing now could silently select the first candidate.
+
+
+
+Decision:
+
+
+
+Import stopped. No package or diagnostic entry was added. The registry is marked:
+
+
+
+\* `importStatus: NeedsReview`
+
+\* `coverageStatus: DiagnosticSectionsIdentified`
+
+\* `importDecision: BlockedPendingSeriesAwareDisambiguation`
+
+
+
+Analysis report:
+
+
+
+`docs/equipment-diagnostics/gree-gmv-idu-manual-import.md`
+
+
+
+Counts remain:
+
+
+
+\* Packages: 4
+
+\* Entries: 253
+
+
+
+No external sources, other manuals, or model-memory technical content were used.
+
+No PDF binary, EF migration, DB schema, runtime diagnostic behavior, or env change was added.
+
+
+
+Validation:
+
+
+
+\* Restore: PASS
+
+\* Build: PASS, 0 errors; 6 pre-existing nullable warnings in architecture tests
+
+\* Full tests: PASS — 4630
+
+\* EquipmentDiagnostics: PASS — 634
+
+\* Knowledge validator: PASS — 4 packages, 253 entries, 0 issues
+
+\* Deployment validators: PASS
+
+\* Release publish smoke: PASS
+
+\* EF migration: none
+
+\* DB/env changes: none
 
 
 
@@ -1586,9 +1726,9 @@ Current registry snapshot:
 
 \* 1 imported manual
 
-\* 30 new/unanalysed records
+\* 29 new/unanalysed records
 
-\* 16 records needing identity or duplicate review
+\* 17 records needing identity, duplicate, or import-design review
 
 
 
@@ -2180,7 +2320,7 @@ Do not add a huge unreviewed cross-series Gree list. Import by manual.
 
 
 
-\* Add next manual-bound package from `SERVICE_MANUAL_GMV_IDU.pdf`.
+\* Add series-aware source disambiguation before importing `SERVICE_MANUAL_GMV_IDU.pdf`.
 
 \* Continue improving import tooling only when needed.
 

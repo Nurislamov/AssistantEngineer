@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+## ED-24F.1 GMV IDU manual analysis
+
+The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. Import is intentionally blocked because all 38 codes overlap existing GMV6 indoor entries and the current Telegram flow cannot safely disambiguate identical indoor/display contexts by series.
+
 ## ED-24F.0 diagnostic manual coverage
 
 The non-runtime [manual coverage matrix](manual-coverage.md) and [future Telegram manual-library plan](telegram-manual-library-plan.md) track local source availability, imported scope, pending identity review, and role policy. The machine-readable registry is `data/equipment-diagnostics/manual-library/manuals.json`. It does not add runtime diagnostic knowledge or commit source manuals.
