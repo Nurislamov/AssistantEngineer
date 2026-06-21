@@ -1,6 +1,6 @@
 # Telegram manual library plan
 
-Status: plan only. ED-24F.0 does not implement file upload, storage, delivery, buttons, callbacks, or Telegram runtime changes.
+Status: plan only. ED-24F.0 and ED-24F.1a do not implement file upload, storage, delivery, buttons, callbacks, or Telegram runtime changes.
 
 ## Intended model
 
@@ -41,13 +41,14 @@ A later stage may add a post-diagnostic button:
 
 `📘 Открыть руководство`
 
-The button should resolve a reviewed `manualId`, enforce the current user role, and return only the manual associated with the selected diagnostic source. It must not generalize one manual across Gree series.
+The button should resolve reviewed `manualId` values from the selected diagnostic answer, enforce the current user role, and return all manuals where the selected code appears. If one answer has multiple `sourceReferences[]`, manual delivery should use those references rather than asking the user to choose a source. It must not generalize one manual across Gree series.
 
 ## Source-of-truth and safety rules
 
 - Keep manual identity and coverage metadata in the registry or a reviewed database.
 - Keep diagnostic JSON manual-bound.
+- Keep same-code/same-equipment/same-meaning cases as one diagnostic answer with multiple source references.
 - Do not derive diagnostic meaning from Telegram captions.
 - Do not expose storage chat identifiers in user-facing text or logs.
 - Do not send manuals to Consumer users.
-- Do not implement Telegram file storage or delivery in ED-24F.0.
+- Do not implement Telegram file storage or delivery in ED-24F.0 or ED-24F.1a.

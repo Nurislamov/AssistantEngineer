@@ -79,18 +79,30 @@ The current Telegram candidate flow:
 
 It does not retain or prompt for a selected series/manual source. For overlapping entries, both candidates would be Gree, Indoor Unit, and the same display context. Silent first-candidate selection would violate the manual-bound rule.
 
+## ED-24F.1a design update
+
+ED-24F.1a adds optional multi-source diagnostic references to the repository-backed error-knowledge model. This changes the import path for `GC202004-X`: when a GMV IDU code has the same equipment type and same meaning as an existing GMV6 indoor entry, the future import should add an additional `sourceReferences[]` item to the existing diagnostic answer instead of creating a duplicate production entry or asking the user to choose a manual.
+
+The design rule is now:
+
+1. Same code + same equipment type + same meaning = one diagnostic answer.
+2. That answer may carry multiple manual/source references.
+3. If the user requests manuals in a future manual-library stage, return all reviewed manuals where the selected code appears.
+4. If a code has different meanings across equipment types or series, ask for equipment/series context, not for source/manual choice.
+
+ED-24F.1a does not import the 38 GMV IDU codes, does not add production diagnostic entries, and does not implement Telegram manual file delivery.
+
 ## Required design decision before import
 
-A separate stage should define and test:
+A separate stage should merge reviewed IDU manual references and procedures without changing the user-facing source-selection boundary:
 
-1. Series-aware candidate filtering and a user-facing series/model-family clarification.
-2. Session persistence of selected series.
-3. Exact-series localization selection and precedence rules.
-4. Behavior for broad `GMV` sources versus specific `GMV6` sources.
-5. `/last` source/series reconstruction.
-6. Regression guarantees for existing GMV6 queries.
+1. Add `GC202004-X` as additional `sourceReferences[]` only where the meaning matches the existing GMV6 indoor answer.
+2. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
+3. Add equipment/series clarification only for genuinely different meanings.
+4. Preserve `/last` and Russian output normalization.
+5. Keep regression guarantees for existing GMV6 queries.
 
-After that design is implemented, this manual can be imported as a distinct source without overwriting GMV6 entries.
+After that merge stage is implemented, this manual can contribute source references and reviewed procedures without overwriting GMV6 entries or forcing manual selection.
 
 ## Import result
 

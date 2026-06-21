@@ -52,6 +52,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Equal("Over-current protection of inverter fan", entry.SourceMeaning);
         Assert.Equal("ManualVerified", entry.VerificationStatus);
         Assert.Equal("High", entry.Confidence);
+        Assert.Empty(entry.SourceReferences);
         Assert.Contains(
             JsonErrorKnowledgeLocalizationSource.GetEmbeddedResourceNames(),
             name => name.EndsWith(".gree.gmv6.outdoor.h5.json", StringComparison.OrdinalIgnoreCase));
@@ -158,6 +159,129 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         Assert.Equal(253, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
+        Assert.All(entries, entry => Assert.Empty(entry.SourceReferences));
+    }
+
+    [Fact]
+    public void OptionalSourceReferencesLoadWhenPresent()
+    {
+        var json = Mutate(root =>
+            root["sourceReferences"] = new JsonArray(
+                SourceReference(
+                    sourceName: "Gree GMV6 service manual",
+                    documentCode: "GC202001-I",
+                    sourceReference: "Manual page 1 / PDF page 2",
+                    manualId: "gree-gmv6-service-manual-2020-09",
+                    packageId: "gree-gmv6-outdoor-fault-protection-codes"),
+                SourceReference(
+                    sourceName: "Gree GMV IDU service manual",
+                    documentCode: "GC202004-X",
+                    sourceReference: "Manual page 173 / PDF page 178",
+                    manualId: "gree-gmv-idu-service-manual",
+                    packageId: "gree-gmv6-outdoor-fault-protection-codes")));
+
+        var result = Validate(json);
+
+        Assert.True(result.IsValid);
+        var entry = Assert.Single(result.Entries);
+        Assert.Equal(2, entry.SourceReferences.Count);
+        Assert.Equal("GC202001-I", entry.SourceReferences[0].DocumentCode);
+        Assert.Equal("gree-gmv-idu-service-manual", entry.SourceReferences[1].ManualId);
+    }
+
+    [Fact]
+    public void EmptySourceReferencesFailsValidation()
+    {
+        var json = Mutate(root => root["sourceReferences"] = new JsonArray());
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue => issue.Problem.Contains("sourceReferences must be non-empty", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("sourceName", "sourceName is required")]
+    [InlineData("sourceReference", "sourceReference is required")]
+    [InlineData("sourceType", "sourceType is required")]
+    [InlineData("sourceLanguage", "sourceLanguage is required")]
+    [InlineData("verificationStatus", "verificationStatus is required")]
+    [InlineData("confidence", "confidence is required")]
+    public void SourceReferenceRequiredFieldsFailValidation(string property, string expected)
+    {
+        var json = Mutate(root =>
+        {
+            var reference = SourceReference();
+            reference.Remove(property);
+            root["sourceReferences"] = new JsonArray(reference);
+        });
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("sourceType", "Blog", "sourceType 'Blog' is invalid")]
+    [InlineData("sourceLanguage", "de", "sourceLanguage 'de' is invalid")]
+    [InlineData("verificationStatus", "Published", "verificationStatus 'Published' is invalid")]
+    [InlineData("confidence", "Certain", "confidence 'Certain' is invalid")]
+    public void SourceReferenceControlledValuesFailValidation(
+        string property,
+        string value,
+        string expected)
+    {
+        var json = Mutate(root =>
+        {
+            var reference = SourceReference();
+            reference[property] = value;
+            root["sourceReferences"] = new JsonArray(reference);
+        });
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void SourceReferencePackageIdMustExistWhenPresent()
+    {
+        var json = Mutate(root =>
+            root["sourceReferences"] = new JsonArray(SourceReference(packageId: "missing-package")));
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue => issue.Problem.Contains("sourceReferences packageId 'missing-package' does not reference an existing package", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("sourceName", "token=123456:abcdefghijklmnopqrstuvwxyzABCDE", "token/webhook-secret-like")]
+    [InlineData("sourceReference", "callback sr:t:12", "callback payload")]
+    [InlineData("notes", "chat 123456789012", "raw chat/platform-user-id-like")]
+    public void SourceReferenceSensitivePlatformValuesFailValidation(
+        string property,
+        string value,
+        string expected)
+    {
+        var json = Mutate(root =>
+        {
+            var reference = SourceReference();
+            reference[property] = value;
+            root["sourceReferences"] = new JsonArray(reference);
+        });
+
+        var result = Validate(json);
+
+        Assert.Contains(
+            result.Issues,
+            issue => issue.Problem.Contains(expected, StringComparison.Ordinal));
     }
 
     [Fact]
@@ -555,6 +679,31 @@ public sealed class ErrorKnowledgeJsonValidationTests
             .Single(node =>
                 node["locale"]!.GetValue<string>() == "ru" &&
                 node["audience"]!.GetValue<string>() == "Consumer");
+
+    private static JsonObject SourceReference(
+        string sourceName = "Gree GMV6 service manual",
+        string? documentCode = "GC202001-I",
+        string sourceReference = "Manual page 1 / PDF page 2",
+        string sourceType = "Manual",
+        string sourceLanguage = "en",
+        string verificationStatus = "ManualVerified",
+        string confidence = "High",
+        string? manualId = "gree-gmv6-service-manual-2020-09",
+        string? packageId = null,
+        string? notes = "Synthetic test source reference.") =>
+        new()
+        {
+            ["sourceName"] = sourceName,
+            ["documentCode"] = documentCode,
+            ["sourceReference"] = sourceReference,
+            ["sourceType"] = sourceType,
+            ["sourceLanguage"] = sourceLanguage,
+            ["verificationStatus"] = verificationStatus,
+            ["confidence"] = confidence,
+            ["manualId"] = manualId,
+            ["packageId"] = packageId,
+            ["notes"] = notes
+        };
 
     private static EquipmentDiagnosticBotResponse Response(
         string code = "H5",

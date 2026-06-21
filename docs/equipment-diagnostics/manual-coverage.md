@@ -72,7 +72,9 @@ Imported GMV6 package IDs:
 
 Known production smoke codes: `Gree C0`, `Gree U0`, `Gree H5`, `Gree E1`, `Gree A0`.
 
-ED-24F.1 verified the IDU manual as `Service Manual - Multi Variable Air Conditioners Indoor Units`, document code `GC202004-X`. Its code table is on manual page 173 / PDF page 178, with troubleshooting through manual page 185 / PDF page 190. No entries were imported because every one of its 38 codes overlaps the existing GMV6 indoor package and the current Telegram flow cannot clarify series when equipment type and display context are identical. See [gree-gmv-idu-manual-import.md](gree-gmv-idu-manual-import.md).
+ED-24F.1 verified the IDU manual as `Service Manual - Multi Variable Air Conditioners Indoor Units`, document code `GC202004-X`. Its code table is on manual page 173 / PDF page 178, with troubleshooting through manual page 185 / PDF page 190. No entries were imported because every one of its 38 codes overlaps the existing GMV6 indoor package and the previous flow could not safely represent a second manual source for the same indoor code.
+
+ED-24F.1a adds optional `sourceReferences[]` support to the error-knowledge model. It keeps the existing single-source fields backward-compatible and prepares ED-24F.1b to merge `GC202004-X` as additional source references/procedures where meanings match. Counts remain 4 packages / 253 entries until that reviewed merge happens. See [gree-gmv-idu-manual-import.md](gree-gmv-idu-manual-import.md).
 
 ## B. Controllers / wired remotes / commissioning tools
 
@@ -159,7 +161,7 @@ For each future import:
 1. Confirm the manual identity, document code/version, series, models, and equipment type.
 2. Identify exact diagnostic/error/status/debug sections.
 3. Define the package boundary from that manual only.
-4. Store source references for every imported entry.
+4. Store source references for every imported entry. When a later manual confirms the same code, equipment type, and meaning, append a `sourceReferences[]` item instead of duplicating the diagnostic answer.
 5. Do not use internet sources, model memory, another manual, or another Gree series to fill gaps.
 6. Validate package and entry counts.
 7. Update `manuals.json`, this document, the import report, tests, and `PROJECT_STATE.md`.

@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24F.1a Add multi-source diagnostic manual references`
+`ED-24F.1b Merge GMV IDU manual references and procedures`
 
 
 
@@ -30,23 +30,23 @@ Purpose:
 
 
 
-Resolve the collision found during `SERVICE_MANUAL_GMV_IDU.pdf` analysis before importing its 38 overlapping indoor-unit codes, and use the ED-24H.0 catalog map to choose the next source-bound Gree VRF manual.
+Use the ED-24F.1a multi-source reference model to merge reviewed `SERVICE_MANUAL_GMV_IDU.pdf` (`GC202004-X`) source references and procedures where they confirm the same GMV indoor-unit code meaning.
 
 
 
-`One manual = one source`
+`Same code + same equipment type + same meaning = one diagnostic answer`
 
 
 
-Do not mix manuals, internet data, memory-based assumptions, or cross-series Gree meanings.
+Do not mix internet data, memory-based assumptions, or cross-series Gree meanings. Multiple manuals may be attached only as reviewed source references when the diagnostic meaning is the same.
 
 
 
-Before starting `ED-24F.1`, choose the next manual from:
+Before starting `ED-24F.1b`, use the reviewed manual:
 
 
 
-`D:\\Project\\AssistantEngineer\\artifacts\\manual-intake\\sources\\gree`
+`D:\\Project\\AssistantEngineer\\artifacts\\manual-intake\\sources\\gree\\SERVICE_MANUAL_GMV_IDU.pdf`
 
 
 
@@ -54,15 +54,15 @@ Expected next action:
 
 
 
-1\. Add multi-source diagnostic references so identical meanings for the same equipment type do not force the bot to choose one manual silently.
+1\. Add `GC202004-X` as additional `sourceReferences[]` only where the meaning matches the existing GMV6 indoor answer.
 
-2\. If a code has different meanings across equipment types, clarify only the equipment type shown by the code.
+2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
-3\. When manuals are requested, return all reviewed manuals where the code is found.
+3\. Add or refine reviewed procedures only from the same manual evidence.
 
-4\. Keep all existing GMV6 smoke behavior unchanged.
+4\. If a code has genuinely different meanings across equipment types or series, ask for equipment/series context, not source/manual choice.
 
-5\. After the reference model is production-safe, resume the manual-bound `GC202004-X` import or continue with the ED-24H manual backlog.
+5\. Keep `/last`, Russian output normalization, and existing GMV6 smoke behavior unchanged.
 
 
 
@@ -111,6 +111,72 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24F.1a - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24F.1a Add multi-source diagnostic references`
+
+
+
+Purpose:
+
+
+
+Add optional multi-source diagnostic references so future manual imports can preserve multiple reviewed source/manual references for the same diagnostic answer without prompting users to choose a manual.
+
+
+
+Root design issue solved:
+
+
+
+Same code + same equipment type + same meaning now remains one answer with multiple source references. Different meanings across equipment types or series still require equipment/series clarification, not manual/source selection.
+
+
+
+Added:
+
+
+
+\* `ErrorKnowledgeSourceReferenceV2`.
+
+\* Optional JSON `sourceReferences[]`.
+
+\* Validation for non-empty arrays when present, required reference fields, allowed source type/language/confidence/verification values, sensitive platform content scanning, and optional package-link checks.
+
+\* Telegram source labeling for multiple reviewed manual references as `руководства производителя`.
+
+\* Deterministic tests for source-reference validation, same-code same-equipment answer behavior, `/last`, and equipment clarification for different meanings.
+
+
+
+Counts remain:
+
+
+
+\* Packages: 4
+
+\* Entries: 253
+
+
+
+No GMV IDU codes were imported. No production diagnostic package or entry was added. No PDF, DOC, XLS, or XLSX source file was committed. No Telegram manual file delivery, role policy, DB schema, EF migration, deployment, or env change was made.
+
+
+
+Next stage:
+
+
+
+`ED-24F.1b Merge GMV IDU manual references and procedures`
 
 
 
@@ -2144,7 +2210,35 @@ Recent important areas:
 
 
 
-Latest known validation for ED-24E.2a:
+Latest known validation for ED-24F.1a:
+
+
+
+\* Restore: PASS
+
+\* Build: PASS, 0 warnings, 0 errors
+
+\* Full tests: PASS - 4660
+
+\* EquipmentDiagnostics: PASS - 679
+
+\* Deployment validators: PASS
+
+\* Knowledge validator: PASS - 4 packages, 253 entries, 0 issues
+
+\* Release publish smoke: not run for ED-24F.1a
+
+\* EF pending model changes: none
+
+\* Migration: none
+
+\* DB changes: none
+
+\* Env changes: none
+
+
+
+Previous validation retained for ED-24E.2a:
 
 
 
@@ -2206,7 +2300,7 @@ Recommended next stage:
 
 
 
-`ED-24F.1 Import next Gree manual-bound knowledge package`
+`ED-24F.1b Merge GMV IDU manual references and procedures`
 
 
 
@@ -2214,11 +2308,15 @@ Scope:
 
 
 
-\* import the next manual only;
+\* merge `GC202004-X` references/procedures only where reviewed manual evidence matches existing GMV6 indoor meanings;
 
 \* no external sources;
 
 \* no cross-series assumptions;
+
+\* no duplicate answer when code, equipment type, and meaning are the same;
+
+\* equipment/series clarification only for genuinely different meanings;
 
 \* no Mini App;
 

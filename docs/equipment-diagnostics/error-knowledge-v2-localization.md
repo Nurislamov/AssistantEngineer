@@ -16,6 +16,7 @@ Each entry JSON file represents one `ErrorKnowledgeEntryV2` and identifies the d
 - `signalType`, `displaySource`, `systemPart`, `severity`;
 - `requiresQualifiedService`, nullable `canCustomerContinueOperation`, and `packageId`;
 - source language, type, name, exact source meaning, and reference;
+- optional `sourceReferences[]` for additional manuals/sources that confirm the same diagnostic meaning;
 - confidence and verification status;
 - creation/update timestamps.
 
@@ -79,6 +80,21 @@ data/equipment-diagnostics/error-knowledge/{manufacturer}/{series}/{category}/{c
 
 The corrected H5 entry is `gree/gmv6/outdoor/h5.json`. JSON uses camelCase. Arrays such as `models`, `possibleCauses`, `checkSteps`,
 and `doNotAdvise` must be present even when empty. Locale and audience values are case-sensitive.
+
+`sourceReferences[]` is optional for backward compatibility. When present, it must be non-empty and each item must include:
+
+- `sourceName`;
+- optional `documentCode`;
+- `sourceReference`;
+- `sourceType`;
+- `sourceLanguage`;
+- `verificationStatus`;
+- `confidence`;
+- optional `manualId`;
+- optional `packageId`;
+- optional `notes`.
+
+Existing single-source fields remain required. New imports should use `sourceReferences[]` only to preserve multiple reviewed source/manual references for the same diagnostic answer. They must not create duplicate production entries when code, equipment type, and meaning are the same.
 
 ## Taxonomy
 
@@ -145,6 +161,7 @@ The current allowed values are:
 
 - locales: `ru`, `en`, `uz` (`uz` is accepted by the format but is not required or exposed yet);
 - audiences: `Consumer`, `Installer`, `Engineer`;
+- source types: `Manual`, `ManufacturerDocumentation`, `ServiceManual`, `CrossCheckedManuals`, `FieldObservation`, `SeededEngineeringKnowledge`;
 - confidence: `Low`, `Medium`, `High`, `ManualVerified`;
 - verification status: `UnverifiedSeed`, `PendingReview`, `Reviewed`, `Verified`, `ManualVerified`.
 
@@ -160,8 +177,9 @@ dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerificat
 The validator reports the repository-relative file and problem. It blocks:
 
 - missing identity, source language, confidence, verification status, timestamps, or localized fields;
+- empty or incomplete `sourceReferences[]` items when the array is present;
 - missing or unknown taxonomy fields and missing service/package classification;
-- invalid or incompatible package references, duplicate package IDs, and package entry-count drift;
+- invalid or incompatible package references, optional source-reference package links, duplicate package IDs, and package entry-count drift;
 - missing Russian Consumer, Installer, or Engineer text;
 - invalid locale, audience, confidence, or verification status;
 - duplicate taxonomy entry keys and duplicate localized `locale/audience` views for the same taxonomy key;

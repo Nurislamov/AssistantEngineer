@@ -1,5 +1,11 @@
 # Equipment Diagnostics
 
+## ED-24F.1a multi-source diagnostic references
+
+ED-24F.1a adds optional `sourceReferences[]` support to repository-backed error knowledge while keeping existing single-source fields backward-compatible. Same code + same equipment type + same meaning remains one diagnostic answer with multiple manual/source references; genuinely different equipment meanings still use equipment clarification.
+
+No GMV IDU codes were imported in ED-24F.1a. Production knowledge remains 4 packages / 253 entries, and Telegram manual file delivery is still not implemented.
+
 ## ED-24H.0 Gree VRF equipment catalog map
 
 The non-runtime [Gree VRF equipment catalog map](gree-vrf-equipment-map.md) inventories catalog-identified Gree VRF/GMV series, indoor-unit types, controllers, commissioning tools, BMS/cloud/billing/remote gateways, and manual-search backlog items. The machine-readable registry is `data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json`.

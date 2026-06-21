@@ -13,6 +13,15 @@ public sealed partial class ErrorKnowledgeJsonValidator
     };
 
     private static readonly string[] AllowedLocales = ["ru", "en", "uz"];
+    private static readonly string[] AllowedSourceTypes =
+    [
+        "Manual",
+        "ManufacturerDocumentation",
+        "ServiceManual",
+        "CrossCheckedManuals",
+        "FieldObservation",
+        "SeededEngineeringKnowledge"
+    ];
     private static readonly string[] AllowedConfidences = ["Low", "Medium", "High", "ManualVerified"];
     private static readonly string[] AllowedVerificationStatuses =
         ["UnverifiedSeed", "PendingReview", "Reviewed", "Verified", "ManualVerified"];
@@ -164,7 +173,12 @@ public sealed partial class ErrorKnowledgeJsonValidator
             "sourceLanguage",
             AllowedLocales,
             issues);
-        var sourceType = Required(document.SourceType, path, "sourceType", issues);
+        var sourceType = Allowed(
+            document.SourceType,
+            path,
+            "sourceType",
+            AllowedSourceTypes,
+            issues);
         var sourceName = Required(document.SourceName, path, "sourceName", issues);
         var verificationStatus = Allowed(
             document.VerificationStatus,
@@ -307,7 +321,12 @@ public sealed partial class ErrorKnowledgeJsonValidator
             "sourceLanguage",
             AllowedLocales,
             issues);
-        var sourceType = Required(document.SourceType, path, "sourceType", issues);
+        var sourceType = Allowed(
+            document.SourceType,
+            path,
+            "sourceType",
+            AllowedSourceTypes,
+            issues);
         var sourceName = Required(document.SourceName, path, "sourceName", issues);
         var sourceMeaning = Normalize(document.SourceMeaning);
         var confidence = Allowed(
@@ -350,6 +369,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
 
         var models = ValidateTextArray(document.Models, path, "models", required: true, issues);
         var texts = ValidateTexts(document.Texts, id, path, issues);
+        var sourceReferences = ValidateSourceReferences(document.SourceReferences, path, issues);
 
         if (issues.Count != startIssueCount ||
             id is null ||
@@ -398,7 +418,105 @@ public sealed partial class ErrorKnowledgeJsonValidator
             verificationStatus,
             document.CreatedAt.Value,
             document.UpdatedAt.Value,
-            texts);
+            texts)
+        {
+            SourceReferences = sourceReferences
+        };
+    }
+
+    private static IReadOnlyList<ErrorKnowledgeSourceReferenceV2> ValidateSourceReferences(
+        IReadOnlyList<ErrorKnowledgeJsonSourceReference>? references,
+        string path,
+        ICollection<ErrorKnowledgeValidationIssue> issues)
+    {
+        if (references is null)
+        {
+            return [];
+        }
+
+        if (references.Count == 0)
+        {
+            issues.Add(new(path, "sourceReferences must be non-empty when present."));
+            return [];
+        }
+
+        var mapped = new List<ErrorKnowledgeSourceReferenceV2>();
+        for (var index = 0; index < references.Count; index++)
+        {
+            var reference = references[index];
+            var referencePath = $"{path}:sourceReferences[{index}]";
+            var startIssueCount = issues.Count;
+            var sourceName = Required(reference.SourceName, referencePath, "sourceName", issues);
+            var sourceReference = Required(reference.SourceReference, referencePath, "sourceReference", issues);
+            var sourceType = Allowed(
+                reference.SourceType,
+                referencePath,
+                "sourceType",
+                AllowedSourceTypes,
+                issues);
+            var sourceLanguage = Allowed(
+                reference.SourceLanguage,
+                referencePath,
+                "sourceLanguage",
+                AllowedLocales,
+                issues);
+            var verificationStatus = Allowed(
+                reference.VerificationStatus,
+                referencePath,
+                "verificationStatus",
+                AllowedVerificationStatuses,
+                issues);
+            var confidence = Allowed(
+                reference.Confidence,
+                referencePath,
+                "confidence",
+                AllowedConfidences,
+                issues);
+            var manualId = Normalize(reference.ManualId);
+            var packageId = Normalize(reference.PackageId);
+
+            ValidateSensitiveContent(
+                new[]
+                {
+                    sourceName,
+                    reference.DocumentCode,
+                    sourceReference,
+                    sourceType,
+                    sourceLanguage,
+                    verificationStatus,
+                    confidence,
+                    manualId,
+                    packageId,
+                    reference.Notes
+                }.Where(value => value is not null).Cast<string>().ToArray(),
+                referencePath,
+                issues);
+
+            if (issues.Count != startIssueCount ||
+                sourceName is null ||
+                sourceReference is null ||
+                sourceType is null ||
+                sourceLanguage is null ||
+                verificationStatus is null ||
+                confidence is null)
+            {
+                continue;
+            }
+
+            mapped.Add(new ErrorKnowledgeSourceReferenceV2(
+                sourceName,
+                Normalize(reference.DocumentCode),
+                sourceReference,
+                sourceType,
+                sourceLanguage,
+                verificationStatus,
+                confidence,
+                manualId,
+                packageId,
+                Normalize(reference.Notes)));
+        }
+
+        return mapped;
     }
 
     private static IReadOnlyList<ErrorKnowledgeTextV2> ValidateTexts(
@@ -618,6 +736,17 @@ public sealed partial class ErrorKnowledgeJsonValidator
                 !package.IntendedDisplaySources.Contains(entry.DisplaySource))
             {
                 issues.Add(new(entry.Id, $"displaySource {entry.DisplaySource} is not allowed by package '{package.PackageId}'."));
+            }
+
+            foreach (var sourceReference in entry.SourceReferences)
+            {
+                if (!string.IsNullOrWhiteSpace(sourceReference.PackageId) &&
+                    !packageLookup.ContainsKey(sourceReference.PackageId))
+                {
+                    issues.Add(new(
+                        entry.Id,
+                        $"sourceReferences packageId '{sourceReference.PackageId}' does not reference an existing package."));
+                }
             }
         }
 

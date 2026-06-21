@@ -325,7 +325,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote));
         builder.AppendLine();
         builder.AppendLine($"Уверенность: {ConfidenceLabel(entry.Confidence)}.");
-        builder.AppendLine($"Источник: {SafeSourceLabel(entry.SourceType)}.");
+        builder.AppendLine($"Источник: {SafeSourceLabel(entry)}.");
         if (!text.IsReviewed || !IsVerified(entry.VerificationStatus))
         {
             builder.AppendLine("Черновик / непроверено: точное значение необходимо сверить с документацией установленной модели.");
@@ -415,6 +415,17 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             _ => "внутренний диагностический каталог"
         };
 
+    private static string SafeSourceLabel(ErrorKnowledgeEntryV2 entry)
+    {
+        if (entry.SourceReferences.Count > 1 &&
+            entry.SourceReferences.All(reference => IsManufacturerManualSource(reference.SourceType)))
+        {
+            return "руководства производителя";
+        }
+
+        return SafeSourceLabel(entry.SourceType);
+    }
+
     private static string SafeSourceLabel(string sourceType) =>
         sourceType switch
         {
@@ -425,6 +436,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "SeededEngineeringKnowledge" => "встроенный черновой каталог",
             _ => "внутренний диагностический каталог"
         };
+
+    private static bool IsManufacturerManualSource(string sourceType) =>
+        sourceType is "Manual" or "ManufacturerDocumentation" or "ServiceManual" or "CrossCheckedManuals";
 
     private static bool IsVerified(string verificationStatus) =>
         verificationStatus is "ManualVerified" or "Verified" or "Reviewed";

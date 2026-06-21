@@ -90,7 +90,7 @@ Future manual library policy remains plan-only: Installer, Engineer, Admin, and 
 
 ## Next Recommended Stages
 
-- ED-24F.1a or equivalent: add multi-source diagnostic references for manuals without silently selecting one source when the code meaning is identical for the same equipment type.
+- ED-24F.1b: merge GMV IDU manual references and procedures where `GC202004-X` matches existing GMV6 indoor meanings.
 - ED-24H.1: import GMV X / GMV X PRO service manual when source is provided.
 - ED-24H.2: import GMV6 HR service manual when source is provided.
 - ED-24H.3: build controller/manual-library foundation for controller, commissioning, BMS, cloud, billing, and remote-monitoring documents.

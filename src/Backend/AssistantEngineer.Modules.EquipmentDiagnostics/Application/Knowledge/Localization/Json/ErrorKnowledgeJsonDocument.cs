@@ -44,11 +44,36 @@ public sealed class ErrorKnowledgeJsonDocument
 
     public string? VerificationStatus { get; set; }
 
+    public List<ErrorKnowledgeJsonSourceReference>? SourceReferences { get; set; }
+
     public DateTimeOffset? CreatedAt { get; set; }
 
     public DateTimeOffset? UpdatedAt { get; set; }
 
     public List<ErrorKnowledgeJsonText>? Texts { get; set; }
+}
+
+public sealed class ErrorKnowledgeJsonSourceReference
+{
+    public string? SourceName { get; set; }
+
+    public string? DocumentCode { get; set; }
+
+    public string? SourceReference { get; set; }
+
+    public string? SourceType { get; set; }
+
+    public string? SourceLanguage { get; set; }
+
+    public string? VerificationStatus { get; set; }
+
+    public string? Confidence { get; set; }
+
+    public string? ManualId { get; set; }
+
+    public string? PackageId { get; set; }
+
+    public string? Notes { get; set; }
 }
 
 public sealed class ErrorKnowledgePackageJsonDocument

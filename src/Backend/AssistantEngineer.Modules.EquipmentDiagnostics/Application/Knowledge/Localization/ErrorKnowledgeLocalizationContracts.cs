@@ -105,7 +105,22 @@ public sealed record ErrorKnowledgeEntryV2(
     string VerificationStatus,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
-    IReadOnlyList<ErrorKnowledgeTextV2> Texts);
+    IReadOnlyList<ErrorKnowledgeTextV2> Texts)
+{
+    public IReadOnlyList<ErrorKnowledgeSourceReferenceV2> SourceReferences { get; init; } = [];
+}
+
+public sealed record ErrorKnowledgeSourceReferenceV2(
+    string SourceName,
+    string? DocumentCode,
+    string SourceReference,
+    string SourceType,
+    string SourceLanguage,
+    string VerificationStatus,
+    string Confidence,
+    string? ManualId,
+    string? PackageId,
+    string? Notes);
 
 public sealed record ErrorKnowledgeTextV2(
     string Id,
