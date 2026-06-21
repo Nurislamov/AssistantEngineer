@@ -1,7 +1,9 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -111,6 +113,22 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         }
     }
 
+    [Fact]
+    public void FinalOutputNormalizesEveryLocalizedDiagnosticField()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
+            new DuplicateCommunicationLocalizationSource());
+        var response = LocalizedResponse();
+
+        var technical = formatter.FormatTechnical(response);
+        var consumer = formatter.FormatConsumer(response, hasPhoneNumber: true, maxLength: 4000);
+
+        Assert.DoesNotContain("связи связи", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("связи связи", consumer, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(7, CountOccurrences(technical, "сообщение о связи и адресации"));
+        Assert.Equal(6, CountOccurrences(consumer, "сообщение о связи и адресации"));
+    }
+
     private static IReadOnlyList<string> EnglishTechnicalMarkers() =>
     [
         "Safety",
@@ -129,5 +147,93 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var services = new ServiceCollection();
         services.AddEquipmentDiagnosticsModule();
         return services.BuildServiceProvider();
+    }
+
+    private static EquipmentDiagnosticBotResponse LocalizedResponse() =>
+        new(
+            EquipmentDiagnosticBotResponseStatus.Answer,
+            "Gree GMV6 C0",
+            "Communication diagnostic.",
+            "GREE",
+            "C0",
+            new EquipmentDiagnosticBotEquipmentContext(
+                "Gree",
+                "GMV6",
+                null,
+                EquipmentCategory.VrfOutdoorUnit,
+                EquipmentDiagnosticBotEquipmentSide.Outdoor,
+                EquipmentDiagnosticBotDisplayContext.OduMainBoardLed),
+            new EquipmentDiagnosticBotObservedCodeContext("C0", "C0", null),
+            AnswerCard: null,
+            ClarificationQuestion: null,
+            SourceCard: null,
+            new EquipmentDiagnosticBotSafetyCard(string.Empty, []),
+            VerificationRequired: false,
+            Confidence: DiagnosticConfidence.High,
+            IsManualVerified: true,
+            IsSeedKnowledge: false,
+            OperatorNextSteps: [],
+            Warnings: [],
+            InternalDecisionTrace: null);
+
+    private static int CountOccurrences(string text, string value) =>
+        text.Split(value, StringSplitOptions.None).Length - 1;
+
+    private sealed class DuplicateCommunicationLocalizationSource : IErrorKnowledgeLocalizationSource
+    {
+        private const string Duplicate = "сообщение о связи связи и адресации";
+        private static readonly ErrorKnowledgeTextV2 Text = new(
+            "c0-ru-engineer",
+            "c0",
+            "ru",
+            ErrorKnowledgeAudience.Engineer,
+            $"Gree GMV6 C0 — {Duplicate}",
+            $"Кратко: {Duplicate}.",
+            $"Безопасность: {Duplicate}.",
+            [$"Причина: {Duplicate}."],
+            [$"Проверка: {Duplicate}."],
+            [$"Не советовать: {Duplicate}."],
+            $"Действие: {Duplicate}.",
+            string.Empty,
+            IsMachineTranslated: false,
+            IsReviewed: true,
+            DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch);
+        private static readonly ErrorKnowledgeEntryV2 Entry = new(
+            "c0",
+            "Gree",
+            ErrorKnowledgeEquipmentFamily.VRF,
+            ErrorKnowledgeEquipmentType.OutdoorUnit,
+            "GMV6",
+            [],
+            "C0",
+            ErrorKnowledgeSignalType.Communication,
+            ErrorKnowledgeDisplaySource.OutdoorBoard,
+            ErrorKnowledgeSystemPart.Communication,
+            ErrorKnowledgeSeverity.Medium,
+            true,
+            false,
+            "test",
+            "ru",
+            "Manual",
+            "Test",
+            Duplicate,
+            null,
+            "High",
+            "ManualVerified",
+            DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch,
+            [Text]);
+
+        public IReadOnlyCollection<ErrorKnowledgeEntryV2> GetEntries() => [Entry];
+
+        public ErrorKnowledgeLocalizationSelection? Select(
+            EquipmentDiagnosticBotResponse response,
+            string locale,
+            ErrorKnowledgeAudience audience)
+        {
+            var text = Text with { Audience = audience };
+            return new ErrorKnowledgeLocalizationSelection(Entry, text);
+        }
     }
 }

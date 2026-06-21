@@ -110,11 +110,23 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
         var response = await adapter.HandleAsync(Update("Gree C0"));
+        var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree GMV6 C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains(
+            "Gree GMV6 C0 — сообщение о связи и адресации",
+            response.Text,
+            StringComparison.Ordinal);
         Assert.Contains("Категория: Связь.", response.Text, StringComparison.Ordinal);
-        Assert.Contains("сообщение о связи и адресации", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "Код C0 классифицирован по таблице руководства как сообщение о связи и адресации.",
+            response.Text,
+            StringComparison.Ordinal);
         Assert.DoesNotContain("связи связи", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "сообщение о связи и адресации",
+            last.Text,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("связи связи", last.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

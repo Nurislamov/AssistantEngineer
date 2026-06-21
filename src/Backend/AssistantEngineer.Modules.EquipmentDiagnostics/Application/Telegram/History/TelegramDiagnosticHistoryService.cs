@@ -46,7 +46,7 @@ public sealed class TelegramDiagnosticHistoryService
                 manufacturer ?? diagnosis.NormalizedManufacturer,
                 equipmentType,
                 displayContext,
-                SafeSummary(diagnosis.AnswerCard?.Summary ?? diagnosis.Message),
+                SafeSummary(NormalizeOutput(diagnosis.AnswerCard?.Summary ?? diagnosis.Message)),
                 BuildNormalizedRequestJson(
                     diagnosis.NormalizedCode,
                     manufacturer ?? diagnosis.NormalizedManufacturer,
@@ -112,11 +112,11 @@ public sealed class TelegramDiagnosticHistoryService
 
         if (diagnosticCase.Status == TelegramDiagnosticCaseStatus.NotFound)
         {
-            return
+            return NormalizeOutput(
                 "Последний запрос\n\n" +
                 $"Код: {FormatCaseTitle(diagnosticCase)}\n" +
                 $"Дата: {_timeFormatter.FormatAbsolute(diagnosticCase.CreatedAt)}\n" +
-                "Статус: точная расшифровка не найдена.";
+                "Статус: точная расшифровка не найдена.");
         }
 
         var isConsumer = user.Role == TelegramUserRole.Consumer;
@@ -124,13 +124,13 @@ public sealed class TelegramDiagnosticHistoryService
             ? ConsumerSafeSummary()
             : TechnicalSummary(diagnosticCase, user.Role);
 
-        return
+        return NormalizeOutput(
             "Последняя диагностика\n\n" +
             $"{FormatCaseTitle(diagnosticCase)}\n" +
             $"Дата: {_timeFormatter.FormatAbsolute(diagnosticCase.CreatedAt)}\n\n" +
             "Возможное значение:\n" +
             $"{summary}\n\n" +
-            "Нажмите «Новый код», чтобы проверить другую ошибку.";
+            "Нажмите «Новый код», чтобы проверить другую ошибку.");
     }
 
     private static TelegramDiagnosticCaseCreate Create(
@@ -204,8 +204,9 @@ public sealed class TelegramDiagnosticHistoryService
         var audience = role == TelegramUserRole.Installer
             ? ErrorKnowledgeAudience.Installer
             : ErrorKnowledgeAudience.Engineer;
-        return _localizationSource.Select(response, "ru", audience)?.Text.Summary ??
-            "Техническое описание пока не локализовано. Проверьте код по сервисному руководству установленной модели.";
+        return NormalizeOutput(
+            _localizationSource.Select(response, "ru", audience)?.Text.Summary ??
+            "Техническое описание пока не локализовано. Проверьте код по сервисному руководству установленной модели.");
     }
 
     private static string? BuildNormalizedRequestJson(
@@ -227,6 +228,9 @@ public sealed class TelegramDiagnosticHistoryService
 
     private static string? SafeSummary(string? value) =>
         SafeText(value, SummaryMaxLength);
+
+    private static string NormalizeOutput(string value) =>
+        RussianDiagnosticTerminology.ImprovePhrase(value);
 
     private static string Required(string? value, string message) =>
         string.IsNullOrWhiteSpace(value) ? throw new InvalidOperationException(message) : value;

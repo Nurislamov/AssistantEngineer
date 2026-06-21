@@ -43,4 +43,15 @@ public sealed class RussianDiagnosticTerminologyTests
             "Сверить код с указанным разделом руководства и не выходить за рамки процедуры для этой модели.",
             text);
     }
+
+    [Fact]
+    public void CommunicationDuplicateIsRemovedWithoutChangingDiagnosticMeaning()
+    {
+        var text = RussianDiagnosticTerminology.ImprovePhrase(
+            "Gree GMV6 C0 — сообщение о связи связи и адресации");
+
+        Assert.Equal(
+            "Gree GMV6 C0 — сообщение о связи и адресации",
+            text);
+    }
 }

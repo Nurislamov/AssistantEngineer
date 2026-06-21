@@ -36,7 +36,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             response.Status != EquipmentDiagnosticBotResponseStatus.ClarificationRequired)
         {
             AppendTechnicalAnswer(builder, response, localized);
-            return builder.ToString().Trim();
+            return NormalizeOutput(builder.ToString().Trim());
         }
 
         switch (response.Status)
@@ -66,7 +66,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
                 break;
         }
 
-        return builder.ToString().Trim();
+        return NormalizeOutput(builder.ToString().Trim());
     }
 
     public string FormatHelp(int maxLength) =>
@@ -154,7 +154,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine(PhonePrompt(hasPhoneNumber));
 
-        return TruncateConsumer(builder.ToString().Trim(), maxLength);
+        return TruncateConsumer(NormalizeOutput(builder.ToString().Trim()), maxLength);
     }
 
     private static string FormatLocalizedConsumer(
@@ -184,7 +184,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine($"Для сервиса: передайте код {response.NormalizedManufacturer} {response.NormalizedCode}.");
         builder.AppendLine();
         builder.AppendLine(PhonePrompt(hasPhoneNumber));
-        return TruncateConsumer(builder.ToString().Trim(), maxLength);
+        return TruncateConsumer(NormalizeOutput(builder.ToString().Trim()), maxLength);
     }
 
     public string FormatMe(
@@ -470,6 +470,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
 
     private static string Compact(string text, int maxLength) =>
         text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 3).TrimEnd(), "...");
+
+    private static string NormalizeOutput(string text) =>
+        RussianDiagnosticTerminology.ImprovePhrase(text);
 
     private static string TruncateConsumer(string text, int maxLength)
     {

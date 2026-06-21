@@ -1,6 +1,8 @@
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
@@ -558,6 +560,36 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task EngineerLastNormalizesLocalizedPossibleMeaning()
+    {
+        var store = new InMemoryTelegramDiagnosticCaseStore();
+        var userStore = new InMemoryTelegramUserStore();
+        await userStore.AllowAsync(7, TelegramUserRole.Engineer);
+        var user = await userStore.GetByChatIdAsync(7);
+        await CreateCaseAsync(
+            store,
+            user!,
+            TelegramDiagnosticCaseStatus.Completed,
+            "C0",
+            "Gree",
+            "Stored summary.",
+            FixedNowUtc,
+            TelegramDiagnosticCaseResponseMode.Technical,
+            TelegramUserRole.Engineer);
+        var history = new TelegramDiagnosticHistoryService(
+            store,
+            new TelegramDisplayTimeFormatter(
+                Options(),
+                new FixedTimeProvider(FixedNowUtc)),
+            new DuplicateSummaryLocalizationSource());
+
+        var response = await history.FormatLastAsync(user!);
+
+        Assert.Contains("сообщение о связи и адресации", response, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("связи связи", response, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task HistoryFormatsTodayYesterdayAndOlderDatesInDisplayTimeZone()
     {
         var harness = CreateHarness([]);
@@ -802,6 +834,30 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         InMemoryTelegramConversationSessionStore SessionStore,
         InMemoryTelegramDiagnosticCaseStore HistoryStore,
         StaticFacade Facade);
+
+    private sealed class DuplicateSummaryLocalizationSource : IErrorKnowledgeLocalizationSource
+    {
+        private readonly JsonErrorKnowledgeLocalizationSource _inner = new();
+
+        public IReadOnlyCollection<ErrorKnowledgeEntryV2> GetEntries() => _inner.GetEntries();
+
+        public ErrorKnowledgeLocalizationSelection? Select(
+            EquipmentDiagnosticBotResponse response,
+            string locale,
+            ErrorKnowledgeAudience audience)
+        {
+            var selection = _inner.Select(response, locale, audience);
+            return selection is null
+                ? null
+                : selection with
+                {
+                    Text = selection.Text with
+                    {
+                        Summary = "Код C0 классифицирован как сообщение о связи связи и адресации."
+                    }
+                };
+        }
+    }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider
     {
