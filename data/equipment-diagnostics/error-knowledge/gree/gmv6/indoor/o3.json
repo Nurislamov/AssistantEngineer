@@ -28,10 +28,36 @@
   "sourceName": "Service Manual for GMV6 v_2020.09",
   "sourceMeaning": "IPM module protection of IDU",
   "sourceReference": "глава 3 Faults / Error Indication / Indoor o3 / PDF page 74 / manual page 72",
+  "sourceReferences": [
+    {
+      "sourceName": "Service Manual for GMV6 v_2020.09",
+      "documentCode": "GC202001-I",
+      "sourceReference": "глава 3 Faults / Error Indication / Indoor o3 / PDF page 74 / manual page 72",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "Primary GMV6 manual source retained for backward compatibility."
+    },
+    {
+      "sourceName": "Service Manual - Multi Variable Air Conditioners Indoor Units",
+      "documentCode": "GC202004-X",
+      "sourceReference": "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-idu-service-manual",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "GC202004-X confirms the existing indoor-unit code meaning."
+    }
+  ],
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-21T00:00:00Z",
   "texts": [
     {
       "locale": "ru",

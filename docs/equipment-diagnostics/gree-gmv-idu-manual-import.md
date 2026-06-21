@@ -2,9 +2,9 @@
 
 ## Decision
 
-Diagnostic import was stopped for design review. No package manifest or diagnostic entry was added.
+ED-24F.1 stopped the diagnostic import for design review. ED-24F.1b completed the safe merge path by attaching the manual as additional `sourceReferences[]` on existing GMV6 indoor entries. No package manifest or diagnostic entry was added.
 
-The source identity and diagnostic sections are clear, but every identified code overlaps an existing GMV6 indoor entry. The current Telegram conversation can distinguish manufacturer, equipment type, and display context, but cannot ask the user to choose between two indoor-unit candidates that differ only by series/manual source. Importing now would allow deterministic ordering to select one source silently.
+The source identity and diagnostic sections are clear, but every identified code overlaps an existing GMV6 indoor entry. ED-24F.1b therefore did not create a second set of broad-GMV indoor entries. It preserved the existing GMV6 answers and added `GC202004-X` as an additional source reference where the equipment type and meaning matched.
 
 ## Exclusive source
 
@@ -94,7 +94,7 @@ ED-24F.1a does not import the 38 GMV IDU codes, does not add production diagnost
 
 ## Required design decision before import
 
-A separate stage should merge reviewed IDU manual references and procedures without changing the user-facing source-selection boundary:
+ED-24F.1b merged reviewed IDU manual references without changing the user-facing source-selection boundary:
 
 1. Add `GC202004-X` as additional `sourceReferences[]` only where the meaning matches the existing GMV6 indoor answer.
 2. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
@@ -102,15 +102,21 @@ A separate stage should merge reviewed IDU manual references and procedures with
 4. Preserve `/last` and Russian output normalization.
 5. Keep regression guarantees for existing GMV6 queries.
 
-After that merge stage is implemented, this manual can contribute source references and reviewed procedures without overwriting GMV6 entries or forcing manual selection.
+The 19 detailed procedure codes were reviewed. Their detailed sections were not copied into localized Installer/Engineer prose in ED-24F.1b because the existing qualified-service text already points to manual-bound procedure sections and several reviewed procedures include component replacement or electrical service actions. Consumer guidance was not expanded.
 
 ## Import result
 
 - Package manifests added: 0.
 - Diagnostic entries added: 0.
+- Existing indoor entries receiving `sourceReferences[]`: 38.
+- Detailed procedure codes reviewed: 19.
+- Installer/Engineer localized procedure text updated: 0.
+- Codes left `NeedsReview`: 0.
 - Existing packages: unchanged at 4.
 - Existing entries: unchanged at 253.
-- Registry status: `NeedsReview`.
-- Coverage status: `DiagnosticSectionsIdentified`.
-- Import decision: `BlockedPendingSeriesAwareDisambiguation`.
+- Registry status: `PartiallyImported`.
+- Coverage status: `PartialDiagnosticScopeImported`.
+- Import decision: `MergedAsSourceReferencesNoNewEntries`.
 - Binary PDF committed: no.
+
+Same code + same equipment type + same meaning remains one Telegram answer. Telegram does not ask the user to choose a manual/source. Future manual delivery can use the merged `manualId` values, but ED-24F.1b does not implement Telegram manual file delivery.

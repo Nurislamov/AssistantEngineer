@@ -17,7 +17,7 @@ Current snapshot:
 - Source files tracked: 47.
 - Imported manuals: 1.
 - New, not imported: 29.
-- Needs identity, duplicate, or import-design review: 17.
+- Needs identity, duplicate, or import-design review: 16.
 - Repo-backed diagnostic packages: 4.
 - Repo-backed diagnostic entries: 253.
 - Current imported source: `Service Manual for GMV6 v_2020.09.pdf`, document code `GC202001-I`.
@@ -53,7 +53,7 @@ Only the GMV6 service manual diagnostic scope has been imported and production s
 | Manual ID | Local filename | Status | Coverage | Notes |
 |---|---|---|---|---|
 | `gree-gmv6-service-manual-2020-09` | `Service Manual for GMV6 v_2020.09.pdf` | Imported | DiagnosticScopeImported | 253 entries; 4 packages; deployed and smoke verified |
-| `gree-gmv-idu-service-manual` | `SERVICE_MANUAL_GMV_IDU.pdf` | NeedsReview | DiagnosticSectionsIdentified | 38/38 codes overlap GMV6 indoor; blocked pending series-aware disambiguation |
+| `gree-gmv-idu-service-manual` | `SERVICE_MANUAL_GMV_IDU.pdf` | PartiallyImported | PartialDiagnosticScopeImported | 38 existing GMV6 indoor entries received `sourceReferences[]`; 19 detailed procedure codes reviewed; 0 new entries |
 | `gree-gmv-mini-service-manual` | `SERVICE_MANUAL_GMV_MINI.pdf` | New | NotAnalyzed | Compare with the `(1)` copy before analysis |
 | `gree-gmv-mini-service-manual-copy-1` | `SERVICE_MANUAL_GMV_MINI (1).pdf` | NeedsReview | NeedsManualReview | Potential duplicate |
 | `gree-gmv-x-owner-manual` | `Owner's Manual GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Owner-level source; usefulness not yet established |
@@ -74,7 +74,7 @@ Known production smoke codes: `Gree C0`, `Gree U0`, `Gree H5`, `Gree E1`, `Gree 
 
 ED-24F.1 verified the IDU manual as `Service Manual - Multi Variable Air Conditioners Indoor Units`, document code `GC202004-X`. Its code table is on manual page 173 / PDF page 178, with troubleshooting through manual page 185 / PDF page 190. No entries were imported because every one of its 38 codes overlaps the existing GMV6 indoor package and the previous flow could not safely represent a second manual source for the same indoor code.
 
-ED-24F.1a adds optional `sourceReferences[]` support to the error-knowledge model. It keeps the existing single-source fields backward-compatible and prepares ED-24F.1b to merge `GC202004-X` as additional source references/procedures where meanings match. Counts remain 4 packages / 253 entries until that reviewed merge happens. See [gree-gmv-idu-manual-import.md](gree-gmv-idu-manual-import.md).
+ED-24F.1a added optional `sourceReferences[]` support to the error-knowledge model. ED-24F.1b used that model to merge `GC202004-X` as an additional reviewed source on 38 existing GMV6 indoor entries. The 19 detailed procedure codes were reviewed, but localized Installer/Engineer procedure text was not changed because existing qualified-service guidance already keeps procedure execution bounded by the manual and several procedures include component replacement or electrical service actions. Counts remain 4 packages / 253 entries. See [gree-gmv-idu-manual-import.md](gree-gmv-idu-manual-import.md).
 
 ## B. Controllers / wired remotes / commissioning tools
 

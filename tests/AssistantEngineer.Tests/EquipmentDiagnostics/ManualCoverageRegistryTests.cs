@@ -157,7 +157,7 @@ public sealed class ManualCoverageRegistryTests
     }
 
     [Fact]
-    public void OnlyGmv6IsImportedAndGmvIduIsNextRecommended()
+    public void OnlyGmv6ImportsNewEntriesAndGmvIduIsMergedAsReferences()
     {
         using var document = LoadRegistry();
         var manuals = document.RootElement.GetProperty("manuals").EnumerateArray().ToArray();
@@ -165,17 +165,21 @@ public sealed class ManualCoverageRegistryTests
             manual.GetProperty("importStatus").GetString() == "Imported").ToArray();
         var recommended = manuals.Where(manual =>
             manual.GetProperty("recommendedNext").GetBoolean()).ToArray();
+        var gmvIdu = manuals.Single(manual =>
+            manual.GetProperty("manualId").GetString() == "gree-gmv-idu-service-manual");
 
         Assert.Equal(
             "gree-gmv6-service-manual-2020-09",
             Assert.Single(imported).GetProperty("manualId").GetString());
-        Assert.Equal(
-            "gree-gmv-idu-service-manual",
-            Assert.Single(recommended).GetProperty("manualId").GetString());
+        Assert.Empty(recommended);
+        Assert.Equal("PartiallyImported", gmvIdu.GetProperty("importStatus").GetString());
+        Assert.Equal("PartialDiagnosticScopeImported", gmvIdu.GetProperty("coverageStatus").GetString());
+        Assert.Equal(0, gmvIdu.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(38, gmvIdu.GetProperty("entriesReferenced").GetInt32());
     }
 
     [Fact]
-    public void GmvIduAnalysisRecordsTotalCollisionAndNoImportedEntries()
+    public void GmvIduAnalysisRecordsReferenceMergeAndNoImportedEntries()
     {
         using var document = LoadRegistry();
         var manual = document.RootElement
@@ -188,16 +192,24 @@ public sealed class ManualCoverageRegistryTests
 
         Assert.Equal("GC202004-X", manual.GetProperty("documentCode").GetString());
         Assert.Equal("en", manual.GetProperty("sourceLanguage").GetString());
-        Assert.Equal("NeedsReview", manual.GetProperty("importStatus").GetString());
-        Assert.Equal("DiagnosticSectionsIdentified", manual.GetProperty("coverageStatus").GetString());
+        Assert.Equal("PartiallyImported", manual.GetProperty("importStatus").GetString());
+        Assert.Equal("PartialDiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
         Assert.Equal(0, manual.GetProperty("entriesImported").GetInt32());
-        Assert.Empty(manual.GetProperty("importedPackageIds").EnumerateArray());
+        Assert.Equal(38, manual.GetProperty("entriesReferenced").GetInt32());
+        Assert.Equal(19, manual.GetProperty("procedureCodeCountReviewed").GetInt32());
+        Assert.Equal(0, manual.GetProperty("procedureTextEntriesUpdated").GetInt32());
+        Assert.Empty(manual.GetProperty("needsReviewCodes").EnumerateArray());
+        Assert.Equal(
+            "gree-gmv6-indoor-fault-codes",
+            Assert.Single(manual.GetProperty("importedPackageIds").EnumerateArray()).GetString());
         Assert.Equal(38, analysis.GetProperty("identifiedCodeCount").GetInt32());
         Assert.Equal(19, analysis.GetProperty("detailedProcedureCodeCount").GetInt32());
         Assert.Equal(38, analysis.GetProperty("existingGmv6IndoorOverlapCount").GetInt32());
         Assert.Equal(
-            "BlockedPendingSeriesAwareDisambiguation",
+            "MergedAsSourceReferencesNoNewEntries",
             analysis.GetProperty("importDecision").GetString());
+        Assert.Equal(38, analysis.GetProperty("sourceReferencesMergedCount").GetInt32());
+        Assert.Equal(0, analysis.GetProperty("procedureTextEntriesUpdated").GetInt32());
 
         var identifiedCodes = analysis
             .GetProperty("identifiedCodes")

@@ -96,6 +96,8 @@ and `doNotAdvise` must be present even when empty. Locale and audience values ar
 
 Existing single-source fields remain required. New imports should use `sourceReferences[]` only to preserve multiple reviewed source/manual references for the same diagnostic answer. They must not create duplicate production entries when code, equipment type, and meaning are the same.
 
+ED-24F.1b uses this pattern for `GC202004-X` (`Service Manual - Multi Variable Air Conditioners Indoor Units`): 38 existing GMV6 indoor entries keep their original `GC202001-I` single-source fields and now carry two deterministic `sourceReferences[]` items, first the original GMV6 manual and then the GMV IDU manual. This does not change package or entry counts and does not ask Telegram users to choose a manual/source.
+
 ## Taxonomy
 
 Taxonomy prevents a future bulk catalog from becoming one flat code list. Choose the narrowest value supported by the

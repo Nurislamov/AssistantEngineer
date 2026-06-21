@@ -6,6 +6,10 @@ ED-24F.1a adds optional `sourceReferences[]` support to repository-backed error 
 
 No GMV IDU codes were imported in ED-24F.1a. Production knowledge remains 4 packages / 253 entries, and Telegram manual file delivery is still not implemented.
 
+## ED-24F.1b GMV IDU source-reference merge
+
+ED-24F.1b merges `SERVICE_MANUAL_GMV_IDU.pdf` (`GC202004-X`) as additional `sourceReferences[]` on 38 existing GMV6 indoor entries. No duplicate entries were created, 19 detailed procedure codes were reviewed, localized procedure prose was left unchanged for safety, and production knowledge remains 4 packages / 253 entries.
+
 ## ED-24H.0 Gree VRF equipment catalog map
 
 The non-runtime [Gree VRF equipment catalog map](gree-vrf-equipment-map.md) inventories catalog-identified Gree VRF/GMV series, indoor-unit types, controllers, commissioning tools, BMS/cloud/billing/remote gateways, and manual-search backlog items. The machine-readable registry is `data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json`.
@@ -14,7 +18,7 @@ ED-24H.0 uses only the three local catalogues `GMV6 Catalouge.pdf`, `141367.pdf`
 
 ## ED-24F.1 GMV IDU manual analysis
 
-The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. Import is intentionally blocked because all 38 codes overlap existing GMV6 indoor entries and the current Telegram flow cannot safely disambiguate identical indoor/display contexts by series.
+The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. ED-24F.1 stopped duplicate entry import; ED-24F.1b completed the safe merge as source references on matching existing GMV6 indoor entries.
 
 ## ED-24F.0 diagnostic manual coverage
 

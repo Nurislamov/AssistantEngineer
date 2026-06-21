@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
@@ -114,6 +115,31 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
     }
 
     [Fact]
+    public void MergedGmvIduTechnicalOutputUsesCompactMultiManualSourceLabel()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(new JsonErrorKnowledgeLocalizationSource());
+        var response = LocalizedResponse(
+            code: "L1",
+            series: "GMV6",
+            category: EquipmentCategory.VrfIndoorUnit,
+            side: EquipmentDiagnosticBotEquipmentSide.Indoor,
+            displayContext: EquipmentDiagnosticBotDisplayContext.IduDisplay);
+
+        var technical = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
+        var consumer = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
+
+        Assert.Contains("Источник: руководства производителя", technical, StringComparison.Ordinal);
+        Assert.DoesNotContain("gree-gmv-idu-service-manual", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("gree-gmv6-indoor-fault-codes", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SERVICE_MANUAL_GMV_IDU.pdf", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("D:\\", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("C:\\", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("РІС‹Р±РµСЂРёС‚Рµ", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Источник:", consumer, StringComparison.Ordinal);
+        Assert.DoesNotContain("gree-gmv-idu-service-manual", consumer, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void FinalOutputNormalizesEveryLocalizedDiagnosticField()
     {
         var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
@@ -149,21 +175,26 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         return services.BuildServiceProvider();
     }
 
-    private static EquipmentDiagnosticBotResponse LocalizedResponse() =>
+    private static EquipmentDiagnosticBotResponse LocalizedResponse(
+        string code = "C0",
+        string series = "GMV6",
+        EquipmentCategory category = EquipmentCategory.VrfOutdoorUnit,
+        EquipmentDiagnosticBotEquipmentSide side = EquipmentDiagnosticBotEquipmentSide.Outdoor,
+        EquipmentDiagnosticBotDisplayContext displayContext = EquipmentDiagnosticBotDisplayContext.OduMainBoardLed) =>
         new(
             EquipmentDiagnosticBotResponseStatus.Answer,
-            "Gree GMV6 C0",
+            $"Gree {series} {code}",
             "Communication diagnostic.",
             "GREE",
-            "C0",
+            code,
             new EquipmentDiagnosticBotEquipmentContext(
                 "Gree",
-                "GMV6",
+                series,
                 null,
-                EquipmentCategory.VrfOutdoorUnit,
-                EquipmentDiagnosticBotEquipmentSide.Outdoor,
-                EquipmentDiagnosticBotDisplayContext.OduMainBoardLed),
-            new EquipmentDiagnosticBotObservedCodeContext("C0", "C0", null),
+                category,
+                side,
+                displayContext),
+            new EquipmentDiagnosticBotObservedCodeContext(code, code, null),
             AnswerCard: null,
             ClarificationQuestion: null,
             SourceCard: null,

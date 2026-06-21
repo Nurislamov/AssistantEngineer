@@ -156,10 +156,45 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var directory = KnowledgeDirectory();
 
         var entries = new ErrorKnowledgeJsonLoader().LoadFromDirectory(directory);
+        var expectedCodes = GmvIduMergedCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var referencedEntries = entries
+            .Where(entry => entry.SourceReferences.Any(reference =>
+                reference.ManualId == "gree-gmv-idu-service-manual"))
+            .ToArray();
 
         Assert.Equal(253, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
-        Assert.All(entries, entry => Assert.Empty(entry.SourceReferences));
+        Assert.Equal(38, referencedEntries.Length);
+        var referencedCodes = referencedEntries
+            .Select(entry => entry.Code)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.Empty(expectedCodes.Except(referencedCodes, StringComparer.OrdinalIgnoreCase));
+        Assert.Empty(referencedCodes.Except(expectedCodes, StringComparer.OrdinalIgnoreCase));
+        Assert.All(referencedEntries, entry =>
+        {
+            Assert.Equal("IndoorUnit", entry.EquipmentType.ToString());
+            Assert.Equal("IndoorUnit", entry.DisplaySource.ToString());
+            Assert.Equal(
+                ["gree-gmv6-service-manual-2020-09", "gree-gmv-idu-service-manual"],
+                entry.SourceReferences.Select(reference => reference.ManualId!).ToArray());
+            Assert.Equal(
+                ["GC202001-I", "GC202004-X"],
+                entry.SourceReferences.Select(reference => reference.DocumentCode!).ToArray());
+            Assert.All(entry.SourceReferences, reference =>
+            {
+                var serialized = string.Join(
+                    " ",
+                    reference.SourceName,
+                    reference.SourceReference,
+                    reference.Notes);
+                Assert.DoesNotContain("SERVICE_MANUAL_GMV_IDU.pdf", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("D:\\", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("C:\\", serialized, StringComparison.OrdinalIgnoreCase);
+            });
+        });
+        Assert.All(
+            entries.Where(entry => !expectedCodes.Contains(entry.Code)),
+            entry => Assert.Empty(entry.SourceReferences));
     }
 
     [Fact]
@@ -679,6 +714,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
             .Single(node =>
                 node["locale"]!.GetValue<string>() == "ru" &&
                 node["audience"]!.GetValue<string>() == "Consumer");
+
+    private static readonly string[] GmvIduMergedCodes =
+    [
+        "L0", "L1", "L2", "L3", "L4", "L5", "L7", "L8", "L9", "LA", "LH", "LC",
+        "d1", "d3", "d4", "d6", "d7", "d8", "d9", "dA", "dH", "dC", "dL", "dE",
+        "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "oA", "ob", "oC",
+        "o0", "db"
+    ];
 
     private static JsonObject SourceReference(
         string sourceName = "Gree GMV6 service manual",

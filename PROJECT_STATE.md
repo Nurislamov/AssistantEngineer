@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24F.1b Merge GMV IDU manual references and procedures`
+`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Use the ED-24F.1a multi-source reference model to merge reviewed `SERVICE_MANUAL_GMV_IDU.pdf` (`GC202004-X`) source references and procedures where they confirm the same GMV indoor-unit code meaning.
+Continue the reviewed local-manual import backlog after ED-24F.1b. Prefer the next locally available Gree VRF/GMV manual identified by the ED-24H catalog map, and import only evidence that is directly verified from that manual.
 
 
 
@@ -42,11 +42,11 @@ Do not mix internet data, memory-based assumptions, or cross-series Gree meaning
 
 
 
-Before starting `ED-24F.1b`, use the reviewed manual:
+Before starting the next import stage, identify the exact local source manual and record:
 
 
 
-`D:\\Project\\AssistantEngineer\\artifacts\\manual-intake\\sources\\gree\\SERVICE_MANUAL_GMV_IDU.pdf`
+manufacturer, equipment family, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests.
 
 
 
@@ -54,7 +54,7 @@ Expected next action:
 
 
 
-1\. Add `GC202004-X` as additional `sourceReferences[]` only where the meaning matches the existing GMV6 indoor answer.
+1\. Use only the selected local manual.
 
 2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
@@ -111,6 +111,78 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24F.1b - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24F.1b Merge GMV IDU manual references`
+
+
+
+Purpose:
+
+
+
+Merge reviewed `SERVICE_MANUAL_GMV_IDU.pdf` (`GC202004-X`) evidence into existing GMV6 indoor diagnostics as additional source references, without creating duplicate answers or changing runtime behavior outside the embedded knowledge data.
+
+
+
+Source used:
+
+
+
+`D:\\Project\\AssistantEngineer\\artifacts\\manual-intake\\sources\\gree\\SERVICE_MANUAL_GMV_IDU.pdf`
+
+
+
+Results:
+
+
+
+\* Codes reviewed: 38
+
+\* Existing GMV6 indoor entries updated with `sourceReferences[]`: 38
+
+\* Detailed procedure-rich codes reviewed: 19
+
+\* Localized Installer/Engineer procedure text updated: 0
+
+\* NeedsReview codes after merge: 0
+
+\* Duplicate diagnostic entries created: 0
+
+\* Packages remain: 4
+
+\* Entries remain: 253
+
+
+
+Procedure note:
+
+
+
+The detailed troubleshooting sections in `GC202004-X` were reviewed, but localized procedure prose was not expanded in this stage. Existing qualified-service text already keeps procedure execution bounded by the reviewed manuals, and several IDU procedures involve component replacement or electrical service actions.
+
+
+
+Manual-bound rule:
+
+
+
+`Same code + same equipment type + same meaning = one diagnostic answer with multiple reviewed source references`
+
+
+
+No external sources, other manuals, or model-memory technical content were used.
+
+No PDF, DOC, XLS, or XLSX source file was committed. No Telegram manual file delivery, Mini App, role policy, DB schema, EF migration, deployment scaffold, or env change was added.
 
 
 
@@ -176,7 +248,7 @@ Next stage:
 
 
 
-`ED-24F.1b Merge GMV IDU manual references and procedures`
+`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
 
 
 
@@ -2210,7 +2282,7 @@ Recent important areas:
 
 
 
-Latest known validation for ED-24F.1a:
+Latest known validation for ED-24F.1b:
 
 
 
@@ -2218,15 +2290,15 @@ Latest known validation for ED-24F.1a:
 
 \* Build: PASS, 0 warnings, 0 errors
 
-\* Full tests: PASS - 4660
+\* Full tests: PASS - 4661
 
-\* EquipmentDiagnostics: PASS - 679
+\* EquipmentDiagnostics: PASS - 680
 
 \* Deployment validators: PASS
 
 \* Knowledge validator: PASS - 4 packages, 253 entries, 0 issues
 
-\* Release publish smoke: not run for ED-24F.1a
+\* Release publish smoke: PASS
 
 \* EF pending model changes: none
 
@@ -2300,7 +2372,7 @@ Recommended next stage:
 
 
 
-`ED-24F.1b Merge GMV IDU manual references and procedures`
+`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
 
 
 
@@ -2308,7 +2380,7 @@ Scope:
 
 
 
-\* merge `GC202004-X` references/procedures only where reviewed manual evidence matches existing GMV6 indoor meanings;
+\* select the exact local source manual before coding;
 
 \* no external sources;
 
@@ -2332,7 +2404,7 @@ Before coding:
 
 
 
-1\. User provides or identifies the next manual.
+1\. User provides or identifies the next manual, or selects one from the ED-24H backlog.
 
 2\. Assistant analyzes manual identity:
 

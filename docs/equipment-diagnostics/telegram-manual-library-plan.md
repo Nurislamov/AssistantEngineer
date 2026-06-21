@@ -1,6 +1,6 @@
 # Telegram manual library plan
 
-Status: plan only. ED-24F.0 and ED-24F.1a do not implement file upload, storage, delivery, buttons, callbacks, or Telegram runtime changes.
+Status: plan only. ED-24F.0, ED-24F.1a, and ED-24F.1b do not implement file upload, storage, delivery, buttons, callbacks, or Telegram runtime changes.
 
 ## Intended model
 
@@ -43,6 +43,8 @@ A later stage may add a post-diagnostic button:
 
 The button should resolve reviewed `manualId` values from the selected diagnostic answer, enforce the current user role, and return all manuals where the selected code appears. If one answer has multiple `sourceReferences[]`, manual delivery should use those references rather than asking the user to choose a source. It must not generalize one manual across Gree series.
 
+ED-24F.1b prepares this for the GMV IDU merge by adding `manualId` references for both the original GMV6 service manual and `GC202004-X` on 38 existing indoor entries. Runtime delivery is still deferred.
+
 ## Source-of-truth and safety rules
 
 - Keep manual identity and coverage metadata in the registry or a reviewed database.
@@ -51,4 +53,4 @@ The button should resolve reviewed `manualId` values from the selected diagnosti
 - Do not derive diagnostic meaning from Telegram captions.
 - Do not expose storage chat identifiers in user-facing text or logs.
 - Do not send manuals to Consumer users.
-- Do not implement Telegram file storage or delivery in ED-24F.0 or ED-24F.1a.
+- Do not implement Telegram file storage or delivery in ED-24F.0, ED-24F.1a, or ED-24F.1b.
