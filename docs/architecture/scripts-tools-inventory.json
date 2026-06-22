@@ -1341,6 +1341,22 @@
                         "riskIfChanged":  "Validation drift can hide broken routing, provider lock-in, database additions, or committed secrets."
                     },
                     {
+                        "id":  "SCR-083A",
+                        "path":  "scripts/deployment/generate-production-secret-values.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generates cryptographically strong candidate values for manual production secret rotation without reading or editing deploy/.env.",
+                        "invokedBy":  [
+                                          "LocalManualOnly"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep default output under ignored artifacts and do not print current or generated secrets unless explicitly requested in a private terminal.",
+                        "proposedStage":  "ED-SEC.1",
+                        "riskIfChanged":  "Helper drift can disclose secrets, write deploy/.env unintentionally, or weaken rotation guidance."
+                    },
+                    {
                         "id":  "SCR-084",
                         "path":  "scripts/deployment/run-ci-deployment-dry-run.ps1",
                         "type":  "PowerShell",

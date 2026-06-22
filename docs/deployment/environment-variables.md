@@ -3,6 +3,12 @@
 `deploy/.env.example` is a placeholder-only template. Copy it to ignored `deploy/.env` and configure values outside
 Git. Do not put real bot tokens, webhook secrets, domains, or credentials in source-controlled files.
 
+Do not paste full `docker compose config` output from production into chats, issues, logs, or reviews. It resolves
+`deploy/.env` placeholders and can print API keys, webhook secrets, database passwords, and connection strings. Use
+`validate-deployment-scaffold.ps1 -RunDockerComposeConfig` for placeholder-only scaffold validation and see
+[production-secret-rotation-runbook.md](production-secret-rotation-runbook.md) for safe production checks and rotation
+steps.
+
 ## Scaffold Variables
 
 | Variable | Purpose | Default/example |

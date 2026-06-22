@@ -18,6 +18,8 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 ## Configuration
 
 - Copy `deploy/.env.example` to ignored `deploy/.env`; never commit secrets to Git.
+- Never paste full production `docker compose config` output into chats, issues, logs, or reviews because it resolves
+  `.env` values and can print secrets. Use `production-secret-rotation-runbook.md` for safe verification commands.
 - Keep Telegram transport and chat ID discovery disabled during initial stack verification.
 - Run `.\scripts\deployment\validate-production-env.ps1`.
 - Run `.\scripts\deployment\validate-deployment-scaffold.ps1`.
@@ -76,4 +78,6 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 
 - Record the deployed image tag or digest and the rollback command.
 - Confirm `deploy/.env`, generated artifacts, secrets, and PDF/manual files remain uncommitted.
+- If any resolved configuration output was exposed, follow `production-secret-rotation-runbook.md` before declaring the
+  release closed.
 - Review the current limitations in `logging-monitoring-backup-notes.md`.

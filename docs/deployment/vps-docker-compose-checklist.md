@@ -10,6 +10,10 @@
 - Create `deploy/.env` locally from `.env.example`; never commit it.
 - Run `validate-production-env.ps1` and `validate-deployment-scaffold.ps1`.
 - Run `validate-deployment-scaffold.ps1 -RunDockerComposeConfig` when Docker Compose is available.
+- Do not paste production `docker compose config` output into chats, issues, logs, or reviews. It resolves `deploy/.env`
+  and can print API keys, webhook secrets, database passwords, and connection strings. For services use
+  `docker compose --env-file deploy/.env -f deploy/docker-compose.yml ps`; for mounts use a bounded
+  `docker inspect --format` query from `production-secret-rotation-runbook.md`.
 - Confirm the provider-neutral CI deployment dry-run workflow passed; it validates and builds but does not deploy.
 - Configure Telegram secrets only through the deployment secret/environment mechanism.
 - Keep Telegram `IsEnabled=false` until secrets and access policy are ready.

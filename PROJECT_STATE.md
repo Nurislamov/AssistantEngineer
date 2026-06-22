@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24G.2 Deploy hardened Telegram manual library and register production bindings`
+`ED-SEC.1 Rotate leaked production secrets`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Deploy ED-24G.1 to production, ensure `/opt/assistantengineer/artifacts/operations/` is writable by the API container, register reviewed Telegram `file_id` bindings for eligible manuals on the production host without committing file IDs or manual binaries, then smoke canonical diagnostic casing and manual delivery flows.
+Add a safe operational runbook, helper script, and regression checks for rotating production secrets that were exposed through resolved Docker Compose configuration output. Actual `deploy/.env` changes and production secret rotation are manual VPS operations and must not be committed.
 
 
 
@@ -58,13 +58,15 @@ Expected next action:
 
 2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
-3\. Register manual bindings only with `/manual_register <manualId>` from an attached or reply-to Telegram document.
+3\. Do not paste full `docker compose config`, `docker inspect`, env dumps, or `deploy/.env` contents into chats/issues/logs.
 
-4\. Use `/manual_unregister <manualId>` and `/manual_bindings` only from Owner/Admin accounts; do not expose file IDs, chat IDs, user IDs, tokens, package IDs, or local paths.
+4\. Rotate leaked production API key, Telegram webhook secret, and PostgreSQL password/connection string manually on the VPS using placeholder-only runbook steps.
 
-5\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
+5\. Treat the notification chat ID as operational metadata; do not paste it publicly, but rotate it only if operational policy changes.
 
-6\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6 smoke behavior stable.
+6\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
+
+7\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6/manual delivery smoke behavior stable.
 
 
 
@@ -108,6 +110,18 @@ Latest known production status:
 
 \* Postgres container remains healthy.
 
+\* ED-24G.1 production deployment is PASS.
+
+\* Telegram manual library works in production.
+
+\* GMV6 service manual and GMV IDU service manual delivery through `/manuals` works.
+
+\* Canonical casing smoke is fixed.
+
+\* Manual bindings persist through `/opt/assistantengineer/artifacts/operations/` to `/app/artifacts/operations/`.
+
+\* ED-SEC.1 risk: resolved production Compose config output exposed secret values in chat/log context and requires manual secret rotation on the VPS.
+
 \* Orphan Postgres compose warning is known and should not be acted on unless explicitly planned.
 
 
@@ -147,6 +161,10 @@ Production/deploy note:
 \* Docker Compose now maps host `/opt/assistantengineer/artifacts/operations/` to container `/app/artifacts/operations/` through `../artifacts/operations:/app/artifacts/operations`.
 
 \* `start-production-stack.ps1` creates `artifacts/operations` before stack startup; production operators must ensure the API container user can write the host directory.
+
+\* Production status after deployment: PASS. Telegram manual library works, canonical casing is fixed, manual bindings persist through the host bind, and both eligible GMV manuals can be delivered through `/manuals`.
+
+\* Security follow-up: resolved `docker compose config` output exposed production API key, Telegram webhook secret, and PostgreSQL password/connection-string material in chat/log context. ED-SEC.1 tracks safe runbook/script/checks; actual rotation is manual on the VPS and must not be committed.
 
 
 
@@ -584,7 +602,7 @@ Next stage:
 
 
 
-`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
+`ED-SEC.1 Rotate leaked production secrets`
 
 
 
@@ -2432,7 +2450,7 @@ Current known working smoke queries:
 
 
 
-No production blocker.
+Current production risk: resolved Docker Compose configuration output exposed production secret values in chat/log context. Rotate the production API key, Telegram webhook secret, and PostgreSQL password/connection string manually on the VPS before treating the incident as closed. Do not paste raw resolved config or env output again.
 
 
 
@@ -2708,7 +2726,7 @@ Recommended next stage:
 
 
 
-`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
+`ED-SEC.1 Rotate leaked production secrets`
 
 
 
@@ -2716,23 +2734,15 @@ Scope:
 
 
 
-\* select the exact local source manual before coding;
+* add safe repository-only runbook, script, and checks;
 
-\* no external sources;
+* do not rotate real secrets in Git;
 
-\* no cross-series assumptions;
+* do not commit `deploy/.env`;
 
-\* no duplicate answer when code, equipment type, and meaning are the same;
+* do not print, store, or repeat exposed values;
 
-\* equipment/series clarification only for genuinely different meanings;
-
-\* no Mini App;
-
-\* no runtime editing;
-
-\* no DB/env changes unless explicitly justified;
-
-\* keep current Telegram diagnostics green.
+* keep current Telegram diagnostics and manual delivery green.
 
 
 
@@ -2740,33 +2750,17 @@ Before coding:
 
 
 
-1\. User provides or identifies the next manual, or selects one from the ED-24H backlog.
+1\. Add/verify the production secret rotation runbook and helper script.
 
-2\. Assistant analyzes manual identity:
+2\. Run restore/build/tests/deployment validators/knowledge verifier.
 
+3\. Commit and push only safe docs/scripts/tests/state changes.
 
-
-&#x20;  \* manufacturer;
-
-&#x20;  \* equipment family;
-
-&#x20;  \* series/model scope;
-
-&#x20;  \* document code/version;
-
-&#x20;  \* sections containing diagnostic/error/status/debug tables;
-
-&#x20;  \* whether troubleshooting details are present;
-
-&#x20;  \* candidate package manifests;
-
-&#x20;  \* uncertain/skipped items.
-
-3\. Assistant prepares a Codex prompt for import.
+4\. User manually rotates production secrets on the VPS using placeholders only.
 
 
 
-Expected checks after next import:
+Expected checks for ED-SEC.1:
 
 
 
@@ -2788,27 +2782,21 @@ Also run deployment validators and release publish smoke if available.
 
 
 
-Production smoke after next import must include:
+Production smoke after manual rotation must include:
 
 
 
-\* at least one known code from the new manual;
+* `/health` and `/ready`;
 
-\* `/last`;
+* protected API accepts the new API key and rejects the old key;
 
-\* existing GMV6 smoke:
+* Telegram polling/webhook starts without printing secrets;
 
+* existing GMV6 smoke: `Gree C0`, `Gree U0`, `Gree H5`, `Gree E1`, `Gree A0`;
 
+* `/last`;
 
-&#x20; \* `Gree C0`
-
-&#x20; \* `Gree U0`
-
-&#x20; \* `Gree H5`
-
-&#x20; \* `Gree E1`
-
-&#x20; \* `Gree A0`
+* `/manuals` still delivers the reviewed manuals.
 
 
 

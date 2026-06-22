@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -17,7 +18,8 @@ public sealed class ProductionDeploymentHardeningTests
         var expectedScripts = new[]
         {
             "scripts/deployment/validate-production-env.ps1",
-            "scripts/deployment/validate-deployment-scaffold.ps1"
+            "scripts/deployment/validate-deployment-scaffold.ps1",
+            "scripts/deployment/generate-production-secret-values.ps1"
         };
         using var inventory = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             TestPaths.RepoRoot, "docs", "architecture", "scripts-tools-inventory.json")));
@@ -115,6 +117,67 @@ public sealed class ProductionDeploymentHardeningTests
         Assert.Contains("No monitoring system", docs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("No database service", docs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("audit log", docs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("docker compose config", docs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Do not paste full", docs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("production-secret-rotation-runbook.md", docs, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ProductionSecretRotationRunbookUsesPlaceholdersAndSafeComposeGuidance()
+    {
+        var runbook = File.ReadAllText(Path.Combine(DeploymentDocsRoot, "production-secret-rotation-runbook.md"));
+
+        Assert.Contains("What Leaked", runbook, StringComparison.Ordinal);
+        Assert.Contains("What Not To Paste", runbook, StringComparison.Ordinal);
+        Assert.Contains("Safe Verification Commands", runbook, StringComparison.Ordinal);
+        Assert.Contains("PostgreSQL password", runbook, StringComparison.Ordinal);
+        Assert.Contains("API key", runbook, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("webhook secret", runbook, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("BotFather", runbook, StringComparison.Ordinal);
+        Assert.Contains("config --quiet", runbook, StringComparison.Ordinal);
+        Assert.Contains("Do not run `docker compose --env-file deploy/.env -f deploy/docker-compose.yml config`", runbook, StringComparison.Ordinal);
+        Assert.Contains("<new-api-key>", runbook, StringComparison.Ordinal);
+        Assert.Contains("<new-webhook-secret>", runbook, StringComparison.Ordinal);
+        Assert.Contains("<new-postgres-password>", runbook, StringComparison.Ordinal);
+        Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", runbook);
+        Assert.DoesNotMatch(@"(?i)(password|secret|api[-_ ]?key)\s*=\s*[A-Za-z0-9_-]{16,}", runbook);
+    }
+
+    [Fact]
+    public void ProductionSecretGeneratorDoesNotReadOrEditEnvByDefault()
+    {
+        var script = ReadScript("generate-production-secret-values.ps1");
+
+        Assert.Contains("RandomNumberGenerator", script, StringComparison.Ordinal);
+        Assert.Contains("artifacts/operations/secret-rotation", script, StringComparison.Ordinal);
+        Assert.Contains("Do not commit", script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("did not read deploy/.env", script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("did not edit deploy/.env", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Get-Content deploy/.env", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Set-Content deploy/.env", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Add-Content deploy/.env", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", script);
+    }
+
+    [Fact]
+    public void SecretRuntimeAndManualBinaryFilesRemainUntracked()
+    {
+        var tracked = GitLsFiles();
+
+        Assert.DoesNotContain("deploy/.env", tracked);
+        Assert.DoesNotContain("artifacts/operations/equipment-diagnostics-manual-bindings.json", tracked);
+        Assert.DoesNotContain(tracked, path =>
+            path.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".doc", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".docx", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".xls", StringComparison.OrdinalIgnoreCase) ||
+            path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase));
+
+        var rootIgnore = File.ReadAllText(Path.Combine(TestPaths.RepoRoot, ".gitignore"));
+        var deployIgnore = ReadDeploy(".gitignore");
+        Assert.Contains("/artifacts/operations/", rootIgnore, StringComparison.Ordinal);
+        Assert.Contains("/artifacts/operations/secret-rotation/", rootIgnore, StringComparison.Ordinal);
+        Assert.Contains(".env", deployIgnore, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -153,4 +216,24 @@ public sealed class ProductionDeploymentHardeningTests
 
     private static string ReadScript(string file) =>
         File.ReadAllText(Path.Combine(DeploymentScriptsRoot, file));
+
+    private static IReadOnlySet<string> GitLsFiles()
+    {
+        var start = new ProcessStartInfo("git", "ls-files -z")
+        {
+            WorkingDirectory = TestPaths.RepoRoot,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+        using var process = Process.Start(start) ?? throw new InvalidOperationException("Unable to start git.");
+        var stdout = process.StandardOutput.ReadToEnd();
+        var stderr = process.StandardError.ReadToEnd();
+        process.WaitForExit();
+        Assert.True(process.ExitCode == 0, stderr);
+        return stdout
+            .Split('\0', StringSplitOptions.RemoveEmptyEntries)
+            .Select(path => path.Replace('\\', '/'))
+            .ToHashSet(StringComparer.Ordinal);
+    }
 }
