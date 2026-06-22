@@ -9,6 +9,9 @@ try {
     if (-not (Test-Path "deploy/.env")) {
         throw "deploy/.env is required. Create it locally from deploy/.env.example and keep it out of Git."
     }
+
+    New-Item -ItemType Directory -Force -Path "artifacts/operations" | Out-Null
+
     docker compose -f $ComposeFile up -d
     if ($LASTEXITCODE -ne 0) { throw "Production-like stack start failed." }
 }

@@ -67,6 +67,8 @@ public sealed class ProductionDeploymentHardeningTests
             Assert.Contains(service, compose, StringComparison.Ordinal);
         }
 
+        Assert.Contains("../artifacts/operations:/app/artifacts/operations", compose, StringComparison.Ordinal);
+        Assert.DoesNotContain("api_operations:", compose, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", compose);
         Assert.DoesNotMatch(@"(?im)^\s*(postgres|mysql|mariadb|sqlserver|mssql|mongodb|redis|database|db)\s*:", compose);
     }

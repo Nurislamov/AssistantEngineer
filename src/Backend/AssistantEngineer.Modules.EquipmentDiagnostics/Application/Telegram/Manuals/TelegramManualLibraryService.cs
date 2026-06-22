@@ -11,6 +11,8 @@ public sealed class TelegramManualLibraryService
     public const string ManualLibraryButton = "📘 Руководства";
     private const string ManualRequestCommand = "/manuals";
     private const string ManualRegisterCommand = "/manual_register";
+    private const string ManualUnregisterCommand = "/manual_unregister";
+    private const string ManualBindingsCommand = "/manual_bindings";
 
     private readonly EquipmentDiagnosticTelegramOptions _options;
     private readonly ITelegramDiagnosticCaseStore _historyStore;
@@ -38,6 +40,12 @@ public sealed class TelegramManualLibraryService
 
     public static bool IsManualRegistration(string? text) =>
         text?.TrimStart().StartsWith(ManualRegisterCommand, StringComparison.OrdinalIgnoreCase) == true;
+
+    public static bool IsManualUnregistration(string? text) =>
+        text?.TrimStart().StartsWith(ManualUnregisterCommand, StringComparison.OrdinalIgnoreCase) == true;
+
+    public static bool IsManualBindingList(string? text) =>
+        string.Equals(text?.Trim(), ManualBindingsCommand, StringComparison.OrdinalIgnoreCase);
 
     public async Task<TelegramManualLibraryResult> RequestManualsAsync(
         EquipmentDiagnosticTelegramUpdate update,
@@ -120,7 +128,7 @@ public sealed class TelegramManualLibraryService
             return Text("Регистрация файлов руководств доступна только админу или владельцу.");
         }
 
-        var parts = update.Text?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
+        var parts = SplitCommand(update.Text);
         if (parts.Length < 2)
         {
             return Text("Укажите manualId из реестра: /manual_register <manualId>. Файл должен быть приложен документом Telegram.");
@@ -131,8 +139,7 @@ public sealed class TelegramManualLibraryService
             return Text("Идентификатор файла не принимается текстом. Отправьте документ с подписью /manual_register <manualId> или ответьте командой на документ.");
         }
 
-        var manual = _manualRegistry.GetManuals()
-            .FirstOrDefault(item => item.ManualId.Equals(parts[1], StringComparison.OrdinalIgnoreCase));
+        var manual = FindManual(parts[1]);
         if (manual is null)
         {
             return Text("Руководство с таким идентификатором не найдено в реестре.");
@@ -166,6 +173,90 @@ public sealed class TelegramManualLibraryService
             cancellationToken);
 
         return Text($"Файл руководства подключен: {DisplayName(manual)}.");
+    }
+
+    public async Task<TelegramManualLibraryResult> UnregisterManualAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return Text("Библиотека руководств сейчас выключена.");
+        }
+
+        if (!CanManageManuals(access.Role))
+        {
+            return Text("Управление файлами руководств доступно только админу или владельцу.");
+        }
+
+        var parts = SplitCommand(update.Text);
+        if (parts.Length != 2)
+        {
+            return Text("Укажите manualId из реестра: /manual_unregister <manualId>.");
+        }
+
+        var manual = FindManual(parts[1]);
+        if (manual is null)
+        {
+            return Text("Руководство с таким идентификатором не найдено в реестре.");
+        }
+
+        var removed = await _bindingStore.RemoveAsync(manual.ManualId, cancellationToken);
+        return Text(removed
+            ? $"Файл руководства отключен: {DisplayName(manual)}."
+            : $"Для этого руководства файл не был подключен: {DisplayName(manual)}.");
+    }
+
+    public async Task<TelegramManualLibraryResult> ListBindingsAsync(
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return Text("Библиотека руководств сейчас выключена.");
+        }
+
+        if (!CanManageManuals(access.Role))
+        {
+            return Text("Список подключенных руководств доступен только админу или владельцу.");
+        }
+
+        var bindings = (await _bindingStore.ListAsync(cancellationToken))
+            .ToDictionary(binding => binding.ManualId, StringComparer.OrdinalIgnoreCase);
+        var manuals = _manualRegistry.GetManuals()
+            .Where(manual => manual.EligibleForTelegramLibrary)
+            .OrderBy(DisplayName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        if (manuals.Length == 0)
+        {
+            return Text("В реестре пока нет руководств, разрешенных для Telegram-библиотеки.");
+        }
+
+        var builder = new StringBuilder();
+        builder.AppendLine("Подключение руководств");
+        foreach (var manual in manuals)
+        {
+            builder.Append("- ");
+            builder.Append(DisplayName(manual));
+            if (bindings.TryGetValue(manual.ManualId, out var binding))
+            {
+                builder.Append(": подключено");
+                var safeName = SafeFileName(binding.OriginalFileName);
+                if (!string.IsNullOrWhiteSpace(safeName))
+                {
+                    builder.Append($"; файл: {safeName}");
+                }
+            }
+            else
+            {
+                builder.Append(": файл не подключен");
+            }
+
+            builder.AppendLine();
+        }
+
+        return Text(builder.ToString().Trim());
     }
 
     private IReadOnlyList<TelegramManualRegistryEntry> ResolveManuals(
@@ -264,6 +355,9 @@ public sealed class TelegramManualLibraryService
     private static bool CanRegisterManuals(TelegramUserRole role) =>
         role is TelegramUserRole.Admin or TelegramUserRole.Owner;
 
+    private static bool CanManageManuals(TelegramUserRole role) =>
+        role is TelegramUserRole.Admin or TelegramUserRole.Owner;
+
     private static bool IsAllowedForRole(TelegramManualRegistryEntry manual, TelegramUserRole role) =>
         manual.EligibleForTelegramLibrary &&
         manual.AllowedRoles.Contains(role) &&
@@ -319,10 +413,22 @@ public sealed class TelegramManualLibraryService
                 update.ReplyToDocumentFileSize);
     }
 
-    private static string DisplayName(TelegramManualRegistryEntry manual) =>
-        string.IsNullOrWhiteSpace(manual.DocumentCode)
+    private TelegramManualRegistryEntry? FindManual(string manualId) =>
+        _manualRegistry.GetManuals()
+            .FirstOrDefault(item => item.ManualId.Equals(manualId, StringComparison.OrdinalIgnoreCase));
+
+    private static string DisplayName(TelegramManualRegistryEntry manual)
+    {
+        var title = string.IsNullOrWhiteSpace(manual.DisplayNameRu)
             ? manual.DocumentTitle
-            : $"{manual.DocumentTitle} ({manual.DocumentCode})";
+            : manual.DisplayNameRu;
+        return string.IsNullOrWhiteSpace(manual.DocumentCode)
+            ? title
+            : $"{title} ({manual.DocumentCode})";
+    }
+
+    private static string[] SplitCommand(string? text) =>
+        text?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
 
     private static string? SafeFileName(string? value) =>
         string.IsNullOrWhiteSpace(value)

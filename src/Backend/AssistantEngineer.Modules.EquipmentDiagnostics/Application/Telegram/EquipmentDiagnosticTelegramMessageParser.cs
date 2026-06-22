@@ -159,7 +159,7 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             return false;
         }
 
-        code = match.ToUpperInvariant();
+        code = match;
         return true;
     }
 

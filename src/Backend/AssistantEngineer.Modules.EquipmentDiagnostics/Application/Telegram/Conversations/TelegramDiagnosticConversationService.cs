@@ -326,6 +326,17 @@ public sealed class TelegramDiagnosticConversationService
             return NotFound(access);
         }
 
+        if (HasCaseOnlyAmbiguityWithoutExactMatch(code, candidates))
+        {
+            await _sessionStore.ClearAsync(user.Id, cancellationToken);
+            return new TelegramDiagnosticConversationResult(
+                true,
+                EquipmentDiagnosticTelegramResponseKind.ValidationError,
+                "Код найден в нескольких вариантах регистра. Введите точный код с экрана оборудования без изменения букв: например D1 или d1.",
+                [],
+                MainKeyboard(access));
+        }
+
         var selectedManufacturer = FindMentionedManufacturer(update.Text, candidates) ??
             SingleOrNull(candidates.Select(candidate => candidate.Manufacturer).Distinct(StringComparer.OrdinalIgnoreCase));
 
@@ -500,7 +511,7 @@ public sealed class TelegramDiagnosticConversationService
         var diagnosis = await _botFacade.DiagnoseAsync(
             new EquipmentDiagnosticBotRequest(
                 selectedManufacturer,
-                code,
+                finalCandidate.Code,
                 FreeText: null,
                 Series: finalCandidate.Series,
                 ModelCode: finalCandidate.ModelCode,
@@ -560,10 +571,10 @@ public sealed class TelegramDiagnosticConversationService
             .ToArray();
         if (runtimeCandidates.Length > 0)
         {
-            return runtimeCandidates;
+            return PreferExactCodeMatches(code, runtimeCandidates);
         }
 
-        return _localizedKnowledge.GetEntries()
+        var localizedCandidates = _localizedKnowledge.GetEntries()
             .Where(entry => entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
             .Where(EquipmentDiagnosticBotReferencePolicy.IsSearchableLocalizedEntry)
             .Select(entry => new TelegramDiagnosticCandidate(
@@ -580,6 +591,7 @@ public sealed class TelegramDiagnosticConversationService
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
             .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
             .ToArray();
+        return PreferExactCodeMatches(code, localizedCandidates);
     }
 
     private async Task<TelegramConversationSessionSnapshot> SaveAsync(
@@ -1025,6 +1037,23 @@ public sealed class TelegramDiagnosticConversationService
         var distinct = values.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         return distinct.Length == 1 ? distinct[0] : null;
     }
+
+    private static IReadOnlyList<TelegramDiagnosticCandidate> PreferExactCodeMatches(
+        string requestedCode,
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates)
+    {
+        var exact = candidates
+            .Where(candidate => string.Equals(candidate.Code, requestedCode, StringComparison.Ordinal))
+            .ToArray();
+        return exact.Length > 0 ? exact : candidates;
+    }
+
+    private static bool HasCaseOnlyAmbiguityWithoutExactMatch(
+        string requestedCode,
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates) =>
+        candidates.Select(candidate => candidate.Code).Distinct(StringComparer.Ordinal).Count() > 1 &&
+        candidates.Select(candidate => candidate.Code).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 1 &&
+        candidates.All(candidate => !string.Equals(candidate.Code, requestedCode, StringComparison.Ordinal));
 
     private static string? MatchOption(string? text, IEnumerable<string> options)
     {

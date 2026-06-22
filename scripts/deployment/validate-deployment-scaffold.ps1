@@ -80,6 +80,13 @@ foreach ($service in @("assistantengineer-api:", "assistantengineer-frontend:", 
     }
 }
 
+if ($compose.IndexOf("../artifacts/operations:/app/artifacts/operations", [StringComparison]::Ordinal) -lt 0) {
+    throw "Compose scaffold must persist API operations artifacts with a host bind mount."
+}
+if ($compose.IndexOf("api_operations:", [StringComparison]::Ordinal) -ge 0) {
+    throw "Compose scaffold must not use the old named api_operations volume for runtime Telegram/manual binding state."
+}
+
 if ($compose -match '(?im)^\s*(postgres|mysql|mariadb|sqlserver|mssql|mongodb|redis|database|db)\s*:') {
     throw "Compose scaffold must not add a database service."
 }
@@ -139,6 +146,7 @@ if ($RunDockerComposeConfig) {
 
 Write-Host "PASS: deployment scaffold validation"
 Write-Host "Compose services: assistantengineer-api, assistantengineer-frontend, reverse-proxy"
+Write-Host "Operations artifacts: host bind mount ../artifacts/operations -> /app/artifacts/operations"
 Write-Host "Database service: absent"
 Write-Host "Telegram secrets: not embedded"
 Write-Host "Placeholder domains: example.com, api.example.com"

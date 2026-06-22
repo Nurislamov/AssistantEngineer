@@ -82,6 +82,8 @@ public sealed class ProviderNeutralDeploymentScaffoldTests
         Assert.Contains("env_file:", compose, StringComparison.Ordinal);
         Assert.Contains("TELEGRAM_IS_ENABLED:-false", compose, StringComparison.Ordinal);
         Assert.Contains("TELEGRAM_ENABLE_CHAT_ID_DISCOVERY:-false", compose, StringComparison.Ordinal);
+        Assert.Contains("../artifacts/operations:/app/artifacts/operations", compose, StringComparison.Ordinal);
+        Assert.DoesNotContain("api_operations:", compose, StringComparison.Ordinal);
         Assert.DoesNotContain("postgres:", compose, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("mysql:", compose, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("sqlserver:", compose, StringComparison.OrdinalIgnoreCase);
@@ -171,6 +173,11 @@ public sealed class ProviderNeutralDeploymentScaffoldTests
             Assert.Contains(relative, paths);
             Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", content);
         }
+
+        Assert.Contains(
+            "artifacts/operations",
+            File.ReadAllText(Path.Combine(scriptsRoot, "start-production-stack.ps1")),
+            StringComparison.Ordinal);
     }
 
     private static IEnumerable<string> RequiredFiles() =>

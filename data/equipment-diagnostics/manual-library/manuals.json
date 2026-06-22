@@ -853,7 +853,7 @@
       "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
       "notes": "Only manual whose diagnostic scope is currently imported into repo-backed JSON. The binary PDF remains ignored and uncommitted.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Identity, scope, source commit, and production quality status are recorded; runtime file delivery uses server-local Telegram file bindings when configured."}
+      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "displayNameRu": "Сервисное руководство GMV6 v2020.09", "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Identity, scope, source commit, and production quality status are recorded; runtime file delivery uses server-local Telegram file bindings when configured."}
     },
     {
       "manualId": "gree-gmv-idu-service-manual",
@@ -907,7 +907,7 @@
         "needsReviewCodes": [],
         "mergeNotes": "Same code + same equipment type + same meaning remains one diagnostic answer with multiple sourceReferences. Procedures were reviewed but not copied into localized text in this stage."
       },
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Manual identity is verified and sourceReferences now connect reviewed diagnostic entries to this manual. Runtime file delivery uses server-local Telegram file bindings when configured."}
+      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "displayNameRu": "Сервисное руководство внутренних блоков GMV", "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Manual identity is verified and sourceReferences now connect reviewed diagnostic entries to this manual. Runtime file delivery uses server-local Telegram file bindings when configured."}
     },
     {
       "manualId": "gree-gmv-mini-service-manual-copy-1",

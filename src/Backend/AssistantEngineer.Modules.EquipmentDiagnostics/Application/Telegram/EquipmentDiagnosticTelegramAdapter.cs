@@ -392,6 +392,14 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         {
             result = await _manualLibraryService.RegisterManualAsync(update, access, cancellationToken);
         }
+        else if (TelegramManualLibraryService.IsManualUnregistration(update.Text))
+        {
+            result = await _manualLibraryService.UnregisterManualAsync(update, access, cancellationToken);
+        }
+        else if (TelegramManualLibraryService.IsManualBindingList(update.Text))
+        {
+            result = await _manualLibraryService.ListBindingsAsync(access, cancellationToken);
+        }
         else if (TelegramManualLibraryService.IsManualRequest(update.Text))
         {
             result = await _manualLibraryService.RequestManualsAsync(update, access, cancellationToken);

@@ -30,6 +30,19 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         }
     }
 
+    public Task<IReadOnlyList<TelegramManualFileBinding>> ListAsync(
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            return Task.FromResult<IReadOnlyList<TelegramManualFileBinding>>(
+                ReadDocument().Bindings
+                    .OrderBy(binding => binding.ManualId, StringComparer.OrdinalIgnoreCase)
+                    .ToArray());
+        }
+    }
+
     public Task UpsertAsync(
         TelegramManualFileBinding binding,
         CancellationToken cancellationToken = default)
@@ -44,18 +57,32 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
                 .OrderBy(value => value.ManualId, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
             var updated = new TelegramManualFileBindingDocument(1, bindings);
-
-            var path = _options.ManualLibrary.FileBindingsPath;
-            var directory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            File.WriteAllText(path, JsonSerializer.Serialize(updated, JsonOptions));
+            WriteDocument(updated);
         }
 
         return Task.CompletedTask;
+    }
+
+    public Task<bool> RemoveAsync(
+        string manualId,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var document = ReadDocument();
+            var bindings = document.Bindings
+                .Where(existing => !existing.ManualId.Equals(manualId, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(value => value.ManualId, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (bindings.Length == document.Bindings.Count)
+            {
+                return Task.FromResult(false);
+            }
+
+            WriteDocument(new TelegramManualFileBindingDocument(1, bindings));
+            return Task.FromResult(true);
+        }
     }
 
     private TelegramManualFileBindingDocument ReadDocument()
@@ -77,6 +104,18 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         {
             return new TelegramManualFileBindingDocument(1, []);
         }
+    }
+
+    private void WriteDocument(TelegramManualFileBindingDocument document)
+    {
+        var path = _options.ManualLibrary.FileBindingsPath;
+        var directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllText(path, JsonSerializer.Serialize(document, JsonOptions));
     }
 
     private sealed record TelegramManualFileBindingDocument(

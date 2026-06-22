@@ -185,6 +185,48 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("Gree d1", "Gree GMV6 d1")]
+    [InlineData("Gree D1", "Gree GMV6 d1")]
+    [InlineData("Gree o1", "Gree GMV6 o1")]
+    [InlineData("Gree O1", "Gree GMV6 o1")]
+    [InlineData("Gree l1", "Gree GMV6 L1")]
+    public async Task IndoorManualCodesDisplayCanonicalJsonCasing(string query, string expectedTitle)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LastUsesCanonicalCasingAfterLowercaseO1Lookup()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("Gree O1"));
+        var last = await adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Gree o1", last.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree O1", last.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task NumericZeroOneDoesNotResolveToLowercaseO1()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree 01"));
+
+        Assert.DoesNotContain("Gree GMV6 o1", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Укажите код ошибки", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public async Task UnknownCodeFormatsSafeFallback()
     {

@@ -41,12 +41,12 @@ configured. Rebuild the backend Docker image to pick up the GSSAPI runtime packa
 Telegram diagnostic `CreatedAt` values stay UTC in the database; only `/history` and `/last` rendering uses
 `TELEGRAM_DISPLAY_TIME_ZONE`.
 
-ED-24G.0 Telegram manual-library bindings use
+ED-24G.1 Telegram manual-library bindings use
 `AssistantEngineer:EquipmentDiagnostics:Telegram:ManualLibrary:FileBindingsPath`, defaulting to
-`artifacts/operations/equipment-diagnostics-manual-bindings.json`. The Docker Compose scaffold already mounts
-`artifacts/operations` on the `api_operations` volume, so no new required `.env` value is needed. Store real Telegram
-manual `file_id` values only in the ignored runtime binding file or register them through `/manual_register`; never
-commit file IDs or manual binaries.
+`artifacts/operations/equipment-diagnostics-manual-bindings.json`. The Docker Compose scaffold mounts
+`/opt/assistantengineer/artifacts/operations/` on the host to `/app/artifacts/operations/` in the API container, so no
+new required `.env` value is needed. Store real Telegram manual `file_id` values only in the ignored runtime binding
+file or register them through `/manual_register`; never commit file IDs or manual binaries.
 
 When `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` is empty, users can still create service requests and the application logs
 a sanitized warning. When configured, new requests are sent to that Telegram group without a full phone number,

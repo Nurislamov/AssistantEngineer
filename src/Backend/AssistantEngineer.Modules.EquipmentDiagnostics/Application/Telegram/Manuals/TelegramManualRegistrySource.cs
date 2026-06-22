@@ -40,6 +40,7 @@ public sealed class TelegramManualRegistrySource : ITelegramManualRegistrySource
                 manualId,
                 Text(manual, "fileName") ?? string.Empty,
                 Text(manual, "documentTitle") ?? manualId,
+                Text(policy, "displayNameRu"),
                 Text(manual, "documentCode"),
                 Text(manual, "fileFormat") ?? string.Empty,
                 Bool(policy, "eligibleForTelegramLibrary"),

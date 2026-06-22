@@ -1,9 +1,9 @@
 # Telegram manual library
 
-Status: ED-24G.0 implements the first Telegram manual-library foundation. It supports role-gated manual requests after
-diagnostics, Telegram `file_id` delivery when a binding exists, and Admin/Owner registration of document bindings. It
-does not add a Mini App, public manual search, OCR, database migration, external storage provider, or committed manual
-binaries.
+Status: ED-24G.1 hardens the first Telegram manual-library foundation. It supports role-gated manual requests after
+diagnostics, Telegram `file_id` delivery when a binding exists, Admin/Owner registration and unregistration of document
+bindings, and a safe binding list. It does not add a Mini App, public manual search, OCR, database migration, external
+storage provider, or committed manual binaries.
 
 ## Intended model
 
@@ -13,10 +13,14 @@ Telegram `file_id` is the delivery handle. Telegram must not be the only source 
 Runtime file binding:
 
 - Default path: `artifacts/operations/equipment-diagnostics-manual-bindings.json`.
+- Production Docker Compose bind mount: `/opt/assistantengineer/artifacts/operations/` on the host to
+  `/app/artifacts/operations/` in the API container.
 - Sample/template: `data/equipment-diagnostics/manual-library/manual-file-bindings.sample.json`.
 - Real `telegramFileId` values must not be committed.
 - If the binding file is missing or a manual has no binding, `/manuals` still works and says in Russian that the
   manual is known but the file is not connected yet.
+- If some manuals are connected and others are missing, `/manuals` sends connected documents and lists the missing
+  manuals instead of failing the whole request.
 
 User-facing messages and normal logs must never expose raw local paths, package IDs, JSON paths, Telegram chat IDs, user
 IDs, file IDs, tokens, or secrets.
@@ -45,6 +49,10 @@ selected diagnostic answer and enforces the current user role. If one answer has
 delivery uses all relevant references rather than asking the user to choose a source. It must not generalize one manual
 across Gree series.
 
+Displayed and stored diagnostic codes use the canonical casing from the selected JSON/manual entry. Lookup may be
+case-insensitive, but exact code casing is preferred first. If multiple entries differ only by case and the user did not
+enter an exact match, the bot asks for the exact code shown on the equipment.
+
 For entries without `sourceReferences[].manualId`, the fallback match is intentionally narrow: exact `sourceName` to
 registry `documentTitle` or exact source name to registry file name without extension. No loose/fuzzy manual matching is
 allowed.
@@ -57,16 +65,20 @@ Supported flows:
 
 - Send a Telegram document to the bot with caption `/manual_register <manualId>`.
 - Reply to a Telegram document with `/manual_register <manualId>`.
+- Remove a binding with `/manual_unregister <manualId>`.
+- List safe binding state with `/manual_bindings`.
 
 Constraints:
 
 - `<manualId>` must already exist in `manuals.json`.
 - The Telegram file identifier must come from the document payload, not from user text.
-- Consumer, Installer, and Engineer cannot register bindings.
+- Consumer, Installer, and Engineer cannot register, unregister, or list bindings.
 - The file extension must match the registry format and allowed extension list (`.pdf`, `.doc`, `.docx`, `.xls`,
   `.xlsx` by default).
 - Confirmation messages show a safe manual display name, not file IDs, chat IDs, user IDs, local paths, package IDs, or
   JSON paths.
+- `/manual_bindings` shows only safe display name, document code when available, connection state, and safe original
+  filename. It must not show `file_id`, `chat_id`, `user_id`, token values, package IDs, or local paths.
 
 Private bot registration is the supported first path. If a storage group is used operationally, configure it as a
 trusted process outside the repo and keep real identifiers out of committed files.

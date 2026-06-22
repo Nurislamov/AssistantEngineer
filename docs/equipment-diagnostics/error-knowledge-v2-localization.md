@@ -62,6 +62,11 @@ a controlled Russian fallback:
 The fallback uses a generic Russian safety boundary. It does not print the raw English source summary, steps, safety
 paragraphs, confidence/source labels, internal source identifiers, or source file names.
 
+Diagnostic lookup may be case-insensitive, but displayed and stored codes use the canonical `code` value from the
+selected JSON/manual entry. Exact casing is preferred first; if two entries differ only by case and the user did not
+enter an exact match, Telegram asks for the exact code shown on the equipment. Numeric codes are not converted to
+letter-shaped codes, so `01` must not resolve to `o1`.
+
 ## GMV6 manual-backed catalog
 
 ED-24E.1 replaces the initial generic GMV H5 seed with a manual-bound GMV6 catalog from `GC202001-I`. It contains

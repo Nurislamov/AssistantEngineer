@@ -58,9 +58,13 @@
   diagnostic, Consumer is denied, missing bindings show a safe not-connected message, and Admin/Owner can register a
   Telegram document with `/manual_register <manualId>` from a private document message or reply. No migration or new
   required environment value is needed.
-- Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
-  processed-message idempotency files, and ED-24G.0 manual file bindings. The binding file may contain Telegram
-  `file_id` values and must remain outside Git.
+- After ED-24G.1 deployment, keep `/opt/assistantengineer/artifacts/operations/` writable by the API container and
+  mounted to `/app/artifacts/operations/`. The compose scaffold uses this host bind path for Telegram polling offset,
+  processed-message idempotency files, and manual file bindings. The binding file may contain Telegram `file_id`
+  values and must remain outside Git.
+- After ED-24G.1 deployment, verify Admin/Owner can use `/manual_unregister <manualId>` and `/manual_bindings`,
+  Consumer/Installer/Engineer cannot manage bindings, `/manuals` sends connected manuals while listing missing ones,
+  and code output/history/manual lookup preserves canonical JSON casing such as `d1`, `o1`, and `L1`.
 
 ## Verification
 

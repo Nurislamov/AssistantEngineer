@@ -35,8 +35,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.ManualLibraryButton));
 
         Assert.Contains("файлы пока не подключены", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Service Manual for GMV6 v_2020.09", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Service Manual - Multi Variable Air Conditioners Indoor Units", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервисное руководство GMV6 v2020.09 (GC202001-I)", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервисное руководство внутренних блоков GMV (GC202004-X)", response.Text, StringComparison.Ordinal);
         AssertNoSensitiveManualLeak(response.Text);
     }
 
@@ -86,6 +86,32 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task PartialFileBindingsSendConnectedDocumentsAndListMissingManuals()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(RegisterDocument(
+            "/manual_register gree-gmv6-service-manual-2020-09",
+            "telegram-file-id-gmv6",
+            "Service Manual for GMV6 v_2020.09.pdf"));
+        await adapter.HandleAsync(Update("Gree d1"));
+
+        var response = await adapter.HandleAsync(Update("/manuals"));
+        var documents = response.OutboundMessages
+            .Where(message => !string.IsNullOrWhiteSpace(message.DocumentFileId))
+            .ToArray();
+
+        Assert.Single(documents);
+        Assert.Equal("telegram-file-id-gmv6", documents[0].DocumentFileId);
+        Assert.Contains("Файл пока не подключен", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Сервисное руководство внутренних блоков GMV (GC202004-X)", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("telegram-file-id", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.All(response.OutboundMessages, message => AssertNoSensitiveManualLeak(message.Text));
+    }
+
+    [Fact]
     public async Task NonAdminCannotRegisterManualFile()
     {
         using var provider = CreateProvider();
@@ -116,8 +142,75 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             "Service Manual for GMV6 v_2020.09.pdf"));
 
         Assert.Contains("Файл руководства подключен", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Service Manual for GMV6 v_2020.09", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервисное руководство GMV6 v2020.09 (GC202001-I)", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("telegram-file-id", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(TelegramUserRole.Consumer)]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    public async Task NonAdminRolesCannotManageManualBindings(TelegramUserRole role)
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        if (role != TelegramUserRole.Consumer)
+        {
+            await AllowAsync(provider, role);
+        }
+
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var unregister = await adapter.HandleAsync(Update("/manual_unregister gree-gmv6-service-manual-2020-09"));
+        var list = await adapter.HandleAsync(Update("/manual_bindings"));
+
+        Assert.Contains("только админу или владельцу", unregister.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("только админу или владельцу", list.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNoSensitiveManualLeak(unregister.Text);
+        AssertNoSensitiveManualLeak(list.Text);
+    }
+
+    [Fact]
+    public async Task AdminCanUnregisterManualFile()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(RegisterDocument(
+            "/manual_register gree-gmv6-service-manual-2020-09",
+            "telegram-file-id-gmv6",
+            "Service Manual for GMV6 v_2020.09.pdf"));
+
+        var removed = await adapter.HandleAsync(Update("/manual_unregister gree-gmv6-service-manual-2020-09"));
+        var bindings = await adapter.HandleAsync(Update("/manual_bindings"));
+
+        Assert.Contains("отключен", removed.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Сервисное руководство GMV6 v2020.09 (GC202001-I): файл не подключен", bindings.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("telegram-file-id", bindings.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNoSensitiveManualLeak(bindings.Text);
+    }
+
+    [Fact]
+    public async Task ManualBindingsListIsSafeAndShowsOnlyDisplayNamesConnectionStateAndFileName()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(RegisterDocument(
+            "/manual_register gree-gmv6-service-manual-2020-09",
+            "telegram-file-id-gmv6",
+            "/secret/Service Manual for GMV6 v_2020.09.pdf"));
+
+        var response = await adapter.HandleAsync(Update("/manual_bindings"));
+
+        Assert.Contains("Сервисное руководство GMV6 v2020.09 (GC202001-I): подключено; файл: Service Manual for GMV6 v_2020.09.pdf", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Сервисное руководство внутренних блоков GMV (GC202004-X): файл не подключен", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("telegram-file-id", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("secret", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("chatId", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("userId", response.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNoSensitiveManualLeak(response.Text);
     }
 
     [Fact]

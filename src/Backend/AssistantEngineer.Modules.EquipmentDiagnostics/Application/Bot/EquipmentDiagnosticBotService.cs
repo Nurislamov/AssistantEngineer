@@ -247,14 +247,15 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
 
         trace.Add("RuntimeDiagnosticAnswer");
         var guidance = EquipmentDiagnosticOperatorGuidanceFormatter.Format(diagnosticCase);
+        var canonicalCode = diagnosticCase.ErrorCode.Code;
         return new EquipmentDiagnosticBotResponse(
             EquipmentDiagnosticBotResponseStatus.Answer,
             guidance.Title,
             guidance.Summary,
             manufacturer,
-            code,
+            canonicalCode,
             ToEquipmentContext(match),
-            new EquipmentDiagnosticBotObservedCodeContext(request.Code?.Trim() ?? match.Code, code, request.FreeText),
+            new EquipmentDiagnosticBotObservedCodeContext(request.Code?.Trim() ?? match.Code, canonicalCode, request.FreeText),
             new EquipmentDiagnosticBotAnswerCard(
                 guidance.Title,
                 guidance.Summary,
@@ -358,6 +359,14 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 DisplayContext(entry.DisplaySource) == request.DisplayContext)
             .ToArray();
 
+        var exactCodeMatches = matches
+            .Where(entry => string.Equals(entry.Code, request.Code?.Trim(), StringComparison.Ordinal))
+            .ToArray();
+        if (exactCodeMatches.Length > 0)
+        {
+            matches = exactCodeMatches;
+        }
+
         if (matches.Length <= 1 || string.IsNullOrWhiteSpace(request.FreeText))
         {
             return matches;
@@ -407,7 +416,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             $"{entry.Manufacturer} {entry.Series} {entry.Code}",
             entry.SourceMeaning ?? "Manual-backed diagnostic knowledge entry.",
             manufacturer,
-            code,
+            entry.Code,
             new EquipmentDiagnosticBotEquipmentContext(
                 entry.Manufacturer,
                 entry.Series,
@@ -415,7 +424,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 Category(entry.EquipmentType),
                 Side(entry.EquipmentType),
                 DisplayContext(entry.DisplaySource)),
-            new EquipmentDiagnosticBotObservedCodeContext(code, code, freeText),
+            new EquipmentDiagnosticBotObservedCodeContext(code, entry.Code, freeText),
             AnswerCard: null,
             ClarificationQuestion: null,
             new EquipmentDiagnosticBotSourceCard(

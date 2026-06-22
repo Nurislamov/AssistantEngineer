@@ -37,8 +37,9 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 
 - Create the BotFather token only at the final approved activation step and store it outside Git.
 - Use polling mode for providers where Telegram inbound HTTPS traffic times out.
-- Keep the polling offset and processed-message idempotency files on durable operational storage; the deployment
-  scaffold uses the `api_operations` named volume.
+- Keep the polling offset, processed-message idempotency files, and manual-library binding file on durable operational
+  storage. The deployment scaffold mounts `/opt/assistantengineer/artifacts/operations/` on the host to
+  `/app/artifacts/operations/` in the API container; confirm the API container user can write it.
 - Generate a new webhook secret using the documented character and length rules only when webhook fallback is used.
 - Configure `BootstrapOwnerChatId`; legacy `AllowedChatIds__0` may remain only as bootstrap compatibility fallback.
 - Apply the `TelegramUsers` EF migration and confirm the user store is available.
@@ -59,6 +60,13 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Verify a replayed duplicate update for the same Telegram `chat.id + message_id` does not send a second response.
 - For webhook fallback, run `set-telegram-webhook.ps1`, then `get-telegram-webhook-info.ps1`.
 - Send one deterministic Telegram smoke message and verify the bounded response.
+- Verify canonical diagnostic casing in Telegram output and `/last`: `Gree D1` shows/stores `d1`, `Gree O1`
+  shows/stores `o1`, `Gree l1` shows/stores `L1`, and `Gree 01` is not treated as `o1`.
+- After a completed technical diagnostic, verify `/manuals` sends connected manuals and lists any missing manuals.
+- From Owner/Admin, verify `/manual_register <manualId>` only accepts an attached or reply-to Telegram document,
+  `/manual_unregister <manualId>` removes a binding, and `/manual_bindings` lists only safe display names, document
+  codes, connection state, and safe original filenames.
+- Confirm Consumer/Installer/Engineer cannot register, unregister, or list manual bindings.
 - From the bootstrap owner, verify `/admin users`, role promotion, block/unblock, disable/enable, and Consumer help
   hiding admin commands.
 - Confirm production logs do not print EF/Npgsql SQL command text at Information level and no

@@ -64,6 +64,23 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task CaseOnlyCodeAmbiguityWithoutExactInputAsksForExactCode()
+    {
+        var harness = CreateHarness([
+            Summary("Gree", "dA1", EquipmentCategory.VrfIndoorUnit),
+            Summary("Gree", "Da1", EquipmentCategory.VrfIndoorUnit)
+        ]);
+
+        var response = await harness.Adapter.HandleAsync(Update("Gree DA1"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+
+        Assert.Contains("нескольких вариантах регистра", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("точный код", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(await harness.HistoryStore.GetLatestForTelegramUserAsync(user!.Id, 5));
+        Assert.Equal(0, harness.Facade.CallCount);
+    }
+
+    [Fact]
     public async Task MultipleDisplayContextsAskDisplayContextWithRussianButtons()
     {
         var harness = CreateHarness([]);

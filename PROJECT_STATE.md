@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24G.1 Register production Telegram manual bindings and smoke manual delivery`
+`ED-24G.2 Deploy hardened Telegram manual library and register production bindings`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Register reviewed Telegram `file_id` bindings for eligible manuals on the production host without committing file IDs or manual binaries, then smoke the manual delivery flow for technical roles.
+Deploy ED-24G.1 to production, ensure `/opt/assistantengineer/artifacts/operations/` is writable by the API container, register reviewed Telegram `file_id` bindings for eligible manuals on the production host without committing file IDs or manual binaries, then smoke canonical diagnostic casing and manual delivery flows.
 
 
 
@@ -60,9 +60,11 @@ Expected next action:
 
 3\. Register manual bindings only with `/manual_register <manualId>` from an attached or reply-to Telegram document.
 
-4\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
+4\. Use `/manual_unregister <manualId>` and `/manual_bindings` only from Owner/Admin accounts; do not expose file IDs, chat IDs, user IDs, tokens, package IDs, or local paths.
 
-5\. Keep `/last`, Russian output normalization, knowledge counts, and GMV6 smoke behavior stable.
+5\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
+
+6\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6 smoke behavior stable.
 
 
 
@@ -111,6 +113,98 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24G.1 - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24G.1 Harden Telegram manual library`
+
+
+
+Purpose:
+
+
+
+Harden Telegram manual-library runtime behavior before production binding registration: preserve canonical diagnostic code casing, persist manual bindings on a durable host bind mount, add safe Admin/Owner binding management commands, and keep manual delivery privacy-safe.
+
+
+
+Production/deploy note:
+
+
+
+\* ED-24G.0 deployment had previously been blocked by missing manual-library Docker publish resources; ED-24G.0a fixed that Dockerfile resource copy. ED-24G.1 does not change embedded diagnostic counts and prepares the now-publishable manual-library runtime for production registration.
+
+\* Runtime manual bindings remain outside Git at `artifacts/operations/equipment-diagnostics-manual-bindings.json`.
+
+\* Docker Compose now maps host `/opt/assistantengineer/artifacts/operations/` to container `/app/artifacts/operations/` through `../artifacts/operations:/app/artifacts/operations`.
+
+\* `start-production-stack.ps1` creates `artifacts/operations` before stack startup; production operators must ensure the API container user can write the host directory.
+
+
+
+Results:
+
+
+
+\* Diagnostic lookup can remain case-insensitive, but response formatting, `/last`, history storage, and manual resolution now use the canonical selected JSON code (`d1`, `o1`, `L1`).
+
+\* Exact code casing is preferred first; if several entries differ only by case and no exact input exists, Telegram asks the user for the exact code shown on the equipment.
+
+\* `Gree 01` is not treated as `Gree o1`.
+
+\* Added `/manual_unregister <manualId>` and `/manual_bindings`.
+
+\* Admin/Owner can register, unregister, and list safe binding state. Consumer, Installer, and Engineer cannot manage bindings.
+
+\* `/manual_register <manualId>` still requires a Telegram document payload or reply-to document and rejects raw typed file IDs.
+
+\* `/manuals` sends connected manuals and lists missing manuals instead of failing all delivery when bindings are partial.
+
+\* Safe binding lists show only display name, document code, connection state, and safe original filename.
+
+\* Preferred Russian manual display names are used for the two eligible Gree GMV manuals while official titles/source metadata and document codes remain in the registry.
+
+\* No diagnostic entries, package manifests, DB schema, EF migrations, env files, manual binaries, or real Telegram `file_id` bindings were changed.
+
+\* Packages remain: 4.
+
+\* Entries remain: 253.
+
+\* Validator issues: 0.
+
+
+
+Validation:
+
+
+
+\* `dotnet restore .\AssistantEngineer.sln` - PASS.
+
+\* `dotnet build .\AssistantEngineer.sln --no-restore` - PASS, 0 warnings, 0 errors.
+
+\* `dotnet test .\AssistantEngineer.sln --no-build` - PASS, 4697 passed.
+
+\* `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter EquipmentDiagnostics --no-build` - PASS, 716 passed.
+
+\* `dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge` - PASS, 257 files / 4 packages / 253 entries / 0 issues.
+
+\* `.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1 -RunDockerComposeConfig` - PASS.
+
+\* `.\scripts\equipment-diagnostics\verify-published-error-knowledge.ps1 -Configuration Release` - PASS.
+
+\* Local Docker daemon was unavailable (`dockerDesktopLinuxEngine` pipe missing), so local `docker compose --env-file deploy/.env -f deploy/docker-compose.yml build --no-cache assistantengineer-api` was not run.
 
 
 

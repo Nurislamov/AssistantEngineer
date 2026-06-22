@@ -42,7 +42,7 @@ public sealed class TelegramDiagnosticHistoryService
                 access,
                 conversationSessionId,
                 TelegramDiagnosticCaseStatus.Completed,
-                code,
+                diagnosis.NormalizedCode,
                 manufacturer ?? diagnosis.NormalizedManufacturer,
                 equipmentType,
                 displayContext,

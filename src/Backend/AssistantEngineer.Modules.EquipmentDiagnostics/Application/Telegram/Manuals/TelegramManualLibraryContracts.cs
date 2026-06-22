@@ -6,6 +6,7 @@ public sealed record TelegramManualRegistryEntry(
     string ManualId,
     string FileName,
     string DocumentTitle,
+    string? DisplayNameRu,
     string? DocumentCode,
     string FileFormat,
     bool EligibleForTelegramLibrary,
@@ -37,7 +38,14 @@ public interface ITelegramManualFileBindingStore
         string manualId,
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<TelegramManualFileBinding>> ListAsync(
+        CancellationToken cancellationToken = default);
+
     Task UpsertAsync(
         TelegramManualFileBinding binding,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> RemoveAsync(
+        string manualId,
         CancellationToken cancellationToken = default);
 }
