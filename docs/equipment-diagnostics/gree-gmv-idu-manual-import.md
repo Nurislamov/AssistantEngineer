@@ -120,3 +120,12 @@ The 19 detailed procedure codes were reviewed. Their detailed sections were not 
 - Binary PDF committed: no.
 
 Same code + same equipment type + same meaning remains one Telegram answer. Telegram does not ask the user to choose a manual/source. Future manual delivery can use the merged `manualId` values, but ED-24F.1b does not implement Telegram manual file delivery.
+
+## ED-24F.1d follow-up
+
+ED-24F.1d did not import this manual again and did not change the IDU merge decision. The stage improved Telegram
+message quality for selected existing GMV6 entries, including `L1`, `d1`, and `o1`, while preserving their
+`SERVICE_MANUAL_GMV_IDU.pdf` / `GC202004-X` `sourceReferences[]`.
+
+No new package, diagnostic entry, manual file delivery, database change, migration, or environment variable was added.
+Package and entry counts remain unchanged at 4 packages / 253 entries.

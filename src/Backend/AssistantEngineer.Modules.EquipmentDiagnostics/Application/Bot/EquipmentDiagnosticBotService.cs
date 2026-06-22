@@ -191,6 +191,47 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
 
         if (diagnosticCase is null)
         {
+            var localizedMatches = FindLocalizedMatches(request, manufacturer, code);
+            if (localizedMatches.Count == 1)
+            {
+                trace.Add("RuntimeCaseLocalizedKnowledgeMatch");
+                return LocalizedKnowledgeResponse(
+                    localizedMatches[0],
+                    manufacturer,
+                    code,
+                    request.FreeText,
+                    trace);
+            }
+
+            if (localizedMatches.Count > 1)
+            {
+                trace.Add($"RuntimeCaseLocalizedKnowledgeAmbiguity:{localizedMatches.Count}");
+                var options = localizedMatches
+                    .Select(ToClarificationOption)
+                    .ToArray();
+                return new EquipmentDiagnosticBotResponse(
+                    EquipmentDiagnosticBotResponseStatus.ClarificationRequired,
+                    "Equipment context required",
+                    "The displayed code matches multiple manual-backed equipment contexts.",
+                    manufacturer,
+                    code,
+                    EquipmentContext: null,
+                    new EquipmentDiagnosticBotObservedCodeContext(request.Code?.Trim() ?? code, code, request.FreeText),
+                    AnswerCard: null,
+                    new EquipmentDiagnosticBotClarificationQuestion(
+                        "Which equipment context shows this code?",
+                        options),
+                    SourceCard: null,
+                    Safety(),
+                    VerificationRequired: false,
+                    DiagnosticConfidence.High,
+                    IsManualVerified: true,
+                    IsSeedKnowledge: false,
+                    options.Select(option => option.FollowUpPrompt).ToArray(),
+                    [],
+                    trace);
+            }
+
             trace.Add("RuntimeCaseUnavailable");
             return NonAnswer(
                 EquipmentDiagnosticBotResponseStatus.NotFound,
@@ -303,7 +344,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             .Where(entry =>
                 entry.Manufacturer.Equals(manufacturer, StringComparison.OrdinalIgnoreCase) &&
                 entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
-            .Where(IsSearchableReferenceEntry)
+            .Where(EquipmentDiagnosticBotReferencePolicy.IsSearchableLocalizedEntry)
             .Where(entry => MatchesSeries(entry.Series, request.Series))
             .Where(entry =>
                 entry.Models.Count == 0 ||
@@ -329,16 +370,6 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             IsSignalHintMatch(entry, normalizedFreeText)).ToArray();
         return hinted.Length > 0 ? hinted : matches;
     }
-
-    private static bool IsSearchableReferenceEntry(ErrorKnowledgeEntryV2 entry) =>
-        entry.SignalType is
-            ErrorKnowledgeSignalType.Status or
-            ErrorKnowledgeSignalType.Debug or
-            ErrorKnowledgeSignalType.Commissioning or
-            ErrorKnowledgeSignalType.Maintenance or
-            ErrorKnowledgeSignalType.RemoteDisplay ||
-        entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
-        entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsSignalHintMatch(ErrorKnowledgeEntryV2 entry, string normalizedFreeText) =>
         entry.SignalType switch

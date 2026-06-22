@@ -13,7 +13,7 @@ namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 public sealed class EquipmentDiagnosticTelegramFormatterTests
 {
     [Theory]
-    [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Уверенность:")]
+    [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Суть:")]
     [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "укажите контекст")]
     [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Gree GMV6 A0")]
     [InlineData("ZZ99", EquipmentDiagnosticBotResponseStatus.NotFound, "Код не найден")]
@@ -30,7 +30,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Equal(status, response.Status);
         Assert.Equal(first, second);
         Assert.Contains(expected, first, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Безопасность:", first, StringComparison.Ordinal);
+        Assert.Contains("Важно:", first, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -99,14 +99,14 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var text = formatter.FormatTechnical(response, role);
 
         Assert.Contains("Диагностика GREE H5", text, StringComparison.Ordinal);
-        Assert.Contains("Кратко:", text, StringComparison.Ordinal);
-        Assert.Contains("Безопасность:", text, StringComparison.Ordinal);
-        Assert.Contains("Возможные причины:", text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", text, StringComparison.Ordinal);
         Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
-        Assert.Contains("Что не советовать клиенту:", text, StringComparison.Ordinal);
-        Assert.Contains("Рекомендованное действие:", text, StringComparison.Ordinal);
-        Assert.Contains("Уверенность: Высокая", text, StringComparison.Ordinal);
-        Assert.Contains("Источник: руководство производителя", text, StringComparison.Ordinal);
+        Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
+        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Категория:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Черновик / непроверено", text, StringComparison.Ordinal);
         foreach (var forbidden in EnglishTechnicalMarkers())
         {
@@ -128,7 +128,8 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var technical = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
         var consumer = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
 
-        Assert.Contains("Источник: руководства производителя", technical, StringComparison.Ordinal);
+        Assert.Contains("защиту вентилятора внутреннего блока", technical, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Источник:", technical, StringComparison.Ordinal);
         Assert.DoesNotContain("gree-gmv-idu-service-manual", technical, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("gree-gmv6-indoor-fault-codes", technical, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("SERVICE_MANUAL_GMV_IDU.pdf", technical, StringComparison.OrdinalIgnoreCase);
@@ -137,6 +138,37 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.DoesNotContain("РІС‹Р±РµСЂРёС‚Рµ", technical, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Источник:", consumer, StringComparison.Ordinal);
         Assert.DoesNotContain("gree-gmv-idu-service-manual", consumer, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task GreeU3TechnicalOutputExplainsPowerPhaseProblemWithoutWaterOrUnsafeProtectionWording()
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+
+        var response = await facade.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "U3", Series: "GMV6"));
+        var text = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
+        Assert.Contains("Диагностика GREE U3", text, StringComparison.Ordinal);
+        Assert.Contains("электропитания наружного блока", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("трехфазное питание", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("потеря фазы", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("чередование фаз", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", text, StringComparison.Ordinal);
+        Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
+        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("классифицирован", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("диагностический вывод должен оставаться", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("если подробная процедура не добавлена", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("не обходить защит", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("не отключать защит", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Категория:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", text, StringComparison.Ordinal);
     }
 
     [Fact]

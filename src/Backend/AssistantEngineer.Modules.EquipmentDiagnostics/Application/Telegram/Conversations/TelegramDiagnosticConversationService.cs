@@ -564,15 +564,7 @@ public sealed class TelegramDiagnosticConversationService
 
         return _localizedKnowledge.GetEntries()
             .Where(entry => entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
-            .Where(entry =>
-                entry.SignalType is
-                    ErrorKnowledgeSignalType.Status or
-                    ErrorKnowledgeSignalType.Debug or
-                    ErrorKnowledgeSignalType.Commissioning or
-                    ErrorKnowledgeSignalType.Maintenance or
-                    ErrorKnowledgeSignalType.RemoteDisplay ||
-                entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
-                entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase))
+            .Where(EquipmentDiagnosticBotReferencePolicy.IsSearchableLocalizedEntry)
             .Select(entry => new TelegramDiagnosticCandidate(
                 entry.Manufacturer,
                 entry.Series,

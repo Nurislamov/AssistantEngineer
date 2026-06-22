@@ -27,7 +27,10 @@ public sealed class MultiSourceDiagnosticReferenceTests
 
         Assert.Equal(EquipmentDiagnosticBotResponseStatus.Answer, response.Status);
         Assert.Null(response.ClarificationQuestion);
-        Assert.Contains("Источник: руководства производителя", text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", text, StringComparison.Ordinal);
         Assert.DoesNotContain("выберите", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("manual", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("gree-gmv6-outdoor-fault-protection-codes", text, StringComparison.OrdinalIgnoreCase);

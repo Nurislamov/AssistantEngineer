@@ -2,7 +2,7 @@
 
 
 
-Last updated: 2026-06-21
+Last updated: 2026-06-22
 
 Primary repo: https://github.com/Nurislamov/AssistantEngineer
 
@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24H.1 Import next reviewed Gree VRF manual from the local backlog`
+`ED-24F.1e Continue controlled GMV6 diagnostic message-quality batch`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Continue the reviewed local-manual import backlog after ED-24F.1b. Prefer the next locally available Gree VRF/GMV manual identified by the ED-24H catalog map, and import only evidence that is directly verified from that manual.
+Continue improving Telegram diagnostic message quality for existing GMV6 entries in small, reviewed batches. Use only existing repository JSON and the already reviewed local manuals that are explicitly attached to the entries being edited.
 
 
 
@@ -42,11 +42,11 @@ Do not mix internet data, memory-based assumptions, or cross-series Gree meaning
 
 
 
-Before starting the next import stage, identify the exact local source manual and record:
+Before starting any next import stage, identify the exact local source manual and record:
 
 
 
-manufacturer, equipment family, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests.
+manufacturer, equipment family, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests. Before starting the next message-quality batch, identify the exact entry IDs and source references to be improved.
 
 
 
@@ -54,15 +54,15 @@ Expected next action:
 
 
 
-1\. Use only the selected local manual.
+1\. Use only existing reviewed source evidence.
 
 2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
-3\. Add or refine reviewed procedures only from the same manual evidence.
+3\. Add or refine reviewed wording only from the same manual evidence.
 
 4\. If a code has genuinely different meanings across equipment types or series, ask for equipment/series context, not source/manual choice.
 
-5\. Keep `/last`, Russian output normalization, and existing GMV6 smoke behavior unchanged.
+5\. Keep `/last`, Russian output normalization, knowledge counts, and GMV6 smoke behavior stable.
 
 
 
@@ -111,6 +111,86 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24F.1d - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24F.1d Improve GMV6 diagnostic message quality`
+
+
+
+Purpose:
+
+
+
+Improve Telegram diagnostic wording for a controlled batch of existing Gree GMV6 entries without adding packages, entries, manuals, database changes, environment variables, or binary artifacts.
+
+
+
+Source used:
+
+
+
+Existing repository JSON under `data/equipment-diagnostics/error-knowledge/gree/gmv6/` and the already imported local GMV6 service-manual evidence. U3 wording was checked against local `Service Manual for GMV6 v_2020.09.pdf`, section `2.140 "U3" Power Phase-Sequence Protection`.
+
+
+
+Results:
+
+
+
+\* Codes improved: U3, C0, U0, L1, H5, E1, A0, d1, o1.
+
+\* U3 now explains outdoor-unit power phase-sequence protection, three-phase supply, wrong connection, phase loss, reverse phase/phase sequence, and detection circuit. It no longer reads like a water-system or metadata-only message.
+
+\* Technical Telegram output now uses diagnostic sections `Суть`, `Что проверить`, `Важно`, `Ограничения вывода`, and `Дальше`.
+
+\* Visible `Категория`, `Уверенность`, `Источник`, package IDs, manual IDs, and source file paths no longer replace the diagnostic meaning in localized technical output.
+
+\* Generic filler wording and bypass/disable-protection phrasing were removed from the improved batch.
+
+\* ED-24F.1b `SERVICE_MANUAL_GMV_IDU.pdf` / `GC202004-X` `sourceReferences[]` remain preserved for the touched indoor entries.
+
+\* Searchable localized fallback remains limited to reference/status/debug entries and the ED-24F.1d quality-approved entry IDs; older unreviewed message-quality entries are not broadly exposed.
+
+\* Packages remain: 4.
+
+\* Entries remain: 253.
+
+\* Validator issues: 0.
+
+
+
+Validation:
+
+
+
+\* `dotnet restore .\AssistantEngineer.sln` - PASS.
+
+\* `dotnet build .\AssistantEngineer.sln --no-restore` - PASS, 0 warnings, 0 errors.
+
+\* `dotnet test .\AssistantEngineer.sln --no-build` - PASS, 4668 passed.
+
+\* `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --no-build --filter EquipmentDiagnostics` - PASS, 687 passed.
+
+\* `dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge` - PASS, 257 files / 4 packages / 253 entries / 0 issues.
+
+\* `.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1` - PASS.
+
+\* `.\scripts\equipment-diagnostics\verify-published-error-knowledge.ps1 -Configuration Release` - PASS.
+
+
+
+No external sources, other manuals, model-memory technical content, EF migration, DB change, env change, Telegram manual file delivery, Mini App, role-policy change, PDF, DOC, XLS, or XLSX file was added.
 
 
 

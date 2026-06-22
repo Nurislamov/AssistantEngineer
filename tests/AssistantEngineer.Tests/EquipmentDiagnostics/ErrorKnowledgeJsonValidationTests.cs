@@ -198,6 +198,52 @@ public sealed class ErrorKnowledgeJsonValidationTests
     }
 
     [Fact]
+    public void ImprovedGmv6MessageBatchDoesNotUseGenericWaterOrUnsafeProtectionWording()
+    {
+        var directory = KnowledgeDirectory();
+        var entries = new ErrorKnowledgeJsonLoader().LoadFromDirectory(directory);
+        var improvedIds = ImprovedMessageQualityEntryIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var improvedEntries = entries
+            .Where(entry => improvedIds.Contains(entry.Id))
+            .ToArray();
+
+        Assert.Equal(ImprovedMessageQualityEntryIds.Length, improvedEntries.Length);
+        Assert.All(improvedEntries, entry =>
+        {
+            Assert.Equal("ManualVerified", entry.VerificationStatus);
+            Assert.All(entry.Texts, text =>
+            {
+                var userFacing = string.Join(
+                    " ",
+                    text.Title,
+                    text.Summary,
+                    text.SafetyNote,
+                    string.Join(" ", text.PossibleCauses),
+                    string.Join(" ", text.CheckSteps),
+                    string.Join(" ", text.DoNotAdvise),
+                    text.RecommendedAction);
+                foreach (var forbidden in ImprovedMessageForbiddenPhrases)
+                {
+                    Assert.DoesNotContain(forbidden, userFacing, StringComparison.OrdinalIgnoreCase);
+                }
+
+                Assert.DoesNotContain("Категория:", userFacing, StringComparison.Ordinal);
+                Assert.DoesNotContain("Уверенность:", userFacing, StringComparison.Ordinal);
+                Assert.DoesNotContain("Источник:", userFacing, StringComparison.Ordinal);
+            });
+        });
+
+        var u3 = Assert.Single(improvedEntries, entry => entry.Id == "gree-gmv6-debugging-u3");
+        Assert.All(u3.Texts, text =>
+        {
+            var userFacing = string.Join(" ", text.Title, text.Summary, string.Join(" ", text.CheckSteps));
+            Assert.Contains("электропитания", userFacing, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("фаз", userFacing, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("чередован", userFacing, StringComparison.OrdinalIgnoreCase);
+        });
+    }
+
+    [Fact]
     public void OptionalSourceReferencesLoadWhenPresent()
     {
         var json = Mutate(root =>
@@ -372,8 +418,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.DoesNotContain("Preliminary diagnostic entry", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("предварительный сигнал", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Черновик / непроверено", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Уверенность: Высокая", text, StringComparison.Ordinal);
-        Assert.Contains("Источник: руководство производителя", text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", text, StringComparison.Ordinal);
+        Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
+        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Категория:", text, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -721,6 +773,32 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "d1", "d3", "d4", "d6", "d7", "d8", "d9", "dA", "dH", "dC", "dL", "dE",
         "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "oA", "ob", "oC",
         "o0", "db"
+    ];
+
+    private static readonly string[] ImprovedMessageQualityEntryIds =
+    [
+        "gree-gmv6-debugging-u3",
+        "gree-gmv6-debugging-c0",
+        "gree-gmv6-debugging-u0",
+        "gree-gmv6-indoor-l1",
+        "gree-gmv6-outdoor-h5",
+        "gree-gmv6-outdoor-e1",
+        "gree-gmv6-status-a0",
+        "gree-gmv6-indoor-d1",
+        "gree-gmv6-indoor-o1"
+    ];
+
+    private static readonly string[] ImprovedMessageForbiddenPhrases =
+    [
+        "классифицирован",
+        "диагностический вывод должен оставаться",
+        "если подробная процедура не добавлена",
+        "сообщение наладки",
+        "штатную процедуру как основное содержание",
+        "не обходить защит",
+        "не обходить защиты",
+        "не отключать защит",
+        "не отключать защиты"
     ];
 
     private static JsonObject SourceReference(

@@ -70,11 +70,15 @@ Imported GMV6 package IDs:
 - `gree-gmv6-debugging-codes` — 37 entries.
 - `gree-gmv6-status-codes` — 36 entries.
 
-Known production smoke codes: `Gree C0`, `Gree U0`, `Gree H5`, `Gree E1`, `Gree A0`.
+Known production smoke codes: `Gree C0`, `Gree U0`, `Gree U3`, `Gree H5`, `Gree E1`, `Gree A0`.
 
 ED-24F.1 verified the IDU manual as `Service Manual - Multi Variable Air Conditioners Indoor Units`, document code `GC202004-X`. Its code table is on manual page 173 / PDF page 178, with troubleshooting through manual page 185 / PDF page 190. No entries were imported because every one of its 38 codes overlaps the existing GMV6 indoor package and the previous flow could not safely represent a second manual source for the same indoor code.
 
 ED-24F.1a added optional `sourceReferences[]` support to the error-knowledge model. ED-24F.1b used that model to merge `GC202004-X` as an additional reviewed source on 38 existing GMV6 indoor entries. The 19 detailed procedure codes were reviewed, but localized Installer/Engineer procedure text was not changed because existing qualified-service guidance already keeps procedure execution bounded by the manual and several procedures include component replacement or electrical service actions. Counts remain 4 packages / 253 entries. See [gree-gmv-idu-manual-import.md](gree-gmv-idu-manual-import.md).
+
+ED-24F.1d is a GMV6 message-quality stage, not a manual coverage expansion. It improves selected existing GMV6
+diagnostic texts and Telegram formatting while preserving the same 4 packages / 253 entries and the ED-24F.1b
+`sourceReferences[]` merge.
 
 ## B. Controllers / wired remotes / commissioning tools
 

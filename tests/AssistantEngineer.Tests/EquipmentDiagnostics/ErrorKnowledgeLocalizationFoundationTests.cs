@@ -48,8 +48,9 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
 
         var text = formatter.FormatTechnical(response, TelegramUserRole.Installer);
 
-        Assert.Contains("Техническое описание пока не локализовано", text, StringComparison.Ordinal);
-        Assert.Contains("Источник: встроенный черновой каталог", text, StringComparison.Ordinal);
+        Assert.Contains("Техническое описание для этого кода пока не локализовано", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Preliminary diagnostic entry", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Qualified technician required", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Safety", text, StringComparison.Ordinal);

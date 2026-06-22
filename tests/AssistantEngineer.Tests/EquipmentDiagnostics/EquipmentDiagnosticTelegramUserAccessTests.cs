@@ -200,8 +200,11 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 700));
 
-        Assert.Contains("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Безопасность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", diagnostic.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -217,8 +220,11 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var history = await adapter.HandleAsync(Update("/history", chatId: 701));
         var last = await adapter.HandleAsync(Update("/last", chatId: 701));
 
-        Assert.Contains("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Безопасность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", diagnostic.Text, StringComparison.Ordinal);
         Assert.Contains("Монтажник", help.Text, StringComparison.Ordinal);
         Assert.Contains("технические объяснения", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("/queue", help.Text, StringComparison.Ordinal);
@@ -252,7 +258,9 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 710));
 
         Assert.Single(response.OutboundMessages);
-        Assert.Contains("Техническое описание пока не локализовано", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Техническое описание для этого кода пока не локализовано", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Technical line", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Техническая строка 120", response.Text, StringComparison.Ordinal);
     }

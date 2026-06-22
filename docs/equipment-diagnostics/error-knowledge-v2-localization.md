@@ -55,11 +55,12 @@ The Telegram formatter selects `ru` text for the current audience. If no matchin
 a controlled Russian fallback:
 
 ```text
-Техническое описание пока не локализовано. Источник: <безопасная метка источника>.
+Суть:
+Техническое описание для этого кода пока не локализовано.
 ```
 
-The fallback uses a generic Russian safety boundary and Russian confidence/source labels. It does not print the raw
-English source summary, steps, safety paragraphs, or internal source identifiers.
+The fallback uses a generic Russian safety boundary. It does not print the raw English source summary, steps, safety
+paragraphs, confidence/source labels, internal source identifiers, or source file names.
 
 ## GMV6 manual-backed catalog
 
@@ -97,6 +98,40 @@ and `doNotAdvise` must be present even when empty. Locale and audience values ar
 Existing single-source fields remain required. New imports should use `sourceReferences[]` only to preserve multiple reviewed source/manual references for the same diagnostic answer. They must not create duplicate production entries when code, equipment type, and meaning are the same.
 
 ED-24F.1b uses this pattern for `GC202004-X` (`Service Manual - Multi Variable Air Conditioners Indoor Units`): 38 existing GMV6 indoor entries keep their original `GC202001-I` single-source fields and now carry two deterministic `sourceReferences[]` items, first the original GMV6 manual and then the GMV IDU manual. This does not change package or entry counts and does not ask Telegram users to choose a manual/source.
+
+## ED-24F.1d diagnostic message quality
+
+ED-24F.1d is a quality-only pass over existing GMV6 JSON and Telegram formatting. It does not add packages, entries,
+manual sources, Telegram manual delivery, database tables, migrations, or environment variables.
+
+Technical Telegram output must lead with diagnostic meaning, not metadata. For localized entries, the stable sections
+are:
+
+- `Суть:`
+- `Что проверить:`
+- `Важно:`
+- `Ограничения вывода:`
+- `Дальше:`
+
+The formatter must not use `Категория`, `Уверенность`, `Источник`, package names, manual IDs, or source file paths as
+the visible explanation when a localized entry exists. Metadata can support selection and validation, but it must not
+replace the meaning of the diagnostic code.
+
+Localized GMV6 text must avoid generic filler such as:
+
+- `классифицирован`
+- `диагностический вывод должен оставаться`
+- `если подробная процедура не добавлена`
+- `сообщение наладки`
+- `штатную процедуру как основное содержание`
+
+Do not write customer or technician guidance as "do not bypass/disable protection" when the message can instead state a
+positive safe boundary such as no repeated starts before inspection. The output should not train users to think of
+protection defeat as an available path.
+
+U3 is the control example for this stage. It must describe GMV6 outdoor-unit power phase-sequence protection from the
+reviewed GMV6 service manual: check the three-phase supply, wrong connection, phase loss, reverse phase/phase sequence,
+and the detection circuit. It must not mention water-system causes or use metadata as the diagnostic meaning.
 
 ## Taxonomy
 

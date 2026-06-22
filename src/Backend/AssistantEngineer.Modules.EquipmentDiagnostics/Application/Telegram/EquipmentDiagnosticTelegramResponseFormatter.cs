@@ -168,7 +168,6 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine($"Код оборудования: {response.NormalizedManufacturer} {response.NormalizedCode}");
         builder.AppendLine();
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
-        AppendKnowledgeCategory(builder, selection.Entry);
         builder.AppendLine();
         builder.AppendLine("Возможное значение:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
@@ -316,44 +315,29 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var text = selection.Text;
         var entry = selection.Entry;
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
-        AppendKnowledgeCategory(builder, entry);
         builder.AppendLine();
-        builder.AppendLine("Кратко:");
+        builder.AppendLine("Суть:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
-        builder.AppendLine();
-        builder.AppendLine("Безопасность:");
-        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote));
-        builder.AppendLine();
-        builder.AppendLine($"Уверенность: {ConfidenceLabel(entry.Confidence)}.");
-        builder.AppendLine($"Источник: {SafeSourceLabel(entry)}.");
         if (!text.IsReviewed || !IsVerified(entry.VerificationStatus))
         {
-            builder.AppendLine("Черновик / непроверено: точное значение необходимо сверить с документацией установленной модели.");
+            builder.AppendLine();
+            builder.AppendLine("Примечание: текст нужно сверить с документацией установленной модели.");
         }
-        AppendSection(builder, "Возможные причины", text.PossibleCauses);
-        AppendSection(builder, "Что проверить", text.CheckSteps);
-        AppendSection(builder, "Что не советовать клиенту", text.DoNotAdvise);
+        AppendCheckSection(builder, text);
+        AppendImportantSection(builder, text.SafetyNote);
+        AppendSection(builder, "Ограничения вывода", text.DoNotAdvise);
         builder.AppendLine();
-        builder.AppendLine("Рекомендованное действие:");
+        builder.AppendLine("Дальше:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
-    }
-
-    private static void AppendKnowledgeCategory(
-        StringBuilder builder,
-        ErrorKnowledgeEntryV2 entry)
-    {
-        builder.AppendLine($"Категория: {RussianDiagnosticTerminology.SignalTypeLabel(entry.SignalType)}.");
-        builder.AppendLine($"Оборудование: {RussianDiagnosticTerminology.EquipmentTypeLabel(entry.EquipmentType)}.");
     }
 
     private static void AppendMissingLocalizationFallback(
         StringBuilder builder,
         EquipmentDiagnosticBotResponse response)
     {
-        builder.AppendLine(
-            $"Техническое описание пока не локализовано. Источник: {SafeSourceLabel(response.SourceCard)}.");
+        builder.AppendLine("Суть:");
+        builder.AppendLine("Техническое описание для этого кода пока не локализовано.");
         AppendGenericSafety(builder);
-        builder.AppendLine($"Уверенность: {ConfidenceLabel(response.Confidence)}.");
         if (response.IsSeedKnowledge || response.VerificationRequired)
         {
             builder.AppendLine("Черновик / непроверено: проверьте точное значение по сервисному руководству установленной модели.");
@@ -377,6 +361,28 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         }
     }
 
+    private static void AppendCheckSection(
+        StringBuilder builder,
+        ErrorKnowledgeTextV2 text)
+    {
+        var values = text.PossibleCauses.Concat(text.CheckSteps).ToArray();
+        AppendSection(builder, "Что проверить", values);
+    }
+
+    private static void AppendImportantSection(
+        StringBuilder builder,
+        string safetyNote)
+    {
+        if (string.IsNullOrWhiteSpace(safetyNote))
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("Важно:");
+        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(safetyNote));
+    }
+
     private static void AppendSection(
         StringBuilder builder,
         string title,
@@ -397,7 +403,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
 
     private static void AppendGenericSafety(StringBuilder builder)
     {
-        builder.AppendLine("Безопасность: электрические, компрессорные, инверторные и холодильные проверки выполняет только квалифицированный специалист. Защиты нельзя отключать или обходить.");
+        builder.AppendLine("Важно: электрические, компрессорные, инверторные и холодильные проверки выполняет квалифицированный специалист. Повторные пуски до проверки не выполнять.");
     }
 
     private static ErrorKnowledgeAudience Audience(TelegramUserRole role) =>
@@ -405,61 +411,8 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             ? ErrorKnowledgeAudience.Installer
             : ErrorKnowledgeAudience.Engineer;
 
-    private static string SafeSourceLabel(EquipmentDiagnosticBotSourceCard? source) =>
-        source?.SourceType switch
-        {
-            "ManufacturerDocumentation" or "ServiceManual" => "документация производителя",
-            "CrossCheckedManuals" => "сверенные руководства производителя",
-            "FieldObservation" => "полевое наблюдение, требующее проверки",
-            "SeededEngineeringKnowledge" => "встроенный черновой каталог",
-            _ => "внутренний диагностический каталог"
-        };
-
-    private static string SafeSourceLabel(ErrorKnowledgeEntryV2 entry)
-    {
-        if (entry.SourceReferences.Count > 1 &&
-            entry.SourceReferences.All(reference => IsManufacturerManualSource(reference.SourceType)))
-        {
-            return "руководства производителя";
-        }
-
-        return SafeSourceLabel(entry.SourceType);
-    }
-
-    private static string SafeSourceLabel(string sourceType) =>
-        sourceType switch
-        {
-            "Manual" or "ManufacturerDocumentation" or "ServiceManual" =>
-                "руководство производителя",
-            "CrossCheckedManuals" => "сверенные руководства производителя",
-            "FieldObservation" => "полевое наблюдение, требующее проверки",
-            "SeededEngineeringKnowledge" => "встроенный черновой каталог",
-            _ => "внутренний диагностический каталог"
-        };
-
-    private static bool IsManufacturerManualSource(string sourceType) =>
-        sourceType is "Manual" or "ManufacturerDocumentation" or "ServiceManual" or "CrossCheckedManuals";
-
     private static bool IsVerified(string verificationStatus) =>
         verificationStatus is "ManualVerified" or "Verified" or "Reviewed";
-
-    private static string ConfidenceLabel(string confidence) =>
-        confidence switch
-        {
-            "High" or "ManualVerified" => "Высокая",
-            "Medium" => "Средняя",
-            "Low" => "Низкая",
-            _ => "Черновик / непроверено"
-        };
-
-    private static string ConfidenceLabel(DiagnosticConfidence confidence) =>
-        confidence switch
-        {
-            DiagnosticConfidence.Low => "Низкая",
-            DiagnosticConfidence.Medium => "Средняя",
-            DiagnosticConfidence.High or DiagnosticConfidence.ManualVerified => "Высокая",
-            _ => "Черновик / непроверено"
-        };
 
     private static string EquipmentSideLabel(EquipmentDiagnosticBotEquipmentSide side) =>
         side switch
