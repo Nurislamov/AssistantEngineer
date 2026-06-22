@@ -4,6 +4,7 @@ WORKDIR /src
 COPY AssistantEngineer.sln ./
 COPY src/Backend/ ./src/Backend/
 COPY data/equipment-diagnostics/error-knowledge/ ./data/equipment-diagnostics/error-knowledge/
+COPY data/equipment-diagnostics/manual-library/ ./data/equipment-diagnostics/manual-library/
 RUN dotnet restore src/Backend/AssistantEngineer.Api/AssistantEngineer.Api.csproj
 RUN dotnet publish src/Backend/AssistantEngineer.Api/AssistantEngineer.Api.csproj \
     --configuration Release \

@@ -20,11 +20,58 @@ $compose = Read-RequiredFile $ComposeFile
 $proxy = Read-RequiredFile "deploy/reverse-proxy/Caddyfile.example"
 $envExample = Read-RequiredFile "deploy/.env.example"
 $deployIgnore = Read-RequiredFile "deploy/.gitignore"
+$equipmentDiagnosticsProjectPath = Join-Path $repoRoot "src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/AssistantEngineer.Modules.EquipmentDiagnostics.csproj"
 
 if ($backendDockerfile.IndexOf(
         "COPY data/equipment-diagnostics/error-knowledge/ ./data/equipment-diagnostics/error-knowledge/",
         [StringComparison]::Ordinal) -lt 0) {
     throw "Backend Dockerfile must copy repository-backed error knowledge before publish."
+}
+
+if (-not (Test-Path -LiteralPath $equipmentDiagnosticsProjectPath -PathType Leaf)) {
+    throw "Required project file is missing: src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/AssistantEngineer.Modules.EquipmentDiagnostics.csproj"
+}
+
+[xml]$equipmentDiagnosticsProject = Get-Content -Raw -LiteralPath $equipmentDiagnosticsProjectPath
+$embeddedEquipmentDataFolders = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
+foreach ($resource in $equipmentDiagnosticsProject.Project.ItemGroup.EmbeddedResource) {
+    $include = $resource.Include
+    if ([string]::IsNullOrWhiteSpace($include)) {
+        continue
+    }
+
+    $normalized = $include.Replace('\', '/')
+    $marker = "data/equipment-diagnostics/"
+    $markerIndex = $normalized.IndexOf($marker, [StringComparison]::Ordinal)
+    if ($markerIndex -lt 0) {
+        continue
+    }
+
+    $relative = $normalized.Substring($markerIndex)
+    $wildcardIndex = $relative.IndexOf('*')
+    if ($wildcardIndex -ge 0) {
+        $relative = $relative.Substring(0, $wildcardIndex)
+    } else {
+        $lastSlash = $relative.LastIndexOf('/')
+        if ($lastSlash -ge 0) {
+            $relative = $relative.Substring(0, $lastSlash + 1)
+        }
+    }
+
+    $relative = $relative.TrimEnd('/') + '/'
+    [void]$embeddedEquipmentDataFolders.Add($relative)
+}
+
+foreach ($folder in $embeddedEquipmentDataFolders) {
+    $localFolder = Join-Path $repoRoot ($folder.TrimEnd('/') -replace '/', [IO.Path]::DirectorySeparatorChar)
+    if (-not (Test-Path -LiteralPath $localFolder -PathType Container)) {
+        throw "Embedded equipment diagnostics data folder does not exist locally: $folder"
+    }
+
+    $copyLine = "COPY $folder ./$folder"
+    if ($backendDockerfile.IndexOf($copyLine, [StringComparison]::Ordinal) -lt 0) {
+        throw "Backend Dockerfile must copy embedded equipment diagnostics data before publish: $folder"
+    }
 }
 
 foreach ($service in @("assistantengineer-api:", "assistantengineer-frontend:", "reverse-proxy:")) {

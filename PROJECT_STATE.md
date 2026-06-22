@@ -114,6 +114,88 @@ Latest known production status:
 
 
 
+\### ED-24G.0a - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24G.0a Fix manual library Docker resources`
+
+
+
+Purpose:
+
+
+
+Fix the ED-24G.0 Docker publish failure caused by an embedded manual-library resource that was present locally but missing from the backend Docker build context.
+
+
+
+Production/deploy note:
+
+
+
+\* ED-24G.0 commit `758e28b1` was pushed and synced on the server, but `docker compose build --no-cache assistantengineer-api` failed during `dotnet publish`.
+
+\* Root cause: `AssistantEngineer.Modules.EquipmentDiagnostics.csproj` embeds `data/equipment-diagnostics/manual-library/manuals.json`, while `deploy/docker/backend/Dockerfile` copied only `data/equipment-diagnostics/error-knowledge/`.
+
+\* After the failed build, production recreated the API from the previous existing image, so ED-24G.0 was not running yet.
+
+
+
+Results:
+
+
+
+\* Backend Dockerfile now copies `data/equipment-diagnostics/manual-library/` to `./data/equipment-diagnostics/manual-library/` before restore/publish.
+
+\* Deployment scaffold validator now reads `AssistantEngineer.Modules.EquipmentDiagnostics.csproj` and requires every embedded `data/equipment-diagnostics/...` folder to have a matching backend Dockerfile `COPY`.
+
+\* Deployment scaffold unit tests now enforce the same embedded data folder copy coverage.
+
+\* No runtime Telegram logic changed.
+
+\* No diagnostic entries, package manifests, DB schema, EF migrations, env files, manual binaries, or real Telegram `file_id` bindings were changed.
+
+\* Packages remain: 4.
+
+\* Entries remain: 253.
+
+\* Validator issues: 0.
+
+
+
+Validation:
+
+
+
+\* `dotnet restore .\AssistantEngineer.sln` - PASS.
+
+\* `dotnet build .\AssistantEngineer.sln` - PASS, 0 warnings, 0 errors.
+
+\* `dotnet test .\AssistantEngineer.sln --blame-hang-timeout 5m --blame-hang-dump-type none` - PASS, 4683 passed. A prior plain `dotnet test .\AssistantEngineer.sln` attempt produced no progress and was stopped as a transient local test-runner hang.
+
+\* `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter EquipmentDiagnostics` - PASS, 702 passed.
+
+\* `dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge` - PASS, 257 files / 4 packages / 253 entries / 0 issues.
+
+\* `.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1 -RunDockerComposeConfig` - PASS.
+
+\* `.\scripts\equipment-diagnostics\verify-published-error-knowledge.ps1 -Configuration Release` - PASS.
+
+\* `git diff --check` - PASS.
+
+\* Local Docker daemon was unavailable, so local `docker compose --env-file deploy/.env -f deploy/docker-compose.yml build --no-cache assistantengineer-api` was not run.
+
+
+
 \### ED-24G.0 - CLOSED
 
 

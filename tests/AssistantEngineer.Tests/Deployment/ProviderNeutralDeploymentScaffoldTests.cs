@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace AssistantEngineer.Tests.Deployment;
 
@@ -36,6 +37,38 @@ public sealed class ProviderNeutralDeploymentScaffoldTests
             Assert.DoesNotContain("WebhookSecret=", content, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain(".pdf", content, StringComparison.OrdinalIgnoreCase);
         });
+    }
+
+    [Fact]
+    public void BackendDockerfileCopiesAllEmbeddedEquipmentDiagnosticsDataFolders()
+    {
+        var backend = Read("docker", "backend", "Dockerfile");
+        var projectPath = Path.Combine(
+            TestPaths.RepoRoot,
+            "src",
+            "Backend",
+            "AssistantEngineer.Modules.EquipmentDiagnostics",
+            "AssistantEngineer.Modules.EquipmentDiagnostics.csproj");
+        var project = XDocument.Load(projectPath);
+        var embeddedFolders = project
+            .Descendants("EmbeddedResource")
+            .Select(element => element.Attribute("Include")?.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => NormalizePath(value!))
+            .Where(value => value.Contains("data/equipment-diagnostics/", StringComparison.Ordinal))
+            .Select(EmbeddedEquipmentDataFolder)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.NotEmpty(embeddedFolders);
+        foreach (var folder in embeddedFolders)
+        {
+            Assert.True(
+                Directory.Exists(Path.Combine(TestPaths.RepoRoot, folder.Replace('/', Path.DirectorySeparatorChar))),
+                $"Embedded equipment diagnostics data folder does not exist locally: {folder}");
+            Assert.Contains($"COPY {folder}/ ./{folder}/", backend, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
@@ -152,4 +185,20 @@ public sealed class ProviderNeutralDeploymentScaffoldTests
 
     private static string Read(params string[] parts) =>
         File.ReadAllText(Path.Combine([DeployRoot, .. parts]));
+
+    private static string EmbeddedEquipmentDataFolder(string include)
+    {
+        const string marker = "data/equipment-diagnostics/";
+        var relative = include[include.IndexOf(marker, StringComparison.Ordinal)..];
+        var wildcardIndex = relative.IndexOf('*');
+        if (wildcardIndex >= 0)
+        {
+            return relative[..wildcardIndex].TrimEnd('/');
+        }
+
+        return relative[..relative.LastIndexOf('/')];
+    }
+
+    private static string NormalizePath(string path) =>
+        path.Replace('\\', '/');
 }
