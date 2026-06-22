@@ -119,11 +119,11 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var last = await adapter.HandleAsync(Update("/last"));
 
         Assert.Contains(
-            "Gree GMV6 C0 - нарушение связи между внутренним, наружным блоком и проводным пультом",
+            "Gree GMV6 C0 - нарушение связи между внутренним блоком, наружным блоком и проводным пультом",
             response.Text,
             StringComparison.Ordinal);
         Assert.Contains(
-            "C0 означает нарушение связи между внутренним блоком, наружным блоком и проводным контроллером внутреннего блока.",
+            "C0 означает нарушение связи между внутренним блоком, наружным блоком и проводным пультом внутреннего блока.",
             response.Text,
             StringComparison.Ordinal);
         Assert.Contains("Что проверить:", response.Text, StringComparison.Ordinal);
@@ -166,8 +166,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree d1", "ошибка платы внутреннего блока")]
-    [InlineData("Gree D1", "ошибка платы внутреннего блока")]
+    [InlineData("Gree d1", "ошибка платы управления внутреннего блока")]
+    [InlineData("Gree D1", "ошибка платы управления внутреннего блока")]
     [InlineData("Gree o1", "низкое напряжение шины внутреннего блока")]
     [InlineData("Gree O1", "низкое напряжение шины внутреннего блока")]
     public async Task MixedCaseIndoorCodesUseImprovedManualMeaning(string query, string expectedMeaning)
@@ -383,7 +383,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History.TelegramDiagnosticHistoryService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestQueueService),
-                typeof(TelegramAdminUserManagementService)
+                typeof(TelegramAdminUserManagementService),
+                typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals.TelegramManualLibraryService)
             ],
             dependencyTypes);
 

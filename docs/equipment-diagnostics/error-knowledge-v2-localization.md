@@ -133,6 +133,20 @@ U3 is the control example for this stage. It must describe GMV6 outdoor-unit pow
 reviewed GMV6 service manual: check the three-phase supply, wrong connection, phase loss, reverse phase/phase sequence,
 and the detection circuit. It must not mention water-system causes or use metadata as the diagnostic meaning.
 
+## ED-24G.0 Russian terminology polish
+
+ED-24G.0 keeps the ED-24F.1d Telegram structure and polishes Russian technical terminology in the improved GMV6 batch.
+User-facing Russian text should use normal Russian terms where the context is clear:
+
+- `indoor PCB` -> `плата управления внутреннего блока`;
+- `outdoor PCB` -> `плата управления наружного блока`;
+- `IDU` -> `внутренний блок`;
+- `ODU` -> `наружный блок`;
+- `wired controller IDU` -> `проводной пульт внутреннего блока` or `проводной пульт` when the context is already clear.
+
+Do not replace `GMV6`, diagnostic codes such as `U0`, `U3`, `C0`, `d1`, `o1`, `H5`, or electrical terminal/phase labels
+such as `U/V/W` when they come from the manual.
+
 ## Taxonomy
 
 Taxonomy prevents a future bulk catalog from becoming one flat code list. Choose the narrowest value supported by the

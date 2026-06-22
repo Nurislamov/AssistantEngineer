@@ -122,6 +122,31 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task HandlerSendsDocumentMessagesThroughOutboundDocumentMethod()
+    {
+        var messages = new[]
+        {
+            new EquipmentDiagnosticTelegramOutboundMessage(
+                "Руководство: Service Manual for GMV6 v_2020.09",
+                DocumentFileId: "telegram-file-id-gmv6")
+        };
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            messages[0].Text,
+            messages);
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(Update("📘 Руководства"), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(0, outbound.CallCount);
+        Assert.Equal(1, outbound.DocumentCallCount);
+        Assert.Equal("telegram-file-id-gmv6", outbound.DocumentFileId);
+        Assert.DoesNotContain("telegram-file-id-gmv6", outbound.DocumentCaption, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task CallbackQueryIsRoutedAndAnsweredBeforeGroupResponse()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "Заявка #1 взята в работу.");
@@ -410,6 +435,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public int AnswerCallbackCount { get; private set; }
         public string? CallbackQueryId { get; private set; }
         public string? CallbackAnswerText { get; private set; }
+        public int DocumentCallCount { get; private set; }
+        public string? DocumentFileId { get; private set; }
+        public string? DocumentCaption { get; private set; }
         public bool ThrowOnAnswer { get; set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
@@ -430,6 +458,19 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
             IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Commands set."));
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendDocumentAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            CancellationToken cancellationToken = default)
+        {
+            DocumentCallCount++;
+            DocumentFileId = telegramFileId;
+            DocumentCaption = caption;
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Document sent."));
+        }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
             string callbackQueryId,

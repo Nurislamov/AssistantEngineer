@@ -1,6 +1,7 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
@@ -22,6 +23,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramServiceRequestService? _serviceRequestService;
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
     private readonly TelegramAdminUserManagementService? _adminUserManagementService;
+    private readonly TelegramManualLibraryService? _manualLibraryService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -34,7 +36,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramDiagnosticHistoryService? historyService = null,
         TelegramServiceRequestService? serviceRequestService = null,
         TelegramServiceRequestQueueService? serviceRequestQueueService = null,
-        TelegramAdminUserManagementService? adminUserManagementService = null)
+        TelegramAdminUserManagementService? adminUserManagementService = null,
+        TelegramManualLibraryService? manualLibraryService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -47,6 +50,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _serviceRequestService = serviceRequestService;
         _serviceRequestQueueService = serviceRequestQueueService;
         _adminUserManagementService = adminUserManagementService;
+        _manualLibraryService = manualLibraryService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -165,6 +169,12 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (adminResponse is not null)
         {
             return adminResponse;
+        }
+
+        var manualResponse = await TryHandleManualLibraryAsync(update, access, cancellationToken);
+        if (manualResponse is not null)
+        {
+            return manualResponse;
         }
 
         var parseResult = _parser.Parse(update.Text, _options);
@@ -365,6 +375,37 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             update.ChatId,
             TranslateAdminCommandResult(command, chatId, result),
             result.Succeeded ? EquipmentDiagnosticTelegramResponseKind.Reply : EquipmentDiagnosticTelegramResponseKind.ValidationError);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramResponse?> TryHandleManualLibraryAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (_manualLibraryService is null)
+        {
+            return null;
+        }
+
+        TelegramManualLibraryResult? result = null;
+        if (TelegramManualLibraryService.IsManualRegistration(update.Text))
+        {
+            result = await _manualLibraryService.RegisterManualAsync(update, access, cancellationToken);
+        }
+        else if (TelegramManualLibraryService.IsManualRequest(update.Text))
+        {
+            result = await _manualLibraryService.RequestManualsAsync(update, access, cancellationToken);
+        }
+
+        return result is null
+            ? null
+            : Response(
+                update.ChatId,
+                result.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                result.Warnings,
+                TelegramDiagnosticConversationService.MainKeyboard(access),
+                result.Messages);
     }
 
     private async Task<EquipmentDiagnosticTelegramResponse> FormatHistoryAsync(

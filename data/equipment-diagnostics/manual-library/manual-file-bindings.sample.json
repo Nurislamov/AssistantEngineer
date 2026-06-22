@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "bindings": [
+    {
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "telegramFileId": "sample-telegram-file-id-not-real",
+      "originalFileName": "Service Manual for GMV6 v_2020.09.pdf",
+      "contentType": "application/pdf",
+      "registeredAtUtc": "2026-06-22T00:00:00Z",
+      "source": "TelegramStorage",
+      "registeredByRole": "Owner"
+    }
+  ]
+}

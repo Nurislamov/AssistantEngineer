@@ -177,6 +177,82 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
     }
 
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> SendDocumentAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
+            string.IsNullOrWhiteSpace(telegramFileId) ||
+            !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
+            baseUri.Scheme != Uri.UriSchemeHttps)
+        {
+            return Failed();
+        }
+
+        var endpoint = new Uri(
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/sendDocument");
+        var payload = new Dictionary<string, object?>
+        {
+            ["chat_id"] = chatId,
+            ["document"] = telegramFileId
+        };
+        if (!string.IsNullOrWhiteSpace(caption))
+        {
+            payload["caption"] = caption;
+        }
+        if (replyMarkup is not null)
+        {
+            payload["reply_markup"] = ToTelegramReplyMarkup(replyMarkup);
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
+
+        try
+        {
+            using var scope = _logger.BeginScope(new Dictionary<string, object>
+            {
+                ["correlationId"] = _correlation.CorrelationId ?? "none",
+                ["documentFileIdPresent"] = true
+            });
+            _logger.LogInformation("Sending Telegram document.");
+            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(
+                    true,
+                    "Telegram document sent.",
+                    await ReadMessageIdAsync(response, cancellationToken));
+            }
+
+            _logger.LogWarning("Telegram document send failed with non-success status code.");
+            return Failed();
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Telegram document send timed out.");
+            return Failed();
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                "Telegram document send failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return Failed();
+        }
+    }
+
     public async Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
         string callbackQueryId,
         string? text = null,

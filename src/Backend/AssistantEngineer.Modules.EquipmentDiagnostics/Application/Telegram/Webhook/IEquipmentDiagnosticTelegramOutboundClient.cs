@@ -16,6 +16,16 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
         IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
         CancellationToken cancellationToken = default);
 
+    Task<EquipmentDiagnosticTelegramOutboundResult> SendDocumentAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram document transport is not configured."));
+
     Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
         string callbackQueryId,
         string? text = null,

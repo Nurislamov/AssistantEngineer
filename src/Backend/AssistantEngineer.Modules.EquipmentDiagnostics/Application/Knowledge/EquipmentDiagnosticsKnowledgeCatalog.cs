@@ -9,6 +9,7 @@ public static class EquipmentDiagnosticsKnowledgeCatalog
         resourceName.EndsWith(".json", StringComparison.OrdinalIgnoreCase) &&
         !resourceName.EndsWith(".schema.json", StringComparison.OrdinalIgnoreCase) &&
         !resourceName.Contains(".Knowledge.ErrorKnowledge.", StringComparison.OrdinalIgnoreCase) &&
+        !resourceName.Contains(".Knowledge.ManualLibrary.", StringComparison.OrdinalIgnoreCase) &&
         !resourceName.Contains(".Knowledge.staging.", StringComparison.OrdinalIgnoreCase) &&
         !resourceName.Contains(".Knowledge.manual-codebook.", StringComparison.OrdinalIgnoreCase);
 }

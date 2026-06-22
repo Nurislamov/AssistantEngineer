@@ -22,6 +22,7 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public bool RequireExplicitManufacturer { get; init; }
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
     public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
+    public TelegramManualLibraryOptions ManualLibrary { get; init; } = new();
     public int SendMessageTimeoutSeconds { get; init; } = 10;
     public string TelegramApiBaseUrl { get; init; } = "https://api.telegram.org";
     public bool DropPendingUpdatesOnSetWebhook { get; init; }
@@ -68,7 +69,10 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("chat")] TelegramWebhookChatDto? Chat,
     [property: JsonPropertyName("from")] TelegramWebhookUserDto? From,
     [property: JsonPropertyName("date")] long? Date,
-    [property: JsonPropertyName("contact")] TelegramWebhookContactDto? Contact = null);
+    [property: JsonPropertyName("contact")] TelegramWebhookContactDto? Contact = null,
+    [property: JsonPropertyName("caption")] string? Caption = null,
+    [property: JsonPropertyName("document")] TelegramWebhookDocumentDto? Document = null,
+    [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null);
 
 public sealed record TelegramWebhookChatDto(
     [property: JsonPropertyName("id")] long Id,
@@ -84,6 +88,12 @@ public sealed record TelegramWebhookUserDto(
 public sealed record TelegramWebhookContactDto(
     [property: JsonPropertyName("phone_number")] string PhoneNumber,
     [property: JsonPropertyName("user_id")] long? UserId);
+
+public sealed record TelegramWebhookDocumentDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_name")] string? FileName = null,
+    [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
 
 public sealed record TelegramWebhookCallbackQueryDto(
     [property: JsonPropertyName("id")] string Id,

@@ -54,8 +54,13 @@
 - Before ED-24C.1 deployment, run `verify-published-error-knowledge.ps1`; rebuild the backend image so the repository
   error-knowledge JSON is copied into the Docker build and embedded in the published assembly. After deployment,
   verify a failed diagnostic sends the safe temporary-unavailable response and is not pre-marked as a duplicate.
+- After ED-24G.0 deployment, verify technical roles can open `/manuals` or the manual-library button after a completed
+  diagnostic, Consumer is denied, missing bindings show a safe not-connected message, and Admin/Owner can register a
+  Telegram document with `/manual_register <manualId>` from a private document message or reply. No migration or new
+  required environment value is needed.
 - Keep the `api_operations` named volume unless a reviewed host path replaces it; it stores Telegram polling offset
-  and processed-message idempotency files without secrets.
+  processed-message idempotency files, and ED-24G.0 manual file bindings. The binding file may contain Telegram
+  `file_id` values and must remain outside Git.
 
 ## Verification
 

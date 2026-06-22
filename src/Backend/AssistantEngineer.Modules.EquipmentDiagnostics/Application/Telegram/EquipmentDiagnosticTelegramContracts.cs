@@ -39,12 +39,22 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public bool RequireExplicitManufacturer { get; init; }
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
     public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
+    public TelegramManualLibraryOptions ManualLibrary { get; init; } = new();
 }
 
 public sealed record TelegramServiceRequestOptions
 {
     public long? NotificationChatId { get; init; }
     public bool NotifyOnCreate { get; init; } = true;
+}
+
+public sealed record TelegramManualLibraryOptions
+{
+    public bool Enabled { get; init; } = true;
+    public string FileBindingsPath { get; init; } = "artifacts/operations/equipment-diagnostics-manual-bindings.json";
+    public int MaxFilesPerRequest { get; init; } = 5;
+    public IReadOnlyCollection<string> AllowedExtensions { get; init; } = [".pdf", ".doc", ".docx", ".xls", ".xlsx"];
+    public IReadOnlyCollection<long> TrustedStorageChatIds { get; init; } = [];
 }
 
 public sealed record EquipmentDiagnosticTelegramUpdate(
@@ -61,7 +71,15 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     long? ContactUserId = null,
     string? ChatType = null,
     string? CallbackQueryId = null,
-    string? CallbackData = null);
+    string? CallbackData = null,
+    string? DocumentFileId = null,
+    string? DocumentFileName = null,
+    string? DocumentMimeType = null,
+    long? DocumentFileSize = null,
+    string? ReplyToDocumentFileId = null,
+    string? ReplyToDocumentFileName = null,
+    string? ReplyToDocumentMimeType = null,
+    long? ReplyToDocumentFileSize = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,
@@ -98,7 +116,9 @@ public sealed record EquipmentDiagnosticTelegramOutboundMessage(
     string Text,
     string? ParseMode = null,
     bool DisableWebPagePreview = true,
-    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null);
+    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null,
+    string? DocumentFileId = null,
+    string? DocumentFileName = null);
 
 public sealed record EquipmentDiagnosticTelegramReplyMarkup(
     IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>? Keyboard = null,

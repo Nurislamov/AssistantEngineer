@@ -19,6 +19,9 @@
     <EmbeddedResource Include="..\..\..\data\equipment-diagnostics\error-knowledge\**\*.json">
       <Link>Knowledge\ErrorKnowledge\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\..\data\equipment-diagnostics\manual-library\manuals.json">
+      <Link>Knowledge\ManualLibrary\manuals.json</Link>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

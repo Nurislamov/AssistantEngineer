@@ -2,6 +2,7 @@ using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
@@ -839,6 +840,10 @@ public sealed class TelegramDiagnosticConversationService
         else if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber == true)
         {
             rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ChangePhoneButton)]);
+        }
+        if (access.UsesTechnicalResponse)
+        {
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.ManualLibraryButton)]);
         }
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);

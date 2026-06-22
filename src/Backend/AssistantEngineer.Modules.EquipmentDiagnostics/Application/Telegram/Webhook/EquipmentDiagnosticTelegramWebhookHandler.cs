@@ -97,7 +97,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         if (update.Message?.Chat is null ||
             (string.IsNullOrWhiteSpace(update.Message.Text) &&
-             string.IsNullOrWhiteSpace(update.Message.Contact?.PhoneNumber)))
+             string.IsNullOrWhiteSpace(update.Message.Caption) &&
+             string.IsNullOrWhiteSpace(update.Message.Contact?.PhoneNumber) &&
+             update.Message.Document is null))
         {
             _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported message.");
@@ -112,7 +114,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                     update.UpdateId,
                     update.Message.Chat.Id,
                     username,
-                    update.Message.Text,
+                    update.Message.Text ?? update.Message.Caption,
                     update.Message.MessageId,
                     update.Message.Date is null
                         ? null
@@ -122,7 +124,15 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                     update.Message.From?.LastName,
                     update.Message.Contact?.PhoneNumber,
                     update.Message.Contact?.UserId,
-                    update.Message.Chat.Type),
+                    update.Message.Chat.Type,
+                    DocumentFileId: update.Message.Document?.FileId,
+                    DocumentFileName: update.Message.Document?.FileName,
+                    DocumentMimeType: update.Message.Document?.MimeType,
+                    DocumentFileSize: update.Message.Document?.FileSize,
+                    ReplyToDocumentFileId: update.Message.ReplyToMessage?.Document?.FileId,
+                    ReplyToDocumentFileName: update.Message.ReplyToMessage?.Document?.FileName,
+                    ReplyToDocumentMimeType: update.Message.ReplyToMessage?.Document?.MimeType,
+                    ReplyToDocumentFileSize: update.Message.ReplyToMessage?.Document?.FileSize),
                 cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -176,13 +186,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         foreach (var message in adapterResponse.OutboundMessages)
         {
-            var outbound = await _outboundClient.SendMessageAsync(
-                adapterResponse.ChatId,
-                message.Text,
-                message.ParseMode,
-                message.DisableWebPagePreview,
-                message.ReplyMarkup,
-                cancellationToken);
+            var outbound = await SendOutboundMessageAsync(adapterResponse.ChatId, message, cancellationToken);
 
             if (!outbound.Succeeded)
             {
@@ -351,13 +355,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         foreach (var message in adapterResponse.OutboundMessages)
         {
-            var outbound = await _outboundClient.SendMessageAsync(
-                adapterResponse.ChatId,
-                message.Text,
-                message.ParseMode,
-                message.DisableWebPagePreview,
-                message.ReplyMarkup,
-                cancellationToken);
+            var outbound = await SendOutboundMessageAsync(adapterResponse.ChatId, message, cancellationToken);
 
             if (!outbound.Succeeded)
             {
@@ -369,6 +367,25 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         _counters.RecordProcessed();
         return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
     }
+
+    private Task<EquipmentDiagnosticTelegramOutboundResult> SendOutboundMessageAsync(
+        long chatId,
+        EquipmentDiagnosticTelegramOutboundMessage message,
+        CancellationToken cancellationToken) =>
+        string.IsNullOrWhiteSpace(message.DocumentFileId)
+            ? _outboundClient.SendMessageAsync(
+                chatId,
+                message.Text,
+                message.ParseMode,
+                message.DisableWebPagePreview,
+                message.ReplyMarkup,
+                cancellationToken)
+            : _outboundClient.SendDocumentAsync(
+                chatId,
+                message.DocumentFileId,
+                message.Text,
+                message.ReplyMarkup,
+                cancellationToken);
 
     private static EquipmentDiagnosticTelegramWebhookResult Result(
         EquipmentDiagnosticTelegramWebhookStatus status,

@@ -22,7 +22,9 @@ Current snapshot:
 - Repo-backed diagnostic entries: 253.
 - Current imported source: `Service Manual for GMV6 v_2020.09.pdf`, document code `GC202001-I`.
 
-Only the GMV6 service manual diagnostic scope has been imported and production smoke verified.
+Only the GMV6 service manual diagnostic scope has been imported and production smoke verified. ED-24G.0 adds Telegram
+manual-library delivery foundations for eligible reviewed manuals, but it does not import new diagnostic scope or commit
+manual binaries.
 
 ## Coverage status model
 
@@ -79,6 +81,11 @@ ED-24F.1a added optional `sourceReferences[]` support to the error-knowledge mod
 ED-24F.1d is a GMV6 message-quality stage, not a manual coverage expansion. It improves selected existing GMV6
 diagnostic texts and Telegram formatting while preserving the same 4 packages / 253 entries and the ED-24F.1b
 `sourceReferences[]` merge.
+
+ED-24G.0 adds the Telegram manual-library foundation. Eligible technical roles can request manuals after a diagnostic;
+Consumer users are denied. If a reviewed manual is known but no server-local Telegram file binding exists, Telegram says
+the file is not connected yet. Real bindings live outside git under the runtime binding path and use Telegram `file_id`
+handles. Counts remain 4 packages / 253 entries.
 
 ## B. Controllers / wired remotes / commissioning tools
 

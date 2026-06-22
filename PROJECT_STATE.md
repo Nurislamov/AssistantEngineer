@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24F.1e Continue controlled GMV6 diagnostic message-quality batch`
+`ED-24G.1 Register production Telegram manual bindings and smoke manual delivery`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Continue improving Telegram diagnostic message quality for existing GMV6 entries in small, reviewed batches. Use only existing repository JSON and the already reviewed local manuals that are explicitly attached to the entries being edited.
+Register reviewed Telegram `file_id` bindings for eligible manuals on the production host without committing file IDs or manual binaries, then smoke the manual delivery flow for technical roles.
 
 
 
@@ -46,7 +46,7 @@ Before starting any next import stage, identify the exact local source manual an
 
 
 
-manufacturer, equipment family, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests. Before starting the next message-quality batch, identify the exact entry IDs and source references to be improved.
+manufacturer, equipment family, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests. Before registering production manual bindings, upload/register only reviewed manuals through Telegram document payloads and keep runtime binding storage outside Git.
 
 
 
@@ -58,9 +58,9 @@ Expected next action:
 
 2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
-3\. Add or refine reviewed wording only from the same manual evidence.
+3\. Register manual bindings only with `/manual_register <manualId>` from an attached or reply-to Telegram document.
 
-4\. If a code has genuinely different meanings across equipment types or series, ask for equipment/series context, not source/manual choice.
+4\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
 
 5\. Keep `/last`, Russian output normalization, knowledge counts, and GMV6 smoke behavior stable.
 
@@ -111,6 +111,86 @@ Latest known production status:
 
 
 \## Last completed work
+
+
+
+\### ED-24G.0 - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24G.0 Add Telegram manual library foundation`
+
+
+
+Purpose:
+
+
+
+Add the first Telegram manual-library foundation and polish user-facing Russian terminology for the latest improved GMV6 batch without adding diagnostic entries, database migrations, required environment variables, or manual binaries.
+
+
+
+Results:
+
+
+
+\* Gree GMV6 d1 user-facing Russian now says `плата управления внутреннего блока`; raw `indoor PCB` remains only in source-only fields when present.
+
+\* Gree GMV6 C0/L1/o1 user-facing Russian no longer prints raw `IDU`/`ODU`; source meanings were preserved.
+
+\* Added `/manuals` and the `📘 Руководства` technical-role button after diagnostics.
+
+\* Consumer is denied. Installer, Engineer, Admin, and Owner can request eligible manuals tied to the last completed diagnostic.
+
+\* If a Telegram binding exists, the bot sends the manual via Telegram `sendDocument` using the stored `file_id`.
+
+\* If a binding is missing, the bot says the manual is known but the file is not connected yet.
+
+\* Added Admin/Owner-only `/manual_register <manualId>` using an attached Telegram document or reply-to-document payload; typed raw file IDs are rejected and not echoed.
+
+\* Runtime bindings default to ignored `artifacts/operations/equipment-diagnostics-manual-bindings.json`; `manual-file-bindings.sample.json` is template-only.
+
+\* No real Telegram file IDs, chat IDs, user IDs, bot tokens, secrets, raw runtime paths, PDF, DOC, XLS, or XLSX binaries were added.
+
+\* Manual registry metadata is embedded safely for publish; legacy error-knowledge loading ignores the manual registry resource.
+
+\* Packages remain: 4.
+
+\* Entries remain: 253.
+
+\* Validator issues: 0.
+
+
+
+Validation:
+
+
+
+\* `dotnet restore .\AssistantEngineer.sln` - PASS.
+
+\* `dotnet build .\AssistantEngineer.sln` - PASS, 6 existing nullable warnings in architecture tests, 0 errors.
+
+\* `dotnet test .\AssistantEngineer.sln` - PASS, 4682 passed.
+
+\* `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter EquipmentDiagnostics` - PASS, 701 passed.
+
+\* `dotnet run --project tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification -- verify-knowledge` - PASS, 257 files / 4 packages / 253 entries / 0 issues.
+
+\* `.\scripts\equipment-diagnostics\verify-published-error-knowledge.ps1 -Configuration Release` - PASS.
+
+\* `.\scripts\deployment\validate-production-env.ps1 -EnvPath deploy/.env.example -AllowPlaceholders` - PASS.
+
+\* `.\scripts\deployment\validate-deployment-scaffold.ps1` - PASS.
+
+\* `git diff --check` - PASS.
+
+
+
+No external sources, EF migration, DB change, required env change, Mini App, CRM, photo/OCR, manual binary, or real Telegram file ID was added.
 
 
 

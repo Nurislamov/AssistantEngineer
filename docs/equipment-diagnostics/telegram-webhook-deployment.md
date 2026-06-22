@@ -246,7 +246,11 @@ Use the temporary `/id` or `/whoami` discovery flow documented in
 - Delete the Telegram webhook before polling mode and verify `getWebhookInfo` has no URL.
 - Verify API logs contain `Telegram polling started`.
 - Keep `artifacts/operations` on durable storage. The Docker Compose scaffold mounts a named `api_operations`
-  volume for the polling offset and processed-message dedupe files.
+  volume for the polling offset, processed-message dedupe files, and ED-24G.0 manual-library file bindings.
+- Confirm technical roles can request `/manuals` after a completed diagnostic, Consumer is denied, missing bindings
+  are reported as not connected, and Admin/Owner can register a Telegram document with `/manual_register <manualId>`
+  from an attached document or a reply-to-document message. No manual binaries, raw `file_id` values, chat IDs, user
+  IDs, tokens, or secrets belong in Git or logs.
 - Confirm global API rate-limit behavior and monitoring.
 - Run webhook integration tests with fake outbound transport.
 - Review Telegram token rotation and incident response.
