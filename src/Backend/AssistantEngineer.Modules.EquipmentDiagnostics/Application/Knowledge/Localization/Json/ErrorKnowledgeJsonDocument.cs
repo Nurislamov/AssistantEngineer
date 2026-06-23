@@ -40,6 +40,8 @@ public sealed class ErrorKnowledgeJsonDocument
 
     public string? SourceReference { get; set; }
 
+    public string? MeaningGroupId { get; set; }
+
     public string? Confidence { get; set; }
 
     public string? VerificationStatus { get; set; }

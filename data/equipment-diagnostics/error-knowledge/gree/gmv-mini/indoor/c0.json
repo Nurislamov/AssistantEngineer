@@ -44,6 +44,7 @@
   "sourceName": "DC Inverter VRF System Service Manual (R410A)",
   "sourceMeaning": "Communication malfunction",
   "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
+  "meaningGroupId": "gree-vrf-gmv-communication-c0",
   "sourceReferences": [
     {
       "sourceName": "DC Inverter VRF System Service Manual (R410A)",

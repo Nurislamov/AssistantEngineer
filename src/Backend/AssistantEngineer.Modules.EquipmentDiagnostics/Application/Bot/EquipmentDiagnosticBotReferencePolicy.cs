@@ -27,7 +27,9 @@ public static class EquipmentDiagnosticBotReferencePolicy
         "gree-gmv6-indoor-o1",
         "gree-gmv6-outdoor-e1",
         "gree-gmv6-outdoor-h5",
-        "gree-gmv6-status-a0"
+        "gree-gmv6-status-a0",
+        "gree-gmv-mini-indoor-aj",
+        "gree-gmv-mini-indoor-c0"
     };
 
     public static bool IsReferenceOnlyCode(string normalizedCode) =>

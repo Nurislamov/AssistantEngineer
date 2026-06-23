@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot.Routing;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
@@ -286,7 +287,21 @@ public sealed class TelegramDiagnosticConversationService
         string code,
         CancellationToken cancellationToken)
     {
-        var candidates = await FindCandidatesByCodeAsync(code, cancellationToken);
+        var parsedRequest = _parser.Parse(update.Text, _options).DiagnosticRequest;
+        var requestedSeries = parsedRequest?.Series ?? DiagnosticRoutingHintExtractor.ExtractSeries(update.Text);
+        var candidates = await FindCandidatesByCodeAsync(code, requestedSeries, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(requestedSeries))
+        {
+            var seriesCandidates = candidates
+                .Where(candidate => DiagnosticRoutingHintExtractor.MatchesSeries(candidate.Series, requestedSeries) &&
+                                    !string.IsNullOrWhiteSpace(candidate.Series))
+                .ToArray();
+            if (seriesCandidates.Length > 0)
+            {
+                candidates = seriesCandidates;
+            }
+        }
+
         if (candidates.Count == 0)
         {
             if (!string.IsNullOrWhiteSpace(_options.DefaultManufacturer) &&
@@ -297,7 +312,7 @@ public sealed class TelegramDiagnosticConversationService
                         _options.DefaultManufacturer,
                         code,
                         FreeText: update.Text,
-                        Series: ExtractSeries(update.Text),
+                        Series: requestedSeries,
                         PreferredLanguage: _options.PreferredLanguage),
                     cancellationToken);
                 if (diagnosis.Status == EquipmentDiagnosticBotResponseStatus.NotFound)
@@ -461,6 +476,16 @@ public sealed class TelegramDiagnosticConversationService
             return NotFound(access);
         }
 
+        var resolveAsMeaningGroup = false;
+        if (TrySelectSameMeaningCandidate(candidates, out var groupedCandidate))
+        {
+            resolveAsMeaningGroup = true;
+            selectedManufacturer = groupedCandidate.Manufacturer;
+            selectedEquipmentType = groupedCandidate.EquipmentType;
+            selectedDisplayContext = DisplayContextLabel(groupedCandidate.DisplayContext);
+            candidates = [groupedCandidate];
+        }
+
         if (string.IsNullOrWhiteSpace(selectedManufacturer))
         {
             var manufacturers = candidates.Select(candidate => candidate.Manufacturer).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
@@ -513,11 +538,11 @@ public sealed class TelegramDiagnosticConversationService
                 selectedManufacturer,
                 finalCandidate.Code,
                 FreeText: null,
-                Series: finalCandidate.Series,
-                ModelCode: finalCandidate.ModelCode,
-                Category: finalCandidate.Category,
-                EquipmentSide: finalCandidate.EquipmentSide,
-                DisplayContext: finalCandidate.DisplayContext,
+                Series: resolveAsMeaningGroup ? null : finalCandidate.Series,
+                ModelCode: resolveAsMeaningGroup ? null : finalCandidate.ModelCode,
+                Category: resolveAsMeaningGroup ? null : finalCandidate.Category,
+                EquipmentSide: resolveAsMeaningGroup ? null : finalCandidate.EquipmentSide,
+                DisplayContext: resolveAsMeaningGroup ? null : finalCandidate.DisplayContext,
                 PreferredLanguage: _options.PreferredLanguage),
             cancellationToken);
 
@@ -543,6 +568,7 @@ public sealed class TelegramDiagnosticConversationService
 
     private async Task<IReadOnlyList<TelegramDiagnosticCandidate>> FindCandidatesByCodeAsync(
         string code,
+        string? requestedSeries,
         CancellationToken cancellationToken)
     {
         var matches = await _diagnosticsService.SearchErrorCodesAsync(
@@ -563,16 +589,13 @@ public sealed class TelegramDiagnosticConversationService
                 match.Category,
                 EquipmentTypeLabel(match.Category),
                 EquipmentSide(match.Category),
-                DisplayContext(match.Category)))
+                DisplayContext(match.Category),
+                MeaningGroupId: null))
             .Distinct()
             .OrderBy(candidate => candidate.Manufacturer, StringComparer.Ordinal)
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
             .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
             .ToArray();
-        if (runtimeCandidates.Length > 0)
-        {
-            return PreferExactCodeMatches(code, runtimeCandidates);
-        }
 
         var localizedCandidates = _localizedKnowledge.GetEntries()
             .Where(entry => entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
@@ -585,12 +608,37 @@ public sealed class TelegramDiagnosticConversationService
                 LocalizedCategory(entry.EquipmentType),
                 LocalizedEquipmentTypeLabel(entry),
                 LocalizedEquipmentSide(entry.EquipmentType),
-                LocalizedDisplayContext(entry.DisplaySource)))
+                LocalizedDisplayContext(entry.DisplaySource),
+                entry.MeaningGroupId))
             .Distinct()
             .OrderBy(candidate => candidate.Manufacturer, StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.Series ?? string.Empty, StringComparer.Ordinal)
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
             .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
             .ToArray();
+
+        TelegramDiagnosticCandidate[] exactSeriesLocalizedCandidates = string.IsNullOrWhiteSpace(requestedSeries) ||
+            string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase)
+                ? []
+                : localizedCandidates
+                    .Where(candidate => DiagnosticRoutingHintExtractor.MatchesSeries(candidate.Series, requestedSeries) &&
+                                        !string.IsNullOrWhiteSpace(candidate.Series))
+                    .ToArray();
+        if (exactSeriesLocalizedCandidates.Length > 0)
+        {
+            return PreferExactCodeMatches(code, exactSeriesLocalizedCandidates);
+        }
+
+        if (HasSameMeaningGroupCollision(localizedCandidates))
+        {
+            return PreferExactCodeMatches(code, localizedCandidates);
+        }
+
+        if (runtimeCandidates.Length > 0)
+        {
+            return PreferExactCodeMatches(code, runtimeCandidates);
+        }
+
         return PreferExactCodeMatches(code, localizedCandidates);
     }
 
@@ -1046,6 +1094,38 @@ public sealed class TelegramDiagnosticConversationService
             .Where(candidate => string.Equals(candidate.Code, requestedCode, StringComparison.Ordinal))
             .ToArray();
         return exact.Length > 0 ? exact : candidates;
+    }
+
+    private static bool TrySelectSameMeaningCandidate(
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates,
+        out TelegramDiagnosticCandidate candidate)
+    {
+        candidate = default!;
+        if (!HasSameMeaningGroupCollision(candidates))
+        {
+            return false;
+        }
+
+        candidate = candidates.FirstOrDefault(item => string.Equals(item.Series, "GMV6", StringComparison.OrdinalIgnoreCase)) ??
+                    candidates[0];
+        return true;
+    }
+
+    private static bool HasSameMeaningGroupCollision(IReadOnlyList<TelegramDiagnosticCandidate> candidates)
+    {
+        if (candidates.Count <= 1)
+        {
+            return false;
+        }
+
+        var meaningGroups = candidates
+            .Select(item => item.MeaningGroupId)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        return meaningGroups.Length == 1 &&
+               candidates.All(item => string.Equals(item.MeaningGroupId, meaningGroups[0], StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool HasCaseOnlyAmbiguityWithoutExactMatch(

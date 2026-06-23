@@ -329,6 +329,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
             issues);
         var sourceName = Required(document.SourceName, path, "sourceName", issues);
         var sourceMeaning = Normalize(document.SourceMeaning);
+        var meaningGroupId = Normalize(document.MeaningGroupId);
         var confidence = Allowed(
             document.Confidence,
             path,
@@ -355,6 +356,11 @@ public sealed partial class ErrorKnowledgeJsonValidator
         if (sourceType == "Manual" && string.IsNullOrWhiteSpace(document.SourceReference))
         {
             issues.Add(new(path, "sourceReference is required for Manual entries."));
+        }
+
+        if (meaningGroupId is not null && !MeaningGroupIdPattern().IsMatch(meaningGroupId))
+        {
+            issues.Add(new(path, "meaningGroupId must contain only lowercase letters, digits, dots, underscores, or hyphens."));
         }
 
         if (document.CreatedAt is null)
@@ -420,7 +426,8 @@ public sealed partial class ErrorKnowledgeJsonValidator
             document.UpdatedAt.Value,
             texts)
         {
-            SourceReferences = sourceReferences
+            SourceReferences = sourceReferences,
+            MeaningGroupId = meaningGroupId
         };
     }
 
@@ -957,4 +964,7 @@ public sealed partial class ErrorKnowledgeJsonValidator
 
     [GeneratedRegex(@"(?<!\d)(?:-100)?\d{9,15}(?!\d)", RegexOptions.CultureInvariant)]
     private static partial Regex RawPlatformIdRegex();
+
+    [GeneratedRegex(@"^[a-z0-9._-]+$", RegexOptions.CultureInvariant)]
+    private static partial Regex MeaningGroupIdPattern();
 }

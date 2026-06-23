@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`
+`ED-24UX.2 Deploy and smoke diagnostic routing policy`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Deploy the ED-24H.2 repository knowledge update and smoke GMV Mini lookups while preserving the already working GMV6/GMV IDU Telegram manual delivery path. ED-24H.2 used only `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used as source evidence or comparison input.
+Deploy the ED-24UX.1 routing update and smoke GMV Mini lookup routing while preserving the already working GMV6/GMV IDU Telegram manual delivery path. ED-24H.2 used only `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used as source evidence or comparison input.
 
 
 
@@ -69,6 +69,8 @@ Expected next action:
 7\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6/manual delivery smoke behavior stable.
 
 8\. ED-24H.2 partially imported `SERVICE_MANUAL_GMV_MINI.pdf`: 3 new packages, 9 new entries, 31 source-reference merges, 90 NeedsReview contexts, and 7 packages / 262 entries / 0 validator issues.
+
+9\. ED-24UX.1 adds deterministic routing policy and candidate resolver foundation without changing package or entry counts. `Gree GMV Mini AJ`, `Gree GMV Mini C0`, `GMV Mini AJ`, and `GMV Mini C0` are accepted. Unqualified `Gree C0` uses explicit same-meaning grouping and must include applicability for GMV6 and GMV Mini instead of silently choosing one series. `Gree 01` still must not match `o1`.
 
 
 
@@ -148,6 +150,12 @@ Latest known production status:
 
 \* Repository knowledge after ED-24H.2 is 7 packages / 262 entries / 0 issues.
 
+\* ED-24UX.1 repo-side routing policy foundation is implemented; deployment smoke is pending.
+
+\* Gree GMV Mini `AJ` and `C0` routing rejects are fixed repo-side.
+
+\* Gree VRF `C0` same-meaning group is explicit metadata only: `gree-vrf-gmv-communication-c0`.
+
 \* Orphan Postgres compose warning is known and should not be acted on unless explicitly planned.
 
 
@@ -207,6 +215,42 @@ Results:
 \* No DB schema, EF migration, env file, Docker/compose, Telegram logic, runtime manual binding JSON, real Telegram `file_id`, or manual binary was added.
 
 \* Production deployment is not yet recorded in this state file; next stage is `ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`.
+
+\### ED-24UX.1 - CLOSED REPO-SIDE
+
+Title:
+
+`ED-24UX.1 Add diagnostic routing policy and candidate resolver foundation`
+
+Purpose:
+
+Fix post-ED-24H.2 Telegram routing ambiguity without importing manuals or changing package/entry counts.
+
+Results:
+
+\* Added `docs/equipment-diagnostics/diagnostic-routing-policy.md`.
+
+\* Added deterministic candidate resolver foundation with `DirectAnswer`, `ClarificationRequired`, and `NotFound` outcomes.
+
+\* Parser now recognizes multi-word GMV hints including `GMV Mini`, `GMV-Mini`, `GMV5 Mini`, `GMV Slim`, `GMV X`, and `GMV X PRO`.
+
+\* Two-letter reviewed codes such as `AJ` are accepted; numeric `01` is still not treated as `o1`.
+
+\* Added optional `meaningGroupId` metadata to repository-backed error knowledge.
+
+\* Marked GMV6 `C0` and GMV Mini `C0` with explicit same-meaning group `gree-vrf-gmv-communication-c0`.
+
+\* `Gree C0` returns one grouped answer with applicability contexts for `Gree GMV6` and `Gree GMV Mini`.
+
+\* `Gree GMV6 C0` resolves GMV6; `Gree GMV Mini C0` resolves GMV Mini.
+
+\* `Gree GMV Mini AJ`, `GMV Mini AJ`, `Gree GMV Mini C0`, and `GMV Mini C0` resolve through Telegram tests.
+
+\* Runtime GMV6 smoke behavior remains guarded: broad `GMV` hints do not override existing runtime catalog paths.
+
+\* Knowledge counts remain 7 packages / 262 entries / 0 validator issues expected.
+
+\* No DB schema, EF migration, env file, Docker/compose, runtime manual binding JSON, real Telegram `file_id`, or manual binary was added.
 
 
 

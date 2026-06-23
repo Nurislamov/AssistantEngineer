@@ -108,6 +108,7 @@ public sealed record ErrorKnowledgeEntryV2(
     IReadOnlyList<ErrorKnowledgeTextV2> Texts)
 {
     public IReadOnlyList<ErrorKnowledgeSourceReferenceV2> SourceReferences { get; init; } = [];
+    public string? MeaningGroupId { get; init; }
 }
 
 public sealed record ErrorKnowledgeSourceReferenceV2(

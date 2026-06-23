@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Guidance;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot.Routing;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
@@ -46,6 +47,12 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 ["Confirm the equipment manufacturer.", "Record the displayed code exactly."],
                 ["Free text is not used to infer equipment identity in this deterministic flow."],
                 trace);
+        }
+
+        var localizedResolution = ResolveLocalizedKnowledge(request, manufacturer, code, trace);
+        if (localizedResolution is not null)
+        {
+            return localizedResolution;
         }
 
         var matches = await _diagnosticsService.SearchErrorCodesAsync(
@@ -318,6 +325,107 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             warnings,
             trace);
 
+    private EquipmentDiagnosticBotResponse? ResolveLocalizedKnowledge(
+        EquipmentDiagnosticBotRequest request,
+        string manufacturer,
+        string code,
+        List<string> trace)
+    {
+        var localizedMatches = FindLocalizedMatches(request, manufacturer, code);
+        if (localizedMatches.Count == 0)
+        {
+            return null;
+        }
+
+        var hasExplicitSeries = !string.IsNullOrWhiteSpace(request.Series) &&
+            !string.Equals(request.Series, "GMV", StringComparison.OrdinalIgnoreCase);
+        var hasSameMeaningCollision = localizedMatches.Count > 1 &&
+            localizedMatches
+                .Select(entry => entry.MeaningGroupId)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Count() == 1 &&
+            localizedMatches.All(entry => !string.IsNullOrWhiteSpace(entry.MeaningGroupId));
+        if (!hasExplicitSeries && !hasSameMeaningCollision)
+        {
+            return null;
+        }
+
+        var resolver = new DiagnosticCandidateResolver();
+        var resolution = resolver.Resolve(
+            new DiagnosticCandidateResolverRequest(
+                request.FreeText,
+                code,
+                manufacturer,
+                request.Series,
+                request.EquipmentSide,
+                request.DisplayContext),
+            localizedMatches.Select(entry => new DiagnosticRoutingCandidate(entry)).ToArray());
+
+        if (resolution.Status == DiagnosticCandidateResolutionStatus.NotFound)
+        {
+            return null;
+        }
+
+        if (resolution.Status == DiagnosticCandidateResolutionStatus.DirectAnswer &&
+            resolution.SelectedCandidate is not null)
+        {
+            var selected = resolution.SelectedCandidate.Entry;
+            trace.Add(resolution.Candidates.Count > 1
+                ? $"LocalizedKnowledgeMeaningGroup:{selected.MeaningGroupId}"
+                : "LocalizedKnowledgeMatch");
+
+            return LocalizedKnowledgeResponse(
+                selected,
+                manufacturer,
+                code,
+                request.FreeText,
+                trace,
+                resolution.ApplicableContexts.Count > 1 ? resolution.ApplicableContexts : []);
+        }
+
+        trace.Add($"LocalizedKnowledgeAmbiguity:{resolution.Candidates.Count}:{resolution.ClarificationKind}");
+        return LocalizedAmbiguityResponse(
+            resolution.Candidates.Select(candidate => candidate.Entry).ToArray(),
+            request,
+            manufacturer,
+            code,
+            trace);
+    }
+
+    private static EquipmentDiagnosticBotResponse LocalizedAmbiguityResponse(
+        IReadOnlyList<ErrorKnowledgeEntryV2> localizedMatches,
+        EquipmentDiagnosticBotRequest request,
+        string manufacturer,
+        string code,
+        IReadOnlyList<string> trace)
+    {
+        var options = localizedMatches
+            .Select(ToClarificationOption)
+            .ToArray();
+        return new EquipmentDiagnosticBotResponse(
+            EquipmentDiagnosticBotResponseStatus.ClarificationRequired,
+            "Equipment context required",
+            "The displayed code matches multiple manual-backed equipment contexts.",
+            manufacturer,
+            code,
+            EquipmentContext: null,
+            new EquipmentDiagnosticBotObservedCodeContext(request.Code?.Trim() ?? code, code, request.FreeText),
+            AnswerCard: null,
+            new EquipmentDiagnosticBotClarificationQuestion(
+                "Which equipment context shows this code?",
+                options),
+            SourceCard: null,
+            Safety(),
+            VerificationRequired: false,
+            DiagnosticConfidence.High,
+            IsManualVerified: true,
+            IsSeedKnowledge: false,
+            options.Select(option => option.FollowUpPrompt).ToArray(),
+            [],
+            trace);
+    }
+
     private static EquipmentDiagnosticBotClarificationOption ToClarificationOption(EquipmentErrorCodeSummaryDto match)
     {
         var side = Side(match.Category);
@@ -346,7 +454,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 entry.Manufacturer.Equals(manufacturer, StringComparison.OrdinalIgnoreCase) &&
                 entry.Code.Equals(code, StringComparison.OrdinalIgnoreCase))
             .Where(EquipmentDiagnosticBotReferencePolicy.IsSearchableLocalizedEntry)
-            .Where(entry => MatchesSeries(entry.Series, request.Series))
+            .Where(entry => DiagnosticRoutingHintExtractor.MatchesSeries(entry.Series, request.Series))
             .Where(entry =>
                 entry.Models.Count == 0 ||
                 string.IsNullOrWhiteSpace(request.ModelCode) ||
@@ -399,7 +507,8 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
         string manufacturer,
         string code,
         string? freeText,
-        IReadOnlyList<string> trace)
+        IReadOnlyList<string> trace,
+        IReadOnlyList<string>? applicableContexts = null)
     {
         var referenceOnly = entry.SignalType is
             ErrorKnowledgeSignalType.Status or
@@ -444,7 +553,10 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             IsSeedKnowledge: false,
             [],
             [],
-            trace);
+            trace)
+        {
+            ApplicableContexts = applicableContexts ?? []
+        };
     }
 
     private static EquipmentDiagnosticBotClarificationOption ToClarificationOption(
@@ -467,13 +579,6 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             $"{entry.Code} is present in manual-backed {context} knowledge.",
             $"Confirm {label} and resend {entry.Code} with that context.");
     }
-
-    private static bool MatchesSeries(string? expected, string? requested) =>
-        string.IsNullOrWhiteSpace(requested) ||
-        string.IsNullOrWhiteSpace(expected) ||
-        expected.Equals(requested, StringComparison.OrdinalIgnoreCase) ||
-        requested.Equals("GMV", StringComparison.OrdinalIgnoreCase) &&
-        expected.StartsWith("GMV", StringComparison.OrdinalIgnoreCase);
 
     private static EquipmentCategory Category(ErrorKnowledgeEquipmentType equipmentType) =>
         equipmentType switch

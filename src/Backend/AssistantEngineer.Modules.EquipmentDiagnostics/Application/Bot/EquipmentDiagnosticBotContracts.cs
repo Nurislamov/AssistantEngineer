@@ -118,4 +118,7 @@ public sealed record EquipmentDiagnosticBotResponse(
     bool IsSeedKnowledge,
     IReadOnlyList<string> OperatorNextSteps,
     IReadOnlyList<string> Warnings,
-    IReadOnlyList<string>? InternalDecisionTrace);
+    IReadOnlyList<string>? InternalDecisionTrace)
+{
+    public IReadOnlyList<string> ApplicableContexts { get; init; } = [];
+}

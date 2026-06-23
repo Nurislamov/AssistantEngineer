@@ -24,6 +24,10 @@ The non-runtime [Gree VRF next manual selection](gree-vrf-next-manual-selection.
 
 The [Gree GMV Mini manual import](gree-gmv-mini-manual-import.md) uses only `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used. It adds 3 GMV Mini packages, 9 entries, and 31 exact same-meaning source-reference merges while leaving 90 context variants in NeedsReview. Repository knowledge is now 7 packages / 262 entries.
 
+## ED-24UX.1 diagnostic routing policy
+
+The [diagnostic routing policy](diagnostic-routing-policy.md) defines deterministic candidate resolution for overlapping Gree VRF codes. It adds explicit `meaningGroupId` metadata for reviewed same-meaning groups, recognizes multi-word GMV series hints such as `GMV Mini`, and prevents unqualified collisions such as `C0` from silently selecting one series without applicability context.
+
 ## ED-24F.1 GMV IDU manual analysis
 
 The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. ED-24F.1 stopped duplicate entry import; ED-24F.1b completed the safe merge as source references on matching existing GMV6 indoor entries.

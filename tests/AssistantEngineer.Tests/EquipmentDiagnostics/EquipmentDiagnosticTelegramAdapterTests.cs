@@ -137,6 +137,39 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("связи связи", last.Text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [InlineData("Gree GMV Mini AJ", "Gree GMV Mini AJ")]
+    [InlineData("GMV Mini AJ", "Gree GMV Mini AJ")]
+    [InlineData("Gree GMV Mini C0", "Gree GMV Mini C0")]
+    [InlineData("GMV Mini C0", "Gree GMV Mini C0")]
+    public async Task GmvMiniMultiWordHintsResolveManualBackedCodes(string query, string expectedTitle)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("РЈРєР°Р¶РёС‚Рµ РєРѕРґ", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("РЅРµ РЅР°С€С‘Р»", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task UnqualifiedC0UsesExplicitSameMeaningGroupApplicability()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree C0"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Gree GMV6 C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Применимо:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini", response.Text, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task LastWorksAfterGmv6DebuggingDiagnostic()
     {

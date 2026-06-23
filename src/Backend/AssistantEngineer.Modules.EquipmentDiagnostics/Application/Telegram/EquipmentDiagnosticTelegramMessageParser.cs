@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot.Routing;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
@@ -124,7 +125,7 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             Manufacturer: manufacturer,
             Code: code,
             FreeText: options.EnableFreeTextParsing ? trimmed : null,
-            Series: tokens.FirstOrDefault(token => token.StartsWith("GMV", StringComparison.OrdinalIgnoreCase)),
+            Series: DiagnosticRoutingHintExtractor.ExtractSeries(trimmed),
             EquipmentSide: equipmentSide,
             DisplayContext: displayContext,
             PreferredLanguage: options.PreferredLanguage);
@@ -186,13 +187,19 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
     private static bool LooksLikeCode(string token) =>
         token.Length <= EquipmentDiagnosticBotRequestLimits.Code &&
         CodePattern().IsMatch(token) &&
-        (token.Any(char.IsDigit) || string.Equals(token, "db", StringComparison.OrdinalIgnoreCase));
+        (token.Any(char.IsDigit) ||
+         token.Length == 2 && token.All(IsAsciiLetter) ||
+         string.Equals(token, "db", StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsAsciiLetter(char value) =>
+        value is >= 'A' and <= 'Z' or >= 'a' and <= 'z';
 
     private static bool IsHint(string token) =>
         OutdoorHints.Concat(IndoorHints).Concat(ChillerHints).Concat(ControllerHints)
             .Concat(KnowledgeHints)
             .Concat(["led", "board", "app", "gateway", "wired"])
-            .Contains(token, StringComparer.OrdinalIgnoreCase);
+            .Contains(token, StringComparer.OrdinalIgnoreCase) ||
+        DiagnosticRoutingHintExtractor.IsSeriesHintToken(token);
 
     private static EquipmentDiagnosticTelegramParseResult Invalid(string error) =>
         new(EquipmentDiagnosticTelegramCommand.Diagnose, null, [error]);

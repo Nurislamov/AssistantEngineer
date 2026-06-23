@@ -204,6 +204,34 @@ public sealed class EquipmentDiagnosticBotServiceTests
     }
 
     [Fact]
+    public async Task C0UsesExplicitMeaningGroupWhenSeriesIsNotSpecified()
+    {
+        using var provider = CreateProvider();
+        var service = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "C0"));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
+        Assert.Equal("GMV6", response.EquipmentContext!.Series);
+        Assert.Contains("Gree GMV6", response.ApplicableContexts);
+        Assert.Contains("Gree GMV Mini", response.ApplicableContexts);
+        Assert.Contains(response.InternalDecisionTrace!, value => value.StartsWith("LocalizedKnowledgeMeaningGroup:", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task GmvMiniC0SeriesHintSelectsGmvMiniEntry()
+    {
+        using var provider = CreateProvider();
+        var service = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "C0", Series: "GMV Mini"));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.Answer, response.Status);
+        Assert.Equal("GMV Mini", response.EquipmentContext!.Series);
+        Assert.Empty(response.ApplicableContexts);
+    }
+
+    [Fact]
     public async Task BotResponsesDoNotContainUnsafeWordingOrRawGeneratedKnowledge()
     {
         using var provider = CreateProvider();

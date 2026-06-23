@@ -14,6 +14,10 @@ public sealed class EquipmentDiagnosticTelegramParserTests
     [InlineData("Gree A0", "Gree", "A0")]
     [InlineData("Gree U0", "Gree", "U0")]
     [InlineData("Gree GMV6 U0", "Gree", "U0")]
+    [InlineData("Gree GMV Mini AJ", "Gree", "AJ")]
+    [InlineData("Gree GMV Mini C0", "Gree", "C0")]
+    [InlineData("GMV Mini AJ", "Gree", "AJ")]
+    [InlineData("GMV Mini C0", "Gree", "C0")]
     [InlineData("Gree debugging U0", "Gree", "U0")]
     [InlineData("n6", "Gree", "n6")]
     [InlineData("db", "Gree", "db")]
@@ -34,6 +38,19 @@ public sealed class EquipmentDiagnosticTelegramParserTests
 
         Assert.Empty(result.Errors);
         Assert.Equal("GMV6", result.DiagnosticRequest!.Series);
+    }
+
+    [Theory]
+    [InlineData("Gree GMV Mini AJ")]
+    [InlineData("Gree GMV-Mini AJ")]
+    [InlineData("Gree GMV5 Mini AJ")]
+    [InlineData("GMV Mini AJ")]
+    public void GmvMiniSeriesHintIsPreserved(string text)
+    {
+        var result = _parser.Parse(text, EnabledOptions());
+
+        Assert.Empty(result.Errors);
+        Assert.Equal("GMV Mini", result.DiagnosticRequest!.Series);
     }
 
     [Theory]

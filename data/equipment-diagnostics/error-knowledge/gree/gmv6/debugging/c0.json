@@ -28,6 +28,7 @@
   "sourceName": "Service Manual for GMV6 v_2020.09",
   "sourceMeaning": "Communication malfunction between IDU, ODU and IDU’s wired controller",
   "sourceReference": "глава 3 Faults / Error Indication / Debugging C0 / PDF page 77 / manual page 75; Troubleshooting 2.27 / PDF page 91 / manual page 89",
+  "meaningGroupId": "gree-vrf-gmv-communication-c0",
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-20T00:00:00Z",

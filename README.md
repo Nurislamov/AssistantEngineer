@@ -27,7 +27,7 @@ AssistantEngineer is a standalone C# engineering calculation platform for HVAC a
 
 ## Planned / Early Modules
 
-- Equipment Diagnostics: early backend foundation for deterministic equipment error-code diagnostics, separate from equipment catalog and selection. ED-00 uses in-memory seed data only and has no persistence or public API routes yet.
+- Equipment Diagnostics: deterministic equipment error-code diagnostics with Telegram-facing routing policy, reviewed manual-backed Gree VRF knowledge, and explicit same-meaning grouping for overlapping codes. See `docs/equipment-diagnostics/README.md`.
 
 ## Architecture Overview
 

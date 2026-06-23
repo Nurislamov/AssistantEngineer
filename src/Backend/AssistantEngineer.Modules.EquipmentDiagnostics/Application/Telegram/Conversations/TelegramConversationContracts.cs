@@ -85,4 +85,5 @@ public sealed record TelegramDiagnosticCandidate(
     EquipmentDiagnostics.Domain.EquipmentCategory Category,
     string EquipmentType,
     EquipmentDiagnosticBotEquipmentSide EquipmentSide,
-    EquipmentDiagnosticBotDisplayContext DisplayContext);
+    EquipmentDiagnosticBotDisplayContext DisplayContext,
+    string? MeaningGroupId = null);

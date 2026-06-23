@@ -171,6 +171,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine("Возможное значение:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
+        AppendApplicableContexts(builder, response);
         builder.AppendLine();
         builder.AppendLine("Что можно сделать безопасно:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote));
@@ -318,6 +319,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine("Суть:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
+        AppendApplicableContexts(builder, response);
         if (!text.IsReviewed || !IsVerified(entry.VerificationStatus))
         {
             builder.AppendLine();
@@ -329,6 +331,23 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine("Дальше:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
+    }
+
+    private static void AppendApplicableContexts(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response)
+    {
+        if (response.ApplicableContexts.Count <= 1)
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("Применимо:");
+        foreach (var context in response.ApplicableContexts.Take(6))
+        {
+            builder.AppendLine($"- {context}");
+        }
     }
 
     private static void AppendMissingLocalizationFallback(
