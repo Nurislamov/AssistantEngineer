@@ -87,6 +87,8 @@ Consumer users are denied. If a reviewed manual is known but no server-local Tel
 the file is not connected yet. Real bindings live outside git under the runtime binding path and use Telegram `file_id`
 handles. Counts remain 4 packages / 253 entries.
 
+ED-24H.1 is a planning-only selection stage. It recommends `SERVICE_MANUAL_GMV_MINI.pdf` as the next local service-manual candidate after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`. It does not change manual registry statuses, import diagnostic entries, or change Telegram/manual delivery behavior. See [gree-vrf-next-manual-selection.md](gree-vrf-next-manual-selection.md).
+
 ## B. Controllers / wired remotes / commissioning tools
 
 | Manual ID | Local filename | Status | Coverage | Notes |

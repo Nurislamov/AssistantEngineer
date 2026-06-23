@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24H.1 Continue Gree VRF manual coverage`
+`ED-24H.2 Import Gree GMV Mini service manual knowledge`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Continue reviewed Gree VRF manual coverage by choosing the next local source manual based on actual equipment used before import. ED-SEC.1 is complete: repo-side safety work passed, production secret rotation was completed manually on the VPS, and the rotated production stack is healthy.
+Inspect and import `SERVICE_MANUAL_GMV_MINI.pdf` only after comparing it with `SERVICE_MANUAL_GMV_MINI (1).pdf`, confirming document identity, diagnostic sections, troubleshooting detail, and collision risk. ED-24H.1 selected this as the safest next local service-manual candidate; do not use owner manuals, sales guides, catalogs, external sources, OCR, or model memory to fill gaps.
 
 
 
@@ -68,7 +68,7 @@ Expected next action:
 
 7\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6/manual delivery smoke behavior stable.
 
-8\. Candidate next manuals: GMV X / GMV X PRO; GMV Mini / GMV5 Mini / Slim / Home; Controllers / CE41 / CE42 / CE52.
+8\. ED-24H.1 selected `SERVICE_MANUAL_GMV_MINI.pdf` as the next local service-manual candidate after duplicate review; GMV X/X PRO remains postponed until an exact service manual is available.
 
 
 
@@ -144,11 +144,63 @@ Latest known production status:
 
 \* Logs after rotation are clean.
 
+\* ED-24H.1 planning selected `SERVICE_MANUAL_GMV_MINI.pdf` as the next safest local VRF service-manual candidate after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`.
+
+\* Knowledge remains 4 packages / 253 entries / 0 issues.
+
 \* Orphan Postgres compose warning is known and should not be acted on unless explicitly planned.
 
 
 
 \## Last completed work
+
+
+
+\### ED-24H.1 - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24H.1 Select next Gree VRF manual for import`
+
+
+
+Purpose:
+
+
+
+Analyze current Gree VRF manual coverage, Telegram manual delivery coverage, the manual registry, and the VRF equipment map to choose the next safest manual for a future import without importing new diagnostic entries.
+
+
+
+Results:
+
+
+
+\* Planning document added: `docs/equipment-diagnostics/gree-vrf-next-manual-selection.md`.
+
+\* Current imported runtime coverage remains GMV6-bound: 4 packages, 253 entries, 0 validator issues.
+
+\* `SERVICE_MANUAL_GMV_IDU.pdf` / `GC202004-X` remains sourceReferences-only on 38 existing GMV6 indoor entries and adds no package or entry.
+
+\* Telegram delivery coverage remains: GMV6 service manual and GMV IDU service manual are connected; `/manuals` after `Gree d1` sends both PDF manuals.
+
+\* Top recommended next candidate: `SERVICE_MANUAL_GMV_MINI.pdf`, after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`.
+
+\* Second candidate: exact GMV X / GMV X PRO service manual, but the current registry has only owner/sales-guide GMV X files, so import is postponed until a service manual is available or exact identity is proven.
+
+\* Third candidate: CE42 / CE52 / CE41 controller and commissioning manuals, but they should shape display/query/workflow support rather than primary equipment fault meanings unless the manual explicitly defines fault semantics.
+
+\* Postponed: GMV6 HR, GMV9 Flex, GMV5 MAX, BMS/gateway/cloud/Eudemon/billing, generic VRF service-manual filenames, chiller, U-Match, split, Versati, FCU, ERV, and spreadsheet sources until exact identity, actual equipment need, and diagnostic sections are confirmed.
+
+\* `manuals.json` was not changed because there is no existing planning-decision field pattern that justifies a schema/status update.
+
+\* No runtime code, Telegram logic, Docker/compose, DB schema, EF migration, env file, diagnostic entry, manual binary, runtime manual binding JSON, or real Telegram `file_id` was changed.
+
+\* Next stage: `ED-24H.2 Import Gree GMV Mini service manual knowledge`.
 
 
 
@@ -696,7 +748,7 @@ Next stage:
 
 
 
-`ED-24H.1 Continue Gree VRF manual coverage`
+`ED-24H.2 Import Gree GMV Mini service manual knowledge`
 
 
 
@@ -2830,13 +2882,15 @@ Scope:
 
 
 
-* choose the next Gree VRF manual based on actual equipment used;
+* compare `SERVICE_MANUAL_GMV_MINI.pdf` with `SERVICE_MANUAL_GMV_MINI (1).pdf` and choose the canonical local source before analysis;
 
-* use only reviewed local source evidence;
+* use only the selected GMV Mini service manual as technical evidence;
 
 * preserve same-code/same-equipment/same-meaning as one diagnostic answer;
 
-* keep knowledge state stable until the selected manual is reviewed;
+* add new entries only when the GMV Mini manual defines a series/equipment-specific meaning not already represented;
+
+* add `sourceReferences[]` only when code, equipment type, display context, and meaning match an existing answer;
 
 * keep current Telegram diagnostics and manual delivery green.
 
@@ -2846,19 +2900,15 @@ Before coding:
 
 
 
-1\. Identify the actual equipment/series in use before import.
+1\. Confirm the actual equipment need is GMV Mini / GMV5 Mini / Slim / Home scope.
 
-2\. Choose the next local manual candidate from:
+2\. Compare `SERVICE_MANUAL_GMV_MINI.pdf` and `SERVICE_MANUAL_GMV_MINI (1).pdf` without committing either binary.
 
-   * GMV X / GMV X PRO;
+3\. Record cover identity, document code/version, model/series scope, diagnostic sections, troubleshooting detail, and duplicate/collision risk before editing runtime JSON.
 
-   * GMV Mini / GMV5 Mini / Slim / Home;
+4\. Do not use GMV6, GMV IDU, GMV X, controller manuals, catalogs, external sources, OCR, or model memory to fill gaps.
 
-   * Controllers / CE41 / CE42 / CE52.
-
-3\. Record manual identity, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests before coding.
-
-4\. Keep secret backup/generated files private on the VPS and out of Git/docs.
+5\. Keep secret backup/generated files private on the VPS and out of Git/docs.
 
 
 

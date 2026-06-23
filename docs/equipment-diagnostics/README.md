@@ -16,6 +16,10 @@ The non-runtime [Gree VRF equipment catalog map](gree-vrf-equipment-map.md) inve
 
 ED-24H.0 uses only the three local catalogues `GMV6 Catalouge.pdf`, `141367.pdf`, and `GMV6 2023 РУС.pdf`. It does not import diagnostic codes, change Telegram lookup behavior, change role policy, or commit PDF/DOC/XLS/XLSX source files.
 
+## ED-24H.1 Gree VRF next manual selection
+
+The non-runtime [Gree VRF next manual selection](gree-vrf-next-manual-selection.md) compares current imported GMV6/IDU coverage, the manual registry, and the VRF equipment map to choose the next safest local service-manual candidate. It recommends `SERVICE_MANUAL_GMV_MINI.pdf` for the next inspection/import stage after duplicate review, while postponing GMV X/X PRO until an exact service manual is available.
+
 ## ED-24F.1 GMV IDU manual analysis
 
 The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. ED-24F.1 stopped duplicate entry import; ED-24F.1b completed the safe merge as source references on matching existing GMV6 indoor entries.

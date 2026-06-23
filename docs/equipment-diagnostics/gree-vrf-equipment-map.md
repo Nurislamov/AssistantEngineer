@@ -90,9 +90,9 @@ Future manual library policy remains plan-only: Installer, Engineer, Admin, and 
 
 ## Next Recommended Stages
 
-- ED-24F.1b: merge GMV IDU manual references and procedures where `GC202004-X` matches existing GMV6 indoor meanings.
-- ED-24H.1: import GMV X / GMV X PRO service manual when source is provided.
-- ED-24H.2: import GMV6 HR service manual when source is provided.
-- ED-24H.3: build controller/manual-library foundation for controller, commissioning, BMS, cloud, billing, and remote-monitoring documents.
+- ED-24H.1: completed the next-manual selection analysis without importing entries.
+- ED-24H.2: inspect and import `SERVICE_MANUAL_GMV_MINI.pdf` after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`.
+- Future: import GMV X / GMV X PRO only after an exact service manual is available or the generic VRF service manual is proven to be that source.
+- Future: import GMV6 HR, GMV9 Flex, GMV5 MAX, controller, commissioning, BMS, cloud, billing, and remote-monitoring manuals only after exact manual identity and actual equipment need are confirmed.
 
 No new diagnostic codes were imported.
