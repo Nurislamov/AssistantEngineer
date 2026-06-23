@@ -2,7 +2,7 @@
 
 
 
-Last updated: 2026-06-22
+Last updated: 2026-06-23
 
 Primary repo: https://github.com/Nurislamov/AssistantEngineer
 
@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-SEC.1 Rotate leaked production secrets`
+`ED-24H.1 Continue Gree VRF manual coverage`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Add a safe operational runbook, helper script, and regression checks for rotating production secrets that were exposed through resolved Docker Compose configuration output. Actual `deploy/.env` changes and production secret rotation are manual VPS operations and must not be committed.
+Continue reviewed Gree VRF manual coverage by choosing the next local source manual based on actual equipment used before import. ED-SEC.1 is complete: repo-side safety work passed, production secret rotation was completed manually on the VPS, and the rotated production stack is healthy.
 
 
 
@@ -58,15 +58,17 @@ Expected next action:
 
 2\. Preserve one diagnostic answer for same-code/same-equipment/same-meaning cases.
 
-3\. Do not paste full `docker compose config`, `docker inspect`, env dumps, or `deploy/.env` contents into chats/issues/logs.
+3\. Do not paste full `docker compose config`, `docker inspect` environment output, env dumps, or `deploy/.env` contents into chats/issues/logs.
 
-4\. Rotate leaked production API key, Telegram webhook secret, and PostgreSQL password/connection string manually on the VPS using placeholder-only runbook steps.
+4\. Treat generated secret files and secret backup files as private VPS-only artifacts; do not open, paste, copy into docs, or commit them.
 
 5\. Treat the notification chat ID as operational metadata; do not paste it publicly, but rotate it only if operational policy changes.
 
 6\. Keep real Telegram `file_id` values only in `artifacts/operations/equipment-diagnostics-manual-bindings.json` or another reviewed ignored runtime path.
 
 7\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6/manual delivery smoke behavior stable.
+
+8\. Candidate next manuals: GMV X / GMV X PRO; GMV Mini / GMV5 Mini / Slim / Home; Controllers / CE41 / CE42 / CE52.
 
 
 
@@ -78,11 +80,11 @@ Expected next action:
 
 
 
-Latest production commit after ED-24E.2a deployment:
+Latest repo-side safety commit after ED-SEC.1:
 
 
 
-`8c89219 ED-24E.2a Fix Russian diagnostic wording normalization`
+`454a73d ED-SEC.1 Add production secret rotation runbook`
 
 
 
@@ -114,19 +116,111 @@ Latest known production status:
 
 \* Telegram manual library works in production.
 
-\* GMV6 service manual and GMV IDU service manual delivery through `/manuals` works.
+\* GMV6 service manual (`Service Manual for GMV6 v_2020.09.pdf`, `GC202001-I`) is connected.
+
+\* GMV IDU service manual (`SERVICE_MANUAL_GMV_IDU.pdf`, `GC202004-X`) is connected.
+
+\* `/manuals` after `Gree d1` sends both PDF manuals.
 
 \* Canonical casing smoke is fixed.
 
+\* Canonical diagnostic code casing works: `d1`/`D1` -> canonical `d1`; `o1`/`O1` -> canonical `o1`; `l1` -> canonical `L1`; `01` is not treated as `o1`.
+
 \* Manual bindings persist through `/opt/assistantengineer/artifacts/operations/` to `/app/artifacts/operations/`.
 
-\* ED-SEC.1 risk: resolved production Compose config output exposed secret values in chat/log context and requires manual secret rotation on the VPS.
+\* ED-SEC.1 repository safety change is committed as `454a73d ED-SEC.1 Add production secret rotation runbook`.
+
+\* ED-SEC.1 production secret rotation on the VPS is PASS.
+
+\* API restart after rotation is PASS.
+
+\* `/health` and `/ready` after rotation are PASS.
+
+\* PostgreSQL container is healthy after rotation.
+
+\* Telegram polling after rotation is PASS.
+
+\* Manual delivery after rotation is PASS.
+
+\* Logs after rotation are clean.
 
 \* Orphan Postgres compose warning is known and should not be acted on unless explicitly planned.
 
 
 
 \## Last completed work
+
+
+
+\### ED-SEC.1 - CLOSED
+
+
+
+Title:
+
+
+
+`ED-SEC.1 Rotate leaked production secrets`
+
+
+
+Purpose:
+
+
+
+Add safe repository-side guidance, helper tooling, and regression checks for rotating production secrets exposed by resolved Docker Compose configuration output, then complete the actual production rotation manually on the VPS without committing secrets.
+
+
+
+Results:
+
+
+
+\* Repo-side runbook, helper script, and tests: PASS.
+
+\* Production rotation on the VPS: PASS.
+
+\* API restart after rotation: PASS.
+
+\* `/health`: PASS.
+
+\* `/ready`: PASS.
+
+\* PostgreSQL container: healthy.
+
+\* Telegram polling: PASS.
+
+\* Manual delivery after rotation: PASS.
+
+\* Logs: clean.
+
+\* No secret values, env files, generated secret files, secret backup files, runtime manual binding JSON, manual binaries, DB schema changes, EF migrations, Telegram logic changes, or diagnostic entry changes were committed.
+
+\* Private generated secret and backup files remain VPS-only operational artifacts and must not be opened, pasted, copied into docs, or committed.
+
+\* Never paste full `docker compose config`, env dumps, `docker inspect` environment output, or `deploy/.env` contents into chats/issues/logs.
+
+\* Packages remain: 4.
+
+\* Entries remain: 253.
+
+\* Validator issues remain: 0.
+
+
+
+Production status:
+
+
+
+\* ED-24G.1 remains production PASS.
+
+\* Telegram manual library works in production.
+
+\* GMV6 service manual (`Service Manual for GMV6 v_2020.09.pdf`, `GC202001-I`) remains connected.
+
+\* GMV IDU service manual (`SERVICE_MANUAL_GMV_IDU.pdf`, `GC202004-X`) remains connected.
+
+\* `/manuals` after `Gree d1` sends both PDF manuals.
 
 
 
@@ -164,7 +258,7 @@ Production/deploy note:
 
 \* Production status after deployment: PASS. Telegram manual library works, canonical casing is fixed, manual bindings persist through the host bind, and both eligible GMV manuals can be delivered through `/manuals`.
 
-\* Security follow-up: resolved `docker compose config` output exposed production API key, Telegram webhook secret, and PostgreSQL password/connection-string material in chat/log context. ED-SEC.1 tracks safe runbook/script/checks; actual rotation is manual on the VPS and must not be committed.
+\* Security follow-up: resolved `docker compose config` output exposed production API key, Telegram webhook secret, and PostgreSQL password/connection-string material in chat/log context. ED-SEC.1 repository safety work and manual VPS production rotation are now complete; no secret values or secret backup/generated files were committed.
 
 
 
@@ -602,7 +696,7 @@ Next stage:
 
 
 
-`ED-SEC.1 Rotate leaked production secrets`
+`ED-24H.1 Continue Gree VRF manual coverage`
 
 
 
@@ -2450,7 +2544,7 @@ Current known working smoke queries:
 
 
 
-Current production risk: resolved Docker Compose configuration output exposed production secret values in chat/log context. Rotate the production API key, Telegram webhook secret, and PostgreSQL password/connection string manually on the VPS before treating the incident as closed. Do not paste raw resolved config or env output again.
+No active production blocker. ED-SEC.1 production secret rotation is complete on the VPS, the API was recreated successfully, `/health` and `/ready` pass, PostgreSQL is healthy, Telegram polling works, manual delivery works, and logs are clean.
 
 
 
@@ -2594,6 +2688,8 @@ Known compose warning:
 
 Do not remove orphan containers unless explicitly planned, because Postgres is currently running and healthy.
 
+Never paste full `docker compose config`, env dumps, `docker inspect` environment output, or `deploy/.env` contents into chats/issues/logs. Generated secret files and secret backup files are private VPS-only operational artifacts and must not be opened, pasted, copied into docs, or committed.
+
 
 
 \## Files changed recently
@@ -2726,7 +2822,7 @@ Recommended next stage:
 
 
 
-`ED-SEC.1 Rotate leaked production secrets`
+`ED-24H.1 Continue Gree VRF manual coverage`
 
 
 
@@ -2734,13 +2830,13 @@ Scope:
 
 
 
-* add safe repository-only runbook, script, and checks;
+* choose the next Gree VRF manual based on actual equipment used;
 
-* do not rotate real secrets in Git;
+* use only reviewed local source evidence;
 
-* do not commit `deploy/.env`;
+* preserve same-code/same-equipment/same-meaning as one diagnostic answer;
 
-* do not print, store, or repeat exposed values;
+* keep knowledge state stable until the selected manual is reviewed;
 
 * keep current Telegram diagnostics and manual delivery green.
 
@@ -2750,17 +2846,23 @@ Before coding:
 
 
 
-1\. Add/verify the production secret rotation runbook and helper script.
+1\. Identify the actual equipment/series in use before import.
 
-2\. Run restore/build/tests/deployment validators/knowledge verifier.
+2\. Choose the next local manual candidate from:
 
-3\. Commit and push only safe docs/scripts/tests/state changes.
+   * GMV X / GMV X PRO;
 
-4\. User manually rotates production secrets on the VPS using placeholders only.
+   * GMV Mini / GMV5 Mini / Slim / Home;
+
+   * Controllers / CE41 / CE42 / CE52.
+
+3\. Record manual identity, model/series scope, document code/version, diagnostic sections, troubleshooting detail, collision risk, and candidate package manifests before coding.
+
+4\. Keep secret backup/generated files private on the VPS and out of Git/docs.
 
 
 
-Expected checks for ED-SEC.1:
+Expected checks after next manual coverage change:
 
 
 
@@ -2782,15 +2884,13 @@ Also run deployment validators and release publish smoke if available.
 
 
 
-Production smoke after manual rotation must include:
+Production smoke after next manual coverage change must include:
 
 
 
 * `/health` and `/ready`;
 
-* protected API accepts the new API key and rejects the old key;
-
-* Telegram polling/webhook starts without printing secrets;
+* Telegram polling starts without printing secrets;
 
 * existing GMV6 smoke: `Gree C0`, `Gree U0`, `Gree H5`, `Gree E1`, `Gree A0`;
 
