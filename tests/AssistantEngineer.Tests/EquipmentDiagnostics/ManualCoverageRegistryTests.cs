@@ -157,7 +157,7 @@ public sealed class ManualCoverageRegistryTests
     }
 
     [Fact]
-    public void OnlyGmv6ImportsNewEntriesAndGmvIduIsMergedAsReferences()
+    public void ImportedManualStatusesRecordGmv6IduAndGmvMiniCoverage()
     {
         using var document = LoadRegistry();
         var manuals = document.RootElement.GetProperty("manuals").EnumerateArray().ToArray();
@@ -167,6 +167,8 @@ public sealed class ManualCoverageRegistryTests
             manual.GetProperty("recommendedNext").GetBoolean()).ToArray();
         var gmvIdu = manuals.Single(manual =>
             manual.GetProperty("manualId").GetString() == "gree-gmv-idu-service-manual");
+        var gmvMini = manuals.Single(manual =>
+            manual.GetProperty("manualId").GetString() == "gree-gmv-mini-service-manual");
 
         Assert.Equal(
             "gree-gmv6-service-manual-2020-09",
@@ -176,6 +178,11 @@ public sealed class ManualCoverageRegistryTests
         Assert.Equal("PartialDiagnosticScopeImported", gmvIdu.GetProperty("coverageStatus").GetString());
         Assert.Equal(0, gmvIdu.GetProperty("entriesImported").GetInt32());
         Assert.Equal(38, gmvIdu.GetProperty("entriesReferenced").GetInt32());
+        Assert.Equal("PartiallyImported", gmvMini.GetProperty("importStatus").GetString());
+        Assert.Equal("PartialDiagnosticScopeImported", gmvMini.GetProperty("coverageStatus").GetString());
+        Assert.Equal(9, gmvMini.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(31, gmvMini.GetProperty("entriesReferenced").GetInt32());
+        Assert.Equal(90, gmvMini.GetProperty("needsReviewCodes").GetArrayLength());
     }
 
     [Fact]
@@ -236,6 +243,63 @@ public sealed class ManualCoverageRegistryTests
 
         Assert.Equal(38, identifiedCodes.Count);
         Assert.All(identifiedCodes, code => Assert.Contains(code, existingCodes));
+    }
+
+    [Fact]
+    public void GmvMiniAnalysisRecordsPartialImportAndNeedsReviewBoundary()
+    {
+        using var document = LoadRegistry();
+        var manual = document.RootElement
+            .GetProperty("manuals")
+            .EnumerateArray()
+            .Single(item =>
+                item.GetProperty("manualId").GetString() ==
+                "gree-gmv-mini-service-manual");
+        var analysis = manual.GetProperty("analysis");
+        var packageIds = manual
+            .GetProperty("importedPackageIds")
+            .EnumerateArray()
+            .Select(item => item.GetString()!)
+            .ToArray();
+
+        Assert.Equal("en", manual.GetProperty("sourceLanguage").GetString());
+        Assert.Equal("PartiallyImported", manual.GetProperty("importStatus").GetString());
+        Assert.Equal("PartialDiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
+        Assert.Equal(9, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(31, manual.GetProperty("entriesReferenced").GetInt32());
+        Assert.Equal(90, manual.GetProperty("needsReviewCodes").GetArrayLength());
+        Assert.Equal(
+            [
+                "gree-gmv-mini-vrf-indoor-controller-codes",
+                "gree-gmv-mini-vrf-outdoor-protection-codes",
+                "gree-gmv-mini-vrf-status-codes"
+            ],
+            packageIds);
+        Assert.Equal("ED-24H.2", analysis.GetProperty("analysisStage").GetString());
+        Assert.Equal("SERVICE_MANUAL_GMV_MINI.pdf", analysis.GetProperty("sourceFileUsed").GetString());
+        Assert.False(analysis.GetProperty("duplicateFileUsed").GetBoolean());
+        Assert.Equal(173, analysis.GetProperty("pageCount").GetInt32());
+        Assert.Equal(130, analysis.GetProperty("identifiedCodeCount").GetInt32());
+        Assert.Equal(9, analysis.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(31, analysis.GetProperty("sourceReferencesMergedCount").GetInt32());
+        Assert.Equal(90, analysis.GetProperty("needsReviewCodeCount").GetInt32());
+        Assert.Equal(
+            "PartialImportWithExactSourceReferenceMerges",
+            analysis.GetProperty("importDecision").GetString());
+        Assert.Equal(90, analysis.GetProperty("needsReviewCodes").GetArrayLength());
+        Assert.Contains(
+            "SERVICE_MANUAL_GMV_MINI (1).pdf",
+            manual.GetProperty("notes").GetString(),
+            StringComparison.Ordinal);
+
+        Assert.All(packageIds, packageId =>
+            Assert.True(File.Exists(Path.Combine(
+                TestPaths.RepoRoot,
+                "data",
+                "equipment-diagnostics",
+                "error-knowledge",
+                "packages",
+                $"{packageId}.json"))));
     }
 
     [Fact]

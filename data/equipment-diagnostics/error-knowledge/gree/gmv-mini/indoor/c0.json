@@ -1,0 +1,139 @@
+{
+  "id": "gree-gmv-mini-indoor-c0",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "IndoorUnit",
+  "series": "GMV Mini",
+  "models": [
+    "GMV-80WL/A-T",
+    "GMV-100WL/A-T",
+    "GMV-121WL/A-T",
+    "GMV-80WL/C-T",
+    "GMV-100WL/C-T",
+    "GMV-121WL/C-T",
+    "GMV-141WL/C-T",
+    "GMV-120WL/A-T",
+    "GMV-140WL/A-T",
+    "GMV-160WL/A-T",
+    "GMV-120WL/A-X",
+    "GMV-140WL/A-X",
+    "GMV-160WL/A-X",
+    "GMV-120WL/C-T",
+    "GMV-140WL/C-T",
+    "GMV-160WL/C-T",
+    "GMV-120WL/C-X",
+    "GMV-140WL/C-X",
+    "GMV-160WL/C-X",
+    "GMV-H224WL/A-X",
+    "GMV-H280WL/A-X",
+    "GMV-H335WL/A-X",
+    "GMV-224WL/C-X",
+    "GMV-280WL/C-X",
+    "GMV-335WL/C-X"
+  ],
+  "code": "C0",
+  "signalType": "Communication",
+  "displaySource": "WiredRemote",
+  "systemPart": "Communication",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceMeaning": "Communication malfunction",
+  "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
+  "sourceReferences": [
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
+      "notes": "Primary GMV Mini/System II source for this entry."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-indoor-c0-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV Mini C0 — ошибка связи",
+      "summary": "Код C0 на проводном контроллере GMV Mini означает нарушение связи. Обычно это связано с обменом между блоками, контроллером или адресацией.",
+      "safetyNote": "Работы с линией связи и платами выполняет квалифицированный специалист при безопасно отключенном питании.",
+      "checkSteps": [
+        "Зафиксируйте код C0 и на каком контроллере или блоке он появился.",
+        "Проверьте, не пропадало ли питание у внутренних или наружного блока.",
+        "Передайте сервисному специалисту модель оборудования и условия появления ошибки."
+      ],
+      "doNotAdvise": [
+        "Не разбирайте контроллер или блок под напряжением.",
+        "Не меняйте адреса и настройки системы без сервисной процедуры."
+      ],
+      "recommendedAction": "Обратитесь в сервис: нужно проверить питание, линию связи, адресацию и состояние плат по сервисному мануалу.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-indoor-c0-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV Mini C0 — ошибка связи",
+      "summary": "Код C0 на проводном контроллере GMV Mini означает нарушение связи. Обычно это связано с обменом между блоками, контроллером или адресацией.",
+      "safetyNote": "Работы с линией связи и платами выполняет квалифицированный специалист при безопасно отключенном питании.",
+      "checkSteps": [
+        "Зафиксируйте код C0 и на каком контроллере или блоке он появился.",
+        "Проверьте, не пропадало ли питание у внутренних или наружного блока.",
+        "Передайте сервисному специалисту модель оборудования и условия появления ошибки."
+      ],
+      "doNotAdvise": [
+        "Не разбирайте контроллер или блок под напряжением.",
+        "Не меняйте адреса и настройки системы без сервисной процедуры."
+      ],
+      "recommendedAction": "Обратитесь в сервис: нужно проверить питание, линию связи, адресацию и состояние плат по сервисному мануалу.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-indoor-c0-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV Mini C0 — ошибка связи",
+      "summary": "Код C0 на проводном контроллере GMV Mini означает нарушение связи. Обычно это связано с обменом между блоками, контроллером или адресацией.",
+      "safetyNote": "Работы с линией связи и платами выполняет квалифицированный специалист при безопасно отключенном питании.",
+      "checkSteps": [
+        "Зафиксируйте код C0 и на каком контроллере или блоке он появился.",
+        "Проверьте, не пропадало ли питание у внутренних или наружного блока.",
+        "Передайте сервисному специалисту модель оборудования и условия появления ошибки."
+      ],
+      "doNotAdvise": [
+        "Не разбирайте контроллер или блок под напряжением.",
+        "Не меняйте адреса и настройки системы без сервисной процедуры."
+      ],
+      "recommendedAction": "Обратитесь в сервис: нужно проверить питание, линию связи, адресацию и состояние плат по сервисному мануалу.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    }
+  ]
+}

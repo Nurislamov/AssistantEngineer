@@ -36,7 +36,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(253, entries.Count);
+        Assert.Equal(262, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -162,7 +162,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 reference.ManualId == "gree-gmv-idu-service-manual"))
             .ToArray();
 
-        Assert.Equal(253, entries.Count);
+        var gmvMiniMergedCodes = GmvMiniMergedCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var gmvMiniReferencedEntries = entries
+            .Where(entry => entry.SourceReferences.Any(reference =>
+                reference.ManualId == "gree-gmv-mini-service-manual") &&
+                !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Equal(262, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -174,12 +181,20 @@ public sealed class ErrorKnowledgeJsonValidationTests
         {
             Assert.Equal("IndoorUnit", entry.EquipmentType.ToString());
             Assert.Equal("IndoorUnit", entry.DisplaySource.ToString());
-            Assert.Equal(
-                ["gree-gmv6-service-manual-2020-09", "gree-gmv-idu-service-manual"],
-                entry.SourceReferences.Select(reference => reference.ManualId!).ToArray());
-            Assert.Equal(
-                ["GC202001-I", "GC202004-X"],
-                entry.SourceReferences.Select(reference => reference.DocumentCode!).ToArray());
+            var manualIds = entry.SourceReferences.Select(reference => reference.ManualId!).ToArray();
+            Assert.Equal("gree-gmv6-service-manual-2020-09", manualIds[0]);
+            Assert.Equal("gree-gmv-idu-service-manual", manualIds[1]);
+            if (gmvMiniMergedCodes.Contains(entry.Code))
+            {
+                Assert.Equal("gree-gmv-mini-service-manual", manualIds[2]);
+            }
+            else
+            {
+                Assert.Equal(2, manualIds.Length);
+            }
+
+            Assert.Equal("GC202001-I", entry.SourceReferences[0].DocumentCode);
+            Assert.Equal("GC202004-X", entry.SourceReferences[1].DocumentCode);
             Assert.All(entry.SourceReferences, reference =>
             {
                 var serialized = string.Join(
@@ -192,8 +207,34 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 Assert.DoesNotContain("C:\\", serialized, StringComparison.OrdinalIgnoreCase);
             });
         });
+        Assert.Equal(31, gmvMiniReferencedEntries.Length);
+        var gmvMiniReferencedCodes = gmvMiniReferencedEntries
+            .Select(entry => entry.Code)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Assert.Empty(gmvMiniMergedCodes.Except(gmvMiniReferencedCodes, StringComparer.OrdinalIgnoreCase));
+        Assert.Empty(gmvMiniReferencedCodes.Except(gmvMiniMergedCodes, StringComparer.OrdinalIgnoreCase));
+        Assert.All(gmvMiniReferencedEntries, entry =>
+        {
+            Assert.Contains(
+                entry.SourceReferences,
+                reference => reference.ManualId == "gree-gmv-mini-service-manual");
+            Assert.All(entry.SourceReferences, reference =>
+            {
+                var serialized = string.Join(
+                    " ",
+                    reference.SourceName,
+                    reference.SourceReference,
+                    reference.Notes);
+                Assert.DoesNotContain("SERVICE_MANUAL_GMV_MINI (1).pdf", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("D:\\", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("C:\\", serialized, StringComparison.OrdinalIgnoreCase);
+            });
+        });
         Assert.All(
-            entries.Where(entry => !expectedCodes.Contains(entry.Code)),
+            entries.Where(entry =>
+                !expectedCodes.Contains(entry.Code) &&
+                !gmvMiniMergedCodes.Contains(entry.Code) &&
+                !entry.Id.StartsWith("gree-gmv-mini-", StringComparison.OrdinalIgnoreCase)),
             entry => Assert.Empty(entry.SourceReferences));
     }
 
@@ -371,7 +412,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var result = ValidateRepository();
 
         Assert.True(result.IsValid);
-        Assert.Equal(4, result.Packages.Count);
+        Assert.Equal(7, result.Packages.Count);
         var package = Assert.Single(
             result.Packages,
             item => item.PackageId == "gree-gmv6-outdoor-fault-protection-codes");
@@ -382,6 +423,60 @@ public sealed class ErrorKnowledgeJsonValidationTests
             [ErrorKnowledgeSignalType.Fault, ErrorKnowledgeSignalType.Protection],
             package.IntendedSignalTypes);
         Assert.Equal(120, package.EntryCountExpected);
+    }
+
+    [Fact]
+    public void GmvMiniManualImportAddsExpectedPackagesEntriesAndReferences()
+    {
+        var result = ValidateRepository();
+
+        Assert.True(result.IsValid);
+        Assert.Contains(
+            result.Packages,
+            package => package.PackageId == "gree-gmv-mini-vrf-indoor-controller-codes" &&
+                package.EntryCountExpected == 2);
+        Assert.Contains(
+            result.Packages,
+            package => package.PackageId == "gree-gmv-mini-vrf-outdoor-protection-codes" &&
+                package.EntryCountExpected == 1);
+        Assert.Contains(
+            result.Packages,
+            package => package.PackageId == "gree-gmv-mini-vrf-status-codes" &&
+                package.EntryCountExpected == 6);
+
+        var gmvMiniEntries = result.Entries
+            .Where(entry => string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
+            .ToArray();
+        var gmvMiniReferencedEntries = result.Entries
+            .Where(entry => entry.SourceReferences.Any(reference =>
+                reference.ManualId == "gree-gmv-mini-service-manual") &&
+                !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Equal(9, gmvMiniEntries.Length);
+        Assert.Equal(31, gmvMiniReferencedEntries.Length);
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-c0");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-aj");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-outdoor-ec");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-status-a1");
+        Assert.All(gmvMiniEntries, entry =>
+        {
+            Assert.Equal("ManualVerified", entry.VerificationStatus);
+            Assert.Contains(
+                entry.SourceReferences,
+                reference => reference.ManualId == "gree-gmv-mini-service-manual");
+            Assert.All(entry.SourceReferences, reference =>
+            {
+                var serialized = string.Join(
+                    " ",
+                    reference.SourceName,
+                    reference.SourceReference,
+                    reference.Notes);
+                Assert.DoesNotContain("SERVICE_MANUAL_GMV_MINI (1).pdf", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("D:\\", serialized, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("C:\\", serialized, StringComparison.OrdinalIgnoreCase);
+            });
+        });
     }
 
     [Fact]
@@ -433,6 +528,8 @@ public sealed class ErrorKnowledgeJsonValidationTests
     [InlineData("E1", "GMV6", "High-pressure protection")]
     [InlineData("U0", "GMV6", "Preheat time of compressor is insufficient")]
     [InlineData("A0", "GMV6", "Unit waiting for debugging")]
+    [InlineData("EC", "GMV Mini", "Loose protection for discharge temperature sensor for compressor 1")]
+    [InlineData("A1", "GMV Mini", "Operational parameter inquiry of compressor")]
     public void RepresentativeGmv6CodeResolvesFromManualCatalog(
         string code,
         string series,
@@ -773,6 +870,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "d1", "d3", "d4", "d6", "d7", "d8", "d9", "dA", "dH", "dC", "dL", "dE",
         "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "oA", "ob", "oC",
         "o0", "db"
+    ];
+
+    private static readonly string[] GmvMiniMergedCodes =
+    [
+        "L5", "d3", "d4", "d6", "d7", "d8", "d9", "dE",
+        "E1", "E3", "F1", "F3", "FP", "J8", "J9", "b2", "b3",
+        "C8", "C9", "CA",
+        "A3", "A4", "A6", "A7", "A8", "AU", "AH", "AL", "Ad", "nA", "nE"
     ];
 
     private static readonly string[] ImprovedMessageQualityEntryIds =

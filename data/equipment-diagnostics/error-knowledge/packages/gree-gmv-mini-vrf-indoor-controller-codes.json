@@ -1,0 +1,28 @@
+{
+  "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV Mini",
+  "title": "Gree GMV Mini indoor wired-controller codes",
+  "description": "Manual-bound malfunction list entries from the GMV Mini/System II service manual that are not already represented by existing GMV6 indoor answers.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Communication",
+    "Maintenance"
+  ],
+  "intendedEquipmentTypes": [
+    "IndoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "WiredRemote"
+  ],
+  "entryCountExpected": 2,
+  "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only. Duplicate/revision candidates were not used in ED-24H.2.",
+  "createdAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z"
+}

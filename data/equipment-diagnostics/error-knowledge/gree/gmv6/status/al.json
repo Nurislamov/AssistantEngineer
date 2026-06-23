@@ -31,7 +31,7 @@
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
@@ -99,6 +99,32 @@
       ],
       "recommendedAction": "Сопоставить код, модель и фактические симптомы с указанным разделом руководства; если подробная процедура не перенесена, выполнять её непосредственно по руководству.",
       "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Отдельная подробная процедура для этого кода из руководства не извлечена."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Service Manual for GMV6 v_2020.09",
+      "documentCode": "GC202001-I",
+      "sourceReference": "глава 3 Faults / Error Indication / Status AL / PDF page 77 / manual page 75",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "packageId": "gree-gmv6-status-codes",
+      "notes": "Primary GMV6 manual source retained for backward compatibility."
+    },
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Outdoor main-board status display table, PDF page 83 / manual page 79",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv6-status-codes",
+      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
     }
   ]
 }

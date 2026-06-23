@@ -52,12 +52,24 @@
       "manualId": "gree-gmv-idu-service-manual",
       "packageId": "gree-gmv6-indoor-fault-codes",
       "notes": "GC202004-X confirms the existing indoor-unit code meaning."
+    },
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
     }
   ],
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-21T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z",
   "texts": [
     {
       "locale": "ru",

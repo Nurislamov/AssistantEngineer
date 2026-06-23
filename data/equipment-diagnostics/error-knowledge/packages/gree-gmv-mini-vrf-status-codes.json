@@ -1,0 +1,28 @@
+{
+  "packageId": "gree-gmv-mini-vrf-status-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV Mini",
+  "title": "Gree GMV Mini status and function codes",
+  "description": "Manual-bound outdoor main-board status/function entries from the GMV Mini/System II service manual not already represented by GMV6.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceReference": "Outdoor main-board status display table, PDF page 83 / manual page 79",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Status",
+    "Commissioning"
+  ],
+  "intendedEquipmentTypes": [
+    "OutdoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "OutdoorBoard"
+  ],
+  "entryCountExpected": 6,
+  "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only. These codes are status/function displays, not standalone fault conclusions.",
+  "createdAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z"
+}

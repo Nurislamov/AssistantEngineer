@@ -16,15 +16,17 @@ Current snapshot:
 
 - Source files tracked: 47.
 - Imported manuals: 1.
-- New, not imported: 29.
+- Partially imported manuals: 2.
+- New, not imported: 28.
 - Needs identity, duplicate, or import-design review: 16.
-- Repo-backed diagnostic packages: 4.
-- Repo-backed diagnostic entries: 253.
+- Repo-backed diagnostic packages: 7.
+- Repo-backed diagnostic entries: 262.
 - Current imported source: `Service Manual for GMV6 v_2020.09.pdf`, document code `GC202001-I`.
 
-Only the GMV6 service manual diagnostic scope has been imported and production smoke verified. ED-24G.0 adds Telegram
-manual-library delivery foundations for eligible reviewed manuals, but it does not import new diagnostic scope or commit
-manual binaries.
+Only the GMV6 service manual diagnostic scope has been production smoke verified. ED-24H.2 partially imports
+`SERVICE_MANUAL_GMV_MINI.pdf` as repository knowledge, but production deployment and smoke verification are still pending.
+Telegram manual-library delivery foundations exist for eligible reviewed manuals, but this document does not commit manual
+binaries or runtime Telegram bindings.
 
 ## Coverage status model
 
@@ -56,8 +58,8 @@ manual binaries.
 |---|---|---|---|---|
 | `gree-gmv6-service-manual-2020-09` | `Service Manual for GMV6 v_2020.09.pdf` | Imported | DiagnosticScopeImported | 253 entries; 4 packages; deployed and smoke verified |
 | `gree-gmv-idu-service-manual` | `SERVICE_MANUAL_GMV_IDU.pdf` | PartiallyImported | PartialDiagnosticScopeImported | 38 existing GMV6 indoor entries received `sourceReferences[]`; 19 detailed procedure codes reviewed; 0 new entries |
-| `gree-gmv-mini-service-manual` | `SERVICE_MANUAL_GMV_MINI.pdf` | New | NotAnalyzed | Compare with the `(1)` copy before analysis |
-| `gree-gmv-mini-service-manual-copy-1` | `SERVICE_MANUAL_GMV_MINI (1).pdf` | NeedsReview | NeedsManualReview | Potential duplicate |
+| `gree-gmv-mini-service-manual` | `SERVICE_MANUAL_GMV_MINI.pdf` | PartiallyImported | PartialDiagnosticScopeImported | ED-24H.2 selected source only; 9 new entries, 31 `sourceReferences[]`, 90 NeedsReview contexts |
+| `gree-gmv-mini-service-manual-copy-1` | `SERVICE_MANUAL_GMV_MINI (1).pdf` | NeedsReview | NeedsManualReview | Duplicate/revision candidate; not used by ED-24H.2 |
 | `gree-gmv-x-owner-manual` | `Owner's Manual GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Owner-level source; usefulness not yet established |
 | `gree-gmv-x-technical-sales-guide` | `Technical Sales Guide GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Do not treat as troubleshooting authority without analysis |
 | `gree-gmv6-owner-manual` | `Owners-Manual-for GMV6.pdf` | New | DiagnosticSectionsUnknown | Separate source; do not merge with service-manual meanings |
@@ -72,6 +74,12 @@ Imported GMV6 package IDs:
 - `gree-gmv6-debugging-codes` — 37 entries.
 - `gree-gmv6-status-codes` — 36 entries.
 
+Imported GMV Mini package IDs:
+
+- `gree-gmv-mini-vrf-indoor-controller-codes` - 2 entries.
+- `gree-gmv-mini-vrf-outdoor-protection-codes` - 1 entry.
+- `gree-gmv-mini-vrf-status-codes` - 6 entries.
+
 Known production smoke codes: `Gree C0`, `Gree U0`, `Gree U3`, `Gree H5`, `Gree E1`, `Gree A0`.
 
 ED-24F.1 verified the IDU manual as `Service Manual - Multi Variable Air Conditioners Indoor Units`, document code `GC202004-X`. Its code table is on manual page 173 / PDF page 178, with troubleshooting through manual page 185 / PDF page 190. No entries were imported because every one of its 38 codes overlaps the existing GMV6 indoor package and the previous flow could not safely represent a second manual source for the same indoor code.
@@ -85,9 +93,11 @@ diagnostic texts and Telegram formatting while preserving the same 4 packages / 
 ED-24G.0 adds the Telegram manual-library foundation. Eligible technical roles can request manuals after a diagnostic;
 Consumer users are denied. If a reviewed manual is known but no server-local Telegram file binding exists, Telegram says
 the file is not connected yet. Real bindings live outside git under the runtime binding path and use Telegram `file_id`
-handles. Counts remain 4 packages / 253 entries.
+handles. ED-24G.0 did not change diagnostic counts.
 
-ED-24H.1 is a planning-only selection stage. It recommends `SERVICE_MANUAL_GMV_MINI.pdf` as the next local service-manual candidate after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`. It does not change manual registry statuses, import diagnostic entries, or change Telegram/manual delivery behavior. See [gree-vrf-next-manual-selection.md](gree-vrf-next-manual-selection.md).
+ED-24H.1 is a planning-only selection stage. It selected `SERVICE_MANUAL_GMV_MINI.pdf` as the next local service-manual candidate at that time. It did not change manual registry statuses, import diagnostic entries, or change Telegram/manual delivery behavior. See [gree-vrf-next-manual-selection.md](gree-vrf-next-manual-selection.md).
+
+ED-24H.2 partially imports `SERVICE_MANUAL_GMV_MINI.pdf` without using `SERVICE_MANUAL_GMV_MINI (1).pdf`. It adds 3 GMV Mini packages, 9 new entries, and 31 source-reference merges on existing GMV6 entries. The 90 remaining context variants stay NeedsReview. Counts are now 7 packages / 262 entries. See [gree-gmv-mini-manual-import.md](gree-gmv-mini-manual-import.md).
 
 ## B. Controllers / wired remotes / commissioning tools
 

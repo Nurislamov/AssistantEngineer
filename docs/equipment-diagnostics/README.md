@@ -18,7 +18,11 @@ ED-24H.0 uses only the three local catalogues `GMV6 Catalouge.pdf`, `141367.pdf`
 
 ## ED-24H.1 Gree VRF next manual selection
 
-The non-runtime [Gree VRF next manual selection](gree-vrf-next-manual-selection.md) compares current imported GMV6/IDU coverage, the manual registry, and the VRF equipment map to choose the next safest local service-manual candidate. It recommends `SERVICE_MANUAL_GMV_MINI.pdf` for the next inspection/import stage after duplicate review, while postponing GMV X/X PRO until an exact service manual is available.
+The non-runtime [Gree VRF next manual selection](gree-vrf-next-manual-selection.md) compared imported GMV6/IDU coverage, the manual registry, and the VRF equipment map to choose the next safest local service-manual candidate. ED-24H.2 has since partially imported `SERVICE_MANUAL_GMV_MINI.pdf` without using the `(1)` duplicate/revision candidate.
+
+## ED-24H.2 Gree GMV Mini manual knowledge import
+
+The [Gree GMV Mini manual import](gree-gmv-mini-manual-import.md) uses only `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used. It adds 3 GMV Mini packages, 9 entries, and 31 exact same-meaning source-reference merges while leaving 90 context variants in NeedsReview. Repository knowledge is now 7 packages / 262 entries.
 
 ## ED-24F.1 GMV IDU manual analysis
 

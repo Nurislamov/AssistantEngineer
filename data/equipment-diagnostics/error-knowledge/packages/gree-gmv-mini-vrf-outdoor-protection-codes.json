@@ -1,0 +1,27 @@
+{
+  "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV Mini",
+  "title": "Gree GMV Mini outdoor protection codes",
+  "description": "Manual-bound outdoor protection entry from the GMV Mini/System II service manual not already represented by GMV6.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceReference": "Outdoor main-board status display table, PDF page 82 / manual page 78",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Protection"
+  ],
+  "intendedEquipmentTypes": [
+    "OutdoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "OutdoorBoard"
+  ],
+  "entryCountExpected": 1,
+  "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only.",
+  "createdAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z"
+}

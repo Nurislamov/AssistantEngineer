@@ -1,0 +1,139 @@
+{
+  "id": "gree-gmv-mini-outdoor-ec",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV Mini",
+  "models": [
+    "GMV-80WL/A-T",
+    "GMV-100WL/A-T",
+    "GMV-121WL/A-T",
+    "GMV-80WL/C-T",
+    "GMV-100WL/C-T",
+    "GMV-121WL/C-T",
+    "GMV-141WL/C-T",
+    "GMV-120WL/A-T",
+    "GMV-140WL/A-T",
+    "GMV-160WL/A-T",
+    "GMV-120WL/A-X",
+    "GMV-140WL/A-X",
+    "GMV-160WL/A-X",
+    "GMV-120WL/C-T",
+    "GMV-140WL/C-T",
+    "GMV-160WL/C-T",
+    "GMV-120WL/C-X",
+    "GMV-140WL/C-X",
+    "GMV-160WL/C-X",
+    "GMV-H224WL/A-X",
+    "GMV-H280WL/A-X",
+    "GMV-H335WL/A-X",
+    "GMV-224WL/C-X",
+    "GMV-280WL/C-X",
+    "GMV-335WL/C-X"
+  ],
+  "code": "EC",
+  "signalType": "Protection",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Sensor",
+  "severity": "High",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceMeaning": "Loose protection for discharge temperature sensor for compressor 1",
+  "sourceReference": "Outdoor main-board status display table, PDF page 82 / manual page 78",
+  "sourceReferences": [
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Outdoor main-board status display table, PDF page 82 / manual page 78",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+      "notes": "Primary GMV Mini/System II source for this entry."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ec-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV Mini EC — защита датчика температуры нагнетания компрессора 1",
+      "summary": "Код EC на главной плате наружного блока GMV Mini относится к защите из-за ослабленного или ненадежного соединения датчика температуры нагнетания компрессора 1.",
+      "safetyNote": "Проверка датчика, разъемов и цепей компрессора относится к работам квалифицированного сервиса.",
+      "checkSteps": [
+        "Зафиксируйте код EC и состояние наружного блока.",
+        "Остановите эксплуатацию при повторном появлении защиты.",
+        "Передайте сервису модель наружного блока и обстоятельства появления кода."
+      ],
+      "doNotAdvise": [
+        "Не обходите защиту датчика.",
+        "Не открывайте наружный блок и не проверяйте компрессорные цепи под напряжением."
+      ],
+      "recommendedAction": "Нужна сервисная проверка датчика температуры нагнетания компрессора 1, разъемов и платы наружного блока.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ec-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV Mini EC — защита датчика температуры нагнетания компрессора 1",
+      "summary": "Код EC на главной плате наружного блока GMV Mini относится к защите из-за ослабленного или ненадежного соединения датчика температуры нагнетания компрессора 1.",
+      "safetyNote": "Проверка датчика, разъемов и цепей компрессора относится к работам квалифицированного сервиса.",
+      "checkSteps": [
+        "Зафиксируйте код EC и состояние наружного блока.",
+        "Остановите эксплуатацию при повторном появлении защиты.",
+        "Передайте сервису модель наружного блока и обстоятельства появления кода."
+      ],
+      "doNotAdvise": [
+        "Не обходите защиту датчика.",
+        "Не открывайте наружный блок и не проверяйте компрессорные цепи под напряжением."
+      ],
+      "recommendedAction": "Нужна сервисная проверка датчика температуры нагнетания компрессора 1, разъемов и платы наружного блока.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-23T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ec-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV Mini EC — защита датчика температуры нагнетания компрессора 1",
+      "summary": "Код EC на главной плате наружного блока GMV Mini относится к защите из-за ослабленного или ненадежного соединения датчика температуры нагнетания компрессора 1.",
+      "safetyNote": "Проверка датчика, разъемов и цепей компрессора относится к работам квалифицированного сервиса.",
+      "checkSteps": [
+        "Зафиксируйте код EC и состояние наружного блока.",
+        "Остановите эксплуатацию при повторном появлении защиты.",
+        "Передайте сервису модель наружного блока и обстоятельства появления кода."
+      ],
+      "doNotAdvise": [
+        "Не обходите защиту датчика.",
+        "Не открывайте наружный блок и не проверяйте компрессорные цепи под напряжением."
+      ],
+      "recommendedAction": "Нужна сервисная проверка датчика температуры нагнетания компрессора 1, разъемов и платы наружного блока.",
+      "sourceNote": "Данные взяты из SERVICE_MANUAL_GMV_MINI.pdf."
+    }
+  ]
+}

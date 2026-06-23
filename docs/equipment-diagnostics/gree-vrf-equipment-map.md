@@ -83,7 +83,7 @@ This is not a service-manual import. No diagnostic codes, packages, entries, Tel
 | 1 | Portable commissioning tool and PC debugging software manuals | CommissioningToolManual | Tools/software are diagnostic and commissioning surfaces |
 | 2 | GMV9 Flex service manual | ServiceManual | Separate outdoor series |
 | 2 | GMV5 MAX service manual | ServiceManual | Separate outdoor series in GMV6 2023 Russian catalogue |
-| 2 | GMV Mini Star, GMV5 Mini, GMV5 Slim, and GMV5 Home service manuals | ServiceManual | Compact/non-modular/home VRF series are catalog-identified only |
+| 2 | Remaining GMV Mini Star, GMV5 Mini, GMV5 Slim, and GMV5 Home service-manual contexts | ServiceManual | ED-24H.2 partially imported the selected GMV Mini source; remaining variants need actual equipment need and manual review |
 | 2 | BMS, BACnet/Modbus/KNX, Wi-Fi/cloud, remote monitoring, and billing gateway manuals | GatewayManual | Gateways can query, forward, or log system status/errors |
 
 Future manual library policy remains plan-only: Installer, Engineer, Admin, and Owner may receive reviewed manuals; Consumer must not receive manuals.
@@ -91,8 +91,9 @@ Future manual library policy remains plan-only: Installer, Engineer, Admin, and 
 ## Next Recommended Stages
 
 - ED-24H.1: completed the next-manual selection analysis without importing entries.
-- ED-24H.2: inspect and import `SERVICE_MANUAL_GMV_MINI.pdf` after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`.
+- ED-24H.2: partially imported `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used.
+- ED-24H.3: deploy and smoke the GMV Mini knowledge subset, then choose whether to review remaining GMV Mini contexts or move to the next actual equipment manual.
 - Future: import GMV X / GMV X PRO only after an exact service manual is available or the generic VRF service manual is proven to be that source.
 - Future: import GMV6 HR, GMV9 Flex, GMV5 MAX, controller, commissioning, BMS, cloud, billing, and remote-monitoring manuals only after exact manual identity and actual equipment need are confirmed.
 
-No new diagnostic codes were imported.
+ED-24H.2 imported 9 GMV Mini entries and added 31 source-reference merges; production deployment is a separate stage.

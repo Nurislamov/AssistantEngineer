@@ -2,12 +2,12 @@
 
 ## Current imported coverage
 
-ED-24H.1 is an analysis-only planning stage. It does not import a manual, add diagnostic entries, change Telegram behavior, or change package counts.
+ED-24H.1 was an analysis-only planning stage. ED-24H.2 has since partially imported the selected GMV Mini source without using the `(1)` duplicate/revision candidate.
 
-Current runtime diagnostic knowledge remains:
+Post ED-24H.2 repository diagnostic knowledge:
 
-- Packages: 4.
-- Entries: 253.
+- Packages: 7.
+- Entries: 262.
 - Validator issues: 0.
 - Imported diagnostic source: `Service Manual for GMV6 v_2020.09.pdf`, document code `GC202001-I`.
 - Runtime package scope:
@@ -15,8 +15,13 @@ Current runtime diagnostic knowledge remains:
   - `gree-gmv6-outdoor-fault-protection-codes`: 120 entries.
   - `gree-gmv6-debugging-codes`: 37 entries.
   - `gree-gmv6-status-codes`: 36 entries.
+  - `gree-gmv-mini-vrf-indoor-controller-codes`: 2 entries.
+  - `gree-gmv-mini-vrf-outdoor-protection-codes`: 1 entry.
+  - `gree-gmv-mini-vrf-status-codes`: 6 entries.
 
 `SERVICE_MANUAL_GMV_IDU.pdf`, document code `GC202004-X`, is partially imported as additional `sourceReferences[]` on 38 existing GMV6 indoor entries. It added no package and no diagnostic entry because every reviewed code overlapped an existing GMV6 indoor answer with the same equipment type and meaning.
+
+`SERVICE_MANUAL_GMV_MINI.pdf` is partially imported by ED-24H.2 with 9 new entries, 31 exact source-reference merges, and 90 NeedsReview contexts. `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used.
 
 The current imported knowledge is GMV6-bound and manual-backed. New Gree VRF imports must stay manual-bound and must not use catalog text, owner manuals, sales guides, external sources, OCR, or model memory to fill missing fault meanings.
 
@@ -76,7 +81,7 @@ These devices can be important diagnostic surfaces, but controller/tool manuals 
 
 | Candidate group | Current local registry evidence | Probable value | Collision risk | Decision |
 | --- | --- | --- | --- | --- |
-| GMV Mini / GMV5 Mini / Slim / Home | `SERVICE_MANUAL_GMV_MINI.pdf` is a local `ServiceManual`; `(1)` copy has the same file size and needs duplicate review. | High if the installed equipment is compact/non-modular GMV. Service-manual source is more suitable than owner/sales docs. | Medium to high. Some codes may match GMV6 meanings and should become `sourceReferences[]`; compact-series-specific meanings may require separate series/equipment context. | Top next import candidate after duplicate/identity review. |
+| GMV Mini / GMV5 Mini / Slim / Home | `SERVICE_MANUAL_GMV_MINI.pdf` was partially imported by ED-24H.2; `(1)` was not used. | High if the installed equipment is compact/non-modular GMV. Service-manual source is more suitable than owner/sales docs. | Medium to high. 90 reviewed contexts still need manual review before import/merge. | Continue only from reviewed remaining contexts or actual equipment need. |
 | GMV X / GMV X PRO | Local registry has `Owner's Manual GMV X DC Inverter VRF Units.pdf` and `Technical Sales Guide GMV X DC Inverter VRF Units.pdf`, but no confirmed GMV X/X PRO service manual. | High product value, but current local files are weak diagnostic authorities. | High if owner/sales text is overused; high if broad GMV X meanings overlap GMV6 without series guardrails. | Postpone import until a GMV X/X PRO service manual is available or the generic VRF service manual is proven to be that source. |
 | GMV6 HR / heat recovery | Equipment map identifies heat-recovery outdoor units, hydromodule, mode exchanger, and branch selector scope. No GMV6 HR service manual is registered. | High for heat-recovery systems because scope likely differs from GMV6 heat-pump outdoor units. | High. HR/mode-exchanger/hydromodule codes must not be merged into plain GMV6 unless meaning and equipment context match. | Review when the exact GMV6 HR service manual is provided. |
 | GMV9 Flex / GMV5 MAX | Catalog-identified series. No local service manual entry is registered for either specific series. | Medium to high depending on installed base. | Medium to high because series-specific outdoor meanings may overlap common GMV codes. | Postpone until exact service manuals are available. |
@@ -100,14 +105,13 @@ Practical guardrails for the next import:
 5. Do not promote query/parameter/status screens such as controller setup or commissioning menus into fault diagnostics unless the manual explicitly defines them as diagnostic entries.
 6. Keep consumer text safe and keep Installer/Engineer procedure detail inside qualified-service boundaries.
 
-GMV Mini has the best next-source shape because it is a service manual already present locally. Its main risk is collision with existing GMV6 code meanings. That risk is manageable with the existing multi-source reference model and a strict series-aware review.
+GMV Mini was the best next-source shape and ED-24H.2 imported the safe subset. The remaining risk is the 90 context variants where wording, display context, or equipment meaning did not justify an automatic merge.
 
 ## Recommended next import order
 
-1. `SERVICE_MANUAL_GMV_MINI.pdf`.
-   - Reason: it is the strongest local service-manual candidate that can expand beyond imported GMV6 while staying in VRF/GMV scope.
-   - First action: compare it with `SERVICE_MANUAL_GMV_MINI (1).pdf` and choose the canonical copy before reading diagnostic sections.
-   - Import expectation: likely a mix of new compact-series entries and source-reference-only overlaps. Do not assume either until the code table is reviewed.
+1. Continue GMV Mini only if actual equipment need points to one of the 90 NeedsReview contexts.
+   - Reason: ED-24H.2 already imported the safe subset from `SERVICE_MANUAL_GMV_MINI.pdf`.
+   - Source boundary: keep using only selected reviewed source evidence; do not use `SERVICE_MANUAL_GMV_MINI (1).pdf` unless a separate future identity-review stage explicitly selects it.
 
 2. GMV X / GMV X PRO service manual.
    - Reason: the equipment map ranks GMV X/X PRO high and separate from GMV6.
@@ -119,18 +123,16 @@ GMV Mini has the best next-source shape because it is a service manual already p
    - Current caution: they should shape display/query/workflow support, not become primary equipment fault meanings unless they explicitly define fault semantics.
    - Next action: review model identity and code-display behavior after the next equipment service-manual import, or earlier if the user's actual workflow is controller-centric.
 
-## Proposed next stage
+## Proposed next stage after ED-24H.2
 
-`ED-24H.2 Import Gree GMV Mini service manual knowledge`
+`ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`
 
 Prompt direction for that stage:
 
-1. Use only `SERVICE_MANUAL_GMV_MINI.pdf` after comparing it with `SERVICE_MANUAL_GMV_MINI (1).pdf`.
-2. Confirm cover identity, document code/version, model/series scope, diagnostic sections, troubleshooting detail, and duplicate/collision risk before editing runtime JSON.
-3. Do not use GMV6, GMV IDU, GMV X, controller manuals, catalogs, external sources, OCR, or model memory to fill gaps.
-4. Add new diagnostic entries only when the GMV Mini manual gives a series/equipment-specific meaning that is not already represented.
-5. Add `sourceReferences[]` only when code, equipment type, display context, and meaning match an existing answer.
-6. Keep package/entry counts explicit and verify with the EquipmentDiagnostics knowledge validator.
+1. Deploy the committed repository state.
+2. Smoke `Gree GMV Mini C0`, `Gree GMV Mini EC`, and `Gree GMV Mini A1`.
+3. Confirm existing `Gree d1` and `/manuals` delivery still sends the GMV6 and GMV IDU manuals.
+4. Do not add real GMV Mini Telegram file bindings until a separate reviewed runtime binding step.
 
 ## What not to import yet
 
@@ -145,10 +147,7 @@ Prompt direction for that stage:
 
 ## Manual files needed from user
 
-No new file is required to start the recommended GMV Mini inspection if the current local ignored files are still available:
-
-- `SERVICE_MANUAL_GMV_MINI.pdf`
-- `SERVICE_MANUAL_GMV_MINI (1).pdf`
+No new file is required to deploy ED-24H.2. Future GMV Mini review should use only explicitly selected source evidence and should not automatically use the `(1)` duplicate/revision candidate.
 
 If the user wants GMV X / GMV X PRO next instead, provide or identify the exact GMV X / GMV X PRO service manual. The existing owner manual and technical sales guide should not be used as primary troubleshooting authority.
 

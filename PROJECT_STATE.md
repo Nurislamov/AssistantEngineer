@@ -22,7 +22,7 @@ Current recommended next stage:
 
 
 
-`ED-24H.2 Import Gree GMV Mini service manual knowledge`
+`ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`
 
 
 
@@ -30,7 +30,7 @@ Purpose:
 
 
 
-Inspect and import `SERVICE_MANUAL_GMV_MINI.pdf` only after comparing it with `SERVICE_MANUAL_GMV_MINI (1).pdf`, confirming document identity, diagnostic sections, troubleshooting detail, and collision risk. ED-24H.1 selected this as the safest next local service-manual candidate; do not use owner manuals, sales guides, catalogs, external sources, OCR, or model memory to fill gaps.
+Deploy the ED-24H.2 repository knowledge update and smoke GMV Mini lookups while preserving the already working GMV6/GMV IDU Telegram manual delivery path. ED-24H.2 used only `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used as source evidence or comparison input.
 
 
 
@@ -68,7 +68,7 @@ Expected next action:
 
 7\. Keep `/last`, Russian output normalization, canonical code casing, knowledge counts, and GMV6/manual delivery smoke behavior stable.
 
-8\. ED-24H.1 selected `SERVICE_MANUAL_GMV_MINI.pdf` as the next local service-manual candidate after duplicate review; GMV X/X PRO remains postponed until an exact service manual is available.
+8\. ED-24H.2 partially imported `SERVICE_MANUAL_GMV_MINI.pdf`: 3 new packages, 9 new entries, 31 source-reference merges, 90 NeedsReview contexts, and 7 packages / 262 entries / 0 validator issues.
 
 
 
@@ -144,15 +144,69 @@ Latest known production status:
 
 \* Logs after rotation are clean.
 
-\* ED-24H.1 planning selected `SERVICE_MANUAL_GMV_MINI.pdf` as the next safest local VRF service-manual candidate after duplicate review against `SERVICE_MANUAL_GMV_MINI (1).pdf`.
+\* ED-24H.2 partially imported `SERVICE_MANUAL_GMV_MINI.pdf`; `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used.
 
-\* Knowledge remains 4 packages / 253 entries / 0 issues.
+\* Repository knowledge after ED-24H.2 is 7 packages / 262 entries / 0 issues.
 
 \* Orphan Postgres compose warning is known and should not be acted on unless explicitly planned.
 
 
 
 \## Last completed work
+
+
+
+\### ED-24H.2 - CLOSED
+
+
+
+Title:
+
+
+
+`ED-24H.2 Import Gree GMV Mini manual knowledge`
+
+
+
+Purpose:
+
+
+
+Use only `SERVICE_MANUAL_GMV_MINI.pdf` to import the safe GMV Mini diagnostic subset, merge exact same-meaning overlaps as source references, and leave wording/context variants in NeedsReview. `SERVICE_MANUAL_GMV_MINI (1).pdf` was not used as source evidence or comparison input.
+
+
+
+Results:
+
+
+
+\* Source manual identity recorded: `DC INVERTER VRF SYSTEM SERVICE MANUAL(R410A)`, running header `DC Inverter Multi VRF System II Service Manual`, 173 pages, no document code found.
+
+\* New package manifests added:
+
+  \* `gree-gmv-mini-vrf-indoor-controller-codes` - 2 entries.
+
+  \* `gree-gmv-mini-vrf-outdoor-protection-codes` - 1 entry.
+
+  \* `gree-gmv-mini-vrf-status-codes` - 6 entries.
+
+\* New GMV Mini entries added: `C0`, `AJ`, `EC`, `A1`, `A5`, `A9`, `AA`, `n1`, `n2`.
+
+\* Existing GMV6 entries receiving GMV Mini `sourceReferences[]`: 31.
+
+\* Remaining context variants left NeedsReview: 90.
+
+\* Knowledge validator result: 269 files / 7 packages / 262 entries / 0 issues.
+
+\* Manual registry updated: `gree-gmv-mini-service-manual` is `PartiallyImported` / `PartialDiagnosticScopeImported`.
+
+\* Import report added: `docs/equipment-diagnostics/gree-gmv-mini-manual-import.md`.
+
+\* Coverage docs, VRF planning docs, README, equipment map, and regression tests updated.
+
+\* No DB schema, EF migration, env file, Docker/compose, Telegram logic, runtime manual binding JSON, real Telegram `file_id`, or manual binary was added.
+
+\* Production deployment is not yet recorded in this state file; next stage is `ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`.
 
 
 
@@ -2874,7 +2928,7 @@ Recommended next stage:
 
 
 
-`ED-24H.1 Continue Gree VRF manual coverage`
+`ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`
 
 
 
@@ -2882,15 +2936,13 @@ Scope:
 
 
 
-* compare `SERVICE_MANUAL_GMV_MINI.pdf` with `SERVICE_MANUAL_GMV_MINI (1).pdf` and choose the canonical local source before analysis;
+* deploy the ED-24H.2 repository state to production;
 
-* use only the selected GMV Mini service manual as technical evidence;
+* smoke `Gree GMV Mini C0`, `Gree GMV Mini EC`, and `Gree GMV Mini A1`;
 
-* preserve same-code/same-equipment/same-meaning as one diagnostic answer;
+* confirm existing `Gree d1`, `/manuals` after `Gree d1`, `Gree H5`, and `Gree U0` remain green;
 
-* add new entries only when the GMV Mini manual defines a series/equipment-specific meaning not already represented;
-
-* add `sourceReferences[]` only when code, equipment type, display context, and meaning match an existing answer;
+* keep GMV Mini manual delivery disconnected until a separate reviewed server-local Telegram binding step;
 
 * keep current Telegram diagnostics and manual delivery green.
 
@@ -2900,13 +2952,13 @@ Before coding:
 
 
 
-1\. Confirm the actual equipment need is GMV Mini / GMV5 Mini / Slim / Home scope.
+1\. Confirm production repo checkout is on the ED-24H.2 commit or newer.
 
-2\. Compare `SERVICE_MANUAL_GMV_MINI.pdf` and `SERVICE_MANUAL_GMV_MINI (1).pdf` without committing either binary.
+2\. Build the Docker image and recreate only the reviewed service stack.
 
-3\. Record cover identity, document code/version, model/series scope, diagnostic sections, troubleshooting detail, and duplicate/collision risk before editing runtime JSON.
+3\. Run `/health`, `/ready`, Telegram polling, and the GMV Mini diagnostic smoke checks.
 
-4\. Do not use GMV6, GMV IDU, GMV X, controller manuals, catalogs, external sources, OCR, or model memory to fill gaps.
+4\. Do not paste full `docker compose config`, env dumps, docker inspect env output, or secret files.
 
 5\. Keep secret backup/generated files private on the VPS and out of Git/docs.
 
