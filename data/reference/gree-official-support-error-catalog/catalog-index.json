@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "generatedUtc":  "2026-06-24T10:24:20.9990490Z",
+    "generatedUtc":  "2026-06-24T10:51:08.8227969Z",
     "source":  {
                    "name":  "Gree Global After-Sales Service Center",
                    "website":  "https://support.gree.com/#/errorCode",
@@ -13,6 +13,33 @@
                    "safeProbeOnly":  true
                },
     "cards":  [
+                  {
+                      "brand":  "Gree",
+                      "code":  "A0",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata",
+                      "sha256":  "9A40DDF7AF702D3B375F77E00188560A26E24DB5E22BFEE7AD0AAEB3A9B4653E",
+                      "bytes":  67375,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-29-55-339Z",
+                      "importedUtc":  "2026-06-24T10:51:08.7958454Z",
+                      "officialMetadata":  {
+                                               "rowId":  696,
+                                               "sourceId":  346,
+                                               "nameEn":  "A0 GMV",
+                                               "nameCn":  "A0 GMV",
+                                               "gmtCreated":  "2021-03-19 02:29:07",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "A0 GMV.PNG",
+                                               "documentSize":  67375,
+                                               "fileKey":  "fcc1142138e244ba9a21b07f8022a27e.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
                   {
                       "brand":  "Gree",
                       "code":  "C0",
@@ -42,6 +69,87 @@
                   },
                   {
                       "brand":  "Gree",
+                      "code":  "C7",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata",
+                      "sha256":  "8B8404B1B704F021F4A20B2E2E78CFDC506C7CBE82EE28B88988B564101B9110",
+                      "bytes":  12583,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-29-55-339Z",
+                      "importedUtc":  "2026-06-24T10:51:08.8067908Z",
+                      "officialMetadata":  {
+                                               "rowId":  792,
+                                               "sourceId":  392,
+                                               "nameEn":  "C7 GMV",
+                                               "nameCn":  "C7 GMV",
+                                               "gmtCreated":  "2021-03-19 08:21:04",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "C7 GMV.png",
+                                               "documentSize":  12583,
+                                               "fileKey":  "bb6ff16df02d4848b97fda5fea025915.png"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "E1",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata",
+                      "sha256":  "4EB024D6D3545334082749951170C18172ED3FF3D8A2E8106D7D1FC4515AA019",
+                      "bytes":  581993,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-29-55-339Z",
+                      "importedUtc":  "2026-06-24T10:51:08.7564853Z",
+                      "officialMetadata":  {
+                                               "rowId":  870,
+                                               "sourceId":  431,
+                                               "nameEn":  "E1 GMV",
+                                               "nameCn":  "E1 GMV",
+                                               "gmtCreated":  "2021-03-19 09:15:01",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "E1 GMV.PNG",
+                                               "documentSize":  581993,
+                                               "fileKey":  "600b7898a5d949a49bf4a57afa17a729.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "H5",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata",
+                      "sha256":  "81B8FAA2BCD21AA865E2F13930348C380172B663D9E5464B0074202694CA3C98",
+                      "bytes":  299149,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-29-55-339Z",
+                      "importedUtc":  "2026-06-24T10:51:08.7817090Z",
+                      "officialMetadata":  {
+                                               "rowId":  978,
+                                               "sourceId":  484,
+                                               "nameEn":  "H5 GMV",
+                                               "nameCn":  "H5 GMV",
+                                               "gmtCreated":  "2021-03-20 06:02:42",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "H5 GMV.PNG",
+                                               "documentSize":  299149,
+                                               "fileKey":  "8cfe0bc711c24f3c851fec158027219d.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
                       "code":  "L1",
                       "model":  "GMV",
                       "sourceName":  "Gree Global After-Sales Service Center",
@@ -64,6 +172,33 @@
                                                "filename":  "L1 GMV.PNG",
                                                "documentSize":  419109,
                                                "fileKey":  "ae2dd962a86d446da87b986682793838.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "o1",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata",
+                      "sha256":  "57C556F33A5344A407EC97AD19D110EC9754E591B9FD229305FB11D038BCAFB5",
+                      "bytes":  43969,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-29-55-339Z",
+                      "importedUtc":  "2026-06-24T10:51:08.8197549Z",
+                      "officialMetadata":  {
+                                               "rowId":  1114,
+                                               "sourceId":  552,
+                                               "nameEn":  "o1 GMV",
+                                               "nameCn":  "o1 GMV",
+                                               "gmtCreated":  "2021-03-20 06:57:16",
+                                               "gmtModified":  "2024-03-21 05:38:31",
+                                               "filename":  "o1 GMV.png",
+                                               "documentSize":  43969,
+                                               "fileKey":  "fd637470bf1544e08f00dfcff2a3b5df.png"
                                            },
                       "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
                   },
