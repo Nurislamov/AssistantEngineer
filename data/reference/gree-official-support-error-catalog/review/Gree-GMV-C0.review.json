@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-C0",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "C0",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6141951Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6141951Z",
+    "updatedUtc":  "2026-06-24T10:58:32.2076434Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata",
@@ -28,47 +28,66 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "C0 GMV - Communication Fault Between Indoor and Outdoor Units, or Communication Fault Between Indoor Unit and Wired Controller.\n\nPossible causes:\n1. Communication cables are connected wrongly or get loose.\n2. Communication cables are broken.\n3. Poor contact of communication cables.\n4. Addresses are set improperly.\n5. Quantity of wired controllers is set improperly.\n6. Controller or PCB fault.\n\nTroubleshooting:\n1. Check communication between indoor and outdoor units.\n2. Check communication between indoor unit and wired controller.\n3. Check wiring, cable continuity, terminals, addressing and wired controller quantity.",
+                       "extractedTitleEn":  "Communication Fault Between Indoor and Outdoor Units, or Communication Fault Between Indoor Unit and Wired Controller",
                        "extractedCausesEn":  [
-
+                                                 "Communication cables are connected wrongly or get loose.",
+                                                 "Communication cables are broken.",
+                                                 "Poor contact of communication cables.",
+                                                 "Addresses are set improperly.",
+                                                 "Quantity of wired controllers is set improperly.",
+                                                 "Controller or PCB fault."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check communication between indoor and outdoor units.",
+                                                          "Check communication between indoor unit and wired controller.",
+                                                          "Check wiring, cable continuity, terminals, addressing and wired controller quantity."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official C0 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV C0 — нарушение связи",
+                         "shortAnswerRu":  "Нет связи между наружным и внутренним блоком или между внутренним блоком и проводным пультом.",
+                         "meaningRu":  "Код C0 указывает на ошибку связи в системе GMV: наружный блок не обменивается данными с внутренним блоком, либо внутренний блок не обменивается данными с проводным пультом.",
                          "likelyCausesRu":  [
-
+                                                "Кабель связи подключён неправильно или ослаб.",
+                                                "Есть обрыв линии связи.",
+                                                "Плохой контакт на клеммах или разъёмах связи.",
+                                                "Неправильно заданы адреса внутренних блоков или пультов.",
+                                                "Неправильно задано количество проводных пультов.",
+                                                "Возможна неисправность контроллера или платы."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить связь наружный блок ↔ внутренний блок.",
+                                          "Проверить связь внутренний блок ↔ проводной пульт.",
+                                          "Проверить клеммы, разъёмы и полярность линии связи.",
+                                          "Проверить кабель связи на обрыв и плохой контакт.",
+                                          "Проверить адреса внутренних блоков и проводных пультов.",
+                                          "Проверить количество подключённых проводных пультов.",
+                                          "Если проводка, адреса и настройки исправны — проверить плату внутреннего блока, плату наружного блока или проводной пульт."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Перед проверкой клемм и плат отключить питание оборудования.",
+                                               "Не менять адреса и схему связи без фиксации текущих настроек."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Если ошибка была после проблем со связью, она может оставаться в истории/индикации до сброса или перезапуска, даже когда связь уже восстановлена. Нужно отличать активную аварию от сохранённой истории ошибки."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV C0 — нарушение связи.\n\nЧто означает:\nнет связи между наружным и внутренним блоком или между внутренним блоком и проводным пультом.\n\nЧто проверить:\n1. клеммы, разъёмы и полярность линии связи;\n2. кабель связи на обрыв и плохой контакт;\n3. адреса внутренних блоков и проводных пультов;\n4. количество подключённых проводных пультов;\n5. связь наружный блок ↔ внутренний блок;\n6. связь внутренний блок ↔ проводной пульт.\n\nЕсли проводка, адреса и настройки исправны — возможна неисправность платы внутреннего блока, платы наружного блока или проводного пульта.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, C0 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },
