@@ -1,0 +1,76 @@
+﻿{
+    "schemaVersion":  1,
+    "reviewId":  "Gree-GMV-H5",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "code":  "H5",
+    "sourceKind":  "official-support-error-code-card",
+    "sourceName":  "Gree Global After-Sales Service Center",
+    "reviewStatus":  "draft",
+    "runtimeEnabled":  false,
+    "createdUtc":  "2026-06-24T10:55:05.6191816Z",
+    "updatedUtc":  "2026-06-24T10:55:05.6191816Z",
+    "source":  {
+                   "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
+                   "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata",
+                   "sha256":  "81B8FAA2BCD21AA865E2F13930348C380172B663D9E5464B0074202694CA3C98",
+                   "bytes":  299149,
+                   "officialMetadata":  {
+                                            "rowId":  978,
+                                            "sourceId":  484,
+                                            "nameEn":  "H5 GMV",
+                                            "nameCn":  "H5 GMV",
+                                            "gmtCreated":  "2021-03-20 06:02:42",
+                                            "gmtModified":  "2022-08-18 15:50:14",
+                                            "filename":  "H5 GMV.PNG",
+                                            "documentSize":  299149,
+                                            "fileKey":  "8cfe0bc711c24f3c851fec158027219d.PNG"
+                                        }
+               },
+    "extraction":  {
+                       "status":  "pending",
+                       "method":  "manual-or-vision-review",
+                       "rawText":  "",
+                       "extractedTitleEn":  "",
+                       "extractedCausesEn":  [
+
+                                             ],
+                       "extractedTroubleshootingEn":  [
+
+                                                      ],
+                       "extractionNotes":  [
+                                               "Fill this from the raw official PNG after manual/vision review.",
+                                               "Do not connect this draft directly to Telegram runtime."
+                                           ]
+                   },
+    "normalizedRu":  {
+                         "titleRu":  "",
+                         "shortAnswerRu":  "",
+                         "meaningRu":  "",
+                         "likelyCausesRu":  [
+
+                                            ],
+                         "checksRu":  [
+
+                                      ],
+                         "safetyNotesRu":  [
+
+                                           ],
+                         "operatorHintRu":  ""
+                     },
+    "botCandidate":  {
+                         "readyForBotKnowledge":  false,
+                         "proposedAnswerRu":  "",
+                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "blockedUntilApproved":  true
+                     },
+    "reviewChecklist":  {
+                            "rawCardOpened":  false,
+                            "textExtracted":  false,
+                            "engineeringMeaningChecked":  false,
+                            "russianWordingChecked":  false,
+                            "noUnsupportedClaims":  true,
+                            "approvedForRuntime":  false
+                        },
+    "notes":  "Draft review template. Raw official card remains reference-only until approved."
+}
