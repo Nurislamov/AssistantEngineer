@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "generatedUtc":  "2026-06-24T09:28:26.3176536Z",
+    "generatedUtc":  "2026-06-24T10:24:20.9990490Z",
     "source":  {
                    "name":  "Gree Global After-Sales Service Center",
                    "website":  "https://support.gree.com/#/errorCode",
@@ -13,6 +13,86 @@
                    "safeProbeOnly":  true
                },
     "cards":  [
-
+                  {
+                      "brand":  "Gree",
+                      "code":  "C0",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata",
+                      "sha256":  "2C46D9ABE0D7E22F783C382866E53EB450ADDD9F35BAA072321E200077F61A67",
+                      "bytes":  422916,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-06-55-871Z",
+                      "importedUtc":  "2026-06-24T10:24:20.9515594Z",
+                      "officialMetadata":  {
+                                               "rowId":  778,
+                                               "sourceId":  385,
+                                               "nameEn":  "C0 GMV",
+                                               "nameCn":  "C0 GMV",
+                                               "gmtCreated":  "2021-03-19 08:18:54",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "C0 GMV.PNG",
+                                               "documentSize":  422916,
+                                               "fileKey":  "8fd833ed72c6459eac9e0cc997bead1d.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "L1",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/metadata",
+                      "sha256":  "1E0F1C9ECDE44C3A6AECBECDE13AFE027C6E7A3E4A43461F9EF64EBA68664D13",
+                      "bytes":  419109,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-06-55-871Z",
+                      "importedUtc":  "2026-06-24T10:24:20.9970544Z",
+                      "officialMetadata":  {
+                                               "rowId":  1038,
+                                               "sourceId":  514,
+                                               "nameEn":  "L1 GMV",
+                                               "nameCn":  "L1 GMV",
+                                               "gmtCreated":  "2021-03-20 06:16:53",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "L1 GMV.PNG",
+                                               "documentSize":  419109,
+                                               "fileKey":  "ae2dd962a86d446da87b986682793838.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "U0",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata",
+                      "sha256":  "340B7CE928031ED1FE4C431869EA6845EA9EB774378E93ED35623BCCA741ECC1",
+                      "bytes":  79553,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-24T10-06-55-871Z",
+                      "importedUtc":  "2026-06-24T10:24:20.9695439Z",
+                      "officialMetadata":  {
+                                               "rowId":  1176,
+                                               "sourceId":  583,
+                                               "nameEn":  "U0 GMV",
+                                               "nameCn":  "U0 GMV",
+                                               "gmtCreated":  "2021-03-20 07:41:06",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "filename":  "U0 GMV.PNG",
+                                               "documentSize":  79553,
+                                               "fileKey":  "0b11a4a0b1ea4ab8a19e7303d2e2b569.PNG"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  }
               ]
 }
