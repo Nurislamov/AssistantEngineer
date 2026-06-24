@@ -1,0 +1,45 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  {
+                 "total":  1,
+                 "data":  [
+                              {
+                                  "operatorId":  null,
+                                  "operator":  null,
+                                  "operatorLoginId":  null,
+                                  "operation":  null,
+                                  "operationTime":  null,
+                                  "id":  704,
+                                  "scope":  1,
+                                  "nameCn":  "A4 GMV",
+                                  "nameEn":  "A4 GMV",
+                                  "descriptionCn":  "",
+                                  "descriptionEn":  "",
+                                  "createdBy":  null,
+                                  "userCreated":  "å´è³æ\u0085§(å½é\u0085ç®¡çé¨)",
+                                  "userModified":  "221077",
+                                  "gmtCreated":  "2021-03-19 03:27:50",
+                                  "gmtModified":  "2022-09-08 02:04:41",
+                                  "delFlag":  0,
+                                  "videoList":  null,
+                                  "imageList":  [
+                                                    {
+                                                        "id":  349,
+                                                        "dataId":  704,
+                                                        "type":  2,
+                                                        "descriptionCn":  null,
+                                                        "descriptionEn":  null,
+                                                        "filename":  "A4  GMV.jpg",
+                                                        "documentSize":  94880,
+                                                        "fileKey":  "fdef1ac4e2a841859780daa7a6f82982.jpg",
+                                                        "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/fdef1ac4e2a841859780daa7a6f82982.jpg?response-content-disposition=inline%3Bfilename%3DA4%2520%2520GMV.jpg\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260624T122447Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260624%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=26f3639de914798e34a458c0e40c3e16db626dbe10411cf99c414a35ec5923ad"
+                                                    }
+                                                ],
+                                  "fileList":  null,
+                                  "fileKey":  null,
+                                  "fileName":  null
+                              }
+                          ]
+             }
+}

@@ -1,0 +1,12 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  [
+                 "GMV",
+                 "RF",
+                 "GK",
+                 "GUD",
+                 "GRS",
+                 "LF"
+             ]
+}
