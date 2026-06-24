@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-H5",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "H5",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6191816Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6191816Z",
+    "updatedUtc":  "2026-06-24T11:06:01.8386550Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata",
@@ -28,47 +28,62 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "H5 GMV - Inverter Fan Over-current Protection.\n\nFault diagnosis:\nIf the fault code displayed on the 2-digit digital LED of the outdoor unit\u0027s main control board is H5, it indicates the over-current protection for the inverter fan.\n\nPossible causes:\n1. Poor contact of fan\u0027s UVW cables.\n2. The fan is damaged.\n3. The blades are stuck, blocked, or the motor shaft gets rusty.\n4. The fan drive board operates improperly.\n\nTroubleshooting:\n1. Check whether U, V and W phases of fan wires are connected properly.\n2. Check whether resistance between fan phase windings is normal and insulation resistance to ground is normal.\n3. Check whether blades are stuck due to foreign matter or rusting of motor shaft.\n4. Check whether other fan faults occurred at the same time.\n5. If fan drive board is abnormal, replace the fan drive board.",
+                       "extractedTitleEn":  "Inverter Fan Over-current Protection",
                        "extractedCausesEn":  [
-
+                                                 "Poor contact of fan\u0027s UVW cables.",
+                                                 "The fan is damaged.",
+                                                 "The blades are stuck, blocked, or the motor shaft gets rusty.",
+                                                 "The fan drive board operates improperly."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check U, V and W fan wires.",
+                                                          "Check fan winding resistance and insulation resistance.",
+                                                          "Check whether fan blades are stuck or blocked.",
+                                                          "Check for related fan faults.",
+                                                          "Check/replace the fan drive board if abnormal."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official H5 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV H5 — защита по перегрузке тока инверторного вентилятора",
+                         "shortAnswerRu":  "Сработала защита по перегрузке тока инверторного вентилятора наружного блока.",
+                         "meaningRu":  "Код H5 указывает на over-current protection for the inverter fan — перегрузку тока инверторного вентилятора наружного блока.",
                          "likelyCausesRu":  [
-
+                                                "Плохой контакт UVW-кабелей вентилятора.",
+                                                "Неисправен вентилятор.",
+                                                "Крыльчатка заблокирована, есть посторонний предмет или заржавел вал двигателя.",
+                                                "Ненормально работает плата привода вентилятора."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить правильность подключения фаз U, V, W вентилятора.",
+                                          "Проверить сопротивление обмоток вентилятора и сопротивление изоляции на землю.",
+                                          "Проверить, не заблокированы ли лопасти вентилятора.",
+                                          "Проверить, нет ли связанных ошибок вентилятора, например H1, H6, H9.",
+                                          "Если вентилятор и проводка исправны — проверить плату привода вентилятора."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Перед проверкой вентилятора, UVW-кабелей и платы отключить питание оборудования.",
+                                               "Не запускать вентилятор при заблокированной крыльчатке."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Для H5 сначала проверяется механика вентилятора и UVW-проводка, а не сразу замена платы."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV H5 — защита по перегрузке тока инверторного вентилятора.\n\nЧто означает:\nсработала защита по перегрузке тока вентилятора наружного блока.\n\nЧто проверить:\n1. UVW-кабели вентилятора и контакт разъёмов;\n2. сопротивление обмоток и изоляцию вентилятора;\n3. свободно ли вращаются лопасти, нет ли посторонних предметов или ржавчины на валу;\n4. нет ли связанных ошибок вентилятора, например H1, H6, H9;\n5. плату привода вентилятора, если вентилятор и проводка исправны.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, H5 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },

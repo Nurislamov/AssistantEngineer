@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-E1",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "E1",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6171869Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6171869Z",
+    "updatedUtc":  "2026-06-24T11:06:01.8416465Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata",
@@ -28,47 +28,76 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "E1 GMV - Protection in Case of Too High Pressure.\n\nFault diagnosis:\nWhen the high pressure sensor detects that the temperature at the high pressure side is greater than 65 C or the high pressure switch is disconnected, it indicates that the high pressure is too high and the unit stops running for safe operation.\n\nPossible causes:\n1. Check valve of the outdoor unit is closed.\n2. Abnormal high pressure sensor.\n3. The high pressure switch operates improperly.\n4. Abnormal outdoor or indoor fans.\n5. Clogging of indoor filter or air duct in heating mode.\n6. Ambient temperature where the unit operates is too high.\n7. Excessive refrigerant in the unit.\n8. Clogging of unit pipes.\n\nTroubleshooting:\nCheck pressure, high pressure switch/sensor, outdoor check valve, outdoor unit panel, air inlet/outlet and air ducts, indoor/outdoor fans, louvers, electronic expansion valves, fins, ambient temperature, clogged pipes and excessive refrigerant.",
+                       "extractedTitleEn":  "Protection in Case of Too High Pressure",
                        "extractedCausesEn":  [
-
+                                                 "Outdoor unit check valve is closed.",
+                                                 "Abnormal high pressure sensor.",
+                                                 "High pressure switch operates improperly.",
+                                                 "Abnormal outdoor or indoor fans.",
+                                                 "Clogging of indoor filter or air duct in heating mode.",
+                                                 "Ambient temperature is too high.",
+                                                 "Excessive refrigerant in the unit.",
+                                                 "Clogging of unit pipes."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check high pressure value and pressure switch/sensor.",
+                                                          "Check outdoor check valve.",
+                                                          "Check outdoor/indoor fans and airflow.",
+                                                          "Check filters, ducts, fins and louvers.",
+                                                          "Check electronic expansion valves.",
+                                                          "Check ambient temperature.",
+                                                          "Check clogged pipes.",
+                                                          "If refrigerant is excessive, remove refrigerant in small steps according to service procedure."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official E1 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV E1 — защита по высокому давлению",
+                         "shortAnswerRu":  "Сработала защита по слишком высокому давлению в системе.",
+                         "meaningRu":  "Код E1 указывает на protection in case of too high pressure. Блок останавливается для безопасной работы, если датчик/реле высокого давления фиксирует превышение или размыкание цепи защиты.",
                          "likelyCausesRu":  [
-
+                                                "Закрыт сервисный/запорный клапан наружного блока.",
+                                                "Неисправен датчик высокого давления.",
+                                                "Ненормально работает реле высокого давления.",
+                                                "Проблема вентилятора наружного или внутреннего блока.",
+                                                "Засор фильтра или воздуховода внутреннего блока в режиме нагрева.",
+                                                "Слишком высокая температура окружающей среды.",
+                                                "Избыточное количество хладагента.",
+                                                "Засор трубопровода или элементов системы."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить фактическое высокое давление и состояние реле/датчика высокого давления.",
+                                          "Проверить, полностью ли открыт клапан наружного блока.",
+                                          "Проверить работу наружных и внутренних вентиляторов.",
+                                          "Проверить фильтры, воздуховоды, жалюзи и теплообменники на загрязнение/засор.",
+                                          "Проверить электронные расширительные клапаны.",
+                                          "Проверить температуру окружающей среды.",
+                                          "Проверить, нет ли засора трубопровода.",
+                                          "Если есть признаки перезаправки — корректировать количество хладагента только по сервисной процедуре."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Не сбрасывать E1 без проверки причины высокого давления.",
+                                               "Работы с хладагентом и давлением выполнять только по сервисной процедуре и с подходящим оборудованием."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Для E1 сначала проверяются клапаны, давление, вентиляторы и воздушный поток. Избыточный хладагент — возможная, но не единственная причина."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV E1 — защита по высокому давлению.\n\nЧто означает:\nсистема остановилась по защите из-за слишком высокого давления.\n\nЧто проверить:\n1. фактическое высокое давление и реле/датчик высокого давления;\n2. открыт ли клапан наружного блока;\n3. работу наружных и внутренних вентиляторов;\n4. фильтры, воздуховоды, жалюзи и теплообменники;\n5. электронные расширительные клапаны;\n6. температуру окружающей среды;\n7. засор трубопровода;\n8. возможную перезаправку хладагента.\n\nВажно: не списывать E1 только на плату. Сначала проверить давление, клапаны, вентиляторы и воздушный поток.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, E1 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },

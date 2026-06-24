@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-o1",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "o1",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6247470Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6247470Z",
+    "updatedUtc":  "2026-06-24T11:06:01.8356624Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata",
@@ -28,47 +28,54 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "o1 GMV - Low bus bar voltage of IDU.\n\nError display:\nODU main board and IDU wired controller will display o1.\n\nError judgment condition and method:\nCheck the error code on the display board. If it displays o1 and indoor fan stops running, that is Low Bus bar Voltage of Indoor Unit.\n\nPossible reasons:\n1. Power supply is abnormal.\n2. Fan drive board is abnormal.\n\nTroubleshooting:\n1. Check whether the power supply is in the normal range required by the unit.\n2. If the power supply is normal, check whether the drive board is damaged and replace the drive board if needed.",
+                       "extractedTitleEn":  "Low bus bar voltage of IDU",
                        "extractedCausesEn":  [
-
+                                                 "Power supply is abnormal.",
+                                                 "Fan drive board is abnormal."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check whether the power supply is in the normal range required by the unit.",
+                                                          "If the power supply is normal, check whether the drive board is damaged and replace the drive board if needed."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official o1 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV o1 — низкое напряжение шины внутреннего блока",
+                         "shortAnswerRu":  "Низкое напряжение DC-шины внутреннего блока; при этом внутренний вентилятор может остановиться.",
+                         "meaningRu":  "Код o1 указывает на low bus bar voltage of IDU — низкое напряжение шины внутреннего блока. По карточке Gree проверяется питание и плата привода вентилятора.",
                          "likelyCausesRu":  [
-
+                                                "Ненормальное питание внутреннего блока.",
+                                                "Возможна неисправность платы привода вентилятора."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить, находится ли питание в нормальном диапазоне, требуемом для блока.",
+                                          "Проверить соединения питания внутреннего блока.",
+                                          "Если питание нормальное — проверить плату привода вентилятора.",
+                                          "При подтверждённой неисправности платы привода — заменить плату по сервисной процедуре."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Перед проверкой питания и платы отключить питание оборудования.",
+                                               "Измерения выполнять только подходящим прибором и с соблюдением электробезопасности."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Важно не путать o1 с 01. Для GMV в официальной карточке указан именно o1 — low bus bar voltage of IDU."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV o1 — низкое напряжение шины внутреннего блока.\n\nЧто означает:\nнизкое напряжение DC-шины внутреннего блока. При этом внутренний вентилятор может остановиться.\n\nЧто проверить:\n1. питание внутреннего блока и его диапазон;\n2. соединения питания;\n3. если питание нормальное — плату привода вентилятора;\n4. при подтверждённой неисправности — заменить плату привода по сервисной процедуре.\n\nВажно: не путать o1 с 01. Для GMV официальная карточка указывает именно o1.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, o1 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },

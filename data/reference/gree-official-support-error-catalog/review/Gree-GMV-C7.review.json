@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-C7",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "C7",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6161897Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6161897Z",
+    "updatedUtc":  "2026-06-24T11:06:01.8326710Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata",
@@ -28,47 +28,51 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "C7 GMV - Abnormal communication of converter.\n\nContent:\nAbnormal communication of converter.",
+                       "extractedTitleEn":  "Abnormal communication of converter",
                        "extractedCausesEn":  [
-
+                                                 "Converter communication is abnormal."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check converter communication path and related wiring/boards according to service documentation."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official C7 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV C7 — нарушение связи преобразователя",
+                         "shortAnswerRu":  "Обнаружена abnormal communication of converter — нарушение связи преобразователя.",
+                         "meaningRu":  "Код C7 указывает на нарушение связи преобразователя. Карточка Gree даёт короткое описание без расширенного алгоритма диагностики.",
                          "likelyCausesRu":  [
-
+                                                "Нарушение связи с преобразователем.",
+                                                "Возможна проблема линии связи, разъёмов или платы/модуля преобразователя."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить разъёмы и проводку связи преобразователя.",
+                                          "Проверить питание и состояние соответствующего модуля/платы.",
+                                          "Если связь и питание исправны — проверять преобразователь и управляющую плату по сервисной документации."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Перед проверкой разъёмов и плат отключить питание оборудования.",
+                                               "Не менять платы без проверки питания, связи и разъёмов."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Для C7 карточка Gree содержит короткое описание, поэтому в ответе не надо придумывать точные причины сверх проверки связи, питания, разъёмов и модуля преобразователя."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV C7 — нарушение связи преобразователя.\n\nЧто означает:\nобнаружена abnormal communication of converter — нарушение связи преобразователя.\n\nЧто проверить:\n1. разъёмы и проводку связи преобразователя;\n2. питание соответствующего модуля/платы;\n3. состояние преобразователя и управляющей платы по сервисной документации.\n\nКарточка Gree по C7 короткая, поэтому без дополнительных данных не стоит делать вывод, что точно неисправна плата.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, C7 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },

@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-A0",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "A0",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.5736861Z",
-    "updatedUtc":  "2026-06-24T10:55:05.5766773Z",
+    "updatedUtc":  "2026-06-24T11:06:01.7903553Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata",
@@ -28,47 +28,52 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "A0 GMV - Unit\u0027s to-be-commissioned State.\n\nFault diagnosis:\nThis is a status code. It is displayed before the completion of system engineering commissioning. At this time, the unit cannot be started.\n\nPossible causes:\nNone.\n\nTroubleshooting:\nNot required.",
+                       "extractedTitleEn":  "Unit\u0027s to-be-commissioned State",
                        "extractedCausesEn":  [
 
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "This is a status code before commissioning is completed.",
+                                                          "Troubleshooting is not required."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official A0 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV A0 — состояние ожидания пусконаладки",
+                         "shortAnswerRu":  "Система ещё не завершила инженерную пусконаладку, поэтому блок не может быть запущен.",
+                         "meaningRu":  "A0 у Gree GMV является статусным кодом: он появляется до завершения инженерной пусконаладки системы. Это не обычная авария датчика или платы.",
                          "likelyCausesRu":  [
-
+                                                "Система ещё не завершила engineering commissioning.",
+                                                "Блок находится в состоянии ожидания пусконаладки."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить, завершена ли пусконаладка системы.",
+                                          "Проверить настройки и процедуру commissioning по сервисной документации.",
+                                          "Не искать неисправность платы только по A0, если система ещё не введена в эксплуатацию."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Не запускать систему в обход процедуры пусконаладки.",
+                                               "Перед изменением commissioning-настроек зафиксировать текущие параметры."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "A0 — это статус до завершения пусконаладки, а не типовая авария. В первую очередь нужно завершить commissioning."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV A0 — состояние ожидания пусконаладки.\n\nЧто означает:\nсистема ещё не завершила инженерную пусконаладку, поэтому блок не может быть запущен.\n\nЧто сделать:\n1. проверить, завершена ли процедура commissioning;\n2. проверить настройки пусконаладки по сервисной документации;\n3. не искать неисправность платы только по A0, если система ещё не введена в эксплуатацию.\n\nЭто статусный код, troubleshooting по карточке Gree не требуется.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, A0 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },
