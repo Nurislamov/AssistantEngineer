@@ -102,3 +102,6 @@ blob-report/
 !docs/security/ownership-backfill-manual-decision-log-template.md
 !docs/security/ownership-backfill-architecture-review-checklist.json
 !docs/security/ownership-backfill-architecture-review-checklist.md
+
+# AssistantEngineer local probe/capture artifacts
+.ae-tools/

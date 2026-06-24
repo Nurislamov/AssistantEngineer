@@ -1,0 +1,18 @@
+﻿{
+    "schemaVersion":  1,
+    "generatedUtc":  "2026-06-24T09:28:26.3176536Z",
+    "source":  {
+                   "name":  "Gree Global After-Sales Service Center",
+                   "website":  "https://support.gree.com/#/errorCode",
+                   "apiBase":  "https://support.gree.com:9877/api"
+               },
+    "policy":  {
+                   "runtimeEnabled":  false,
+                   "reviewRequiredBeforeBotUsage":  true,
+                   "massDownloadAllowed":  false,
+                   "safeProbeOnly":  true
+               },
+    "cards":  [
+
+              ]
+}
