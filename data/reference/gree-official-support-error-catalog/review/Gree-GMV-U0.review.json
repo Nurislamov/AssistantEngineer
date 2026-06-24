@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-U0",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "U0",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6267417Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6267417Z",
+    "updatedUtc":  "2026-06-24T11:02:29.0361245Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata",
@@ -28,47 +28,53 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "U0 GMV - Insufficient Warm-up Time for Compressor.\n\nPossible cause:\nThe compressor warm-up time is insufficient before startup.\n\nTroubleshooting:\nWarm up the outdoor unit/compressor for more than 8 hours before startup.",
+                       "extractedTitleEn":  "Insufficient Warm-up Time for Compressor",
                        "extractedCausesEn":  [
-
+                                                 "The compressor warm-up time is insufficient before startup."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Warm up the outdoor unit/compressor for more than 8 hours before startup."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official U0 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV U0 — недостаточное время прогрева компрессора",
+                         "shortAnswerRu":  "Компрессор был запущен после недостаточного времени прогрева.",
+                         "meaningRu":  "Код U0 указывает, что перед запуском компрессора картер/масло прогревались недостаточно долго. По карточке Gree требуется прогрев более 8 часов перед запуском.",
                          "likelyCausesRu":  [
-
+                                                "Система была запущена сразу после подачи питания.",
+                                                "Наружный блок или компрессор не прогревался достаточно долго.",
+                                                "Питание подогрева картера было отключено или подано недавно."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить, сколько времени питание было подано на наружный блок перед запуском.",
+                                          "Оставить питание наружного блока включённым и дать системе прогреться более 8 часов.",
+                                          "После прогрева выполнить повторный запуск.",
+                                          "Если U0 появляется после нормального прогрева — отдельно проверить цепь питания/подогрева компрессора по сервисной документации."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Не запускать компрессор сразу после длительного отключения питания.",
+                                               "Перед работой в электрощите соблюдать стандартные правила электробезопасности."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Если питание наружного блока недавно отключали, U0 чаще всего означает не поломку, а защиту от запуска без достаточного прогрева."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV U0 — недостаточное время прогрева компрессора.\n\nЧто означает:\nкомпрессор был запущен после недостаточного времени прогрева. По карточке Gree перед запуском нужен прогрев более 8 часов.\n\nЧто сделать:\n1. оставить питание наружного блока включённым;\n2. дать системе прогреться более 8 часов;\n3. после прогрева выполнить повторный запуск.\n\nЕсли U0 появляется после нормального прогрева — проверить питание и цепь подогрева компрессора по сервисной документации.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, U0 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },

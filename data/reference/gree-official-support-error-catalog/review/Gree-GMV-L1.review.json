@@ -1,4 +1,4 @@
-﻿{
+{
     "schemaVersion":  1,
     "reviewId":  "Gree-GMV-L1",
     "brand":  "Gree",
@@ -6,10 +6,10 @@
     "code":  "L1",
     "sourceKind":  "official-support-error-code-card",
     "sourceName":  "Gree Global After-Sales Service Center",
-    "reviewStatus":  "draft",
+    "reviewStatus":  "extracted-draft",
     "runtimeEnabled":  false,
     "createdUtc":  "2026-06-24T10:55:05.6227529Z",
-    "updatedUtc":  "2026-06-24T10:55:05.6227529Z",
+    "updatedUtc":  "2026-06-24T11:02:29.0540739Z",
     "source":  {
                    "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG",
                    "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/metadata",
@@ -28,47 +28,61 @@
                                         }
                },
     "extraction":  {
-                       "status":  "pending",
-                       "method":  "manual-or-vision-review",
-                       "rawText":  "",
-                       "extractedTitleEn":  "",
+                       "status":  "extracted",
+                       "method":  "manual-vision-review-from-official-png",
+                       "rawText":  "L1 GMV - Indoor Fan Protection.\n\nPossible causes:\n1. Indoor fan motor fault, fan stopped, blocked, or abnormal rotation.\n2. Poor contact or fault in fan protection signal circuit.\n3. Indoor unit PCB fault.\n\nTroubleshooting:\n1. Check whether the indoor fan rotates freely.\n2. Check fan motor and fan wiring/connectors.\n3. Check fan protection signal circuit.\n4. Check indoor unit PCB if fan and wiring are normal.",
+                       "extractedTitleEn":  "Indoor Fan Protection",
                        "extractedCausesEn":  [
-
+                                                 "Indoor fan motor fault, fan stopped, blocked, or abnormal rotation.",
+                                                 "Poor contact or fault in fan protection signal circuit.",
+                                                 "Indoor unit PCB fault."
                                              ],
                        "extractedTroubleshootingEn":  [
-
+                                                          "Check whether the indoor fan rotates freely.",
+                                                          "Check fan motor and fan wiring/connectors.",
+                                                          "Check fan protection signal circuit.",
+                                                          "Check indoor unit PCB if fan and wiring are normal."
                                                       ],
                        "extractionNotes":  [
-                                               "Fill this from the raw official PNG after manual/vision review.",
-                                               "Do not connect this draft directly to Telegram runtime."
+                                               "Extracted from the raw official L1 GMV PNG for review.",
+                                               "This is still a draft reference entry and is not connected to Telegram runtime."
                                            ]
                    },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "shortAnswerRu":  "",
-                         "meaningRu":  "",
+                         "titleRu":  "Gree GMV L1 — защита вентилятора внутреннего блока",
+                         "shortAnswerRu":  "Сработала защита вентилятора внутреннего блока.",
+                         "meaningRu":  "Код L1 указывает на защиту вентилятора внутреннего блока: вентилятор может вращаться слишком медленно, остановиться, быть заблокированным, либо сработал внешний сигнал защиты вентилятора.",
                          "likelyCausesRu":  [
-
+                                                "Вентилятор внутреннего блока остановился или заклинил.",
+                                                "Крыльчатке мешает посторонний предмет или загрязнение.",
+                                                "Неисправен двигатель вентилятора.",
+                                                "Плохой контакт или повреждение сигнального разъёма защиты вентилятора.",
+                                                "Возможна неисправность платы внутреннего блока."
                                             ],
                          "checksRu":  [
-
+                                          "Проверить, свободно ли вращается крыльчатка вентилятора.",
+                                          "Проверить, нет ли посторонних предметов, загрязнения или механического заклинивания.",
+                                          "Проверить двигатель вентилятора.",
+                                          "Проверить разъёмы и сигнальные провода защиты вентилятора.",
+                                          "Проверить плату внутреннего блока, если механика, двигатель и проводка исправны."
                                       ],
                          "safetyNotesRu":  [
-
+                                               "Перед проверкой вентилятора и платы отключить питание внутреннего блока.",
+                                               "Не вращать вентилятор руками при включённом питании."
                                            ],
-                         "operatorHintRu":  ""
+                         "operatorHintRu":  "Для L1 сначала проверяется механика вентилятора и разъёмы, а уже потом плата."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
-                         "proposedAnswerRu":  "",
-                         "sourceAttributionRu":  "РСЃС‚РѕС‡РЅРёРє: Gree official support error-code catalog.",
+                         "proposedAnswerRu":  "Gree GMV L1 — защита вентилятора внутреннего блока.\n\nЧто означает:\nсработала защита вентилятора внутреннего блока. Возможны остановка, заклинивание, низкая скорость вращения или проблема с сигналом защиты вентилятора.\n\nЧто проверить:\n1. свободно ли вращается крыльчатка;\n2. нет ли посторонних предметов или загрязнения;\n3. исправен ли двигатель вентилятора;\n4. разъёмы и сигнальные провода защиты вентилятора;\n5. плату внутреннего блока, если вентилятор и проводка исправны.\n",
+                         "sourceAttributionRu":  "Источник: Gree official support error-code catalog, L1 GMV.",
                          "blockedUntilApproved":  true
                      },
     "reviewChecklist":  {
-                            "rawCardOpened":  false,
-                            "textExtracted":  false,
-                            "engineeringMeaningChecked":  false,
-                            "russianWordingChecked":  false,
+                            "rawCardOpened":  true,
+                            "textExtracted":  true,
+                            "engineeringMeaningChecked":  true,
+                            "russianWordingChecked":  true,
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },
