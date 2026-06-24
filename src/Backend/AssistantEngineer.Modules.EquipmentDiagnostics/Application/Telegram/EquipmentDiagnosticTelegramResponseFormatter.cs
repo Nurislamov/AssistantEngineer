@@ -166,8 +166,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var text = selection.Text;
         var builder = new StringBuilder();
         builder.AppendLine($"Код оборудования: {response.NormalizedManufacturer} {response.NormalizedCode}");
+        AppendConfusableCodeNote(builder, response.NormalizedCode);
         builder.AppendLine();
-        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
+        builder.AppendLine(TechnicalTitle(response, text));
         builder.AppendLine();
         builder.AppendLine("Возможное значение:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
@@ -179,7 +180,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         AppendSection(builder, "Что можно проверить безопасно", text.CheckSteps);
         builder.AppendLine();
         builder.AppendLine("Рекомендованное действие:");
-        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
+        builder.AppendLine(RecommendedAction(response, text));
         builder.AppendLine();
         builder.AppendLine($"Для сервиса: передайте код {response.NormalizedManufacturer} {response.NormalizedCode}.");
         builder.AppendLine();
@@ -315,7 +316,8 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     {
         var text = selection.Text;
         var entry = selection.Entry;
-        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Title));
+        builder.AppendLine(TechnicalTitle(response, text));
+        AppendConfusableCodeNote(builder, response.NormalizedCode);
         builder.AppendLine();
         builder.AppendLine("Суть:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
@@ -330,7 +332,41 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         AppendSection(builder, "Ограничения вывода", text.DoNotAdvise);
         builder.AppendLine();
         builder.AppendLine("Дальше:");
-        builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction));
+        builder.AppendLine(RecommendedAction(response, text));
+    }
+
+    private static string TechnicalTitle(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeTextV2 text) =>
+        IsGroupedAnswer(response)
+            ? $"{DisplayManufacturer(response.NormalizedManufacturer)} GMV {response.NormalizedCode} — нарушение связи"
+            : RussianDiagnosticTerminology.ImprovePhrase(text.Title);
+
+    private static string RecommendedAction(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeTextV2 text) =>
+        IsGroupedAnswer(response)
+            ? $"Продолжить диагностику по разделу {response.NormalizedCode} руководства применимой серии. Если серия известна — использовать руководство этой серии."
+            : RussianDiagnosticTerminology.ImprovePhrase(text.RecommendedAction);
+
+    private static bool IsGroupedAnswer(EquipmentDiagnosticBotResponse response) =>
+        response.ApplicableContexts.Count > 1;
+
+    private static string DisplayManufacturer(string manufacturer) =>
+        string.Equals(manufacturer, "GREE", StringComparison.OrdinalIgnoreCase)
+            ? "Gree"
+            : manufacturer;
+
+    private static void AppendConfusableCodeNote(StringBuilder builder, string code)
+    {
+        if (string.Equals(code, "o1", StringComparison.Ordinal))
+        {
+            builder.AppendLine("Код: o1 — буква O + цифра 1.");
+        }
+        else if (string.Equals(code, "L1", StringComparison.Ordinal))
+        {
+            builder.AppendLine("Код: L1 — буква L + цифра 1.");
+        }
     }
 
     private static void AppendApplicableContexts(

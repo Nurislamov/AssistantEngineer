@@ -19,6 +19,7 @@ public sealed class EquipmentDiagnosticTelegramParserTests
     [InlineData("GMV Mini AJ", "Gree", "AJ")]
     [InlineData("GMV Mini C0", "Gree", "C0")]
     [InlineData("Gree debugging U0", "Gree", "U0")]
+    [InlineData("Gree 01", "Gree", "01")]
     [InlineData("n6", "Gree", "n6")]
     [InlineData("db", "Gree", "db")]
     public void DiagnosticMessagesParseDeterministically(string text, string manufacturer, string code)

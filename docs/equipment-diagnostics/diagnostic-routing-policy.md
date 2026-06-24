@@ -60,6 +60,28 @@ Therefore:
 - `Gree GMV6 C0` resolves GMV6;
 - `Gree GMV Mini C0` resolves GMV Mini.
 
+Grouped same-meaning output must remain neutral:
+
+- its title must not present one candidate series as the only result;
+- its next step must point to the manual for the applicable/known series instead of forcing the representative candidate's manual;
+- it may list reviewed applicability contexts;
+- it must not expose `meaningGroupId`, package/source identifiers, local paths, or Telegram manual file identifiers.
+
+Explicit series requests remain series-specific.
+
+## Visually Confusable Codes
+
+Lookup does not silently substitute visually similar characters. Numeric `01` is not lowercase `o1`.
+
+When a rejected code has a known visually confusable reviewed alternative, Telegram may explain the distinction and invite an explicit lookup. The suggestion is presentation guidance only and must not store or resolve the alternative until the user explicitly requests it.
+
+Reviewed answers may include compact notes for ambiguous canonical codes, for example:
+
+- `o1` is letter O plus digit 1;
+- `L1` is letter L plus digit 1.
+
+See [Diagnostic Answer Quality Baseline](diagnostic-answer-quality-baseline.md) for answer-class and wording rules.
+
 ## Runtime Boundary
 
 Runtime catalog answers remain authoritative for existing runtime scenarios unless a precise series hint or an explicit same-meaning group requires repository-backed routing. This preserves existing GMV6 smoke behavior while allowing reviewed GMV Mini manual-backed entries to resolve.

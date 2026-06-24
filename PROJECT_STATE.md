@@ -2,7 +2,7 @@
 
 
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24
 
 Primary repo: https://github.com/Nurislamov/AssistantEngineer
 
@@ -71,6 +71,12 @@ Expected next action:
 8\. ED-24H.2 partially imported `SERVICE_MANUAL_GMV_MINI.pdf`: 3 new packages, 9 new entries, 31 source-reference merges, 90 NeedsReview contexts, and 7 packages / 262 entries / 0 validator issues.
 
 9\. ED-24UX.1 adds deterministic routing policy and candidate resolver foundation without changing package or entry counts. `Gree GMV Mini AJ`, `Gree GMV Mini C0`, `GMV Mini AJ`, and `GMV Mini C0` are accepted. Unqualified `Gree C0` uses explicit same-meaning grouping and must include applicability for GMV6 and GMV Mini instead of silently choosing one series. `Gree 01` still must not match `o1`.
+
+10\. ED-24UX.1a polishes grouped same-meaning output: unqualified `C0` / `Gree C0` use a neutral `Gree GMV C0` title and a series-neutral next step, while explicit GMV6 and GMV Mini requests remain series-specific.
+
+11\. `Gree 01` remains not found and is never auto-converted to `o1`; Telegram now explains the O/zero distinction. Canonical `o1` and `L1` answers include compact letter/digit clarification.
+
+12\. The first diagnostic answer-quality baseline is documented for active faults, protections, warnings, statuses, parameter settings, service reminders, commissioning, communication, power, sensor, and board faults.
 
 
 
@@ -151,6 +157,8 @@ Latest known production status:
 \* Repository knowledge after ED-24H.2 is 7 packages / 262 entries / 0 issues.
 
 \* ED-24UX.1 repo-side routing policy foundation is implemented; deployment smoke is pending.
+
+\* ED-24UX.1a repo-side diagnostic answer UX polish is implemented; deployment smoke remains pending under ED-24UX.2.
 
 \* Gree GMV Mini `AJ` and `C0` routing rejects are fixed repo-side.
 
@@ -251,6 +259,56 @@ Results:
 \* Knowledge counts remain 7 packages / 262 entries / 0 validator issues expected.
 
 \* No DB schema, EF migration, env file, Docker/compose, runtime manual binding JSON, real Telegram `file_id`, or manual binary was added.
+
+\### ED-24UX.1a - CLOSED REPO-SIDE
+
+Title:
+
+`ED-24UX.1a Polish diagnostic answer UX`
+
+Purpose:
+
+Polish grouped same-meaning Telegram output, explain visually confusable codes without unsafe substitution, and establish the first answer-quality baseline without importing manuals or changing knowledge counts.
+
+Results:
+
+\* Unqualified `C0` and `Gree C0` use neutral `Gree GMV C0` presentation with applicability for `Gree GMV Mini` and `Gree GMV6`.
+
+\* Grouped C0 next steps no longer force the GMV6 manual; explicit `Gree GMV6 C0` and `Gree GMV Mini C0` remain series-specific.
+
+\* Numeric `01` remains not found and is stored as `01` in `/last`; Telegram suggests an explicit `o1` check and explains that `o1` uses letter O.
+
+\* Canonical `o1` and `L1` answers include compact letter/digit clarification.
+
+\* Added `docs/equipment-diagnostics/diagnostic-answer-quality-baseline.md` and linked it from routing and EquipmentDiagnostics documentation.
+
+\* Smoke-relevant answers are guarded against generic filler and unsafe generic protection phrases.
+
+\* Existing manual-backed entries already satisfy the baseline; no diagnostic JSON meanings, packages, or entries were changed.
+
+\* Knowledge remains 7 packages / 262 entries / 0 issues expected.
+
+\* No DB schema, EF migration, env file, Docker/compose, runtime manual binding JSON, real Telegram `file_id`, secret file, or manual binary was added.
+
+Validation:
+
+\* `dotnet restore .\AssistantEngineer.sln` - PASS.
+
+\* `dotnet build .\AssistantEngineer.sln --no-restore` - PASS, 0 warnings, 0 errors.
+
+\* `dotnet test .\AssistantEngineer.sln --no-build` - PASS, 4738 passed.
+
+\* `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter EquipmentDiagnostics --no-build` - PASS, 754 passed.
+
+\* Targeted Telegram/parser/formatter tests - PASS, 112 passed.
+
+\* Knowledge verifier - PASS, 269 files / 7 packages / 262 entries / 0 issues.
+
+\* Deployment scaffold with Docker Compose config - PASS.
+
+\* Release publish smoke - PASS.
+
+\* Local Docker daemon was unavailable, so the local API image build was not run.
 
 
 
@@ -2972,7 +3030,7 @@ Recommended next stage:
 
 
 
-`ED-24H.3 Deploy and smoke Gree GMV Mini diagnostic knowledge`
+`ED-24UX.2 Deploy and smoke diagnostic routing policy`
 
 
 
@@ -2980,13 +3038,13 @@ Scope:
 
 
 
-* deploy the ED-24H.2 repository state to production;
+* deploy the ED-24UX.1 and ED-24UX.1a repository state to production;
 
-* smoke `Gree GMV Mini C0`, `Gree GMV Mini EC`, and `Gree GMV Mini A1`;
+* smoke neutral grouped `C0` / `Gree C0` output and explicit GMV6/GMV Mini C0 routing;
 
-* confirm existing `Gree d1`, `/manuals` after `Gree d1`, `Gree H5`, and `Gree U0` remain green;
+* smoke `Gree 01`, canonical `Gree o1` / `Gree O1` / `Gree L1`, GMV Mini `AJ` / `n1`, `/last`, and `/manuals`;
 
-* keep GMV Mini manual delivery disconnected until a separate reviewed server-local Telegram binding step;
+* confirm existing manual delivery remains green without exposing runtime binding data;
 
 * keep current Telegram diagnostics and manual delivery green.
 
@@ -2996,11 +3054,11 @@ Before coding:
 
 
 
-1\. Confirm production repo checkout is on the ED-24H.2 commit or newer.
+1\. Confirm production repo checkout is on the ED-24UX.1a commit or newer.
 
-2\. Build the Docker image and recreate only the reviewed service stack.
+2\. Build the API image with no cache and recreate only `assistantengineer-api`.
 
-3\. Run `/health`, `/ready`, Telegram polling, and the GMV Mini diagnostic smoke checks.
+3\. Run `/health`, `/ready`, Telegram polling, and the ED-24UX.2 Telegram smoke checklist.
 
 4\. Do not paste full `docker compose config`, env dumps, docker inspect env output, or secret files.
 

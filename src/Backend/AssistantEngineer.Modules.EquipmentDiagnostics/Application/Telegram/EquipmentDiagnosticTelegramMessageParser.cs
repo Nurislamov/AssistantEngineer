@@ -186,10 +186,11 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
 
     private static bool LooksLikeCode(string token) =>
         token.Length <= EquipmentDiagnosticBotRequestLimits.Code &&
-        CodePattern().IsMatch(token) &&
-        (token.Any(char.IsDigit) ||
-         token.Length == 2 && token.All(IsAsciiLetter) ||
-         string.Equals(token, "db", StringComparison.OrdinalIgnoreCase));
+        (token.Length == 2 && token.All(char.IsDigit) ||
+         CodePattern().IsMatch(token) &&
+         (token.Any(char.IsDigit) ||
+          token.Length == 2 && token.All(IsAsciiLetter) ||
+          string.Equals(token, "db", StringComparison.OrdinalIgnoreCase)));
 
     private static bool IsAsciiLetter(char value) =>
         value is >= 'A' and <= 'Z' or >= 'a' and <= 'z';

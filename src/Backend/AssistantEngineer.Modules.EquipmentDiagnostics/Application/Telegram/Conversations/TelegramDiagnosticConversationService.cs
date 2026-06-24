@@ -319,7 +319,7 @@ public sealed class TelegramDiagnosticConversationService
                 {
                     await RecordNotFoundAsync(access, conversationSessionId: null, code, _options.DefaultManufacturer, cancellationToken);
                     await _sessionStore.ClearAsync(user.Id, cancellationToken);
-                    return NotFound(access);
+                    return NotFound(access, code);
                 }
 
                 await RecordCompletedAsync(
@@ -338,7 +338,7 @@ public sealed class TelegramDiagnosticConversationService
 
             await _sessionStore.ClearAsync(user.Id, cancellationToken);
             await RecordNotFoundAsync(access, conversationSessionId: null, code, ExtractManufacturer(update.Text, code), cancellationToken);
-            return NotFound(access);
+            return NotFound(access, code);
         }
 
         if (HasCaseOnlyAmbiguityWithoutExactMatch(code, candidates))
@@ -473,7 +473,7 @@ public sealed class TelegramDiagnosticConversationService
         if (candidates.Count == 0)
         {
             await RecordNotFoundAsync(access, conversationSessionId: null, code, selectedManufacturer, cancellationToken);
-            return NotFound(access);
+            return NotFound(access, code);
         }
 
         var resolveAsMeaningGroup = false;
@@ -549,7 +549,7 @@ public sealed class TelegramDiagnosticConversationService
         if (diagnosis.Status == EquipmentDiagnosticBotResponseStatus.NotFound)
         {
             await RecordNotFoundAsync(access, session.Id, code, selectedManufacturer, cancellationToken);
-            return NotFound(access);
+            return NotFound(access, code);
         }
 
         await RecordCompletedAsync(
@@ -778,8 +778,22 @@ public sealed class TelegramDiagnosticConversationService
             MainKeyboard(access));
     }
 
-    private TelegramDiagnosticConversationResult NotFound(TelegramUserAccessResult access)
+    private TelegramDiagnosticConversationResult NotFound(
+        TelegramUserAccessResult access,
+        string code)
     {
+        if (string.Equals(code, "01", StringComparison.Ordinal))
+        {
+            return new TelegramDiagnosticConversationResult(
+                true,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                "Код 01 не найден.\n\n" +
+                "Возможно, вы имели в виду o1 — буква O + цифра 1.\n" +
+                "Если на дисплее именно буква O, проверьте код o1.",
+                [],
+                MainKeyboard(access));
+        }
+
         var text = "Я не нашёл точную расшифровку этого кода. Проверьте код или укажите бренд, например: Gree H5.";
         if (access.UsesTechnicalResponse)
         {

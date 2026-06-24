@@ -28,6 +28,10 @@ The [Gree GMV Mini manual import](gree-gmv-mini-manual-import.md) uses only `SER
 
 The [diagnostic routing policy](diagnostic-routing-policy.md) defines deterministic candidate resolution for overlapping Gree VRF codes. It adds explicit `meaningGroupId` metadata for reviewed same-meaning groups, recognizes multi-word GMV series hints such as `GMV Mini`, and prevents unqualified collisions such as `C0` from silently selecting one series without applicability context.
 
+## ED-24UX.1a diagnostic answer quality
+
+The [diagnostic answer quality baseline](diagnostic-answer-quality-baseline.md) defines the first response classes and wording rules for faults, protections, warnings, statuses, parameter settings, service reminders, commissioning indications, communication faults, power faults, sensor faults, and board faults. Grouped same-meaning answers remain neutral, and visually confusable codes such as `01`/`o1` are explained without automatic substitution.
+
 ## ED-24F.1 GMV IDU manual analysis
 
 The [GMV IDU manual analysis](gree-gmv-idu-manual-import.md) verifies document `GC202004-X` and its 38-code indoor-unit table. ED-24F.1 stopped duplicate entry import; ED-24F.1b completed the safe merge as source references on matching existing GMV6 indoor entries.

@@ -141,6 +141,27 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
     }
 
     [Fact]
+    public void GroupedC0UsesNeutralTitleAndNextStepForTechnicalAndConsumerOutput()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(new JsonErrorKnowledgeLocalizationSource());
+        var response = LocalizedResponse() with
+        {
+            ApplicableContexts = ["Gree GMV Mini", "Gree GMV6"]
+        };
+
+        var technical = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
+        var consumer = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
+
+        foreach (var text in new[] { technical, consumer })
+        {
+            Assert.Contains("Gree GMV C0 — нарушение связи", text, StringComparison.Ordinal);
+            Assert.Contains("руководства применимой серии", text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("Gree GMV6 C0", text, StringComparison.Ordinal);
+            Assert.DoesNotContain("руководства GMV6", text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public async Task GreeU3TechnicalOutputExplainsPowerPhaseProblemWithoutWaterOrUnsafeProtectionWording()
     {
         using var provider = CreateProvider();
