@@ -1,0 +1,109 @@
+﻿{
+    "startedUtc":  "2026-06-25T11:58:54.2057381Z",
+    "finishedUtc":  "2026-06-25T12:03:50.6987574Z",
+    "requestCount":  5,
+    "firstSymbolsDiscovered":  [
+                                   "A",
+                                   "C",
+                                   "E",
+                                   "F",
+                                   "G",
+                                   "H",
+                                   "J",
+                                   "L",
+                                   "N",
+                                   "P",
+                                   "S",
+                                   "U",
+                                   "b",
+                                   "d",
+                                   "e",
+                                   "n",
+                                   "o",
+                                   "0",
+                                   "q",
+                                   "1",
+                                   "r",
+                                   "2",
+                                   "3",
+                                   "4",
+                                   "5",
+                                   "7",
+                                   "y"
+                               ],
+    "firstSymbolsProcessed":  [
+
+                              ],
+    "codeCandidates":  [
+                           "Jy"
+                       ],
+    "codeModelIndex":  [
+                           {
+                               "code":  "Jy",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           }
+                       ],
+    "searchResults":  [
+                          {
+                              "code":  "Jy",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  22758,
+                                               "nameCn":  "Jy GMV",
+                                               "nameEn":  "Jy GMV",
+                                               "gmtCreated":  "2025-12-15 05:50:22",
+                                               "gmtModified":  "2025-12-15 05:50:22",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "Jy",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  22758,
+                                                                  "sourceId":  23476,
+                                                                  "type":  "image",
+                                                                  "filename":  "Jy GMV.jpg",
+                                                                  "documentSize":  413717,
+                                                                  "fileKey":  "7c4c3065636f45e9a7eaa04c74598db0.jpg",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/7c4c3065636f45e9a7eaa04c74598db0.jpg?response-content-disposition=inline%3Bfilename%3DJy%2520GMV.jpg\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T120129Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=f9785f0ee8632375aea2fcb2fee7e8c5388b469ea600f4bd54817a6c44d67fdf",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          }
+                      ],
+    "fileCandidates":  [
+                           {
+                               "code":  "Jy",
+                               "model":  "GMV",
+                               "rowId":  22758,
+                               "sourceId":  23476,
+                               "type":  "image",
+                               "filename":  "Jy GMV.jpg",
+                               "documentSize":  413717,
+                               "fileKey":  "7c4c3065636f45e9a7eaa04c74598db0.jpg",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/7c4c3065636f45e9a7eaa04c74598db0.jpg?response-content-disposition=inline%3Bfilename%3DJy%2520GMV.jpg\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T120129Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=f9785f0ee8632375aea2fcb2fee7e8c5388b469ea600f4bd54817a6c44d67fdf",
+                               "urlAvailableInSearch":  true
+                           }
+                       ],
+    "downloads":  [
+                      {
+                          "code":  "Jy",
+                          "model":  "GMV",
+                          "filename":  "Jy GMV.jpg",
+                          "bytes":  413717,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T11-58-54-196Z\\downloads\\Jy-GMV\\Jy GMV.jpg",
+                          "source":  "presign"
+                      }
+                  ],
+    "safety":  {
+                   "stoppedByLimit":  false,
+                   "note":  "Single-threaded low-rate probe. Downloads disabled unless -DownloadFiles is passed. v3.3 sends the same client headers as the web app. Downloads use presign first, then direct temporary URLs only as fallback."
+               }
+}

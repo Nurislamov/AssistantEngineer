@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "generatedUtc":  "2026-06-25T11:58:32.3994374Z",
+    "generatedUtc":  "2026-06-25T12:15:36.7254092Z",
     "source":  {
                    "name":  "Gree Global After-Sales Service Center",
                    "website":  "https://support.gree.com/#/errorCode",
@@ -4897,6 +4897,33 @@
                                                "filename":  "Jn GMV.jpg",
                                                "documentSize":  377181,
                                                "fileKey":  "de9a769527a34361b8c940a88acc414d.jpg"
+                                           },
+                      "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
+                  },
+                  {
+                      "brand":  "Gree",
+                      "code":  "Jy",
+                      "model":  "GMV",
+                      "sourceName":  "Gree Global After-Sales Service Center",
+                      "sourceKind":  "official-support-error-code-card",
+                      "reviewStatus":  "raw",
+                      "runtimeEnabled":  false,
+                      "cardFile":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jy/Jy GMV.jpg",
+                      "metadataDirectory":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jy/metadata",
+                      "sha256":  "301BDF57B82B25C37FDFC76876B43E6CBA4263D4DA2CC415AC769FD7A6E90677",
+                      "bytes":  413717,
+                      "collectedFromLocalRun":  ".ae-tools/gree-support-catalog-v3/run-2026-06-25T11-58-54-196Z",
+                      "importedUtc":  "2026-06-25T12:15:36.7061734Z",
+                      "officialMetadata":  {
+                                               "rowId":  22758,
+                                               "sourceId":  23476,
+                                               "nameEn":  "Jy GMV",
+                                               "nameCn":  "Jy GMV",
+                                               "gmtCreated":  "2025-12-15 05:50:22",
+                                               "gmtModified":  "2025-12-15 05:50:22",
+                                               "filename":  "Jy GMV.jpg",
+                                               "documentSize":  413717,
+                                               "fileKey":  "7c4c3065636f45e9a7eaa04c74598db0.jpg"
                                            },
                       "notes":  "Raw official card captured for reference only. Not used by Telegram runtime until reviewed and converted to approved bot knowledge."
                   },
