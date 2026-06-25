@@ -1,0 +1,42 @@
+﻿{
+    "repoRoot":  "D:\\Project\\AssistantEngineer",
+    "apiBase":  "https://support.gree.com:9877/api",
+    "clientUuid":  "989c2caa-72fa-46ed-9140-021110556fdc",
+    "firstSymbols":  [
+                         "C"
+                     ],
+    "maxSecondSymbolsPerFirst":  3,
+    "maxCodes":  18,
+    "maxModelsPerCode":  1,
+    "downloadFiles":  true,
+    "maxDownloads":  45,
+    "allowPresignFallback":  false,
+    "maxRequests":  170,
+    "delaySeconds":  45,
+    "jitterSeconds":  20,
+    "onlyCodes":  [
+                      "J0",
+                      "J1",
+                      "J2",
+                      "J3",
+                      "J4",
+                      "J5",
+                      "J6",
+                      "J7",
+                      "J8",
+                      "J9",
+                      "JA",
+                      "JC",
+                      "JE",
+                      "JF",
+                      "JJ",
+                      "JL",
+                      "Jn",
+                      "Jy"
+                  ],
+    "onlyModels":  [
+                       "GMV"
+                   ],
+    "planOnly":  false,
+    "startedUtc":  "2026-06-25T10:06:26.6997296Z"
+}
