@@ -1,0 +1,341 @@
+﻿{
+    "startedUtc":  "2026-06-25T06:42:02.0814829Z",
+    "finishedUtc":  "2026-06-25T07:00:32.4607614Z",
+    "requestCount":  21,
+    "firstSymbolsDiscovered":  [
+                                   "A",
+                                   "C",
+                                   "E",
+                                   "F",
+                                   "G",
+                                   "H",
+                                   "J",
+                                   "L",
+                                   "N",
+                                   "P",
+                                   "S",
+                                   "U",
+                                   "b",
+                                   "d",
+                                   "e",
+                                   "n",
+                                   "o",
+                                   "0",
+                                   "q",
+                                   "1",
+                                   "r",
+                                   "2",
+                                   "3",
+                                   "4",
+                                   "5",
+                                   "7",
+                                   "y"
+                               ],
+    "firstSymbolsProcessed":  [
+
+                              ],
+    "codeCandidates":  [
+                           "G6",
+                           "G7",
+                           "G8",
+                           "G9",
+                           "GA"
+                       ],
+    "codeModelIndex":  [
+                           {
+                               "code":  "G6",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "G7",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "G8",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "G9",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "GA",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           }
+                       ],
+    "searchResults":  [
+                          {
+                              "code":  "G6",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  932,
+                                               "nameCn":  "G6 GMV",
+                                               "nameEn":  "G6 GMV",
+                                               "gmtCreated":  "2021-03-20 01:20:34",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "G6",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  932,
+                                                                  "sourceId":  462,
+                                                                  "type":  "image",
+                                                                  "filename":  "G6 GMV.png",
+                                                                  "documentSize":  10310,
+                                                                  "fileKey":  "33051b770cb64565af8b774ca6ac9ae6.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/33051b770cb64565af8b774ca6ac9ae6.png?response-content-disposition=inline%3Bfilename%3DG6%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064804Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7db950786551744b7203cc29fe1729978e78b14cef609e9e0102604866183c03",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "G7",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  934,
+                                               "nameCn":  "G7 GMV",
+                                               "nameEn":  "G7 GMV",
+                                               "gmtCreated":  "2021-03-20 01:20:49",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "G7",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  934,
+                                                                  "sourceId":  463,
+                                                                  "type":  "image",
+                                                                  "filename":  "G7 GMV.png",
+                                                                  "documentSize":  13169,
+                                                                  "fileKey":  "8ed858a632c5405cb69f7a52c890c0bd.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/8ed858a632c5405cb69f7a52c890c0bd.png?response-content-disposition=inline%3Bfilename%3DG7%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064850Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=b2bf48e608d038920cc29635fe359784feac7ee0199da6ea5debca939a879362",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "G8",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  936,
+                                               "nameCn":  "G8 GMV",
+                                               "nameEn":  "G8 GMV",
+                                               "gmtCreated":  "2021-03-20 01:21:01",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "G8",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  936,
+                                                                  "sourceId":  464,
+                                                                  "type":  "image",
+                                                                  "filename":  "G8 GMV.png",
+                                                                  "documentSize":  12531,
+                                                                  "fileKey":  "529782ca75164799bdddb4bf13af9a9c.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/529782ca75164799bdddb4bf13af9a9c.png?response-content-disposition=inline%3Bfilename%3DG8%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064952Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a41933969e67f7393865c2bf3c8d2415f9fb2f554a189bb362e8b7fb43544fa6",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "G9",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  938,
+                                               "nameCn":  "G9 GMV",
+                                               "nameEn":  "G9 GMV",
+                                               "gmtCreated":  "2021-03-20 01:21:14",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "G9",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  938,
+                                                                  "sourceId":  465,
+                                                                  "type":  "image",
+                                                                  "filename":  "G9 GMV.png",
+                                                                  "documentSize":  15877,
+                                                                  "fileKey":  "c3d9fe22194b46119165f5ff072bef5c.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/c3d9fe22194b46119165f5ff072bef5c.png?response-content-disposition=inline%3Bfilename%3DG9%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T065053Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=cc18453ff6b28b3f57299482ef6a692f5abe8b95f50edbfa36ae4d06c6e64041",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "GA",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  940,
+                                               "nameCn":  "GA GMV",
+                                               "nameEn":  "GA GMVV",
+                                               "gmtCreated":  "2021-03-20 01:21:28",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "GA",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  940,
+                                                                  "sourceId":  466,
+                                                                  "type":  "image",
+                                                                  "filename":  "GA GMV.png",
+                                                                  "documentSize":  16561,
+                                                                  "fileKey":  "cd0ca1d5e98846ceb10309c038d8092c.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/cd0ca1d5e98846ceb10309c038d8092c.png?response-content-disposition=inline%3Bfilename%3DGA%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T065140Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=b61aebf7675c027cf0febd33d8af184bde9e34dc3b71009a40cb8879361ee4c7",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          }
+                      ],
+    "fileCandidates":  [
+                           {
+                               "code":  "G6",
+                               "model":  "GMV",
+                               "rowId":  932,
+                               "sourceId":  462,
+                               "type":  "image",
+                               "filename":  "G6 GMV.png",
+                               "documentSize":  10310,
+                               "fileKey":  "33051b770cb64565af8b774ca6ac9ae6.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/33051b770cb64565af8b774ca6ac9ae6.png?response-content-disposition=inline%3Bfilename%3DG6%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064804Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7db950786551744b7203cc29fe1729978e78b14cef609e9e0102604866183c03",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "G7",
+                               "model":  "GMV",
+                               "rowId":  934,
+                               "sourceId":  463,
+                               "type":  "image",
+                               "filename":  "G7 GMV.png",
+                               "documentSize":  13169,
+                               "fileKey":  "8ed858a632c5405cb69f7a52c890c0bd.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/8ed858a632c5405cb69f7a52c890c0bd.png?response-content-disposition=inline%3Bfilename%3DG7%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064850Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=b2bf48e608d038920cc29635fe359784feac7ee0199da6ea5debca939a879362",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "G8",
+                               "model":  "GMV",
+                               "rowId":  936,
+                               "sourceId":  464,
+                               "type":  "image",
+                               "filename":  "G8 GMV.png",
+                               "documentSize":  12531,
+                               "fileKey":  "529782ca75164799bdddb4bf13af9a9c.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/529782ca75164799bdddb4bf13af9a9c.png?response-content-disposition=inline%3Bfilename%3DG8%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T064952Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a41933969e67f7393865c2bf3c8d2415f9fb2f554a189bb362e8b7fb43544fa6",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "G9",
+                               "model":  "GMV",
+                               "rowId":  938,
+                               "sourceId":  465,
+                               "type":  "image",
+                               "filename":  "G9 GMV.png",
+                               "documentSize":  15877,
+                               "fileKey":  "c3d9fe22194b46119165f5ff072bef5c.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/c3d9fe22194b46119165f5ff072bef5c.png?response-content-disposition=inline%3Bfilename%3DG9%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T065053Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=cc18453ff6b28b3f57299482ef6a692f5abe8b95f50edbfa36ae4d06c6e64041",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "GA",
+                               "model":  "GMV",
+                               "rowId":  940,
+                               "sourceId":  466,
+                               "type":  "image",
+                               "filename":  "GA GMV.png",
+                               "documentSize":  16561,
+                               "fileKey":  "cd0ca1d5e98846ceb10309c038d8092c.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/cd0ca1d5e98846ceb10309c038d8092c.png?response-content-disposition=inline%3Bfilename%3DGA%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T065140Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=b61aebf7675c027cf0febd33d8af184bde9e34dc3b71009a40cb8879361ee4c7",
+                               "urlAvailableInSearch":  true
+                           }
+                       ],
+    "downloads":  [
+                      {
+                          "code":  "G6",
+                          "model":  "GMV",
+                          "filename":  "G6 GMV.png",
+                          "bytes":  10310,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T06-42-02-070Z\\downloads\\G6-GMV\\G6 GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "G7",
+                          "model":  "GMV",
+                          "filename":  "G7 GMV.png",
+                          "bytes":  13169,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T06-42-02-070Z\\downloads\\G7-GMV\\G7 GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "G8",
+                          "model":  "GMV",
+                          "filename":  "G8 GMV.png",
+                          "bytes":  12531,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T06-42-02-070Z\\downloads\\G8-GMV\\G8 GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "G9",
+                          "model":  "GMV",
+                          "filename":  "G9 GMV.png",
+                          "bytes":  15877,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T06-42-02-070Z\\downloads\\G9-GMV\\G9 GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "GA",
+                          "model":  "GMV",
+                          "filename":  "GA GMV.png",
+                          "bytes":  16561,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T06-42-02-070Z\\downloads\\GA-GMV\\GA GMV.png",
+                          "source":  "presign"
+                      }
+                  ],
+    "safety":  {
+                   "stoppedByLimit":  false,
+                   "note":  "Single-threaded low-rate probe. Downloads disabled unless -DownloadFiles is passed. v3.3 sends the same client headers as the web app. Downloads use presign first, then direct temporary URLs only as fallback."
+               }
+}
