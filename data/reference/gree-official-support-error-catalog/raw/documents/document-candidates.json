@@ -1,0 +1,29 @@
+{
+    "schemaVersion":  1,
+    "generatedUtc":  "2026-06-25T04:57:28.7058281Z",
+    "source":  "Gree Global After-Sales Service Center",
+    "policy":  "Reference-only document registry. Entries are not used by Telegram runtime until explicitly reviewed and approved.",
+    "entries":  [
+                    {
+                        "brand":  "Gree",
+                        "code":  "F3",
+                        "model":  "GMV",
+                        "filename":  "GMVå¤èæºF3ä½åä¼ æå¨ æ\u0085éæé¤æ¹æ³GMV VRF - F3 Low voltage sensor fault troubleshooting_met..pdf",
+                        "fileKey":  "4f47df754c7a42229f7f9b07eb27e83b.pdf",
+                        "sourceId":  1373,
+                        "documentSize":  1519963,
+                        "attachmentKind":  "document-pdf",
+                        "sourceName":  "Gree Global After-Sales Service Center",
+                        "sourceKind":  "official-support-error-code-attachment",
+                        "runFolder":  ".ae-tools/gree-support-catalog-v3/run-2026-06-25T02-40-46-528Z",
+                        "searchMetadataFile":  ".ae-tools/gree-support-catalog-v3/run-2026-06-25T02-40-46-528Z/raw/search-F3-GMV.json",
+                        "presignMetadataFile":  null,
+                        "downloadedLocalPath":  null,
+                        "presignMetadata":  null,
+                        "status":  "registered-not-downloaded",
+                        "runtimeEnabled":  false,
+                        "importedUtc":  "2026-06-25T04:57:28.6768311Z",
+                        "notes":  "Registered for manual review only. Not used by Telegram runtime."
+                    }
+                ]
+}
