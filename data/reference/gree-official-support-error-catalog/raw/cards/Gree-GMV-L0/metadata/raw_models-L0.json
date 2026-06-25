@@ -1,0 +1,15 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  [
+                 "FGR",
+                 "GMV",
+                 "FHB",
+                 "RF",
+                 "UML",
+                 "FGX",
+                 "UM",
+                 "LF",
+                 "UMD"
+             ]
+}
