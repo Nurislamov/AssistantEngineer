@@ -1,0 +1,5 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/8ad612fbc3c843d9b12ba1fc9db2f4a1.png?response-content-disposition=inline%3Bfilename%3DGd%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T080029Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=90a3179b01359eab70f9417db03004528e5005e504483b99e13ae3c984c22e62"
+}
