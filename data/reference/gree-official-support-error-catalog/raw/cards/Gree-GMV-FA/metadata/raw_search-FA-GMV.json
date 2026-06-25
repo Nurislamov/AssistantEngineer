@@ -1,0 +1,81 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  {
+                 "total":  2,
+                 "data":  [
+                              {
+                                  "operatorId":  null,
+                                  "operator":  null,
+                                  "operatorLoginId":  null,
+                                  "operation":  null,
+                                  "operationTime":  null,
+                                  "id":  896,
+                                  "scope":  1,
+                                  "nameCn":  "FA GMV",
+                                  "nameEn":  "FA GMV",
+                                  "descriptionCn":  "",
+                                  "descriptionEn":  "",
+                                  "createdBy":  null,
+                                  "userCreated":  "å´è³æ\u0085§(å½é\u0085ç®¡çé¨)",
+                                  "userModified":  "å´è³æ\u0085§(å½é\u0085ç®¡çé¨)",
+                                  "gmtCreated":  "2021-03-19 09:19:05",
+                                  "gmtModified":  "2022-08-18 15:50:14",
+                                  "delFlag":  0,
+                                  "videoList":  null,
+                                  "imageList":  [
+                                                    {
+                                                        "id":  444,
+                                                        "dataId":  896,
+                                                        "type":  2,
+                                                        "descriptionCn":  null,
+                                                        "descriptionEn":  null,
+                                                        "filename":  "FA GMV.PNG",
+                                                        "documentSize":  223739,
+                                                        "fileKey":  "b556d00d5454409aa2e958be7069f3ea.PNG",
+                                                        "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/b556d00d5454409aa2e958be7069f3ea.PNG?response-content-disposition=inline%3Bfilename%3DFA%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T051804Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=1eaea4c8d2c10947bae938c91ad8e733524bdc45bd56c07f948870bac78cb5ce"
+                                                    }
+                                                ],
+                                  "fileList":  null,
+                                  "fileKey":  null,
+                                  "fileName":  null
+                              },
+                              {
+                                  "operatorId":  null,
+                                  "operator":  null,
+                                  "operatorLoginId":  null,
+                                  "operation":  null,
+                                  "operationTime":  null,
+                                  "id":  3440,
+                                  "scope":  1,
+                                  "nameCn":  "FAP GMV",
+                                  "nameEn":  "FAP GMV",
+                                  "descriptionCn":  "",
+                                  "descriptionEn":  "",
+                                  "createdBy":  null,
+                                  "userCreated":  "221077",
+                                  "userModified":  "221077",
+                                  "gmtCreated":  "2022-09-08 03:13:54",
+                                  "gmtModified":  "2022-09-08 03:13:54",
+                                  "delFlag":  0,
+                                  "videoList":  null,
+                                  "imageList":  [
+                                                    {
+                                                        "id":  1954,
+                                                        "dataId":  3440,
+                                                        "type":  2,
+                                                        "descriptionCn":  null,
+                                                        "descriptionEn":  null,
+                                                        "filename":  "FAP GMV.jpg",
+                                                        "documentSize":  238681,
+                                                        "fileKey":  "61898dfe410a41e3b6da5c6b706f89a0.jpg",
+                                                        "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/61898dfe410a41e3b6da5c6b706f89a0.jpg?response-content-disposition=inline%3Bfilename%3DFAP%2520GMV.jpg\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T051804Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=32b3e71dbb326539ba17bfcbc7c375b3dd043044bcfa527ebffc2c03d5e9fdf8"
+                                                    }
+                                                ],
+                                  "fileList":  null,
+                                  "fileKey":  null,
+                                  "fileName":  null
+                              }
+                          ]
+             }
+}

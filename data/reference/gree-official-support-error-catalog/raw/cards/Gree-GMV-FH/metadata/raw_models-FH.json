@@ -1,0 +1,14 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  [
+                 "GMV",
+                 "GJC",
+                 "GJE",
+                 "GJH",
+                 "GVH",
+                 "GFH",
+                 "GWH",
+                 "GRS"
+             ]
+}
