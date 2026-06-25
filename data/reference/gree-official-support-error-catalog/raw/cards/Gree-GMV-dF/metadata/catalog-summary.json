@@ -1,0 +1,1211 @@
+﻿{
+    "startedUtc":  "2026-06-25T01:54:02.2407850Z",
+    "finishedUtc":  "2026-06-25T02:39:45.0608769Z",
+    "requestCount":  81,
+    "firstSymbolsDiscovered":  [
+                                   "A",
+                                   "C",
+                                   "E",
+                                   "F",
+                                   "G",
+                                   "H",
+                                   "J",
+                                   "L",
+                                   "N",
+                                   "P",
+                                   "S",
+                                   "U",
+                                   "b",
+                                   "d",
+                                   "e",
+                                   "n",
+                                   "o",
+                                   "0",
+                                   "q",
+                                   "1",
+                                   "r",
+                                   "2",
+                                   "3",
+                                   "4",
+                                   "5",
+                                   "7",
+                                   "y"
+                               ],
+    "firstSymbolsProcessed":  [
+
+                              ],
+    "codeCandidates":  [
+                           "d1",
+                           "d2",
+                           "d3",
+                           "d4",
+                           "d5",
+                           "d6",
+                           "d7",
+                           "d8",
+                           "d9",
+                           "dA",
+                           "db",
+                           "dC",
+                           "dd",
+                           "dE",
+                           "dF",
+                           "dH",
+                           "dJ",
+                           "dL",
+                           "dn",
+                           "dP"
+                       ],
+    "codeModelIndex":  [
+                           {
+                               "code":  "d1",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d2",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d3",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d4",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d5",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d6",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d7",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d8",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "d9",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dA",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "db",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dC",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dd",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dE",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dF",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dH",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dJ",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dL",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dn",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           },
+                           {
+                               "code":  "dP",
+                               "models":  [
+                                              "GMV"
+                                          ]
+                           }
+                       ],
+    "searchResults":  [
+                          {
+                              "code":  "d1",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  824,
+                                               "nameCn":  "d1 GMV",
+                                               "nameEn":  "d1 GMV",
+                                               "gmtCreated":  "2021-03-19 08:53:16",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d1",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  824,
+                                                                  "sourceId":  408,
+                                                                  "type":  "image",
+                                                                  "filename":  "d1 GMV.PNG",
+                                                                  "documentSize":  95740,
+                                                                  "fileKey":  "8e498c38d17148dea391edab5efd4826.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/8e498c38d17148dea391edab5efd4826.PNG?response-content-disposition=inline%3Bfilename%3Dd1%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020535Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8d70b9a2d1f1bd3648e5a58f2d067fbfc670dcada4368eddd6668859f6d73334",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d2",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  826,
+                                               "nameCn":  "d2 GMV",
+                                               "nameEn":  "d2 GMV",
+                                               "gmtCreated":  "2021-03-19 08:53:29",
+                                               "gmtModified":  "2023-03-02 00:46:17",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d2",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  826,
+                                                                  "sourceId":  409,
+                                                                  "type":  "image",
+                                                                  "filename":  "d2 GMV.png",
+                                                                  "documentSize":  135674,
+                                                                  "fileKey":  "dab613b266414c07891d084dc9dc70f1.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/dab613b266414c07891d084dc9dc70f1.png?response-content-disposition=inline%3Bfilename%3Dd2%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020610Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=c6b246440bed49045676beab79a071bd332fd9ccebe18787725f79613e4d5608",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d3",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  828,
+                                               "nameCn":  "d3 GMV",
+                                               "nameEn":  "d3 GMV",
+                                               "gmtCreated":  "2021-03-19 08:53:45",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d3",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  828,
+                                                                  "sourceId":  410,
+                                                                  "type":  "image",
+                                                                  "filename":  "d3 GMV.PNG",
+                                                                  "documentSize":  201363,
+                                                                  "fileKey":  "155f33ea29014b6ab12dac83b7f26243.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/155f33ea29014b6ab12dac83b7f26243.PNG?response-content-disposition=inline%3Bfilename%3Dd3%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020638Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=17ee058ae4488206f607ef1c882f56adcad550461c46ac59180d31a22b4b8b0d",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d4",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  830,
+                                               "nameCn":  "d4 GMV",
+                                               "nameEn":  "d4 GMV",
+                                               "gmtCreated":  "2021-03-19 08:54:01",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d4",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  830,
+                                                                  "sourceId":  411,
+                                                                  "type":  "image",
+                                                                  "filename":  "d4 GMV.PNG",
+                                                                  "documentSize":  207846,
+                                                                  "fileKey":  "7b816f7c49a246cabd4766036a3fedb6.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/7b816f7c49a246cabd4766036a3fedb6.PNG?response-content-disposition=inline%3Bfilename%3Dd4%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020706Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7ca41888572005632fa592c4dfa1c1635f42c626fdd2bdadcd6edd79a357c24d",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d5",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  832,
+                                               "nameCn":  "d5 GMV",
+                                               "nameEn":  "d5 GMV",
+                                               "gmtCreated":  "2021-03-19 08:54:18",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d5",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  832,
+                                                                  "sourceId":  412,
+                                                                  "type":  "image",
+                                                                  "filename":  "d5 GMV.PNG",
+                                                                  "documentSize":  14247,
+                                                                  "fileKey":  "3442f6164c0b48c5a06b8572a2783ee5.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/3442f6164c0b48c5a06b8572a2783ee5.PNG?response-content-disposition=inline%3Bfilename%3Dd5%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020746Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=339cadf8a31d3d9c0257235b56b2eaca9b2519da97f7dbf9c2305499a75b0c78",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d6",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  834,
+                                               "nameCn":  "d6 GMV",
+                                               "nameEn":  "d6 GMV",
+                                               "gmtCreated":  "2021-03-19 08:54:30",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d6",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  834,
+                                                                  "sourceId":  413,
+                                                                  "type":  "image",
+                                                                  "filename":  "d6 GMV.PNG",
+                                                                  "documentSize":  213544,
+                                                                  "fileKey":  "101ea393c29644b285ea931d141730a8.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/101ea393c29644b285ea931d141730a8.PNG?response-content-disposition=inline%3Bfilename%3Dd6%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020815Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8eec0dd10dedd601fa9492a6d248f792354e8a8f37bb5f254b3e7fa5bd287257",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d7",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  836,
+                                               "nameCn":  "d7 GMV",
+                                               "nameEn":  "d7 GMV",
+                                               "gmtCreated":  "2021-03-19 08:54:45",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d7",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  836,
+                                                                  "sourceId":  414,
+                                                                  "type":  "image",
+                                                                  "filename":  "d7 GMV.PNG",
+                                                                  "documentSize":  205708,
+                                                                  "fileKey":  "5ed69895164e4f989d0a1c83d159acc1.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/5ed69895164e4f989d0a1c83d159acc1.PNG?response-content-disposition=inline%3Bfilename%3Dd7%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020855Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8ba5bed25d80b19f0a320aeab8f4f5c75320de487059528d6b8b75626a5d4bc7",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d8",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  838,
+                                               "nameCn":  "d8 GMV",
+                                               "nameEn":  "d8 GMV",
+                                               "gmtCreated":  "2021-03-19 08:55:00",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d8",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  838,
+                                                                  "sourceId":  415,
+                                                                  "type":  "image",
+                                                                  "filename":  "d8 GMV.PNG",
+                                                                  "documentSize":  13564,
+                                                                  "fileKey":  "31496913c73f4c85b55b7d0ce563d08b.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/31496913c73f4c85b55b7d0ce563d08b.PNG?response-content-disposition=inline%3Bfilename%3Dd8%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020921Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=23ae63b4ebc57579ccd396c7c54cf6f196152846dbfb8999c9766e54a880819e",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "d9",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  840,
+                                               "nameCn":  "d9 GMV",
+                                               "nameEn":  "d9 GMV",
+                                               "gmtCreated":  "2021-03-19 08:55:14",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "d9",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  840,
+                                                                  "sourceId":  416,
+                                                                  "type":  "image",
+                                                                  "filename":  "d9 GMV.PNG",
+                                                                  "documentSize":  174567,
+                                                                  "fileKey":  "989fc11d4a4648bcb228dd47b6340cd0.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/989fc11d4a4648bcb228dd47b6340cd0.PNG?response-content-disposition=inline%3Bfilename%3Dd9%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020956Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=1bf4f9da66f5912b87e7c36e737808f09cd4c95155fd502f10dd91dcafd2cbe6",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dA",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  842,
+                                               "nameCn":  "dA GMV",
+                                               "nameEn":  "dA GMV",
+                                               "gmtCreated":  "2021-03-19 08:55:27",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dA",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  842,
+                                                                  "sourceId":  417,
+                                                                  "type":  "image",
+                                                                  "filename":  "dA GMV.PNG",
+                                                                  "documentSize":  133405,
+                                                                  "fileKey":  "1ce548f557d04b708ad00a62aa2ba09e.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/1ce548f557d04b708ad00a62aa2ba09e.PNG?response-content-disposition=inline%3Bfilename%3DdA%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021026Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a495c388389cfc34f70c3550956fb8058ea6856606577397b595412edbfbf46c",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "db",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  844,
+                                               "nameCn":  "db GMV",
+                                               "nameEn":  "db GMV",
+                                               "gmtCreated":  "2021-03-19 08:55:38",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "db",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  844,
+                                                                  "sourceId":  418,
+                                                                  "type":  "image",
+                                                                  "filename":  "db GMV.PNG",
+                                                                  "documentSize":  100690,
+                                                                  "fileKey":  "ae8720d2ede340caaddd766388ebb55f.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/ae8720d2ede340caaddd766388ebb55f.PNG?response-content-disposition=inline%3Bfilename%3Ddb%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021055Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=676344cf2f2953c55abf243c72d0d7fb62e89366bcfbb7481f0caa88ed0d4216",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dC",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  846,
+                                               "nameCn":  "dC GMV",
+                                               "nameEn":  "dC GMV",
+                                               "gmtCreated":  "2021-03-19 08:55:54",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dC",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  846,
+                                                                  "sourceId":  419,
+                                                                  "type":  "image",
+                                                                  "filename":  "dC GMV.PNG",
+                                                                  "documentSize":  160380,
+                                                                  "fileKey":  "42d08b81cbc44b26b2777336400df933.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/42d08b81cbc44b26b2777336400df933.PNG?response-content-disposition=inline%3Bfilename%3DdC%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021125Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=9e37ef28319b6af0f08ab8379d3bd8e76510ee11a176fc61cee8825b8aa1e3df",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dd",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  848,
+                                               "nameCn":  "dd GMV",
+                                               "nameEn":  "dd GMV",
+                                               "gmtCreated":  "2021-03-19 08:56:10",
+                                               "gmtModified":  "2023-03-02 00:45:07",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dd",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  848,
+                                                                  "sourceId":  420,
+                                                                  "type":  "image",
+                                                                  "filename":  "dd GMV.png",
+                                                                  "documentSize":  140194,
+                                                                  "fileKey":  "31fde1dfffbb4b2d901099fe00f13eaa.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/31fde1dfffbb4b2d901099fe00f13eaa.png?response-content-disposition=inline%3Bfilename%3Ddd%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021159Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=17a3bcb2fa0651f0d4a5f31506fa81f0934505c2a75adfbd3e98525840358bf6",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dE",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  850,
+                                               "nameCn":  "dE GMV",
+                                               "nameEn":  "dE GMV",
+                                               "gmtCreated":  "2021-03-19 08:56:27",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dE",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  850,
+                                                                  "sourceId":  421,
+                                                                  "type":  "image",
+                                                                  "filename":  "dE GMV.PNG",
+                                                                  "documentSize":  16266,
+                                                                  "fileKey":  "121a66325a684b09b96fab08aea19f12.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/121a66325a684b09b96fab08aea19f12.PNG?response-content-disposition=inline%3Bfilename%3DdE%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021238Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7b87b9e99289ce144c84f6ad7749aa8f8f391055c595ff074deb74057f423a9a",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dF",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  852,
+                                               "nameCn":  "dF GMV",
+                                               "nameEn":  "dF GMV",
+                                               "gmtCreated":  "2021-03-19 08:57:09",
+                                               "gmtModified":  "2023-03-02 00:46:06",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dF",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  852,
+                                                                  "sourceId":  422,
+                                                                  "type":  "image",
+                                                                  "filename":  "dF GMV.png",
+                                                                  "documentSize":  116234,
+                                                                  "fileKey":  "b1e63542f5854a3683e98711e5b44b07.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/b1e63542f5854a3683e98711e5b44b07.png?response-content-disposition=inline%3Bfilename%3DdF%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021307Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=44e226bb8413f609c30ec865b09c13b40570df58d6379dfb378f7f8aaf0765cf",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dH",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  854,
+                                               "nameCn":  "dH GMV",
+                                               "nameEn":  "dH GMV",
+                                               "gmtCreated":  "2021-03-19 08:57:24",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dH",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  854,
+                                                                  "sourceId":  423,
+                                                                  "type":  "image",
+                                                                  "filename":  "dH GMV.PNG",
+                                                                  "documentSize":  165668,
+                                                                  "fileKey":  "d4c564066c0f4d90a5b5e43f77eccdec.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/d4c564066c0f4d90a5b5e43f77eccdec.PNG?response-content-disposition=inline%3Bfilename%3DdH%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021339Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=40d19bd519d8c81e051f77962f968203ce0fb92909f9e63dcc6e501a0be6b2e6",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dJ",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  856,
+                                               "nameCn":  "dJ GMV",
+                                               "nameEn":  "dJ GMV",
+                                               "gmtCreated":  "2021-03-19 08:57:43",
+                                               "gmtModified":  "2023-03-02 00:45:54",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dJ",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  856,
+                                                                  "sourceId":  424,
+                                                                  "type":  "image",
+                                                                  "filename":  "dJ GMV.png",
+                                                                  "documentSize":  126404,
+                                                                  "fileKey":  "fd88c98fb55143a0bd4ec1a3526537aa.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/fd88c98fb55143a0bd4ec1a3526537aa.png?response-content-disposition=inline%3Bfilename%3DdJ%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021409Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=c9cc2fafddad28a7d1cb853aede81cbb277d11048a5d09cf0be1c45ad9a70879",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dL",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  858,
+                                               "nameCn":  "dL GMV",
+                                               "nameEn":  "dL GMV",
+                                               "gmtCreated":  "2021-03-19 08:57:55",
+                                               "gmtModified":  "2022-08-18 15:50:14",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dL",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  858,
+                                                                  "sourceId":  425,
+                                                                  "type":  "image",
+                                                                  "filename":  "dL GMV.PNG",
+                                                                  "documentSize":  205728,
+                                                                  "fileKey":  "1022677bdf054724b501d2bdae58b635.PNG",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/1022677bdf054724b501d2bdae58b635.PNG?response-content-disposition=inline%3Bfilename%3DdL%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021438Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a90f4560876eda1bdbe6f9b26e9951f1b1bd0d62d712e52e0867305cc28a2097",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dn",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  860,
+                                               "nameCn":  "dn GMV",
+                                               "nameEn":  "dn GMV",
+                                               "gmtCreated":  "2021-03-19 08:58:07",
+                                               "gmtModified":  "2023-03-02 00:44:55",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dn",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  860,
+                                                                  "sourceId":  426,
+                                                                  "type":  "image",
+                                                                  "filename":  "dn GMV.png",
+                                                                  "documentSize":  118774,
+                                                                  "fileKey":  "72e48308e8694071b8c52e54caecd449.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/72e48308e8694071b8c52e54caecd449.png?response-content-disposition=inline%3Bfilename%3Ddn%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021516Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=1bfeb7f23868c8ba8494261ad97321fe6ba35374082e2b2946d1348a5cc5c7ac",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          },
+                          {
+                              "code":  "dP",
+                              "model":  "GMV",
+                              "total":  1,
+                              "rows":  [
+                                           {
+                                               "id":  862,
+                                               "nameCn":  "dP GMV",
+                                               "nameEn":  "dP GMV",
+                                               "gmtCreated":  "2021-03-19 08:58:23",
+                                               "gmtModified":  "2023-03-02 00:45:39",
+                                               "images":  [
+                                                              {
+                                                                  "code":  "dP",
+                                                                  "model":  "GMV",
+                                                                  "rowId":  862,
+                                                                  "sourceId":  427,
+                                                                  "type":  "image",
+                                                                  "filename":  "dP GMV.png",
+                                                                  "documentSize":  120483,
+                                                                  "fileKey":  "5c0a71184d54454fb9cd945fb19eea2d.png",
+                                                                  "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/5c0a71184d54454fb9cd945fb19eea2d.png?response-content-disposition=inline%3Bfilename%3DdP%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021543Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=6768734057cc1f686f9542b024ac8b82e2398fc15fe2816ce67f84793d91ad79",
+                                                                  "urlAvailableInSearch":  true
+                                                              }
+                                                          ],
+                                               "files":  [
+
+                                                         ]
+                                           }
+                                       ]
+                          }
+                      ],
+    "fileCandidates":  [
+                           {
+                               "code":  "d1",
+                               "model":  "GMV",
+                               "rowId":  824,
+                               "sourceId":  408,
+                               "type":  "image",
+                               "filename":  "d1 GMV.PNG",
+                               "documentSize":  95740,
+                               "fileKey":  "8e498c38d17148dea391edab5efd4826.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/8e498c38d17148dea391edab5efd4826.PNG?response-content-disposition=inline%3Bfilename%3Dd1%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020535Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8d70b9a2d1f1bd3648e5a58f2d067fbfc670dcada4368eddd6668859f6d73334",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d2",
+                               "model":  "GMV",
+                               "rowId":  826,
+                               "sourceId":  409,
+                               "type":  "image",
+                               "filename":  "d2 GMV.png",
+                               "documentSize":  135674,
+                               "fileKey":  "dab613b266414c07891d084dc9dc70f1.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/dab613b266414c07891d084dc9dc70f1.png?response-content-disposition=inline%3Bfilename%3Dd2%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020610Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=c6b246440bed49045676beab79a071bd332fd9ccebe18787725f79613e4d5608",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d3",
+                               "model":  "GMV",
+                               "rowId":  828,
+                               "sourceId":  410,
+                               "type":  "image",
+                               "filename":  "d3 GMV.PNG",
+                               "documentSize":  201363,
+                               "fileKey":  "155f33ea29014b6ab12dac83b7f26243.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/155f33ea29014b6ab12dac83b7f26243.PNG?response-content-disposition=inline%3Bfilename%3Dd3%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020638Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=17ee058ae4488206f607ef1c882f56adcad550461c46ac59180d31a22b4b8b0d",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d4",
+                               "model":  "GMV",
+                               "rowId":  830,
+                               "sourceId":  411,
+                               "type":  "image",
+                               "filename":  "d4 GMV.PNG",
+                               "documentSize":  207846,
+                               "fileKey":  "7b816f7c49a246cabd4766036a3fedb6.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/7b816f7c49a246cabd4766036a3fedb6.PNG?response-content-disposition=inline%3Bfilename%3Dd4%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020706Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7ca41888572005632fa592c4dfa1c1635f42c626fdd2bdadcd6edd79a357c24d",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d5",
+                               "model":  "GMV",
+                               "rowId":  832,
+                               "sourceId":  412,
+                               "type":  "image",
+                               "filename":  "d5 GMV.PNG",
+                               "documentSize":  14247,
+                               "fileKey":  "3442f6164c0b48c5a06b8572a2783ee5.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/3442f6164c0b48c5a06b8572a2783ee5.PNG?response-content-disposition=inline%3Bfilename%3Dd5%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020746Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=339cadf8a31d3d9c0257235b56b2eaca9b2519da97f7dbf9c2305499a75b0c78",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d6",
+                               "model":  "GMV",
+                               "rowId":  834,
+                               "sourceId":  413,
+                               "type":  "image",
+                               "filename":  "d6 GMV.PNG",
+                               "documentSize":  213544,
+                               "fileKey":  "101ea393c29644b285ea931d141730a8.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/101ea393c29644b285ea931d141730a8.PNG?response-content-disposition=inline%3Bfilename%3Dd6%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020815Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8eec0dd10dedd601fa9492a6d248f792354e8a8f37bb5f254b3e7fa5bd287257",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d7",
+                               "model":  "GMV",
+                               "rowId":  836,
+                               "sourceId":  414,
+                               "type":  "image",
+                               "filename":  "d7 GMV.PNG",
+                               "documentSize":  205708,
+                               "fileKey":  "5ed69895164e4f989d0a1c83d159acc1.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/5ed69895164e4f989d0a1c83d159acc1.PNG?response-content-disposition=inline%3Bfilename%3Dd7%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020855Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=8ba5bed25d80b19f0a320aeab8f4f5c75320de487059528d6b8b75626a5d4bc7",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d8",
+                               "model":  "GMV",
+                               "rowId":  838,
+                               "sourceId":  415,
+                               "type":  "image",
+                               "filename":  "d8 GMV.PNG",
+                               "documentSize":  13564,
+                               "fileKey":  "31496913c73f4c85b55b7d0ce563d08b.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/31496913c73f4c85b55b7d0ce563d08b.PNG?response-content-disposition=inline%3Bfilename%3Dd8%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020921Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=23ae63b4ebc57579ccd396c7c54cf6f196152846dbfb8999c9766e54a880819e",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "d9",
+                               "model":  "GMV",
+                               "rowId":  840,
+                               "sourceId":  416,
+                               "type":  "image",
+                               "filename":  "d9 GMV.PNG",
+                               "documentSize":  174567,
+                               "fileKey":  "989fc11d4a4648bcb228dd47b6340cd0.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/989fc11d4a4648bcb228dd47b6340cd0.PNG?response-content-disposition=inline%3Bfilename%3Dd9%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T020956Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=1bf4f9da66f5912b87e7c36e737808f09cd4c95155fd502f10dd91dcafd2cbe6",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dA",
+                               "model":  "GMV",
+                               "rowId":  842,
+                               "sourceId":  417,
+                               "type":  "image",
+                               "filename":  "dA GMV.PNG",
+                               "documentSize":  133405,
+                               "fileKey":  "1ce548f557d04b708ad00a62aa2ba09e.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/1ce548f557d04b708ad00a62aa2ba09e.PNG?response-content-disposition=inline%3Bfilename%3DdA%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021026Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a495c388389cfc34f70c3550956fb8058ea6856606577397b595412edbfbf46c",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "db",
+                               "model":  "GMV",
+                               "rowId":  844,
+                               "sourceId":  418,
+                               "type":  "image",
+                               "filename":  "db GMV.PNG",
+                               "documentSize":  100690,
+                               "fileKey":  "ae8720d2ede340caaddd766388ebb55f.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/ae8720d2ede340caaddd766388ebb55f.PNG?response-content-disposition=inline%3Bfilename%3Ddb%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021055Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=676344cf2f2953c55abf243c72d0d7fb62e89366bcfbb7481f0caa88ed0d4216",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dC",
+                               "model":  "GMV",
+                               "rowId":  846,
+                               "sourceId":  419,
+                               "type":  "image",
+                               "filename":  "dC GMV.PNG",
+                               "documentSize":  160380,
+                               "fileKey":  "42d08b81cbc44b26b2777336400df933.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/42d08b81cbc44b26b2777336400df933.PNG?response-content-disposition=inline%3Bfilename%3DdC%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021125Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=9e37ef28319b6af0f08ab8379d3bd8e76510ee11a176fc61cee8825b8aa1e3df",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dd",
+                               "model":  "GMV",
+                               "rowId":  848,
+                               "sourceId":  420,
+                               "type":  "image",
+                               "filename":  "dd GMV.png",
+                               "documentSize":  140194,
+                               "fileKey":  "31fde1dfffbb4b2d901099fe00f13eaa.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/31fde1dfffbb4b2d901099fe00f13eaa.png?response-content-disposition=inline%3Bfilename%3Ddd%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021159Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=17a3bcb2fa0651f0d4a5f31506fa81f0934505c2a75adfbd3e98525840358bf6",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dE",
+                               "model":  "GMV",
+                               "rowId":  850,
+                               "sourceId":  421,
+                               "type":  "image",
+                               "filename":  "dE GMV.PNG",
+                               "documentSize":  16266,
+                               "fileKey":  "121a66325a684b09b96fab08aea19f12.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/121a66325a684b09b96fab08aea19f12.PNG?response-content-disposition=inline%3Bfilename%3DdE%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021238Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=7b87b9e99289ce144c84f6ad7749aa8f8f391055c595ff074deb74057f423a9a",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dF",
+                               "model":  "GMV",
+                               "rowId":  852,
+                               "sourceId":  422,
+                               "type":  "image",
+                               "filename":  "dF GMV.png",
+                               "documentSize":  116234,
+                               "fileKey":  "b1e63542f5854a3683e98711e5b44b07.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/b1e63542f5854a3683e98711e5b44b07.png?response-content-disposition=inline%3Bfilename%3DdF%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021307Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=44e226bb8413f609c30ec865b09c13b40570df58d6379dfb378f7f8aaf0765cf",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dH",
+                               "model":  "GMV",
+                               "rowId":  854,
+                               "sourceId":  423,
+                               "type":  "image",
+                               "filename":  "dH GMV.PNG",
+                               "documentSize":  165668,
+                               "fileKey":  "d4c564066c0f4d90a5b5e43f77eccdec.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/d4c564066c0f4d90a5b5e43f77eccdec.PNG?response-content-disposition=inline%3Bfilename%3DdH%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021339Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=40d19bd519d8c81e051f77962f968203ce0fb92909f9e63dcc6e501a0be6b2e6",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dJ",
+                               "model":  "GMV",
+                               "rowId":  856,
+                               "sourceId":  424,
+                               "type":  "image",
+                               "filename":  "dJ GMV.png",
+                               "documentSize":  126404,
+                               "fileKey":  "fd88c98fb55143a0bd4ec1a3526537aa.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/fd88c98fb55143a0bd4ec1a3526537aa.png?response-content-disposition=inline%3Bfilename%3DdJ%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021409Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=c9cc2fafddad28a7d1cb853aede81cbb277d11048a5d09cf0be1c45ad9a70879",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dL",
+                               "model":  "GMV",
+                               "rowId":  858,
+                               "sourceId":  425,
+                               "type":  "image",
+                               "filename":  "dL GMV.PNG",
+                               "documentSize":  205728,
+                               "fileKey":  "1022677bdf054724b501d2bdae58b635.PNG",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/1022677bdf054724b501d2bdae58b635.PNG?response-content-disposition=inline%3Bfilename%3DdL%2520GMV.PNG\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021438Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=a90f4560876eda1bdbe6f9b26e9951f1b1bd0d62d712e52e0867305cc28a2097",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dn",
+                               "model":  "GMV",
+                               "rowId":  860,
+                               "sourceId":  426,
+                               "type":  "image",
+                               "filename":  "dn GMV.png",
+                               "documentSize":  118774,
+                               "fileKey":  "72e48308e8694071b8c52e54caecd449.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/72e48308e8694071b8c52e54caecd449.png?response-content-disposition=inline%3Bfilename%3Ddn%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021516Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=1bfeb7f23868c8ba8494261ad97321fe6ba35374082e2b2946d1348a5cc5c7ac",
+                               "urlAvailableInSearch":  true
+                           },
+                           {
+                               "code":  "dP",
+                               "model":  "GMV",
+                               "rowId":  862,
+                               "sourceId":  427,
+                               "type":  "image",
+                               "filename":  "dP GMV.png",
+                               "documentSize":  120483,
+                               "fileKey":  "5c0a71184d54454fb9cd945fb19eea2d.png",
+                               "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/5c0a71184d54454fb9cd945fb19eea2d.png?response-content-disposition=inline%3Bfilename%3DdP%2520GMV.png\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T021543Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=6768734057cc1f686f9542b024ac8b82e2398fc15fe2816ce67f84793d91ad79",
+                               "urlAvailableInSearch":  true
+                           }
+                       ],
+    "downloads":  [
+                      {
+                          "code":  "d1",
+                          "model":  "GMV",
+                          "filename":  "d1 GMV.PNG",
+                          "bytes":  95740,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d1-GMV\\d1 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d2",
+                          "model":  "GMV",
+                          "filename":  "d2 GMV.png",
+                          "bytes":  135674,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d2-GMV\\d2 GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d3",
+                          "model":  "GMV",
+                          "filename":  "d3 GMV.PNG",
+                          "bytes":  201363,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d3-GMV\\d3 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d4",
+                          "model":  "GMV",
+                          "filename":  "d4 GMV.PNG",
+                          "bytes":  207846,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d4-GMV\\d4 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d5",
+                          "model":  "GMV",
+                          "filename":  "d5 GMV.PNG",
+                          "bytes":  14247,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d5-GMV\\d5 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d6",
+                          "model":  "GMV",
+                          "filename":  "d6 GMV.PNG",
+                          "bytes":  213544,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d6-GMV\\d6 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d7",
+                          "model":  "GMV",
+                          "filename":  "d7 GMV.PNG",
+                          "bytes":  205708,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d7-GMV\\d7 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d8",
+                          "model":  "GMV",
+                          "filename":  "d8 GMV.PNG",
+                          "bytes":  13564,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d8-GMV\\d8 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "d9",
+                          "model":  "GMV",
+                          "filename":  "d9 GMV.PNG",
+                          "bytes":  174567,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\d9-GMV\\d9 GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dA",
+                          "model":  "GMV",
+                          "filename":  "dA GMV.PNG",
+                          "bytes":  133405,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dA-GMV\\dA GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "db",
+                          "model":  "GMV",
+                          "filename":  "db GMV.PNG",
+                          "bytes":  100690,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\db-GMV\\db GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dC",
+                          "model":  "GMV",
+                          "filename":  "dC GMV.PNG",
+                          "bytes":  160380,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dC-GMV\\dC GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dd",
+                          "model":  "GMV",
+                          "filename":  "dd GMV.png",
+                          "bytes":  140194,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dd-GMV\\dd GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dE",
+                          "model":  "GMV",
+                          "filename":  "dE GMV.PNG",
+                          "bytes":  16266,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dE-GMV\\dE GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dF",
+                          "model":  "GMV",
+                          "filename":  "dF GMV.png",
+                          "bytes":  116234,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dF-GMV\\dF GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dH",
+                          "model":  "GMV",
+                          "filename":  "dH GMV.PNG",
+                          "bytes":  165668,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dH-GMV\\dH GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dJ",
+                          "model":  "GMV",
+                          "filename":  "dJ GMV.png",
+                          "bytes":  126404,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dJ-GMV\\dJ GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dL",
+                          "model":  "GMV",
+                          "filename":  "dL GMV.PNG",
+                          "bytes":  205728,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dL-GMV\\dL GMV.PNG",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dn",
+                          "model":  "GMV",
+                          "filename":  "dn GMV.png",
+                          "bytes":  118774,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dn-GMV\\dn GMV.png",
+                          "source":  "presign"
+                      },
+                      {
+                          "code":  "dP",
+                          "model":  "GMV",
+                          "filename":  "dP GMV.png",
+                          "bytes":  120483,
+                          "path":  "D:\\Project\\AssistantEngineer\\.ae-tools\\gree-support-catalog-v3\\run-2026-06-25T01-54-02-231Z\\downloads\\dP-GMV\\dP GMV.png",
+                          "source":  "presign"
+                      }
+                  ],
+    "safety":  {
+                   "stoppedByLimit":  false,
+                   "note":  "Single-threaded low-rate probe. Downloads disabled unless -DownloadFiles is passed. v3.3 sends the same client headers as the web app. Downloads use presign first, then direct temporary URLs only as fallback."
+               }
+}

@@ -1,0 +1,45 @@
+﻿{
+    "code":  200,
+    "msg":  null,
+    "data":  {
+                 "total":  1,
+                 "data":  [
+                              {
+                                  "operatorId":  null,
+                                  "operator":  null,
+                                  "operatorLoginId":  null,
+                                  "operation":  null,
+                                  "operationTime":  null,
+                                  "id":  22760,
+                                  "scope":  1,
+                                  "nameCn":  "F2 GMV",
+                                  "nameEn":  "F2 GMV",
+                                  "descriptionCn":  "",
+                                  "descriptionEn":  "",
+                                  "createdBy":  null,
+                                  "userCreated":  "å´è³æ\u0085§(æ ¼åå½é\u0085)",
+                                  "userModified":  "å´è³æ\u0085§(æ ¼åå½é\u0085)",
+                                  "gmtCreated":  "2025-12-15 05:55:03",
+                                  "gmtModified":  "2025-12-15 05:55:03",
+                                  "delFlag":  0,
+                                  "videoList":  null,
+                                  "imageList":  [
+                                                    {
+                                                        "id":  23478,
+                                                        "dataId":  22760,
+                                                        "type":  2,
+                                                        "descriptionCn":  null,
+                                                        "descriptionEn":  null,
+                                                        "filename":  "F2 GMV.jpg",
+                                                        "documentSize":  325754,
+                                                        "fileKey":  "92b92ab406b545b38644db1b2dfce6db.jpg",
+                                                        "url":  "https://gree-overseas-prod.s3.ap-southeast-1.amazonaws.com/data-storage/92b92ab406b545b38644db1b2dfce6db.jpg?response-content-disposition=inline%3Bfilename%3DF2%2520GMV.jpg\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Date=20260625T030135Z\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Expires=180\u0026X-Amz-Credential=AKIA24UVFLZ5K6WRSD6A%2F20260625%2Fap-southeast-1%2Fs3%2Faws4_request\u0026X-Amz-Signature=e462478c8aa2a535dd9e866ebad585f17d6ef9d5b46d1d92c0bcee86ddc464d8"
+                                                    }
+                                                ],
+                                  "fileList":  null,
+                                  "fileKey":  null,
+                                  "fileName":  null
+                              }
+                          ]
+             }
+}
