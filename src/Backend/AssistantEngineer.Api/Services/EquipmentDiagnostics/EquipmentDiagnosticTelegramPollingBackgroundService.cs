@@ -81,12 +81,14 @@ public sealed class EquipmentDiagnosticTelegramPollingBackgroundService : Backgr
             }
 
             _logger.LogWarning(
-                "Telegram polling update completed with retryable failure status. UpdateId: {UpdateId}; ChatType: {ChatType}; Status: {Status}.",
+                "Telegram polling update completed with retryable failure status and was skipped to keep polling offset moving. UpdateId: {UpdateId}; ChatType: {ChatType}; Status: {Status}.",
                 update.UpdateId,
                 SafeChatType(update.Message?.Chat?.Type ?? update.CallbackQuery?.Message?.Chat?.Type),
                 result.Status);
-            throw new InvalidOperationException(
-                $"Telegram update processing returned retryable status {result.Status}.");
+            await MarkProcessedMessageAsync(update, cancellationToken);
+            await _offsetStore.SaveLastProcessedUpdateIdAsync(update.UpdateId, cancellationToken);
+            currentLastProcessed = update.UpdateId;
+            continue;
         }
 
         return currentLastProcessed;

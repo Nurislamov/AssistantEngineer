@@ -389,24 +389,57 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
     }
 
     [Fact]
-    public async Task RetryableFailureStatusDoesNotAdvanceOffsetOrMarkMessage()
+    public async Task RetryableFailureStatusAdvancesOffsetAndMarksMessageAsSkipped()
     {
         var processedStore = new FakeProcessedMessageStore();
         var offsetStore = new FakeOffsetStore();
+        var handler = new FakeWebhookHandler
+        {
+            ResultStatus = EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed
+        };
         var service = CreateService(
             EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
             new FakeInboundClient([Update(11, "private", chatId: 3, messageId: 7)], false),
-            new FakeWebhookHandler
-            {
-                ResultStatus = EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed
-            },
+            handler,
             offsetStore,
             processedStore);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => service.PollOnceAsync(10));
+        var lastProcessed = await service.PollOnceAsync(10);
 
-        Assert.Null(offsetStore.LastSavedUpdateId);
-        Assert.False(await processedStore.IsProcessedMessageAsync(3, 7));
+        Assert.Equal(11, lastProcessed);
+        Assert.Equal(11, offsetStore.LastSavedUpdateId);
+        Assert.Equal([11], handler.HandledUpdateIds);
+        Assert.True(await processedStore.IsProcessedMessageAsync(3, 7));
+    }
+
+    [Fact]
+    public async Task PollOnceContinuesAfterOutboundFailedUpdateAndProcessesNextUpdate()
+    {
+        var processedStore = new FakeProcessedMessageStore();
+        var offsetStore = new FakeOffsetStore();
+        var handler = new FakeWebhookHandler();
+        handler.ResultStatusByUpdateId[11] = EquipmentDiagnosticTelegramWebhookStatus.OutboundFailed;
+        handler.ResultStatusByUpdateId[12] = EquipmentDiagnosticTelegramWebhookStatus.Processed;
+
+        var service = CreateService(
+            EnabledOptions() with { InboundMode = EquipmentDiagnosticTelegramInboundMode.Polling },
+            new FakeInboundClient(
+                [
+                    Update(11, "group", chatId: -100, messageId: 700, text: "Gree H5"),
+                    Update(12, "private", chatId: 3, messageId: 701, text: "Gree H5")
+                ],
+                false),
+            handler,
+            offsetStore,
+            processedStore);
+
+        var lastProcessed = await service.PollOnceAsync(10);
+
+        Assert.Equal(12, lastProcessed);
+        Assert.Equal(12, offsetStore.LastSavedUpdateId);
+        Assert.Equal([11, 12], handler.HandledUpdateIds);
+        Assert.True(await processedStore.IsProcessedMessageAsync(-100, 700));
+        Assert.True(await processedStore.IsProcessedMessageAsync(3, 701));
     }
 
     [Fact]
@@ -561,6 +594,7 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
         public bool ThrowOnFirstHandle { get; init; }
         public EquipmentDiagnosticTelegramWebhookStatus ResultStatus { get; init; } =
             EquipmentDiagnosticTelegramWebhookStatus.Processed;
+        public Dictionary<long, EquipmentDiagnosticTelegramWebhookStatus> ResultStatusByUpdateId { get; } = [];
 
         public Task<EquipmentDiagnosticTelegramWebhookResult> HandleAsync(
             TelegramWebhookUpdateDto update,
@@ -581,8 +615,11 @@ public sealed class EquipmentDiagnosticTelegramPollingTests
             }
 
             HandledUpdateIds.Add(update.UpdateId);
+            var status = ResultStatusByUpdateId.TryGetValue(update.UpdateId, out var configuredStatus)
+                ? configuredStatus
+                : ResultStatus;
             return Task.FromResult(new EquipmentDiagnosticTelegramWebhookResult(
-                ResultStatus,
+                status,
                 "Processed."));
         }
     }
