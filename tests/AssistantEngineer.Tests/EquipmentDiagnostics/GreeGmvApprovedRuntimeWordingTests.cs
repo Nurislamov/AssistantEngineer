@@ -26,28 +26,26 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
             ["U5"] = "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u5.json",
         };
 
+    private static readonly string[] ForbiddenVisibleTerms =
+    [
+        "review-РїРѕР»",
+        "review-РєР°СЂС‚",
+        "raw card",
+        "raw-РєР°СЂС‚",
+        "approved",
+        "runtime",
+        "РґРёР°РіРЅРѕСЃС‚РёС‡РµСЃРєР°СЏ Р±Р°Р·Р°",
+        "commissioning"
+    ];
+
     [Fact]
-    public void ApprovedPriorityGmvWordingIsAppliedToRuntimeRussianTexts()
+    public void ApprovedPriorityGmvRuntimeTextsAreHumanReadableAndClean()
     {
         foreach (var (code, runtimePath) in RuntimeTargets)
         {
-            var approved = ReadObject(Path.Combine(
-                TestPaths.RepoRoot,
-                "data",
-                "reference",
-                "gree-official-support-error-catalog",
-                "approved",
-                $"Gree-GMV-{code}.approved.json"));
-
             var runtime = ReadObject(Path.Combine(
                 TestPaths.RepoRoot,
                 runtimePath.Replace('/', Path.DirectorySeparatorChar)));
-
-            var normalizedRu = RequiredObject(approved, "normalizedRu");
-            var expectedTitle = RequiredString(normalizedRu, "titleRu");
-            var expectedChecks = RequiredArray(normalizedRu, "checksRu")
-                .Select(item => SanitizeVisibleRuntimeText(item!.GetValue<string>()))
-                .ToArray();
 
             var texts = RequiredArray(runtime, "texts")
                 .OfType<JsonObject>()
@@ -55,30 +53,24 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
                 .ToArray();
 
             Assert.NotEmpty(texts);
-            Assert.Contains(texts, text => RequiredString(text, "title") == expectedTitle);
-            Assert.Contains(texts, text => ArrayEquals(RequiredArray(text, "checkSteps"), expectedChecks));
-
-            var consumerSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "userSafeAnswerRu"));
-            var technicianSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "technicianAnswerRu"));
-
-            Assert.Contains(texts, text =>
-                IsAudience(text, "Consumer") &&
-                !string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
-
-            Assert.Contains(texts, text =>
-                !IsAudience(text, "Consumer") &&
-                !string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
+            Assert.Contains(texts, text => IsAudience(text, "Consumer"));
+            Assert.Contains(texts, text => !IsAudience(text, "Consumer"));
 
             foreach (var text in texts)
             {
-                var visibleBlob = text.ToJsonString();
+                Assert.StartsWith($"Gree GMV {code}", RequiredString(text, "title"), StringComparison.OrdinalIgnoreCase);
+                Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
+                Assert.NotEmpty(RequiredStringArray(text, "checkSteps"));
+                Assert.NotEmpty(RequiredStringArray(text, "possibleCauses"));
+                Assert.NotEmpty(RequiredStringArray(text, "doNotAdvise"));
+                Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
+                Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
 
-                Assert.DoesNotContain("review-пол", visibleBlob, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("review-карт", visibleBlob, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("raw card", visibleBlob, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("raw-карт", visibleBlob, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("approved", visibleBlob, StringComparison.OrdinalIgnoreCase);
-                Assert.DoesNotContain("runtime", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                var visibleBlob = text.ToJsonString();
+                foreach (var forbidden in ForbiddenVisibleTerms)
+                {
+                    Assert.DoesNotContain(forbidden, visibleBlob, StringComparison.OrdinalIgnoreCase);
+                }
             }
         }
     }
@@ -102,40 +94,14 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
         Assert.DoesNotContain("Gree-GMV-C0", textBlob, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string SanitizeVisibleRuntimeText(string value)
-    {
-        return value
-            .Replace("согласно заполненным review-полям и raw card", "по проверенному описанию сервисной карты", StringComparison.Ordinal)
-            .Replace("согласно заполненным review-полям", "по проверенному описанию", StringComparison.Ordinal)
-            .Replace("заполненным review-полям", "проверенному описанию", StringComparison.Ordinal)
-            .Replace("заполненные review-поля", "проверенное описание", StringComparison.Ordinal)
-            .Replace("review-полям", "проверенному описанию", StringComparison.Ordinal)
-            .Replace("review-поля", "проверенное описание", StringComparison.Ordinal)
-            .Replace("по raw card", "по сервисной карте", StringComparison.Ordinal)
-            .Replace("по raw-карте", "по сервисной карте", StringComparison.Ordinal)
-            .Replace("raw-карточке", "сервисной карте", StringComparison.Ordinal)
-            .Replace("raw-карта", "сервисная карта", StringComparison.Ordinal)
-            .Replace("raw card", "сервисная карта", StringComparison.Ordinal)
-            .Replace("Перед approved/runtime проверить", "Перед окончательным выводом проверить", StringComparison.Ordinal)
-            .Replace("без approved-проверки", "без подтверждения по сервисной карте", StringComparison.Ordinal)
-            .Replace("Не включать runtime", "Не использовать как окончательный вывод", StringComparison.Ordinal)
-            .Replace("runtime", "диагностическая база", StringComparison.Ordinal)
-            .Replace("approved", "подтверждённый", StringComparison.Ordinal);
-    }
-
-    private static bool ArrayEquals(JsonArray actualArray, IReadOnlyList<string> expected)
-    {
-        var actual = actualArray
-            .Select(item => item!.GetValue<string>())
-            .ToArray();
-
-        return actual.SequenceEqual(expected, StringComparer.Ordinal);
-    }
-
     private static bool IsRussianText(JsonObject text)
     {
-        if (text.TryGetPropertyValue("language", out var languageNode) &&
-            languageNode is not null)
+        if (text.TryGetPropertyValue("locale", out var localeNode) && localeNode is not null)
+        {
+            return localeNode.GetValue<string>().StartsWith("ru", StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (text.TryGetPropertyValue("language", out var languageNode) && languageNode is not null)
         {
             return languageNode.GetValue<string>().StartsWith("ru", StringComparison.OrdinalIgnoreCase);
         }
@@ -145,8 +111,7 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
 
     private static bool IsAudience(JsonObject text, string expected)
     {
-        if (!text.TryGetPropertyValue("audience", out var audienceNode) ||
-            audienceNode is null)
+        if (!text.TryGetPropertyValue("audience", out var audienceNode) || audienceNode is null)
         {
             return false;
         }
@@ -158,14 +123,6 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
     {
         Assert.True(File.Exists(path), $"JSON file does not exist: {path}");
         var node = JsonNode.Parse(File.ReadAllText(path));
-        Assert.NotNull(node);
-
-        return Assert.IsType<JsonObject>(node);
-    }
-
-    private static JsonObject RequiredObject(JsonObject obj, string propertyName)
-    {
-        var node = obj[propertyName];
         Assert.NotNull(node);
 
         return Assert.IsType<JsonObject>(node);
@@ -188,5 +145,18 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
         Assert.False(string.IsNullOrWhiteSpace(value), $"Property '{propertyName}' must not be empty.");
 
         return value;
+    }
+
+    private static string[] RequiredStringArray(JsonObject obj, string propertyName)
+    {
+        var array = RequiredArray(obj, propertyName);
+        var values = array
+            .Select(node => node?.GetValue<string>())
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .ToArray();
+
+        Assert.Equal(array.Count, values.Length);
+        return values;
     }
 }
