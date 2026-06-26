@@ -25,7 +25,26 @@
                                             "filename":  "A0 GMV.PNG",
                                             "documentSize":  67375,
                                             "fileKey":  "fcc1142138e244ba9a21b07f8022a27e.PNG"
-                                        }
+                                        },
+                   "sourceKind":  "official-support-error-code-card",
+                   "rawFolderPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_models-A0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_presign-A0-GMV-A0 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_search-A0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
                },
     "extraction":  {
                        "status":  "extracted",
@@ -77,5 +96,16 @@
                             "noUnsupportedClaims":  true,
                             "approvedForRuntime":  false
                         },
-    "notes":  "Draft review template. Raw official card remains reference-only until approved."
+    "notes":  "Draft review template. Raw official card remains reference-only until approved.",
+    "status":  "review-draft",
+    "review":  {
+                   "needsHumanReview":  true,
+                   "approved":  false,
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted"
+               },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  false,
+                     "diagnosticsRuntimeEnabled":  false
+                 }
 }
