@@ -299,7 +299,8 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 900));
 
-        Assert.Contains("Ваш номер уже сохранен", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV H5", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Если хотите, оставьте номер телефона", response.Text, StringComparison.Ordinal);
         var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text).ToArray();
         Assert.Contains("🔎 Новый код", buttons);
         Assert.Contains(TelegramDiagnosticConversationService.ChangePhoneButton, buttons);

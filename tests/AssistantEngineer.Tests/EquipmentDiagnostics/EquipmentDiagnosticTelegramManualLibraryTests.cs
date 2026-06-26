@@ -258,8 +258,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain(" IDU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" ODU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" IDU", o1.Text, StringComparison.Ordinal);
-        Assert.Contains("внутренним блоком", c0.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("наружным блоком", c0.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("внутреннего блока", c0.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("наружного блока", c0.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("шины внутреннего блока", o1.Text, StringComparison.OrdinalIgnoreCase);
     }
 
