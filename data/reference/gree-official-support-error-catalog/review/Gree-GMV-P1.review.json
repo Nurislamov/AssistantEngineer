@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "P1",
@@ -27,30 +27,38 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV P1 — ненормальная работа платы привода компрессора",
+                         "meaningRu":  "P1 на проводном пульте указывает на ненормальную работу компрессорного драйвера. Для уточнения причины нужно смотреть код на двухразрядном индикаторе главной платы наружного блока.",
+                         "severityRu":  "Высокая: диагностика компрессорного привода наружного блока.",
                          "possibleCausesRu":  [
-
+                                                  "P5 на плате наружного блока: защита инверторного компрессора по сверхтоку.",
+                                                  "P6 на плате наружного блока: защита IPM-модуля привода компрессора.",
+                                                  "C2 на плате наружного блока: неисправность связи привода компрессора."
                                               ],
                          "checksRu":  [
-
+                                          "Считать 2-digit LED код на главной плате наружного блока.",
+                                          "Если отображается P5, проверять условия сверхтока инверторного компрессора.",
+                                          "Если отображается P6, проверять IPM-модуль/цепь привода.",
+                                          "Если отображается C2, проверять связь компрессорного драйвера."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "Raw card: Malfunctioning Compressor Drive Board.",
+                                                "Troubleshooting выполняется по коду, отображаемому на главной плате наружного блока."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "P1 относится к плате привода компрессора. Для точной диагностики нужно посмотреть дополнительный код на плате наружного блока.",
+                         "technicianAnswerRu":  "При P1 считать код на 2-digit LED главной платы наружного блока. Возможные направления по raw card: P5 сверхток инверторного компрессора, P6 защита IPM-модуля, C2 связь компрессорного драйвера."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

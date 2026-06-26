@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "U3",
@@ -27,30 +27,40 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV U3 — защита по фазировке питания",
+                         "meaningRu":  "Код U3 возникает при неправильном подключении трёхфазного питания, пропадании фазы или обратной последовательности фаз.",
+                         "severityRu":  "Высокая: требуется проверка электропитания.",
                          "possibleCausesRu":  [
-
+                                                  "Неправильно подключено питание наружного блока.",
+                                                  "Пропала одна из фаз.",
+                                                  "Неверная последовательность фаз.",
+                                                  "Неисправна цепь контроля питания."
                                               ],
                          "checksRu":  [
-
+                                          "Проверить трёхфазное питание наружного блока.",
+                                          "Проверить наличие всех фаз.",
+                                          "Проверить и при необходимости исправить последовательность фаз.",
+                                          "Если питание корректное, проверить цепь контроля и главную плату."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "Fault display: главная плата наружного блока, проводной пульт, приёмная плата внутреннего блока.",
+                                                "Работы с трёхфазным питанием выполнять только квалифицированному специалисту.",
+                                                "По raw card при подозрении на неисправность detection circuit — replace the main control board."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "U3 означает проблему с трёхфазным питанием: возможна потеря фазы или неправильная последовательность фаз. Это должен проверять электрик или сервисный специалист.",
+                         "technicianAnswerRu":  "При U3 проверить правильность подключения трёхфазного питания, наличие всех фаз и фазировку. Если питание в норме, проверить цепь детекции; при её неисправности по карте предусмотрена замена main control board."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

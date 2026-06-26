@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "U5",
@@ -27,30 +27,38 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV U5 — ошибка адреса платы привода компрессора",
+                         "meaningRu":  "Карточка указывает на неправильный адрес платы привода компрессора.",
+                         "severityRu":  "Требуется сервисная проверка адресации платы привода компрессора.",
                          "possibleCausesRu":  [
-
+                                                  "Неверно задан адрес платы привода компрессора.",
+                                                  "Адрес платы привода не соответствует требуемой конфигурации наружного блока.",
+                                                  "Возможна ошибка настройки или замены платы привода."
                                               ],
                          "checksRu":  [
-
+                                          "Проверить адрес/настройку платы привода компрессора по сервисной документации конкретной модели.",
+                                          "Проверить соответствие платы привода компрессора наружному блоку.",
+                                          "После корректировки адресации выполнить перезапуск согласно сервисной процедуре."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "Raw card содержит только краткое описание: Wrong address for driving board of compressor.",
+                                                "Для approved-версии желательно дополнить данные из сервисного мануала конкретной серии.",
+                                                "Не включать в runtime без дополнительной проверки."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "U5 означает ошибку адреса платы привода компрессора. Это настройка внутри наружного блока, её должен проверять сервисный специалист.",
+                         "technicianAnswerRu":  "При U5 проверить адресацию/настройку compressor driving board и соответствие установленной платы конфигурации наружного блока. Карточка содержит только краткое описание, поэтому перед approved/runtime требуется сверка с сервисным мануалом конкретной серии."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

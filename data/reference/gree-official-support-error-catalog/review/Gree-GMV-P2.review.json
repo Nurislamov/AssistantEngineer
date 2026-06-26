@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "P2",
@@ -27,30 +27,38 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV P2 — защита входного напряжения платы привода компрессора",
+                         "meaningRu":  "P2 указывает на защиту входного напряжения компрессорного драйвера. Конкретная причина уточняется по двухразрядному индикатору главной платы наружного блока.",
+                         "severityRu":  "Высокая: проверка питания и DC-шины компрессорного привода.",
                          "possibleCausesRu":  [
-
+                                                  "PH на плате наружного блока: перенапряжение DC-шины привода компрессора.",
+                                                  "PL на плате наружного блока: пониженное напряжение DC-шины привода компрессора."
                                               ],
                          "checksRu":  [
-
+                                          "Считать код на двухразрядном индикаторе главной платы наружного блока.",
+                                          "При PH проверять условия перенапряжения DC-шины привода.",
+                                          "При PL проверять условия пониженного напряжения DC-шины привода.",
+                                          "Проверять питание наружного блока и цепи компрессорного драйвера согласно сервисной процедуре."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "P2 на пульте является групповой ошибкой.",
+                                                "Raw card: Input Voltage Protection for the Compressor Drive Board.",
+                                                "Troubleshooting выполняется по faults displayed on the main board of the outdoor unit."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "P2 связан с защитой по напряжению платы привода компрессора. Нужно проверить питание наружного блока и дополнительный код на плате наружного блока.",
+                         "technicianAnswerRu":  "При P2 считать наружный 2-digit LED код. Если PH — проверять перенапряжение DC bus компрессорного драйвера; если PL — пониженное напряжение DC bus. Дальше выполнять диагностику питания и цепей драйвера."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

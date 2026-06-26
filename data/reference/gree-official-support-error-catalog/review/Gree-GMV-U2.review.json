@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "U2",
@@ -27,30 +27,39 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV U2 — ошибка настройки мощности наружного блока DIP-переключателем или перемычкой",
+                         "meaningRu":  "Главная плата наружного блока обнаружила несоответствие настройки мощности фактической мощности блока или несоответствие значения перемычки фактической конфигурации.",
+                         "severityRu":  "Требуется проверка настроек наружного блока перед эксплуатацией.",
                          "possibleCausesRu":  [
-
+                                                  "Неверная настройка DIP-переключателя мощности или перемычки.",
+                                                  "DIP-переключатель или перемычка повреждены.",
+                                                  "Неисправна цепь определения настройки."
                                               ],
                          "checksRu":  [
-
+                                          "Сверить положение DIP-переключателя мощности или перемычки с фактической моделью/мощностью наружного блока.",
+                                          "Отключить питание перед изменением DIP-переключателя или перемычки.",
+                                          "Выставить корректную настройку или заменить правильную перемычку, затем снова подать питание.",
+                                          "Если настройка корректная, проверить цепь определения и главную плату."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "Applicable models: all outdoor units.",
+                                                "Для некоторых моделей без jumper cap ошибка перемычки может не определяться.",
+                                                "По raw card при подозрении на неисправность цепи — replace the main control board."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "U2 означает ошибку настройки мощности наружного блока. Нужно проверить DIP-переключатели или перемычки на плате наружного блока и сверить их с моделью.",
+                         "technicianAnswerRu":  "При U2 сверить capacity DIP switch / jumper cap на main board с фактической мощностью и моделью наружного блока. Менять настройки только при снятом питании. Если настройки правильные, проверить цепь определения; при её неисправности рассматривается замена главной платы."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

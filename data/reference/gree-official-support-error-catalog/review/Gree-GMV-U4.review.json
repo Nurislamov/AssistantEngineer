@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "U4",
@@ -27,30 +27,38 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV U4 — защита по недостатку хладагента",
+                         "meaningRu":  "Система оценивает давление по датчикам высокого и низкого давления. Перед запуском, если давление не соответствует ожидаемым условиям относительно температуры окружающей среды, блок может уйти в защиту и не запускаться.",
+                         "severityRu":  "Требуется проверка холодильного контура.",
                          "possibleCausesRu":  [
-
+                                                  "Недостаточное количество хладагента в системе.",
+                                                  "Утечка в трубопроводах или холодильном контуре."
                                               ],
                          "checksRu":  [
-
+                                          "Проверить соответствие заправки хладагентом проектным требованиям.",
+                                          "Проверить систему на утечки.",
+                                          "Устранить утечки и выполнить корректную дозаправку по сервисной процедуре.",
+                                          "Проверить показания датчиков давления при необходимости."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "Raw card: Refrigerant Loss Protection.",
+                                                "В карточке указано, что защита может не разрешать запуск для safety purpose.",
+                                                "Не сводить диагностику только к дозаправке: сначала исключить утечки и ошибки измерения давления."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "U4 указывает на защиту по недостатку хладагента или возможной утечке. Нужно проверить заправку и герметичность системы.",
+                         "technicianAnswerRu":  "При U4 проверить фактическую заправку относительно проектных требований, выполнить поиск утечек трубопроводов/контура, устранить утечки и заправить по процедуре. При спорных показаниях дополнительно проверить датчики давления."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",

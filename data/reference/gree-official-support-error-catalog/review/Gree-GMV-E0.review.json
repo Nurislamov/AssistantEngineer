@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "status":  "review-template",
+    "status":  "review-draft",
     "brand":  "Gree",
     "model":  "GMV",
     "code":  "E0",
@@ -27,30 +27,38 @@
                                           ]
                },
     "normalizedRu":  {
-                         "titleRu":  "",
-                         "meaningRu":  "",
-                         "severityRu":  "",
+                         "titleRu":  "Gree GMV E0 — неисправность наружного блока",
+                         "meaningRu":  "Код E0 на внутреннем пульте означает, что наружный блок сообщил неисправность. Конкретную причину нужно уточнять по коду на двухразрядном индикаторе главной платы наружного блока.",
+                         "severityRu":  "Требуется диагностика наружного блока сервисным специалистом.",
                          "possibleCausesRu":  [
-
+                                                  "Неисправность наружного блока.",
+                                                  "Внутренний пульт показывает общий код, а конкретный под-код находится на главной плате наружного блока.",
+                                                  "Дальнейшая причина зависит от кода на двухразрядном индикаторе наружного блока."
                                               ],
                          "checksRu":  [
-
+                                          "Проверить двухразрядный индикатор/LED на главной плате наружного блока.",
+                                          "Записать точный код, который отображается на наружной плате.",
+                                          "Продолжить диагностику по конкретному коду наружного блока."
                                       ],
                          "serviceNotesRu":  [
-
+                                                "E0 не является финальной причиной неисправности.",
+                                                "Не заменять узлы только по E0 без чтения кода с платы наружного блока.",
+                                                "Raw card: Malfunction of ODU."
                                             ],
-                         "userSafeAnswerRu":  "",
-                         "technicianAnswerRu":  ""
+                         "userSafeAnswerRu":  "E0 означает, что внутренний пульт видит неисправность наружного блока. Нужен точный код с индикатора на главной плате наружного блока — по нему определяется дальнейшая диагностика.",
+                         "technicianAnswerRu":  "При E0 сначала считать код на двухразрядном индикаторе главной платы наружного блока. E0 на внутреннем пульте является общим указателем на fault ODU; дальнейшие действия выполнять по конкретному наружному под-коду."
                      },
     "review":  {
                    "needsHumanReview":  true,
-                   "confidence":  "template",
-                   "extractionStatus":  "not-started",
+                   "confidence":  "draft",
+                   "extractionStatus":  "drafted-from-raw-card",
                    "approved":  false,
                    "approvedBy":  "",
                    "approvedUtc":  "",
                    "notes":  [
-
+                                 "ED-24GEC.3C priority draft extracted from official raw card image.",
+                                 "Needs human engineering review before approval.",
+                                 "Do not enable Telegram runtime from review catalog."
                              ],
                    "warnings":  [
                                     "Template only. Do not use in Telegram runtime.",
