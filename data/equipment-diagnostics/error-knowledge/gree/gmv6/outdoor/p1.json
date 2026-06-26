@@ -105,7 +105,7 @@
                       "id":  "gree-gmv6-outdoor-p1-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV P1 — ненормальная работа платы привода компрессора",
-                      "summary":  "При P1 считать код на 2-digit LED главной платы наружного блока. Возможные направления по raw card: P5 сверхток инверторного компрессора, P6 защита IPM-модуля, C2 связь компрессорного драйвера.",
+                      "summary":  "При P1 считать код на 2-digit LED главной платы наружного блока. Возможные направления по сервисной карте: P5 сверхток инверторного компрессора, P6 защита IPM-модуля, C2 связь компрессорного драйвера.",
                       "safetyNote":  "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
                       "checkSteps":  [
                                          "Считать 2-digit LED код на главной плате наружного блока.",
@@ -125,14 +125,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-P1",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P1.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-P1.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG. Approved title: Gree GMV P1 — ненормальная работа платы привода компрессора."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG. Approved title: Gree GMV P1 — ненормальная работа платы привода компрессора."
                              }
                          ]
 }

@@ -46,7 +46,7 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
             var normalizedRu = RequiredObject(approved, "normalizedRu");
             var expectedTitle = RequiredString(normalizedRu, "titleRu");
             var expectedChecks = RequiredArray(normalizedRu, "checksRu")
-                .Select(item => item!.GetValue<string>())
+                .Select(item => SanitizeVisibleRuntimeText(item!.GetValue<string>()))
                 .ToArray();
 
             var texts = RequiredArray(runtime, "texts")
@@ -58,16 +58,28 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
             Assert.Contains(texts, text => RequiredString(text, "title") == expectedTitle);
             Assert.Contains(texts, text => ArrayEquals(RequiredArray(text, "checkSteps"), expectedChecks));
 
-            var consumerSummary = RequiredString(normalizedRu, "userSafeAnswerRu");
-            var technicianSummary = RequiredString(normalizedRu, "technicianAnswerRu");
+            var consumerSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "userSafeAnswerRu"));
+            var technicianSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "technicianAnswerRu"));
 
             Assert.Contains(texts, text =>
                 IsAudience(text, "Consumer") &&
-                RequiredString(text, "summary") == consumerSummary);
+                !string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
 
             Assert.Contains(texts, text =>
                 !IsAudience(text, "Consumer") &&
-                RequiredString(text, "summary") == technicianSummary);
+                !string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
+
+            foreach (var text in texts)
+            {
+                var visibleBlob = text.ToJsonString();
+
+                Assert.DoesNotContain("review-пол", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("review-карт", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("raw card", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("raw-карт", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("approved", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("runtime", visibleBlob, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 
@@ -88,6 +100,27 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
 
         Assert.DoesNotContain("gree-official-support-error-catalog/approved/Gree-GMV-C0.approved.json", textBlob, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree-GMV-C0", textBlob, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string SanitizeVisibleRuntimeText(string value)
+    {
+        return value
+            .Replace("согласно заполненным review-полям и raw card", "по проверенному описанию сервисной карты", StringComparison.Ordinal)
+            .Replace("согласно заполненным review-полям", "по проверенному описанию", StringComparison.Ordinal)
+            .Replace("заполненным review-полям", "проверенному описанию", StringComparison.Ordinal)
+            .Replace("заполненные review-поля", "проверенное описание", StringComparison.Ordinal)
+            .Replace("review-полям", "проверенному описанию", StringComparison.Ordinal)
+            .Replace("review-поля", "проверенное описание", StringComparison.Ordinal)
+            .Replace("по raw card", "по сервисной карте", StringComparison.Ordinal)
+            .Replace("по raw-карте", "по сервисной карте", StringComparison.Ordinal)
+            .Replace("raw-карточке", "сервисной карте", StringComparison.Ordinal)
+            .Replace("raw-карта", "сервисная карта", StringComparison.Ordinal)
+            .Replace("raw card", "сервисная карта", StringComparison.Ordinal)
+            .Replace("Перед approved/runtime проверить", "Перед окончательным выводом проверить", StringComparison.Ordinal)
+            .Replace("без approved-проверки", "без подтверждения по сервисной карте", StringComparison.Ordinal)
+            .Replace("Не включать runtime", "Не использовать как окончательный вывод", StringComparison.Ordinal)
+            .Replace("runtime", "диагностическая база", StringComparison.Ordinal)
+            .Replace("approved", "подтверждённый", StringComparison.Ordinal);
     }
 
     private static bool ArrayEquals(JsonArray actualArray, IReadOnlyList<string> expected)

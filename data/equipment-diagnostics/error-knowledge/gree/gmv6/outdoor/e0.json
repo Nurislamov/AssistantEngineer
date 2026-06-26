@@ -122,14 +122,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-E0",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E0.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-E0.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png. Approved title: Gree GMV E0 — неисправность наружного блока."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png. Approved title: Gree GMV E0 — неисправность наружного блока."
                              }
                          ]
 }

@@ -36,8 +36,8 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Состояние или неисправность определяется по raw-карточке A0.",
-                                             "Требуется инженерная проверка перед approved/runtime."
+                                             "Состояние или неисправность определяется по сервисной карте A0.",
+                                             "Требуется инженерная проверка перед подтверждённый/диагностической базе."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -63,8 +63,8 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Состояние или неисправность определяется по raw-карточке A0.",
-                                             "Требуется инженерная проверка перед approved/runtime."
+                                             "Состояние или неисправность определяется по сервисной карте A0.",
+                                             "Требуется инженерная проверка перед подтверждённый/диагностической базе."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -90,8 +90,8 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Состояние или неисправность определяется по raw-карточке A0.",
-                                             "Требуется инженерная проверка перед approved/runtime."
+                                             "Состояние или неисправность определяется по сервисной карте A0.",
+                                             "Требуется инженерная проверка перед окончательным выводом."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -100,7 +100,7 @@
                       "id":  "gree-gmv6-status-a0-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV A0 — состояние ожидания пусконаладки",
-                      "summary":  "Для A0 использовать уже заполненные поля review-карточки как основную трактовку. Перед approved/runtime сверить raw card и не давать пользователю действий, связанных с разбором наружного блока. Runtime пока не включать.",
+                      "summary":  "Для A0 использовать проверенное описание сервисной карты как основную трактовку. Перед окончательным выводом сверить сервисную карту и не давать пользователю действий, связанных с разбором наружного блока.",
                       "safetyNote":  "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
                       "checkSteps":  [
                                          "Проверить, завершена ли пусконаладка системы.",
@@ -119,14 +119,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-A0",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-A0.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-A0.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-status-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG. Approved title: Gree GMV A0 — состояние ожидания пусконаладки."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG. Approved title: Gree GMV A0 — состояние ожидания пусконаладки."
                              }
                          ]
 }

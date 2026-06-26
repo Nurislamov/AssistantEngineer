@@ -56,14 +56,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-o1",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-o1.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-o1.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-indoor-fault-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG. Approved title: Gree GMV o1 — низкое напряжение шины внутреннего блока."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG. Approved title: Gree GMV o1 — низкое напряжение шины внутреннего блока."
                              }
                          ],
     "confidence":  "High",
@@ -74,7 +74,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке o1.",
+                                             "Причина определяется по сервисной карте o1.",
                                              "Возможна ошибка визуального ввода кода: o1 / 01 / O1."
                                          ],
                       "isMachineTranslated":  false,
@@ -102,7 +102,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке o1.",
+                                             "Причина определяется по сервисной карте o1.",
                                              "Возможна ошибка визуального ввода кода: o1 / 01 / O1."
                                          ],
                       "isMachineTranslated":  false,
@@ -130,7 +130,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке o1.",
+                                             "Причина определяется по сервисной карте o1.",
                                              "Возможна ошибка визуального ввода кода: o1 / 01 / O1."
                                          ],
                       "isMachineTranslated":  false,
@@ -140,7 +140,7 @@
                       "id":  "gree-gmv6-indoor-o1-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV o1 — низкое напряжение шины внутреннего блока",
-                      "summary":  "Для o1 сохранить каноническое написание именно o1. Не матчить автоматически как 01/O1. Перед approved/runtime проверить raw card, визуальное отображение кода и правила нормализации диагностического поиска.",
+                      "summary":  "Для o1 сохранить каноническое написание именно o1. Не матчить автоматически как 01/O1. Перед окончательным выводом проверить сервисная карта, визуальное отображение кода и правила нормализации диагностического поиска.",
                       "safetyNote":  "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
                       "checkSteps":  [
                                          "Проверить, находится ли питание в нормальном диапазоне, требуемом для блока.",

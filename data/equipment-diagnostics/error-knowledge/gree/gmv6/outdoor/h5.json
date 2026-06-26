@@ -48,7 +48,7 @@
                                              "Срабатывание защиты силового модуля.",
                                              "Проблема питания.",
                                              "Проблема силовой платы или связанных цепей.",
-                                             "Точная причина требует проверки по raw-карточке H5."
+                                             "Точная причина требует проверки по сервисной карте H5."
                                          ],
                       "checkSteps":  [
                                          "Проверить правильность подключения фаз U, V, W вентилятора.",
@@ -79,7 +79,7 @@
                                              "Срабатывание защиты силового модуля.",
                                              "Проблема питания.",
                                              "Проблема силовой платы или связанных цепей.",
-                                             "Точная причина требует проверки по raw-карточке H5."
+                                             "Точная причина требует проверки по сервисной карте H5."
                                          ],
                       "checkSteps":  [
                                          "Проверить правильность подключения фаз U, V, W вентилятора.",
@@ -104,13 +104,13 @@
                       "id":  "gree-gmv6-outdoor-h5-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV H5 — защита по перегрузке тока инверторного вентилятора",
-                      "summary":  "При H5 проверять питание, силовой модуль, плату управления и связанные цепи согласно заполненным review-полям и raw card. Не рекомендовать замену платы без проверки питания, разъёмов, нагрузки и условий появления ошибки.",
+                      "summary":  "При H5 проверять питание, силовой модуль, плату управления и связанные цепи по проверенному описанию сервисной карты. Не рекомендовать замену платы без проверки питания, разъёмов, нагрузки и условий появления ошибки.",
                       "safetyNote":  "Проверки кабелей UVW, двигателя вентилятора и платы привода выполняются квалифицированным специалистом при снятом питании.",
                       "possibleCauses":  [
                                              "Срабатывание защиты силового модуля.",
                                              "Проблема питания.",
                                              "Проблема силовой платы или связанных цепей.",
-                                             "Точная причина требует проверки по raw-карточке H5."
+                                             "Точная причина требует проверки по сервисной карте H5."
                                          ],
                       "checkSteps":  [
                                          "Проверить правильность подключения фаз U, V, W вентилятора.",
@@ -131,14 +131,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-H5",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-H5.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-H5.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG. Approved title: Gree GMV H5 — защита по перегрузке тока инверторного вентилятора."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG. Approved title: Gree GMV H5 — защита по перегрузке тока инверторного вентилятора."
                              }
                          ]
 }

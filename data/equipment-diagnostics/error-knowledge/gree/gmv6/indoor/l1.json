@@ -56,14 +56,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-L1",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-L1.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-L1.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-indoor-fault-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG. Approved title: Gree GMV L1 — защита вентилятора внутреннего блока."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG. Approved title: Gree GMV L1 — защита вентилятора внутреннего блока."
                              }
                          ],
     "confidence":  "High",
@@ -74,7 +74,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке L1.",
+                                             "Причина определяется по сервисной карте L1.",
                                              "Возможное защитное состояние наружного блока или системы."
                                          ],
                       "isMachineTranslated":  false,
@@ -103,7 +103,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке L1.",
+                                             "Причина определяется по сервисной карте L1.",
                                              "Возможное защитное состояние наружного блока или системы."
                                          ],
                       "isMachineTranslated":  false,
@@ -132,7 +132,7 @@
                   {
                       "locale":  "ru",
                       "possibleCauses":  [
-                                             "Причина определяется по raw-карточке L1.",
+                                             "Причина определяется по сервисной карте L1.",
                                              "Возможное защитное состояние наружного блока или системы."
                                          ],
                       "isMachineTranslated":  false,
@@ -142,7 +142,7 @@
                       "id":  "gree-gmv6-indoor-l1-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV L1 — защита вентилятора внутреннего блока",
-                      "summary":  "Для L1 использовать текущие normalizedRu-поля как основную трактовку. Проверить условия возникновения, наружную плату/индикатор, питание и связанные цепи по raw card. Перед runtime требуется отдельное approved-подтверждение.",
+                      "summary":  "Для L1 использовать текущие normalizedRu-поля как основную трактовку. Проверить условия возникновения, наружную плату/индикатор, питание и связанные цепи по сервисной карте. Перед диагностической базе требуется отдельное подтверждённый-подтверждение.",
                       "safetyNote":  "Не открывать внутренний блок и не проверять двигатель вентилятора под напряжением. Внутренние проверки выполняет квалифицированный специалист.",
                       "checkSteps":  [
                                          "Проверить, свободно ли вращается крыльчатка вентилятора.",

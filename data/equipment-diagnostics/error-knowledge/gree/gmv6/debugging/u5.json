@@ -103,7 +103,7 @@
                       "id":  "gree-gmv6-debugging-u5-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV U5 — ошибка адреса платы привода компрессора",
-                      "summary":  "При U5 проверить адресацию/настройку compressor driving board и соответствие установленной платы конфигурации наружного блока. Карточка содержит только краткое описание, поэтому перед approved/runtime требуется сверка с сервисным мануалом конкретной серии.",
+                      "summary":  "При U5 проверить адресацию/настройку compressor driving board и соответствие установленной платы конфигурации наружного блока. Карточка содержит только краткое описание, поэтому перед подтверждённый/диагностической базе требуется сверка с сервисным мануалом конкретной серии.",
                       "safetyNote":  "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
                       "checkSteps":  [
                                          "Проверить адрес/настройку платы привода компрессора по сервисной документации конкретной модели.",
@@ -122,14 +122,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-U5",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U5.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-U5.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-debugging-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U5/U5 GMV.png. Approved title: Gree GMV U5 — ошибка адреса платы привода компрессора."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U5/U5 GMV.png. Approved title: Gree GMV U5 — ошибка адреса платы привода компрессора."
                              }
                          ]
 }

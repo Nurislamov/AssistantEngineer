@@ -38,7 +38,7 @@
                       "possibleCauses":  [
                                              "Защита или неисправность наружного блока.",
                                              "Возможная проблема давления, теплообмена или условий работы.",
-                                             "Точная причина требует сверки с raw-карточкой E1."
+                                             "Точная причина требует сверки с сервисной карточкой E1."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -71,7 +71,7 @@
                       "possibleCauses":  [
                                              "Защита или неисправность наружного блока.",
                                              "Возможная проблема давления, теплообмена или условий работы.",
-                                             "Точная причина требует сверки с raw-карточкой E1."
+                                             "Точная причина требует сверки с сервисной карточкой E1."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -104,7 +104,7 @@
                       "possibleCauses":  [
                                              "Защита или неисправность наружного блока.",
                                              "Возможная проблема давления, теплообмена или условий работы.",
-                                             "Точная причина требует сверки с raw-карточкой E1."
+                                             "Точная причина требует сверки с сервисной карточкой E1."
                                          ],
                       "isMachineTranslated":  false,
                       "isReviewed":  true,
@@ -113,7 +113,7 @@
                       "id":  "gree-gmv6-outdoor-e1-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV E1 — защита по высокому давлению",
-                      "summary":  "При E1 проверить контур высокого давления: теплообмен наружного блока, вентиляторы, загрязнение, воздушный поток, перегрузку, заправку и показания датчиков/реле давления согласно raw card. До approved/runtime сверить конкретную GMV-карточку.",
+                      "summary":  "При E1 проверить контур высокого давления: теплообмен наружного блока, вентиляторы, загрязнение, воздушный поток, перегрузку, заправку и показания датчиков/реле давления согласно сервисная карта. До подтверждённый/диагностической базе сверить конкретную GMV-карточку.",
                       "safetyNote":  "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
                       "checkSteps":  [
                                          "Проверить фактическое высокое давление и состояние реле/датчика высокого давления.",
@@ -161,14 +161,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-E1",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E1.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-E1.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG. Approved title: Gree GMV E1 — защита по высокому давлению."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG. Approved title: Gree GMV E1 — защита по высокому давлению."
                              }
                          ]
 }

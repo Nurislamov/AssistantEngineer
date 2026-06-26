@@ -37,7 +37,7 @@
                       "locale":  "ru",
                       "possibleCauses":  [
                                              "Защитное состояние системы GMV.",
-                                             "Условия появления требуют проверки по raw-карточке U0.",
+                                             "Условия появления требуют проверки по сервисной карте U0.",
                                              "Возможны дополнительные коды на плате наружного блока."
                                          ],
                       "isMachineTranslated":  false,
@@ -66,7 +66,7 @@
                       "locale":  "ru",
                       "possibleCauses":  [
                                              "Защитное состояние системы GMV.",
-                                             "Условия появления требуют проверки по raw-карточке U0.",
+                                             "Условия появления требуют проверки по сервисной карте U0.",
                                              "Возможны дополнительные коды на плате наружного блока."
                                          ],
                       "isMachineTranslated":  false,
@@ -95,7 +95,7 @@
                       "locale":  "ru",
                       "possibleCauses":  [
                                              "Защитное состояние системы GMV.",
-                                             "Условия появления требуют проверки по raw-карточке U0.",
+                                             "Условия появления требуют проверки по сервисной карте U0.",
                                              "Возможны дополнительные коды на плате наружного блока."
                                          ],
                       "isMachineTranslated":  false,
@@ -105,7 +105,7 @@
                       "id":  "gree-gmv6-debugging-u0-ru-engineer",
                       "audience":  "Engineer",
                       "title":  "Gree GMV U0 — недостаточное время прогрева компрессора",
-                      "summary":  "Для U0 использовать уже заполненные review-поля как источник трактовки. Проверить условия появления, наружную плату/индикатор и связанные датчики/защиты по raw card. Не включать runtime без approved-проверки.",
+                      "summary":  "Для U0 использовать уже проверенное описание как источник трактовки. Проверить условия появления, наружную плату/индикатор и связанные датчики/защиты по сервисной карте. Не использовать как окончательный вывод без подтверждения по сервисной карте.",
                       "safetyNote":  "До завершения прогрева не выполнять повторные пуски. Проверки питания и цепей компрессора выполняет квалифицированный специалист.",
                       "checkSteps":  [
                                          "Проверить, сколько времени питание было подано на наружный блок перед запуском.",
@@ -125,14 +125,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-U0",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U0.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-U0.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-debugging-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG. Approved title: Gree GMV U0 — недостаточное время прогрева компрессора."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG. Approved title: Gree GMV U0 — недостаточное время прогрева компрессора."
                              }
                          ]
 }

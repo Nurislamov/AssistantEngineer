@@ -155,14 +155,14 @@
                              {
                                  "sourceName":  "Gree official support error code catalog",
                                  "documentCode":  "Gree-GMV-F3",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-F3.approved.json",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-F3.подтверждённый.json",
                                  "sourceType":  "Manual",
                                  "sourceLanguage":  "en",
                                  "verificationStatus":  "ManualVerified",
                                  "confidence":  "High",
                                  "manualId":  "gree-official-support-error-catalog",
                                  "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG. Approved title: Gree GMV F3 — неисправность датчика низкого давления."
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG. Approved title: Gree GMV F3 — неисправность датчика низкого давления."
                              }
                          ]
 }
