@@ -11,6 +11,29 @@ namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
 public sealed class ErrorKnowledgeJsonValidationTests
 {
+    private const string OfficialSupportCatalogManualId = "gree-official-support-error-catalog";
+
+    private static readonly HashSet<string> OfficialSupportGmvCodes = new(
+        [
+            "A0",
+            "C0",
+            "C7",
+            "E0",
+            "E1",
+            "F3",
+            "H5",
+            "L1",
+            "o1",
+            "P0",
+            "P1",
+            "P2",
+            "U0",
+            "U2",
+            "U3",
+            "U4",
+            "U5"
+        ],
+        StringComparer.OrdinalIgnoreCase);
     private static readonly string KnowledgePath = Path.Combine(
         TestPaths.RepoRoot,
         "data",
@@ -52,7 +75,14 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Equal("Over-current protection of inverter fan", entry.SourceMeaning);
         Assert.Equal("ManualVerified", entry.VerificationStatus);
         Assert.Equal("High", entry.Confidence);
-        Assert.Empty(entry.SourceReferences);
+
+        var officialSupportReference = Assert.Single(entry.SourceReferences);
+        Assert.Equal("Gree-GMV-H5", officialSupportReference.DocumentCode);
+        Assert.Equal(OfficialSupportCatalogManualId, officialSupportReference.ManualId);
+        Assert.Equal("Manual", officialSupportReference.SourceType);
+        Assert.Equal("ManualVerified", officialSupportReference.VerificationStatus);
+        Assert.Equal("High", officialSupportReference.Confidence);
+
         Assert.Contains(
             JsonErrorKnowledgeLocalizationSource.GetEmbeddedResourceNames(),
             name => name.EndsWith(".gree.gmv6.outdoor.h5.json", StringComparison.OrdinalIgnoreCase));
@@ -181,17 +211,24 @@ public sealed class ErrorKnowledgeJsonValidationTests
         {
             Assert.Equal("IndoorUnit", entry.EquipmentType.ToString());
             Assert.Equal("IndoorUnit", entry.DisplaySource.ToString());
-            var manualIds = entry.SourceReferences.Select(reference => reference.ManualId!).ToArray();
-            Assert.Equal("gree-gmv6-service-manual-2020-09", manualIds[0]);
-            Assert.Equal("gree-gmv-idu-service-manual", manualIds[1]);
+            var expectedManualIds = new List<string>
+            {
+                "gree-gmv6-service-manual-2020-09",
+                "gree-gmv-idu-service-manual"
+            };
+
             if (gmvMiniMergedCodes.Contains(entry.Code))
             {
-                Assert.Equal("gree-gmv-mini-service-manual", manualIds[2]);
+                expectedManualIds.Add("gree-gmv-mini-service-manual");
             }
-            else
+
+            if (OfficialSupportGmvCodes.Contains(entry.Code))
             {
-                Assert.Equal(2, manualIds.Length);
+                expectedManualIds.Add(OfficialSupportCatalogManualId);
             }
+
+            var manualIds = entry.SourceReferences.Select(reference => reference.ManualId!).ToArray();
+            Assert.Equal(expectedManualIds, manualIds);
 
             Assert.Equal("GC202001-I", entry.SourceReferences[0].DocumentCode);
             Assert.Equal("GC202004-X", entry.SourceReferences[1].DocumentCode);
@@ -209,6 +246,12 @@ public sealed class ErrorKnowledgeJsonValidationTests
         });
         Assert.Equal(31, gmvMiniReferencedEntries.Length);
         var gmvMiniReferencedCodes = gmvMiniReferencedEntries
+            .Select(entry => entry.Code)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var officialSupportReferencedCodes = entries
+            .Where(entry => entry.SourceReferences.Any(reference =>
+                reference.ManualId == OfficialSupportCatalogManualId))
             .Select(entry => entry.Code)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         Assert.Empty(gmvMiniMergedCodes.Except(gmvMiniReferencedCodes, StringComparer.OrdinalIgnoreCase));
@@ -234,6 +277,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
             entries.Where(entry =>
                 !expectedCodes.Contains(entry.Code) &&
                 !gmvMiniMergedCodes.Contains(entry.Code) &&
+                !officialSupportReferencedCodes.Contains(entry.Code) &&
                 !entry.Id.StartsWith("gree-gmv-mini-", StringComparison.OrdinalIgnoreCase)),
             entry => Assert.Empty(entry.SourceReferences));
     }

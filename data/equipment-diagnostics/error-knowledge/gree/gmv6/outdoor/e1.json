@@ -1,147 +1,159 @@
 {
-  "id": "gree-gmv6-outdoor-e1",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "E1",
-  "signalType": "Protection",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "RefrigerantCircuit",
-  "severity": "High",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-outdoor-fault-protection-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "High-pressure protection",
-  "sourceReference": "глава 3 Faults / Error Indication / Outdoor E1 / PDF page 75 / manual page 73; Troubleshooting 2.57 / PDF page 109 / manual page 107",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-23T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Высокое давление в контуре.",
-        "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
-        "Срабатывание или неисправность цепи контроля высокого давления."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-outdoor-e1-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 E1 - защита по высокому давлению",
-      "summary": "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
-      "safetyNote": "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
-      "checkSteps": [
-        "Запишите код E1 и условия появления: жара, загрязнение наружного блока, работа после обслуживания.",
-        "Без вскрытия проверьте, не закрыт ли наружный блок и нет ли явного препятствия для воздуха."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
-        "Сначала подтвердить условия теплообмена и цепь высокого давления."
-      ],
-      "recommendedAction": "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Высокое давление в контуре.",
-        "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
-        "Срабатывание или неисправность цепи контроля высокого давления."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-outdoor-e1-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 E1 - защита по высокому давлению",
-      "summary": "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
-      "safetyNote": "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
-      "checkSteps": [
-        "Проверить, относится ли E1 к наружному блоку GMV6, если бот запросил уточнение контекста.",
-        "Осмотреть теплообменник и воздушный поток наружного блока без вскрытия опасных отсеков.",
-        "Передать инженеру данные о температуре наружного воздуха, загрязнении теплообменника и сопутствующих кодах."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
-        "Сначала подтвердить условия теплообмена и цепь высокого давления."
-      ],
-      "recommendedAction": "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Высокое давление в контуре.",
-        "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
-        "Срабатывание или неисправность цепи контроля высокого давления."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-outdoor-e1-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 E1 - защита по высокому давлению",
-      "summary": "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
-      "safetyNote": "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
-      "checkSteps": [
-        "Проверить условия теплообмена наружного блока и расход воздуха.",
-        "Проверить загрязнение теплообменника и работу вентиляторов наружного блока.",
-        "Проверить цепь высокого давления по разделу 2.57.",
-        "Учитывать сопутствующие коды давления, вентилятора и датчиков."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
-        "Сначала подтвердить условия теплообмена и цепь высокого давления."
-      ],
-      "recommendedAction": "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
-    }
-  ],
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "глава 3 Faults / Error Indication / Outdoor E1 / PDF page 75 / manual page 73; Troubleshooting 2.57 / PDF page 109 / manual page 107",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
-      "notes": "Primary GMV6 manual source retained for backward compatibility."
-    },
-    {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
-      "sourceReference": "Outdoor main-board status display table, PDF page 82 / manual page 78",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-mini-service-manual",
-      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
-      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
-    }
-  ]
+    "id":  "gree-gmv6-outdoor-e1",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "E1",
+    "signalType":  "Protection",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "RefrigerantCircuit",
+    "severity":  "High",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "High-pressure protection",
+    "sourceReference":  "глава 3 Faults / Error Indication / Outdoor E1 / PDF page 75 / manual page 73; Troubleshooting 2.57 / PDF page 109 / manual page 107",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-23T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Высокое давление в контуре.",
+                                             "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
+                                             "Срабатывание или неисправность цепи контроля высокого давления."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-outdoor-e1-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 E1 - защита по высокому давлению",
+                      "summary":  "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
+                      "safetyNote":  "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
+                      "checkSteps":  [
+                                         "Запишите код E1 и условия появления: жара, загрязнение наружного блока, работа после обслуживания.",
+                                         "Без вскрытия проверьте, не закрыт ли наружный блок и нет ли явного препятствия для воздуха."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
+                                          "Сначала подтвердить условия теплообмена и цепь высокого давления."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Высокое давление в контуре.",
+                                             "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
+                                             "Срабатывание или неисправность цепи контроля высокого давления."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-outdoor-e1-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 E1 - защита по высокому давлению",
+                      "summary":  "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
+                      "safetyNote":  "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
+                      "checkSteps":  [
+                                         "Проверить, относится ли E1 к наружному блоку GMV6, если бот запросил уточнение контекста.",
+                                         "Осмотреть теплообменник и воздушный поток наружного блока без вскрытия опасных отсеков.",
+                                         "Передать инженеру данные о температуре наружного воздуха, загрязнении теплообменника и сопутствующих кодах."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
+                                          "Сначала подтвердить условия теплообмена и цепь высокого давления."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Высокое давление в контуре.",
+                                             "Недостаточный теплообмен или ограничение воздушного потока наружного блока.",
+                                             "Срабатывание или неисправность цепи контроля высокого давления."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-outdoor-e1-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 E1 - защита по высокому давлению",
+                      "summary":  "E1 означает защиту по высокому давлению в холодильном контуре наружного блока. Код требует проверки условий теплообмена, расхода воздуха и цепи высокого давления по руководству.",
+                      "safetyNote":  "Работы с холодильным контуром и датчиками давления выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении E1.",
+                      "checkSteps":  [
+                                         "Проверить условия теплообмена наружного блока и расход воздуха.",
+                                         "Проверить загрязнение теплообменника и работу вентиляторов наружного блока.",
+                                         "Проверить цепь высокого давления по разделу 2.57.",
+                                         "Учитывать сопутствующие коды давления, вентилятора и датчиков."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о заправке, утечке или замене датчика только по коду E1.",
+                                          "Сначала подтвердить условия теплообмена и цепь высокого давления."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику защиты высокого давления по разделу E1 / 2.57.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.57, но его пошаговая процедура в эту запись не перенесена."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "глава 3 Faults / Error Indication / Outdoor E1 / PDF page 75 / manual page 73; Troubleshooting 2.57 / PDF page 109 / manual page 107",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
+                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
+                             },
+                             {
+                                 "sourceName":  "DC Inverter VRF System Service Manual (R410A)",
+                                 "documentCode":  null,
+                                 "sourceReference":  "Outdoor main-board status display table, PDF page 82 / manual page 78",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-mini-service-manual",
+                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
+                                 "notes":  "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
+                             },
+                             {
+                                 "sourceName":  "Gree official support error code catalog",
+                                 "documentCode":  "Gree-GMV-E1",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E1.approved.json",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-official-support-error-catalog",
+                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG. Approved title: Gree GMV E1 — защита по высокому давлению."
+                             }
+                         ]
 }

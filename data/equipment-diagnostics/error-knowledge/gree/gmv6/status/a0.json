@@ -1,108 +1,128 @@
 {
-  "id": "gree-gmv6-status-a0",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "A0",
-  "signalType": "Status",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Controller",
-  "severity": "Info",
-  "requiresQualifiedService": false,
-  "canCustomerContinueOperation": null,
-  "packageId": "gree-gmv6-status-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Unit waiting for debugging",
-  "sourceReference": "глава 3 Faults / Error Indication / Status A0 / PDF page 77 / manual page 75; Troubleshooting 2.1 / PDF page 78 / manual page 76",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-22T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-status-a0-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 A0 - блок ожидает наладку",
-      "summary": "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
-      "safetyNote": "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
-      "checkSteps": [
-        "Запишите код A0 и сообщите, что система ожидает наладку.",
-        "Не пытайтесь самостоятельно запускать режимы наладки."
-      ],
-      "doNotAdvise": [
-        "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
-        "Если есть другие активные коды, диагностировать их отдельно."
-      ],
-      "recommendedAction": "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-status-a0-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 A0 - блок ожидает наладку",
-      "summary": "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
-      "safetyNote": "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
-      "checkSteps": [
-        "Проверить, что A0 отображается в контексте ввода в эксплуатацию GMV6.",
-        "Проверить готовность объекта к штатной процедуре наладки.",
-        "Если есть другие коды, рассматривать их отдельно от статуса A0."
-      ],
-      "doNotAdvise": [
-        "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
-        "Если есть другие активные коды, диагностировать их отдельно."
-      ],
-      "recommendedAction": "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-status-a0-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 A0 - блок ожидает наладку",
-      "summary": "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
-      "safetyNote": "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
-      "checkSteps": [
-        "Подтвердить, что A0 является статусом ожидания наладки.",
-        "Проверить готовность системы к commissioning-процедуре по разделу 2.1.",
-        "Не перегружать ответ тяжелой диагностикой, если A0 отображается без аварийных кодов."
-      ],
-      "doNotAdvise": [
-        "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
-        "Если есть другие активные коды, диагностировать их отдельно."
-      ],
-      "recommendedAction": "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
-    }
-  ]
+    "id":  "gree-gmv6-status-a0",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "A0",
+    "signalType":  "Status",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Controller",
+    "severity":  "Info",
+    "requiresQualifiedService":  false,
+    "canCustomerContinueOperation":  null,
+    "packageId":  "gree-gmv6-status-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Unit waiting for debugging",
+    "sourceReference":  "глава 3 Faults / Error Indication / Status A0 / PDF page 77 / manual page 75; Troubleshooting 2.1 / PDF page 78 / manual page 76",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-22T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-status-a0-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 A0 - блок ожидает наладку",
+                      "summary":  "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
+                      "safetyNote":  "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
+                      "checkSteps":  [
+                                         "Запишите код A0 и сообщите, что система ожидает наладку.",
+                                         "Не пытайтесь самостоятельно запускать режимы наладки."
+                                     ],
+                      "doNotAdvise":  [
+                                          "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
+                                          "Если есть другие активные коды, диагностировать их отдельно."
+                                      ],
+                      "recommendedAction":  "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-status-a0-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 A0 - блок ожидает наладку",
+                      "summary":  "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
+                      "safetyNote":  "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
+                      "checkSteps":  [
+                                         "Проверить, что A0 отображается в контексте ввода в эксплуатацию GMV6.",
+                                         "Проверить готовность объекта к штатной процедуре наладки.",
+                                         "Если есть другие коды, рассматривать их отдельно от статуса A0."
+                                     ],
+                      "doNotAdvise":  [
+                                          "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
+                                          "Если есть другие активные коды, диагностировать их отдельно."
+                                      ],
+                      "recommendedAction":  "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-status-a0-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 A0 - блок ожидает наладку",
+                      "summary":  "A0 означает состояние ожидания наладки блока. Это статус ввода в эксплуатацию, а не самостоятельная неисправность холодильного контура.",
+                      "safetyNote":  "Наладку выполняет квалифицированный специалист согласно процедуре ввода в эксплуатацию.",
+                      "checkSteps":  [
+                                         "Подтвердить, что A0 является статусом ожидания наладки.",
+                                         "Проверить готовность системы к commissioning-процедуре по разделу 2.1.",
+                                         "Не перегружать ответ тяжелой диагностикой, если A0 отображается без аварийных кодов."
+                                     ],
+                      "doNotAdvise":  [
+                                          "A0 сам по себе не подтверждает неисправность платы, компрессора или датчика.",
+                                          "Если есть другие активные коды, диагностировать их отдельно."
+                                      ],
+                      "recommendedAction":  "Выполнить штатную процедуру наладки GMV6 по разделу A0 / 2.1 или сначала устранить сопутствующие активные коды.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.1, но его пошаговая процедура в эту запись не перенесена."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Gree official support error code catalog",
+                                 "documentCode":  "Gree-GMV-A0",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-A0.approved.json",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-official-support-error-catalog",
+                                 "packageId":  "gree-gmv6-status-codes",
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG. Approved title: Gree GMV A0 — состояние ожидания пусконаладки."
+                             }
+                         ]
 }

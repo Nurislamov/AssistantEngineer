@@ -1,143 +1,155 @@
 {
-  "id": "gree-gmv6-indoor-o1",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "IndoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "o1",
-  "signalType": "Fault",
-  "displaySource": "IndoorUnit",
-  "systemPart": "PowerSupply",
-  "severity": "High",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-indoor-fault-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Low bus bar voltage of IDU",
-  "sourceReference": "глава 3 Faults / Error Indication / Indoor o1 / PDF page 74 / manual page 72",
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "глава 3 Faults / Error Indication / Indoor o1 / PDF page 74 / manual page 72",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-indoor-fault-codes",
-      "notes": "Primary GMV6 manual source retained for backward compatibility."
-    },
-    {
-      "sourceName": "Service Manual - Multi Variable Air Conditioners Indoor Units",
-      "documentCode": "GC202004-X",
-      "sourceReference": "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-idu-service-manual",
-      "packageId": "gree-gmv6-indoor-fault-codes",
-      "notes": "GC202004-X confirms the existing indoor-unit code meaning."
-    }
-  ],
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-22T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Низкое напряжение шины внутреннего блока.",
-        "Возможна проблема питания или цепи шины внутреннего блока."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-indoor-o1-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
-      "summary": "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
-      "safetyNote": "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
-      "checkSteps": [
-        "Запишите код o1 и модель внутреннего блока.",
-        "Не вскрывайте блок и сообщите сервису, что код связан с низким напряжением шины внутреннего блока."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправности платы только по o1.",
-        "Сначала проверить питание и напряжение шины внутреннего блока."
-      ],
-      "recommendedAction": "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Низкое напряжение шины внутреннего блока.",
-        "Возможна проблема питания или цепи шины внутреннего блока."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-indoor-o1-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
-      "summary": "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
-      "safetyNote": "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
-      "checkSteps": [
-        "Проверить, что o1 отображается на внутреннем блоке GMV6.",
-        "Передать инженеру данные о питании объекта и сопутствующих кодах питания.",
-        "Не делать вывод о плате без проверки питания."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправности платы только по o1.",
-        "Сначала проверить питание и напряжение шины внутреннего блока."
-      ],
-      "recommendedAction": "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Низкое напряжение шины внутреннего блока.",
-        "Возможна проблема питания или цепи шины внутреннего блока."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-22T00:00:00Z",
-      "id": "gree-gmv6-indoor-o1-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
-      "summary": "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
-      "safetyNote": "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
-      "checkSteps": [
-        "Проверить питание внутреннего блока и цепь шины внутреннего блока.",
-        "Проверить соединения питания внутреннего блока.",
-        "Учитывать сопутствующие коды питания или платы управления внутреннего блока."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправности платы только по o1.",
-        "Сначала проверить питание и напряжение шины внутреннего блока."
-      ],
-      "recommendedAction": "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    }
-  ]
+    "id":  "gree-gmv6-indoor-o1",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "IndoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "o1",
+    "signalType":  "Fault",
+    "displaySource":  "IndoorUnit",
+    "systemPart":  "PowerSupply",
+    "severity":  "High",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-indoor-fault-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Low bus bar voltage of IDU",
+    "sourceReference":  "глава 3 Faults / Error Indication / Indoor o1 / PDF page 74 / manual page 72",
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "глава 3 Faults / Error Indication / Indoor o1 / PDF page 74 / manual page 72",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-indoor-fault-codes",
+                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
+                             },
+                             {
+                                 "sourceName":  "Service Manual - Multi Variable Air Conditioners Indoor Units",
+                                 "documentCode":  "GC202004-X",
+                                 "sourceReference":  "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-idu-service-manual",
+                                 "packageId":  "gree-gmv6-indoor-fault-codes",
+                                 "notes":  "GC202004-X confirms the existing indoor-unit code meaning."
+                             },
+                             {
+                                 "sourceName":  "Gree official support error code catalog",
+                                 "documentCode":  "Gree-GMV-o1",
+                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-o1.approved.json",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-official-support-error-catalog",
+                                 "packageId":  "gree-gmv6-indoor-fault-codes",
+                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary raw card path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG. Approved title: Gree GMV o1 — низкое напряжение шины внутреннего блока."
+                             }
+                         ],
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-22T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Низкое напряжение шины внутреннего блока.",
+                                             "Возможна проблема питания или цепи шины внутреннего блока."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-o1-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
+                      "summary":  "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
+                      "safetyNote":  "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
+                      "checkSteps":  [
+                                         "Запишите код o1 и модель внутреннего блока.",
+                                         "Не вскрывайте блок и сообщите сервису, что код связан с низким напряжением шины внутреннего блока."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправности платы только по o1.",
+                                          "Сначала проверить питание и напряжение шины внутреннего блока."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Низкое напряжение шины внутреннего блока.",
+                                             "Возможна проблема питания или цепи шины внутреннего блока."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-o1-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
+                      "summary":  "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
+                      "safetyNote":  "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
+                      "checkSteps":  [
+                                         "Проверить, что o1 отображается на внутреннем блоке GMV6.",
+                                         "Передать инженеру данные о питании объекта и сопутствующих кодах питания.",
+                                         "Не делать вывод о плате без проверки питания."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправности платы только по o1.",
+                                          "Сначала проверить питание и напряжение шины внутреннего блока."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Низкое напряжение шины внутреннего блока.",
+                                             "Возможна проблема питания или цепи шины внутреннего блока."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-22T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-o1-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 o1 - низкое напряжение шины внутреннего блока",
+                      "summary":  "o1 означает низкое напряжение шины внутреннего блока. Код относится к электропитанию внутреннего блока и требует проверки питания/шины внутреннего блока по руководству.",
+                      "safetyNote":  "Проверки питания и внутренней шины выполняет квалифицированный специалист. До проверки не выполнять повторные пуски при сохранении o1.",
+                      "checkSteps":  [
+                                         "Проверить питание внутреннего блока и цепь шины внутреннего блока.",
+                                         "Проверить соединения питания внутреннего блока.",
+                                         "Учитывать сопутствующие коды питания или платы управления внутреннего блока."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправности платы только по o1.",
+                                          "Сначала проверить питание и напряжение шины внутреннего блока."
+                                      ],
+                      "recommendedAction":  "Продолжить диагностику низкого напряжения шины внутреннего блока по руководству GMV6 для o1.",
+                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
+                  }
+              ]
 }
