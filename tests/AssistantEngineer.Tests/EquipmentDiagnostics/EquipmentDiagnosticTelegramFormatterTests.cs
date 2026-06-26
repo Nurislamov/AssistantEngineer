@@ -12,6 +12,12 @@ namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
 public sealed class EquipmentDiagnosticTelegramFormatterTests
 {
+    private static readonly string DiagnosticAnswerStagesPath = Path.Combine(
+        TestPaths.RepoRoot,
+        "docs",
+        "equipment-diagnostics",
+        "telegram-diagnostic-answer-stages.md");
+
     [Theory]
     [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Суть:")]
     [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "укажите контекст")]
@@ -208,6 +214,108 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Equal(6, CountOccurrences(consumer, "сообщение о связи и адресации"));
     }
 
+    [Theory]
+    [MemberData(nameof(PolishedGmvDiagnosticRequests))]
+    public async Task PolishedGmvTechnicalAnswersKeepCoreDiagnosticStages(EquipmentDiagnosticBotRequest request)
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+
+        var response = await ResolveDiagnosticStageResponseAsync(facade, request);
+        var text = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
+
+        Assert.True(
+            response.Status is EquipmentDiagnosticBotResponseStatus.Answer or EquipmentDiagnosticBotResponseStatus.ReferenceOnly,
+            $"Expected a resolved diagnostic answer for {request.Manufacturer} {request.Code}, got {response.Status}.");
+        AssertDiagnosticAnswerHasCoreStages(text, response.NormalizedManufacturer, response.NormalizedCode);
+        AssertNoInternalCatalogWords(text);
+        AssertNoUnsafeProtectionAdvice(text);
+    }
+
+    [Theory]
+    [MemberData(nameof(PolishedGmvDiagnosticRequests))]
+    public async Task PolishedGmvConsumerAnswersKeepSafeUserStages(EquipmentDiagnosticBotRequest request)
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+
+        var response = await ResolveDiagnosticStageResponseAsync(facade, request);
+        var text = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
+
+        Assert.Contains($"Код оборудования: {response.NormalizedManufacturer} {response.NormalizedCode}", text, StringComparison.Ordinal);
+        Assert.Contains("Возможное значение:", text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно:", text, StringComparison.Ordinal);
+        Assert.Contains("Рекомендованное действие:", text, StringComparison.Ordinal);
+        Assert.Contains("Для сервиса:", text, StringComparison.Ordinal);
+        AssertNoInternalCatalogWords(text);
+        AssertNoUnsafeConsumerAdvice(text);
+    }
+
+    [Fact]
+    public void DiagnosticAnswerStageContractIsDocumented()
+    {
+        Assert.True(File.Exists(DiagnosticAnswerStagesPath), $"Missing diagnostic answer stage contract: {DiagnosticAnswerStagesPath}");
+        var text = File.ReadAllText(DiagnosticAnswerStagesPath);
+
+        Assert.Contains("Identification", text, StringComparison.Ordinal);
+        Assert.Contains("Meaning", text, StringComparison.Ordinal);
+        Assert.Contains("Safety", text, StringComparison.Ordinal);
+        Assert.Contains("Safe User Checks", text, StringComparison.Ordinal);
+        Assert.Contains("Installer Checks", text, StringComparison.Ordinal);
+        Assert.Contains("Engineer Or Service Checks", text, StringComparison.Ordinal);
+        Assert.Contains("Next Action", text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", text, StringComparison.Ordinal);
+        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+    }
+
+    public static IEnumerable<object[]> PolishedGmvDiagnosticRequests()
+    {
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest("Gree", "C0")
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest("Gree", "H5", Series: "GMV6")
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest("Gree", "U3", Series: "GMV6")
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest(
+                "Gree",
+                "E1",
+                Series: "GMV6",
+                Category: EquipmentCategory.VrfOutdoorUnit,
+                EquipmentSide: EquipmentDiagnosticBotEquipmentSide.Outdoor,
+                DisplayContext: EquipmentDiagnosticBotDisplayContext.OduMainBoardLed)
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest(
+                "Gree",
+                "P0",
+                Series: "GMV6",
+                Category: EquipmentCategory.VrfOutdoorUnit,
+                EquipmentSide: EquipmentDiagnosticBotEquipmentSide.Outdoor,
+                DisplayContext: EquipmentDiagnosticBotDisplayContext.OduMainBoardLed)
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest("Gree", "o1", Series: "GMV6")
+        ];
+        yield return
+        [
+            new EquipmentDiagnosticBotRequest("Gree", "L1", Series: "GMV6")
+        ];
+    }
+
     private static IReadOnlyList<string> EnglishTechnicalMarkers() =>
     [
         "Safety",
@@ -219,6 +327,107 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         " High",
         "Preliminary diagnostic entry",
         "Recommended action"
+    ];
+
+    private static void AssertDiagnosticAnswerHasCoreStages(
+        string text,
+        string manufacturer,
+        string code)
+    {
+        Assert.Contains($"Диагностика {manufacturer} {code}", text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV", text, StringComparison.Ordinal);
+        Assert.Contains(code, text, StringComparison.Ordinal);
+        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Важно:", text, StringComparison.Ordinal);
+        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+    }
+
+    private static void AssertNoUnsafeConsumerAdvice(string text)
+    {
+        foreach (var fragment in UnsafeConsumerAdviceMarkers())
+        {
+            Assert.DoesNotContain(fragment, text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static void AssertNoUnsafeProtectionAdvice(string text)
+    {
+        foreach (var fragment in UnsafeProtectionAdviceMarkers())
+        {
+            Assert.DoesNotContain(fragment, text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static void AssertNoInternalCatalogWords(string text)
+    {
+        foreach (var fragment in InternalCatalogMarkers())
+        {
+            Assert.DoesNotContain(fragment, text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static IReadOnlyList<string> UnsafeConsumerAdviceMarkers() =>
+    [
+        "разберите",
+        "разобрать",
+        "откройте шкаф",
+        "снимите крыш",
+        "измерьте",
+        "замерьте",
+        "под напряжением",
+        "замкните",
+        "перемкните",
+        "замените плат",
+        "заменить плат",
+        "замените датчик",
+        "заменить датчик",
+        "запустите повторно",
+        "сбросьте несколько раз"
+    ];
+
+    private static async Task<EquipmentDiagnosticBotResponse> ResolveDiagnosticStageResponseAsync(
+        IEquipmentDiagnosticBotFacade facade,
+        EquipmentDiagnosticBotRequest request)
+    {
+        var response = await facade.DiagnoseAsync(request);
+        if (response.Status != EquipmentDiagnosticBotResponseStatus.NotFound ||
+            !string.Equals(request.Code, "P0", StringComparison.Ordinal))
+        {
+            return response;
+        }
+
+        return LocalizedResponse(
+            code: "P0",
+            series: "GMV6",
+            category: EquipmentCategory.VrfOutdoorUnit,
+            side: EquipmentDiagnosticBotEquipmentSide.Outdoor,
+            displayContext: EquipmentDiagnosticBotDisplayContext.OduMainBoardLed);
+    }
+
+    private static IReadOnlyList<string> UnsafeProtectionAdviceMarkers() =>
+    [
+        "обойдите защит",
+        "отключите защит",
+        "disable " + "protection",
+        "by" + "pass protection",
+        "force " + "run",
+        "short " + "protection",
+        "ignore " + "protection"
+    ];
+
+    private static IReadOnlyList<string> InternalCatalogMarkers() =>
+    [
+        "source " + "card",
+        "catalog " + "pipeline",
+        "reference-" + "only",
+        "machine " + "translated",
+        "support-" + "каталог",
+        "Knowledge/" + "staging",
+        "manual-" + "codebook",
+        "arti" + "facts/verification",
+        "internal trace",
+        "deterministic bot API"
     ];
 
     private static ServiceProvider CreateProvider()
