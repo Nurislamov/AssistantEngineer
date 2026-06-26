@@ -23,6 +23,24 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         "remaining-runtime-candidates",
         "candidate-runtime-json.json");
 
+    private static readonly string ManualReviewBatch9JsonPath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "reference",
+        "gree-official-support-error-catalog",
+        "staging",
+        "manual-review-batch-9",
+        "manual-review-9.json");
+
+    private static readonly string ManualReviewBatch9CsvPath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "reference",
+        "gree-official-support-error-catalog",
+        "staging",
+        "manual-review-batch-9",
+        "manual-review-9.csv");
+
     private static readonly string[] ExpectedBlockedCodes =
     [
         "by",
@@ -125,6 +143,84 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
     }
 
     [Fact]
+    public void ManualReviewBatch9DocumentsAllBlockedCardsWithoutRuntimePromotion()
+    {
+        var report = ReadJsonObject(ManualReviewBatch9JsonPath);
+
+        Assert.True(File.Exists(ManualReviewBatch9CsvPath));
+        Assert.Equal(1, RequiredInt32(report, "schemaVersion"));
+        Assert.Equal("ED-24GEC.9", RequiredString(report, "stage"));
+        Assert.Equal("manual-review-complete", RequiredString(report, "status"));
+        Assert.Equal(0, RequiredInt32(report, "runtimeEntriesAdded"));
+        Assert.Equal(262, RequiredInt32(report, "totalRuntimeKnowledgeCount"));
+        Assert.Equal(253, RequiredInt32(report, "gmv6RuntimeCount"));
+        Assert.Empty(RequiredArray(report, "packageCountChanges"));
+
+        var reviews = Batch9Reviews(report);
+        Assert.Equal(
+            ExpectedBlockedCodes.Order(StringComparer.Ordinal).ToArray(),
+            reviews.Select(item => RequiredString(item, "code")).Order(StringComparer.Ordinal).ToArray());
+        Assert.DoesNotContain(reviews, item => RequiredString(item, "decision") == "added-runtime");
+
+        foreach (var item in reviews)
+        {
+            Assert.Contains(
+                RequiredString(item, "decision"),
+                new[] { "still-blocked", "needs-human-source-review", "reference-only" });
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "officialCode")));
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "sourceCardPath")));
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "rawCardPath")));
+            Assert.Equal(string.Empty, OptionalString(item, "existingRuntimePath"));
+            Assert.StartsWith(
+                "data/equipment-diagnostics/error-knowledge/gree/gmv6/",
+                RequiredString(item, "proposedRuntimePath"),
+                StringComparison.Ordinal);
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "reason")));
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "sourceMeaning")));
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "equipmentType")));
+            Assert.False(string.IsNullOrWhiteSpace(RequiredString(item, "categoryFolder")));
+            Assert.NotEmpty(RequiredArray(item, "conflicts"));
+            Assert.NotEmpty(RequiredArray(item, "safetyNotes"));
+            Assert.NotEmpty(RequiredArray(item, "sourceReferences"));
+            Assert.Equal(string.Empty, OptionalString(item, "addedRuntimeEntryId"));
+        }
+    }
+
+    [Fact]
+    public void ManualReviewBatch9StillBlockedCodesAreNotLoadedAsRuntimeEntries()
+    {
+        var source = new JsonErrorKnowledgeLocalizationSource();
+        var entries = source.GetEntries();
+        var report = ReadJsonObject(ManualReviewBatch9JsonPath);
+        var reviews = Batch9Reviews(report);
+
+        Assert.Equal(262, entries.Count);
+        Assert.Equal(0, reviews.Count(item => RequiredString(item, "decision") == "added-runtime"));
+        foreach (var item in reviews)
+        {
+            var code = RequiredString(item, "code");
+            Assert.DoesNotContain(
+                entries,
+                entry => entry.Manufacturer == "Gree" &&
+                    entry.Series == "GMV6" &&
+                    string.Equals(entry.Code, code, StringComparison.Ordinal));
+        }
+    }
+
+    [Fact]
+    public void ManualReviewBatch9DocumentsVisualAndMiniConflictGuards()
+    {
+        var reviews = Batch9Reviews(ReadJsonObject(ManualReviewBatch9JsonPath));
+
+        AssertReviewConflict(reviews, "Ho", "visual ambiguity");
+        AssertReviewConflict(reviews, "No", "visual ambiguity");
+        AssertReviewConflict(reviews, "N2", "GMV Mini conflict");
+        AssertReviewConflict(reviews, "by", "lowercase by visual ambiguity");
+        AssertReviewConflict(reviews, "eA", "official image shows EA");
+        AssertReviewConflict(reviews, "eH", "official image shows EH");
+    }
+
+    [Fact]
     public void RemainingSourceToRuntimeMappingCoversAllOfficialSupportReviewCards()
     {
         var preview = ReadJsonObject(PreviewPath);
@@ -136,6 +232,22 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         Assert.Equal(236, mapping.Count(item => RequiredString(item, "decision") == "already-runtime"));
         Assert.Equal(20, mapping.Count(item => RequiredString(item, "decision") == "blocked-manual-review"));
         Assert.Equal(0, mapping.Count(item => RequiredString(item, "decision") == "safe-to-generate"));
+    }
+
+    private static JsonObject[] Batch9Reviews(JsonObject report) =>
+        RequiredArray(report, "reviews")
+            .Select(Assert.IsType<JsonObject>)
+            .ToArray();
+
+    private static void AssertReviewConflict(JsonObject[] reviews, string code, string expected)
+    {
+        var item = Assert.Single(reviews, review => RequiredString(review, "code") == code);
+        var conflicts = RequiredArray(item, "conflicts")
+            .Select(node => node!.GetValue<string>())
+            .ToArray();
+
+        Assert.Contains(conflicts, conflict => conflict.Contains(expected, StringComparison.OrdinalIgnoreCase));
+        Assert.NotEqual("added-runtime", RequiredString(item, "decision"));
     }
 
     private static JsonObject ReadJsonObject(string path)
@@ -168,6 +280,13 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var value = node.GetValue<string>();
         Assert.False(string.IsNullOrWhiteSpace(value), $"Property '{propertyName}' must not be empty.");
         return value;
+    }
+
+    private static string OptionalString(JsonObject obj, string propertyName)
+    {
+        var node = obj[propertyName];
+        Assert.NotNull(node);
+        return node.GetValue<string>();
     }
 
     private static int RequiredInt32(JsonObject obj, string propertyName)

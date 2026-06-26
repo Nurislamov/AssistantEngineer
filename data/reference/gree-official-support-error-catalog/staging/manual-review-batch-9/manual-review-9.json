@@ -1,0 +1,471 @@
+{
+  "schemaVersion": 1,
+  "stage": "ED-24GEC.9",
+  "status": "manual-review-complete",
+  "runtimeEntriesAdded": 0,
+  "totalRuntimeKnowledgeCount": 262,
+  "gmv6RuntimeCount": 253,
+  "packageCountChanges": [],
+  "reviews": [
+    {
+      "code": "by",
+      "officialCode": "by",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-by.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-by/by GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/by.json",
+      "decision": "needs-human-source-review",
+      "reason": "Clear source meaning, but card is GMV-W water heat pump VRF and GMV6 applicability is not confirmed; code spelling is visually unusual.",
+      "sourceMeaning": "Water outlet temperature wrap fault",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "lowercase by visual ambiguity", "not in current GMV6 runtime manual set"],
+      "safetyNotes": ["Do not tell users to open panels, measure live circuits, or replace temperature wrap/main board directly."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-by",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-by/by GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "E5",
+      "officialCode": "E5",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E5.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E5/E5 GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e5.json",
+      "decision": "needs-human-source-review",
+      "reason": "Source card has conflicting visible meanings and older GMVT context, so a safe normalized GMV6 answer cannot be created without human source resolution.",
+      "sourceMeaning": "Temperature of radiating fin is too high / Overcurrent Protection / compressor overcurrent protection",
+      "equipmentType": "outdoor",
+      "categoryFolder": "outdoor",
+      "conflicts": ["multiple meanings on same card", "GMVT source label", "troubleshooting contains direct replacement steps"],
+      "safetyNotes": ["Keep as blocked until one authoritative meaning and GMV6 applicability are confirmed."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-E5",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E5/E5 GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "E6",
+      "officialCode": "E6",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E6.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E6/E6  GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e6.json",
+      "decision": "needs-human-source-review",
+      "reason": "Card meaning is clear, but it is a broad communication-error flow from older Digital Multi VRF material and does not clearly map to a GMV6 runtime category.",
+      "sourceMeaning": "Communication error",
+      "equipmentType": "communication",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMVT/Digital Multi VRF context", "broad communication-code overlap with existing C0-style GMV communication entries"],
+      "safetyNotes": ["Visible text would need qualified-service-only communication checks and no direct rewiring advice."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-E6",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E6/E6  GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "E7",
+      "officialCode": "E7",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E7.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E7/E7 GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e7.json",
+      "decision": "needs-human-source-review",
+      "reason": "Table-only GMVT/wired-controller card gives a meaning, but no GMV6 applicability or safe diagnostic procedure is confirmed.",
+      "sourceMeaning": "Mode conflict",
+      "equipmentType": "controller",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMVT Digital Multi VRF table-only evidence", "proposed outdoor folder is not supported by the card"],
+      "safetyNotes": ["Do not present as a confirmed outdoor-unit fault without model context."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-E7",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E7/E7 GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "E9",
+      "officialCode": "E9",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E9.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E9/Eb E9 GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e9.json",
+      "decision": "needs-human-source-review",
+      "reason": "Shared Eb/E9 cassette water-full card conflicts with the proposed outdoor GMV6 path and needs source review before runtime use.",
+      "sourceMeaning": "Water-full protection (Cassette)",
+      "equipmentType": "indoor-cassette",
+      "categoryFolder": "outdoor",
+      "conflicts": ["shared Eb/E9 card", "indoor cassette meaning conflicts with proposed outdoor category", "GMVT/wired-controller context"],
+      "safetyNotes": ["Do not advise pump, liquid-level switch, or main-board replacement directly to consumers."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-E9",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E9/Eb E9 GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "eA",
+      "officialCode": "EA",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-eA.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-eA/EA GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/ea.json",
+      "decision": "needs-human-source-review",
+      "reason": "Tiny table-only card shows uppercase EA while inventory code is eA; casing and GMV6 applicability need human confirmation.",
+      "sourceMeaning": "Oil solenoid valve protection",
+      "equipmentType": "outdoor",
+      "categoryFolder": "outdoor",
+      "conflicts": ["official image shows EA", "inventory key is eA", "table-only evidence"],
+      "safetyNotes": ["Do not create runtime casing until source spelling is confirmed."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-eA",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-eA/EA GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Eb",
+      "officialCode": "Eb",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Eb.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Eb/Eb E9 GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/eb.json",
+      "decision": "needs-human-source-review",
+      "reason": "Shared Eb/E9 cassette water-full card conflicts with the proposed outdoor GMV6 path and needs source review before runtime use.",
+      "sourceMeaning": "Water-full protection (Cassette)",
+      "equipmentType": "indoor-cassette",
+      "categoryFolder": "outdoor",
+      "conflicts": ["shared Eb/E9 card", "indoor cassette meaning conflicts with proposed outdoor category", "GMVT/wired-controller context"],
+      "safetyNotes": ["Do not advise pump, liquid-level switch, or main-board replacement directly to consumers."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Eb",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Eb/Eb E9 GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "EE",
+      "officialCode": "EE",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-EE.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-EE/EE GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/ee.json",
+      "decision": "needs-human-source-review",
+      "reason": "Table-only GMVT controller card lacks GMV6 runtime category and diagnostic scope.",
+      "sourceMeaning": "Remote lock",
+      "equipmentType": "controller",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMVT Digital Multi VRF table-only evidence", "remote-lock status may not be outdoor protection"],
+      "safetyNotes": ["Keep as non-runtime until exact GMV6 context and display source are confirmed."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-EE",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-EE/EE GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "eH",
+      "officialCode": "EH",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-eH.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-eH/EH GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/eh.json",
+      "decision": "needs-human-source-review",
+      "reason": "Tiny table-only card shows uppercase EH while inventory code is eH; equipment side and GMV6 applicability are not clear.",
+      "sourceMeaning": "Auxiliary heater error",
+      "equipmentType": "indoor-or-controller",
+      "categoryFolder": "outdoor",
+      "conflicts": ["official image shows EH", "inventory key is eH", "auxiliary-heater context conflicts with proposed outdoor category"],
+      "safetyNotes": ["Do not create runtime casing or equipment category until source spelling and model context are confirmed."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-eH",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-eH/EH GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "F2",
+      "officialCode": "F2",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-F2.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F2/F2 GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/f2.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is GMV-W water heat pump VRF and does not confirm GMV6 applicability.",
+      "sourceMeaning": "Plate type heat exchanger inlet pipe temperature sensor fault",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "water heat pump plate-heat-exchanger component is not mapped to current GMV6 package boundary"],
+      "safetyNotes": ["Consumer text must not advise opening equipment or replacing sensors/boards."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-F2",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F2/F2 GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "F4",
+      "officialCode": "F4",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-F4.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F4/F4 GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/f4.json",
+      "decision": "needs-human-source-review",
+      "reason": "Card includes both a small GMV table meaning and a GMV-W water heat pump sensor card; the conflict must be resolved before runtime use.",
+      "sourceMeaning": "Outdoor ambient temperature sensor error / plate type heat exchanger outlet pipe temperature sensor fault",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["conflicting meanings on same image", "GMV-W source label", "proposed outdoor category is too broad"],
+      "safetyNotes": ["Do not normalize until the authoritative meaning for GMV6 is selected."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-F4",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F4/F4 GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "FH",
+      "officialCode": "FH",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-FH.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-FH/FH GMV.PNG",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/fh.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card does not establish GMV6 applicability beyond the generic GMV support model.",
+      "sourceMeaning": "Abnormal current sensor of compressor 1",
+      "equipmentType": "outdoor",
+      "categoryFolder": "outdoor",
+      "conflicts": ["generic GMV official-support card only", "not in current GMV6 manual package set"],
+      "safetyNotes": ["Visible text would need qualified-service sensor checks and no direct board replacement advice."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-FH",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-FH/FH GMV.PNG"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Fy",
+      "officialCode": "Fy",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Fy.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Fy/Fy GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/fy.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is GMV-W water heat pump VRF and does not confirm GMV6 applicability.",
+      "sourceMeaning": "Water inlet temperature wrap fault",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "water heat pump component is not mapped to current GMV6 package boundary"],
+      "safetyNotes": ["Consumer text must not advise replacing temperature wrap/main board."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Fy",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Fy/Fy GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Ho",
+      "officialCode": "HO",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Ho.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Ho/HO GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/ho.json",
+      "decision": "needs-human-source-review",
+      "reason": "Table-only card shows uppercase HO and has Ho/H0 visual ambiguity; source is not enough for runtime use.",
+      "sourceMeaning": "Marking of master hand controller",
+      "equipmentType": "controller",
+      "categoryFolder": "outdoor",
+      "conflicts": ["visual ambiguity Ho/H0/HO", "table-only GMVT controller evidence"],
+      "safetyNotes": ["Do not auto-map visually ambiguous controller/status codes."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Ho",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Ho/HO GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "JJ",
+      "officialCode": "JJ",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-JJ.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-JJ/JJ GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/jj.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is GMV-W water heat pump VRF and does not confirm GMV6 applicability.",
+      "sourceMeaning": "Water inlet undertemperature protection",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "hydronic protection not mapped to current GMV6 package boundary"],
+      "safetyNotes": ["Do not advise operation during protection state; checks require qualified service context."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-JJ",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-JJ/JJ GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Jn",
+      "officialCode": "Jn",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Jn.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jn/Jn GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/jn.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is GMV-W water heat pump VRF and does not confirm GMV6 applicability.",
+      "sourceMeaning": "Water flow abnormality protection",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "water-flow system checks are not mapped to current GMV6 package boundary"],
+      "safetyNotes": ["Consumer text must not advise opening water system or forcing operation."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Jn",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jn/Jn GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Jy",
+      "officialCode": "Jy",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Jy.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jy/Jy GMV.jpg",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/jy.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is GMV-W water heat pump VRF and does not confirm GMV6 applicability.",
+      "sourceMeaning": "Inlet water temperature abnormal protection",
+      "equipmentType": "water-heat-pump-vrf",
+      "categoryFolder": "outdoor",
+      "conflicts": ["GMV-W source label", "hydronic operating range is not mapped to current GMV6 package boundary"],
+      "safetyNotes": ["Consumer text must not advise sensor or main-board replacement."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Jy",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Jy/Jy GMV.jpg"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "Ld",
+      "officialCode": "Ld",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-Ld.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Ld/Ld GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/indoor/ld.json",
+      "decision": "still-blocked",
+      "reason": "Source meaning is clear, but the card is not in the current GMV6 manual package set and needs applicability confirmation before adding a new indoor runtime code.",
+      "sourceMeaning": "Protection for indoor fan (Fan 2)",
+      "equipmentType": "indoor",
+      "categoryFolder": "indoor",
+      "conflicts": ["generic GMV official-support card only", "direct replacement instruction must be normalized before any future runtime use"],
+      "safetyNotes": ["Visible text must only advise qualified-service checks with power off and no direct board replacement."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-Ld",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-Ld/Ld GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "N2",
+      "officialCode": "n2",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-N2.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-N2/n2 GMV.PNG",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/n2.json",
+      "decision": "needs-human-source-review",
+      "reason": "Source card is a clear status code, but ED-24GEC.8 flagged a GMV Mini conflict and the official image uses lowercase n2 while the inventory key is N2.",
+      "sourceMeaning": "Settings status of maximum capacity configuration rate for indoor and outdoor units",
+      "equipmentType": "status",
+      "categoryFolder": "status",
+      "conflicts": ["GMV Mini conflict", "casing conflict N2/n2", "not a fault", "troubleshooting not required"],
+      "safetyNotes": ["If later added, it should be reference/status-only and must not look like an active fault."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-N2",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-N2/n2 GMV.PNG"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    },
+    {
+      "code": "No",
+      "officialCode": "No",
+      "sourceCardPath": "data/reference/gree-official-support-error-catalog/review/Gree-GMV-No.review.json",
+      "rawCardPath": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-No/No GMV.png",
+      "existingRuntimePath": "",
+      "proposedRuntimePath": "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/no.json",
+      "decision": "needs-human-source-review",
+      "reason": "Table-only card has No/N0 visual ambiguity and no diagnostic procedure; do not promote without human source confirmation.",
+      "sourceMeaning": "No master indoor unit code",
+      "equipmentType": "status-or-controller",
+      "categoryFolder": "status",
+      "conflicts": ["visual ambiguity No/N0", "table-only GMVT controller evidence"],
+      "safetyNotes": ["Do not auto-map visually ambiguous status/controller codes."],
+      "sourceReferences": [
+        {
+          "sourceName": "Gree official support error code catalog",
+          "documentCode": "Gree-GMV-No",
+          "sourceReference": "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-No/No GMV.png"
+        }
+      ],
+      "addedRuntimeEntryId": ""
+    }
+  ]
+}
