@@ -139,6 +139,14 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             var updatedAccess = updatedUser is null
                 ? access
                 : new TelegramUserAccessResult(access.IsAllowed, updatedUser, updatedUser.Role, access.DenialReason);
+            var pendingServiceRequest = _conversationService is not null && updatedAccess.User is not null
+                ? await _conversationService.ResumePendingServiceRequestAfterPhoneSavedAsync(update, updatedAccess, cancellationToken)
+                : null;
+            if (pendingServiceRequest is not null)
+            {
+                return FromConversation(update.ChatId, pendingServiceRequest);
+            }
+
             var repeatedPrompt = _conversationService is not null && updatedAccess.User is not null
                 ? await _conversationService.RepeatActivePromptAsync(updatedAccess.User, updatedAccess, cancellationToken)
                 : null;
@@ -463,14 +471,14 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         }
 
         var result = await _serviceRequestService.CreateFromLatestAsync(update, access, cancellationToken);
-        var keyboard = result.Status switch
+        if (result.Status == TelegramServiceRequestAttemptStatus.PhoneMissing &&
+            _conversationService is not null &&
+            access.User is not null)
         {
-            TelegramServiceRequestAttemptStatus.PhoneMissing =>
-                TelegramDiagnosticConversationService.ServiceRequestPhoneKeyboard(),
-            TelegramServiceRequestAttemptStatus.Created or TelegramServiceRequestAttemptStatus.Existing =>
-                TelegramDiagnosticConversationService.ServiceRequestCreatedKeyboard(access),
-            _ => TelegramDiagnosticConversationService.MainKeyboard(access)
-        };
+            await _conversationService.MarkPendingServiceRequestAsync(access.User, cancellationToken);
+        }
+
+        var keyboard = TelegramDiagnosticConversationService.ServiceRequestKeyboard(result.Status, access);
         return Response(
             update.ChatId,
             result.Text,

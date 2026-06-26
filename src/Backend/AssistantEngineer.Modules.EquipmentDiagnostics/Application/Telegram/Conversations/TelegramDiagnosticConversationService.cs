@@ -6,6 +6,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Local
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Domain;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
@@ -27,7 +28,18 @@ public sealed class TelegramDiagnosticConversationService
     private const int TelegramTechnicalChunkLength = 3500;
     private const int ConsumerMessageLength = 900;
     private static readonly TimeSpan SessionTtl = TimeSpan.FromDays(30);
+    private static readonly TimeSpan PendingServiceRequestTtl = TimeSpan.FromHours(2);
+    private const string PendingServiceRequestActionType = "service-request";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
+    private sealed record TelegramConversationSessionPayload(
+        TelegramDiagnosticCandidate[] Candidates,
+        TelegramConversationPendingAction? PendingAction);
+
+    private sealed record TelegramConversationPendingAction(
+        string Type,
+        DateTimeOffset CreatedAt,
+        DateTimeOffset ExpiresAt);
 
     private readonly ITelegramConversationSessionStore _sessionStore;
     private readonly IEquipmentDiagnosticsService _diagnosticsService;
@@ -38,6 +50,7 @@ public sealed class TelegramDiagnosticConversationService
     private readonly EquipmentDiagnosticTelegramResponseFormatter _formatter;
     private readonly EquipmentDiagnosticTelegramOptions _options;
     private readonly TelegramDiagnosticHistoryService? _historyService;
+    private readonly TelegramServiceRequestService? _serviceRequestService;
 
     public TelegramDiagnosticConversationService(
         ITelegramConversationSessionStore sessionStore,
@@ -48,7 +61,8 @@ public sealed class TelegramDiagnosticConversationService
         EquipmentDiagnosticTelegramMessageParser parser,
         EquipmentDiagnosticTelegramResponseFormatter formatter,
         EquipmentDiagnosticTelegramOptions options,
-        TelegramDiagnosticHistoryService? historyService = null)
+        TelegramDiagnosticHistoryService? historyService = null,
+        TelegramServiceRequestService? serviceRequestService = null)
     {
         _sessionStore = sessionStore;
         _diagnosticsService = diagnosticsService;
@@ -59,6 +73,7 @@ public sealed class TelegramDiagnosticConversationService
         _formatter = formatter;
         _options = options;
         _historyService = historyService;
+        _serviceRequestService = serviceRequestService;
     }
 
     public static bool IsResetText(string? text)
@@ -131,6 +146,71 @@ public sealed class TelegramDiagnosticConversationService
         }
 
         return null;
+    }
+
+    public async Task MarkPendingServiceRequestAsync(
+        TelegramUserSnapshot user,
+        CancellationToken cancellationToken)
+    {
+        var session = await _sessionStore.GetByTelegramUserIdAsync(user.Id, cancellationToken);
+        var now = DateTimeOffset.UtcNow;
+        var expiresAt = now.Add(PendingServiceRequestTtl);
+        var candidates = ReadCandidates(session?.CandidateOptionsJson);
+        var payload = new TelegramConversationSessionPayload(
+            candidates.ToArray(),
+            new TelegramConversationPendingAction(PendingServiceRequestActionType, now, expiresAt));
+
+        await _sessionStore.UpsertAsync(
+            new TelegramConversationSessionUpsert(
+                user.Id,
+                TelegramConversationState.WaitingForPhoneNumber,
+                session?.CurrentCode,
+                session?.SelectedManufacturer,
+                session?.SelectedEquipmentType,
+                session?.SelectedDisplayContext,
+                JsonSerializer.Serialize(payload, JsonOptions),
+                session?.LastPromptMessageId,
+                now,
+                expiresAt),
+            cancellationToken);
+    }
+
+    public async Task<TelegramDiagnosticConversationResult?> ResumePendingServiceRequestAfterPhoneSavedAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (_serviceRequestService is null || access.User is null)
+        {
+            return null;
+        }
+
+        var session = await _sessionStore.GetByTelegramUserIdAsync(access.User.Id, cancellationToken);
+        if (session is null ||
+            !TryReadPendingServiceRequest(session, update.ReceivedAt ?? DateTimeOffset.UtcNow, out var isExpired))
+        {
+            return null;
+        }
+
+        if (isExpired)
+        {
+            await _sessionStore.ClearAsync(access.User.Id, cancellationToken);
+            return new TelegramDiagnosticConversationResult(
+                true,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                "Спасибо, номер сохранён.\n\nСрок запроса на мастера истёк. Отправьте код ошибки ещё раз, например: Gree H5.",
+                [],
+                MainKeyboard(access));
+        }
+
+        var result = await _serviceRequestService.CreateFromLatestAsync(update, access, cancellationToken);
+        await _sessionStore.ClearAsync(access.User.Id, cancellationToken);
+        return new TelegramDiagnosticConversationResult(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            string.Join("\n\n", "Спасибо, номер сохранён.", result.Text),
+            [],
+            ServiceRequestKeyboard(result.Status, access));
     }
 
     public async Task<TelegramDiagnosticConversationResult> HandleTextAsync(
@@ -243,6 +323,12 @@ public sealed class TelegramDiagnosticConversationService
             updatedUser,
             updatedUser.Role,
             access.DenialReason);
+
+        var pendingRequestResult = await ResumePendingServiceRequestAfterPhoneSavedAsync(update, updatedAccess, cancellationToken);
+        if (pendingRequestResult is not null)
+        {
+            return pendingRequestResult;
+        }
 
         var resumePrompt = await ResumeDiagnosticPromptAsync(session, updatedAccess, cancellationToken);
         if (resumePrompt is not null)
@@ -950,6 +1036,18 @@ public sealed class TelegramDiagnosticConversationService
             ResizeKeyboard: true,
             OneTimeKeyboard: false);
 
+    public static EquipmentDiagnosticTelegramReplyMarkup ServiceRequestKeyboard(
+        TelegramServiceRequestAttemptStatus status,
+        TelegramUserAccessResult access) =>
+        status switch
+        {
+            TelegramServiceRequestAttemptStatus.PhoneMissing =>
+                ServiceRequestPhoneKeyboard(),
+            TelegramServiceRequestAttemptStatus.Created or TelegramServiceRequestAttemptStatus.Existing =>
+                ServiceRequestCreatedKeyboard(access),
+            _ => MainKeyboard(access)
+        };
+
     private static EquipmentDiagnosticTelegramReplyMarkup ChoiceKeyboard(
         IReadOnlyList<string> options,
         TelegramUserAccessResult access)
@@ -1023,11 +1121,58 @@ public sealed class TelegramDiagnosticConversationService
 
         try
         {
-            return JsonSerializer.Deserialize<TelegramDiagnosticCandidate[]>(json, JsonOptions) ?? [];
+            using var document = JsonDocument.Parse(json);
+            if (document.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                return JsonSerializer.Deserialize<TelegramDiagnosticCandidate[]>(json, JsonOptions) ?? [];
+            }
+
+            if (document.RootElement.ValueKind == JsonValueKind.Object &&
+                document.RootElement.TryGetProperty("candidates", out var candidates) &&
+                candidates.ValueKind == JsonValueKind.Array)
+            {
+                return candidates.Deserialize<TelegramDiagnosticCandidate[]>(JsonOptions) ?? [];
+            }
+
+            return [];
         }
         catch (JsonException)
         {
             return [];
+        }
+    }
+
+    private static bool TryReadPendingServiceRequest(
+        TelegramConversationSessionSnapshot session,
+        DateTimeOffset now,
+        out bool isExpired)
+    {
+        isExpired = false;
+        if (session.State != TelegramConversationState.WaitingForPhoneNumber ||
+            string.IsNullOrWhiteSpace(session.CandidateOptionsJson))
+        {
+            return false;
+        }
+
+        try
+        {
+            var payload = JsonSerializer.Deserialize<TelegramConversationSessionPayload>(
+                session.CandidateOptionsJson,
+                JsonOptions);
+            var pendingAction = payload?.PendingAction;
+            if (pendingAction is null ||
+                !string.Equals(pendingAction.Type, PendingServiceRequestActionType, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            isExpired = pendingAction.ExpiresAt <= now ||
+                (session.ExpiresAt is not null && session.ExpiresAt <= now);
+            return true;
+        }
+        catch (JsonException)
+        {
+            return false;
         }
     }
 
