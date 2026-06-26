@@ -1,0 +1,662 @@
+{
+    "schemaVersion":  1,
+    "status":  "staging-runtime-overlay-preview",
+    "stage":  "ED-24GEC.5D",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "runtimeEnabled":  false,
+    "diagnosticsRuntimeEnabled":  false,
+    "sourcePreview":  ".ae-tools/ed-24gec-5c-merge-preview/approved-runtime-merge-preview.json",
+    "count":  17,
+    "entries":  [
+                    {
+                        "code":  "A0",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/a0.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-A0.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-A0.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
+                                        "titleRu":  "Gree GMV A0 — состояние ожидания пусконаладки",
+                                        "meaningRu":  "A0 у Gree GMV является статусным кодом: он появляется до завершения инженерной пусконаладки системы. Это не обычная авария датчика или платы.",
+                                        "severityRu":  "Сервисное состояние; требуется проверка по карточке перед runtime.",
+                                        "possibleCausesRu":  [
+                                                                 "Состояние или неисправность определяется по raw-карточке A0.",
+                                                                 "Требуется инженерная проверка перед approved/runtime."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить, завершена ли пусконаладка системы.",
+                                                         "Проверить настройки и процедуру commissioning по сервисной документации.",
+                                                         "Не искать неисправность платы только по A0, если система ещё не введена в эксплуатацию."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Legacy priority draft normalized for approved-reference structure.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "A0 относится к сервисному или эксплуатационному состоянию GMV. Если оборудование работает штатно и нет аварийных признаков, обычно достаточно зафиксировать код и проверить его по сервисной карточке. Если есть остановка, запах, шум, срабатывание защиты или повторное появление кода — нужен сервисный специалист.",
+                                        "technicianAnswerRu":  "Для A0 использовать уже заполненные поля review-карточки как основную трактовку. Перед approved/runtime сверить raw card и не давать пользователю действий, связанных с разбором наружного блока. Runtime пока не включать.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "C0",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/c0.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C0.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C0.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG",
+                                        "titleRu":  "Gree GMV C0 — нарушение связи",
+                                        "meaningRu":  "Код C0 указывает на ошибку связи в системе GMV: наружный блок не обменивается данными с внутренним блоком, либо внутренний блок не обменивается данными с проводным пультом.",
+                                        "severityRu":  "Средняя или высокая: зависит от активности ошибки связи.",
+                                        "possibleCausesRu":  [
+                                                                 "Нарушение связи между блоками или платами.",
+                                                                 "Плохой контакт коммуникационной линии.",
+                                                                 "Проблема питания одного из участников связи.",
+                                                                 "Адресация или конфликт устройств."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить связь наружный блок ↔ внутренний блок.",
+                                                         "Проверить связь внутренний блок ↔ проводной пульт.",
+                                                         "Проверить клеммы, разъёмы и полярность линии связи.",
+                                                         "Проверить кабель связи на обрыв и плохой контакт.",
+                                                         "Проверить адреса внутренних блоков и проводных пультов.",
+                                                         "Проверить количество подключённых проводных пультов.",
+                                                         "Если проводка, адреса и настройки исправны — проверить плату внутреннего блока, плату наружного блока или проводной пульт."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Сохранить различие общего C0 и специфичных Mini/GMV6 карточек.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "C0 указывает на проблему связи в системе GMV. Даже если сейчас связь восстановилась, код мог остаться в истории или ожидать сброса после нормального обмена. Проверь питание блоков, межблочную линию связи и повторяемость ошибки.",
+                                        "technicianAnswerRu":  "При C0 проверять линию связи GMV: питание блоков, полярность/целостность коммуникационной линии, клеммы, адресацию и наличие конфликтов. Если ошибка уже не активна, проверить историю и условия сброса/самовосстановления. Не путать общий C0 с более конкретными вариантами Mini/GMV6.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "C7",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/c7.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C7.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C7.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG",
+                                        "titleRu":  "Gree GMV C7 — нарушение связи преобразователя",
+                                        "meaningRu":  "Код C7 указывает на нарушение связи преобразователя. Карточка Gree даёт короткое описание без расширенного алгоритма диагностики.",
+                                        "severityRu":  "Сервисное состояние; требуется уточнение по условиям появления.",
+                                        "possibleCausesRu":  [
+                                                                 "Ограничение или защитное состояние системы.",
+                                                                 "Влияние внешнего управления или контроллера.",
+                                                                 "Условия появления требуют проверки по raw-карточке C7."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить разъёмы и проводку связи преобразователя.",
+                                                         "Проверить питание и состояние соответствующего модуля/платы.",
+                                                         "Если связь и питание исправны — проверять преобразователь и управляющую плату по сервисной документации."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Legacy priority draft normalized for approved-reference structure.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "C7 связан с состоянием или ограничением работы системы GMV. Если код появляется периодически, важно зафиксировать когда именно он появляется, какие блоки работают и есть ли подключённые внешние контроллеры или ограничения.",
+                                        "technicianAnswerRu":  "Для C7 использовать заполненные review-поля как основу. Проверить условия появления кода, состояние управления/ограничений, внешние контроллеры и связь. Перед approved/runtime требуется инженерная проверка формулировки по raw card.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "E0",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e0.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E0.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E0.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png",
+                                        "titleRu":  "Gree GMV E0 — неисправность наружного блока",
+                                        "meaningRu":  "Код E0 на внутреннем пульте означает, что наружный блок сообщил неисправность. Конкретную причину нужно уточнять по коду на двухразрядном индикаторе главной платы наружного блока.",
+                                        "severityRu":  "Требуется диагностика наружного блока сервисным специалистом.",
+                                        "possibleCausesRu":  [
+                                                                 "Неисправность наружного блока.",
+                                                                 "Внутренний пульт показывает общий код, а конкретный под-код находится на главной плате наружного блока.",
+                                                                 "Дальнейшая причина зависит от кода на двухразрядном индикаторе наружного блока."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить двухразрядный индикатор/LED на главной плате наружного блока.",
+                                                         "Записать точный код, который отображается на наружной плате.",
+                                                         "Продолжить диагностику по конкретному коду наружного блока."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "E0 не является финальной причиной неисправности.",
+                                                               "Не заменять узлы только по E0 без чтения кода с платы наружного блока.",
+                                                               "Raw card: Malfunction of ODU."
+                                                           ],
+                                        "userSafeAnswerRu":  "E0 означает, что внутренний пульт видит неисправность наружного блока. Нужен точный код с индикатора на главной плате наружного блока — по нему определяется дальнейшая диагностика.",
+                                        "technicianAnswerRu":  "При E0 сначала считать код на двухразрядном индикаторе главной платы наружного блока. E0 на внутреннем пульте является общим указателем на fault ODU; дальнейшие действия выполнять по конкретному наружному под-коду.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "E1",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/e1.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E1.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E1.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG",
+                                        "titleRu":  "Gree GMV E1 — защита по высокому давлению",
+                                        "meaningRu":  "Код E1 указывает на protection in case of too high pressure. Блок останавливается для безопасной работы, если датчик/реле высокого давления фиксирует превышение или размыкание цепи защиты.",
+                                        "severityRu":  "Высокая: защитное состояние наружного блока.",
+                                        "possibleCausesRu":  [
+                                                                 "Защита или неисправность наружного блока.",
+                                                                 "Возможная проблема давления, теплообмена или условий работы.",
+                                                                 "Точная причина требует сверки с raw-карточкой E1."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить фактическое высокое давление и состояние реле/датчика высокого давления.",
+                                                         "Проверить, полностью ли открыт клапан наружного блока.",
+                                                         "Проверить работу наружных и внутренних вентиляторов.",
+                                                         "Проверить фильтры, воздуховоды, жалюзи и теплообменники на загрязнение/засор.",
+                                                         "Проверить электронные расширительные клапаны.",
+                                                         "Проверить температуру окружающей среды.",
+                                                         "Проверить, нет ли засора трубопровода.",
+                                                         "Если есть признаки перезаправки — корректировать количество хладагента только по сервисной процедуре."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Не рекомендовать многократный перезапуск без диагностики.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "E1 обычно относится к защите по высокому давлению или аварийному состоянию наружного блока. Не стоит многократно перезапускать систему без диагностики. Нужно проверить теплообмен, вентиляторы, загрязнение, режим работы и точный код/состояние наружного блока.",
+                                        "technicianAnswerRu":  "При E1 проверить контур высокого давления: теплообмен наружного блока, вентиляторы, загрязнение, воздушный поток, перегрузку, заправку и показания датчиков/реле давления согласно raw card. До approved/runtime сверить конкретную GMV-карточку.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "F3",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/f3.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-F3.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-F3.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG",
+                                        "titleRu":  "Gree GMV F3 — неисправность датчика низкого давления",
+                                        "meaningRu":  "Главная плата наружного блока контролирует AD-значение датчика низкого давления. Если значение выходит за допустимые пределы в течение 30 секунд, формируется ошибка F3.",
+                                        "severityRu":  "Требуется сервисная диагностика цепи датчика низкого давления.",
+                                        "possibleCausesRu":  [
+                                                                 "Плохой контакт между датчиком низкого давления и разъёмом главной платы.",
+                                                                 "Плохой контакт между датчиком низкого давления и местом измерения давления.",
+                                                                 "Неисправен датчик низкого давления.",
+                                                                 "Неисправна цепь измерения датчика низкого давления."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить разъём датчика низкого давления на главной плате: ослабление, загрязнение, посторонние предметы.",
+                                                         "Проверить подключение датчика к месту измерения давления.",
+                                                         "Очистить и плотно переподключить разъёмы при плохом контакте.",
+                                                         "Если контакт исправен, проверить/заменить датчик низкого давления.",
+                                                         "Если после замены датчика ошибка остаётся, проверить цепь измерения и главную плату."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Fault display: главная плата наружного блока, проводной пульт внутреннего блока, приёмная плата внутреннего блока.",
+                                                               "По raw card последним шагом при подозрении на неисправность цепи является замена main control board.",
+                                                               "Не путать F3 с P3: это разные коды."
+                                                           ],
+                                        "userSafeAnswerRu":  "F3 связан с датчиком низкого давления наружного блока. Обычно проверяют разъёмы, подключение датчика и сам датчик. Без доступа к наружному блоку и измерительным приборам лучше вызвать сервис.",
+                                        "technicianAnswerRu":  "Для F3 проверить AD-цепь датчика низкого давления: разъём на главной плате, контакт в точке измерения давления, состояние датчика. При плохом контакте очистить и переподключить. Если после проверки/замены датчика ошибка сохраняется, проверить цепь измерения и главную плату наружного блока.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "H5",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/h5.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-H5.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-H5.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
+                                        "titleRu":  "Gree GMV H5 — защита по перегрузке тока инверторного вентилятора",
+                                        "meaningRu":  "Код H5 указывает на over-current protection for the inverter fan — перегрузку тока инверторного вентилятора наружного блока.",
+                                        "severityRu":  "Высокая: силовая часть или защитное состояние.",
+                                        "possibleCausesRu":  [
+                                                                 "Срабатывание защиты силового модуля.",
+                                                                 "Проблема питания.",
+                                                                 "Проблема силовой платы или связанных цепей.",
+                                                                 "Точная причина требует проверки по raw-карточке H5."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить правильность подключения фаз U, V, W вентилятора.",
+                                                         "Проверить сопротивление обмоток вентилятора и сопротивление изоляции на землю.",
+                                                         "Проверить, не заблокированы ли лопасти вентилятора.",
+                                                         "Проверить, нет ли связанных ошибок вентилятора, например H1, H6, H9.",
+                                                         "Если вентилятор и проводка исправны — проверить плату привода вентилятора."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Не рекомендовать замену платы без проверки питания и нагрузки.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "H5 относится к защите или неисправности силовой части/модуля управления. Это не код для пользовательского сброса. Нужна диагностика наружного блока, питания и силовых компонентов.",
+                                        "technicianAnswerRu":  "При H5 проверять питание, силовой модуль, плату управления и связанные цепи согласно заполненным review-полям и raw card. Не рекомендовать замену платы без проверки питания, разъёмов, нагрузки и условий появления ошибки.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "L1",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/indoor/l1.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-L1.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-L1.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG",
+                                        "titleRu":  "Gree GMV L1 — защита вентилятора внутреннего блока",
+                                        "meaningRu":  "Код L1 указывает на защиту вентилятора внутреннего блока: вентилятор может вращаться слишком медленно, остановиться, быть заблокированным, либо сработал внешний сигнал защиты вентилятора.",
+                                        "severityRu":  "Сервисное или защитное состояние; требуется проверка по карточке.",
+                                        "possibleCausesRu":  [
+                                                                 "Причина определяется по raw-карточке L1.",
+                                                                 "Возможное защитное состояние наружного блока или системы."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить, свободно ли вращается крыльчатка вентилятора.",
+                                                         "Проверить, нет ли посторонних предметов, загрязнения или механического заклинивания.",
+                                                         "Проверить двигатель вентилятора.",
+                                                         "Проверить разъёмы и сигнальные провода защиты вентилятора.",
+                                                         "Проверить плату внутреннего блока, если механика, двигатель и проводка исправны."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Legacy priority draft normalized for approved-reference structure.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "L1 относится к защитному или сервисному состоянию GMV. Для точного вывода нужно смотреть заполненную карточку и состояние наружного блока. Если код активный и система не работает — требуется сервисная диагностика.",
+                                        "technicianAnswerRu":  "Для L1 использовать текущие normalizedRu-поля как основную трактовку. Проверить условия возникновения, наружную плату/индикатор, питание и связанные цепи по raw card. Перед runtime требуется отдельное approved-подтверждение.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "o1",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/indoor/o1.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-o1.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-o1.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG",
+                                        "titleRu":  "Gree GMV o1 — низкое напряжение шины внутреннего блока",
+                                        "meaningRu":  "Код o1 указывает на low bus bar voltage of IDU — низкое напряжение шины внутреннего блока. По карточке Gree проверяется питание и плата привода вентилятора.",
+                                        "severityRu":  "Сервисное состояние; важно точное написание кода.",
+                                        "possibleCausesRu":  [
+                                                                 "Причина определяется по raw-карточке o1.",
+                                                                 "Возможна ошибка визуального ввода кода: o1 / 01 / O1."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить, находится ли питание в нормальном диапазоне, требуемом для блока.",
+                                                         "Проверить соединения питания внутреннего блока.",
+                                                         "Если питание нормальное — проверить плату привода вентилятора.",
+                                                         "При подтверждённой неисправности платы привода — заменить плату по сервисной процедуре."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Сохранить каноническое написание o1.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "o1 важно не путать с 01 или O1. Вводить и проверять нужно именно код с маленькой буквой o. Если код активный, ориентироваться на карточку o1 и состояние конкретной системы GMV.",
+                                        "technicianAnswerRu":  "Для o1 сохранить каноническое написание именно o1. Не матчить автоматически как 01/O1. Перед approved/runtime проверить raw card, визуальное отображение кода и правила нормализации диагностического поиска.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P0",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/p0.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P0.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P0.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/P0 GMV.PNG",
+                                        "titleRu":  "Gree GMV P0 — неисправность платы привода компрессора",
+                                        "meaningRu":  "P0 на проводном пульте внутреннего блока является обобщённым кодом неисправности компрессорного драйвера. Для точной причины нужно смотреть двухразрядный индикатор главной платы наружного блока.",
+                                        "severityRu":  "Высокая: диагностика компрессорного привода наружного блока.",
+                                        "possibleCausesRu":  [
+                                                                 "P3 на плате наружного блока: защита сброса/перезапуска модуля привода компрессора.",
+                                                                 "P7 на плате наружного блока: неисправность температурного датчика привода компрессора.",
+                                                                 "P8 на плате наружного блока: защита IPM по перегреву.",
+                                                                 "PC на плате наружного блока: неисправность цепи измерения тока привода компрессора.",
+                                                                 "PF на плате наружного блока: неисправность цепи заряда привода компрессора.",
+                                                                 "P9 на плате наружного блока: защита от потери синхронизации инверторного компрессора.",
+                                                                 "PJ на плате наружного блока: ошибка запуска инверторного компрессора."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Считать код на двухразрядном индикаторе главной платы наружного блока.",
+                                                         "Определить конкретный под-код привода компрессора.",
+                                                         "Выполнять диагностику по под-коду, отображаемому на плате наружного блока."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "P0 не даёт точную причину без кода на outdoor main board.",
+                                                               "Raw card указывает troubleshooting based on the faults displayed on the main board of the outdoor unit.",
+                                                               "Не заменять плату привода только по P0 без проверки наружного под-кода."
+                                                           ],
+                                        "userSafeAnswerRu":  "P0 означает общую ошибку платы привода компрессора. Нужен дополнительный код на плате наружного блока — без него нельзя точно понять причину.",
+                                        "technicianAnswerRu":  "При P0 считать 2-digit LED код главной платы наружного блока. По нему определить конкретную неисправность привода компрессора: P3, P7, P8, PC, PF, P9 или PJ, затем выполнять диагностику по соответствующей карте.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P1",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/p1.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P1.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P1.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG",
+                                        "titleRu":  "Gree GMV P1 — ненормальная работа платы привода компрессора",
+                                        "meaningRu":  "P1 на проводном пульте указывает на ненормальную работу компрессорного драйвера. Для уточнения причины нужно смотреть код на двухразрядном индикаторе главной платы наружного блока.",
+                                        "severityRu":  "Высокая: диагностика компрессорного привода наружного блока.",
+                                        "possibleCausesRu":  [
+                                                                 "P5 на плате наружного блока: защита инверторного компрессора по сверхтоку.",
+                                                                 "P6 на плате наружного блока: защита IPM-модуля привода компрессора.",
+                                                                 "C2 на плате наружного блока: неисправность связи привода компрессора."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Считать 2-digit LED код на главной плате наружного блока.",
+                                                         "Если отображается P5, проверять условия сверхтока инверторного компрессора.",
+                                                         "Если отображается P6, проверять IPM-модуль/цепь привода.",
+                                                         "Если отображается C2, проверять связь компрессорного драйвера."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Raw card: Malfunctioning Compressor Drive Board.",
+                                                               "Troubleshooting выполняется по коду, отображаемому на главной плате наружного блока."
+                                                           ],
+                                        "userSafeAnswerRu":  "P1 относится к плате привода компрессора. Для точной диагностики нужно посмотреть дополнительный код на плате наружного блока.",
+                                        "technicianAnswerRu":  "При P1 считать код на 2-digit LED главной платы наружного блока. Возможные направления по raw card: P5 сверхток инверторного компрессора, P6 защита IPM-модуля, C2 связь компрессорного драйвера.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P2",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/p2.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P2.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P2.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG",
+                                        "titleRu":  "Gree GMV P2 — защита входного напряжения платы привода компрессора",
+                                        "meaningRu":  "P2 указывает на защиту входного напряжения компрессорного драйвера. Конкретная причина уточняется по двухразрядному индикатору главной платы наружного блока.",
+                                        "severityRu":  "Высокая: проверка питания и DC-шины компрессорного привода.",
+                                        "possibleCausesRu":  [
+                                                                 "PH на плате наружного блока: перенапряжение DC-шины привода компрессора.",
+                                                                 "PL на плате наружного блока: пониженное напряжение DC-шины привода компрессора."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Считать код на двухразрядном индикаторе главной платы наружного блока.",
+                                                         "При PH проверять условия перенапряжения DC-шины привода.",
+                                                         "При PL проверять условия пониженного напряжения DC-шины привода.",
+                                                         "Проверять питание наружного блока и цепи компрессорного драйвера согласно сервисной процедуре."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "P2 на пульте является групповой ошибкой.",
+                                                               "Raw card: Input Voltage Protection for the Compressor Drive Board.",
+                                                               "Troubleshooting выполняется по faults displayed on the main board of the outdoor unit."
+                                                           ],
+                                        "userSafeAnswerRu":  "P2 связан с защитой по напряжению платы привода компрессора. Нужно проверить питание наружного блока и дополнительный код на плате наружного блока.",
+                                        "technicianAnswerRu":  "При P2 считать наружный 2-digit LED код. Если PH — проверять перенапряжение DC bus компрессорного драйвера; если PL — пониженное напряжение DC bus. Дальше выполнять диагностику питания и цепей драйвера.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U0",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u0.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U0.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U0.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG",
+                                        "titleRu":  "Gree GMV U0 — недостаточное время прогрева компрессора",
+                                        "meaningRu":  "Код U0 указывает, что перед запуском компрессора картер/масло прогревались недостаточно долго. По карточке Gree требуется прогрев более 8 часов перед запуском.",
+                                        "severityRu":  "Сервисное или защитное состояние; зависит от активности ошибки.",
+                                        "possibleCausesRu":  [
+                                                                 "Защитное состояние системы GMV.",
+                                                                 "Условия появления требуют проверки по raw-карточке U0.",
+                                                                 "Возможны дополнительные коды на плате наружного блока."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить, сколько времени питание было подано на наружный блок перед запуском.",
+                                                         "Оставить питание наружного блока включённым и дать системе прогреться более 8 часов.",
+                                                         "После прогрева выполнить повторный запуск.",
+                                                         "Если U0 появляется после нормального прогрева — отдельно проверить цепь питания/подогрева компрессора по сервисной документации."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Legacy priority draft normalized for approved-reference structure.",
+                                                               "Runtime remains disabled."
+                                                           ],
+                                        "userSafeAnswerRu":  "U0 относится к защитному или сервисному состоянию системы GMV. Если код появляется повторно, нужно зафиксировать режим работы, температуру, состояние наружного блока и дополнительные коды на платах.",
+                                        "technicianAnswerRu":  "Для U0 использовать уже заполненные review-поля как источник трактовки. Проверить условия появления, наружную плату/индикатор и связанные датчики/защиты по raw card. Не включать runtime без approved-проверки.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U2",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u2.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U2.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U2.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/U2 GMV.PNG",
+                                        "titleRu":  "Gree GMV U2 — ошибка настройки мощности наружного блока DIP-переключателем или перемычкой",
+                                        "meaningRu":  "Главная плата наружного блока обнаружила несоответствие настройки мощности фактической мощности блока или несоответствие значения перемычки фактической конфигурации.",
+                                        "severityRu":  "Требуется проверка настроек наружного блока перед эксплуатацией.",
+                                        "possibleCausesRu":  [
+                                                                 "Неверная настройка DIP-переключателя мощности или перемычки.",
+                                                                 "DIP-переключатель или перемычка повреждены.",
+                                                                 "Неисправна цепь определения настройки."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Сверить положение DIP-переключателя мощности или перемычки с фактической моделью/мощностью наружного блока.",
+                                                         "Отключить питание перед изменением DIP-переключателя или перемычки.",
+                                                         "Выставить корректную настройку или заменить правильную перемычку, затем снова подать питание.",
+                                                         "Если настройка корректная, проверить цепь определения и главную плату."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Applicable models: all outdoor units.",
+                                                               "Для некоторых моделей без jumper cap ошибка перемычки может не определяться.",
+                                                               "По raw card при подозрении на неисправность цепи — replace the main control board."
+                                                           ],
+                                        "userSafeAnswerRu":  "U2 означает ошибку настройки мощности наружного блока. Нужно проверить DIP-переключатели или перемычки на плате наружного блока и сверить их с моделью.",
+                                        "technicianAnswerRu":  "При U2 сверить capacity DIP switch / jumper cap на main board с фактической мощностью и моделью наружного блока. Менять настройки только при снятом питании. Если настройки правильные, проверить цепь определения; при её неисправности рассматривается замена главной платы.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U3",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u3.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U3.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U3.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/U3 GMV.PNG",
+                                        "titleRu":  "Gree GMV U3 — защита по фазировке питания",
+                                        "meaningRu":  "Код U3 возникает при неправильном подключении трёхфазного питания, пропадании фазы или обратной последовательности фаз.",
+                                        "severityRu":  "Высокая: требуется проверка электропитания.",
+                                        "possibleCausesRu":  [
+                                                                 "Неправильно подключено питание наружного блока.",
+                                                                 "Пропала одна из фаз.",
+                                                                 "Неверная последовательность фаз.",
+                                                                 "Неисправна цепь контроля питания."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить трёхфазное питание наружного блока.",
+                                                         "Проверить наличие всех фаз.",
+                                                         "Проверить и при необходимости исправить последовательность фаз.",
+                                                         "Если питание корректное, проверить цепь контроля и главную плату."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Fault display: главная плата наружного блока, проводной пульт, приёмная плата внутреннего блока.",
+                                                               "Работы с трёхфазным питанием выполнять только квалифицированному специалисту.",
+                                                               "По raw card при подозрении на неисправность detection circuit — replace the main control board."
+                                                           ],
+                                        "userSafeAnswerRu":  "U3 означает проблему с трёхфазным питанием: возможна потеря фазы или неправильная последовательность фаз. Это должен проверять электрик или сервисный специалист.",
+                                        "technicianAnswerRu":  "При U3 проверить правильность подключения трёхфазного питания, наличие всех фаз и фазировку. Если питание в норме, проверить цепь детекции; при её неисправности по карте предусмотрена замена main control board.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U4",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u4.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U4.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U4.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/U4 GMV.PNG",
+                                        "titleRu":  "Gree GMV U4 — защита по недостатку хладагента",
+                                        "meaningRu":  "Система оценивает давление по датчикам высокого и низкого давления. Перед запуском, если давление не соответствует ожидаемым условиям относительно температуры окружающей среды, блок может уйти в защиту и не запускаться.",
+                                        "severityRu":  "Требуется проверка холодильного контура.",
+                                        "possibleCausesRu":  [
+                                                                 "Недостаточное количество хладагента в системе.",
+                                                                 "Утечка в трубопроводах или холодильном контуре."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить соответствие заправки хладагентом проектным требованиям.",
+                                                         "Проверить систему на утечки.",
+                                                         "Устранить утечки и выполнить корректную дозаправку по сервисной процедуре.",
+                                                         "Проверить показания датчиков давления при необходимости."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Raw card: Refrigerant Loss Protection.",
+                                                               "В карточке указано, что защита может не разрешать запуск для safety purpose.",
+                                                               "Не сводить диагностику только к дозаправке: сначала исключить утечки и ошибки измерения давления."
+                                                           ],
+                                        "userSafeAnswerRu":  "U4 указывает на защиту по недостатку хладагента или возможной утечке. Нужно проверить заправку и герметичность системы.",
+                                        "technicianAnswerRu":  "При U4 проверить фактическую заправку относительно проектных требований, выполнить поиск утечек трубопроводов/контура, устранить утечки и заправить по процедуре. При спорных показаниях дополнительно проверить датчики давления.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U5",
+                        "status":  "staging-overlay-preview",
+                        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/u5.json",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U5.approved.json",
+                        "overlay":  {
+                                        "referenceSource":  "gree-official-support-error-catalog",
+                                        "referenceStage":  "ED-24GEC.4B",
+                                        "referenceApprovedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U5.approved.json",
+                                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U5/U5 GMV.png",
+                                        "titleRu":  "Gree GMV U5 — ошибка адреса платы привода компрессора",
+                                        "meaningRu":  "Карточка указывает на неправильный адрес платы привода компрессора.",
+                                        "severityRu":  "Требуется сервисная проверка адресации платы привода компрессора.",
+                                        "possibleCausesRu":  [
+                                                                 "Неверно задан адрес платы привода компрессора.",
+                                                                 "Адрес платы привода не соответствует требуемой конфигурации наружного блока.",
+                                                                 "Возможна ошибка настройки или замены платы привода."
+                                                             ],
+                                        "checksRu":  [
+                                                         "Проверить адрес/настройку платы привода компрессора по сервисной документации конкретной модели.",
+                                                         "Проверить соответствие платы привода компрессора наружному блоку.",
+                                                         "После корректировки адресации выполнить перезапуск согласно сервисной процедуре."
+                                                     ],
+                                        "serviceNotesRu":  [
+                                                               "Raw card содержит только краткое описание: Wrong address for driving board of compressor.",
+                                                               "Для approved-версии желательно дополнить данные из сервисного мануала конкретной серии.",
+                                                               "Не включать в runtime без дополнительной проверки."
+                                                           ],
+                                        "userSafeAnswerRu":  "U5 означает ошибку адреса платы привода компрессора. Это настройка внутри наружного блока, её должен проверять сервисный специалист.",
+                                        "technicianAnswerRu":  "При U5 проверить адресацию/настройку compressor driving board и соответствие установленной платы конфигурации наружного блока. Карточка содержит только краткое описание, поэтому перед approved/runtime требуется сверка с сервисным мануалом конкретной серии.",
+                                        "runtimeEnabled":  false,
+                                        "diagnosticsRuntimeEnabled":  false
+                                    },
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeEnabled":  false
+                    }
+                ],
+    "blockedMappings":  [
+                            {
+                                "code":  "C0",
+                                "status":  "blocked",
+                                "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv-mini/indoor/c0.json",
+                                "reason":  "Do not merge Gree GMV approved reference into GMV Mini C0 runtime entry.",
+                                "blockedStage":  "ED-24GEC.5D"
+                            }
+                        ],
+    "freeze":  {
+                   "frozenUtc":  "2026-06-26T06:41:40Z",
+                   "frozenBy":  "manual-staging-overlay-review",
+                   "basis":  "Deterministic approved-to-runtime mapping from ED-24GEC.5C.",
+                   "notes":  [
+                                 "This is a staging overlay only.",
+                                 "It does not modify data/equipment-diagnostics runtime JSON.",
+                                 "It must not be used directly by Telegram runtime.",
+                                 "Future importer stage must map and test runtime behavior explicitly."
+                             ]
+               }
+}
