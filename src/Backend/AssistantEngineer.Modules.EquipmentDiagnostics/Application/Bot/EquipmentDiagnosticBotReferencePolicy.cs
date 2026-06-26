@@ -26,6 +26,8 @@ public static class EquipmentDiagnosticBotReferencePolicy
         "gree-gmv6-indoor-l1",
         "gree-gmv6-indoor-o1",
         "gree-gmv6-outdoor-e1",
+        "gree-gmv6-outdoor-fh",
+        "gree-gmv6-outdoor-h0",
         "gree-gmv6-outdoor-h5",
         "gree-gmv6-status-a0",
         "gree-gmv-mini-indoor-aj",

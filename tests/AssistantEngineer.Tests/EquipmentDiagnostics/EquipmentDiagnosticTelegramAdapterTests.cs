@@ -299,6 +299,22 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
+    [InlineData("Gree Ho")]
+    [InlineData("Gree HO")]
+    public async Task HoVisualInputRoutesToCanonicalGmv6H0WithClarification(string query)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Gree GMV6 H0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("HO/Ho часто означает H0", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV6 Ho", response.Text, StringComparison.Ordinal);
+    }
+
+    [Theory]
     [InlineData("Gree GMV Mini AJ", "сервисное напоминание", "не аварийная защита")]
     [InlineData("Gree GMV Mini n1", "параметрический статус", "не авария")]
     public async Task GmvMiniAnswerClassesDoNotLookLikeActiveFaults(

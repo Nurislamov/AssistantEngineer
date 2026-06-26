@@ -118,7 +118,7 @@ public sealed class ManualCoverageRegistryTests
         Assert.Equal("DiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
         Assert.Equal("DeployedAndSmokeVerified", manual.GetProperty("productionStatus").GetString());
         Assert.Equal("GC202001-I", manual.GetProperty("documentCode").GetString());
-        Assert.Equal(253, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(255, manual.GetProperty("entriesImported").GetInt32());
         Assert.Equal(4, packageIds.Length);
         Assert.All(packageIds, packageId =>
             Assert.True(File.Exists(Path.Combine(

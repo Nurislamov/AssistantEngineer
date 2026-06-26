@@ -59,7 +59,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(262, entries.Count);
+        Assert.Equal(264, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -199,7 +199,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(262, entries.Count);
+        Assert.Equal(264, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -278,6 +278,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !expectedCodes.Contains(entry.Code) &&
                 !gmvMiniMergedCodes.Contains(entry.Code) &&
                 !officialSupportReferencedCodes.Contains(entry.Code) &&
+                !ManualConfirmedGmv6RuntimeIds.Contains(entry.Id) &&
                 !entry.Id.StartsWith("gree-gmv-mini-", StringComparison.OrdinalIgnoreCase)),
             entry => Assert.Empty(entry.SourceReferences));
     }
@@ -466,7 +467,11 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Equal(
             [ErrorKnowledgeSignalType.Fault, ErrorKnowledgeSignalType.Protection],
             package.IntendedSignalTypes);
-        Assert.Equal(120, package.EntryCountExpected);
+        Assert.Equal(121, package.EntryCountExpected);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv6-status-codes" &&
+                item.EntryCountExpected == 37);
     }
 
     [Fact]
@@ -936,6 +941,12 @@ public sealed class ErrorKnowledgeJsonValidationTests
         "gree-gmv6-indoor-d1",
         "gree-gmv6-indoor-o1"
     ];
+
+    private static readonly HashSet<string> ManualConfirmedGmv6RuntimeIds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "gree-gmv6-outdoor-fh",
+        "gree-gmv6-status-n2"
+    };
 
     private static readonly string[] ImprovedMessageForbiddenPhrases =
     [

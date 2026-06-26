@@ -41,6 +41,15 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         "manual-review-batch-9",
         "manual-review-9.csv");
 
+    private static readonly string CodeStatusRegistryJsonPath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "reference",
+        "gree-official-support-error-catalog",
+        "staging",
+        "code-status-registry",
+        "gree-code-status-registry.json");
+
     private static readonly string[] ExpectedBlockedCodes =
     [
         "by",
@@ -64,6 +73,17 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         "N2",
         "No"
     ];
+
+    private static readonly string[] ExpectedPromotedCodes =
+    [
+        "FH",
+        "N2"
+    ];
+
+    private static readonly string[] ExpectedStillBlockedCodes =
+        ExpectedBlockedCodes
+            .Except(ExpectedPromotedCodes, StringComparer.Ordinal)
+            .ToArray();
 
     [Fact]
     public void RemainingRuntimeCandidatePreviewDocumentsBlockedCards()
@@ -131,8 +151,8 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(262, entries.Count);
-        foreach (var code in ExpectedBlockedCodes)
+        Assert.Equal(264, entries.Count);
+        foreach (var code in ExpectedStillBlockedCodes)
         {
             Assert.DoesNotContain(
                 entries,
@@ -140,6 +160,122 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
                     entry.Series == "GMV6" &&
                     string.Equals(entry.Code, code, StringComparison.Ordinal));
         }
+    }
+
+    [Fact]
+    public void ManualConfirmedGmv6FhAndN2AreLoadedWithoutHoOrEeRuntimeCards()
+    {
+        var source = new JsonErrorKnowledgeLocalizationSource();
+        var entries = source.GetEntries();
+
+        var fh = Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-fh");
+        Assert.Equal("Gree", fh.Manufacturer);
+        Assert.Equal("GMV6", fh.Series);
+        Assert.Equal("FH", fh.Code);
+        Assert.Equal("Abnormal Current Sensor of Compressor 1", fh.SourceMeaning);
+        Assert.Equal("ManualVerified", fh.VerificationStatus);
+        Assert.Equal("High", fh.Confidence);
+        Assert.Contains(fh.SourceReferences, reference =>
+            reference.ManualId == "gree-gmv6-service-manual-2020-09" &&
+            reference.VerificationStatus == "ManualVerified" &&
+            reference.Confidence == "High");
+
+        var gmv6N2 = Assert.Single(entries, entry => entry.Id == "gree-gmv6-status-n2");
+        Assert.Equal("GMV6", gmv6N2.Series);
+        Assert.Equal("n2", gmv6N2.Code);
+        Assert.Equal("Status", gmv6N2.SignalType.ToString());
+        Assert.Contains("Maximum Capacity Configuration", gmv6N2.SourceMeaning, StringComparison.Ordinal);
+        Assert.Contains(gmv6N2.SourceReferences, reference =>
+            reference.ManualId == "gree-gmv6-service-manual-2020-09" &&
+            reference.VerificationStatus == "ManualVerified" &&
+            reference.Confidence == "High");
+
+        Assert.Single(entries, entry => entry.Id == "gree-gmv-mini-status-n2");
+        Assert.DoesNotContain(entries, entry =>
+            entry.Manufacturer == "Gree" &&
+            entry.Series == "GMV6" &&
+            string.Equals(entry.Code, "Ho", StringComparison.Ordinal));
+        Assert.DoesNotContain(entries, entry =>
+            entry.Manufacturer == "Gree" &&
+            entry.Series == "GMV6" &&
+            string.Equals(entry.Code, "EE", StringComparison.Ordinal));
+
+        Assert.False(File.Exists(Path.Combine(
+            TestPaths.RepoRoot,
+            "data",
+            "equipment-diagnostics",
+            "error-knowledge",
+            "gree",
+            "gmv6",
+            "outdoor",
+            "ho.json")));
+    }
+
+    [Fact]
+    public void ManualConfirmedGmv6RuntimeTextsAvoidInternalWordsAndUnsafeConsumerAdvice()
+    {
+        var source = new JsonErrorKnowledgeLocalizationSource();
+        var entries = source.GetEntries()
+            .Where(entry => entry.Id is "gree-gmv6-outdoor-fh" or "gree-gmv6-status-n2")
+            .ToArray();
+
+        Assert.Equal(2, entries.Length);
+        foreach (var entry in entries)
+        {
+            foreach (var text in entry.Texts)
+            {
+                var visibleText = string.Join(
+                    " ",
+                    text.Title,
+                    text.Summary,
+                    text.SafetyNote,
+                    string.Join(" ", text.PossibleCauses),
+                    string.Join(" ", text.CheckSteps),
+                    string.Join(" ", text.DoNotAdvise),
+                    text.RecommendedAction,
+                    text.SourceNote);
+
+                AssertNoInternalCatalogWords(visibleText);
+            }
+
+            var consumer = Assert.Single(entry.Texts, text => text.Audience.ToString() == "Consumer");
+            AssertNoUnsafeConsumerAdvice(string.Join(
+                " ",
+                consumer.SafetyNote,
+                string.Join(" ", consumer.CheckSteps),
+                string.Join(" ", consumer.RecommendedAction)));
+        }
+    }
+
+    [Fact]
+    public void CodeStatusRegistryReflectsManualConfirmedRuntimeBatch()
+    {
+        var registry = ReadJsonArray(CodeStatusRegistryJsonPath)
+            .Select(Assert.IsType<JsonObject>)
+            .ToDictionary(item => RequiredString(item, "Code"), StringComparer.Ordinal);
+
+        Assert.Equal("RuntimeAdded", RequiredString(registry["FH"], "TrackingStatus"));
+        Assert.Equal(
+            "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/fh.json",
+            RequiredString(registry["FH"], "ExistingRuntimePaths"));
+
+        Assert.Equal("RuntimeAdded", RequiredString(registry["N2"], "TrackingStatus"));
+        Assert.Contains(
+            "data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n2.json",
+            RequiredString(registry["N2"], "ExistingRuntimePaths"),
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/n2.json",
+            RequiredString(registry["N2"], "ExistingRuntimePaths"),
+            StringComparison.Ordinal);
+
+        Assert.Equal("AliasToExistingCode", RequiredString(registry["Ho"], "TrackingStatus"));
+        Assert.Equal(
+            "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/h0.json",
+            RequiredString(registry["Ho"], "ExistingRuntimePaths"));
+
+        Assert.Equal("BlockedNoiseOrSeriesMismatch", RequiredString(registry["EE"], "TrackingStatus"));
+        Assert.Equal("no", RequiredString(registry["EE"], "ExistingRuntime"));
     }
 
     [Fact]
@@ -194,9 +330,9 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var report = ReadJsonObject(ManualReviewBatch9JsonPath);
         var reviews = Batch9Reviews(report);
 
-        Assert.Equal(262, entries.Count);
+        Assert.Equal(264, entries.Count);
         Assert.Equal(0, reviews.Count(item => RequiredString(item, "decision") == "added-runtime"));
-        foreach (var item in reviews)
+        foreach (var item in reviews.Where(item => !ExpectedPromotedCodes.Contains(RequiredString(item, "code"), StringComparer.Ordinal)))
         {
             var code = RequiredString(item, "code");
             Assert.DoesNotContain(
@@ -301,5 +437,44 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var node = obj[propertyName];
         Assert.NotNull(node);
         return node.GetValue<bool>();
+    }
+
+    private static void AssertNoInternalCatalogWords(string text)
+    {
+        foreach (var forbidden in new[]
+        {
+            "support-каталог",
+            "reference-only",
+            "справочная запись",
+            "raw",
+            "review",
+            "staging",
+            "runtime",
+            "internal",
+            "sourceMeaning",
+            "machine translated"
+        })
+        {
+            Assert.DoesNotContain(forbidden, text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    private static void AssertNoUnsafeConsumerAdvice(string text)
+    {
+        foreach (var forbidden in new[]
+        {
+            "откройте панель",
+            "откройте панели",
+            "разберите",
+            "снимите крышку",
+            "измерьте напряжение",
+            "измерить напряжение",
+            "замкните",
+            "обойдите защит",
+            "принудительный пуск"
+        })
+        {
+            Assert.DoesNotContain(forbidden, text, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

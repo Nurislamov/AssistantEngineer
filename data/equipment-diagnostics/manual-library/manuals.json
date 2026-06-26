@@ -845,7 +845,7 @@
       "coverageStatus": "DiagnosticScopeImported",
       "diagnosticUsefulness": "High",
       "importedPackageIds": ["gree-gmv6-indoor-fault-codes", "gree-gmv6-outdoor-fault-protection-codes", "gree-gmv6-debugging-codes", "gree-gmv6-status-codes"],
-      "entriesImported": 253,
+      "entriesImported": 255,
       "categoriesImported": ["Indoor", "Outdoor", "Debugging", "Status"],
       "knownSmokeCodes": ["Gree C0", "Gree U0", "Gree H5", "Gree E1", "Gree A0"],
       "sourceCommit": "32cfd432d6de17bc6fe98393dd839ea840a5b320",

@@ -32,6 +32,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
 
         var manufacturer = Normalize(request.Manufacturer);
         var code = Normalize(request.Code);
+        var observedCode = request.Code?.Trim() ?? code;
         var trace = new List<string> { "RequestNormalized", "RuntimeCatalogOnly" };
 
         if (manufacturer.Length == 0 || code.Length == 0)
@@ -49,7 +50,13 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 trace);
         }
 
-        var localizedResolution = ResolveLocalizedKnowledge(request, manufacturer, code, trace);
+        if (TryCanonicalizeVisualAlias(manufacturer, code, request.Series, request.FreeText, out var aliasCode))
+        {
+            trace.Add($"VisualCodeAlias:{code}->{aliasCode}");
+            code = aliasCode;
+        }
+
+        var localizedResolution = ResolveLocalizedKnowledge(request, manufacturer, code, observedCode, trace);
         if (localizedResolution is not null)
         {
             return localizedResolution;
@@ -114,7 +121,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                 return LocalizedKnowledgeResponse(
                     localizedMatches[0],
                     manufacturer,
-                    code,
+                    observedCode,
                     request.FreeText,
                     trace);
             }
@@ -329,6 +336,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
         EquipmentDiagnosticBotRequest request,
         string manufacturer,
         string code,
+        string observedCode,
         List<string> trace)
     {
         var localizedMatches = FindLocalizedMatches(request, manufacturer, code);
@@ -378,7 +386,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             return LocalizedKnowledgeResponse(
                 selected,
                 manufacturer,
-                code,
+                observedCode,
                 request.FreeText,
                 trace,
                 resolution.ApplicableContexts.Count > 1 ? resolution.ApplicableContexts : []);
@@ -468,7 +476,9 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             .ToArray();
 
         var exactCodeMatches = matches
-            .Where(entry => string.Equals(entry.Code, request.Code?.Trim(), StringComparison.Ordinal))
+            .Where(entry =>
+                string.Equals(entry.Code, request.Code?.Trim(), StringComparison.Ordinal) ||
+                string.Equals(entry.Code, code, StringComparison.Ordinal))
             .ToArray();
         if (exactCodeMatches.Length > 0)
         {
@@ -486,6 +496,26 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
              normalizedFreeText.Contains(Normalize(entry.Series), StringComparison.Ordinal)) ||
             IsSignalHintMatch(entry, normalizedFreeText)).ToArray();
         return hinted.Length > 0 ? hinted : matches;
+    }
+
+    private static bool TryCanonicalizeVisualAlias(
+        string manufacturer,
+        string code,
+        string? series,
+        string? freeText,
+        out string canonicalCode)
+    {
+        _ = series;
+        _ = freeText;
+        canonicalCode = code;
+        if (string.Equals(manufacturer, "GREE", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(code, "HO", StringComparison.Ordinal))
+        {
+            canonicalCode = "H0";
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsSignalHintMatch(ErrorKnowledgeEntryV2 entry, string normalizedFreeText) =>

@@ -166,7 +166,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var text = selection.Text;
         var builder = new StringBuilder();
         builder.AppendLine($"Код оборудования: {response.NormalizedManufacturer} {response.NormalizedCode}");
-        AppendConfusableCodeNote(builder, response.NormalizedCode);
+        AppendConfusableCodeNote(builder, response);
         builder.AppendLine();
         builder.AppendLine(TechnicalTitle(response, text));
         builder.AppendLine();
@@ -317,7 +317,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         var text = selection.Text;
         var entry = selection.Entry;
         builder.AppendLine(TechnicalTitle(response, text));
-        AppendConfusableCodeNote(builder, response.NormalizedCode);
+        AppendConfusableCodeNote(builder, response);
         builder.AppendLine();
         builder.AppendLine("Суть:");
         builder.AppendLine(RussianDiagnosticTerminology.ImprovePhrase(text.Summary));
@@ -357,8 +357,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             ? "Gree"
             : manufacturer;
 
-    private static void AppendConfusableCodeNote(StringBuilder builder, string code)
+    private static void AppendConfusableCodeNote(StringBuilder builder, EquipmentDiagnosticBotResponse response)
     {
+        var code = response.NormalizedCode;
         if (string.Equals(code, "o1", StringComparison.Ordinal))
         {
             builder.AppendLine("Код: o1 — буква O + цифра 1.");
@@ -367,7 +368,15 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         {
             builder.AppendLine("Код: L1 — буква L + цифра 1.");
         }
+        else if (string.Equals(code, "H0", StringComparison.Ordinal) &&
+            IsObservedHoAlias(response.ObservedCode.Code))
+        {
+            builder.AppendLine("Проверьте точное написание: на семисегментном дисплее HO/Ho часто означает H0.");
+        }
     }
+
+    private static bool IsObservedHoAlias(string observedCode) =>
+        string.Equals(observedCode.Trim(), "HO", StringComparison.OrdinalIgnoreCase);
 
     private static void AppendApplicableContexts(
         StringBuilder builder,

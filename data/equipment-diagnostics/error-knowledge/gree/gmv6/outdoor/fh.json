@@ -1,0 +1,124 @@
+{
+  "id": "gree-gmv6-outdoor-fh",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV6",
+  "models": [
+    "GMV-224WM/G-X",
+    "GMV-280WM/G-X",
+    "GMV-335WM/G-X",
+    "GMV-400WM/G-X",
+    "GMV-450WM/G-X",
+    "GMV-504WM/G-X",
+    "GMV-560WM/G-X",
+    "GMV-615WM/G-X",
+    "GMV-680WM/G-X"
+  ],
+  "code": "FH",
+  "signalType": "Fault",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Sensor",
+  "severity": "High",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Service Manual for GMV6 v_2020.09",
+  "sourceMeaning": "Abnormal Current Sensor of Compressor 1",
+  "sourceReference": "Troubleshooting 2.70 FH / manual evidence line 6924",
+  "sourceReferences": [
+    {
+      "sourceName": "Service Manual for GMV6 v_2020.09",
+      "documentCode": "GC202001-I",
+      "sourceReference": "Section 2.70: FH Abnormal Current Sensor of Compressor 1 / manual evidence line 6924",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+      "notes": "Exact GMV6 service manual row confirms code FH and source meaning."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-26T00:00:00Z",
+  "updatedAt": "2026-06-26T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-26T00:00:00Z",
+      "updatedAt": "2026-06-26T00:00:00Z",
+      "id": "gree-gmv6-outdoor-fh-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV6 FH — неисправность датчика тока компрессора 1",
+      "summary": "Код FH на наружном блоке GMV6 означает ненормальное состояние датчика тока компрессора 1.",
+      "safetyNote": "Остановите повторные перезапуски, если код появляется снова. Не открывайте панели и не выполняйте электрические проверки самостоятельно.",
+      "checkSteps": [
+        "Запишите код FH, модель GMV6 и место, где показан код.",
+        "Отметьте, когда появляется код: при запуске, в работе или после отключения.",
+        "Если это безопасно без разборки, проверьте снаружи видимую грязь, лёд или перекрытие воздуха."
+      ],
+      "doNotAdvise": [
+        "Не открывать электрические отсеки.",
+        "Не измерять напряжение или ток самостоятельно.",
+        "Не менять датчик, плату или компрессор только по коду."
+      ],
+      "recommendedAction": "Если FH сохраняется, создайте сервисную заявку и передайте специалисту модель, код и условия появления.",
+      "sourceNote": "Значение подтверждено разделом 2.70 руководства GMV6."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-26T00:00:00Z",
+      "updatedAt": "2026-06-26T00:00:00Z",
+      "id": "gree-gmv6-outdoor-fh-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV6 FH — неисправность датчика тока компрессора 1",
+      "summary": "Руководство GMV6 связывает FH с ненормальным состоянием датчика тока компрессора 1 на наружном блоке.",
+      "safetyNote": "Внутренние проверки выполняет квалифицированный специалист при снятом питании и по сервисной процедуре.",
+      "checkSteps": [
+        "Подтвердить серию GMV6, наружный блок и место отображения FH.",
+        "Проверить условия установки, питание и сообщения контроллера без расширения вывода только по коду.",
+        "При снятом питании проверить посадку разъёмов датчика тока и связанных цепей по руководству."
+      ],
+      "doNotAdvise": [
+        "Не объявлять замену датчика, платы или компрессора без подтверждающих проверок.",
+        "Не выполнять проверки на открытых токоведущих частях."
+      ],
+      "recommendedAction": "Передать инженеру модель, условия появления FH и результаты безопасной проверки для диагностики по разделу 2.70.",
+      "sourceNote": "Значение подтверждено разделом 2.70 руководства GMV6."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-26T00:00:00Z",
+      "updatedAt": "2026-06-26T00:00:00Z",
+      "id": "gree-gmv6-outdoor-fh-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV6 FH — неисправность датчика тока компрессора 1",
+      "summary": "FH относится к цепи датчика тока компрессора 1 наружного блока GMV6.",
+      "safetyNote": "Измерения, инверторные проверки, проверки фаз, датчиков, плат и компрессорных цепей выполняются только квалифицированным сервисом по руководству.",
+      "checkSteps": [
+        "Подтвердить точную модель, плату отображения и код FH.",
+        "Проверить разъёмы и цепь датчика тока компрессора 1 при снятом питании.",
+        "Выполнить измерения и проверку платы, датчика и компрессорной цепи по разделу 2.70."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправном компоненте только по коду.",
+        "Не обходить защитные алгоритмы и не выполнять принудительный пуск до завершения проверки."
+      ],
+      "recommendedAction": "Сопоставить FH с фактическими симптомами и выполнить квалифицированную диагностику по разделу 2.70 руководства GMV6.",
+      "sourceNote": "Значение подтверждено разделом 2.70 руководства GMV6."
+    }
+  ]
+}

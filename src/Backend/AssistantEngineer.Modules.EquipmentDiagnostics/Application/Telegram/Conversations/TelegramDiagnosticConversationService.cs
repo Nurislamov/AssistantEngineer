@@ -375,7 +375,8 @@ public sealed class TelegramDiagnosticConversationService
     {
         var parsedRequest = _parser.Parse(update.Text, _options).DiagnosticRequest;
         var requestedSeries = parsedRequest?.Series ?? DiagnosticRoutingHintExtractor.ExtractSeries(update.Text);
-        var candidates = await FindCandidatesByCodeAsync(code, requestedSeries, cancellationToken);
+        var lookupCode = CanonicalizeVisualLookupCode(code);
+        var candidates = await FindCandidatesByCodeAsync(lookupCode, requestedSeries, cancellationToken);
         if (!string.IsNullOrWhiteSpace(requestedSeries))
         {
             var seriesCandidates = candidates
@@ -619,10 +620,14 @@ public sealed class TelegramDiagnosticConversationService
             cancellationToken);
 
         var finalCandidate = candidates[0];
+        var requestCode = IsHoVisualAlias(code) &&
+            string.Equals(finalCandidate.Code, "H0", StringComparison.OrdinalIgnoreCase)
+                ? code
+                : finalCandidate.Code;
         var diagnosis = await _botFacade.DiagnoseAsync(
             new EquipmentDiagnosticBotRequest(
                 selectedManufacturer,
-                finalCandidate.Code,
+                requestCode,
                 FreeText: null,
                 Series: resolveAsMeaningGroup ? null : finalCandidate.Series,
                 ModelCode: resolveAsMeaningGroup ? null : finalCandidate.ModelCode,
@@ -727,6 +732,12 @@ public sealed class TelegramDiagnosticConversationService
 
         return PreferExactCodeMatches(code, localizedCandidates);
     }
+
+    private static string CanonicalizeVisualLookupCode(string code) =>
+        IsHoVisualAlias(code) ? "H0" : code;
+
+    private static bool IsHoVisualAlias(string code) =>
+        string.Equals(code, "HO", StringComparison.OrdinalIgnoreCase);
 
     private async Task<TelegramConversationSessionSnapshot> SaveAsync(
         long telegramUserId,

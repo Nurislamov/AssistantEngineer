@@ -218,6 +218,22 @@ public sealed class EquipmentDiagnosticBotServiceTests
         Assert.Contains(response.InternalDecisionTrace!, value => value.StartsWith("LocalizedKnowledgeMeaningGroup:", StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("Ho")]
+    [InlineData("HO")]
+    public async Task HoVisualAliasResolvesToExistingGmv6H0(string code)
+    {
+        using var provider = CreateProvider();
+        var service = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", code));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.Answer, response.Status);
+        Assert.Equal("H0", response.NormalizedCode);
+        Assert.Equal(code, response.ObservedCode.Code);
+        Assert.Contains("VisualCodeAlias:HO->H0", response.InternalDecisionTrace!);
+    }
+
     [Fact]
     public async Task GmvMiniC0SeriesHintSelectsGmvMiniEntry()
     {
