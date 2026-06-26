@@ -90,7 +90,9 @@
                                                "Перед проверкой вентилятора, UVW-кабелей и платы отключить питание оборудования.",
                                                "Не запускать вентилятор при заблокированной крыльчатке."
                                            ],
-                         "operatorHintRu":  "Для H5 сначала проверяется механика вентилятора и UVW-проводка, а не сразу замена платы."
+                         "operatorHintRu":  "Для H5 сначала проверяется механика вентилятора и UVW-проводка, а не сразу замена платы.",
+                         "userSafeAnswerRu":  "H5 относится к защите или неисправности силовой части/модуля управления. Это не код для пользовательского сброса. Нужна диагностика наружного блока, питания и силовых компонентов.",
+                         "technicianAnswerRu":  "При H5 проверять питание, силовой модуль, плату управления и связанные цепи согласно заполненным review-полям и raw card. Не рекомендовать замену платы без проверки питания, разъёмов, нагрузки и условий появления ошибки."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -112,10 +114,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

@@ -104,7 +104,9 @@
                                                "Не сбрасывать E1 без проверки причины высокого давления.",
                                                "Работы с хладагентом и давлением выполнять только по сервисной процедуре и с подходящим оборудованием."
                                            ],
-                         "operatorHintRu":  "Для E1 сначала проверяются клапаны, давление, вентиляторы и воздушный поток. Избыточный хладагент — возможная, но не единственная причина."
+                         "operatorHintRu":  "Для E1 сначала проверяются клапаны, давление, вентиляторы и воздушный поток. Избыточный хладагент — возможная, но не единственная причина.",
+                         "userSafeAnswerRu":  "E1 обычно относится к защите по высокому давлению или аварийному состоянию наружного блока. Не стоит многократно перезапускать систему без диагностики. Нужно проверить теплообмен, вентиляторы, загрязнение, режим работы и точный код/состояние наружного блока.",
+                         "technicianAnswerRu":  "При E1 проверить контур высокого давления: теплообмен наружного блока, вентиляторы, загрязнение, воздушный поток, перегрузку, заправку и показания датчиков/реле давления согласно raw card. До approved/runtime сверить конкретную GMV-карточку."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -126,10 +128,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

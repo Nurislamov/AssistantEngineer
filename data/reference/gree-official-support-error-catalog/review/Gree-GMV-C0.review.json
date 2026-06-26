@@ -94,7 +94,9 @@
                                                "Перед проверкой клемм и плат отключить питание оборудования.",
                                                "Не менять адреса и схему связи без фиксации текущих настроек."
                                            ],
-                         "operatorHintRu":  "Если ошибка была после проблем со связью, она может оставаться в истории/индикации до сброса или перезапуска, даже когда связь уже восстановлена. Нужно отличать активную аварию от сохранённой истории ошибки."
+                         "operatorHintRu":  "Если ошибка была после проблем со связью, она может оставаться в истории/индикации до сброса или перезапуска, даже когда связь уже восстановлена. Нужно отличать активную аварию от сохранённой истории ошибки.",
+                         "userSafeAnswerRu":  "C0 указывает на проблему связи в системе GMV. Даже если сейчас связь восстановилась, код мог остаться в истории или ожидать сброса после нормального обмена. Проверь питание блоков, межблочную линию связи и повторяемость ошибки.",
+                         "technicianAnswerRu":  "При C0 проверять линию связи GMV: питание блоков, полярность/целостность коммуникационной линии, клеммы, адресацию и наличие конфликтов. Если ошибка уже не активна, проверить историю и условия сброса/самовосстановления. Не путать общий C0 с более конкретными вариантами Mini/GMV6."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -116,10 +118,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

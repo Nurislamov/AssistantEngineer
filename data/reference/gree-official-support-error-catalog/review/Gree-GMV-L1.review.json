@@ -89,7 +89,9 @@
                                                "Перед проверкой вентилятора и платы отключить питание внутреннего блока.",
                                                "Не вращать вентилятор руками при включённом питании."
                                            ],
-                         "operatorHintRu":  "Для L1 сначала проверяется механика вентилятора и разъёмы, а уже потом плата."
+                         "operatorHintRu":  "Для L1 сначала проверяется механика вентилятора и разъёмы, а уже потом плата.",
+                         "userSafeAnswerRu":  "L1 относится к защитному или сервисному состоянию GMV. Для точного вывода нужно смотреть заполненную карточку и состояние наружного блока. Если код активный и система не работает — требуется сервисная диагностика.",
+                         "technicianAnswerRu":  "Для L1 использовать текущие normalizedRu-поля как основную трактовку. Проверить условия возникновения, наружную плату/индикатор, питание и связанные цепи по raw card. Перед runtime требуется отдельное approved-подтверждение."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -111,10 +113,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

@@ -82,7 +82,9 @@
                                                "Перед проверкой питания и платы отключить питание оборудования.",
                                                "Измерения выполнять только подходящим прибором и с соблюдением электробезопасности."
                                            ],
-                         "operatorHintRu":  "Важно не путать o1 с 01. Для GMV в официальной карточке указан именно o1 — low bus bar voltage of IDU."
+                         "operatorHintRu":  "Важно не путать o1 с 01. Для GMV в официальной карточке указан именно o1 — low bus bar voltage of IDU.",
+                         "userSafeAnswerRu":  "o1 важно не путать с 01 или O1. Вводить и проверять нужно именно код с маленькой буквой o. Если код активный, ориентироваться на карточку o1 и состояние конкретной системы GMV.",
+                         "technicianAnswerRu":  "Для o1 сохранить каноническое написание именно o1. Не матчить автоматически как 01/O1. Перед approved/runtime проверить raw card, визуальное отображение кода и правила нормализации диагностического поиска."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -104,10 +106,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

@@ -79,7 +79,9 @@
                                                "Перед проверкой разъёмов и плат отключить питание оборудования.",
                                                "Не менять платы без проверки питания, связи и разъёмов."
                                            ],
-                         "operatorHintRu":  "Для C7 карточка Gree содержит короткое описание, поэтому в ответе не надо придумывать точные причины сверх проверки связи, питания, разъёмов и модуля преобразователя."
+                         "operatorHintRu":  "Для C7 карточка Gree содержит короткое описание, поэтому в ответе не надо придумывать точные причины сверх проверки связи, питания, разъёмов и модуля преобразователя.",
+                         "userSafeAnswerRu":  "C7 связан с состоянием или ограничением работы системы GMV. Если код появляется периодически, важно зафиксировать когда именно он появляется, какие блоки работают и есть ли подключённые внешние контроллеры или ограничения.",
+                         "technicianAnswerRu":  "Для C7 использовать заполненные review-поля как основу. Проверить условия появления кода, состояние управления/ограничений, внешние контроллеры и связь. Перед approved/runtime требуется инженерная проверка формулировки по raw card."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -101,10 +103,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }

@@ -80,7 +80,9 @@
                                                "Не запускать систему в обход процедуры пусконаладки.",
                                                "Перед изменением commissioning-настроек зафиксировать текущие параметры."
                                            ],
-                         "operatorHintRu":  "A0 — это статус до завершения пусконаладки, а не типовая авария. В первую очередь нужно завершить commissioning."
+                         "operatorHintRu":  "A0 — это статус до завершения пусконаладки, а не типовая авария. В первую очередь нужно завершить commissioning.",
+                         "userSafeAnswerRu":  "A0 относится к сервисному или эксплуатационному состоянию GMV. Если оборудование работает штатно и нет аварийных признаков, обычно достаточно зафиксировать код и проверить его по сервисной карточке. Если есть остановка, запах, шум, срабатывание защиты или повторное появление кода — нужен сервисный специалист.",
+                         "technicianAnswerRu":  "Для A0 использовать уже заполненные поля review-карточки как основную трактовку. Перед approved/runtime сверить raw card и не давать пользователю действий, связанных с разбором наружного блока. Runtime пока не включать."
                      },
     "botCandidate":  {
                          "readyForBotKnowledge":  false,
@@ -102,10 +104,17 @@
                    "needsHumanReview":  true,
                    "approved":  false,
                    "confidence":  "draft",
-                   "extractionStatus":  "drafted"
+                   "extractionStatus":  "drafted-from-raw-card",
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+                                 "ED-24GEC.3C.1 added userSafeAnswerRu and technicianAnswerRu; still requires human engineering review before approval."
+                             ]
                },
     "importer":  {
                      "diagnosticsRuntimeCandidate":  false,
-                     "diagnosticsRuntimeEnabled":  false
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
                  }
 }
