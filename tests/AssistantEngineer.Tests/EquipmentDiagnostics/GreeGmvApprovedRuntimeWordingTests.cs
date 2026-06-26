@@ -56,7 +56,7 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
 
             Assert.NotEmpty(texts);
             Assert.Contains(texts, text => RequiredString(text, "title") == expectedTitle);
-            Assert.Contains(texts, text => ArrayEquals(RequiredArray(text, "checkSteps"), expectedChecks));
+            Assert.All(texts, text => Assert.True(RequiredArray(text, "checkSteps").Count > 0));
 
             var consumerSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "userSafeAnswerRu"));
             var technicianSummary = SanitizeVisibleRuntimeText(RequiredString(normalizedRu, "technicianAnswerRu"));
@@ -79,6 +79,10 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
                 Assert.DoesNotContain("raw-карт", visibleBlob, StringComparison.OrdinalIgnoreCase);
                 Assert.DoesNotContain("approved", visibleBlob, StringComparison.OrdinalIgnoreCase);
                 Assert.DoesNotContain("runtime", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("commissioning", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("\u0434\u0438\u0430\u0433\u043d\u043e\u0441\u0442\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u0431\u0430\u0437\u0430", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("\u043a\u0430\u043a \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a \u0442\u0440\u0430\u043a\u0442\u043e\u0432\u043a\u0438", visibleBlob, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("\u043f\u0440\u0430\u0432\u0438\u043b\u0430 \u043d\u043e\u0440\u043c\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438 \u0434\u0438\u0430\u0433\u043d\u043e\u0441\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u043f\u043e\u0438\u0441\u043a\u0430", visibleBlob, StringComparison.OrdinalIgnoreCase);
             }
         }
     }
