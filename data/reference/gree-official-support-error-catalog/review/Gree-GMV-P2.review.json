@@ -1,0 +1,67 @@
+{
+    "schemaVersion":  1,
+    "status":  "review-template",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "code":  "P2",
+    "runtimeEnabled":  false,
+    "source":  {
+                   "sourceKind":  "official-support-error-code-card",
+                   "rawFolderPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_models-P2.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_presign-P2-GMV-P2 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_search-P2-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "normalizedRu":  {
+                         "titleRu":  "",
+                         "meaningRu":  "",
+                         "severityRu":  "",
+                         "possibleCausesRu":  [
+
+                                              ],
+                         "checksRu":  [
+
+                                      ],
+                         "serviceNotesRu":  [
+
+                                            ],
+                         "userSafeAnswerRu":  "",
+                         "technicianAnswerRu":  ""
+                     },
+    "review":  {
+                   "needsHumanReview":  true,
+                   "confidence":  "template",
+                   "extractionStatus":  "not-started",
+                   "approved":  false,
+                   "approvedBy":  "",
+                   "approvedUtc":  "",
+                   "notes":  [
+
+                             ],
+                   "warnings":  [
+                                    "Template only. Do not use in Telegram runtime.",
+                                    "Preserve exact code spelling and case.",
+                                    "Check visually similar codes manually: o1/01/O1, Ho/H0, No/N0."
+                                ]
+               },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  false,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}
