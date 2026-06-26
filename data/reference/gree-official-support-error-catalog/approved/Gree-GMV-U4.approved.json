@@ -1,0 +1,69 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "U4",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV U4 — защита по недостатку хладагента",
+                         "meaningRu":  "Система оценивает давление по датчикам высокого и низкого давления. Перед запуском, если давление не соответствует ожидаемым условиям относительно температуры окружающей среды, блок может уйти в защиту и не запускаться.",
+                         "severityRu":  "Требуется проверка холодильного контура.",
+                         "possibleCausesRu":  [
+                                                  "Недостаточное количество хладагента в системе.",
+                                                  "Утечка в трубопроводах или холодильном контуре."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить соответствие заправки хладагентом проектным требованиям.",
+                                          "Проверить систему на утечки.",
+                                          "Устранить утечки и выполнить корректную дозаправку по сервисной процедуре.",
+                                          "Проверить показания датчиков давления при необходимости."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Raw card: Refrigerant Loss Protection.",
+                                                "В карточке указано, что защита может не разрешать запуск для safety purpose.",
+                                                "Не сводить диагностику только к дозаправке: сначала исключить утечки и ошибки измерения давления."
+                                            ],
+                         "userSafeAnswerRu":  "U4 указывает на защиту по недостатку хладагента или возможной утечке. Нужно проверить заправку и герметичность системы.",
+                         "technicianAnswerRu":  "При U4 проверить фактическую заправку относительно проектных требований, выполнить поиск утечек трубопроводов/контура, устранить утечки и заправить по процедуре. При спорных показаниях дополнительно проверить датчики давления."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U4.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/U4 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/U4 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/metadata/raw_models-U4.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/metadata/raw_presign-U4-GMV-U4 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/metadata/raw_search-U4-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

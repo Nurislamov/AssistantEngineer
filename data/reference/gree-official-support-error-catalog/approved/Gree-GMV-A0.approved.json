@@ -1,0 +1,67 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "A0",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV A0 — состояние ожидания пусконаладки",
+                         "meaningRu":  "A0 у Gree GMV является статусным кодом: он появляется до завершения инженерной пусконаладки системы. Это не обычная авария датчика или платы.",
+                         "severityRu":  "Сервисное состояние; требуется проверка по карточке перед runtime.",
+                         "possibleCausesRu":  [
+                                                  "Состояние или неисправность определяется по raw-карточке A0.",
+                                                  "Требуется инженерная проверка перед approved/runtime."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить, завершена ли пусконаладка системы.",
+                                          "Проверить настройки и процедуру commissioning по сервисной документации.",
+                                          "Не искать неисправность платы только по A0, если система ещё не введена в эксплуатацию."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Legacy priority draft normalized for approved-reference structure.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "A0 относится к сервисному или эксплуатационному состоянию GMV. Если оборудование работает штатно и нет аварийных признаков, обычно достаточно зафиксировать код и проверить его по сервисной карточке. Если есть остановка, запах, шум, срабатывание защиты или повторное появление кода — нужен сервисный специалист.",
+                         "technicianAnswerRu":  "Для A0 использовать уже заполненные поля review-карточки как основную трактовку. Перед approved/runtime сверить raw card и не давать пользователю действий, связанных с разбором наружного блока. Runtime пока не включать."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-A0.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_models-A0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_presign-A0-GMV-A0 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/raw_search-A0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

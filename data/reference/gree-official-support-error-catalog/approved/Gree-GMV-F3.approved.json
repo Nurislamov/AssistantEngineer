@@ -1,0 +1,79 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "F3",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV F3 — неисправность датчика низкого давления",
+                         "meaningRu":  "Главная плата наружного блока контролирует AD-значение датчика низкого давления. Если значение выходит за допустимые пределы в течение 30 секунд, формируется ошибка F3.",
+                         "severityRu":  "Требуется сервисная диагностика цепи датчика низкого давления.",
+                         "possibleCausesRu":  [
+                                                  "Плохой контакт между датчиком низкого давления и разъёмом главной платы.",
+                                                  "Плохой контакт между датчиком низкого давления и местом измерения давления.",
+                                                  "Неисправен датчик низкого давления.",
+                                                  "Неисправна цепь измерения датчика низкого давления."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить разъём датчика низкого давления на главной плате: ослабление, загрязнение, посторонние предметы.",
+                                          "Проверить подключение датчика к месту измерения давления.",
+                                          "Очистить и плотно переподключить разъёмы при плохом контакте.",
+                                          "Если контакт исправен, проверить/заменить датчик низкого давления.",
+                                          "Если после замены датчика ошибка остаётся, проверить цепь измерения и главную плату."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Fault display: главная плата наружного блока, проводной пульт внутреннего блока, приёмная плата внутреннего блока.",
+                                                "По raw card последним шагом при подозрении на неисправность цепи является замена main control board.",
+                                                "Не путать F3 с P3: это разные коды."
+                                            ],
+                         "userSafeAnswerRu":  "F3 связан с датчиком низкого давления наружного блока. Обычно проверяют разъёмы, подключение датчика и сам датчик. Без доступа к наружному блоку и измерительным приборам лучше вызвать сервис.",
+                         "technicianAnswerRu":  "Для F3 проверить AD-цепь датчика низкого давления: разъём на главной плате, контакт в точке измерения давления, состояние датчика. При плохом контакте очистить и переподключить. Если после проверки/замены датчика ошибка сохраняется, проверить цепь измерения и главную плату наружного блока."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-F3.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/metadata/raw_models-F3.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/metadata/raw_presign-F3-GMV-F3 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/metadata/raw_search-F3-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+                                              {
+                                                  "filename":  "GMVå¤èæºF3ä½åä¼ æå¨ æ\u0085éæé¤æ¹æ³GMV VRF - F3 Low voltage sensor fault troubleshooting_met..pdf",
+                                                  "fileKey":  "4f47df754c7a42229f7f9b07eb27e83b.pdf",
+                                                  "status":  "registered-not-downloaded",
+                                                  "attachmentKind":  "document-pdf",
+                                                  "runtimeEnabled":  false,
+                                                  "notes":  "Registered for manual review only. Not used by Telegram runtime."
+                                              }
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

@@ -1,0 +1,73 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "P0",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV P0 — неисправность платы привода компрессора",
+                         "meaningRu":  "P0 на проводном пульте внутреннего блока является обобщённым кодом неисправности компрессорного драйвера. Для точной причины нужно смотреть двухразрядный индикатор главной платы наружного блока.",
+                         "severityRu":  "Высокая: диагностика компрессорного привода наружного блока.",
+                         "possibleCausesRu":  [
+                                                  "P3 на плате наружного блока: защита сброса/перезапуска модуля привода компрессора.",
+                                                  "P7 на плате наружного блока: неисправность температурного датчика привода компрессора.",
+                                                  "P8 на плате наружного блока: защита IPM по перегреву.",
+                                                  "PC на плате наружного блока: неисправность цепи измерения тока привода компрессора.",
+                                                  "PF на плате наружного блока: неисправность цепи заряда привода компрессора.",
+                                                  "P9 на плате наружного блока: защита от потери синхронизации инверторного компрессора.",
+                                                  "PJ на плате наружного блока: ошибка запуска инверторного компрессора."
+                                              ],
+                         "checksRu":  [
+                                          "Считать код на двухразрядном индикаторе главной платы наружного блока.",
+                                          "Определить конкретный под-код привода компрессора.",
+                                          "Выполнять диагностику по под-коду, отображаемому на плате наружного блока."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "P0 не даёт точную причину без кода на outdoor main board.",
+                                                "Raw card указывает troubleshooting based on the faults displayed on the main board of the outdoor unit.",
+                                                "Не заменять плату привода только по P0 без проверки наружного под-кода."
+                                            ],
+                         "userSafeAnswerRu":  "P0 означает общую ошибку платы привода компрессора. Нужен дополнительный код на плате наружного блока — без него нельзя точно понять причину.",
+                         "technicianAnswerRu":  "При P0 считать 2-digit LED код главной платы наружного блока. По нему определить конкретную неисправность привода компрессора: P3, P7, P8, PC, PF, P9 или PJ, затем выполнять диагностику по соответствующей карте."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P0.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/P0 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/P0 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/metadata/raw_models-P0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/metadata/raw_presign-P0-GMV-P0 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/metadata/raw_search-P0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

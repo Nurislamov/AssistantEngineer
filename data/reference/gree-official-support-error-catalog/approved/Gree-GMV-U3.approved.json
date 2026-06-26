@@ -1,0 +1,71 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "U3",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV U3 — защита по фазировке питания",
+                         "meaningRu":  "Код U3 возникает при неправильном подключении трёхфазного питания, пропадании фазы или обратной последовательности фаз.",
+                         "severityRu":  "Высокая: требуется проверка электропитания.",
+                         "possibleCausesRu":  [
+                                                  "Неправильно подключено питание наружного блока.",
+                                                  "Пропала одна из фаз.",
+                                                  "Неверная последовательность фаз.",
+                                                  "Неисправна цепь контроля питания."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить трёхфазное питание наружного блока.",
+                                          "Проверить наличие всех фаз.",
+                                          "Проверить и при необходимости исправить последовательность фаз.",
+                                          "Если питание корректное, проверить цепь контроля и главную плату."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Fault display: главная плата наружного блока, проводной пульт, приёмная плата внутреннего блока.",
+                                                "Работы с трёхфазным питанием выполнять только квалифицированному специалисту.",
+                                                "По raw card при подозрении на неисправность detection circuit — replace the main control board."
+                                            ],
+                         "userSafeAnswerRu":  "U3 означает проблему с трёхфазным питанием: возможна потеря фазы или неправильная последовательность фаз. Это должен проверять электрик или сервисный специалист.",
+                         "technicianAnswerRu":  "При U3 проверить правильность подключения трёхфазного питания, наличие всех фаз и фазировку. Если питание в норме, проверить цепь детекции; при её неисправности по карте предусмотрена замена main control board."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U3.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/U3 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/U3 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/metadata/raw_models-U3.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/metadata/raw_presign-U3-GMV-U3 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/metadata/raw_search-U3-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

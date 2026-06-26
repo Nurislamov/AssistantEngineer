@@ -1,0 +1,69 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "P2",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV P2 — защита входного напряжения платы привода компрессора",
+                         "meaningRu":  "P2 указывает на защиту входного напряжения компрессорного драйвера. Конкретная причина уточняется по двухразрядному индикатору главной платы наружного блока.",
+                         "severityRu":  "Высокая: проверка питания и DC-шины компрессорного привода.",
+                         "possibleCausesRu":  [
+                                                  "PH на плате наружного блока: перенапряжение DC-шины привода компрессора.",
+                                                  "PL на плате наружного блока: пониженное напряжение DC-шины привода компрессора."
+                                              ],
+                         "checksRu":  [
+                                          "Считать код на двухразрядном индикаторе главной платы наружного блока.",
+                                          "При PH проверять условия перенапряжения DC-шины привода.",
+                                          "При PL проверять условия пониженного напряжения DC-шины привода.",
+                                          "Проверять питание наружного блока и цепи компрессорного драйвера согласно сервисной процедуре."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "P2 на пульте является групповой ошибкой.",
+                                                "Raw card: Input Voltage Protection for the Compressor Drive Board.",
+                                                "Troubleshooting выполняется по faults displayed on the main board of the outdoor unit."
+                                            ],
+                         "userSafeAnswerRu":  "P2 связан с защитой по напряжению платы привода компрессора. Нужно проверить питание наружного блока и дополнительный код на плате наружного блока.",
+                         "technicianAnswerRu":  "При P2 считать наружный 2-digit LED код. Если PH — проверять перенапряжение DC bus компрессорного драйвера; если PL — пониженное напряжение DC bus. Дальше выполнять диагностику питания и цепей драйвера."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P2.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_models-P2.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_presign-P2-GMV-P2 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/raw_search-P2-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

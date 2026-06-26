@@ -1,0 +1,73 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "C0",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV C0 — нарушение связи",
+                         "meaningRu":  "Код C0 указывает на ошибку связи в системе GMV: наружный блок не обменивается данными с внутренним блоком, либо внутренний блок не обменивается данными с проводным пультом.",
+                         "severityRu":  "Средняя или высокая: зависит от активности ошибки связи.",
+                         "possibleCausesRu":  [
+                                                  "Нарушение связи между блоками или платами.",
+                                                  "Плохой контакт коммуникационной линии.",
+                                                  "Проблема питания одного из участников связи.",
+                                                  "Адресация или конфликт устройств."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить связь наружный блок ↔ внутренний блок.",
+                                          "Проверить связь внутренний блок ↔ проводной пульт.",
+                                          "Проверить клеммы, разъёмы и полярность линии связи.",
+                                          "Проверить кабель связи на обрыв и плохой контакт.",
+                                          "Проверить адреса внутренних блоков и проводных пультов.",
+                                          "Проверить количество подключённых проводных пультов.",
+                                          "Если проводка, адреса и настройки исправны — проверить плату внутреннего блока, плату наружного блока или проводной пульт."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Сохранить различие общего C0 и специфичных Mini/GMV6 карточек.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "C0 указывает на проблему связи в системе GMV. Даже если сейчас связь восстановилась, код мог остаться в истории или ожидать сброса после нормального обмена. Проверь питание блоков, межблочную линию связи и повторяемость ошибки.",
+                         "technicianAnswerRu":  "При C0 проверять линию связи GMV: питание блоков, полярность/целостность коммуникационной линии, клеммы, адресацию и наличие конфликтов. Если ошибка уже не активна, проверить историю и условия сброса/самовосстановления. Не путать общий C0 с более конкретными вариантами Mini/GMV6."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-C0.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata/raw_models-C0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata/raw_presign-C0-GMV-C0 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata/raw_search-C0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

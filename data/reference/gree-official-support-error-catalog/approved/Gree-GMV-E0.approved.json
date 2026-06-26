@@ -1,0 +1,69 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "E0",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV E0 — неисправность наружного блока",
+                         "meaningRu":  "Код E0 на внутреннем пульте означает, что наружный блок сообщил неисправность. Конкретную причину нужно уточнять по коду на двухразрядном индикаторе главной платы наружного блока.",
+                         "severityRu":  "Требуется диагностика наружного блока сервисным специалистом.",
+                         "possibleCausesRu":  [
+                                                  "Неисправность наружного блока.",
+                                                  "Внутренний пульт показывает общий код, а конкретный под-код находится на главной плате наружного блока.",
+                                                  "Дальнейшая причина зависит от кода на двухразрядном индикаторе наружного блока."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить двухразрядный индикатор/LED на главной плате наружного блока.",
+                                          "Записать точный код, который отображается на наружной плате.",
+                                          "Продолжить диагностику по конкретному коду наружного блока."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "E0 не является финальной причиной неисправности.",
+                                                "Не заменять узлы только по E0 без чтения кода с платы наружного блока.",
+                                                "Raw card: Malfunction of ODU."
+                                            ],
+                         "userSafeAnswerRu":  "E0 означает, что внутренний пульт видит неисправность наружного блока. Нужен точный код с индикатора на главной плате наружного блока — по нему определяется дальнейшая диагностика.",
+                         "technicianAnswerRu":  "При E0 сначала считать код на двухразрядном индикаторе главной платы наружного блока. E0 на внутреннем пульте является общим указателем на fault ODU; дальнейшие действия выполнять по конкретному наружному под-коду."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E0.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/metadata/raw_models-E0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/metadata/raw_presign-E0-GMV-E0 GMV.png.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/metadata/raw_search-E0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

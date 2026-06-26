@@ -1,0 +1,69 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "U0",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV U0 — недостаточное время прогрева компрессора",
+                         "meaningRu":  "Код U0 указывает, что перед запуском компрессора картер/масло прогревались недостаточно долго. По карточке Gree требуется прогрев более 8 часов перед запуском.",
+                         "severityRu":  "Сервисное или защитное состояние; зависит от активности ошибки.",
+                         "possibleCausesRu":  [
+                                                  "Защитное состояние системы GMV.",
+                                                  "Условия появления требуют проверки по raw-карточке U0.",
+                                                  "Возможны дополнительные коды на плате наружного блока."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить, сколько времени питание было подано на наружный блок перед запуском.",
+                                          "Оставить питание наружного блока включённым и дать системе прогреться более 8 часов.",
+                                          "После прогрева выполнить повторный запуск.",
+                                          "Если U0 появляется после нормального прогрева — отдельно проверить цепь питания/подогрева компрессора по сервисной документации."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Legacy priority draft normalized for approved-reference structure.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "U0 относится к защитному или сервисному состоянию системы GMV. Если код появляется повторно, нужно зафиксировать режим работы, температуру, состояние наружного блока и дополнительные коды на платах.",
+                         "technicianAnswerRu":  "Для U0 использовать уже заполненные review-поля как источник трактовки. Проверить условия появления, наружную плату/индикатор и связанные датчики/защиты по raw card. Не включать runtime без approved-проверки."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U0.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata/raw_models-U0.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata/raw_presign-U0-GMV-U0 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata/raw_search-U0-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

@@ -1,0 +1,68 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "C7",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV C7 — нарушение связи преобразователя",
+                         "meaningRu":  "Код C7 указывает на нарушение связи преобразователя. Карточка Gree даёт короткое описание без расширенного алгоритма диагностики.",
+                         "severityRu":  "Сервисное состояние; требуется уточнение по условиям появления.",
+                         "possibleCausesRu":  [
+                                                  "Ограничение или защитное состояние системы.",
+                                                  "Влияние внешнего управления или контроллера.",
+                                                  "Условия появления требуют проверки по raw-карточке C7."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить разъёмы и проводку связи преобразователя.",
+                                          "Проверить питание и состояние соответствующего модуля/платы.",
+                                          "Если связь и питание исправны — проверять преобразователь и управляющую плату по сервисной документации."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Legacy priority draft normalized for approved-reference structure.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "C7 связан с состоянием или ограничением работы системы GMV. Если код появляется периодически, важно зафиксировать когда именно он появляется, какие блоки работают и есть ли подключённые внешние контроллеры или ограничения.",
+                         "technicianAnswerRu":  "Для C7 использовать заполненные review-поля как основу. Проверить условия появления кода, состояние управления/ограничений, внешние контроллеры и связь. Перед approved/runtime требуется инженерная проверка формулировки по raw card."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-C7.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata/raw_models-C7.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata/raw_presign-C7-GMV-C7 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata/raw_search-C7-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

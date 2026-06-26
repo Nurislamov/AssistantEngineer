@@ -1,0 +1,69 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "P1",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV P1 — ненормальная работа платы привода компрессора",
+                         "meaningRu":  "P1 на проводном пульте указывает на ненормальную работу компрессорного драйвера. Для уточнения причины нужно смотреть код на двухразрядном индикаторе главной платы наружного блока.",
+                         "severityRu":  "Высокая: диагностика компрессорного привода наружного блока.",
+                         "possibleCausesRu":  [
+                                                  "P5 на плате наружного блока: защита инверторного компрессора по сверхтоку.",
+                                                  "P6 на плате наружного блока: защита IPM-модуля привода компрессора.",
+                                                  "C2 на плате наружного блока: неисправность связи привода компрессора."
+                                              ],
+                         "checksRu":  [
+                                          "Считать 2-digit LED код на главной плате наружного блока.",
+                                          "Если отображается P5, проверять условия сверхтока инверторного компрессора.",
+                                          "Если отображается P6, проверять IPM-модуль/цепь привода.",
+                                          "Если отображается C2, проверять связь компрессорного драйвера."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Raw card: Malfunctioning Compressor Drive Board.",
+                                                "Troubleshooting выполняется по коду, отображаемому на главной плате наружного блока."
+                                            ],
+                         "userSafeAnswerRu":  "P1 относится к плате привода компрессора. Для точной диагностики нужно посмотреть дополнительный код на плате наружного блока.",
+                         "technicianAnswerRu":  "При P1 считать код на 2-digit LED главной платы наружного блока. Возможные направления по raw card: P5 сверхток инверторного компрессора, P6 защита IPM-модуля, C2 связь компрессорного драйвера."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P1.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/metadata/raw_models-P1.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/metadata/raw_presign-P1-GMV-P1 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/metadata/raw_search-P1-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

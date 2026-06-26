@@ -1,0 +1,68 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "o1",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV o1 — низкое напряжение шины внутреннего блока",
+                         "meaningRu":  "Код o1 указывает на low bus bar voltage of IDU — низкое напряжение шины внутреннего блока. По карточке Gree проверяется питание и плата привода вентилятора.",
+                         "severityRu":  "Сервисное состояние; важно точное написание кода.",
+                         "possibleCausesRu":  [
+                                                  "Причина определяется по raw-карточке o1.",
+                                                  "Возможна ошибка визуального ввода кода: o1 / 01 / O1."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить, находится ли питание в нормальном диапазоне, требуемом для блока.",
+                                          "Проверить соединения питания внутреннего блока.",
+                                          "Если питание нормальное — проверить плату привода вентилятора.",
+                                          "При подтверждённой неисправности платы привода — заменить плату по сервисной процедуре."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Сохранить каноническое написание o1.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "o1 важно не путать с 01 или O1. Вводить и проверять нужно именно код с маленькой буквой o. Если код активный, ориентироваться на карточку o1 и состояние конкретной системы GMV.",
+                         "technicianAnswerRu":  "Для o1 сохранить каноническое написание именно o1. Не матчить автоматически как 01/O1. Перед approved/runtime проверить raw card, визуальное отображение кода и правила нормализации диагностического поиска."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-o1.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata/raw_models-o1.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata/raw_presign-o1-GMV-o1 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata/raw_search-o1-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

@@ -1,0 +1,70 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "U2",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV U2 — ошибка настройки мощности наружного блока DIP-переключателем или перемычкой",
+                         "meaningRu":  "Главная плата наружного блока обнаружила несоответствие настройки мощности фактической мощности блока или несоответствие значения перемычки фактической конфигурации.",
+                         "severityRu":  "Требуется проверка настроек наружного блока перед эксплуатацией.",
+                         "possibleCausesRu":  [
+                                                  "Неверная настройка DIP-переключателя мощности или перемычки.",
+                                                  "DIP-переключатель или перемычка повреждены.",
+                                                  "Неисправна цепь определения настройки."
+                                              ],
+                         "checksRu":  [
+                                          "Сверить положение DIP-переключателя мощности или перемычки с фактической моделью/мощностью наружного блока.",
+                                          "Отключить питание перед изменением DIP-переключателя или перемычки.",
+                                          "Выставить корректную настройку или заменить правильную перемычку, затем снова подать питание.",
+                                          "Если настройка корректная, проверить цепь определения и главную плату."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Applicable models: all outdoor units.",
+                                                "Для некоторых моделей без jumper cap ошибка перемычки может не определяться.",
+                                                "По raw card при подозрении на неисправность цепи — replace the main control board."
+                                            ],
+                         "userSafeAnswerRu":  "U2 означает ошибку настройки мощности наружного блока. Нужно проверить DIP-переключатели или перемычки на плате наружного блока и сверить их с моделью.",
+                         "technicianAnswerRu":  "При U2 сверить capacity DIP switch / jumper cap на main board с фактической мощностью и моделью наружного блока. Менять настройки только при снятом питании. Если настройки правильные, проверить цепь определения; при её неисправности рассматривается замена главной платы."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U2.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/U2 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/U2 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/metadata/raw_models-U2.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/metadata/raw_presign-U2-GMV-U2 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/metadata/raw_search-U2-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

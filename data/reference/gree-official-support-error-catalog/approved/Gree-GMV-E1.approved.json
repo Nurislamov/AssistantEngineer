@@ -1,0 +1,73 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "E1",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV E1 — защита по высокому давлению",
+                         "meaningRu":  "Код E1 указывает на protection in case of too high pressure. Блок останавливается для безопасной работы, если датчик/реле высокого давления фиксирует превышение или размыкание цепи защиты.",
+                         "severityRu":  "Высокая: защитное состояние наружного блока.",
+                         "possibleCausesRu":  [
+                                                  "Защита или неисправность наружного блока.",
+                                                  "Возможная проблема давления, теплообмена или условий работы.",
+                                                  "Точная причина требует сверки с raw-карточкой E1."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить фактическое высокое давление и состояние реле/датчика высокого давления.",
+                                          "Проверить, полностью ли открыт клапан наружного блока.",
+                                          "Проверить работу наружных и внутренних вентиляторов.",
+                                          "Проверить фильтры, воздуховоды, жалюзи и теплообменники на загрязнение/засор.",
+                                          "Проверить электронные расширительные клапаны.",
+                                          "Проверить температуру окружающей среды.",
+                                          "Проверить, нет ли засора трубопровода.",
+                                          "Если есть признаки перезаправки — корректировать количество хладагента только по сервисной процедуре."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Не рекомендовать многократный перезапуск без диагностики.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "E1 обычно относится к защите по высокому давлению или аварийному состоянию наружного блока. Не стоит многократно перезапускать систему без диагностики. Нужно проверить теплообмен, вентиляторы, загрязнение, режим работы и точный код/состояние наружного блока.",
+                         "technicianAnswerRu":  "При E1 проверить контур высокого давления: теплообмен наружного блока, вентиляторы, загрязнение, воздушный поток, перегрузку, заправку и показания датчиков/реле давления согласно raw card. До approved/runtime сверить конкретную GMV-карточку."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E1.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata/raw_models-E1.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata/raw_presign-E1-GMV-E1 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata/raw_search-E1-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}

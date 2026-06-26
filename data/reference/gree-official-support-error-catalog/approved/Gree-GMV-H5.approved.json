@@ -1,0 +1,71 @@
+{
+    "schemaVersion":  1,
+    "status":  "approved-reference",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "code":  "H5",
+    "runtimeEnabled":  false,
+    "normalizedRu":  {
+                         "titleRu":  "Gree GMV H5 — защита по перегрузке тока инверторного вентилятора",
+                         "meaningRu":  "Код H5 указывает на over-current protection for the inverter fan — перегрузку тока инверторного вентилятора наружного блока.",
+                         "severityRu":  "Высокая: силовая часть или защитное состояние.",
+                         "possibleCausesRu":  [
+                                                  "Срабатывание защиты силового модуля.",
+                                                  "Проблема питания.",
+                                                  "Проблема силовой платы или связанных цепей.",
+                                                  "Точная причина требует проверки по raw-карточке H5."
+                                              ],
+                         "checksRu":  [
+                                          "Проверить правильность подключения фаз U, V, W вентилятора.",
+                                          "Проверить сопротивление обмоток вентилятора и сопротивление изоляции на землю.",
+                                          "Проверить, не заблокированы ли лопасти вентилятора.",
+                                          "Проверить, нет ли связанных ошибок вентилятора, например H1, H6, H9.",
+                                          "Если вентилятор и проводка исправны — проверить плату привода вентилятора."
+                                      ],
+                         "serviceNotesRu":  [
+                                                "Не рекомендовать замену платы без проверки питания и нагрузки.",
+                                                "Runtime remains disabled."
+                                            ],
+                         "userSafeAnswerRu":  "H5 относится к защите или неисправности силовой части/модуля управления. Это не код для пользовательского сброса. Нужна диагностика наружного блока, питания и силовых компонентов.",
+                         "technicianAnswerRu":  "При H5 проверять питание, силовой модуль, плату управления и связанные цепи согласно заполненным review-полям и raw card. Не рекомендовать замену платы без проверки питания, разъёмов, нагрузки и условий появления ошибки."
+                     },
+    "source":  {
+                   "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-H5.review.json",
+                   "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
+                   "rawCardPaths":  [
+                                        "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG"
+                                    ],
+                   "supplementalRawCardPaths":  [
+
+                                                ],
+                   "metadataPaths":  [
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata/catalog-summary.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata/raw_models-H5.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata/raw_presign-H5-GMV-H5 GMV.PNG.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata/raw_search-H5-GMV.json",
+                                         "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/metadata/run-config.json"
+                                     ],
+                   "documentCandidates":  [
+
+                                          ]
+               },
+    "approval":  {
+                     "approvedUtc":  "2026-06-26T02:31:48Z",
+                     "approvedBy":  "manual-priority-review",
+                     "approvalStage":  "ED-24GEC.4A",
+                     "basis":  "Priority GMV review board sanity-check and reviewed review-draft JSON.",
+                     "runtimeEnabled":  false,
+                     "notes":  [
+                                   "Approved as reference data only.",
+                                   "Do not enable Telegram runtime from approved reference files.",
+                                   "Runtime importer must be a separate stage with tests and explicit mapping."
+                               ]
+                 },
+    "importer":  {
+                     "diagnosticsRuntimeCandidate":  true,
+                     "diagnosticsRuntimeEnabled":  false,
+                     "targetCatalog":  "",
+                     "targetEntryId":  ""
+                 }
+}
