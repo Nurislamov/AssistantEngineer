@@ -1,0 +1,212 @@
+{
+    "schemaVersion":  1,
+    "status":  "frozen-approved-priority-index",
+    "brand":  "Gree",
+    "model":  "GMV",
+    "family":  "GMV",
+    "stage":  "ED-24GEC.4B",
+    "runtimeEnabled":  false,
+    "diagnosticsRuntimeEnabled":  false,
+    "count":  17,
+    "codes":  [
+                  "A0",
+                  "C0",
+                  "C7",
+                  "E1",
+                  "H5",
+                  "L1",
+                  "o1",
+                  "U0",
+                  "E0",
+                  "F3",
+                  "P0",
+                  "P1",
+                  "P2",
+                  "U2",
+                  "U3",
+                  "U4",
+                  "U5"
+              ],
+    "entries":  [
+                    {
+                        "code":  "A0",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-A0.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-A0.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-A0/A0 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "C0",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C0.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-C0.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C0/C0 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "C7",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-C7.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-C7.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-C7/C7 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "E1",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E1.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E1.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E1/E1 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "H5",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-H5.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-H5.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-H5/H5 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "L1",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-L1.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-L1.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "o1",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-o1.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-o1.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-o1/o1 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U0",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U0.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U0.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U0/U0 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "E0",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-E0.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-E0.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "F3",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-F3.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-F3.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P0",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P0.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P0.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P0/P0 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P1",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P1.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P1.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P1/P1 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "P2",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-P2.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-P2.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-P2/P2 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U2",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U2.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U2.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U2/U2 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U3",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U3.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U3.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U3/U3 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U4",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U4.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U4.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U4/U4 GMV.PNG",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    },
+                    {
+                        "code":  "U5",
+                        "status":  "approved-reference",
+                        "approvedPath":  "data/reference/gree-official-support-error-catalog/approved/Gree-GMV-U5.approved.json",
+                        "reviewPath":  "data/reference/gree-official-support-error-catalog/review/Gree-GMV-U5.review.json",
+                        "primaryRawCardPath":  "data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-U5/U5 GMV.png",
+                        "runtimeEnabled":  false,
+                        "diagnosticsRuntimeCandidate":  true,
+                        "diagnosticsRuntimeEnabled":  false
+                    }
+                ],
+    "freeze":  {
+                   "frozenUtc":  "2026-06-26T02:34:55Z",
+                   "frozenBy":  "manual-priority-review",
+                   "basis":  "Approved priority GMV reference catalog created from reviewed review-draft JSON.",
+                   "notes":  [
+                                 "This index freezes approved reference data only.",
+                                 "This is not the Telegram runtime diagnostics catalog.",
+                                 "Runtime importer must be implemented and tested separately."
+                             ]
+               }
+}

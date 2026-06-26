@@ -306,7 +306,7 @@ foreach ($reviewFile in $reviewFiles) {
 
 $approvedFiles = @()
 if (Test-Path $approvedRoot) {
-    $approvedFiles = @(Get-ChildItem -Path $approvedRoot -File -Filter "*.json" -ErrorAction SilentlyContinue)
+    $approvedFiles = @(Get-ChildItem -Path $approvedRoot -File -Filter "Gree-GMV-*.approved.json" -ErrorAction SilentlyContinue)
 }
 
 foreach ($approvedFile in $approvedFiles) {
