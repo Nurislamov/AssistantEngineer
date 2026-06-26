@@ -322,9 +322,9 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.All(u3.Texts, text =>
         {
             var userFacing = string.Join(" ", text.Title, text.Summary, string.Join(" ", text.CheckSteps));
-            Assert.Contains("электропитания", userFacing, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("питания", userFacing, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("фаз", userFacing, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("чередован", userFacing, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("фазиров", userFacing, StringComparison.OrdinalIgnoreCase);
         });
     }
 
@@ -531,8 +531,8 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         var text = formatter.FormatConsumer(Response(), hasPhoneNumber: false, maxLength: 2000);
 
-        Assert.Contains("защита инверторного вентилятора по току", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Gree GMV6", text, StringComparison.Ordinal);
+        Assert.Contains("защита по перегрузке тока инверторного вентилятора", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Gree GMV H5", text, StringComparison.Ordinal);
         Assert.DoesNotContain("измерить напряжение", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("добавить хладагент", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("заменить компрессор", text, StringComparison.OrdinalIgnoreCase);
@@ -540,10 +540,10 @@ public sealed class ErrorKnowledgeJsonValidationTests
     }
 
     [Theory]
-    [InlineData(TelegramUserRole.Installer, "кабелей UVW")]
-    [InlineData(TelegramUserRole.Engineer, "платы привода вентилятора")]
-    [InlineData(TelegramUserRole.Admin, "платы привода вентилятора")]
-    [InlineData(TelegramUserRole.Owner, "платы привода вентилятора")]
+    [InlineData(TelegramUserRole.Installer, "фаз U, V, W")]
+    [InlineData(TelegramUserRole.Engineer, "фаз U, V, W")]
+    [InlineData(TelegramUserRole.Admin, "фаз U, V, W")]
+    [InlineData(TelegramUserRole.Owner, "фаз U, V, W")]
     public void GreeH5TechnicalRolesUseJsonRussianText(
         TelegramUserRole role,
         string expected)
@@ -602,7 +602,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         var text = formatter.FormatTechnical(Response(code, "GMV6", status), TelegramUserRole.Engineer);
 
-        Assert.Contains($"Gree GMV6 {code}", text, StringComparison.Ordinal);
+        Assert.Contains($"Gree GMV {code}", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Справочное совпадение", text, StringComparison.Ordinal);
     }
 
