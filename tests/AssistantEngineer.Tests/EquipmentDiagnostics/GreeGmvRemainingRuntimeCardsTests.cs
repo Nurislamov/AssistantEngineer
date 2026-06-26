@@ -50,6 +50,24 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         "code-status-registry",
         "gree-code-status-registry.json");
 
+    private static readonly string CodeStatusRegistryCsvPath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "reference",
+        "gree-official-support-error-catalog",
+        "staging",
+        "code-status-registry",
+        "gree-code-status-registry.csv");
+
+    private static readonly string CodeStatusRegistryReadmePath = Path.Combine(
+        TestPaths.RepoRoot,
+        "data",
+        "reference",
+        "gree-official-support-error-catalog",
+        "staging",
+        "code-status-registry",
+        "README.md");
+
     private static readonly string[] ExpectedBlockedCodes =
     [
         "by",
@@ -84,6 +102,31 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         ExpectedBlockedCodes
             .Except(ExpectedPromotedCodes, StringComparer.Ordinal)
             .ToArray();
+
+    private static readonly IReadOnlyDictionary<string, string> ExpectedRegistryStatuses =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["by"] = "BlockedNoiseOrVisualAmbiguity",
+            ["E5"] = "NeedGmvWRuntimeStructure",
+            ["E6"] = "ReadyAddMini",
+            ["E7"] = "NeedSeriesDecision",
+            ["E9"] = "NeedSeriesDecision",
+            ["eA"] = "NeedSeriesDecision",
+            ["Eb"] = "BlockedNoManualEvidence",
+            ["EE"] = "BlockedNoiseOrSeriesMismatch",
+            ["eH"] = "NeedGmvWRuntimeStructure",
+            ["F2"] = "NeedGmvWRuntimeStructure",
+            ["F4"] = "NeedGmvWRuntimeStructure",
+            ["FH"] = "RuntimeAdded",
+            ["Fy"] = "BlockedNoManualEvidence",
+            ["Ho"] = "AliasToExistingCode",
+            ["JJ"] = "BlockedNoManualEvidence",
+            ["Jn"] = "BlockedNoManualEvidence",
+            ["Jy"] = "BlockedNoManualEvidence",
+            ["Ld"] = "NeedGmvWRuntimeStructure",
+            ["N2"] = "RuntimeAdded",
+            ["No"] = "BlockedNoiseOrVisualAmbiguity"
+        };
 
     [Fact]
     public void RemainingRuntimeCandidatePreviewDocumentsBlockedCards()
@@ -279,6 +322,65 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
     }
 
     [Fact]
+    public void CodeStatusRegistryCsvJsonAndReadmeStayConsistentForTrackedCodes()
+    {
+        var json = ReadJsonArray(CodeStatusRegistryJsonPath)
+            .Select(Assert.IsType<JsonObject>)
+            .ToDictionary(item => RequiredString(item, "Code"), StringComparer.Ordinal);
+        var csv = ReadCsv(CodeStatusRegistryCsvPath);
+        var readme = File.ReadAllText(CodeStatusRegistryReadmePath);
+
+        Assert.Equal(
+            ExpectedBlockedCodes.Order(StringComparer.Ordinal).ToArray(),
+            json.Keys.Order(StringComparer.Ordinal).ToArray());
+        Assert.Equal(
+            ExpectedBlockedCodes.Order(StringComparer.Ordinal).ToArray(),
+            csv.Keys.Order(StringComparer.Ordinal).ToArray());
+
+        foreach (var code in ExpectedBlockedCodes)
+        {
+            var jsonRow = json[code];
+            var csvRow = csv[code];
+
+            Assert.Equal(ExpectedRegistryStatuses[code], RequiredString(jsonRow, "TrackingStatus"));
+            Assert.Equal(RequiredString(jsonRow, "TrackingStatus"), csvRow["TrackingStatus"]);
+            Assert.Equal(RequiredString(jsonRow, "ExistingRuntime"), csvRow["ExistingRuntime"]);
+            Assert.Equal(OptionalString(jsonRow, "ExistingRuntimePaths"), csvRow["ExistingRuntimePaths"]);
+            Assert.Equal(OptionalString(jsonRow, "RuntimeTarget"), csvRow["RuntimeTarget"]);
+        }
+
+        AssertRegistryRuntime(json, "eH", "NeedGmvWRuntimeStructure", "no", "", "GMV-W / Versati");
+        AssertRegistryRuntime(json, "Fy", "BlockedNoManualEvidence", "no", "", "");
+        AssertRegistryRuntime(json, "Ho", "AliasToExistingCode", "alias", "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/h0.json", "GMV6 H0");
+        AssertRegistryRuntime(json, "FH", "RuntimeAdded", "yes", "data/equipment-diagnostics/error-knowledge/gree/gmv6/outdoor/fh.json", "GMV6 outdoor FH");
+        AssertRegistryRuntime(json, "N2", "RuntimeAdded", "yes", "data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n2.json; data/equipment-diagnostics/error-knowledge/gree/gmv6/status/n2.json", "GMV6 status n2");
+        AssertRegistryRuntime(json, "EE", "BlockedNoiseOrSeriesMismatch", "no", "", "GMV6");
+
+        foreach (var code in new[] { "E5", "eH", "F2", "F4", "Ld" })
+        {
+            Assert.Equal("NeedGmvWRuntimeStructure", RequiredString(json[code], "TrackingStatus"));
+        }
+
+        Assert.Equal("ReadyAddMini", RequiredString(json["E6"], "TrackingStatus"));
+        Assert.Equal("BlockedNoiseOrVisualAmbiguity", RequiredString(json["by"], "TrackingStatus"));
+        Assert.Equal("BlockedNoiseOrVisualAmbiguity", RequiredString(json["No"], "TrackingStatus"));
+        foreach (var code in new[] { "Eb", "Fy", "JJ", "Jn", "Jy" })
+        {
+            Assert.Equal("BlockedNoManualEvidence", RequiredString(json[code], "TrackingStatus"));
+        }
+
+        foreach (var code in new[] { "FH", "N2", "Ho", "EE", "eH", "Fy" })
+        {
+            var status = RequiredString(json[code], "TrackingStatus");
+            Assert.Contains($"| {code} | {status} |", readme, StringComparison.Ordinal);
+        }
+
+        Assert.DoesNotContain("| eH | RuntimeAdded |", readme, StringComparison.Ordinal);
+        Assert.DoesNotContain("eH | RuntimeAdded", readme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Fy | AliasToExistingCode", readme, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void ManualReviewBatch9DocumentsAllBlockedCardsWithoutRuntimePromotion()
     {
         var report = ReadJsonObject(ManualReviewBatch9JsonPath);
@@ -402,6 +504,66 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         return Assert.IsType<JsonArray>(node);
     }
 
+    private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> ReadCsv(string path)
+    {
+        Assert.True(File.Exists(path), $"CSV file does not exist: {path}");
+        var lines = File.ReadAllLines(path);
+        Assert.NotEmpty(lines);
+
+        var headers = ParseCsvLine(lines[0]);
+        var codeIndex = Array.IndexOf(headers, "Code");
+        Assert.True(codeIndex >= 0, "CSV must contain Code column.");
+
+        return lines
+            .Skip(1)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(ParseCsvLine)
+            .Select(values =>
+            {
+                Assert.Equal(headers.Length, values.Length);
+                return (Code: values[codeIndex], Row: (IReadOnlyDictionary<string, string>)headers
+                    .Select((header, index) => (header, value: values[index]))
+                    .ToDictionary(item => item.header, item => item.value, StringComparer.Ordinal));
+            })
+            .ToDictionary(item => item.Code, item => item.Row, StringComparer.Ordinal);
+    }
+
+    private static string[] ParseCsvLine(string line)
+    {
+        var values = new List<string>();
+        var current = new System.Text.StringBuilder();
+        var inQuotes = false;
+
+        for (var index = 0; index < line.Length; index++)
+        {
+            var character = line[index];
+            if (character == '"')
+            {
+                if (inQuotes && index + 1 < line.Length && line[index + 1] == '"')
+                {
+                    current.Append('"');
+                    index++;
+                    continue;
+                }
+
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (character == ',' && !inQuotes)
+            {
+                values.Add(current.ToString());
+                current.Clear();
+                continue;
+            }
+
+            current.Append(character);
+        }
+
+        values.Add(current.ToString());
+        return values.ToArray();
+    }
+
     private static JsonArray RequiredArray(JsonObject obj, string propertyName)
     {
         var node = obj[propertyName];
@@ -437,6 +599,21 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var node = obj[propertyName];
         Assert.NotNull(node);
         return node.GetValue<bool>();
+    }
+
+    private static void AssertRegistryRuntime(
+        IReadOnlyDictionary<string, JsonObject> registry,
+        string code,
+        string status,
+        string existingRuntime,
+        string existingRuntimePaths,
+        string runtimeTarget)
+    {
+        var row = registry[code];
+        Assert.Equal(status, RequiredString(row, "TrackingStatus"));
+        Assert.Equal(existingRuntime, RequiredString(row, "ExistingRuntime"));
+        Assert.Equal(existingRuntimePaths, OptionalString(row, "ExistingRuntimePaths"));
+        Assert.Equal(runtimeTarget, OptionalString(row, "RuntimeTarget"));
     }
 
     private static void AssertNoInternalCatalogWords(string text)

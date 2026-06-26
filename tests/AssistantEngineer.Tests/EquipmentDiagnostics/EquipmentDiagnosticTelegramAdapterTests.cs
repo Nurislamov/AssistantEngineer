@@ -314,6 +314,67 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("Gree GMV6 Ho", response.Text, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task UnqualifiedN2AsksForGreeSeriesRatherThanChoosingMini()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree n2"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Для кода n2 есть несколько вариантов", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
+        Assert.Contains("настройка максимального коэффициента", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("верхний предел коэффициента", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV Mini n2 — верхний предел", response.Text.Split('\n').First(), StringComparison.Ordinal);
+        Assert.All(ForbiddenFragments(), fragment =>
+            Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
+
+        var selected = await adapter.HandleAsync(Update("GMV6"));
+
+        Assert.Contains("Gree GMV6 n2", selected.Text, StringComparison.Ordinal);
+        Assert.Contains("настройка максимального коэффициента", selected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("не нашёл точную расшифровку", selected.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData("Gree GMV6 n2", "Gree GMV6 n2", "настройка максимального коэффициента")]
+    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2", "верхний предел коэффициента")]
+    [InlineData("Gree Mini n2", "Gree GMV Mini n2", "верхний предел коэффициента")]
+    public async Task ExplicitN2SeriesSelectsSeparateRuntimeAnswer(
+        string query,
+        string expectedTitle,
+        string expectedMeaning)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
+        Assert.Contains(expectedMeaning, response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Уточните серию", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData("Gree FH")]
+    [InlineData("Gree GMV6 FH")]
+    public async Task ManualConfirmedFhResolvesToGmv6Answer(string query)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("Gree GMV6 FH", response.Text, StringComparison.Ordinal);
+        Assert.Contains("датчика тока компрессора 1", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData("Gree GMV Mini AJ", "сервисное напоминание", "не аварийная защита")]
     [InlineData("Gree GMV Mini n1", "параметрический статус", "не авария")]

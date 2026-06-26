@@ -250,6 +250,12 @@ public sealed class TelegramDiagnosticConversationService
             return PhoneValidationError();
         }
 
+        if (session?.State == TelegramConversationState.WaitingForSeries &&
+            IsSeriesSelection(update.Text, ReadCandidates(session.CandidateOptionsJson)))
+        {
+            return await SelectSeriesAsync(session, access, update.Text, cancellationToken);
+        }
+
         if (_parser.TryExtractDiagnosticCode(update.Text, out var code))
         {
             return await StartFromCodeAsync(update, access, user, code, cancellationToken);
@@ -268,6 +274,8 @@ public sealed class TelegramDiagnosticConversationService
                 await SelectEquipmentTypeAsync(session, access, update.Text, cancellationToken),
             TelegramConversationState.WaitingForDisplayContext =>
                 await SelectDisplayContextAsync(session, access, update.Text, cancellationToken),
+            TelegramConversationState.WaitingForSeries =>
+                await SelectSeriesAsync(session, access, update.Text, cancellationToken),
             _ => new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, [])
         };
     }
@@ -525,6 +533,36 @@ public sealed class TelegramDiagnosticConversationService
             cancellationToken);
     }
 
+    private async Task<TelegramDiagnosticConversationResult> SelectSeriesAsync(
+        TelegramConversationSessionSnapshot session,
+        TelegramUserAccessResult access,
+        string? text,
+        CancellationToken cancellationToken)
+    {
+        var candidates = ReadCandidates(session.CandidateOptionsJson);
+        var selected = MatchOption(text, candidates
+            .Select(candidate => candidate.Series)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .Distinct(StringComparer.OrdinalIgnoreCase));
+        if (selected is null)
+        {
+            return PromptSeries(session.CurrentCode ?? string.Empty, candidates, access);
+        }
+
+        return await ContinueAsync(
+            session.TelegramUserId,
+            access,
+            session.CurrentCode ?? string.Empty,
+            candidates
+                .Where(candidate => string.Equals(candidate.Series, selected, StringComparison.OrdinalIgnoreCase))
+                .ToArray(),
+            session.SelectedManufacturer,
+            session.SelectedEquipmentType,
+            session.SelectedDisplayContext,
+            cancellationToken);
+    }
+
     private async Task<TelegramDiagnosticConversationResult> ContinueAsync(
         long telegramUserId,
         TelegramUserAccessResult access,
@@ -607,6 +645,26 @@ public sealed class TelegramDiagnosticConversationService
             }
 
             selectedDisplayContext = displayContexts[0];
+        }
+
+        var seriesOptions = candidates
+            .Select(candidate => candidate.Series)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        if (seriesOptions.Length > 1)
+        {
+            await SaveAsync(
+                telegramUserId,
+                TelegramConversationState.WaitingForSeries,
+                code,
+                candidates,
+                selectedManufacturer,
+                selectedEquipmentType,
+                selectedDisplayContext,
+                cancellationToken);
+            return PromptSeries(code, candidates, access);
         }
 
         var session = await SaveAsync(
@@ -917,6 +975,8 @@ public sealed class TelegramDiagnosticConversationService
                 PromptEquipmentType(candidates.Select(candidate => candidate.EquipmentType).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), access),
             TelegramConversationState.WaitingForDisplayContext =>
                 PromptDisplayContext(candidates.Select(candidate => DisplayContextLabel(candidate.DisplayContext)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(), access),
+            TelegramConversationState.WaitingForSeries =>
+                PromptSeries(session.CurrentCode ?? string.Empty, candidates, access),
             _ => new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, [])
         };
 
@@ -960,6 +1020,20 @@ public sealed class TelegramDiagnosticConversationService
             return true;
         }
 
+        var displayFiltered = string.IsNullOrWhiteSpace(session.SelectedDisplayContext)
+            ? typeFiltered
+            : typeFiltered.Where(candidate => string.Equals(DisplayContextLabel(candidate.DisplayContext), session.SelectedDisplayContext, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        if (displayFiltered
+            .Select(candidate => candidate.Series)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count() > 1)
+        {
+            state = TelegramConversationState.WaitingForSeries;
+            return true;
+        }
+
         return false;
     }
 
@@ -992,6 +1066,71 @@ public sealed class TelegramDiagnosticConversationService
             "Уточните, где отображается код ошибки.",
             [],
             ChoiceKeyboard(displayContexts, access));
+
+    private TelegramDiagnosticConversationResult PromptSeries(
+        string code,
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates,
+        TelegramUserAccessResult access)
+    {
+        var series = candidates
+            .Select(candidate => candidate.Series)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value, StringComparer.Ordinal)
+            .ToArray();
+
+        var builder = new System.Text.StringBuilder();
+        builder.AppendLine($"Для кода {code} есть несколько вариантов в сериях Gree. Уточните серию оборудования: GMV6 или GMV Mini.");
+        foreach (var candidate in candidates
+            .Where(candidate => !string.IsNullOrWhiteSpace(candidate.Series))
+            .DistinctBy(candidate => candidate.Series, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(candidate => candidate.Series, StringComparer.Ordinal))
+        {
+            builder.AppendLine($"- Gree {candidate.Series} {candidate.Code} — {SeriesMeaning(candidate)}");
+        }
+
+        return new TelegramDiagnosticConversationResult(
+            true,
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            builder.ToString().Trim(),
+            [],
+            ChoiceKeyboard(series, access));
+    }
+
+    private string SeriesMeaning(TelegramDiagnosticCandidate candidate)
+    {
+        if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
+        {
+            return "настройка максимального коэффициента соответствия блоков.";
+        }
+
+        if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+        {
+            return "верхний предел коэффициента соответствия внутренних и наружных блоков.";
+        }
+
+        var entry = _localizedKnowledge.GetEntries().FirstOrDefault(entry =>
+            entry.Manufacturer.Equals(candidate.Manufacturer, StringComparison.OrdinalIgnoreCase) &&
+            entry.Code.Equals(candidate.Code, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(entry.Series, candidate.Series, StringComparison.OrdinalIgnoreCase));
+        var title = entry?.Texts.FirstOrDefault(text =>
+            text.Locale.Equals("ru", StringComparison.OrdinalIgnoreCase) &&
+            text.Audience == ErrorKnowledgeAudience.Consumer)?.Title;
+        var separator = title?.IndexOf('—', StringComparison.Ordinal) ?? -1;
+        if (separator >= 0 && separator + 1 < title!.Length)
+        {
+            var meaning = title[(separator + 1)..].Trim();
+            if (meaning.Length > 0)
+            {
+                return string.Concat(char.ToLowerInvariant(meaning[0]), meaning[1..].TrimEnd('.'), ".");
+            }
+        }
+
+        return "уточните точную серию оборудования.";
+    }
 
     public static EquipmentDiagnosticTelegramReplyMarkup MainKeyboard(TelegramUserAccessResult access)
     {
@@ -1332,6 +1471,19 @@ public sealed class TelegramDiagnosticConversationService
 
     private static bool IsUnknown(string? text) =>
         string.Equals(NormalizeText(text), NormalizeText(UnknownButton), StringComparison.Ordinal);
+
+    private static bool IsSeriesSelection(
+        string? text,
+        IReadOnlyList<TelegramDiagnosticCandidate> candidates)
+    {
+        var normalized = NormalizeText(text);
+        return candidates
+            .Select(candidate => candidate.Series)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value!)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Any(series => NormalizeText(series) == normalized);
+    }
 
     private static string NormalizeText(string? text) =>
         string.IsNullOrWhiteSpace(text)
