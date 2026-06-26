@@ -52,6 +52,9 @@ services:
 
   reverse-proxy:
     image: caddy:2.8-alpine
+    env_file:
+      - path: .env
+        required: false
     depends_on:
       - assistantengineer-api
       - assistantengineer-frontend
@@ -60,7 +63,7 @@ services:
       - "${HTTPS_PORT:-443}:443"
       - "${HTTPS_PORT:-443}:443/udp"
     volumes:
-      - ./reverse-proxy/Caddyfile.example:/etc/caddy/Caddyfile:ro
+      - ./reverse-proxy/Caddyfile.production:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
     restart: unless-stopped

@@ -1,0 +1,57 @@
+{
+    servers {
+        protocols h1 h2
+    }
+}
+
+assistantengineer.uz {
+    handle /api/* {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle /health {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle /ready {
+        reverse_proxy assistantengineer-api:8080
+    }
+
+    handle {
+        reverse_proxy assistantengineer-frontend:80
+    }
+}
+
+api.assistantengineer.uz {
+    reverse_proxy assistantengineer-api:8080
+}
+
+bot.assistantengineer.uz {
+    log {
+        output stdout
+        format console
+    }
+
+    handle /api/v1/equipment-diagnostics/telegram/webhook {
+        reverse_proxy assistantengineer-api:8080 {
+            header_up X-AssistantEngineer-Api-Key "{$ASSISTANTENGINEER_INTERNAL_API_KEY}"
+        }
+    }
+
+    reverse_proxy assistantengineer-api:8080
+}
+
+bot.assistantengineer.uz:8443 {
+    log {
+        output stdout
+        format console
+    }
+
+    handle /api/v1/equipment-diagnostics/telegram/webhook {
+        reverse_proxy assistantengineer-api:8080 {
+            header_up X-AssistantEngineer-Api-Key "{$ASSISTANTENGINEER_INTERNAL_API_KEY}"
+        }
+    }
+
+    reverse_proxy assistantengineer-api:8080
+}
