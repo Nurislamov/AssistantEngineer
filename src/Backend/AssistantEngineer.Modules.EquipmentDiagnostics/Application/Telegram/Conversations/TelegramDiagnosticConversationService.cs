@@ -1103,13 +1103,13 @@ public sealed class TelegramDiagnosticConversationService
         if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
             string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
         {
-            return "настройка максимального коэффициента соответствия блоков.";
+            return "настройка предела коэффициента соответствия внутренних и наружных блоков.";
         }
 
         if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
             string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
         {
-            return "верхний предел коэффициента соответствия внутренних и наружных блоков.";
+            return "настройка предела коэффициента соответствия внутренних и наружных блоков.";
         }
 
         var entry = _localizedKnowledge.GetEntries().FirstOrDefault(entry =>

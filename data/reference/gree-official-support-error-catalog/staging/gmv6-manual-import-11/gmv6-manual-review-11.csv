@@ -1,0 +1,18 @@
+code,trackingStatus,topEvidenceSeries,topEvidenceManualId,runtimeTarget,reason,nextAction
+by,BlockedNoiseOrVisualAmbiguity,GMV6,gree-gmv6-service-manual-2020-09,,Search hits are noisy common-word matches; current evidence does not confirm website meaning for GMV6.,Keep blocked until exact manual table row for code by is found.
+E5,NeedGmvWRuntimeStructure,GMV-W,gree-versati-iii-split-heat-pump,GMV-W / Versati,"Manual evidence points to GMV-W/Versati, but runtime has no GMV-W package yet.",Create GMV-W/Versati runtime structure and package before adding this code.
+E6,ReadyAddMini,GMV-W,gree-versati-iii-split-heat-pump,GMV Mini,GMV Mini manual hit exists.,"Review top evidence, then add GMV Mini runtime if meaning is exact."
+E7,NeedSeriesDecision,Unknown,gree-multi-split-service-manual,,"Manual evidence exists, but series is generic/legacy/unknown or conflicting.",Review source series manually; do not add to GMV6 by default.
+E9,NeedSeriesDecision,Unknown,gree-u-match-gu50-160k-on-off-service-manual,,"Manual evidence exists, but series is generic/legacy/unknown or conflicting.",Review source series manually; do not add to GMV6 by default.
+eA,NeedSeriesDecision,Unknown,gree-screw-chiller-service-manual-russian-filename,,"Manual evidence exists, but series is generic/legacy/unknown or conflicting.",Review source series manually; do not add to GMV6 by default.
+Eb,BlockedNoManualEvidence,,,,No manual hit found in current indexed PDF manuals.,Keep in review until a matching service manual source is found.
+EE,BlockedNoiseOrSeriesMismatch,Unknown,gree-multi-split-service-manual,GMV6,Manual recheck found the GMV6 hit is noisy text; top EE evidence is non-GMV6 and does not support the website meaning.,Keep blocked; do not add GMV6 runtime unless exact GMV6 EE table evidence appears.
+eH,NeedGmvWRuntimeStructure,GMV-W,gree-versati-iii-split-heat-pump,GMV-W / Versati,"Manual evidence points to GMV-W/Versati, but runtime has no GMV-W package yet.",Create GMV-W/Versati runtime structure and package before adding this code.
+F2,NeedGmvWRuntimeStructure,Unknown,gree-u-match-gu50-160k-on-off-service-manual,GMV-W / Versati,"Manual evidence points to GMV-W/Versati, but runtime has no GMV-W package yet.",Create GMV-W/Versati runtime structure and package before adding this code.
+F4,NeedGmvWRuntimeStructure,GMV-W,gree-versati-iii-split-heat-pump,GMV-W / Versati,"Manual evidence points to GMV-W/Versati, but runtime has no GMV-W package yet.",Create GMV-W/Versati runtime structure and package before adding this code.
+Fy,BlockedNoManualEvidence,,,,No manual hit found in current indexed PDF manuals.,Keep in review until a matching service manual source is found.
+JJ,BlockedNoManualEvidence,,,,No manual hit found in current indexed PDF manuals.,Keep in review until a matching service manual source is found.
+Jn,BlockedNoManualEvidence,,,,No manual hit found in current indexed PDF manuals.,Keep in review until a matching service manual source is found.
+Jy,BlockedNoManualEvidence,,,,No manual hit found in current indexed PDF manuals.,Keep in review until a matching service manual source is found.
+Ld,NeedGmvWRuntimeStructure,GMV-W,gree-versati-iii-split-heat-pump,GMV-W / Versati,"Manual evidence points to GMV-W/Versati, but runtime has no GMV-W package yet.",Create GMV-W/Versati runtime structure and package before adding this code.
+No,BlockedNoiseOrVisualAmbiguity,Generic GMV/VRF,gree-vrf-service-manual-russian-filename,,Useful manual evidence describes 'No master IDU' but not confirmed as standalone code No; GMV6 hits are mostly common word noise.,Do not add as No. Review whether actual code is L7 / no master IDU for Mini or generic GMV.

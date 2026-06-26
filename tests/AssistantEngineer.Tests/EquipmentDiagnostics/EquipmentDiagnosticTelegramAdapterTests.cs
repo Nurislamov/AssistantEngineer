@@ -326,27 +326,26 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Для кода n2 есть несколько вариантов", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
-        Assert.Contains("настройка максимального коэффициента", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("верхний предел коэффициента", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Gree GMV Mini n2 — верхний предел", response.Text.Split('\n').First(), StringComparison.Ordinal);
+        Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(2, CountOccurrences(response.Text, "настройка предела коэффициента соответствия внутренних и наружных блоков"));
+        Assert.DoesNotContain("Gree GMV Mini n2 — настройка предела", response.Text.Split('\n').First(), StringComparison.Ordinal);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
 
         var selected = await adapter.HandleAsync(Update("GMV6"));
 
         Assert.Contains("Gree GMV6 n2", selected.Text, StringComparison.Ordinal);
-        Assert.Contains("настройка максимального коэффициента", selected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("не нашёл точную расшифровку", selected.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
-    [InlineData("Gree GMV6 n2", "Gree GMV6 n2", "настройка максимального коэффициента")]
-    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2", "верхний предел коэффициента")]
-    [InlineData("Gree Mini n2", "Gree GMV Mini n2", "верхний предел коэффициента")]
+    [InlineData("Gree GMV6 n2", "Gree GMV6 n2")]
+    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2")]
+    [InlineData("Gree Mini n2", "Gree GMV Mini n2")]
     public async Task ExplicitN2SeriesSelectsSeparateRuntimeAnswer(
         string query,
-        string expectedTitle,
-        string expectedMeaning)
+        string expectedTitle)
     {
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -355,7 +354,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
-        Assert.Contains(expectedMeaning, response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Уточните серию", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -666,6 +665,19 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
     private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
         new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text, UserId: 11);
+
+    private static int CountOccurrences(string text, string value)
+    {
+        var count = 0;
+        var index = 0;
+        while ((index = text.IndexOf(value, index, StringComparison.OrdinalIgnoreCase)) >= 0)
+        {
+            count++;
+            index += value.Length;
+        }
+
+        return count;
+    }
 
     private static IReadOnlyList<string> ForbiddenFragments() =>
     [
