@@ -1,0 +1,3 @@
+﻿"seriesCandidate","sourceManualId","candidateCodes","readyForImport","needsManualReview","sourceMissing","recommendation","proposedNextStage","reason"
+"X series","gree-gmv-x-owner-manual","63","0","63","0","Do not import yet","Obtain/identify GMV X or GMV X PRO service/after-sales maintenance manual, then build series-specific import from service evidence.","Owner manual has code tables but explicitly defers specific unit fault and maintenance to engineering debugging and after-sales maintenance manual."
+"9 series Flex","source-missing-gmv9-flex-service-manual","0","0","0","1","Source missing","Add exact GMV9 Flex service manual before import planning.","Repo has catalog evidence for GMV9 Flex but no local manual record or PDF."
