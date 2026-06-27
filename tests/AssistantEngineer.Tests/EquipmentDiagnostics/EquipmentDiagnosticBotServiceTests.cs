@@ -181,10 +181,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
     }
 
     [Theory]
-    [InlineData(null, null)]
     [InlineData("GMV6", null)]
     [InlineData(null, "Gree debugging U0")]
-    public async Task Gmv6U0FallsBackToManualBackedDebuggingKnowledge(
+    public async Task Gmv6U0WithExplicitContextFallsBackToManualBackedDebuggingKnowledge(
         string? series,
         string? freeText)
     {
@@ -201,6 +200,19 @@ public sealed class EquipmentDiagnosticBotServiceTests
         Assert.Equal(DiagnosticConfidence.High, response.Confidence);
         Assert.Equal("Manual", response.SourceCard!.SourceType);
         Assert.Contains("LocalizedKnowledgeMatch", response.InternalDecisionTrace!);
+    }
+
+    [Fact]
+    public async Task Gmv6U0WithoutContextRequiresClarificationAfterGmvRuntimeExpansion()
+    {
+        using var provider = CreateProvider();
+        var service = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "U0"));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ClarificationRequired, response.Status);
+        Assert.NotNull(response.ClarificationQuestion);
+        Assert.Null(response.AnswerCard);
     }
 
     [Fact]

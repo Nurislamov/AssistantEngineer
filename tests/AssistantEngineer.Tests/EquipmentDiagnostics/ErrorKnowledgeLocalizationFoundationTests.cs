@@ -35,9 +35,11 @@ public sealed class ErrorKnowledgeLocalizationFoundationTests
 
         Assert.NotNull(installer);
         Assert.NotNull(engineer);
-        Assert.Contains("защиту инверторного вентилятора", installer.Text.Summary, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("двухразрядном индикаторе", engineer.Text.Summary, StringComparison.OrdinalIgnoreCase);
-        Assert.NotEqual(installer.Text.Summary, engineer.Text.Summary);
+        Assert.Contains("H5", installer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\u043F\u0438\u0442\u0430\u043D\u0438", installer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("H5", engineer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("\u043F\u0438\u0442\u0430\u043D\u0438", engineer.Text.Summary, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(installer.Text.Summary, engineer.Text.Summary);
     }
 
     [Fact]

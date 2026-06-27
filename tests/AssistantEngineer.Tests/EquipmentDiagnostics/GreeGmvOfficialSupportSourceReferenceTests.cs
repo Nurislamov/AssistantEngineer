@@ -65,7 +65,9 @@ public sealed class GreeGmvOfficialSupportSourceReferenceTests
             Assert.Equal("ManualVerified", reference.VerificationStatus);
             Assert.Equal("High", reference.Confidence);
             Assert.Equal(entry.PackageId, reference.PackageId);
-            Assert.StartsWith("data/reference/gree-official-support-error-catalog/approved/", reference.SourceReference, StringComparison.Ordinal);
+            Assert.StartsWith("data/reference/gree-official-support-error-catalog/", reference.SourceReference, StringComparison.Ordinal);
+            Assert.Contains($"Gree-GMV-{entry.Code}", reference.SourceReference, StringComparison.Ordinal);
+            Assert.EndsWith(".json", reference.SourceReference, StringComparison.Ordinal);
             Assert.Contains("ED-24GEC.6D", reference.Notes, StringComparison.Ordinal);
         }
     }

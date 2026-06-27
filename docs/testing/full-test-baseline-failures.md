@@ -6,6 +6,24 @@ Commit: `2c6f7efd05ac2ed21c0b4499a0af800305b6f50d`
 
 Scope: ED-24TD.2 inventory only. No runtime JSON, route, wording, deploy, environment, migration, frontend, Telegram polling, service-request, or phone-flow files were changed.
 
+## ED-24TD.3 Resolution
+
+Resolution date: 2026-06-27
+
+Status: resolved.
+
+Full solution result after ED-24TD.3:
+
+```powershell
+dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal" --logger "trx;LogFileName=ed-24td3-final.trx"
+```
+
+Result: 0 failed, 4828 passed, 0 skipped, 4828 total, duration 2 m 12 s.
+
+TRX: `tests/AssistantEngineer.Tests/TestResults/ed-24td3-final.trx`
+
+The five ED-24TD.2 failures were resolved by refreshing stale test/scenario expectations and by ignoring local `.ae-tools/**` analysis artifacts in the beta-readiness scanner. `PublishedApiAssemblyLoadsEmbeddedGreeH5` still does not hang and the full baseline is green.
+
 ## Commands Run
 
 ```powershell

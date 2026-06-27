@@ -203,6 +203,7 @@ public sealed class EquipmentDiagnosticsBetaReadinessReportGenerator
     {
         var relative = NormalizeRelative(root, path);
         return relative.StartsWith(".git/", StringComparison.OrdinalIgnoreCase) ||
+            relative.StartsWith(".ae-tools/", StringComparison.OrdinalIgnoreCase) ||
             relative.StartsWith("artifacts/", StringComparison.OrdinalIgnoreCase) ||
             relative.StartsWith("TestResults/", StringComparison.OrdinalIgnoreCase) ||
             relative.Contains("/bin/", StringComparison.OrdinalIgnoreCase) ||
