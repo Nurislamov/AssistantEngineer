@@ -180,8 +180,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree GMV Mini C0"));
 
-        Assert.Contains("Gree GMV Mini C0 — ошибка связи", response.Text, StringComparison.Ordinal);
-        Assert.Contains("по сервисному мануалу", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Gree GMV Mini C0 — нарушение связи", response.Text, StringComparison.Ordinal);
+        Assert.Contains("точная причина зависит", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("руководства GMV6", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Применимо:", response.Text, StringComparison.Ordinal);
     }
@@ -275,7 +275,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.DoesNotContain("Gree GMV o1", response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV Mini 01", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Set master unit", response.Text, StringComparison.Ordinal);
+        Assert.Contains("назначение главного блока", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Gree 01", last.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree o1", last.Text, StringComparison.Ordinal);
     }
@@ -375,8 +375,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree GMV Mini AJ", "сервисное напоминание", "не аварийная защита")]
-    [InlineData("Gree GMV Mini n1", "параметрический статус", "не авария")]
+    [InlineData("Gree GMV Mini AJ", "предупреждение о необходимости очистки фильтра", "не самостоятельный признак отказа компонента")]
+    [InlineData("Gree GMV Mini n1", "настройка периода оттайки K1", "не самостоятельный признак отказа компонента")]
     public async Task GmvMiniAnswerClassesDoNotLookLikeActiveFaults(
         string query,
         string expectedClass,
