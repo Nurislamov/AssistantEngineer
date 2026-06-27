@@ -65,7 +65,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
         var matches = await _diagnosticsService.SearchErrorCodesAsync(
             new SearchEquipmentErrorCodesQuery(
                 Manufacturer: request.Manufacturer,
-                ErrorCode: request.Code,
+                ErrorCode: code,
                 Series: request.Series,
                 ModelCode: request.ModelCode,
                 Category: request.Category),
@@ -79,6 +79,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             .ThenBy(match => match.Category.ToString(), StringComparer.Ordinal)
             .ThenBy(match => match.ModelCode ?? string.Empty, StringComparer.Ordinal)
             .ToArray();
+        matches = ApplyUnqualifiedGmv6RuntimePriority(request.Series, matches);
 
         trace.Add($"RuntimeMatches:{matches.Count}");
 
@@ -488,6 +489,8 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             matches = exactCodeMatches;
         }
 
+        matches = ApplyUnqualifiedGmv6LocalizedPriority(request.Series, request.FreeText, matches);
+
         if (matches.Length <= 1 || string.IsNullOrWhiteSpace(request.FreeText))
         {
             return matches;
@@ -499,6 +502,123 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
              normalizedFreeText.Contains(Normalize(entry.Series), StringComparison.Ordinal)) ||
             IsSignalHintMatch(entry, normalizedFreeText)).ToArray();
         return hinted.Length > 0 ? hinted : matches;
+    }
+
+    private static IReadOnlyList<EquipmentErrorCodeSummaryDto> ApplyUnqualifiedGmv6RuntimePriority(
+        string? requestedSeries,
+        IReadOnlyList<EquipmentErrorCodeSummaryDto> candidates)
+    {
+        if (!IsUnqualifiedGmvSeries(requestedSeries) ||
+            candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
+        {
+            return candidates;
+        }
+
+        var hasGmvX = candidates.Any(candidate => string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase));
+        if (!hasGmvX)
+        {
+            return candidates;
+        }
+
+        var establishedCategories = candidates
+            .Where(candidate =>
+                string.Equals(candidate.SeriesName, "GMV", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(candidate.SeriesName, "GMV6", StringComparison.OrdinalIgnoreCase))
+            .Select(candidate => candidate.Category)
+            .Distinct()
+            .ToArray();
+        if (establishedCategories.Length == 0)
+        {
+            return candidates;
+        }
+
+        candidates = candidates
+            .Where(candidate =>
+                !string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase) ||
+                !establishedCategories.Contains(candidate.Category))
+            .ToArray();
+
+        if (candidates.Select(candidate => candidate.Category).Distinct().Count() > 1)
+        {
+            return candidates;
+        }
+
+        var establishedGmv = candidates
+            .Where(candidate => string.Equals(candidate.SeriesName, "GMV", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        if (establishedGmv.Length > 0)
+        {
+            return establishedGmv;
+        }
+
+        var gmv6 = candidates
+            .Where(candidate => string.Equals(candidate.SeriesName, "GMV6", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        if (gmv6.Length > 0)
+        {
+            return gmv6;
+        }
+
+        var nonGmvX = candidates
+            .Where(candidate => !string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        return nonGmvX.Length > 0 ? nonGmvX : candidates;
+    }
+
+    private static ErrorKnowledgeEntryV2[] ApplyUnqualifiedGmv6LocalizedPriority(
+        string? requestedSeries,
+        string? freeText,
+        ErrorKnowledgeEntryV2[] candidates)
+    {
+        var hasContextHint = !string.IsNullOrWhiteSpace(requestedSeries) ||
+            !string.IsNullOrWhiteSpace(freeText);
+        if (!IsUnqualifiedGmvSeries(requestedSeries) ||
+            !hasContextHint && !HasEstablishedGmv6RuntimeFaultCollision(candidates) ||
+            HasSameMeaningGroupCollision(candidates) ||
+            candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
+        {
+            return candidates;
+        }
+
+        var gmv6 = candidates
+            .Where(candidate => string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        return gmv6.Length > 0 ? gmv6 : candidates;
+    }
+
+    private static bool HasEstablishedGmv6RuntimeFaultCollision(IReadOnlyList<ErrorKnowledgeEntryV2> candidates) =>
+        candidates.Any(candidate => string.Equals(candidate.Series, "GMV X", StringComparison.OrdinalIgnoreCase)) &&
+        candidates.Any(candidate =>
+            string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase) &&
+            IsRuntimeFaultSignal(candidate.SignalType) &&
+            candidates.Any(other =>
+                string.Equals(other.Series, "GMV X", StringComparison.OrdinalIgnoreCase) &&
+                other.EquipmentType == candidate.EquipmentType &&
+                other.DisplaySource == candidate.DisplaySource &&
+                IsRuntimeFaultSignal(other.SignalType)));
+
+    private static bool IsRuntimeFaultSignal(ErrorKnowledgeSignalType signalType) =>
+        signalType is
+            ErrorKnowledgeSignalType.Fault or
+            ErrorKnowledgeSignalType.Protection or
+            ErrorKnowledgeSignalType.Warning or
+            ErrorKnowledgeSignalType.Communication;
+
+    private static bool IsUnqualifiedGmvSeries(string? requestedSeries) =>
+        string.IsNullOrWhiteSpace(requestedSeries) ||
+        string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase);
+
+    private static bool HasSameMeaningGroupCollision(IReadOnlyList<ErrorKnowledgeEntryV2> candidates)
+    {
+        if (candidates.Count <= 1 || candidates.Any(candidate => string.IsNullOrWhiteSpace(candidate.MeaningGroupId)))
+        {
+            return false;
+        }
+
+        return candidates
+            .Select(candidate => candidate.MeaningGroupId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Count() == 1;
     }
 
     private static bool TryCanonicalizeVisualAlias(

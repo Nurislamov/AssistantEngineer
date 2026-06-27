@@ -1803,6 +1803,61 @@
       }
     },
     {
+      "manualId": "gree-gmv-x-service-manual-2022-09",
+      "fileName": "JF00305173, Outlet T1R410A50 & 60HzGMVX Heat Pump GMV Service Manual, A.3.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/JF00305173, Outlet T1R410A50 & 60HzGMVX Heat Pump GMV Service Manual, A.3.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "VRF",
+      "equipmentType": "VRFSystem",
+      "series": "GMV X",
+      "modelScope": "GMV X DC inverter VRF units, 22.4kW~360.0kW, 50Hz/60Hz.",
+      "documentTitle": "Gree GMV X DC Inverter VRF Units Service Manual",
+      "documentCode": "GC202209-I",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "Imported",
+      "coverageStatus": "DiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-gmv-x-indoor-fault-codes",
+        "gree-gmv-x-outdoor-fault-protection-codes",
+        "gree-gmv-x-debugging-codes",
+        "gree-gmv-x-status-codes"
+      ],
+      "entriesImported": 263,
+      "categoriesImported": [
+        "indoor",
+        "outdoor",
+        "debugging",
+        "status"
+      ],
+      "knownSmokeCodes": [
+        "E1",
+        "H5",
+        "C0",
+        "A0"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "NotImported",
+      "recommendedNext": false,
+      "notes": "Imported in ED-24GEC.14 from local service manual GC202209-I. Scope is GMV X only; do not mix with GMV6, GMV Mini, or GMV9 Flex.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Runtime diagnostic cards were imported; manual file delivery is a separate access-controlled workflow."
+      }
+    },
+    {
       "manualId": "gree-test-operation-troubleshooting-maintenance",
       "fileName": "Test Operation & Troubleshooting & Maintenance.pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/Test Operation & Troubleshooting & Maintenance.pdf",

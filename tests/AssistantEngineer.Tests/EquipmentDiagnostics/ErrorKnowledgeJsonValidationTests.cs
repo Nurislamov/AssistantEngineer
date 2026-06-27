@@ -62,7 +62,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(399, entries.Count);
+        Assert.Equal(662, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -171,7 +171,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(399, entries.Count);
+        Assert.Equal(662, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -251,6 +251,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !gmvMiniMergedCodes.Contains(entry.Code) &&
                 !officialSupportReferencedCodes.Contains(entry.Code) &&
                 !ManualConfirmedGmv6RuntimeIds.Contains(entry.Id) &&
+                !entry.Id.StartsWith("gree-gmv-x-", StringComparison.OrdinalIgnoreCase) &&
                 !entry.Id.StartsWith("gree-gmv-mini-", StringComparison.OrdinalIgnoreCase)),
             entry => Assert.Empty(entry.SourceReferences));
     }
@@ -429,7 +430,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var result = ValidateRepository();
 
         Assert.True(result.IsValid);
-        Assert.Equal(7, result.Packages.Count);
+        Assert.Equal(11, result.Packages.Count);
         var package = Assert.Single(
             result.Packages,
             item => item.PackageId == "gree-gmv6-outdoor-fault-protection-codes");
@@ -448,6 +449,22 @@ public sealed class ErrorKnowledgeJsonValidationTests
             result.Packages,
             item => item.PackageId == "gree-gmv6-debugging-codes" &&
                 item.EntryCountExpected == 38);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv-x-indoor-fault-codes" &&
+                item.EntryCountExpected == 60);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv-x-outdoor-fault-protection-codes" &&
+                item.EntryCountExpected == 121);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv-x-debugging-codes" &&
+                item.EntryCountExpected == 38);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv-x-status-codes" &&
+                item.EntryCountExpected == 44);
     }
 
     [Fact]
@@ -1083,7 +1100,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 .Cast<object>()
                 .ToArray();
 
-            Assert.Equal(399, entries.Length);
+            Assert.Equal(662, entries.Length);
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-outdoor-h5"));
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-debugging-u0"));
         }

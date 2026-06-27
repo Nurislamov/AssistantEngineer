@@ -1,0 +1,8 @@
+series,category,packageId,runtimeJsonCount,entryCountExpected
+GMV X,indoor,gree-gmv-x-indoor-fault-codes,60,60
+GMV X,outdoor,gree-gmv-x-outdoor-fault-protection-codes,121,121
+GMV X,debugging,gree-gmv-x-debugging-codes,38,38
+GMV X,status,gree-gmv-x-status-codes,44,44
+GMV6,all,existing,263,263
+GMV Mini,all,existing,136,136
+Gree,total-after,all,662,662

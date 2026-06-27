@@ -100,7 +100,7 @@ public sealed class GreeGmv6ManualImport11Tests
             "equipment-diagnostics",
             "error-knowledge",
             "gree"), "*.json", SearchOption.AllDirectories).Length;
-        Assert.Equal(399, totalRuntimeCount);
+        Assert.Equal(662, totalRuntimeCount);
     }
 
     [Fact]

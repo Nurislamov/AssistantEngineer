@@ -395,7 +395,7 @@ public sealed class TelegramDiagnosticConversationService
             {
                 candidates = seriesCandidates;
             }
-            else if (string.Equals(requestedSeries, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            else if (IsStrictNoFallbackSeries(requestedSeries))
             {
                 candidates = [];
             }
@@ -819,6 +819,14 @@ public sealed class TelegramDiagnosticConversationService
         var nonMini = candidates
             .Where(candidate => !string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
             .ToArray();
+        var gmv6 = nonMini
+            .Where(candidate => string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        if (gmv6.Length > 0)
+        {
+            return gmv6;
+        }
+
         return nonMini.Length > 0 ? nonMini : candidates;
     }
 
@@ -827,6 +835,10 @@ public sealed class TelegramDiagnosticConversationService
 
     private static bool IsHoVisualAlias(string code) =>
         string.Equals(code, "HO", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsStrictNoFallbackSeries(string series) =>
+        string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase);
 
     private async Task<TelegramConversationSessionSnapshot> SaveAsync(
         long telegramUserId,

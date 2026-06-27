@@ -50,7 +50,7 @@ public sealed class ManualCoverageRegistryTests
             "futureTelegramManualLibrary"
         };
 
-        Assert.Equal(48, manuals.Length);
+        Assert.Equal(49, manuals.Length);
         Assert.DoesNotContain(manualIds, string.IsNullOrWhiteSpace);
         Assert.Equal(manualIds.Length, manualIds.Distinct(StringComparer.Ordinal).Count());
         Assert.All(manuals, manual =>
@@ -173,6 +173,7 @@ public sealed class ManualCoverageRegistryTests
         Assert.Equal(
             [
                 "gree-gmv-mini-service-manual",
+                "gree-gmv-x-service-manual-2022-09",
                 "gree-gmv6-service-manual-2020-09"
             ],
             imported

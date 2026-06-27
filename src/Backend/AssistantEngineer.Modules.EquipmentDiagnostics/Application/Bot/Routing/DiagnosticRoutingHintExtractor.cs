@@ -17,7 +17,9 @@ public static partial class DiagnosticRoutingHintExtractor
             return "GMV X PRO";
         }
 
-        if (normalized.Contains("GMVX", StringComparison.Ordinal))
+        if (normalized.Contains("GMVX", StringComparison.Ordinal) ||
+            normalized.Contains("XSERIES", StringComparison.Ordinal) ||
+            HasToken(text, "X"))
         {
             return "GMV X";
         }
@@ -54,6 +56,7 @@ public static partial class DiagnosticRoutingHintExtractor
         token.Equals("SLIM", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("PRO", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("X", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("X-SERIES", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV-MINI", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5-MINI", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV-SLIM", StringComparison.OrdinalIgnoreCase) ||

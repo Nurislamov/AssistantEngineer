@@ -1,0 +1,29 @@
+{
+  "packageId": "gree-gmv-x-outdoor-fault-protection-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV X",
+  "title": "Gree GMV X outdoor fault and protection codes",
+  "description": "Manual-bound Chapter 3 Error Indication catalog for GMV X outdoor unit fault and protection codes.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV X DC Inverter VRF Units Service Manual",
+  "sourceReference": "Chapter 3 Faults / Error Indication",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Fault",
+    "Protection",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "OutdoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "OutdoorBoard"
+  ],
+  "entryCountExpected": 121,
+  "notes": "GMV X service manual GC202209-I import scope for ED-24GEC.14. Do not mix with GMV6, GMV Mini, or GMV9 Flex packages.",
+  "createdAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-06-27T00:00:00Z"
+}

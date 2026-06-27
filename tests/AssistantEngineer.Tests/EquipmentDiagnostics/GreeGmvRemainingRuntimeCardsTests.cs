@@ -194,7 +194,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(399, entries.Count);
+        Assert.Equal(662, entries.Count);
         foreach (var code in ExpectedStillBlockedCodes)
         {
             Assert.DoesNotContain(
@@ -432,7 +432,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var report = ReadJsonObject(ManualReviewBatch9JsonPath);
         var reviews = Batch9Reviews(report);
 
-        Assert.Equal(399, entries.Count);
+        Assert.Equal(662, entries.Count);
         Assert.Equal(0, reviews.Count(item => RequiredString(item, "decision") == "added-runtime"));
         foreach (var item in reviews.Where(item => !ExpectedPromotedCodes.Contains(RequiredString(item, "code"), StringComparer.Ordinal)))
         {
