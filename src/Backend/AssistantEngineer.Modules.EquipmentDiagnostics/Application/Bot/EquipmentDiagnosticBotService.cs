@@ -155,11 +155,14 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
                     trace);
             }
 
-            trace.Add("RuntimeDiagnosticNotFound");
+            var notFoundContext = DiagnosticRoutingHintExtractor.ContextLabel(manufacturer, request.Series);
+            trace.Add(string.IsNullOrWhiteSpace(request.Series)
+                ? "RuntimeDiagnosticNotFound"
+                : $"RuntimeDiagnosticNotFound:{request.Series}");
             return NonAnswer(
                 EquipmentDiagnosticBotResponseStatus.NotFound,
-                "Runtime diagnostic case not found",
-                "No runtime diagnostic case found. Verify equipment family, display context, and service manual.",
+                $"{notFoundContext} runtime diagnostic case not found",
+                $"No runtime diagnostic case found for {notFoundContext}. Verify equipment family, display context, and service manual.",
                 manufacturer,
                 code,
                 request.FreeText,

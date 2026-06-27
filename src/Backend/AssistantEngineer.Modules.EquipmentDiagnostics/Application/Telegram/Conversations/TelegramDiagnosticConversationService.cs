@@ -395,6 +395,10 @@ public sealed class TelegramDiagnosticConversationService
             {
                 candidates = seriesCandidates;
             }
+            else if (string.Equals(requestedSeries, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            {
+                candidates = [];
+            }
         }
 
         if (candidates.Count == 0)
@@ -765,6 +769,7 @@ public sealed class TelegramDiagnosticConversationService
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
             .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
             .ToArray();
+        localizedCandidates = ApplyUnqualifiedMiniPriority(requestedSeries, localizedCandidates);
 
         TelegramDiagnosticCandidate[] exactSeriesLocalizedCandidates = string.IsNullOrWhiteSpace(requestedSeries) ||
             string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase)
@@ -789,6 +794,32 @@ public sealed class TelegramDiagnosticConversationService
         }
 
         return PreferExactCodeMatches(code, localizedCandidates);
+    }
+
+    private static TelegramDiagnosticCandidate[] ApplyUnqualifiedMiniPriority(
+        string? requestedSeries,
+        TelegramDiagnosticCandidate[] candidates)
+    {
+        if (!string.IsNullOrWhiteSpace(requestedSeries) &&
+            !string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase))
+        {
+            return candidates;
+        }
+
+        if (HasSameMeaningGroupCollision(candidates))
+        {
+            return candidates;
+        }
+
+        if (candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
+        {
+            return candidates;
+        }
+
+        var nonMini = candidates
+            .Where(candidate => !string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+        return nonMini.Length > 0 ? nonMini : candidates;
     }
 
     private static string CanonicalizeVisualLookupCode(string code) =>
@@ -1410,6 +1441,11 @@ public sealed class TelegramDiagnosticConversationService
         out TelegramDiagnosticCandidate candidate)
     {
         candidate = default!;
+        if (candidates.Any(item => string.Equals(item.Code, "n2", StringComparison.OrdinalIgnoreCase)))
+        {
+            return false;
+        }
+
         if (!HasSameMeaningGroupCollision(candidates))
         {
             return false;

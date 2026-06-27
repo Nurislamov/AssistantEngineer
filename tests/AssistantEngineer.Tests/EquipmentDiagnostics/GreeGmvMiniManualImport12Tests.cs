@@ -1,4 +1,6 @@
 using System.Text.Json.Nodes;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
@@ -81,6 +83,43 @@ public sealed class GreeGmvMiniManualImport12Tests
         Assert.True(File.Exists(Path.Combine(MiniRuntimeDirectory, "outdoor", "e0.json")));
         Assert.True(File.Exists(Path.Combine(MiniRuntimeDirectory, "indoor", "l0.json")));
         Assert.True(File.Exists(Path.Combine(MiniRuntimeDirectory, "status", "01.json")));
+    }
+
+    [Fact]
+    public void EmbeddedRuntimeCatalogExposesAllGmvMiniEntriesToBotSearch()
+    {
+        var entries = new JsonErrorKnowledgeLocalizationSource().GetEntries();
+        var miniEntries = entries
+            .Where(entry => string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(entry.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        Assert.Equal(391, entries.Count);
+        Assert.Equal(136, miniEntries.Length);
+
+        foreach (var (code, id) in new[]
+        {
+            ("d1", "gree-gmv-mini-indoor-d1"),
+            ("b1", "gree-gmv-mini-outdoor-b1"),
+            ("E0", "gree-gmv-mini-outdoor-e0"),
+            ("P0", "gree-gmv-mini-outdoor-p0"),
+            ("01", "gree-gmv-mini-status-01"),
+            ("n2", "gree-gmv-mini-status-n2")
+        })
+        {
+            var entry = Assert.Single(miniEntries, item =>
+                item.Id == id &&
+                item.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
+            Assert.True(EquipmentDiagnosticBotReferencePolicy.IsSearchableLocalizedEntry(entry));
+            Assert.NotEmpty(entry.SourceReferences);
+            Assert.DoesNotContain(entry.Texts, text =>
+                text.Title.Contains("неисправность for", StringComparison.OrdinalIgnoreCase) ||
+                text.Title.Contains("неисправность of", StringComparison.OrdinalIgnoreCase) ||
+                text.Title.Contains("driven board for", StringComparison.OrdinalIgnoreCase) ||
+                text.Summary.Contains("неисправность for", StringComparison.OrdinalIgnoreCase) ||
+                text.Summary.Contains("неисправность of", StringComparison.OrdinalIgnoreCase) ||
+                text.Summary.Contains("driven board for", StringComparison.OrdinalIgnoreCase));
+        }
     }
 
     private static void AssertPackageCount(string packageFileName, string folder, int expectedCount)

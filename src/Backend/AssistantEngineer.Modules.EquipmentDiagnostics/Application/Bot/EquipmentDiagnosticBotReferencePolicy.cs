@@ -49,5 +49,12 @@ public static class EquipmentDiagnosticBotReferencePolicy
             ErrorKnowledgeSignalType.RemoteDisplay ||
         entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
         entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase) ||
-        QualityApprovedLocalizedEntryIds.Contains(entry.Id);
+        QualityApprovedLocalizedEntryIds.Contains(entry.Id) ||
+        IsManualVerifiedGmvMiniRuntimeEntry(entry);
+
+    private static bool IsManualVerifiedGmvMiniRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
+        string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
 }
