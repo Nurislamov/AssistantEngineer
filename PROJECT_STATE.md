@@ -2,218 +2,194 @@
 
 ## Current stage
 
-GMV / Telegram diagnostics stabilization is completed through:
+ED-24GEC — Gree equipment diagnostics knowledge expansion.
 
-- ED-24TG.1
-- ED-24TG.2
-- ED-24GEC.7D
-- ED-24GEC.8
-- ED-24GEC.9
+Current production status: PASS after GMV6 and GMV Mini stabilization.
 
-Current production-safe baseline is on `master`.
+Completed substages:
+- ED-24GEC.11 — GMV6 manual import verification.
+- ED-24GEC.12 — GMV Mini VRF manual import.
+- ED-24GEC.12.1 — GMV Mini routing/search fix.
+- ED-24GEC.12.2 — GMV Mini visible wording polish.
 
 ## Current branch
 
-`master`
+master
 
 Latest confirmed commits:
-
 ```text
-eee53ccc ED-24GEC.9 Review blocked GMV error cards
-8c7ad798 ED-24GEC.7D Update Telegram wording tests for polished GMV answers
-f490733c ED-24GEC.8 Add remaining GMV card inventory and guards
-64862049 ED-24TG.2 Resume pending service request after phone capture
-6c7d7d97 ED-24TG.1 Make Telegram polling resilient to outbound failures
+a8b281a3 ED-24GEC.12.2 Polish GMV Mini visible wording
+4e53206b ED-24GEC.12.1 Fix GMV Mini routing and wording
+8b864303 ED-24GEC.12 Import GMV Mini manual codes
+4e43d185 ED-24GEC.11 Import missing GMV6 manual codes
 ```
-
-Local, origin, and VPS were confirmed synchronized after `eee53ccc`.
 
 ## Last completed work
 
-### ED-24TG.1
+### GMV6
 
-Telegram polling resilience was fixed.
+GMV6 diagnostics are closed against the service manual.
 
-Before this stage, one failed outbound send from a group update could block the polling offset and make the bot stop responding to new messages.
+Source manual:
+- Service Manual for GMV6 v_2020.09.
+- manualId: gree-gmv6-service-manual-2020-09.
+- document: GC202001-I.
 
-Now `OutboundFailed` no longer blocks the whole polling batch. The failed update is logged/skipped, the offset moves forward, and the bot continues processing next updates.
+Runtime result:
+- GMV6 manual inventory: 255 codes.
+- GMV6 runtime count: 255 codes.
+- New missing GMV6 runtime JSON after full scan: 0.
+- GMV6 status: closed.
 
-### ED-24TG.2
+Confirmed Telegram behavior:
+- Gree FH / Gree GMV6 FH returns GMV6 FH.
+- Gree GMV6 n2 returns GMV6 n2.
+- Gree H0 returns GMV6 H0.
+- Gree Ho / Gree HO routes to H0 with visual-code clarification.
+- Gree n2 without series asks the user to choose GMV6 or GMV Mini.
 
-Pending service request after phone capture was fixed.
+### GMV Mini
 
-Before this stage:
+GMV Mini VRF diagnostics are imported and production-tested.
 
+Source manual:
+- manualId: gree-gmv-mini-service-manual.
+- file: SERVICE_MANUAL_GMV_MINI.pdf.
+- title: DC Inverter VRF System Service Manual (R410A).
+
+Runtime result:
+- GMV Mini runtime count: 136 cards.
+- Total Gree runtime count: 391 cards.
+- GMV Mini routing/search: fixed.
+- GMV Mini visible wording: polished.
+- GMV Mini status: closed.
+
+GMV Mini categories:
 ```text
-Gree H5 -> request master -> bot asks phone -> user sends contact -> bot saved phone but did not create request
+Indoor/controller: 27
+Outdoor/protection: 62
+Status/debug: 47
 ```
 
-Now:
-
+Production Telegram checks passed for:
 ```text
-Gree H5 -> request master -> bot asks phone -> user sends contact -> phone saved -> service request created immediately
+Gree GMV Mini 01
+Gree GMV Mini L3
+Gree GMV Mini P1
+Gree GMV Mini nC
+Gree GMV Mini UE
+Gree GMV Mini d3
+Gree GMV Mini b1
+Gree GMV Mini E0
+Gree GMV Mini P0
+Gree GMV Mini n2
+Gree n2
 ```
 
-Production was deployed and checked.
+Confirmed behavior:
+- Explicit `Gree GMV Mini ...` and `Gree Mini ...` requests stay in GMV Mini.
+- Mini-to-GMV6 fallback is blocked.
+- `Gree n2` remains ambiguous and asks for GMV6 or GMV Mini.
+- Mini visible text no longer contains mixed phrases like `Set master unit`, `neispravnost for`, `of outdoor`, `Water overf...`, or `driven board for`.
 
-### ED-24GEC.7D
+## Current blocker
 
-Old broad Telegram wording tests were updated to match polished GMV visible answers from `ED-24GEC.7C.1/7C.2`.
+No active production blocker for GMV6 or GMV Mini diagnostics.
 
-This was test-only. Runtime JSON and bot behavior were not changed.
-
-### ED-24GEC.8
-
-Remaining Gree GMV official support cards were inventoried.
-
-Result:
-
-```text
-Official support cards: 256
-Already present in GMV6 runtime: 236
-Blocked/manual-review: 20
-New runtime entries added: 0
-Total runtime knowledge count: 262
-GMV6 runtime count: 253
-Package counts changed: none
-```
-
-Added generator, staging preview and guard tests.
-
-### ED-24GEC.9
-
-All 20 blocked/manual-review GMV cards were manually reviewed and documented.
-
-Reviewed codes:
-
-```text
-by, E5, E6, E7, E9, eA, Eb, EE, eH, F2, F4, FH, Fy, Ho, JJ, Jn, Jy, Ld, N2, No
-```
-
-Decision:
-
-```text
-added-runtime: none
-```
-
-Reason: sources are not safe enough for GMV6 runtime promotion. Issues include GMV-W / GMVT / GMV Mini context, table-only evidence, casing conflicts, visual ambiguity, shared code cards, or missing safe GMV6-specific source evidence.
-
-## Current production status
-
-VPS path:
-
-```text
-/opt/assistantengineer
-```
-
-VPS confirmed on:
-
-```text
-eee53ccc ED-24GEC.9 Review blocked GMV error cards
-```
-
-No Docker rebuild was needed for `ED-24GEC.8`, `ED-24GEC.9`, or `ED-24GEC.7D` because they did not change runtime bot behavior.
-
-Last runtime-changing/deployed stages:
-
-- `ED-24TG.1`
-- `ED-24TG.2`
-- `ED-24GEC.7C.1`
-- `ED-24GEC.7C.2`
+Known technical debt:
+- `PublishedApiAssemblyLoadsEmbeddedGreeH5` can hang during broad test filters. It should be fixed as a separate technical debt item.
 
 ## Important decisions
 
-1. Do not auto-promote the remaining 20 blocked GMV cards into runtime.
-2. Do not merge GMV Mini, GMV-W, GMVT, or ambiguous official support cards into GMV6 runtime without stronger source confirmation.
-3. Keep visible bot answers free from internal terms:
-   - raw
-   - review
-   - approved
-   - runtime
-   - staging
-   - internal
-   - machine translated
-4. Consumer answers must not contain unsafe advice:
-   - measuring live voltage/current
-   - opening electrical cabinets
-   - bypassing protections
-   - repeated reset to force operation
-   - direct board/component replacement
-5. Public wording must avoid unsupported parity claims. Prefer:
-   - standard-based
-   - standard-inspired
-   - external reference validation
-   - engineering-core validation
+- GMV6 and GMV Mini are handled from their own service manuals, not from website cards alone.
+- Gree website/support cards are secondary/reference evidence only.
+- A code is added to a runtime series only when that series service manual confirms the code and meaning.
+- GMV-W / Versati / U-Match / Multi Split / Chiller / FCU are not mixed into GMV6 or GMV Mini.
+- `Ho` / `HO` is not a separate card; it is visual input routed to canonical `H0`.
+- `E6` was not added to GMV Mini because the GMV Mini service manual did not confirm a precise E6 runtime entry.
+- User-visible text must not mention internal process words such as `runtime`, `staging`, `support-catalog`, `raw`, `sourceMeaning`, or `machine translated`.
+- Public documentation and UI must avoid claims like `pyBuildingEnergy parity` or exact EnergyPlus matching.
 
 ## Files changed recently
 
-Important recent files:
-
+Key recent areas:
 ```text
-src/Backend/AssistantEngineer.Api/Services/EquipmentDiagnostics/EquipmentDiagnosticTelegramPollingBackgroundService.cs
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramPollingTests.cs
+data/equipment-diagnostics/error-knowledge/gree/gmv6/**
+data/equipment-diagnostics/error-knowledge/gree/gmv-mini/**
+data/equipment-diagnostics/error-knowledge/packages/**
+data/equipment-diagnostics/manual-library/manuals.json
+data/reference/gree-official-support-error-catalog/staging/**
+src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Bot/**
+src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/**
+tests/AssistantEngineer.Tests/EquipmentDiagnostics/**
+.ae-tools/generate_gmv_mini_import_12.py
+.ae-tools/polish_gmv_mini_visible_wording_12_2.py
+```
 
-src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Conversations/TelegramDiagnosticConversationService.cs
-src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramAdapter.cs
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramServiceRequestTests.cs
-
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramAdapterTests.cs
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramFormatterTests.cs
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramManualLibraryTests.cs
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramUserAccessTests.cs
-
-tools/gree-support/generate-gree-gmv-remaining-runtime-candidates.ps1
-tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvRemainingRuntimeCardsTests.cs
-
-data/reference/gree-official-support-error-catalog/staging/remaining-runtime-candidates/
-data/reference/gree-official-support-error-catalog/staging/manual-review-batch-9/
+Recent notable tests:
+```text
+GreeGmv6ManualImport11Tests
+GreeGmvMiniManualImport12Tests
+GreeGmvMiniRouting12_1Tests
+GreeGmvMiniVisibleWording12_2Tests
+EquipmentDiagnosticTelegramAdapterTests
+ErrorKnowledgeJsonValidationTests
+GreeGmvRemainingRuntimeCardsTests
 ```
 
 ## Validation status
 
-Recent targeted validations passed during stages:
-
+Recent validation:
 ```text
-EquipmentDiagnosticTelegram: 373 passed
-GreeGmvRemainingRuntimeCardsTests: passed
-GreeGmvApprovedRuntimeWordingTests: passed
-Telegram service request + polling smoke: 36 passed
-Review catalog validator: passed
-Approved priority catalog validator: passed
-Runtime overlay staging validator: passed
+ED-24GEC.11:
+- GMV6 inventory/runtime: 255/255.
+- Wide filter without known hanging smoke: 85/85 passed.
+- EquipmentDiagnosticTelegram: 396/396 passed.
+- ED-24GEC.11 targeted tests: 10/10 passed.
+
+ED-24GEC.12:
+- GMV Mini runtime: 136.
+- Total Gree runtime: 391.
+- ErrorKnowledgeJsonValidationTests + related Gree runtime tests: 86 passed.
+- EquipmentDiagnosticTelegram: 396 passed.
+- GreeGmvMiniManualImport12Tests: 3 passed.
+- Targeted registry/manual coverage: 13 passed.
+
+ED-24GEC.12.1:
+- EquipmentDiagnosticTelegram: 396 passed.
+- Mini/import/validation/runtime/wording set without known hanging smoke: 89 passed.
+- GreeGmvMiniRouting12_1Tests + GreeGmvMiniManualImport12Tests: 30 passed.
+- git diff --check: passed.
+
+ED-24GEC.12.2:
+- Narrow set: 101/101 passed.
+- Required set 1: 426/426 passed.
+- Required set 2 without known hanging smoke: 85/85 passed.
+- git diff --check: passed.
 ```
 
-Known caveat:
+Production Telegram smoke checks after deployment passed for GMV Mini routing and wording.
 
-One published-assembly smoke test was reported by Codex as hanging when run alone:
+## Deployment status
 
-```text
-PublishedApiAssemblyLoadsEmbeddedGreeH5
+Latest production deployment tested after ED-24GEC.12.2.
+
+Deployment command used:
+```bash
+cd /opt/assistantengineer
+git fetch origin
+git reset --hard origin/master
+docker compose --env-file ./deploy/.env -f ./deploy/docker-compose.yml up -d --build assistantengineer-api
 ```
 
-This was not treated as part of ED-24GEC.9 because runtime JSON/packages were unchanged. Investigate separately only if it blocks CI or full test runs.
-
-## Current blocker
-
-No active production blocker.
-
-Bot and service request flow were restored after ED-24TG.1 and ED-24TG.2.
-
-The remaining 20 Gree GMV official support cards are intentionally blocked from runtime until stronger source evidence is available.
+Production bot behavior confirmed through Telegram screenshots.
 
 ## Next step
 
-Recommended next stage:
-
-```text
-ED-24GEC.10 — Decide next source strategy for blocked GMV cards
-```
-
-Options:
-
-1. Find stronger official GMV6 manuals/source evidence for blocked codes.
-2. Keep the 20 blocked cards as reference-only and move to another diagnostic family.
-3. Investigate the published-assembly smoke test hang if full CI becomes noisy.
-4. Continue expanding Telegram bot UX/features now that GMV baseline is stable.
-
-Do not start by adding the 20 blocked codes to runtime without new source evidence.
+Recommended next steps:
+1. Commit this `PROJECT_STATE.md` update.
+2. Decide the next direction:
+   - GMV-W / Versati manual import as a separate future stage;
+   - or fix technical debt around `PublishedApiAssemblyLoadsEmbeddedGreeH5`;
+   - or continue improving Telegram diagnostic UX after GMV6/GMV Mini knowledge base stabilization.
+3. Do not mix GMV-W / Versati into GMV6 or GMV Mini.
