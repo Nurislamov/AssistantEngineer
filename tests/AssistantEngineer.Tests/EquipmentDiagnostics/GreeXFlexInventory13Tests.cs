@@ -103,9 +103,9 @@ public sealed class GreeXFlexInventory13Tests
     [Fact]
     public void RuntimeCountsAndXFlexFoldersRemainUnchanged()
     {
-        Assert.Equal(255, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(391, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(399, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         foreach (var folder in new[] { "gmv-x", "x-series", "gmv9-flex", "9-series-flex", "flex" })
         {

@@ -1259,6 +1259,57 @@
       }
     },
     {
+      "manualId": "gree-gmv6-service-manual-2022-03",
+      "fileName": "JF00304129, Export T1_R410A_GMV6 GMV Service Manual (Asia Pacific), D.2.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/JF00304129, Export T1_R410A_GMV6 GMV Service Manual (Asia Pacific), D.2.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "VRF",
+      "equipmentType": "VRFSystem",
+      "series": "GMV6",
+      "modelScope": "GMV6 DC inverter VRF units, Asia Pacific fresh service-manual delta scope.",
+      "documentTitle": "Gree GMV6 DC Inverter VRF Units Service Manual",
+      "documentCode": "GC202203-IV",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "PartiallyImported",
+      "coverageStatus": "PartialDiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-gmv6-debugging-codes",
+        "gree-gmv6-status-codes"
+      ],
+      "entriesImported": 8,
+      "categoriesImported": [
+        "Debugging",
+        "Status"
+      ],
+      "knownSmokeCodes": [
+        "Gree GMV6 A9",
+        "Gree GMV6 n1",
+        "Gree GMV6 qA",
+        "Gree GMV6 Uy"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "DeltaImportedPendingProductionSmoke",
+      "recommendedNext": false,
+      "notes": "ED-24GEC.13A imported only GC202203-IV delta codes absent from the previous GMV6 runtime. The binary PDF remains ignored and uncommitted.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Delta runtime evidence is recorded; full manual-library publication can be reviewed after production smoke."
+      }
+    },
+    {
       "manualId": "gree-gmv-idu-service-manual",
       "fileName": "SERVICE_MANUAL_GMV_IDU.pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/SERVICE_MANUAL_GMV_IDU.pdf",

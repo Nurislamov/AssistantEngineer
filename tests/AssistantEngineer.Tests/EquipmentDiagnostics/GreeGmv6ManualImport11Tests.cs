@@ -76,8 +76,8 @@ public sealed class GreeGmv6ManualImport11Tests
     {
         AssertPackageCount("gree-gmv6-outdoor-fault-protection-codes.json", "outdoor", 121);
         AssertPackageCount("gree-gmv6-indoor-fault-codes.json", "indoor", 60);
-        AssertPackageCount("gree-gmv6-status-codes.json", "status", 37);
-        AssertPackageCount("gree-gmv6-debugging-codes.json", "debugging", 37);
+        AssertPackageCount("gree-gmv6-status-codes.json", "status", 44);
+        AssertPackageCount("gree-gmv6-debugging-codes.json", "debugging", 38);
 
         var manuals = ReadObject(Path.Combine(
             TestPaths.RepoRoot,
@@ -100,7 +100,7 @@ public sealed class GreeGmv6ManualImport11Tests
             "equipment-diagnostics",
             "error-knowledge",
             "gree"), "*.json", SearchOption.AllDirectories).Length;
-        Assert.Equal(391, totalRuntimeCount);
+        Assert.Equal(399, totalRuntimeCount);
     }
 
     [Fact]
@@ -112,7 +112,9 @@ public sealed class GreeGmv6ManualImport11Tests
 
             Assert.Equal("ManualVerified", RequiredString(entry, "verificationStatus"));
             Assert.Equal("High", RequiredString(entry, "confidence"));
-            Assert.Equal(ManualName, RequiredString(entry, "sourceName"));
+            Assert.Contains(
+                RequiredString(entry, "sourceName"),
+                new[] { ManualName, "GMV6 DC Inverter VRF Units Service Manual" });
             Assert.False(string.IsNullOrWhiteSpace(RequiredString(entry, "sourceReference")));
         }
     }

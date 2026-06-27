@@ -21,8 +21,8 @@
   "intendedDisplaySources": [
     "OutdoorBoard"
   ],
-  "entryCountExpected": 37,
-  "notes": "One-manual source boundary: GC202001-I, GMV6 only. Exact table wording is stored in sourceMeaning. Detailed troubleshooting is imported for H5; other entries remain table-bound unless explicitly noted.",
+  "entryCountExpected": 38,
+  "notes": "GMV6 manual source boundary: GC202001-I plus GC202203-IV fresh-manual delta rows from ED-24GEC.13A. Exact table wording is stored in sourceMeaning. Detailed troubleshooting is imported for H5; other entries remain table-bound unless explicitly noted.",
   "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z"
+  "updatedAt": "2026-06-27T00:00:00Z"
 }

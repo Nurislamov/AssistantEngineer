@@ -62,7 +62,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(391, entries.Count);
+        Assert.Equal(399, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -171,7 +171,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(391, entries.Count);
+        Assert.Equal(399, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -443,7 +443,11 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Contains(
             result.Packages,
             item => item.PackageId == "gree-gmv6-status-codes" &&
-                item.EntryCountExpected == 37);
+                item.EntryCountExpected == 44);
+        Assert.Contains(
+            result.Packages,
+            item => item.PackageId == "gree-gmv6-debugging-codes" &&
+                item.EntryCountExpected == 38);
     }
 
     [Fact]
@@ -922,7 +926,15 @@ public sealed class ErrorKnowledgeJsonValidationTests
     private static readonly HashSet<string> ManualConfirmedGmv6RuntimeIds = new(StringComparer.OrdinalIgnoreCase)
     {
         "gree-gmv6-outdoor-fh",
-        "gree-gmv6-status-n2"
+        "gree-gmv6-status-n2",
+        "gree-gmv6-status-a9",
+        "gree-gmv6-status-n1",
+        "gree-gmv6-status-qa",
+        "gree-gmv6-status-qc",
+        "gree-gmv6-status-qh",
+        "gree-gmv6-status-qp",
+        "gree-gmv6-status-qu",
+        "gree-gmv6-debugging-uy"
     };
 
     private static readonly string[] ImprovedMessageForbiddenPhrases =
@@ -1071,7 +1083,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 .Cast<object>()
                 .ToArray();
 
-            Assert.Equal(391, entries.Length);
+            Assert.Equal(399, entries.Length);
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-outdoor-h5"));
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-debugging-u0"));
         }

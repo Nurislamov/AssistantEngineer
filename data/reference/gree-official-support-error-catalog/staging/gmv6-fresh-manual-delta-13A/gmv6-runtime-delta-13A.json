@@ -1,0 +1,90 @@
+﻿[
+    {
+        "code":  "A9",
+        "canonicalCode":  "A9",
+        "sourceMeaningEn":  "Set Back function",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/a9.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "n1",
+        "canonicalCode":  "N1",
+        "sourceMeaningEn":  "Defrosting cycle K1 setting",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/n1.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "qA",
+        "canonicalCode":  "QA",
+        "sourceMeaningEn":  "Heat recovery status",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/qa.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "qC",
+        "canonicalCode":  "QC",
+        "sourceMeaningEn":  "Mainly cooling",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/qc.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "qH",
+        "canonicalCode":  "QH",
+        "sourceMeaningEn":  "Mainly heating",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/qh.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "qP",
+        "canonicalCode":  "QP",
+        "sourceMeaningEn":  "Export region setting for PV VRF units",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/qp.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "qU",
+        "canonicalCode":  "QU",
+        "sourceMeaningEn":  "Grid voltage configuration",
+        "categoryCandidate":  "status",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/status/qu.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    },
+    {
+        "code":  "Uy",
+        "canonicalCode":  "UY",
+        "sourceMeaningEn":  "PV module over-temperature protection",
+        "categoryCandidate":  "debugging",
+        "sourceManualId":  "gree-gmv6-service-manual-2022-03",
+        "sourceDocument":  "GC202203-IV",
+        "actionRecommendation":  "ready-for-import",
+        "runtimePath":  "data/equipment-diagnostics/error-knowledge/gree/gmv6/debugging/uy.json",
+        "reason":  "Confirmed fresh manual delta imported."
+    }
+]

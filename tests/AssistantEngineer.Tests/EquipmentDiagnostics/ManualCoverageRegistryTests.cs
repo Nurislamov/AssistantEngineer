@@ -50,7 +50,7 @@ public sealed class ManualCoverageRegistryTests
             "futureTelegramManualLibrary"
         };
 
-        Assert.Equal(47, manuals.Length);
+        Assert.Equal(48, manuals.Length);
         Assert.DoesNotContain(manualIds, string.IsNullOrWhiteSpace);
         Assert.Equal(manualIds.Length, manualIds.Distinct(StringComparer.Ordinal).Count());
         Assert.All(manuals, manual =>
