@@ -1,4 +1,7 @@
+using System.Collections;
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.Loader;
 using System.Text.Json.Nodes;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
@@ -124,60 +127,29 @@ public sealed class ErrorKnowledgeJsonValidationTests
     [Fact]
     public async Task PublishedApiAssemblyLoadsEmbeddedGreeH5()
     {
-        var publishDirectory = Path.Combine(
-            Path.GetTempPath(),
-            $"assistant-engineer-published-knowledge-{Guid.NewGuid():N}");
-        try
-        {
-            var result = await RunProcessAsync(
-                "dotnet",
-                [
-                    "publish",
-                    "src/Backend/AssistantEngineer.Api/AssistantEngineer.Api.csproj",
-                    "--configuration",
-                    "Debug",
-                    "--no-restore",
-                    "--no-build",
-                    "--output",
-                    publishDirectory,
-                    "/p:UseAppHost=false"
-                ]);
-            Assert.True(
-                result.ExitCode == 0,
-                $"dotnet publish failed.{Environment.NewLine}{result.Output}");
+        var stopwatch = Stopwatch.StartNew();
+        var apiAssemblyPath = typeof(Program).Assembly.Location;
+        var apiOutputDirectory = Path.GetDirectoryName(apiAssemblyPath)
+            ?? throw new InvalidOperationException("API assembly directory could not be resolved.");
+        var modulePath = Path.Combine(
+            apiOutputDirectory,
+            "AssistantEngineer.Modules.EquipmentDiagnostics.dll");
 
-            var modulePath = Path.Combine(
-                publishDirectory,
-                "AssistantEngineer.Modules.EquipmentDiagnostics.dll");
-            Assert.True(File.Exists(modulePath), $"Published module was not found: {modulePath}");
+        Assert.Contains(
+            typeof(Program).Assembly.GetReferencedAssemblies(),
+            reference => string.Equals(
+                reference.Name,
+                "AssistantEngineer.Modules.EquipmentDiagnostics",
+                StringComparison.Ordinal));
+        Assert.True(File.Exists(modulePath), $"Published API output module was not found: {modulePath}");
 
-            var smoke = await RunProcessAsync(
-                "dotnet",
-                [
-                    "run",
-                    "--project",
-                    "tools/AssistantEngineer.Tools.EquipmentDiagnosticsVerification",
-                    "--no-restore",
-                    "--",
-                    "verify-published-knowledge",
-                    "--assembly",
-                    modulePath
-                ]);
-            Assert.True(
-                smoke.ExitCode == 0,
-                $"Published knowledge smoke failed.{Environment.NewLine}{smoke.Output}");
-            Assert.Contains("PASS", smoke.Output, StringComparison.Ordinal);
-            Assert.Contains("Entry: gree-gmv6-outdoor-h5", smoke.Output, StringComparison.Ordinal);
-            Assert.Contains("Debugging entry: gree-gmv6-debugging-u0", smoke.Output, StringComparison.Ordinal);
-            Assert.Contains("Package resource:", smoke.Output, StringComparison.Ordinal);
-        }
-        finally
-        {
-            if (Directory.Exists(publishDirectory))
-            {
-                Directory.Delete(publishDirectory, recursive: true);
-            }
-        }
+        await RunPublishedKnowledgeSmokeWithTimeoutAsync(
+            modulePath,
+            TimeSpan.FromSeconds(5));
+
+        Assert.True(
+            stopwatch.Elapsed < TimeSpan.FromSeconds(5),
+            $"Published knowledge smoke should finish quickly, but took {stopwatch.Elapsed}.");
     }
 
     [Fact]
@@ -1038,33 +1010,91 @@ public sealed class ErrorKnowledgeJsonValidationTests
             [],
             null);
 
-    private static async Task<ProcessResult> RunProcessAsync(
-        string fileName,
-        IReadOnlyList<string> arguments)
+    private static async Task RunPublishedKnowledgeSmokeWithTimeoutAsync(
+        string modulePath,
+        TimeSpan timeout)
     {
-        var startInfo = new ProcessStartInfo
+        const string step = "load embedded Gree H5 knowledge from API output module";
+        try
         {
-            FileName = fileName,
-            WorkingDirectory = TestPaths.RepoRoot,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        foreach (var argument in arguments)
-        {
-            startInfo.ArgumentList.Add(argument);
+            await Task.Run(() => VerifyPublishedKnowledgeAssembly(modulePath))
+                .WaitAsync(timeout);
         }
-
-        using var process = Process.Start(startInfo)
-            ?? throw new InvalidOperationException($"Failed to start {fileName}.");
-        var outputTask = process.StandardOutput.ReadToEndAsync();
-        var errorTask = process.StandardError.ReadToEndAsync();
-        await process.WaitForExitAsync();
-        return new ProcessResult(
-            process.ExitCode,
-            string.Concat(await outputTask, Environment.NewLine, await errorTask));
+        catch (TimeoutException ex)
+        {
+            Assert.Fail(
+                $"Published knowledge smoke timed out during '{step}'. " +
+                $"Assembly: {modulePath}. Waited: {timeout.TotalSeconds:n0}s. {ex.Message}");
+        }
     }
 
-    private sealed record ProcessResult(int ExitCode, string Output);
+    private static void VerifyPublishedKnowledgeAssembly(string modulePath)
+    {
+        var moduleDirectory = Path.GetDirectoryName(modulePath)
+            ?? throw new InvalidOperationException($"Module directory could not be resolved: {modulePath}");
+        var loadContext = new AssemblyLoadContext(
+            $"published-error-knowledge-{Guid.NewGuid():N}",
+            isCollectible: true);
+        loadContext.Resolving += (_, assemblyName) => ResolveFromDirectory(
+            loadContext,
+            moduleDirectory,
+            assemblyName);
+
+        try
+        {
+            var assembly = loadContext.LoadFromAssemblyPath(modulePath);
+            var resources = assembly.GetManifestResourceNames();
+
+            Assert.Contains(
+                resources,
+                name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.gree.gmv6.outdoor.h5.json",
+                    StringComparison.Ordinal));
+            Assert.Contains(
+                resources,
+                name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.packages.gree-gmv6-outdoor-fault-protection-codes.json",
+                    StringComparison.Ordinal));
+            Assert.Contains(
+                resources,
+                name => name.EndsWith(
+                    ".Knowledge.ErrorKnowledge.gree.gmv6.debugging.u0.json",
+                    StringComparison.Ordinal));
+
+            var sourceType = assembly.GetType(
+                "AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json.JsonErrorKnowledgeLocalizationSource",
+                throwOnError: true)!;
+            var source = Activator.CreateInstance(sourceType)!;
+            var entries = ((IEnumerable)sourceType
+                    .GetMethod("GetEntries", BindingFlags.Instance | BindingFlags.Public)!
+                    .Invoke(source, null)!)
+                .Cast<object>()
+                .ToArray();
+
+            Assert.Equal(391, entries.Length);
+            Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-outdoor-h5"));
+            Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-debugging-u0"));
+        }
+        finally
+        {
+            loadContext.Unload();
+        }
+    }
+
+    private static Assembly? ResolveFromDirectory(
+        AssemblyLoadContext loadContext,
+        string directory,
+        AssemblyName assemblyName)
+    {
+        var dependencyPath = Path.Combine(directory, $"{assemblyName.Name}.dll");
+        return File.Exists(dependencyPath)
+            ? loadContext.LoadFromAssemblyPath(dependencyPath)
+            : null;
+    }
+
+    private static bool HasEntryId(object entry, string expectedId) =>
+        string.Equals(
+            entry.GetType().GetProperty("Id")?.GetValue(entry)?.ToString(),
+            expectedId,
+            StringComparison.Ordinal);
 }
