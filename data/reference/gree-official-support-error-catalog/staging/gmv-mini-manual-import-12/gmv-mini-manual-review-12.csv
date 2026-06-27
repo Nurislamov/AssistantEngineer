@@ -1,0 +1,2 @@
+code,canonicalCode,sourceCandidate,sourceManualId,action,reason
+E6,E6,Gree support/catalog candidate,gree-gmv-mini-service-manual,manual-review,SERVICE_MANUAL_GMV_MINI.pdf did not contain an exact GMV Mini E6 communication-error table row.

@@ -1,8 +1,8 @@
-﻿# Gree Code Status Registry
+# Gree Code Status Registry
 
-Stage: ED-24GEC.10B
+Stage: ED-24GEC.12
 
-Generated: 2026-06-26T23:00:59.4087818+05:00; updated for ED-24GEC.10B
+Generated: 2026-06-27T00:00:00+05:00; updated for ED-24GEC.12
 
 This registry tracks the remaining Gree website/support candidate codes against runtime JSON and indexed service manuals.
 
@@ -11,12 +11,12 @@ This registry tracks the remaining Gree website/support candidate codes against 
 | Status | Count |
 |---|---:|
 | AliasToExistingCode | 1 |
+| BlockedNoManualEvidence | 5 |
 | BlockedNoiseOrSeriesMismatch | 1 |
 | BlockedNoiseOrVisualAmbiguity | 2 |
-| BlockedNoManualEvidence | 5 |
+| ManualReviewNoMiniRuntime | 1 |
 | NeedGmvWRuntimeStructure | 5 |
 | NeedSeriesDecision | 3 |
-| ReadyAddMini | 1 |
 | RuntimeAdded | 2 |
 
 ## Codes
@@ -25,7 +25,7 @@ This registry tracks the remaining Gree website/support candidate codes against 
 |---|---|---|---|---:|---:|---:|---|
 | by | BlockedNoiseOrVisualAmbiguity |  | no | 46 | 29 | 101 | Keep blocked until exact manual table row for code by is found. |
 | E5 | NeedGmvWRuntimeStructure | GMV-W / Versati | no | 0 | 0 | 2 | Create GMV-W/Versati runtime structure and package before adding this code. |
-| E6 | ReadyAddMini | GMV Mini | no | 0 | 1 | 12 | Review top evidence, then add GMV Mini runtime if meaning is exact. |
+| E6 | ManualReviewNoMiniRuntime | GMV Mini | no | 0 | 1 | 12 | Do not add GMV Mini E6 until an exact Mini service-manual row is found. |
 | E7 | NeedSeriesDecision |  | no | 0 | 0 | 0 | Review source series manually; do not add to GMV6 by default. |
 | E9 | NeedSeriesDecision |  | no | 0 | 0 | 0 | Review source series manually; do not add to GMV6 by default. |
 | eA | NeedSeriesDecision |  | no | 0 | 0 | 0 | Review source series manually; do not add to GMV6 by default. |
@@ -49,11 +49,3 @@ This registry tracks the remaining Gree website/support candidate codes against 
 - gree-code-status-registry.csv
 - gree-code-status-registry.json
 - README.md
-
-## Rules
-
-- Website/support codes are candidates, not automatic runtime entries.
-- A code is added to a series only when a service manual confirms that series and meaning.
-- GMV-W/Versati codes are not added to GMV6.
-- Visual aliases such as Ho/HO must map to confirmed canonical codes instead of creating duplicate cards.
-- No internal catalog/staging/reference-only wording should appear in user-visible Telegram answers.

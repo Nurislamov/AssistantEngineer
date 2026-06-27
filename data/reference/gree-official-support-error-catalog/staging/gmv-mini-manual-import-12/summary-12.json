@@ -1,0 +1,24 @@
+{
+  "manualId": "gree-gmv-mini-service-manual",
+  "manualPath": "artifacts/manual-intake/sources/gree/SERVICE_MANUAL_GMV_MINI.pdf",
+  "manualEvidenceRows": 138,
+  "existingRuntimeRows": 9,
+  "aliasRows": 2,
+  "newRuntimeJson": 127,
+  "newRuntimeCount": 136,
+  "packageCounts": {
+    "gree-gmv-mini-vrf-indoor-controller-codes": 27,
+    "gree-gmv-mini-vrf-outdoor-protection-codes": 62,
+    "gree-gmv-mini-vrf-status-codes": 47
+  },
+  "manualReview": [
+    {
+      "code": "E6",
+      "canonicalCode": "E6",
+      "sourceCandidate": "Gree support/catalog candidate",
+      "sourceManualId": "gree-gmv-mini-service-manual",
+      "action": "manual-review",
+      "reason": "SERVICE_MANUAL_GMV_MINI.pdf did not contain an exact GMV Mini E6 communication-error table row."
+    }
+  ]
+}

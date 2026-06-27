@@ -78,7 +78,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
-        var response = await adapter.HandleAsync(Update("Gree A0"));
+        var response = await adapter.HandleAsync(Update("Gree GMV6 A0"));
 
         Assert.Contains("Gree GMV A0", response.Text, StringComparison.Ordinal);
         Assert.Contains("пусконаладк", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -265,7 +265,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
-    public async Task NumericZeroOneDoesNotResolveToLowercaseO1()
+    public async Task NumericZeroOneResolvesToMiniDebuggingCodeAndNotLowercaseO1()
     {
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -274,9 +274,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var last = await adapter.HandleAsync(Update("/last"));
 
         Assert.DoesNotContain("Gree GMV o1", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Код 01 не найден", response.Text, StringComparison.Ordinal);
-        Assert.Contains("o1 — буква O + цифра 1", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Код: Gree 01", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini 01", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Set master unit", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree 01", last.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree o1", last.Text, StringComparison.Ordinal);
     }
 

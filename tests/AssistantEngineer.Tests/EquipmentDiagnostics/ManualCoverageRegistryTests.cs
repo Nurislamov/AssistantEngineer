@@ -171,18 +171,24 @@ public sealed class ManualCoverageRegistryTests
             manual.GetProperty("manualId").GetString() == "gree-gmv-mini-service-manual");
 
         Assert.Equal(
-            "gree-gmv6-service-manual-2020-09",
-            Assert.Single(imported).GetProperty("manualId").GetString());
+            [
+                "gree-gmv-mini-service-manual",
+                "gree-gmv6-service-manual-2020-09"
+            ],
+            imported
+                .Select(manual => manual.GetProperty("manualId").GetString()!)
+                .Order(StringComparer.Ordinal)
+                .ToArray());
         Assert.Empty(recommended);
         Assert.Equal("PartiallyImported", gmvIdu.GetProperty("importStatus").GetString());
         Assert.Equal("PartialDiagnosticScopeImported", gmvIdu.GetProperty("coverageStatus").GetString());
         Assert.Equal(0, gmvIdu.GetProperty("entriesImported").GetInt32());
         Assert.Equal(38, gmvIdu.GetProperty("entriesReferenced").GetInt32());
-        Assert.Equal("PartiallyImported", gmvMini.GetProperty("importStatus").GetString());
-        Assert.Equal("PartialDiagnosticScopeImported", gmvMini.GetProperty("coverageStatus").GetString());
-        Assert.Equal(9, gmvMini.GetProperty("entriesImported").GetInt32());
+        Assert.Equal("Imported", gmvMini.GetProperty("importStatus").GetString());
+        Assert.Equal("DiagnosticScopeImported", gmvMini.GetProperty("coverageStatus").GetString());
+        Assert.Equal(136, gmvMini.GetProperty("entriesImported").GetInt32());
         Assert.Equal(31, gmvMini.GetProperty("entriesReferenced").GetInt32());
-        Assert.Equal(90, gmvMini.GetProperty("needsReviewCodes").GetArrayLength());
+        Assert.Single(gmvMini.GetProperty("needsReviewCodes").EnumerateArray());
     }
 
     [Fact]
@@ -246,7 +252,7 @@ public sealed class ManualCoverageRegistryTests
     }
 
     [Fact]
-    public void GmvMiniAnalysisRecordsPartialImportAndNeedsReviewBoundary()
+    public void GmvMiniAnalysisRecordsFullImportAndE6ReviewBoundary()
     {
         using var document = LoadRegistry();
         var manual = document.RootElement
@@ -263,11 +269,11 @@ public sealed class ManualCoverageRegistryTests
             .ToArray();
 
         Assert.Equal("en", manual.GetProperty("sourceLanguage").GetString());
-        Assert.Equal("PartiallyImported", manual.GetProperty("importStatus").GetString());
-        Assert.Equal("PartialDiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
-        Assert.Equal(9, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Equal("Imported", manual.GetProperty("importStatus").GetString());
+        Assert.Equal("DiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
+        Assert.Equal(136, manual.GetProperty("entriesImported").GetInt32());
         Assert.Equal(31, manual.GetProperty("entriesReferenced").GetInt32());
-        Assert.Equal(90, manual.GetProperty("needsReviewCodes").GetArrayLength());
+        Assert.Single(manual.GetProperty("needsReviewCodes").EnumerateArray());
         Assert.Equal(
             [
                 "gree-gmv-mini-vrf-indoor-controller-codes",
@@ -275,18 +281,18 @@ public sealed class ManualCoverageRegistryTests
                 "gree-gmv-mini-vrf-status-codes"
             ],
             packageIds);
-        Assert.Equal("ED-24H.2", analysis.GetProperty("analysisStage").GetString());
+        Assert.Equal("ED-24GEC.12", analysis.GetProperty("analysisStage").GetString());
         Assert.Equal("SERVICE_MANUAL_GMV_MINI.pdf", analysis.GetProperty("sourceFileUsed").GetString());
         Assert.False(analysis.GetProperty("duplicateFileUsed").GetBoolean());
         Assert.Equal(173, analysis.GetProperty("pageCount").GetInt32());
-        Assert.Equal(130, analysis.GetProperty("identifiedCodeCount").GetInt32());
-        Assert.Equal(9, analysis.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(138, analysis.GetProperty("identifiedCodeCount").GetInt32());
+        Assert.Equal(136, analysis.GetProperty("entriesImported").GetInt32());
         Assert.Equal(31, analysis.GetProperty("sourceReferencesMergedCount").GetInt32());
-        Assert.Equal(90, analysis.GetProperty("needsReviewCodeCount").GetInt32());
+        Assert.Equal(1, analysis.GetProperty("needsReviewCodeCount").GetInt32());
         Assert.Equal(
-            "PartialImportWithExactSourceReferenceMerges",
+            "FullRuntimeImportWithAliases",
             analysis.GetProperty("importDecision").GetString());
-        Assert.Equal(90, analysis.GetProperty("needsReviewCodes").GetArrayLength());
+        Assert.Single(analysis.GetProperty("needsReviewCodes").EnumerateArray());
         Assert.Contains(
             "SERVICE_MANUAL_GMV_MINI (1).pdf",
             manual.GetProperty("notes").GetString(),

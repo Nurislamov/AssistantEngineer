@@ -108,7 +108,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         {
             ["by"] = "BlockedNoiseOrVisualAmbiguity",
             ["E5"] = "NeedGmvWRuntimeStructure",
-            ["E6"] = "ReadyAddMini",
+            ["E6"] = "ManualReviewNoMiniRuntime",
             ["E7"] = "NeedSeriesDecision",
             ["E9"] = "NeedSeriesDecision",
             ["eA"] = "NeedSeriesDecision",
@@ -194,7 +194,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(264, entries.Count);
+        Assert.Equal(391, entries.Count);
         foreach (var code in ExpectedStillBlockedCodes)
         {
             Assert.DoesNotContain(
@@ -361,7 +361,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
             Assert.Equal("NeedGmvWRuntimeStructure", RequiredString(json[code], "TrackingStatus"));
         }
 
-        Assert.Equal("ReadyAddMini", RequiredString(json["E6"], "TrackingStatus"));
+        Assert.Equal("ManualReviewNoMiniRuntime", RequiredString(json["E6"], "TrackingStatus"));
         Assert.Equal("BlockedNoiseOrVisualAmbiguity", RequiredString(json["by"], "TrackingStatus"));
         Assert.Equal("BlockedNoiseOrVisualAmbiguity", RequiredString(json["No"], "TrackingStatus"));
         foreach (var code in new[] { "Eb", "Fy", "JJ", "Jn", "Jy" })
@@ -432,7 +432,7 @@ public sealed class GreeGmvRemainingRuntimeCardsTests
         var report = ReadJsonObject(ManualReviewBatch9JsonPath);
         var reviews = Batch9Reviews(report);
 
-        Assert.Equal(264, entries.Count);
+        Assert.Equal(391, entries.Count);
         Assert.Equal(0, reviews.Count(item => RequiredString(item, "decision") == "added-runtime"));
         foreach (var item in reviews.Where(item => !ExpectedPromotedCodes.Contains(RequiredString(item, "code"), StringComparer.Ordinal)))
         {

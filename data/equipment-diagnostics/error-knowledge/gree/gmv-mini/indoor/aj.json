@@ -56,12 +56,24 @@
       "manualId": "gree-gmv-mini-service-manual",
       "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
       "notes": "Primary GMV Mini/System II source for this entry."
+    },
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
+      "notes": "Outdoor main-board table uses the same visible code; kept on the existing GMV Mini card to avoid duplicate answers."
     }
   ],
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-27T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
@@ -69,7 +81,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-consumer",
       "audience": "Consumer",
       "title": "Gree GMV Mini AJ — предупреждение очистки фильтра",
@@ -93,7 +105,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-installer",
       "audience": "Installer",
       "title": "Gree GMV Mini AJ — предупреждение очистки фильтра",
@@ -117,7 +129,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-23T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-engineer",
       "audience": "Engineer",
       "title": "Gree GMV Mini AJ — предупреждение очистки фильтра",

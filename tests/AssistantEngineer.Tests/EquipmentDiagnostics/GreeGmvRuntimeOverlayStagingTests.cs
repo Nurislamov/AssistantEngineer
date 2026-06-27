@@ -122,7 +122,7 @@ public sealed class GreeGmvRuntimeOverlayStagingTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(264, entries.Count);
+        Assert.Equal(391, entries.Count);
         Assert.DoesNotContain(entries, entry => entry.Id.Contains("runtime-overlay", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(entries, entry => entry.PackageId.Contains("gree-official-support-error-catalog", StringComparison.OrdinalIgnoreCase));
     }

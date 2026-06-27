@@ -4,7 +4,7 @@
   "equipmentFamily": "VRF",
   "series": "GMV Mini",
   "title": "Gree GMV Mini status and function codes",
-  "description": "Manual-bound outdoor main-board status/function entries from the GMV Mini/System II service manual not already represented by GMV6.",
+  "description": "Manual-bound outdoor main-board status, commissioning, debug, and function entries from the GMV Mini/System II service manual.",
   "sourceLanguage": "en",
   "sourceType": "Manual",
   "sourceName": "DC Inverter VRF System Service Manual (R410A)",
@@ -13,7 +13,11 @@
   "confidence": "High",
   "intendedSignalTypes": [
     "Status",
-    "Commissioning"
+    "Commissioning",
+    "Debug",
+    "Warning",
+    "Protection",
+    "Communication"
   ],
   "intendedEquipmentTypes": [
     "OutdoorUnit"
@@ -21,8 +25,8 @@
   "intendedDisplaySources": [
     "OutdoorBoard"
   ],
-  "entryCountExpected": 6,
+  "entryCountExpected": 47,
   "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only. These codes are status/function displays, not standalone fault conclusions.",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-23T00:00:00Z"
+  "updatedAt": "2026-06-27T00:00:00Z"
 }

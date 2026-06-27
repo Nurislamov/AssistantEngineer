@@ -1,0 +1,139 @@
+{
+  "id": "gree-gmv-mini-status-03",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV Mini",
+  "models": [
+    "GMV-80WL/A-T",
+    "GMV-100WL/A-T",
+    "GMV-121WL/A-T",
+    "GMV-80WL/C-T",
+    "GMV-100WL/C-T",
+    "GMV-121WL/C-T",
+    "GMV-141WL/C-T",
+    "GMV-120WL/A-T",
+    "GMV-140WL/A-T",
+    "GMV-160WL/A-T",
+    "GMV-120WL/A-X",
+    "GMV-140WL/A-X",
+    "GMV-160WL/A-X",
+    "GMV-120WL/C-T",
+    "GMV-140WL/C-T",
+    "GMV-160WL/C-T",
+    "GMV-120WL/C-X",
+    "GMV-140WL/C-X",
+    "GMV-160WL/C-X",
+    "GMV-H224WL/A-X",
+    "GMV-H280WL/A-X",
+    "GMV-H335WL/A-X",
+    "GMV-224WL/C-X",
+    "GMV-280WL/C-X",
+    "GMV-335WL/C-X"
+  ],
+  "code": "03",
+  "signalType": "Debug",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Unknown",
+  "severity": "Info",
+  "requiresQualifiedService": false,
+  "canCustomerContinueOperation": null,
+  "packageId": "gree-gmv-mini-vrf-status-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceMeaning": "Confirm the quantity of outdoor unit",
+  "sourceReference": "Debugging of unit stage table, PDF pages 72-75 / manual pages 68-71",
+  "sourceReferences": [
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Debugging of unit stage table, PDF pages 72-75 / manual pages 68-71",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-status-codes",
+      "notes": "Primary GMV Mini/System II source for this entry."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-06-27T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-status-03-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV Mini 03 - Confirm the quantity of наружный блок",
+      "summary": "Код 03 для GMV Mini относится к состоянию или сервисной функции: Confirm the quantity of наружный блок. Это не самостоятельный признак отказа компонента.",
+      "safetyNote": "Не меняйте сервисные настройки без инструкции производителя и квалификации.",
+      "checkSteps": [
+        "Зафиксируйте код 03, режим работы и место отображения.",
+        "Проверьте, не идет ли штатная наладка, настройка или просмотр параметров.",
+        "Если вместе с кодом есть отказ работы, передайте сервису сопутствующие коды и симптомы."
+      ],
+      "doNotAdvise": [
+        "Не считайте 03 аварией без других признаков.",
+        "Не меняйте параметры платы только по этому коду."
+      ],
+      "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-status-03-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV Mini 03 - Confirm the quantity of наружный блок",
+      "summary": "Код 03 для GMV Mini относится к состоянию или сервисной функции: Confirm the quantity of наружный блок. Это не самостоятельный признак отказа компонента.",
+      "safetyNote": "Не меняйте сервисные настройки без инструкции производителя и квалификации.",
+      "checkSteps": [
+        "Зафиксируйте код 03, режим работы и место отображения.",
+        "Проверьте, не идет ли штатная наладка, настройка или просмотр параметров.",
+        "Если вместе с кодом есть отказ работы, передайте сервису сопутствующие коды и симптомы."
+      ],
+      "doNotAdvise": [
+        "Не считайте 03 аварией без других признаков.",
+        "Не меняйте параметры платы только по этому коду."
+      ],
+      "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-status-03-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV Mini 03 - Confirm the quantity of наружный блок",
+      "summary": "Код 03 для GMV Mini относится к состоянию или сервисной функции: Confirm the quantity of наружный блок. Это не самостоятельный признак отказа компонента.",
+      "safetyNote": "Не меняйте сервисные настройки без инструкции производителя и квалификации.",
+      "checkSteps": [
+        "Зафиксируйте код 03, режим работы и место отображения.",
+        "Проверьте, не идет ли штатная наладка, настройка или просмотр параметров.",
+        "Если вместе с кодом есть отказ работы, передайте сервису сопутствующие коды и симптомы."
+      ],
+      "doNotAdvise": [
+        "Не считайте 03 аварией без других признаков.",
+        "Не меняйте параметры платы только по этому коду."
+      ],
+      "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    }
+  ]
+}

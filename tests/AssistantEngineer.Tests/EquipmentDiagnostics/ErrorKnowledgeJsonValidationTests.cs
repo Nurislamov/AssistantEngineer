@@ -59,7 +59,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(264, entries.Count);
+        Assert.Equal(391, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -199,7 +199,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(264, entries.Count);
+        Assert.Equal(391, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -483,15 +483,15 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.Contains(
             result.Packages,
             package => package.PackageId == "gree-gmv-mini-vrf-indoor-controller-codes" &&
-                package.EntryCountExpected == 2);
+                package.EntryCountExpected == 27);
         Assert.Contains(
             result.Packages,
             package => package.PackageId == "gree-gmv-mini-vrf-outdoor-protection-codes" &&
-                package.EntryCountExpected == 1);
+                package.EntryCountExpected == 62);
         Assert.Contains(
             result.Packages,
             package => package.PackageId == "gree-gmv-mini-vrf-status-codes" &&
-                package.EntryCountExpected == 6);
+                package.EntryCountExpected == 47);
 
         var gmvMiniEntries = result.Entries
             .Where(entry => string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
@@ -502,12 +502,17 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(9, gmvMiniEntries.Length);
+        Assert.Equal(136, gmvMiniEntries.Length);
         Assert.Equal(31, gmvMiniReferencedEntries.Length);
         Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-c0");
         Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-aj");
         Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-outdoor-ec");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-outdoor-e0");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-l0");
+        Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-status-01");
         Assert.Contains(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-status-a1");
+        Assert.DoesNotContain(gmvMiniEntries, entry => entry.Id == "gree-gmv-mini-indoor-e6");
+        Assert.DoesNotContain(gmvMiniEntries, entry => entry.Code == "E6");
         Assert.All(gmvMiniEntries, entry =>
         {
             Assert.Equal("ManualVerified", entry.VerificationStatus);

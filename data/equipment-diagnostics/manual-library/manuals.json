@@ -4,14 +4,40 @@
   "sourceRoot": "artifacts/manual-intake/sources/gree",
   "manualBoundImportRule": "One manual = one source. Do not use internet sources, model memory, mixed manuals, or cross-series generalization.",
   "statusModels": {
-    "importStatus": ["New", "Analyzed", "PartiallyImported", "Imported", "Skipped", "NeedsReview", "Superseded"],
-    "coverageStatus": ["NotAnalyzed", "DiagnosticSectionsUnknown", "DiagnosticSectionsIdentified", "DiagnosticScopeImported", "PartialDiagnosticScopeImported", "NoDiagnosticScope", "NeedsManualReview"],
-    "productionStatus": ["NotImported", "DeployedAndSmokeVerified"]
+    "importStatus": [
+      "New",
+      "Analyzed",
+      "PartiallyImported",
+      "Imported",
+      "Skipped",
+      "NeedsReview",
+      "Superseded"
+    ],
+    "coverageStatus": [
+      "NotAnalyzed",
+      "DiagnosticSectionsUnknown",
+      "DiagnosticSectionsIdentified",
+      "DiagnosticScopeImported",
+      "PartialDiagnosticScopeImported",
+      "NoDiagnosticScope",
+      "NeedsManualReview"
+    ],
+    "productionStatus": [
+      "NotImported",
+      "DeployedAndSmokeVerified"
+    ]
   },
   "futureTelegramManualLibraryPolicy": {
     "implementationStatus": "FoundationImplemented",
-    "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"],
-    "deniedRoles": ["Consumer"],
+    "allowedRoles": [
+      "Installer",
+      "Engineer",
+      "Admin",
+      "Owner"
+    ],
+    "deniedRoles": [
+      "Consumer"
+    ],
     "rule": "Consumers must not receive manuals. Eligible authenticated technical roles may request reviewed manuals through Telegram file_id bindings when server-local bindings exist."
   },
   "manuals": [
@@ -41,7 +67,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Needs manual identity review; duplicated .pdf extension is preserved from the local filename.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Identity and access metadata must be reviewed before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Identity and access metadata must be reviewed before library publication."
+      }
     },
     {
       "manualId": "gree-versati-air-to-water-split",
@@ -69,7 +107,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only; needs manual identity review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-a-series-chiller-tsm",
@@ -97,7 +147,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only; needs manual identity review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-ce41-controller-manual",
@@ -125,7 +187,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Existing source notes indicate a possible filename/cover-model mismatch; do not overclaim identity.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve filename and cover identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve filename and cover identity before library publication."
+      }
     },
     {
       "manualId": "gree-ce42-controller-manual-2020-10-29",
@@ -153,7 +227,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Version-like date is taken from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-ce52-controller-manual",
@@ -181,7 +267,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-gmv-c-series-owner-manual",
@@ -209,7 +307,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Owner-manual classification is conservative; local filename spelling is preserved.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review diagnostic scope and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review diagnostic scope and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-gmv-f-series-owner-manual",
@@ -237,7 +347,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Owner-manual classification is conservative; local filename spelling is preserved.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review diagnostic scope and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review diagnostic scope and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-u-match-inverter-duct-type",
@@ -265,7 +387,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-design-selection-reference",
@@ -293,7 +427,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Non-diagnostic reference candidate; needs identity and applicability review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Engineering reference documents require separate scope and access review."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Engineering reference documents require separate scope and access review."
+      }
     },
     {
       "manualId": "gree-split-duct-inverter-series-2",
@@ -321,7 +467,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-e-series-modular-scroll-chiller",
@@ -349,7 +507,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-energy-recovery-ventilation-system",
@@ -377,7 +547,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-engineering-data-reference",
@@ -405,7 +587,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Non-diagnostic reference candidate; needs identity and applicability review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Engineering reference documents require separate scope and access review."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Engineering reference documents require separate scope and access review."
+      }
     },
     {
       "manualId": "gree-fan-coil-service-manual-labonallo",
@@ -433,7 +627,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Filename contains an unclear term; needs manual identity review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve document identity before library publication."
+      }
     },
     {
       "manualId": "gree-u-match-gu50-160k-on-off-service-manual",
@@ -461,7 +667,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-gva55al-m3nnc7a-220",
@@ -489,7 +707,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Needs manual identity review; no equipment family is inferred from the filename.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-hwr36-60na-b-m-35982-r410",
@@ -517,7 +747,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Needs manual identity review; refrigerant marking alone is not used to infer equipment family.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-erv-installation-startup-maintenance",
@@ -545,7 +787,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-air-cooled-screw-chiller-heat-recovery-jf00303869",
@@ -573,7 +827,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-air-cooled-screw-chiller-service-manual-jf00304179",
@@ -601,7 +867,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and scope before library publication."
+      }
     },
     {
       "manualId": "gree-lsqwrf249mnad-m-doc",
@@ -629,7 +907,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "DOC/PDF pair may be format variants; needs identity and duplicate review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve document identity and preferred format before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve document identity and preferred format before library publication."
+      }
     },
     {
       "manualId": "gree-lsqwrf249mnad-m-pdf",
@@ -657,7 +947,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "DOC/PDF pair may be format variants; needs identity and duplicate review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve document identity and preferred format before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve document identity and preferred format before library publication."
+      }
     },
     {
       "manualId": "gree-ce41-portable-commissioning-tool",
@@ -685,7 +987,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Tool operation must not be treated as equipment fault meaning without manual review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review tool scope and access metadata before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review tool scope and access metadata before library publication."
+      }
     },
     {
       "manualId": "gree-multi-split-service-manual",
@@ -713,7 +1027,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-wk-011pm-owner-manual",
@@ -741,7 +1067,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Needs manual identity review; controller classification is tentative from filename prefix.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-gmv-x-owner-manual",
@@ -769,7 +1107,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Not imported into repo-backed diagnostic JSON; analyze before any series-bound import.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review diagnostic scope and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review diagnostic scope and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-gmv6-owner-manual",
@@ -797,7 +1147,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Separate source from the imported GMV6 service manual; do not merge meanings across manuals.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review owner-manual scope and access metadata before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review owner-manual scope and access metadata before library publication."
+      }
     },
     {
       "manualId": "gree-erv-service-manual",
@@ -825,7 +1187,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-gmv6-service-manual-2020-09",
@@ -844,16 +1218,45 @@
       "importStatus": "Imported",
       "coverageStatus": "DiagnosticScopeImported",
       "diagnosticUsefulness": "High",
-      "importedPackageIds": ["gree-gmv6-indoor-fault-codes", "gree-gmv6-outdoor-fault-protection-codes", "gree-gmv6-debugging-codes", "gree-gmv6-status-codes"],
+      "importedPackageIds": [
+        "gree-gmv6-indoor-fault-codes",
+        "gree-gmv6-outdoor-fault-protection-codes",
+        "gree-gmv6-debugging-codes",
+        "gree-gmv6-status-codes"
+      ],
       "entriesImported": 255,
-      "categoriesImported": ["Indoor", "Outdoor", "Debugging", "Status"],
-      "knownSmokeCodes": ["Gree C0", "Gree U0", "Gree H5", "Gree E1", "Gree A0"],
+      "categoriesImported": [
+        "Indoor",
+        "Outdoor",
+        "Debugging",
+        "Status"
+      ],
+      "knownSmokeCodes": [
+        "Gree C0",
+        "Gree U0",
+        "Gree H5",
+        "Gree E1",
+        "Gree A0"
+      ],
       "sourceCommit": "32cfd432d6de17bc6fe98393dd839ea840a5b320",
       "latestQualityCommit": "8c89219634b1c017968f0de76c2f8c9f29452800",
       "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
       "notes": "Only manual whose diagnostic scope is currently imported into repo-backed JSON. The binary PDF remains ignored and uncommitted.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "displayNameRu": "Сервисное руководство GMV6 v2020.09", "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Identity, scope, source commit, and production quality status are recorded; runtime file delivery uses server-local Telegram file bindings when configured."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": true,
+        "displayNameRu": "Сервисное руководство GMV6 v2020.09",
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Identity, scope, source commit, and production quality status are recorded; runtime file delivery uses server-local Telegram file bindings when configured."
+      }
     },
     {
       "manualId": "gree-gmv-idu-service-manual",
@@ -872,14 +1275,22 @@
       "importStatus": "PartiallyImported",
       "coverageStatus": "PartialDiagnosticScopeImported",
       "diagnosticUsefulness": "High",
-      "importedPackageIds": ["gree-gmv6-indoor-fault-codes"],
+      "importedPackageIds": [
+        "gree-gmv6-indoor-fault-codes"
+      ],
       "entriesImported": 0,
       "entriesReferenced": 38,
       "procedureCodeCountReviewed": 19,
       "procedureTextEntriesUpdated": 0,
       "needsReviewCodes": [],
-      "categoriesImported": ["IndoorSourceReferences"],
-      "knownSmokeCodes": ["Gree L1", "Gree d1", "Gree o1"],
+      "categoriesImported": [
+        "IndoorSourceReferences"
+      ],
+      "knownSmokeCodes": [
+        "Gree L1",
+        "Gree d1",
+        "Gree o1"
+      ],
       "sourceCommit": null,
       "latestQualityCommit": null,
       "productionStatus": "NotImported",
@@ -892,24 +1303,145 @@
         "versionOrDateNote": "No explicit manual version or publication date was found on the cover or reviewed identity pages; PDF metadata is not treated as document version evidence.",
         "diagnosticTable": "Maintenance / 1 Troubleshooting / 1.1 Malfunction List for the Wired Controller, manual page 173, PDF page 178",
         "troubleshootingRange": "Maintenance / 1.2 Exception Analyzing and Troubleshooting, manual pages 173-185, PDF pages 178-190",
-        "displayContexts": ["WiredController", "IndoorUnitReceiveLightBoard"],
+        "displayContexts": [
+          "WiredController",
+          "IndoorUnitReceiveLightBoard"
+        ],
         "identifiedCodeCount": 38,
-        "identifiedCodes": ["L0", "L1", "L2", "L3", "L4", "L5", "L7", "L8", "L9", "LA", "LH", "LC", "d1", "d3", "d4", "d6", "d7", "d8", "d9", "dA", "dH", "dC", "dL", "dE", "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "oA", "ob", "oC", "o0", "db"],
+        "identifiedCodes": [
+          "L0",
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L7",
+          "L8",
+          "L9",
+          "LA",
+          "LH",
+          "LC",
+          "d1",
+          "d3",
+          "d4",
+          "d6",
+          "d7",
+          "d8",
+          "d9",
+          "dA",
+          "dH",
+          "dC",
+          "dL",
+          "dE",
+          "o1",
+          "o2",
+          "o3",
+          "o4",
+          "o5",
+          "o6",
+          "o7",
+          "o8",
+          "o9",
+          "oA",
+          "ob",
+          "oC",
+          "o0",
+          "db"
+        ],
         "detailedProcedureCodeCount": 19,
-        "detailedProcedureCodes": ["d1", "d3", "d4", "d6", "d7", "d9", "dA", "dH", "dC", "dL", "db", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC"],
-        "statusOrDebugCodes": ["db"],
+        "detailedProcedureCodes": [
+          "d1",
+          "d3",
+          "d4",
+          "d6",
+          "d7",
+          "d9",
+          "dA",
+          "dH",
+          "dC",
+          "dL",
+          "db",
+          "L1",
+          "L3",
+          "L4",
+          "L5",
+          "L7",
+          "L9",
+          "LA",
+          "LC"
+        ],
+        "statusOrDebugCodes": [
+          "db"
+        ],
         "existingGmv6IndoorOverlapCount": 38,
-        "existingGmv6IndoorOverlapCodes": ["L0", "L1", "L2", "L3", "L4", "L5", "L7", "L8", "L9", "LA", "LH", "LC", "d1", "d3", "d4", "d6", "d7", "d8", "d9", "dA", "dH", "dC", "dL", "dE", "o1", "o2", "o3", "o4", "o5", "o6", "o7", "o8", "o9", "oA", "ob", "oC", "o0", "db"],
+        "existingGmv6IndoorOverlapCodes": [
+          "L0",
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L7",
+          "L8",
+          "L9",
+          "LA",
+          "LH",
+          "LC",
+          "d1",
+          "d3",
+          "d4",
+          "d6",
+          "d7",
+          "d8",
+          "d9",
+          "dA",
+          "dH",
+          "dC",
+          "dL",
+          "dE",
+          "o1",
+          "o2",
+          "o3",
+          "o4",
+          "o5",
+          "o6",
+          "o7",
+          "o8",
+          "o9",
+          "oA",
+          "ob",
+          "oC",
+          "o0",
+          "db"
+        ],
         "importDecision": "MergedAsSourceReferencesNoNewEntries",
-        "skippedScopes": ["Control parameter/query codes such as C00/P00 interfaces", "Installation-only content", "Wiring diagrams", "Parts and disassembly content"],
+        "skippedScopes": [
+          "Control parameter/query codes such as C00/P00 interfaces",
+          "Installation-only content",
+          "Wiring diagrams",
+          "Parts and disassembly content"
+        ],
         "sourceReferencesMergedCount": 38,
         "procedureTextEntriesUpdated": 0,
         "needsReviewCodes": [],
         "mergeNotes": "Same code + same equipment type + same meaning remains one diagnostic answer with multiple sourceReferences. Procedures were reviewed but not copied into localized text in this stage."
       },
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": true, "displayNameRu": "Сервисное руководство внутренних блоков GMV", "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Manual identity is verified and sourceReferences now connect reviewed diagnostic entries to this manual. Runtime file delivery uses server-local Telegram file bindings when configured."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": true,
+        "displayNameRu": "Сервисное руководство внутренних блоков GMV",
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Manual identity is verified and sourceReferences now connect reviewed diagnostic entries to this manual. Runtime file delivery uses server-local Telegram file bindings when configured."
+      }
     },
-        {
+    {
       "manualId": "gree-gmv-mini-service-manual-copy-1",
       "fileName": "SERVICE_MANUAL_GMV_MINI (1).pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/SERVICE_MANUAL_GMV_MINI (1).pdf",
@@ -949,7 +1481,7 @@
         "reason": "Resolve duplicate status and document identity before library publication."
       }
     },
-        {
+    {
       "manualId": "gree-gmv-mini-service-manual",
       "fileName": "SERVICE_MANUAL_GMV_MINI.pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/SERVICE_MANUAL_GMV_MINI.pdf",
@@ -963,15 +1495,15 @@
       "sourceLanguage": "en",
       "sourceKind": "ServiceManual",
       "fileFormat": "PDF",
-      "importStatus": "PartiallyImported",
-      "coverageStatus": "PartialDiagnosticScopeImported",
+      "importStatus": "Imported",
+      "coverageStatus": "DiagnosticScopeImported",
       "diagnosticUsefulness": "High",
       "importedPackageIds": [
         "gree-gmv-mini-vrf-indoor-controller-codes",
         "gree-gmv-mini-vrf-outdoor-protection-codes",
         "gree-gmv-mini-vrf-status-codes"
       ],
-      "entriesImported": 9,
+      "entriesImported": 136,
       "categoriesImported": [
         "IndoorSourceReferences",
         "OutdoorSourceReferences",
@@ -986,13 +1518,14 @@
       "knownSmokeCodes": [
         "Gree GMV Mini C0",
         "Gree GMV Mini EC",
-        "Gree GMV Mini A1"
+        "Gree GMV Mini A1",
+        "Gree GMV Mini E0"
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
-      "productionStatus": "NotImported",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "ED-24H.2 used only SERVICE_MANUAL_GMV_MINI.pdf. The duplicate/revision candidate SERVICE_MANUAL_GMV_MINI (1).pdf was not used as import evidence. Cover title and System II header were verified; no document code was found.",
+      "notes": "ED-24GEC.12 used only SERVICE_MANUAL_GMV_MINI.pdf and imported the complete extracted GMV Mini diagnostic/status/debugging table set. The duplicate/revision candidate SERVICE_MANUAL_GMV_MINI (1).pdf was not used as import evidence.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -1008,99 +1541,10 @@
       },
       "entriesReferenced": 31,
       "needsReviewCodes": [
-        "Indoor L0",
-        "Indoor L1",
-        "Indoor L2",
-        "Indoor L3",
-        "Indoor L4",
-        "Indoor L6",
-        "Indoor L7",
-        "Indoor L8",
-        "Indoor L9",
-        "Indoor LA",
-        "Indoor LH",
-        "Indoor LC",
-        "Indoor d1",
-        "Indoor dA",
-        "Indoor dH",
-        "Indoor dC",
-        "Indoor dL",
-        "Indoor db",
-        "Outdoor E0",
-        "Outdoor E2",
-        "Outdoor E4",
-        "Outdoor F0",
-        "Outdoor F5",
-        "Outdoor J0",
-        "Outdoor J1",
-        "Outdoor J7",
-        "Outdoor JL",
-        "Outdoor b1",
-        "Outdoor b4",
-        "Outdoor b5",
-        "Outdoor b6",
-        "Outdoor b7",
-        "Outdoor b9",
-        "Outdoor bH",
-        "Outdoor P0",
-        "Outdoor P1",
-        "Outdoor P2",
-        "Outdoor P3",
-        "Outdoor P4",
-        "Outdoor P5",
-        "Outdoor P6",
-        "Outdoor P7",
-        "Outdoor P8",
-        "Outdoor P9",
-        "Outdoor PH",
-        "Outdoor PC",
-        "Outdoor PL",
-        "Outdoor PE",
-        "Outdoor PF",
-        "Outdoor PJ",
-        "Outdoor PP",
-        "Outdoor U0",
-        "Outdoor U2",
-        "Outdoor U4",
-        "Outdoor U5",
-        "Outdoor U6",
-        "Outdoor U8",
-        "Outdoor U9",
-        "Outdoor UC",
-        "Outdoor UL",
-        "Outdoor UE",
-        "Outdoor C0",
-        "Outdoor C2",
-        "Outdoor C3",
-        "Outdoor C4",
-        "Outdoor C5",
-        "Outdoor C6",
-        "Outdoor CH",
-        "Outdoor CC",
-        "Outdoor CF",
-        "Outdoor CJ",
-        "Outdoor CL",
-        "Outdoor CU",
-        "Outdoor Cb",
-        "Outdoor A0",
-        "Outdoor A2",
-        "Outdoor Ab",
-        "Outdoor AE",
-        "Outdoor AF",
-        "Outdoor AJ",
-        "Outdoor AP",
-        "Outdoor n0",
-        "Outdoor n4",
-        "Outdoor n6",
-        "Outdoor n7",
-        "Outdoor n8",
-        "Outdoor nH",
-        "Outdoor nC",
-        "Outdoor nF",
-        "Outdoor Ed"
+        "E6"
       ],
       "analysis": {
-        "analysisStage": "ED-24H.2",
+        "analysisStage": "ED-24GEC.12",
         "sourceFileUsed": "SERVICE_MANUAL_GMV_MINI.pdf",
         "duplicateFileUsed": false,
         "duplicateFileNameNotUsed": "SERVICE_MANUAL_GMV_MINI (1).pdf",
@@ -1117,148 +1561,154 @@
           "Status display table for indicators on outdoor main board, PDF pages 82-83 / manual pages 78-79",
           "Troubleshooting, PDF pages 92-101 / manual pages 88-97"
         ],
-        "identifiedCodeCount": 130,
-        "entriesImported": 9,
+        "identifiedCodeCount": 138,
+        "entriesImported": 136,
         "sourceReferencesMergedCount": 31,
-        "needsReviewCodeCount": 90,
-        "importDecision": "PartialImportWithExactSourceReferenceMerges",
+        "needsReviewCodeCount": 1,
+        "importDecision": "FullRuntimeImportWithAliases",
         "importedCodes": [
-          "C0",
-          "AJ",
-          "EC",
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "A0",
           "A1",
+          "A2",
+          "A3",
+          "A4",
           "A5",
+          "A6",
+          "A7",
+          "A8",
           "A9",
           "AA",
-          "n1",
-          "n2"
-        ],
-        "sourceReferenceOnlyCodes": [
-          "L5",
+          "Ab",
+          "Ad",
+          "AE",
+          "AF",
+          "AH",
+          "AJ",
+          "AL",
+          "AP",
+          "AU",
+          "b1",
+          "b2",
+          "b3",
+          "b4",
+          "b5",
+          "b6",
+          "b7",
+          "b9",
+          "bH",
+          "C0",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "C6",
+          "C8",
+          "C9",
+          "CA",
+          "Cb",
+          "CC",
+          "CF",
+          "CH",
+          "CJ",
+          "CL",
+          "CU",
+          "d1",
           "d3",
           "d4",
           "d6",
           "d7",
           "d8",
           "d9",
+          "dA",
+          "db",
+          "dC",
           "dE",
+          "dH",
+          "dL",
+          "E0",
           "E1",
+          "E2",
           "E3",
+          "E4",
+          "EC",
+          "Ed",
+          "F0",
           "F1",
           "F3",
+          "F5",
           "FP",
+          "J0",
+          "J1",
+          "J7",
           "J8",
           "J9",
-          "b2",
-          "b3",
-          "C8",
-          "C9",
-          "CA",
-          "A3",
-          "A4",
-          "A6",
-          "A7",
-          "A8",
-          "AU",
-          "AH",
-          "AL",
-          "Ad",
+          "JL",
+          "L0",
+          "L1",
+          "L2",
+          "L3",
+          "L4",
+          "L5",
+          "L6",
+          "L7",
+          "L8",
+          "L9",
+          "LA",
+          "LC",
+          "LH",
+          "n0",
+          "n1",
+          "n2",
+          "n4",
+          "n6",
+          "n7",
+          "n8",
           "nA",
-          "nE"
+          "nC",
+          "nE",
+          "nF",
+          "nH",
+          "P0",
+          "P1",
+          "P2",
+          "P3",
+          "P4",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P9",
+          "PC",
+          "PE",
+          "PF",
+          "PH",
+          "PJ",
+          "PL",
+          "PP",
+          "U0",
+          "U2",
+          "U4",
+          "U5",
+          "U6",
+          "U8",
+          "U9",
+          "UC",
+          "UE",
+          "UL"
         ],
+        "sourceReferenceOnlyCodes": [],
         "needsReviewCodes": [
-          "Indoor L0",
-          "Indoor L1",
-          "Indoor L2",
-          "Indoor L3",
-          "Indoor L4",
-          "Indoor L6",
-          "Indoor L7",
-          "Indoor L8",
-          "Indoor L9",
-          "Indoor LA",
-          "Indoor LH",
-          "Indoor LC",
-          "Indoor d1",
-          "Indoor dA",
-          "Indoor dH",
-          "Indoor dC",
-          "Indoor dL",
-          "Indoor db",
-          "Outdoor E0",
-          "Outdoor E2",
-          "Outdoor E4",
-          "Outdoor F0",
-          "Outdoor F5",
-          "Outdoor J0",
-          "Outdoor J1",
-          "Outdoor J7",
-          "Outdoor JL",
-          "Outdoor b1",
-          "Outdoor b4",
-          "Outdoor b5",
-          "Outdoor b6",
-          "Outdoor b7",
-          "Outdoor b9",
-          "Outdoor bH",
-          "Outdoor P0",
-          "Outdoor P1",
-          "Outdoor P2",
-          "Outdoor P3",
-          "Outdoor P4",
-          "Outdoor P5",
-          "Outdoor P6",
-          "Outdoor P7",
-          "Outdoor P8",
-          "Outdoor P9",
-          "Outdoor PH",
-          "Outdoor PC",
-          "Outdoor PL",
-          "Outdoor PE",
-          "Outdoor PF",
-          "Outdoor PJ",
-          "Outdoor PP",
-          "Outdoor U0",
-          "Outdoor U2",
-          "Outdoor U4",
-          "Outdoor U5",
-          "Outdoor U6",
-          "Outdoor U8",
-          "Outdoor U9",
-          "Outdoor UC",
-          "Outdoor UL",
-          "Outdoor UE",
-          "Outdoor C0",
-          "Outdoor C2",
-          "Outdoor C3",
-          "Outdoor C4",
-          "Outdoor C5",
-          "Outdoor C6",
-          "Outdoor CH",
-          "Outdoor CC",
-          "Outdoor CF",
-          "Outdoor CJ",
-          "Outdoor CL",
-          "Outdoor CU",
-          "Outdoor Cb",
-          "Outdoor A0",
-          "Outdoor A2",
-          "Outdoor Ab",
-          "Outdoor AE",
-          "Outdoor AF",
-          "Outdoor AJ",
-          "Outdoor AP",
-          "Outdoor n0",
-          "Outdoor n4",
-          "Outdoor n6",
-          "Outdoor n7",
-          "Outdoor n8",
-          "Outdoor nH",
-          "Outdoor nC",
-          "Outdoor nF",
-          "Outdoor Ed"
+          "E6"
         ],
-        "mergeNotes": "Only exact same code + same equipment type + same source meaning received sourceReferences. Wording variants remained NeedsReview."
+        "mergeNotes": "C0 and AJ outdoor table rows were kept as source evidence on the existing GMV Mini cards instead of creating duplicate same-series answers."
       }
     },
     {
@@ -1287,7 +1737,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Do not treat a sales guide as troubleshooting authority until analyzed.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review applicability and access purpose before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review applicability and access purpose before library publication."
+      }
     },
     {
       "manualId": "gree-test-operation-troubleshooting-maintenance",
@@ -1315,7 +1777,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Potentially diagnostic but equipment identity is absent from filename; needs manual identity review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-split-duct-inverter-series",
@@ -1343,7 +1817,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-u-match-series-air-conditioners",
@@ -1371,7 +1857,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-unit-control-reference",
@@ -1399,7 +1897,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Equipment applicability is unknown; do not use as diagnostic source without identity review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment applicability before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment applicability before library publication."
+      }
     },
     {
       "manualId": "gree-unit-installation-reference",
@@ -1427,7 +1937,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Equipment applicability is unknown; likely non-diagnostic until reviewed.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment applicability before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment applicability before library publication."
+      }
     },
     {
       "manualId": "gree-versati-iii-all-in-one-heat-pump",
@@ -1455,7 +1977,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-versati-iii-split-heat-pump",
@@ -1483,7 +2017,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-fcu-wired-controller-manual",
@@ -1511,7 +2057,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Classified from filename only.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Review document identity and model scope before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Review document identity and model scope before library publication."
+      }
     },
     {
       "manualId": "gree-screw-chiller-controller-russian",
@@ -1539,7 +2097,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Needs manual identity review; filename classification is tentative.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve equipment and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve equipment and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-fan-coil-controllers-spreadsheet",
@@ -1567,7 +2137,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Spreadsheet is not assumed to be a manual; needs source and ownership review.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "A spreadsheet is not eligible until source, identity, and access purpose are reviewed."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "A spreadsheet is not eligible until source, identity, and access purpose are reviewed."
+      }
     },
     {
       "manualId": "gree-vrf-service-manual-russian-filename",
@@ -1595,7 +2177,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Generic filename is insufficient for a manual-bound import; identify series, document code, and model scope first.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve exact series and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve exact series and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-screw-chiller-service-manual-russian-filename",
@@ -1623,7 +2217,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Identify exact series, document code, and model scope before analysis.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "Resolve exact series and document identity before library publication."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Resolve exact series and document identity before library publication."
+      }
     },
     {
       "manualId": "gree-d-series-chiller-characteristics-spreadsheet",
@@ -1651,7 +2257,19 @@
       "productionStatus": "NotImported",
       "recommendedNext": false,
       "notes": "Spreadsheet characteristics are not assumed to contain diagnostic scope.",
-      "futureTelegramManualLibrary": {"eligibleForTelegramLibrary": false, "allowedRoles": ["Installer", "Engineer", "Admin", "Owner"], "deniedRoles": ["Consumer"], "reason": "A spreadsheet is not eligible until source, identity, and access purpose are reviewed."}
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "A spreadsheet is not eligible until source, identity, and access purpose are reviewed."
+      }
     }
   ]
 }

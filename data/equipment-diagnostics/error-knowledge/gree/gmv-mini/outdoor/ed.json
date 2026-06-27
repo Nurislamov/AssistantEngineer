@@ -1,0 +1,139 @@
+{
+  "id": "gree-gmv-mini-outdoor-ed",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV Mini",
+  "models": [
+    "GMV-80WL/A-T",
+    "GMV-100WL/A-T",
+    "GMV-121WL/A-T",
+    "GMV-80WL/C-T",
+    "GMV-100WL/C-T",
+    "GMV-121WL/C-T",
+    "GMV-141WL/C-T",
+    "GMV-120WL/A-T",
+    "GMV-140WL/A-T",
+    "GMV-160WL/A-T",
+    "GMV-120WL/A-X",
+    "GMV-140WL/A-X",
+    "GMV-160WL/A-X",
+    "GMV-120WL/C-T",
+    "GMV-140WL/C-T",
+    "GMV-160WL/C-T",
+    "GMV-120WL/C-X",
+    "GMV-140WL/C-X",
+    "GMV-160WL/C-X",
+    "GMV-H224WL/A-X",
+    "GMV-H280WL/A-X",
+    "GMV-H335WL/A-X",
+    "GMV-224WL/C-X",
+    "GMV-280WL/C-X",
+    "GMV-335WL/C-X"
+  ],
+  "code": "Ed",
+  "signalType": "Protection",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Sensor",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceMeaning": "Low temperature protection for drive module",
+  "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
+  "sourceReferences": [
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+      "notes": "Primary GMV Mini/System II source for this entry."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-06-27T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ed-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV Mini Ed - низкая температура защита for drive module",
+      "summary": "Код Ed для GMV Mini означает: низкая температура защита for drive module. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
+      "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
+      "checkSteps": [
+        "Зафиксируйте код Ed, модель оборудования и где он отображается.",
+        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
+        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+      ],
+      "doNotAdvise": [
+        "Не делайте вывод о замене компонента только по коду Ed.",
+        "Не выполняйте повторные сбросы, если код возвращается."
+      ],
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ed-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV Mini Ed - низкая температура защита for drive module",
+      "summary": "Код Ed для GMV Mini означает: низкая температура защита for drive module. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
+      "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
+      "checkSteps": [
+        "Зафиксируйте код Ed, модель оборудования и где он отображается.",
+        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
+        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+      ],
+      "doNotAdvise": [
+        "Не делайте вывод о замене компонента только по коду Ed.",
+        "Не выполняйте повторные сбросы, если код возвращается."
+      ],
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-06-27T00:00:00Z",
+      "id": "gree-gmv-mini-outdoor-ed-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV Mini Ed - низкая температура защита for drive module",
+      "summary": "Код Ed для GMV Mini означает: низкая температура защита for drive module. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
+      "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
+      "checkSteps": [
+        "Зафиксируйте код Ed, модель оборудования и где он отображается.",
+        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
+        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+      ],
+      "doNotAdvise": [
+        "Не делайте вывод о замене компонента только по коду Ed.",
+        "Не выполняйте повторные сбросы, если код возвращается."
+      ],
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
+      "sourceNote": "Данные сверены с SERVICE_MANUAL_GMV_MINI.pdf."
+    }
+  ]
+}
