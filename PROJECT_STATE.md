@@ -4,7 +4,7 @@
 
 ED-24GEC - Gree equipment diagnostics knowledge expansion.
 
-Current production status: PASS after GMV6 fresh manual delta import.
+Current production status: PASS after GMV X diagnostics import and stabilization.
 
 Completed substages:
 - ED-24GEC.11 - GMV6 manual import verification.
@@ -13,6 +13,9 @@ Completed substages:
 - ED-24GEC.12.2 - GMV Mini visible wording polish.
 - ED-24GEC.13 - Inventory X series and 9 series Flex sources.
 - ED-24GEC.13A - GMV6 fresh manual delta review/import, production PASS.
+- ED-24GEC.14 - GMV X service manual import.
+- ED-24GEC.14.1 - GMV X visible wording encoding corruption fix.
+- ED-24GEC.14.2 - GMV X visible wording grammar polish.
 
 ## Current Branch
 
@@ -20,14 +23,63 @@ master
 
 Latest confirmed commits:
 ```text
+ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
+99f73ef0 ED-24GEC.14.1 Fix GMV X visible wording encoding
+f04b6fe5 ED-24GEC.14 Import GMV X manual codes
+f42d7c1b Update project state after GMV6 fresh manual delta
 b3bafc9c ED-24GEC.13A Import GMV6 fresh manual delta codes
-17ae17ff ED-24GEC.13 Inventory X series and 9 series Flex sources
-2c1b8253 ED-24TD.3 Fix stale full-test baseline failures
-b16c2438 ED-24TD.2 Document full test baseline failures
-2c6f7efd ED-24TD.1 Fix hanging published API embedded H5 test
 ```
 
 ## Last Completed Work
+
+### GMV X Service Manual Import And Stabilization
+
+ED-24GEC.14 is closed as production PASS.
+
+Source manual:
+- File: JF00305173, Outlet T1R410A50 & 60HzGMVX Heat Pump GMV Service Manual, A.3.pdf.
+- Document: GC202209-I.
+
+Imported GMV X runtime:
+- Total: 263 cards.
+- Indoor: 60 cards.
+- Outdoor: 121 cards.
+- Debugging: 38 cards.
+- Status: 44 cards.
+
+ED-24GEC.14.1 is closed: GMV X visible wording encoding corruption fixed.
+
+Root cause:
+- ED-24GEC.14 generated Russian visible fields through a lossy encoding path, so Cyrillic in GMV X `texts[]` became question marks.
+
+Fix result:
+- 263 GMV X runtime JSON files repaired.
+- No `???` remains in GMV X visible fields.
+- Counts unchanged.
+
+ED-24GEC.14.2 is closed: GMV X visible wording grammar polished.
+
+Fixed phrases:
+```text
+Код относится к наружного блока -> Код относится к наружному блоку
+Код относится к внутреннего блока -> Код относится к внутреннему блоку
+формулировка относится к наружного блока -> формулировка относится к наружному блоку
+формулировка относится к внутреннего блока -> формулировка относится к внутреннему блоку
+```
+
+Production smoke after ED-24GEC.14.2:
+- `Gree GMV X E0` works and uses readable Russian.
+- `Gree GMV X d9` works and uses readable Russian.
+- `Gree GMV X qP` works and uses readable Russian.
+- `Gree GMV X n2` works and uses readable Russian.
+- `Gree n2` ambiguity remains GMV6 / GMV Mini.
+- GMV Mini selection after ambiguity still works.
+
+Runtime result after ED-24GEC.14.2:
+- GMV6 runtime count: 263 cards.
+- GMV Mini runtime count: 136 cards.
+- GMV X runtime count: 263 cards.
+- Total Gree runtime count: 662 cards.
 
 ### GMV6 Fresh Manual Delta
 
@@ -98,7 +150,7 @@ Confirmed behavior:
 
 ## Current Blocker
 
-No active production blocker for GMV6 or GMV Mini diagnostics.
+No active production blocker for GMV6, GMV Mini, or GMV X diagnostics.
 
 ## Important Decisions
 
@@ -117,6 +169,7 @@ Key recent areas:
 ```text
 data/equipment-diagnostics/error-knowledge/gree/gmv6/**
 data/equipment-diagnostics/error-knowledge/gree/gmv-mini/**
+data/equipment-diagnostics/error-knowledge/gree/gmv-x/**
 data/equipment-diagnostics/error-knowledge/packages/**
 data/equipment-diagnostics/manual-library/manuals.json
 data/reference/gree-official-support-error-catalog/staging/**
@@ -130,6 +183,8 @@ GreeGmv6ManualImport11Tests
 GreeGmvMiniManualImport12Tests
 GreeGmvMiniRouting12_1Tests
 GreeGmvMiniVisibleWording12_2Tests
+GreeGmvXImport14Tests
+GreeGmvXVisibleWording14_1Tests
 EquipmentDiagnosticTelegramAdapterTests
 ErrorKnowledgeJsonValidationTests
 GreeGmvRemainingRuntimeCardsTests
@@ -140,6 +195,14 @@ ManualCoverageRegistryTests
 
 Recent validation:
 ```text
+ED-24GEC.14.2:
+- GMV X focused pack: 32/32 passed.
+- EquipmentDiagnosticTelegram: 396/396 passed.
+- JSON/GMV6/GMV Mini regression pack: 92/92 passed.
+- Full baseline dotnet test .\AssistantEngineer.sln: 4875/4875 passed.
+- git diff --check: clean.
+- Production Telegram smoke: PASS.
+
 ED-24GEC.13A:
 - GreeGmv6FreshManualDelta13ATests: 10/10 passed.
 - EquipmentDiagnosticTelegram: 396/396 passed.
@@ -160,13 +223,13 @@ ED-24GEC.12.2:
 - git diff --check: passed.
 ```
 
-Production Telegram smoke checks passed after ED-24GEC.13A.
+Production Telegram smoke checks passed after ED-24GEC.14.2.
 
 ## Deployment Status
 
 Latest production baseline is master after:
 ```text
-b3bafc9c ED-24GEC.13A Import GMV6 fresh manual delta codes
+ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ```
 
 Production Telegram smoke: PASS.
@@ -174,6 +237,6 @@ Production Telegram smoke: PASS.
 ## Next Step
 
 Recommended next steps:
-1. ED-24GEC.14 - GMV X service manual import.
-2. Then run a separate stage for GMV9 Flex service manual import.
-3. Do not mix GMV X, GMV9 Flex, GMV6, or GMV Mini runtime packages.
+1. ED-24GEC.15 - GMV9 Flex service manual import.
+2. Keep GMV9 Flex as a separate runtime series/package.
+3. Do not mix GMV9 Flex with GMV6, GMV Mini, or GMV X runtime packages.
