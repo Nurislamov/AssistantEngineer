@@ -18,7 +18,7 @@ master
 
 ED-24SRC.1 added a role-gated `📄 Мануал` action for concrete found Gree diagnostics.
 
-Commit: recorded in the follow-up project-state update.
+Commit: `afc3e325`.
 
 ## Current working point
 
@@ -159,6 +159,7 @@ Latest validation after ED-24SRC.1:
 - EquipmentDiagnostics tests: 949/949 passed.
 - Local Gree diagnostics smoke: 9/9 passed.
 - Full solution baseline: 4933/4933 passed.
+- `git diff --check`: PASS.
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
@@ -176,6 +177,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+afc3e325 ED-24SRC.1 Add role-gated diagnostic manual action
 5d944e12 Update project state after ED-24UX.6
 d8fdc3d1 ED-24UX.6 Compact Gree diagnostic first-check bullets
 e24ae712 ED-24UX.4a Polish live-reviewed Gree Telegram answer UX
