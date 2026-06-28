@@ -1,0 +1,2 @@
+# AssistantEngineer helper tooling should not affect GitHub language stats
+.ae-tools/** linguist-vendored

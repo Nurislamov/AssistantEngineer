@@ -105,3 +105,6 @@ blob-report/
 
 # AssistantEngineer local probe/capture artifacts
 .ae-tools/
+
+# AssistantEngineer local backups
+.ae-backups/
