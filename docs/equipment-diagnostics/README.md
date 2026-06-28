@@ -596,6 +596,9 @@ The scenarios are validated and executed twice through the module facade, core s
 
 See [bot-field-acceptance-checklist.md](bot-field-acceptance-checklist.md). This stage adds no runtime knowledge, Telegram integration, database, AI/RAG, or backend endpoint.
 
+Run the offline focused Gree diagnostics smoke from the repository root with
+`.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1`; it requires no Telegram token and makes no Telegram API calls.
+
 Formatter output:
 
 - `Title`

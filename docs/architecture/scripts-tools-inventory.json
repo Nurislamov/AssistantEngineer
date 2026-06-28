@@ -1519,6 +1519,22 @@
                         "riskIfChanged":  "Packaging drift can ship an API assembly without embedded error knowledge and break Telegram diagnostics only after deployment."
                     },
                     {
+                        "id":  "SCR-094",
+                        "path":  "scripts/diagnostics/run-gree-diagnostics-smoke.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "Run focused, offline Gree diagnostics smoke tests through the existing test and Telegram adapter infrastructure.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  "dotnet test --filter FullyQualifiedName~GreeDiagnosticsSmokeTests",
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the runner offline, secret-free, and limited to invoking focused tests.",
+                        "proposedStage":  "ED-24OPS.1",
+                        "riskIfChanged":  "Runner drift can bypass the diagnostic adapter, hide focused smoke failures, or introduce unintended external calls."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
