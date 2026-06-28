@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24USR.2 - CLOSED / pushed to origin/master.
+ED-24SRC.1a - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
-1. Deploy and verify Telegram `/admin_users` user-card callbacks on VPS.
+1. Deploy and verify Telegram diagnostic reply keyboard UX on VPS.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24USR.2 fixed Telegram admin callback actor resolution for `/admin_users` user-card callbacks.
+ED-24SRC.1a fixed Telegram diagnostic manual keyboard UX.
 
-Commit: `85515a14`.
+Commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
 
 ## Current working point
 
@@ -31,6 +31,7 @@ Commit: `85515a14`.
 - ED-24UX.6 - CLOSED / production PASS.
 - ED-24SRC.1 - CLOSED / pushed.
 - ED-24USR.2 - CLOSED / pushed.
+- ED-24SRC.1a - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -181,6 +182,23 @@ Latest validation after ED-24USR.2:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest validation after ED-24SRC.1a:
+
+- Implementation commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
+- Telegram reply keyboard no longer exposes the global `📘 Руководства` button.
+- Technical concrete found Gree diagnostics now show only contextual `📄 Мануал` with compact rows: `🔎 Новый код` / `📄 Мануал`, then `📋 История` / `🛠 Оставить заявку`, then `📄 Мои заявки`.
+- Consumer concrete found diagnostics use compact rows: `🔎 Новый код` / `📋 История`, then `🛠 Оставить заявку` / `📄 Мои заявки`; no manual actions or phone-row are shown on the diagnostic answer.
+- Manual-not-linked replies preserve the contextual `📄 Мануал` keyboard while the last concrete diagnostic context remains valid.
+- ED-24SRC.1 manual access gating is preserved: consumers are still denied, technical roles retain contextual access only.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Telegram manual/adapter/admin tests: 133/133 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4938/4938 passed.
+- `git diff --check`: PASS.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -195,6 +213,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+4231cb9d ED-24SRC.1a Fix diagnostic manual keyboard UX
 85515a14 ED-24USR.2 Fix Telegram admin user identity
 afc3e325 ED-24SRC.1 Add role-gated diagnostic manual action
 5d944e12 Update project state after ED-24UX.6
@@ -224,7 +243,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24SRC.1.
+No active blocker after ED-24SRC.1a.
 
 ## Next step
 
