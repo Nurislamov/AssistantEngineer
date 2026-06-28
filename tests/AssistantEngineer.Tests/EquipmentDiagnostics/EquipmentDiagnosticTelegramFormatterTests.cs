@@ -219,6 +219,27 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Equal(6, CountOccurrences(consumer, "сообщение о связи и адресации"));
     }
 
+    [Fact]
+    public void GreeTechnicalHtmlEscapesEveryDynamicDiagnosticField()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
+            new SpecialCharacterLocalizationSource());
+
+        var html = formatter.FormatTechnicalHtml(
+            LocalizedResponse(code: "C<0", series: "GMV <X> &"),
+            TelegramUserRole.Engineer);
+
+        Assert.Contains("<b>Диагностика GREE C&lt;0</b>", html, StringComparison.Ordinal);
+        Assert.Contains("GMV &lt;X&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Сводка &lt;summary&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Причина &lt;cause&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Важно &lt;safety&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Ограничение &lt;limit&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<summary>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<check>", html, StringComparison.Ordinal);
+    }
+
     [Theory]
     [MemberData(nameof(PolishedGmvDiagnosticRequests))]
     public async Task PolishedGmvTechnicalAnswersKeepCoreDiagnosticStages(EquipmentDiagnosticBotRequest request)
@@ -271,10 +292,11 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("Installer Checks", text, StringComparison.Ordinal);
         Assert.Contains("Engineer Or Service Checks", text, StringComparison.Ordinal);
         Assert.Contains("Next Action", text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", text, StringComparison.Ordinal);
-        Assert.Contains("Дальше:", text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", text, StringComparison.Ordinal);
+        Assert.Contains("<b>Ограничения:</b>", text, StringComparison.Ordinal);
+        Assert.Contains("<b>Техническая заметка:</b>", text, StringComparison.Ordinal);
     }
 
     public static IEnumerable<object[]> PolishedGmvDiagnosticRequests()
@@ -533,5 +555,60 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
             var text = Text with { Audience = audience };
             return new ErrorKnowledgeLocalizationSelection(Entry, text);
         }
+    }
+
+    private sealed class SpecialCharacterLocalizationSource : IErrorKnowledgeLocalizationSource
+    {
+        private static readonly ErrorKnowledgeTextV2 Text = new(
+            "special-ru-engineer",
+            "special",
+            "ru",
+            ErrorKnowledgeAudience.Engineer,
+            "Gree GMV <X> & C<0 - Значение <meaning> &",
+            "Сводка <summary> &",
+            "Важно <safety> &",
+            ["Причина <cause> &"],
+            ["Проверка <check> &"],
+            ["Ограничение <limit> &"],
+            "Действие <action> &",
+            "Источник <source> &",
+            IsMachineTranslated: false,
+            IsReviewed: true,
+            DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch);
+
+        private static readonly ErrorKnowledgeEntryV2 Entry = new(
+            "special",
+            "Gree",
+            ErrorKnowledgeEquipmentFamily.VRF,
+            ErrorKnowledgeEquipmentType.OutdoorUnit,
+            "GMV <X> &",
+            [],
+            "C<0",
+            ErrorKnowledgeSignalType.Fault,
+            ErrorKnowledgeDisplaySource.OutdoorBoard,
+            ErrorKnowledgeSystemPart.Unknown,
+            ErrorKnowledgeSeverity.Medium,
+            true,
+            false,
+            "test",
+            "ru",
+            "Manual",
+            "Test",
+            "Meaning <entry> &",
+            null,
+            "High",
+            "ManualVerified",
+            DateTimeOffset.UnixEpoch,
+            DateTimeOffset.UnixEpoch,
+            [Text]);
+
+        public IReadOnlyCollection<ErrorKnowledgeEntryV2> GetEntries() => [Entry];
+
+        public ErrorKnowledgeLocalizationSelection? Select(
+            EquipmentDiagnosticBotResponse response,
+            string locale,
+            ErrorKnowledgeAudience audience) =>
+            new(Entry, Text with { Audience = audience });
     }
 }

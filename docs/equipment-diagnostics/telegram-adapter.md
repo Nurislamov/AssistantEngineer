@@ -204,7 +204,7 @@ rows include local date and time, for example `15.06.2026 18:10`.
 
 ## ED-23B Service Requests
 
-ED-23B adds a deliberately small service-request foundation, not a CRM. `🛠 Нужен мастер` and hidden `/request`
+ED-23B adds a deliberately small service-request foundation, not a CRM. `🛠 Оставить заявку` and hidden `/request`
 create a PostgreSQL-backed `TelegramServiceRequests` row from the current user's latest diagnostic case when a phone
 is saved. `/requests` is in the global command menu and shows the latest five requests owned by the current user.
 Active `New` or `InProgress` requests are unique per diagnostic case.

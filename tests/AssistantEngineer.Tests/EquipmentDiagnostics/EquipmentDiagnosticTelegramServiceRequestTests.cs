@@ -19,6 +19,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
 
     [Theory]
     [InlineData("/request")]
+    [InlineData("🛠 Оставить заявку")]
     [InlineData("🛠 Нужен мастер")]
     public async Task RequestAliasesCreateServiceRequestFromLatestDiagnosticCase(string text)
     {
@@ -201,7 +202,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         var response = await harness.Adapter.HandleAsync(Update("/requests"));
 
         Assert.Contains("У вас пока нет сервисных заявок", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Нужен мастер", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Оставить заявку", response.Text, StringComparison.Ordinal);
     }
 
     [Fact]

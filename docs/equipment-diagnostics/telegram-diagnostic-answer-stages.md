@@ -36,15 +36,17 @@ ED-24DG.1 defines the staged shape expected from Telegram equipment-diagnostic a
 
 ## Current Telegram Section Mapping
 
-Technical Telegram answers use these section labels:
+Gree technical Telegram answers use escaped HTML with `ParseMode: HTML`. Only static `<b>` tags are emitted;
+manufacturer, series, code, meanings, checks, warnings, limitations, and other card text are HTML-escaped before
+insertion. Other bot messages keep their existing parse mode.
 
-- `Gree <series> — <code>` covers identification for Gree answers.
-- `Значение:` covers meaning.
-- `Первые проверки:` covers the first installer and service checks.
-- `Серия:` repeats the selected series for quick scanning.
-- `Важно:` covers safety.
-- `Ограничения вывода:` captures limits and non-actions when present.
-- `Дальше:` covers next action.
+- `<b>Диагностика ...</b>` and `<b>Gree <series> — <code></b>` cover identification.
+- `<b>Суть:</b>` covers meaning.
+- `<b>Что проверить:</b>` covers the first installer and service checks.
+- `<b>Серия:</b>` repeats the selected series for quick scanning.
+- `<b>Важно:</b>` covers safety.
+- `<b>Ограничения:</b>` captures limits and non-actions when present.
+- `<b>Техническая заметка:</b>` retains a unique recommended action without a repetitive `Дальше:` block.
 
 Consumer Telegram answers use equivalent plain-language sections:
 

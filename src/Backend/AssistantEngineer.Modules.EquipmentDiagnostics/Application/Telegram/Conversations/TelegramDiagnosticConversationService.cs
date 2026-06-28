@@ -17,7 +17,8 @@ public sealed class TelegramDiagnosticConversationService
 {
     public const string NewCodeButton = "🔎 Новый код";
     public const string HistoryButton = "📋 История";
-    public const string ServiceRequestButton = "🛠 Нужен мастер";
+    public const string ServiceRequestButton = "🛠 Оставить заявку";
+    public const string PreviousServiceRequestButton = "🛠 Нужен мастер";
     public const string RequestsButton = "📄 Мои заявки";
     public const string SharePhoneButton = "📞 Поделиться номером Telegram";
     public const string ManualPhoneButton = "✏️ Ввести другой номер";
@@ -97,7 +98,7 @@ public sealed class TelegramDiagnosticConversationService
     public static bool IsServiceRequestText(string? text)
     {
         var normalized = NormalizeText(text);
-        return normalized is "нуженмастер" or "request";
+        return normalized is "оставитьзаявку" or "нуженмастер" or "request";
     }
 
     public static bool IsRequestsText(string? text)
@@ -953,11 +954,18 @@ public sealed class TelegramDiagnosticConversationService
     {
         if (access.UsesTechnicalResponse)
         {
-            var technical = _formatter.FormatTechnical(diagnosis, access.Role);
+            var useHtml = string.Equals(
+                diagnosis.NormalizedManufacturer,
+                "Gree",
+                StringComparison.OrdinalIgnoreCase);
+            var technical = useHtml
+                ? _formatter.FormatTechnicalHtml(diagnosis, access.Role)
+                : _formatter.FormatTechnical(diagnosis, access.Role);
+            var parseMode = useHtml ? TelegramHtml.ParseMode : null;
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,
-                    ParseMode: null,
+                    ParseMode: parseMode,
                     DisableWebPagePreview: true,
                     MainKeyboard(access)))
                 .ToArray();
@@ -968,7 +976,8 @@ public sealed class TelegramDiagnosticConversationService
                 messages[0].Text,
                 diagnosis.Warnings,
                 messages[0].ReplyMarkup,
-                messages);
+                messages,
+                parseMode);
         }
 
         var phoneSaved = access.User?.HasPhoneNumber == true;
@@ -1005,14 +1014,15 @@ public sealed class TelegramDiagnosticConversationService
             return new TelegramDiagnosticConversationResult(
                 true,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
-                $"Код {code} не найден для Gree {series}.\n\n" +
+                $"{TelegramHtml.Bold($"Код {code} не найден для Gree {series}.")}\n\n" +
                 "Я не подставляю значения из других серий, потому что один и тот же код может отличаться.\n\n" +
-                "Проверьте:\n" +
-                "• точную серию блока;\n" +
-                "• написание кода;\n" +
-                "• фото ошибки или модель блока.",
+                $"{TelegramHtml.Bold("Проверьте:")}\n" +
+                "- написание кода;\n" +
+                "- точную серию блока;\n" +
+                "- фото ошибки или модель блока.",
                 [],
-                MainKeyboard(access));
+                MainKeyboard(access),
+                ParseMode: TelegramHtml.ParseMode);
         }
 
         var text = "Я не нашёл точную расшифровку этого кода. Проверьте код или укажите бренд, например: Gree H5.";
@@ -1151,12 +1161,12 @@ public sealed class TelegramDiagnosticConversationService
         if (string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
             series.All(IsKnownN2Series))
         {
-            builder.AppendLine("Код n2 найден в нескольких сериях Gree.");
+            builder.AppendLine(TelegramHtml.Bold("Код n2 найден в нескольких сериях Gree."));
             builder.AppendLine();
-            builder.AppendLine("Выберите серию:");
+            builder.AppendLine(TelegramHtml.Bold("Выберите серию:"));
             foreach (var value in series)
             {
-                builder.AppendLine($"• {value}");
+                builder.AppendLine($"- {TelegramHtml.Bold(value)}");
             }
         }
         else
@@ -1177,7 +1187,11 @@ public sealed class TelegramDiagnosticConversationService
             EquipmentDiagnosticTelegramResponseKind.Reply,
             builder.ToString().Trim(),
             [],
-            ChoiceKeyboard(series, access));
+            ChoiceKeyboard(series, access),
+            ParseMode: string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
+                series.All(IsKnownN2Series)
+                    ? TelegramHtml.ParseMode
+                    : null);
     }
 
     private string SeriesMeaning(TelegramDiagnosticCandidate candidate)

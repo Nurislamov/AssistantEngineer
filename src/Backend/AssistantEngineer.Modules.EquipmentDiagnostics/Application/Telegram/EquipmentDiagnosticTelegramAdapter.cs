@@ -282,10 +282,18 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         var diagnosis = await _botFacade.DiagnoseAsync(parseResult.DiagnosticRequest, cancellationToken);
         if (access.UsesTechnicalResponse)
         {
-            var technical = _formatter.FormatTechnical(diagnosis, access.Role);
+            var useHtml = string.Equals(
+                diagnosis.NormalizedManufacturer,
+                "Gree",
+                StringComparison.OrdinalIgnoreCase);
+            var technical = useHtml
+                ? _formatter.FormatTechnicalHtml(diagnosis, access.Role)
+                : _formatter.FormatTechnical(diagnosis, access.Role);
+            var parseMode = useHtml ? TelegramHtml.ParseMode : null;
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,
+                    ParseMode: parseMode,
                     ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access)))
                 .ToArray();
 
@@ -294,7 +302,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 messages[0].Text,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
                 diagnosis.Warnings,
-                messages: messages);
+                messages: messages,
+                parseMode: parseMode);
         }
 
         var consumerPhoneSaved = access.User?.HasPhoneNumber == true;
@@ -492,7 +501,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         CancellationToken cancellationToken)
     {
         var text = access.User is null || _serviceRequestService is null
-            ? "У вас пока нет сервисных заявок.\n\nОтправьте код ошибки, а после диагностики нажмите «Нужен мастер»."
+            ? "У вас пока нет сервисных заявок.\n\nОтправьте код ошибки, а после диагностики нажмите «Оставить заявку»."
             : await _serviceRequestService.FormatRequestsAsync(access.User, cancellationToken);
         return Response(
             update.ChatId,
@@ -525,7 +534,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             result.ResponseKind,
             result.Warnings,
             result.ReplyMarkup,
-            result.Messages);
+            result.Messages,
+            parseMode: result.ParseMode);
 
     private static IReadOnlyList<string> SplitTelegramMessage(string text)
     {
@@ -589,12 +599,13 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null,
         string? callbackAnswerText = null,
-        bool suppressOutbound = false) =>
+        bool suppressOutbound = false,
+        string? parseMode = null) =>
         new(
             chatId,
             text,
             responseKind,
-            ParseMode: null,
+            ParseMode: parseMode,
             DisableWebPagePreview: true,
             warnings ?? [],
             InternalDecisionTrace: null,
@@ -605,7 +616,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     [
                         new EquipmentDiagnosticTelegramOutboundMessage(
                             text,
-                            ParseMode: null,
+                            ParseMode: parseMode,
                             DisableWebPagePreview: true,
                             replyMarkup)
                     ]),

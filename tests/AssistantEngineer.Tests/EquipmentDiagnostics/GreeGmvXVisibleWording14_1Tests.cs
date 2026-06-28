@@ -138,7 +138,8 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains($"Gree GMV X — {expectedCode}", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains(expectedFragment, response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV X", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
@@ -175,7 +176,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
-        Assert.Contains("• GMV X", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("- <b>GMV X</b>", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> VisibleValues(JsonObject text)

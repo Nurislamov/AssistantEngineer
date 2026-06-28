@@ -58,7 +58,8 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
         }
 
         if (string.Equals(trimmed, "/request", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(trimmed, TelegramDiagnosticConversationService.ServiceRequestButton, StringComparison.Ordinal))
+            string.Equals(trimmed, TelegramDiagnosticConversationService.ServiceRequestButton, StringComparison.Ordinal) ||
+            string.Equals(trimmed, TelegramDiagnosticConversationService.PreviousServiceRequestButton, StringComparison.Ordinal))
         {
             return Command(EquipmentDiagnosticTelegramCommand.Request);
         }

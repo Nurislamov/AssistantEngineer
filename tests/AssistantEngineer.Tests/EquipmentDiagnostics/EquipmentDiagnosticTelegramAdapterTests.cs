@@ -36,11 +36,14 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.DoesNotContain("Черновик / непроверено", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Ограничения вывода:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Дальше:", response.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
@@ -68,7 +71,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Contains("Gree GMV6 — E1", outdoor.Text, StringComparison.Ordinal);
         Assert.Contains("высокому давлению", outdoor.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Значение:", outdoor.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", outdoor.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", outdoor.Text, StringComparison.Ordinal);
     }
 
@@ -82,7 +85,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Contains("Gree GMV6 — A0", response.Text, StringComparison.Ordinal);
         Assert.Contains("пусконаладк", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Внимание: ошибка", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
@@ -101,7 +104,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains("Gree GMV6 — U0", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.Contains("предварительного прогрева компрессора", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -122,7 +125,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("линию связи GMV", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("питание внутреннего блока, наружного блока и проводного пульта", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("руководства применимой серии", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("классифицирован", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -231,7 +234,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains(expectedMeaning, response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
@@ -640,7 +643,13 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         {
             Assert.All(forbidden, fragment =>
                 Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
-            Assert.Null(response.ParseMode);
+            Assert.True(
+                response.ParseMode is null or "HTML",
+                $"Unexpected parse mode: {response.ParseMode}");
+            if (response.ParseMode == "HTML")
+            {
+                Assert.Equal("HTML", response.OutboundMessages.Single().ParseMode);
+            }
             Assert.True(response.DisableWebPagePreview);
             Assert.Null(response.InternalDecisionTrace);
         }

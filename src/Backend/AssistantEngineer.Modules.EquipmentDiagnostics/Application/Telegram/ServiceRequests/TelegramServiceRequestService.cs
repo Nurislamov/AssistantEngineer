@@ -128,7 +128,7 @@ public sealed class TelegramServiceRequestService
         if (requests.Count == 0)
         {
             return "У вас пока нет сервисных заявок.\n\n" +
-                "Отправьте код ошибки, а после диагностики нажмите «Нужен мастер».";
+                "Отправьте код ошибки, а после диагностики нажмите «Оставить заявку».";
         }
 
         var builder = new StringBuilder();

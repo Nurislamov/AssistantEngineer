@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24UX.4 - CLOSED / pushed to origin/master.
+ED-24UX.4a - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
@@ -16,7 +16,7 @@ master
 
 ## Last completed work
 
-ED-24UX.4 polished existing Gree Telegram diagnostic answer structure without changing runtime knowledge or routing.
+ED-24UX.4a polished live-reviewed Gree Telegram answer UX with safe HTML formatting, clearer labels, and no runtime knowledge or routing changes.
 
 ## Gree diagnostics runtime status
 
@@ -77,6 +77,17 @@ Latest validation after ED-24UX.4:
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 - Telegram formatting remains plain text (`ParseMode: null`); Gree technical answers now use structured headings, meaning, first checks, and series sections.
 
+Latest validation after ED-24UX.4a:
+
+- Gree technical diagnostic answers, n2 ambiguity, and explicit-series not-found use safe escaped HTML with `ParseMode: HTML`.
+- The service-request button is `🛠 Оставить заявку`; the previous label remains accepted as a legacy input alias.
+- The repetitive `Дальше:` block is absent from found Gree Telegram answers.
+- `Ограничения вывода:` is replaced by `Ограничения:`.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4924/4924 passed.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -91,6 +102,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+80947fdb ED-24UX.4 Polish Gree diagnostic answer structure
 96a9d62e ED-24OPS.1 Add repeatable Gree diagnostics smoke runner
 60f11980 ED-24QA.1 Lock existing Gree diagnostics quality baseline
 02217540 ED-24TD.4 Exclude helper tooling from GitHub language stats
@@ -114,7 +126,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active production blocker after ED-24UX.4.
+No active production blocker after ED-24UX.4a.
 
 ## Next step
 

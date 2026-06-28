@@ -48,7 +48,7 @@ ED-22F adds the committed manual annotated-tag and release-handoff procedure; it
   secrets in logs.
 - Verify Consumer `/last` displays the public-safe Russian summary and does not print saved English technical
   summaries; Engineer/Owner/Admin `/last` may show the saved short technical summary.
-- Verify `🛠 Нужен мастер` and hidden `/request` create one request from the current user's latest diagnostic case only
+- Verify `🛠 Оставить заявку` and hidden `/request` create one request from the current user's latest diagnostic case only
   when a phone is saved; a second active request for the same case is not created.
 - Verify `/requests` returns the latest five requests for the current user only, uses Russian status labels and
   `Asia/Tashkent` display time, and never prints a phone number or internal identifier.

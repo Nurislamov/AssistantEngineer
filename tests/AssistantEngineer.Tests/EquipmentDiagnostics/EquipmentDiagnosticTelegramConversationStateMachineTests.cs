@@ -319,9 +319,10 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", response.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
         Assert.Equal(TelegramDiagnosticCaseResponseMode.Technical, diagnosticCase?.ResponseMode);
@@ -338,8 +339,9 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", response.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
         Assert.Equal(TelegramDiagnosticCaseResponseMode.Technical, diagnosticCase?.ResponseMode);

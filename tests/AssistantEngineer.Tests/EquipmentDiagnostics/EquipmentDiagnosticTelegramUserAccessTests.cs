@@ -200,9 +200,10 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
 
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 700));
 
-        Assert.Contains("Значение:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", diagnostic.ParseMode);
+        Assert.Contains("<b>Суть:</b>", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", diagnostic.Text, StringComparison.Ordinal);
     }
@@ -220,9 +221,10 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var history = await adapter.HandleAsync(Update("/history", chatId: 701));
         var last = await adapter.HandleAsync(Update("/last", chatId: 701));
 
-        Assert.Contains("Значение:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Важно:", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", diagnostic.ParseMode);
+        Assert.Contains("<b>Суть:</b>", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", diagnostic.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", diagnostic.Text, StringComparison.Ordinal);
         Assert.Contains("Монтажник", help.Text, StringComparison.Ordinal);

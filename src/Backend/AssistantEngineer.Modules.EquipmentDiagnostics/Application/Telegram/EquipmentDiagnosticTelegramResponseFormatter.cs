@@ -69,6 +69,55 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         return NormalizeOutput(builder.ToString().Trim());
     }
 
+    public string FormatTechnicalHtml(
+        EquipmentDiagnosticBotResponse response,
+        TelegramUserRole role = TelegramUserRole.Engineer)
+    {
+        var localized = _localizationSource.Select(
+            response,
+            RussianLocale,
+            Audience(role));
+        if (localized is null ||
+            response.Status == EquipmentDiagnosticBotResponseStatus.ClarificationRequired ||
+            !string.Equals(localized.Entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(localized.Entry.Series))
+        {
+            return TelegramHtml.Escape(FormatTechnical(response, role));
+        }
+
+        var text = localized.Text;
+        var entry = localized.Entry;
+        var series = IsGroupedAnswer(response) ? "GMV" : entry.Series!;
+        var meaning = TechnicalMeaning(response, text).TrimEnd('.');
+        var builder = new StringBuilder();
+
+        builder.AppendLine(TelegramHtml.Bold(
+            $"Диагностика {response.NormalizedManufacturer} {response.NormalizedCode}"));
+        builder.Append(TelegramHtml.Bold(
+            $"{DisplayManufacturer(entry.Manufacturer)} {series} — {response.NormalizedCode}"));
+        builder.AppendLine($" — {TelegramHtml.Escape(meaning)}");
+        AppendHtmlConfusableCodeNote(builder, response);
+        builder.AppendLine();
+        builder.AppendLine(TelegramHtml.Bold("Суть:"));
+        builder.AppendLine(TelegramHtml.Escape(
+            RussianDiagnosticTerminology.ImprovePhrase(text.Summary)));
+        AppendHtmlApplicableContexts(builder, response);
+        AppendHtmlSection(builder, "Возможные причины:", text.PossibleCauses, numbered: false, limit: 5);
+        AppendHtmlSection(builder, "Что проверить:", text.CheckSteps, numbered: false, limit: 3);
+        builder.AppendLine();
+        builder.AppendLine($"{TelegramHtml.Bold("Серия:")} {TelegramHtml.Escape(series)}");
+        builder.AppendLine();
+        builder.AppendLine(TelegramHtml.Bold("Важно:"));
+        builder.AppendLine(TelegramHtml.Escape(
+            RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote)));
+        AppendHtmlSection(builder, "Ограничения:", text.DoNotAdvise, numbered: false, limit: 5);
+        builder.AppendLine();
+        builder.AppendLine(TelegramHtml.Bold("Техническая заметка:"));
+        builder.AppendLine(TelegramHtml.Escape(RecommendedAction(response, text)));
+
+        return builder.ToString().Trim();
+    }
+
     public string FormatHelp(int maxLength) =>
         Truncate(
             "Диагностика оборудования\n" +
@@ -441,6 +490,39 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     private static bool IsObservedHoAlias(string observedCode) =>
         string.Equals(observedCode.Trim(), "HO", StringComparison.OrdinalIgnoreCase);
 
+    private static void AppendHtmlConfusableCodeNote(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response)
+    {
+        var note = ConfusableCodeNote(response);
+        if (note is not null)
+        {
+            builder.AppendLine(TelegramHtml.Escape(note));
+        }
+    }
+
+    private static string? ConfusableCodeNote(EquipmentDiagnosticBotResponse response)
+    {
+        var code = response.NormalizedCode;
+        if (string.Equals(code, "o1", StringComparison.Ordinal))
+        {
+            return "Код: o1 — буква O + цифра 1.";
+        }
+
+        if (string.Equals(code, "L1", StringComparison.Ordinal))
+        {
+            return "Код: L1 — буква L + цифра 1.";
+        }
+
+        if (string.Equals(code, "H0", StringComparison.Ordinal) &&
+            IsObservedHoAlias(response.ObservedCode.Code))
+        {
+            return "Проверьте точное написание: на семисегментном дисплее HO/Ho часто означает H0.";
+        }
+
+        return null;
+    }
+
     private static void AppendApplicableContexts(
         StringBuilder builder,
         EquipmentDiagnosticBotResponse response)
@@ -455,6 +537,23 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         foreach (var context in response.ApplicableContexts.Take(6))
         {
             builder.AppendLine($"- {context}");
+        }
+    }
+
+    private static void AppendHtmlApplicableContexts(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response)
+    {
+        if (response.ApplicableContexts.Count <= 1)
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine(TelegramHtml.Bold("Применимо:"));
+        foreach (var context in response.ApplicableContexts.Take(6))
+        {
+            builder.AppendLine($"- {TelegramHtml.Escape(context)}");
         }
     }
 
@@ -544,6 +643,28 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         foreach (var (value, index) in values.Take(limit).Select((value, index) => (value, index)))
         {
             builder.AppendLine($"{index + 1}. {Compact(RussianDiagnosticTerminology.ImprovePhrase(value), 220)}");
+        }
+    }
+
+    private static void AppendHtmlSection(
+        StringBuilder builder,
+        string title,
+        IReadOnlyList<string> values,
+        bool numbered,
+        int limit)
+    {
+        if (values.Count == 0)
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine(TelegramHtml.Bold(title));
+        foreach (var (value, index) in values.Take(limit).Select((value, index) => (value, index)))
+        {
+            var marker = numbered ? $"{index + 1}." : "-";
+            builder.AppendLine(
+                $"{marker} {TelegramHtml.Escape(Compact(RussianDiagnosticTerminology.ImprovePhrase(value), 220))}");
         }
     }
 

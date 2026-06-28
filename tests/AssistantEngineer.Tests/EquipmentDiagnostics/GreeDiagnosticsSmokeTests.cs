@@ -34,6 +34,10 @@ public sealed class GreeDiagnosticsSmokeTests
         var response = await adapter.HandleAsync(Update("Gree n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Equal("HTML", response.OutboundMessages.Single().ParseMode);
+        Assert.Contains("<b>Код n2 найден в нескольких сериях Gree.</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Выберите серию:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("Код n2 найден в нескольких сериях Gree.", response.Text, StringComparison.Ordinal);
         Assert.Contains("Выберите серию:", response.Text, StringComparison.Ordinal);
         AssertSafeVisibleText(response.Text);
@@ -61,9 +65,16 @@ public sealed class GreeDiagnosticsSmokeTests
         var response = await adapter.HandleAsync(Update("Gree GMV X n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Equal("HTML", response.OutboundMessages.Single().ParseMode);
         Assert.Contains("Gree GMV X — n2", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Серия: GMV X", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Диагностика GREE n2</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Серия:</b> GMV X", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV9 Flex n2", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -79,9 +90,12 @@ public sealed class GreeDiagnosticsSmokeTests
         var response = await adapter.HandleAsync(Update("Gree GMV9 Flex n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Код n2 не найден для Gree GMV9 Flex.", response.Text, StringComparison.Ordinal);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Equal("HTML", response.OutboundMessages.Single().ParseMode);
+        Assert.Contains("<b>Код n2 не найден для Gree GMV9 Flex.</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("не подставляю значения из других серий", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Проверьте:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Проверьте:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("укажите бренд", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -106,10 +120,17 @@ public sealed class GreeDiagnosticsSmokeTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Equal("HTML", response.OutboundMessages.Single().ParseMode);
         Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
-        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
-        Assert.Contains($"Серия: {expectedSeries}", response.Text, StringComparison.Ordinal);
+        Assert.Contains($"<b>Диагностика GREE {query.Split(' ')[^1]}</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains($"<b>Серия:</b> {expectedSeries}", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
         AssertSafeVisibleText(response.Text);
     }

@@ -95,7 +95,7 @@ not crash the bot. Consumer `/last` uses the public-safe Russian summary instead
 summary; Engineer, Owner, and Admin may see the saved short technical summary.
 
 ED-23B adds the PostgreSQL-backed `TelegramServiceRequests` foundation. After a final diagnosis, the main keyboard
-offers `🛠 Нужен мастер`; hidden `/request` is an alias. A request requires the current user's latest diagnostic case
+offers `🛠 Оставить заявку`; hidden `/request` is an alias. A request requires the current user's latest diagnostic case
 and a saved phone. `/requests` shows that user's latest five requests only. Active `New`/`InProgress` requests are
 deduplicated per diagnostic case. The optional `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` Docker variable maps to
 `AssistantEngineer:EquipmentDiagnostics:Telegram:ServiceRequests:NotificationChatId`. If it is empty or notification

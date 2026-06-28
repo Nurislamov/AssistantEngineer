@@ -76,7 +76,8 @@ public sealed record TelegramDiagnosticConversationResult(
     string Text,
     IReadOnlyList<string> Warnings,
     EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null,
-    IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null);
+    IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null,
+    string? ParseMode = null);
 
 public sealed record TelegramDiagnosticCandidate(
     string Manufacturer,
