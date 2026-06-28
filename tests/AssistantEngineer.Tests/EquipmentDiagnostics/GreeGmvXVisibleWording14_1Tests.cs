@@ -50,6 +50,16 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         "force start"
     ];
 
+    private static readonly string[] BrokenRussianCaseFragments =
+    [
+        "к наружного блока",
+        "к внутреннего блока",
+        "относится к наружного блока",
+        "относится к внутреннего блока",
+        "формулировка относится к наружного блока",
+        "формулировка относится к внутреннего блока"
+    ];
+
     [Fact]
     public void GmvXRuntimeCountsRemainUnchangedAfterVisibleWordingRepair()
     {
@@ -77,12 +87,15 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
                 var title = RequiredString(text, "title");
                 Assert.Contains(" — ", title, StringComparison.Ordinal);
                 Assert.DoesNotContain("?", title, StringComparison.Ordinal);
+                Assert.DoesNotContain(" ? ", title, StringComparison.Ordinal);
 
                 foreach (var visible in VisibleValues(text))
                 {
                     Assert.DoesNotContain("???", visible, StringComparison.Ordinal);
                     Assert.DoesNotContain("????", visible, StringComparison.Ordinal);
                     Assert.DoesNotContain("? ?", visible, StringComparison.Ordinal);
+                    Assert.All(BrokenRussianCaseFragments, fragment =>
+                        Assert.DoesNotContain(fragment, visible, StringComparison.OrdinalIgnoreCase));
                     Assert.True(
                         CountCyrillic(visible) >= 8,
                         $"Visible text must contain readable Cyrillic wording: {file}: {visible}");
@@ -128,6 +141,8 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("????", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("? ?", response.Text, StringComparison.Ordinal);
+        Assert.All(BrokenRussianCaseFragments, fragment =>
+            Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
         Assert.True(CountCyrillic(response.Text) >= 40, response.Text);
     }
 
