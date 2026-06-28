@@ -813,7 +813,12 @@ public sealed class TelegramDiagnosticConversationService
 
         if (candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
         {
-            return candidates;
+            var establishedN2 = candidates
+                .Where(candidate =>
+                    string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+            return establishedN2.Length >= 2 ? establishedN2 : candidates;
         }
 
         var nonMini = candidates
