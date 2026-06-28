@@ -292,7 +292,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
-    public async Task ConsumerWithSavedPhoneDoesNotGetRepeatedPhonePromptOrKeyboard()
+    public async Task ConsumerWithSavedPhoneDoesNotGetRepeatedPhonePromptOrKeyboardOnDiagnosticAnswer()
     {
         var store = new InMemoryTelegramUserStore();
         await store.GetOrCreateConsumerAsync(Update("/start", chatId: 900));
@@ -305,8 +305,9 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.DoesNotContain("Если хотите, оставьте номер телефона", response.Text, StringComparison.Ordinal);
         var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text).ToArray();
         Assert.Contains("🔎 Новый код", buttons);
-        Assert.Contains(TelegramDiagnosticConversationService.ChangePhoneButton, buttons);
         Assert.DoesNotContain(TelegramDiagnosticConversationService.SharePhoneButton, buttons);
+        Assert.DoesNotContain(TelegramDiagnosticConversationService.ManualPhoneButton, buttons);
+        Assert.DoesNotContain(TelegramDiagnosticConversationService.ChangePhoneButton, buttons);
     }
 
     [Fact]

@@ -84,7 +84,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     manualResult.Text,
                     EquipmentDiagnosticTelegramResponseKind.Reply,
                     manualResult.Warnings,
-                    TelegramDiagnosticConversationService.MainKeyboard(callbackAccess),
+                    manualResult.ReplyMarkup ?? TelegramDiagnosticConversationService.MainKeyboard(callbackAccess),
                     manualResult.Messages,
                     callbackAnswerText: manualResult.CallbackAnswerText,
                     parseMode: manualResult.ParseMode);
@@ -342,7 +342,10 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             _formatter.FormatConsumer(diagnosis, consumerPhoneSaved, ConsumerMessageLength),
             EquipmentDiagnosticTelegramResponseKind.Reply,
             diagnosis.Warnings,
-            replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+            replyMarkup: TelegramDiagnosticConversationService.DiagnosticResultKeyboard(
+                access,
+                diagnosis,
+                _options.ManualLibrary.Enabled));
     }
 
     private bool TryHandleMe(
@@ -463,7 +466,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 result.Text,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
                 result.Warnings,
-                TelegramDiagnosticConversationService.MainKeyboard(access),
+                result.ReplyMarkup ?? TelegramDiagnosticConversationService.MainKeyboard(access),
                 result.Messages,
                 callbackAnswerText: result.CallbackAnswerText,
                 parseMode: result.ParseMode);

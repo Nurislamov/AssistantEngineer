@@ -1,5 +1,6 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var callback = await adapter.HandleAsync(ManualCallback());
 
         Assert.False(HasButton(diagnosis, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(diagnosis, TelegramManualLibraryService.ManualLibraryButton));
         Assert.Equal("HTML", action.ParseMode);
         Assert.Contains("<b>Доступ ограничен</b>", action.Text, StringComparison.Ordinal);
         Assert.Contains("только для технических ролей", action.Text, StringComparison.OrdinalIgnoreCase);
@@ -41,8 +43,54 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var response = await adapter.HandleAsync(Update("Gree GMV6 H5"));
 
         Assert.True(HasButton(response, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(response, TelegramManualLibraryService.ManualLibraryButton));
         Assert.Contains("<b>Диагностика GREE H5</b>", response.Text, StringComparison.Ordinal);
         AssertNoDiagnosticSourceLeak(response);
+    }
+
+    [Fact]
+    public async Task TechnicalDiagnosticKeyboardUsesOnlyContextualManualActionAndCompactRows()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree GMV6 H5"));
+
+        Assert.Collection(
+            KeyboardRows(response),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.NewCodeButton, TelegramManualLibraryService.DiagnosticManualButton],
+                row),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.HistoryButton, TelegramDiagnosticConversationService.ServiceRequestButton],
+                row),
+            row => Assert.Equal([TelegramDiagnosticConversationService.RequestsButton], row));
+        Assert.False(HasButton(response, TelegramManualLibraryService.ManualLibraryButton));
+        Assert.Equal(
+            1,
+            Buttons(response).Count(button =>
+                string.Equals(button, TelegramManualLibraryService.DiagnosticManualButton, StringComparison.Ordinal)));
+    }
+
+    [Fact]
+    public async Task ConsumerDiagnosticKeyboardIsCompactAndHasNoManualActions()
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree GMV6 H5"));
+
+        Assert.Collection(
+            KeyboardRows(response),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.NewCodeButton, TelegramDiagnosticConversationService.HistoryButton],
+                row),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.ServiceRequestButton, TelegramDiagnosticConversationService.RequestsButton],
+                row));
+        Assert.False(HasButton(response, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(response, TelegramManualLibraryService.ManualLibraryButton));
     }
 
     [Fact]
@@ -57,6 +105,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
 
         Assert.False(HasButton(ambiguity, TelegramManualLibraryService.DiagnosticManualButton));
         Assert.False(HasButton(notFound, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(ambiguity, TelegramManualLibraryService.ManualLibraryButton));
+        Assert.False(HasButton(notFound, TelegramManualLibraryService.ManualLibraryButton));
     }
 
     [Fact]
@@ -73,6 +123,17 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("<b>Мануал пока не привязан</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex / E0", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(response.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.True(HasButton(response, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(response, TelegramManualLibraryService.ManualLibraryButton));
+        Assert.Collection(
+            KeyboardRows(response),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.NewCodeButton, TelegramManualLibraryService.DiagnosticManualButton],
+                row),
+            row => Assert.Equal(
+                [TelegramDiagnosticConversationService.HistoryButton, TelegramDiagnosticConversationService.ServiceRequestButton],
+                row),
+            row => Assert.Equal([TelegramDiagnosticConversationService.RequestsButton], row));
         AssertNoDiagnosticSourceLeak(response);
     }
 
@@ -140,7 +201,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
         await adapter.HandleAsync(Update("Gree d1"));
-        var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.ManualLibraryButton));
+        var response = await adapter.HandleAsync(Update("/manuals"));
 
         Assert.Contains("файлы пока не подключены", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Сервисное руководство GMV6 v2020.09 (GC202001-I)", response.Text, StringComparison.Ordinal);
@@ -432,10 +493,21 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     private static bool HasButton(
         EquipmentDiagnosticTelegramResponse response,
         string text) =>
+        Buttons(response)
+            .Any(button => string.Equals(button, text, StringComparison.Ordinal));
+
+    private static string[] Buttons(EquipmentDiagnosticTelegramResponse response) =>
         response.OutboundMessages
             .SelectMany(message => message.ReplyMarkup?.Keyboard ?? [])
             .SelectMany(row => row)
-            .Any(button => string.Equals(button.Text, text, StringComparison.Ordinal));
+            .Select(button => button.Text)
+            .ToArray();
+
+    private static string[][] KeyboardRows(EquipmentDiagnosticTelegramResponse response) =>
+        response.OutboundMessages
+            .SelectMany(message => message.ReplyMarkup?.Keyboard ?? [])
+            .Select(row => row.Select(button => button.Text).ToArray())
+            .ToArray();
 
     private static void AssertNoDiagnosticSourceLeak(EquipmentDiagnosticTelegramResponse response)
     {

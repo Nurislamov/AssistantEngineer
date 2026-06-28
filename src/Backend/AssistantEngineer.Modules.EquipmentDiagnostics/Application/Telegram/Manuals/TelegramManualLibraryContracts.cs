@@ -27,7 +27,8 @@ public sealed record TelegramManualLibraryResult(
     IReadOnlyList<string> Warnings,
     IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? Messages = null,
     string? ParseMode = null,
-    string? CallbackAnswerText = null);
+    string? CallbackAnswerText = null,
+    EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null);
 
 public interface ITelegramManualRegistrySource
 {

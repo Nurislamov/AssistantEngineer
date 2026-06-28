@@ -988,7 +988,7 @@ public sealed class TelegramDiagnosticConversationService
             EquipmentDiagnosticTelegramResponseKind.Reply,
             text,
             diagnosis.Warnings,
-            MainKeyboard(access));
+            DiagnosticResultKeyboard(access, diagnosis, _options.ManualLibrary.Enabled));
     }
 
     private TelegramDiagnosticConversationResult NotFound(
@@ -1275,26 +1275,19 @@ public sealed class TelegramDiagnosticConversationService
 
     public static EquipmentDiagnosticTelegramReplyMarkup MainKeyboard(TelegramUserAccessResult access)
     {
-        var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>
-        {
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton) },
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton) },
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(ServiceRequestButton) },
-            new[] { new EquipmentDiagnosticTelegramKeyboardButton(RequestsButton) }
-        };
+        var rows = CompactMainRows();
 
         if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
         {
-            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(SharePhoneButton, RequestContact: true)]);
-            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ManualPhoneButton)]);
+            rows.Add(
+            [
+                new EquipmentDiagnosticTelegramKeyboardButton(SharePhoneButton, RequestContact: true),
+                new EquipmentDiagnosticTelegramKeyboardButton(ManualPhoneButton)
+            ]);
         }
         else if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber == true)
         {
             rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(ChangePhoneButton)]);
-        }
-        if (access.UsesTechnicalResponse)
-        {
-            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.ManualLibraryButton)]);
         }
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
@@ -1305,21 +1298,40 @@ public sealed class TelegramDiagnosticConversationService
         EquipmentDiagnosticBotResponse diagnosis,
         bool manualLibraryEnabled)
     {
-        var main = MainKeyboard(access);
         if (!manualLibraryEnabled ||
             !access.CanAccessDiagnosticManual ||
             diagnosis.Status is not (EquipmentDiagnosticBotResponseStatus.Answer or EquipmentDiagnosticBotResponseStatus.ReferenceOnly) ||
             !string.Equals(diagnosis.NormalizedManufacturer, "Gree", StringComparison.OrdinalIgnoreCase) ||
             string.IsNullOrWhiteSpace(diagnosis.EquipmentContext?.Series))
         {
-            return main;
+            return CompactDiagnosticKeyboard();
         }
 
-        var rows = main.Keyboard?
-            .Select(row => (IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>)row.ToArray())
-            .ToList() ?? [];
-        rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.DiagnosticManualButton)]);
-        return main with { Keyboard = rows };
+        return DiagnosticManualContextKeyboard(access);
+    }
+
+    public static EquipmentDiagnosticTelegramReplyMarkup DiagnosticManualContextKeyboard(
+        TelegramUserAccessResult access)
+    {
+        if (!access.CanAccessDiagnosticManual)
+        {
+            return CompactDiagnosticKeyboard();
+        }
+
+        return new EquipmentDiagnosticTelegramReplyMarkup(
+            [
+                [
+                    new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton),
+                    new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.DiagnosticManualButton)
+                ],
+                [
+                    new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton),
+                    new EquipmentDiagnosticTelegramKeyboardButton(ServiceRequestButton)
+                ],
+                [new EquipmentDiagnosticTelegramKeyboardButton(RequestsButton)]
+            ],
+            ResizeKeyboard: true,
+            OneTimeKeyboard: false);
     }
 
     public static EquipmentDiagnosticTelegramReplyMarkup ServiceRequestCreatedKeyboard(
@@ -1377,6 +1389,21 @@ public sealed class TelegramDiagnosticConversationService
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
     }
+
+    private static EquipmentDiagnosticTelegramReplyMarkup CompactDiagnosticKeyboard() =>
+        new(CompactMainRows(), ResizeKeyboard: true, OneTimeKeyboard: false);
+
+    private static List<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>> CompactMainRows() =>
+        [
+            [
+                new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton),
+                new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton)
+            ],
+            [
+                new EquipmentDiagnosticTelegramKeyboardButton(ServiceRequestButton),
+                new EquipmentDiagnosticTelegramKeyboardButton(RequestsButton)
+            ]
+        ];
 
     private static EquipmentDiagnosticTelegramReplyMarkup PhoneInputKeyboard() =>
         new(

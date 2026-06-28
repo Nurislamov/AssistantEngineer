@@ -156,6 +156,7 @@ public sealed class TelegramManualLibraryService
             return MissingDiagnosticContext();
         }
 
+        var replyMarkup = TelegramDiagnosticConversationService.DiagnosticManualContextKeyboard(access);
         var manuals = ResolveManuals(last, access.Role, series);
         var boundManuals = new List<TelegramManualFileBinding>();
         foreach (var manual in manuals.Take(Math.Clamp(_options.ManualLibrary.MaxFilesPerRequest, 1, 10)))
@@ -174,7 +175,8 @@ public sealed class TelegramManualLibraryService
                 $"{TelegramHtml.Bold("Мануал пока не привязан")}\n\n" +
                 $"Для {TelegramHtml.Escape(equipment)} / {TelegramHtml.Escape(last.Code)} есть диагностическая карточка, " +
                 "но файл мануала ещё отсутствует.",
-                callbackAnswerText: "Мануал не привязан");
+                callbackAnswerText: "Мануал не привязан",
+                replyMarkup: replyMarkup);
         }
 
         var heading =
@@ -187,12 +189,12 @@ public sealed class TelegramManualLibraryService
             new(
                 heading,
                 ParseMode: TelegramHtml.ParseMode,
-                ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access))
+                ReplyMarkup: replyMarkup)
         };
         messages.AddRange(boundManuals.Select(binding =>
             new EquipmentDiagnosticTelegramOutboundMessage(
                 "Сохранённый мануал по последней диагностике.",
-                ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access),
+                ReplyMarkup: replyMarkup,
                 DocumentFileId: binding.TelegramFileId,
                 DocumentFileName: binding.OriginalFileName)));
 
@@ -201,7 +203,8 @@ public sealed class TelegramManualLibraryService
             [],
             messages,
             TelegramHtml.ParseMode,
-            "Отправляю мануал");
+            "Отправляю мануал",
+            replyMarkup);
     }
 
     public async Task<TelegramManualLibraryResult> RegisterManualAsync(
@@ -575,8 +578,14 @@ public sealed class TelegramManualLibraryService
 
     private static TelegramManualLibraryResult Html(
         string text,
-        string? callbackAnswerText = null) =>
-        new(text, [], ParseMode: TelegramHtml.ParseMode, CallbackAnswerText: callbackAnswerText);
+        string? callbackAnswerText = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null) =>
+        new(
+            text,
+            [],
+            ParseMode: TelegramHtml.ParseMode,
+            CallbackAnswerText: callbackAnswerText,
+            ReplyMarkup: replyMarkup);
 
     private static TelegramManualLibraryResult Text(string text) => new(text, []);
 
