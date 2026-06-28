@@ -326,11 +326,18 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Для кода n2 есть несколько вариантов", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
         Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(2, CountOccurrences(response.Text, "настройка предела коэффициента соответствия внутренних и наружных блоков"));
+        Assert.Equal(3, CountOccurrences(response.Text, "настройка предела коэффициента соответствия внутренних и наружных блоков"));
         Assert.DoesNotContain("Gree GMV Mini n2 — настройка предела", response.Text.Split('\n').First(), StringComparison.Ordinal);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
+        var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text);
+        Assert.Contains("GMV Mini", buttons);
+        Assert.Contains("GMV6", buttons);
+        Assert.Contains("GMV X", buttons);
+        Assert.Contains("Не знаю", buttons);
+        Assert.Contains("🔎 Новый код", buttons);
 
         var selected = await adapter.HandleAsync(Update("GMV6"));
 
@@ -339,10 +346,27 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("не нашёл точную расшифровку", selected.Text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task SelectingGmvXAfterUnqualifiedN2ReturnsGmvXN2()
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        _ = await adapter.HandleAsync(Update("Gree n2"));
+        var selected = await adapter.HandleAsync(Update("GMV X"));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, selected.ResponseKind);
+        Assert.Contains("Gree GMV X n2", selected.Text, StringComparison.Ordinal);
+        Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", selected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 n2", selected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV Mini n2", selected.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Theory]
     [InlineData("Gree GMV6 n2", "Gree GMV6 n2")]
     [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2")]
     [InlineData("Gree Mini n2", "Gree GMV Mini n2")]
+    [InlineData("Gree GMV X n2", "Gree GMV X n2")]
     public async Task ExplicitN2SeriesSelectsSeparateRuntimeAnswer(
         string query,
         string expectedTitle)
@@ -356,6 +380,30 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
         Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Уточните серию", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData("Gree GMV9 Flex E0", "GC202512-I")]
+    [InlineData("Gree GMV9 H5", "GC202512-I")]
+    [InlineData("Gree 9 series Flex C0", "GC202512-I")]
+    [InlineData("Gree 9-Flex A0", "GC202512-I")]
+    [InlineData("Gree GMV X E0", "GC202209-I")]
+    [InlineData("Gree GMV X n2", "GC202209-I")]
+    [InlineData("Gree GMV6 A9", "GC202203-IV")]
+    [InlineData("Gree GMV6 Uy", "GC202203-IV")]
+    public async Task ManualBackedTelegramAnswersHideTechnicalManualReferences(string query, string documentCode)
+    {
+        using var provider = CreateProvider(EnabledOptions());
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.DoesNotContain(documentCode, response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("PDF page", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("manual page", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Chapter 3 Faults", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Error Indication", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

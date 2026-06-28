@@ -814,9 +814,7 @@ public sealed class TelegramDiagnosticConversationService
         if (candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
         {
             var establishedN2 = candidates
-                .Where(candidate =>
-                    string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+                .Where(candidate => IsKnownN2Series(candidate.Series))
                 .ToArray();
             return establishedN2.Length >= 2 ? establishedN2 : candidates;
         }
@@ -1126,15 +1124,17 @@ public sealed class TelegramDiagnosticConversationService
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .Select(value => value!)
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(value => value, StringComparer.Ordinal)
+            .OrderBy(SeriesSortKey)
+            .ThenBy(value => value, StringComparer.Ordinal)
             .ToArray();
 
         var builder = new System.Text.StringBuilder();
-        builder.AppendLine($"Для кода {code} есть несколько вариантов в сериях Gree. Уточните серию оборудования: GMV6 или GMV Mini.");
+        builder.AppendLine($"Для кода {code} есть несколько вариантов в сериях Gree. Уточните серию оборудования: {FormatSeriesList(series)}.");
         foreach (var candidate in candidates
             .Where(candidate => !string.IsNullOrWhiteSpace(candidate.Series))
             .DistinctBy(candidate => candidate.Series, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(candidate => candidate.Series, StringComparer.Ordinal))
+            .OrderBy(candidate => SeriesSortKey(candidate.Series!))
+            .ThenBy(candidate => candidate.Series, StringComparer.Ordinal))
         {
             builder.AppendLine($"- Gree {candidate.Series} {candidate.Code} — {SeriesMeaning(candidate)}");
         }
@@ -1150,13 +1150,7 @@ public sealed class TelegramDiagnosticConversationService
     private string SeriesMeaning(TelegramDiagnosticCandidate candidate)
     {
         if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
-        {
-            return "настройка предела коэффициента соответствия внутренних и наружных блоков.";
-        }
-
-        if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            IsKnownN2Series(candidate.Series))
         {
             return "настройка предела коэффициента соответствия внутренних и наружных блоков.";
         }
@@ -1179,6 +1173,56 @@ public sealed class TelegramDiagnosticConversationService
         }
 
         return "уточните точную серию оборудования.";
+    }
+
+    private static bool IsKnownN2Series(string? series) =>
+        string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV6", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase);
+
+    private static int SeriesSortKey(string series)
+    {
+        if (string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+        {
+            return 0;
+        }
+
+        if (string.Equals(series, "GMV6", StringComparison.OrdinalIgnoreCase))
+        {
+            return 1;
+        }
+
+        if (string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase))
+        {
+            return 2;
+        }
+
+        if (string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase))
+        {
+            return 3;
+        }
+
+        return 100;
+    }
+
+    private static string FormatSeriesList(IReadOnlyList<string> series)
+    {
+        if (series.Count == 0)
+        {
+            return "серию оборудования";
+        }
+
+        if (series.Count == 1)
+        {
+            return series[0];
+        }
+
+        if (series.Count == 2)
+        {
+            return $"{series[0]} или {series[1]}";
+        }
+
+        return $"{string.Join(", ", series.Take(series.Count - 1))} или {series[^1]}";
     }
 
     public static EquipmentDiagnosticTelegramReplyMarkup MainKeyboard(TelegramUserAccessResult access)

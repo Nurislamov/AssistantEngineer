@@ -160,7 +160,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
     }
 
     [Fact]
-    public async Task UnqualifiedN2AmbiguityRemainsGmv6AndGmvMiniOnly()
+    public async Task UnqualifiedN2AmbiguityIncludesGmvX()
     {
         using var provider = CreateProvider();
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -170,8 +170,9 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Gree GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> VisibleValues(JsonObject text)

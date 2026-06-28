@@ -92,6 +92,76 @@ public sealed class ErrorKnowledgeJsonValidationTests
     }
 
     [Fact]
+    public void GreeVisibleTextsDoNotExposeManualReferenceMarkers()
+    {
+        var runtimeDirectory = Path.Combine(
+            TestPaths.RepoRoot,
+            "data",
+            "equipment-diagnostics",
+            "error-knowledge",
+            "gree");
+        var files = Directory.GetFiles(runtimeDirectory, "*.json", SearchOption.AllDirectories);
+        Assert.Equal(922, files.Length);
+
+        var entriesWithDocumentMetadata = 0;
+        foreach (var file in files)
+        {
+            var entry = JsonNode.Parse(File.ReadAllText(file))!.AsObject();
+            var sourceReferences = entry["sourceReferences"]?.AsArray();
+            if (sourceReferences is not null &&
+                sourceReferences.OfType<JsonObject>().Any(source =>
+                    source["documentCode"]?.GetValue<string>().StartsWith("GC20", StringComparison.OrdinalIgnoreCase) == true))
+            {
+                entriesWithDocumentMetadata++;
+            }
+
+            foreach (var textNode in entry["texts"]!.AsArray())
+            {
+                var text = Assert.IsType<JsonObject>(textNode);
+                foreach (var visible in VisibleTextValues(text))
+                {
+                    Assert.DoesNotContain("GC20", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("PDF page", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("manual page", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("Chapter 3 Faults", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("Error Indication", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("???", visible, StringComparison.Ordinal);
+                    Assert.DoesNotContain("к наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("к внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("относится к наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("относится к внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+                }
+            }
+        }
+
+        Assert.True(entriesWithDocumentMetadata > 0);
+
+        static IEnumerable<string> VisibleTextValues(JsonObject text)
+        {
+            foreach (var propertyName in new[] { "title", "summary", "safetyNote", "recommendedAction", "sourceNote" })
+            {
+                if (text[propertyName] is JsonValue value)
+                {
+                    yield return value.GetValue<string>();
+                }
+            }
+
+            foreach (var propertyName in new[] { "possibleCauses", "checkSteps", "doNotAdvise" })
+            {
+                if (text[propertyName] is not JsonArray values)
+                {
+                    continue;
+                }
+
+                foreach (var value in values.OfType<JsonValue>())
+                {
+                    yield return value.GetValue<string>();
+                }
+            }
+        }
+    }
+
+    [Fact]
     public void ErrorKnowledgeResourceFilterRejectsUnrelatedEmbeddedJson()
     {
         Assert.True(ErrorKnowledgeJsonLoader.IsKnowledgeResource(
