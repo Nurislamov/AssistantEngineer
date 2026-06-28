@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24UX.6 - CLOSED / pushed to origin/master.
+ED-24UX.6 - CLOSED / production PASS.
 
 Next recommended steps:
 
 1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
-3. Discuss ED-24SRC.1 (add a separate source reference action for diagnostics) or another small Gree UX/source stage.
+3. Discuss ED-24UX.7 (rename or compact the Gree diagnostic cause/context block) or ED-24SRC.1 (add a separate source reference action for diagnostics).
 
 ## Current branch
 
@@ -16,9 +16,11 @@ master
 
 ## Last completed work
 
-ED-24UX.6 compacted the first-check bullets in found Gree Telegram answers without changing runtime knowledge or routing.
+ED-24UX.6 compacted the first-check bullets in found Gree Telegram answers and passed VPS deploy and Telegram live-review.
 
-Commit: `d8fdc3d1`.
+Implementation commit: `d8fdc3d1`.
+
+Project-state hash update commit: `5d944e12`.
 
 ## Current working point
 
@@ -28,7 +30,7 @@ Commit: `d8fdc3d1`.
 - ED-24UX.4 - CLOSED / pushed.
 - ED-24UX.4a - CLOSED / production PASS.
 - ED-24UX.5 - CLOSED / pushed.
-- ED-24UX.6 - CLOSED / pushed.
+- ED-24UX.6 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -119,15 +121,25 @@ Latest validation after ED-24UX.5:
 
 Latest validation after ED-24UX.6:
 
+- Implementation commit: `d8fdc3d1`.
+- Project-state hash update commit: `5d944e12`.
+- VPS deploy to `assistantengineer-beta-01`: PASS.
+- Telegram live-review: PASS.
+- Telegram polling logs: clean; updates 41767191-41767193 were processed successfully with `Status: Processed` and no provided error, exception, failed, or polling-batch-failed entries.
 - Found Gree `Что проверить:` sections use three short, non-duplicating bullets.
 - Fault/protection-style answers confirm code, series, and indication location, then separate model and occurrence-context checks.
 - Status/service-function answers confirm code, signal category, and display location, then separate model, settings, and related-message checks.
 - Grouped answers retain a neutral reference to the service procedure in the applicable-series manual.
 - Separate `Техническая заметка:`, `Ограничения:`, and `Дальше:` blocks remain absent.
 - The compact `Важно:` safety block, safe HTML escaping, and narrow `ParseMode: HTML` scope are unchanged.
+- The `🛠 Оставить заявку` button remains in place.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused formatter/smoke tests: 40/40 passed.
 - Local Gree diagnostics smoke: 9/9 passed.
 - EquipmentDiagnostics tests: 940/940 passed.
 - Full solution baseline: 4924/4924 passed.
+- `git diff --check`: PASS.
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
@@ -145,6 +157,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+5d944e12 Update project state after ED-24UX.6
 d8fdc3d1 ED-24UX.6 Compact Gree diagnostic first-check bullets
 e24ae712 ED-24UX.4a Polish live-reviewed Gree Telegram answer UX
 80947fdb ED-24UX.4 Polish Gree diagnostic answer structure
@@ -175,5 +188,8 @@ No active production blocker after ED-24UX.6.
 
 ## Next step
 
-Discuss ED-24SRC.1 Add separate source reference action for diagnostics, or another agreed small follow-up.
+Discuss one of:
+
+- ED-24UX.7 Rename or compact Gree diagnostic cause/context block.
+- ED-24SRC.1 Add separate source reference action for diagnostics.
 
