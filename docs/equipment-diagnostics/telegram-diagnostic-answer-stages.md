@@ -38,9 +38,10 @@ ED-24DG.1 defines the staged shape expected from Telegram equipment-diagnostic a
 
 Technical Telegram answers use these section labels:
 
-- `Диагностика ...` and the title line cover identification.
-- `Суть:` covers meaning.
-- `Что проверить:` covers installer and service checks.
+- `Gree <series> — <code>` covers identification for Gree answers.
+- `Значение:` covers meaning.
+- `Первые проверки:` covers the first installer and service checks.
+- `Серия:` repeats the selected series for quick scanning.
 - `Важно:` covers safety.
 - `Ограничения вывода:` captures limits and non-actions when present.
 - `Дальше:` covers next action.

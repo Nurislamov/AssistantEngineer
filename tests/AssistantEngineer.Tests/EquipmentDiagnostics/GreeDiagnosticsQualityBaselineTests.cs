@@ -84,7 +84,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         var response = await adapter.HandleAsync(Update("Gree n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Для кода n2 есть несколько вариантов", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Код n2 найден в нескольких сериях Gree.", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
@@ -113,7 +113,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         var response = await adapter.HandleAsync(Update("Gree GMV X n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV X n2", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV X — n2", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV9 Flex n2", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -134,7 +134,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("не найден для Gree", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(firstForbiddenTitle, response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(secondForbiddenTitle, response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(thirdForbiddenTitle, response.Text, StringComparison.OrdinalIgnoreCase);

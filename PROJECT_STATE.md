@@ -2,16 +2,13 @@
 
 ## Current stage
 
-ED-24GEC.15.1 - CLOSED / production PASS.
+ED-24UX.4 - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
-1. Start with this project-state checkpoint after ED-24GEC.15 / ED-24GEC.15.1.
-2. Then do small technical hygiene stage ED-24TD.4:
-   - add or update .gitattributes;
-   - exclude .ae-tools/** from GitHub language stats;
-   - keep helper Python scripts from appearing as project language.
-3. After that discuss the next Gree diagnostics direction: GMV-W, Versati, chillers, fan coils, or another priority.
+1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
+3. Discuss the next Gree diagnostics direction: GMV-W, Versati, chillers, fan coils, or another priority.
 
 ## Current branch
 
@@ -19,7 +16,7 @@ master
 
 ## Last completed work
 
-ED-24GEC.15.1 cleaned visible manual/document references and fixed n2 ambiguity behavior after GMV9 Flex import.
+ED-24UX.4 polished existing Gree Telegram diagnostic answer structure without changing runtime knowledge or routing.
 
 ## Gree diagnostics runtime status
 
@@ -60,11 +57,27 @@ ED-24GEC.15.1 cleaned visible manual/document references and fixed n2 ambiguity 
 
 ## Validation status
 
-Full baseline after ED-24GEC.15.1:
+ED-24OPS.1 local smoke runner:
 
-4907/4907 passed
+`.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1`
 
-Production smoke after ED-24GEC.15.1:
+ED-24OPS.1 smoke:
+
+9/9 passed
+
+Full baseline after ED-24OPS.1:
+
+4922/4922 passed
+
+Latest validation after ED-24UX.4:
+
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4922/4922 passed.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+- Telegram formatting remains plain text (`ParseMode: null`); Gree technical answers now use structured headings, meaning, first checks, and series sections.
+
+Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
 Gree GMV X n2 -> GMV X n2
@@ -78,6 +91,9 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+96a9d62e ED-24OPS.1 Add repeatable Gree diagnostics smoke runner
+60f11980 ED-24QA.1 Lock existing Gree diagnostics quality baseline
+02217540 ED-24TD.4 Exclude helper tooling from GitHub language stats
 20fb7ef0 ED-24GEC.15.1 Clean visible manual references and n2 ambiguity
 a7aad11a ED-24GEC.15 Import GMV9 Flex manual codes
 bdcff4f0 Update project state after GMV X diagnostics stabilization
@@ -98,17 +114,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active production blocker after ED-24GEC.15.1.
-
-Pending technical housekeeping:
-
-- ED-24TD.4 should exclude .ae-tools/** from GitHub language stats.
+No active production blocker after ED-24UX.4.
 
 ## Next step
 
-Commit this PROJECT_STATE.md update first.
-
-Then start:
-
-ED-24TD.4 Exclude helper tooling from GitHub language stats
+Discuss and select the next Gree diagnostics stage.
 

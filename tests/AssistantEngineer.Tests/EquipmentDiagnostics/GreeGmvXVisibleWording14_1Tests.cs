@@ -118,14 +118,14 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
     }
 
     [Theory]
-    [InlineData("Gree GMV X E0", "Gree GMV X E0 — неисправность наружного блока")]
-    [InlineData("Gree X E0", "Gree GMV X E0 — неисправность наружного блока")]
-    [InlineData("Gree X series E0", "Gree GMV X E0 — неисправность наружного блока")]
-    [InlineData("Gree GMV X F5", "Gree GMV X F5 — неисправность компрессора")]
-    [InlineData("Gree GMV X d9", "Gree GMV X d9 — неисправность управления")]
-    [InlineData("Gree GMV X UE", "Gree GMV X UE — сообщение наладки холодильного контура")]
-    [InlineData("Gree GMV X qP", "Gree GMV X qP — настройка региона экспорта")]
-    [InlineData("Gree GMV X n2", "Gree GMV X n2 — настройка предела коэффициента соответствия")]
+    [InlineData("Gree GMV X E0", "неисправность наружного блока")]
+    [InlineData("Gree X E0", "неисправность наружного блока")]
+    [InlineData("Gree X series E0", "неисправность наружного блока")]
+    [InlineData("Gree GMV X F5", "неисправность компрессора")]
+    [InlineData("Gree GMV X d9", "неисправность управления")]
+    [InlineData("Gree GMV X UE", "сообщение наладки холодильного контура")]
+    [InlineData("Gree GMV X qP", "настройка региона экспорта")]
+    [InlineData("Gree GMV X n2", "настройка предела коэффициента соответствия")]
     public async Task TelegramGmvXSmokeAnswersUseReadableRussianWithoutQuestionMarks(
         string query,
         string expectedFragment)
@@ -134,8 +134,11 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
         var response = await adapter.HandleAsync(Update(query));
+        var expectedCode = query.Split(' ', StringSplitOptions.RemoveEmptyEntries)[^1];
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains($"Gree GMV X — {expectedCode}", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
         Assert.Contains(expectedFragment, response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV X", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
@@ -172,7 +175,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("???", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Gree GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("• GMV X", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<string> VisibleValues(JsonObject text)

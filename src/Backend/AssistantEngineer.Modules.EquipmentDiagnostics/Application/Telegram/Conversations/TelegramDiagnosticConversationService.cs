@@ -418,7 +418,7 @@ public sealed class TelegramDiagnosticConversationService
                 {
                     await RecordNotFoundAsync(access, conversationSessionId: null, code, _options.DefaultManufacturer, cancellationToken);
                     await _sessionStore.ClearAsync(user.Id, cancellationToken);
-                    return NotFound(access, code);
+                    return NotFound(access, code, _options.DefaultManufacturer, requestedSeries);
                 }
 
                 await RecordCompletedAsync(
@@ -436,8 +436,9 @@ public sealed class TelegramDiagnosticConversationService
             }
 
             await _sessionStore.ClearAsync(user.Id, cancellationToken);
-            await RecordNotFoundAsync(access, conversationSessionId: null, code, ExtractManufacturer(update.Text, code), cancellationToken);
-            return NotFound(access, code);
+            var manufacturer = ExtractManufacturer(update.Text, code);
+            await RecordNotFoundAsync(access, conversationSessionId: null, code, manufacturer, cancellationToken);
+            return NotFound(access, code, manufacturer, requestedSeries);
         }
 
         if (HasCaseOnlyAmbiguityWithoutExactMatch(code, candidates))
@@ -982,7 +983,9 @@ public sealed class TelegramDiagnosticConversationService
 
     private TelegramDiagnosticConversationResult NotFound(
         TelegramUserAccessResult access,
-        string code)
+        string code,
+        string? manufacturer = null,
+        string? series = null)
     {
         if (string.Equals(code, "01", StringComparison.Ordinal))
         {
@@ -992,6 +995,22 @@ public sealed class TelegramDiagnosticConversationService
                 "Код 01 не найден.\n\n" +
                 "Возможно, вы имели в виду o1 — буква O + цифра 1.\n" +
                 "Если на дисплее именно буква O, проверьте код o1.",
+                [],
+                MainKeyboard(access));
+        }
+
+        if (string.Equals(manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(series))
+        {
+            return new TelegramDiagnosticConversationResult(
+                true,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                $"Код {code} не найден для Gree {series}.\n\n" +
+                "Я не подставляю значения из других серий, потому что один и тот же код может отличаться.\n\n" +
+                "Проверьте:\n" +
+                "• точную серию блока;\n" +
+                "• написание кода;\n" +
+                "• фото ошибки или модель блока.",
                 [],
                 MainKeyboard(access));
         }
@@ -1129,14 +1148,28 @@ public sealed class TelegramDiagnosticConversationService
             .ToArray();
 
         var builder = new System.Text.StringBuilder();
-        builder.AppendLine($"Для кода {code} есть несколько вариантов в сериях Gree. Уточните серию оборудования: {FormatSeriesList(series)}.");
-        foreach (var candidate in candidates
-            .Where(candidate => !string.IsNullOrWhiteSpace(candidate.Series))
-            .DistinctBy(candidate => candidate.Series, StringComparer.OrdinalIgnoreCase)
-            .OrderBy(candidate => SeriesSortKey(candidate.Series!))
-            .ThenBy(candidate => candidate.Series, StringComparer.Ordinal))
+        if (string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
+            series.All(IsKnownN2Series))
         {
-            builder.AppendLine($"- Gree {candidate.Series} {candidate.Code} — {SeriesMeaning(candidate)}");
+            builder.AppendLine("Код n2 найден в нескольких сериях Gree.");
+            builder.AppendLine();
+            builder.AppendLine("Выберите серию:");
+            foreach (var value in series)
+            {
+                builder.AppendLine($"• {value}");
+            }
+        }
+        else
+        {
+            builder.AppendLine($"Для кода {code} есть несколько вариантов в сериях Gree. Уточните серию оборудования: {FormatSeriesList(series)}.");
+            foreach (var candidate in candidates
+                .Where(candidate => !string.IsNullOrWhiteSpace(candidate.Series))
+                .DistinctBy(candidate => candidate.Series, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(candidate => SeriesSortKey(candidate.Series!))
+                .ThenBy(candidate => candidate.Series, StringComparer.Ordinal))
+            {
+                builder.AppendLine($"- Gree {candidate.Series} {candidate.Code} — {SeriesMeaning(candidate)}");
+            }
         }
 
         return new TelegramDiagnosticConversationResult(

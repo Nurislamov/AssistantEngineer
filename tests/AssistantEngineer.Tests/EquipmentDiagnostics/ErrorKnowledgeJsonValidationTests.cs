@@ -635,8 +635,8 @@ public sealed class ErrorKnowledgeJsonValidationTests
         Assert.DoesNotContain("Preliminary diagnostic entry", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("предварительный сигнал", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Черновик / непроверено", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Суть:", text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
         Assert.Contains("Важно:", text, StringComparison.Ordinal);
         Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", text, StringComparison.Ordinal);
@@ -680,7 +680,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
 
         var text = formatter.FormatTechnical(Response(code, "GMV6", status), TelegramUserRole.Engineer);
 
-        Assert.Contains($"Gree GMV {code}", text, StringComparison.Ordinal);
+        Assert.Contains($"Gree GMV6 — {code}", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Справочное совпадение", text, StringComparison.Ordinal);
     }
 

@@ -19,9 +19,9 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         "telegram-diagnostic-answer-stages.md");
 
     [Theory]
-    [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Суть:")]
+    [InlineData("H5", EquipmentDiagnosticBotResponseStatus.Answer, "Значение:")]
     [InlineData("E1", EquipmentDiagnosticBotResponseStatus.ClarificationRequired, "укажите контекст")]
-    [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Gree GMV A0")]
+    [InlineData("A0", EquipmentDiagnosticBotResponseStatus.ReferenceOnly, "Gree GMV6 — A0")]
     [InlineData("ZZ99", EquipmentDiagnosticBotResponseStatus.NotFound, "Код не найден")]
     public async Task StatusFormatsAreDeterministic(string code, EquipmentDiagnosticBotResponseStatus status, string expected)
     {
@@ -104,10 +104,11 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
 
         var text = formatter.FormatTechnical(response, role);
 
-        Assert.Contains("Диагностика GREE H5", text, StringComparison.Ordinal);
-        Assert.Contains("Суть:", text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — H5", text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", text, StringComparison.Ordinal);
         Assert.Contains("Важно:", text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
+        Assert.Contains("Серия: GMV6", text, StringComparison.Ordinal);
         Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", text, StringComparison.Ordinal);
@@ -158,9 +159,12 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var technical = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
         var consumer = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
 
+        Assert.Contains("Gree GMV — C0", technical, StringComparison.Ordinal);
+        Assert.Contains("Значение:", technical, StringComparison.Ordinal);
+        Assert.Contains("Серия: GMV", technical, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV C0 — нарушение связи", consumer, StringComparison.Ordinal);
         foreach (var text in new[] { technical, consumer })
         {
-            Assert.Contains("Gree GMV C0 — нарушение связи", text, StringComparison.Ordinal);
             Assert.Contains("руководства применимой серии", text, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("Gree GMV6 C0", text, StringComparison.Ordinal);
             Assert.DoesNotContain("руководства GMV6", text, StringComparison.OrdinalIgnoreCase);
@@ -178,13 +182,14 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var text = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
 
         Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
-        Assert.Contains("Диагностика GREE U3", text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — U3", text, StringComparison.Ordinal);
         Assert.Contains("фазировке питания", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("трёхфазн", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("наличие всех фаз", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("фазиров", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Суть:", text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
+        Assert.Contains("Серия: GMV6", text, StringComparison.Ordinal);
         Assert.Contains("Важно:", text, StringComparison.Ordinal);
         Assert.Contains("Ограничения вывода:", text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", text, StringComparison.Ordinal);
@@ -210,7 +215,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
 
         Assert.DoesNotContain("связи связи", technical, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("связи связи", consumer, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(7, CountOccurrences(technical, "сообщение о связи и адресации"));
+        Assert.Equal(6, CountOccurrences(technical, "сообщение о связи и адресации"));
         Assert.Equal(6, CountOccurrences(consumer, "сообщение о связи и адресации"));
     }
 
@@ -266,8 +271,8 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("Installer Checks", text, StringComparison.Ordinal);
         Assert.Contains("Engineer Or Service Checks", text, StringComparison.Ordinal);
         Assert.Contains("Next Action", text, StringComparison.Ordinal);
-        Assert.Contains("Суть:", text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
         Assert.Contains("Важно:", text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", text, StringComparison.Ordinal);
     }
@@ -334,11 +339,11 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         string manufacturer,
         string code)
     {
-        Assert.Contains($"Диагностика {manufacturer} {code}", text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV", text, StringComparison.Ordinal);
-        Assert.Contains(code, text, StringComparison.Ordinal);
-        Assert.Contains("Суть:", text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", text, StringComparison.Ordinal);
+        Assert.Contains($"— {code}", text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", text, StringComparison.Ordinal);
+        Assert.Contains("Серия:", text, StringComparison.Ordinal);
         Assert.Contains("Важно:", text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", text, StringComparison.Ordinal);
     }

@@ -316,6 +316,13 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
     {
         var text = selection.Text;
         var entry = selection.Entry;
+        if (string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(entry.Series))
+        {
+            AppendPolishedGreeAnswer(builder, response, selection);
+            return;
+        }
+
         builder.AppendLine(TechnicalTitle(response, text));
         AppendConfusableCodeNote(builder, response);
         builder.AppendLine();
@@ -333,6 +340,62 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         builder.AppendLine();
         builder.AppendLine("Дальше:");
         builder.AppendLine(RecommendedAction(response, text));
+    }
+
+    private static void AppendPolishedGreeAnswer(
+        StringBuilder builder,
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeLocalizationSelection selection)
+    {
+        var text = selection.Text;
+        var entry = selection.Entry;
+        var series = IsGroupedAnswer(response) ? "GMV" : entry.Series!;
+
+        builder.Clear();
+        builder.AppendLine($"{DisplayManufacturer(entry.Manufacturer)} {series} — {response.NormalizedCode}");
+        AppendConfusableCodeNote(builder, response);
+        builder.AppendLine();
+        builder.AppendLine("Значение:");
+        var meaning = TechnicalMeaning(response, text);
+        var summary = RussianDiagnosticTerminology.ImprovePhrase(text.Summary);
+        builder.AppendLine(meaning);
+        if (!string.Equals(meaning, summary, StringComparison.OrdinalIgnoreCase))
+        {
+            builder.AppendLine(summary);
+        }
+        AppendApplicableContexts(builder, response);
+        AppendSection(builder, "Возможные причины", text.PossibleCauses);
+        AppendNumberedSection(builder, "Первые проверки", text.CheckSteps, 3);
+        builder.AppendLine();
+        builder.AppendLine($"Серия: {series}");
+        AppendImportantSection(builder, text.SafetyNote);
+        AppendSection(builder, "Ограничения вывода", text.DoNotAdvise);
+        builder.AppendLine();
+        builder.AppendLine("Дальше:");
+        builder.AppendLine(RecommendedAction(response, text));
+    }
+
+    private static string TechnicalMeaning(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeTextV2 text)
+    {
+        var title = TechnicalTitle(response, text);
+        var separator = title.IndexOf('—', StringComparison.Ordinal);
+        var separatorLength = 1;
+        if (separator < 0)
+        {
+            separator = title.IndexOf(" - ", StringComparison.Ordinal);
+            separatorLength = 3;
+        }
+
+        if (separator < 0 || separator + separatorLength >= title.Length)
+        {
+            return RussianDiagnosticTerminology.ImprovePhrase(text.Summary);
+        }
+
+        var meaning = title[(separator + separatorLength)..].Trim();
+        return RussianDiagnosticTerminology.ImprovePhrase(
+            string.Concat(char.ToUpperInvariant(meaning[0]), meaning[1..].TrimEnd('.'), "."));
     }
 
     private static string TechnicalTitle(
@@ -462,6 +525,25 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         foreach (var value in values.Take(5))
         {
             builder.AppendLine($"- {Compact(RussianDiagnosticTerminology.ImprovePhrase(value), 220)}");
+        }
+    }
+
+    private static void AppendNumberedSection(
+        StringBuilder builder,
+        string title,
+        IReadOnlyList<string> values,
+        int limit)
+    {
+        if (values.Count == 0)
+        {
+            return;
+        }
+
+        builder.AppendLine();
+        builder.AppendLine($"{title}:");
+        foreach (var (value, index) in values.Take(limit).Select((value, index) => (value, index)))
+        {
+            builder.AppendLine($"{index + 1}. {Compact(RussianDiagnosticTerminology.ImprovePhrase(value), 220)}");
         }
     }
 

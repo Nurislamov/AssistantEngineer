@@ -126,7 +126,7 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
         var ambiguous = await adapter.HandleAsync(Update("Gree n2"));
         Assert.Contains("GMV6", ambiguous.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", ambiguous.Text, StringComparison.Ordinal);
-        Assert.Contains("Уточните серию", ambiguous.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Выберите серию:", ambiguous.Text, StringComparison.Ordinal);
     }
 
     private static IEnumerable<string> VisibleValues(JsonObject text)

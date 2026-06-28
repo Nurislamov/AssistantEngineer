@@ -146,10 +146,10 @@ public sealed partial class GreeGmv9FlexImport15Tests
     }
 
     [Theory]
-    [InlineData("Gree GMV9 Flex E0", "Gree GMV9 Flex E0")]
-    [InlineData("Gree GMV9 H5", "Gree GMV9 Flex H5")]
-    [InlineData("Gree 9 series Flex C0", "Gree GMV9 Flex C0")]
-    [InlineData("Gree 9-Flex A0", "Gree GMV9 Flex A0")]
+    [InlineData("Gree GMV9 Flex E0", "Gree GMV9 Flex — E0")]
+    [InlineData("Gree GMV9 H5", "Gree GMV9 Flex — H5")]
+    [InlineData("Gree 9 series Flex C0", "Gree GMV9 Flex — C0")]
+    [InlineData("Gree 9-Flex A0", "Gree GMV9 Flex — A0")]
     public async Task ExplicitGmv9FlexQueriesResolveGmv9FlexCards(string query, string expectedTitle)
     {
         using var provider = CreateProvider();
@@ -179,11 +179,11 @@ public sealed partial class GreeGmv9FlexImport15Tests
     }
 
     [Theory]
-    [InlineData("Gree H5", "Gree GMV H5")]
-    [InlineData("Gree U3", "Gree GMV U3")]
-    [InlineData("Gree o1", "Gree GMV o1")]
-    [InlineData("Gree GMV6 A9", "Gree GMV6 A9")]
-    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2")]
+    [InlineData("Gree H5", "Gree GMV6 — H5")]
+    [InlineData("Gree U3", "Gree GMV6 — U3")]
+    [InlineData("Gree o1", "Gree GMV6 — o1")]
+    [InlineData("Gree GMV6 A9", "Gree GMV6 — A9")]
+    [InlineData("Gree GMV Mini n2", "Gree GMV Mini — n2")]
     public async Task ExistingGmv6AndMiniPriorityQueriesRemainStable(string query, string expectedTitle)
     {
         using var provider = CreateProvider();

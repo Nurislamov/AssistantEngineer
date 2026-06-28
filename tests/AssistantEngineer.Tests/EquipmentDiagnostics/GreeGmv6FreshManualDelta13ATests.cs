@@ -130,10 +130,10 @@ public sealed class GreeGmv6FreshManualDelta13ATests
     }
 
     [Theory]
-    [InlineData("Gree GMV6 A9", "Gree GMV6 A9")]
-    [InlineData("Gree GMV6 n1", "Gree GMV6 n1")]
-    [InlineData("Gree GMV6 qA", "Gree GMV6 qA")]
-    [InlineData("Gree GMV6 Uy", "Gree GMV6 Uy")]
+    [InlineData("Gree GMV6 A9", "Gree GMV6 — A9")]
+    [InlineData("Gree GMV6 n1", "Gree GMV6 — n1")]
+    [InlineData("Gree GMV6 qA", "Gree GMV6 — qA")]
+    [InlineData("Gree GMV6 Uy", "Gree GMV6 — Uy")]
     public async Task TelegramReturnsRepresentativeFreshDeltaCodes(string query, string expectedTitle)
     {
         using var provider = CreateProvider();

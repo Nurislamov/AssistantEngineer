@@ -116,10 +116,10 @@ public sealed class GreeGmvXImport14Tests
     }
 
     [Theory]
-    [InlineData("Gree GMV X E1", "Gree GMV X E1")]
-    [InlineData("Gree X H5", "Gree GMV X H5")]
-    [InlineData("Gree X series C0", "Gree GMV X C0")]
-    [InlineData("Gree X-series A0", "Gree GMV X A0")]
+    [InlineData("Gree GMV X E1", "Gree GMV X — E1")]
+    [InlineData("Gree X H5", "Gree GMV X — H5")]
+    [InlineData("Gree X series C0", "Gree GMV X — C0")]
+    [InlineData("Gree X-series A0", "Gree GMV X — A0")]
     public async Task ExplicitGmvXQueriesResolveGmvXCards(string query, string expectedTitle)
     {
         using var provider = CreateProvider();
@@ -147,11 +147,11 @@ public sealed class GreeGmvXImport14Tests
     }
 
     [Theory]
-    [InlineData("Gree H5", "Gree GMV H5")]
-    [InlineData("Gree U3", "Gree GMV U3")]
-    [InlineData("Gree o1", "Gree GMV o1")]
-    [InlineData("Gree GMV6 A9", "Gree GMV6 A9")]
-    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2")]
+    [InlineData("Gree H5", "Gree GMV6 — H5")]
+    [InlineData("Gree U3", "Gree GMV6 — U3")]
+    [InlineData("Gree o1", "Gree GMV6 — o1")]
+    [InlineData("Gree GMV6 A9", "Gree GMV6 — A9")]
+    [InlineData("Gree GMV Mini n2", "Gree GMV Mini — n2")]
     public async Task ExistingGmv6AndMiniPriorityQueriesRemainStable(string query, string expectedTitle)
     {
         using var provider = CreateProvider();

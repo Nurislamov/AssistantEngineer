@@ -36,8 +36,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.DoesNotContain("Черновик / непроверено", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Суть:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Что проверить:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Важно:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Ограничения вывода:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Дальше:", response.Text, StringComparison.Ordinal);
@@ -66,9 +66,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var outdoor = await adapter.HandleAsync(Update("Наружный блок"));
 
-        Assert.Contains("Gree GMV E1", outdoor.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — E1", outdoor.Text, StringComparison.Ordinal);
         Assert.Contains("высокому давлению", outdoor.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Суть:", outdoor.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", outdoor.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", outdoor.Text, StringComparison.Ordinal);
     }
 
@@ -80,9 +80,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree GMV6 A0"));
 
-        Assert.Contains("Gree GMV A0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — A0", response.Text, StringComparison.Ordinal);
         Assert.Contains("пусконаладк", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Суть:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Внимание: ошибка", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
@@ -100,8 +100,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV U0", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Суть:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — U0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.Contains("предварительного прогрева компрессора", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -118,10 +118,11 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree GMV6 C0"));
         var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree GMV C0 — нарушение связи", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("линию связи GMV", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("питание внутреннего блока, наружного блока и проводного пульта", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Что проверить:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Первые проверки:", response.Text, StringComparison.Ordinal);
         Assert.Contains("руководства применимой серии", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("классифицирован", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -131,10 +132,10 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree GMV Mini AJ", "Gree GMV Mini AJ")]
-    [InlineData("GMV Mini AJ", "Gree GMV Mini AJ")]
-    [InlineData("Gree GMV Mini C0", "Gree GMV Mini C0")]
-    [InlineData("GMV Mini C0", "Gree GMV Mini C0")]
+    [InlineData("Gree GMV Mini AJ", "Gree GMV Mini — AJ")]
+    [InlineData("GMV Mini AJ", "Gree GMV Mini — AJ")]
+    [InlineData("Gree GMV Mini C0", "Gree GMV Mini — C0")]
+    [InlineData("GMV Mini C0", "Gree GMV Mini — C0")]
     public async Task GmvMiniMultiWordHintsResolveManualBackedCodes(string query, string expectedTitle)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -159,7 +160,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV C0 — нарушение связи", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV — C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Применимо:", response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV Mini", response.Text, StringComparison.Ordinal);
@@ -180,7 +182,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var response = await adapter.HandleAsync(Update("Gree GMV Mini C0"));
 
-        Assert.Contains("Gree GMV Mini C0 — нарушение связи", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini — C0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("точная причина зависит", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("руководства GMV6", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Применимо:", response.Text, StringComparison.Ordinal);
@@ -228,18 +231,18 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains(expectedMeaning, response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Суть:", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Значение:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);
     }
 
     [Theory]
-    [InlineData("Gree d1", "Gree GMV6 d1")]
-    [InlineData("Gree D1", "Gree GMV6 d1")]
-    [InlineData("Gree o1", "Gree GMV o1")]
-    [InlineData("Gree O1", "Gree GMV o1")]
-    [InlineData("Gree l1", "Gree GMV L1")]
+    [InlineData("Gree d1", "Gree GMV6 — d1")]
+    [InlineData("Gree D1", "Gree GMV6 — d1")]
+    [InlineData("Gree o1", "Gree GMV6 — o1")]
+    [InlineData("Gree O1", "Gree GMV6 — o1")]
+    [InlineData("Gree l1", "Gree GMV6 — L1")]
     public async Task IndoorManualCodesDisplayCanonicalJsonCasing(string query, string expectedTitle)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -274,16 +277,16 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var last = await adapter.HandleAsync(Update("/last"));
 
         Assert.DoesNotContain("Gree GMV o1", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Gree GMV Mini 01", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini — 01", response.Text, StringComparison.Ordinal);
         Assert.Contains("назначение главного блока", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Gree 01", last.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree o1", last.Text, StringComparison.Ordinal);
     }
 
     [Theory]
-    [InlineData("Gree o1", "Gree GMV o1", "Код: o1 — буква O + цифра 1.")]
-    [InlineData("Gree O1", "Gree GMV o1", "Код: o1 — буква O + цифра 1.")]
-    [InlineData("Gree L1", "Gree GMV L1", "Код: L1 — буква L + цифра 1.")]
+    [InlineData("Gree o1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
+    [InlineData("Gree O1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
+    [InlineData("Gree L1", "Gree GMV6 — L1", "Код: L1 — буква L + цифра 1.")]
     public async Task ConfusableCanonicalCodesIncludeCompactClarification(
         string query,
         string expectedTitle,
@@ -309,7 +312,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV6 H0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — H0", response.Text, StringComparison.Ordinal);
         Assert.Contains("HO/Ho часто означает H0", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 Ho", response.Text, StringComparison.Ordinal);
     }
@@ -323,13 +326,12 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update("Gree n2"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Для кода n2 есть несколько вариантов", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Код n2 найден в нескольких сериях Gree.", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Выберите серию:", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
-        Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Equal(3, CountOccurrences(response.Text, "настройка предела коэффициента соответствия внутренних и наружных блоков"));
-        Assert.DoesNotContain("Gree GMV Mini n2 — настройка предела", response.Text.Split('\n').First(), StringComparison.Ordinal);
+        Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
         var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text);
@@ -341,7 +343,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         var selected = await adapter.HandleAsync(Update("GMV6"));
 
-        Assert.Contains("Gree GMV6 n2", selected.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — n2", selected.Text, StringComparison.Ordinal);
         Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("не нашёл точную расшифровку", selected.Text, StringComparison.OrdinalIgnoreCase);
     }
@@ -356,17 +358,17 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var selected = await adapter.HandleAsync(Update("GMV X"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, selected.ResponseKind);
-        Assert.Contains("Gree GMV X n2", selected.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV X — n2", selected.Text, StringComparison.Ordinal);
         Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV6 n2", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", selected.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]
-    [InlineData("Gree GMV6 n2", "Gree GMV6 n2")]
-    [InlineData("Gree GMV Mini n2", "Gree GMV Mini n2")]
-    [InlineData("Gree Mini n2", "Gree GMV Mini n2")]
-    [InlineData("Gree GMV X n2", "Gree GMV X n2")]
+    [InlineData("Gree GMV6 n2", "Gree GMV6 — n2")]
+    [InlineData("Gree GMV Mini n2", "Gree GMV Mini — n2")]
+    [InlineData("Gree Mini n2", "Gree GMV Mini — n2")]
+    [InlineData("Gree GMV X n2", "Gree GMV X — n2")]
     public async Task ExplicitN2SeriesSelectsSeparateRuntimeAnswer(
         string query,
         string expectedTitle)
@@ -417,7 +419,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV6 FH", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — FH", response.Text, StringComparison.Ordinal);
         Assert.Contains("датчика тока компрессора 1", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
     }
