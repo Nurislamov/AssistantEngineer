@@ -72,7 +72,11 @@ public sealed class GreeDiagnosticsSmokeTests
         Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Серия:</b> GMV X", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
-        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("только по одному коду", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Не обходите защиты", response.Text, StringComparison.Ordinal);
+        Assert.Contains("квалифицированные специалисты", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -128,7 +132,11 @@ public sealed class GreeDiagnosticsSmokeTests
         Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains($"<b>Серия:</b> {expectedSeries}", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
-        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("только по одному коду", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Не обходите защиты", response.Text, StringComparison.Ordinal);
+        Assert.Contains("квалифицированные специалисты", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);

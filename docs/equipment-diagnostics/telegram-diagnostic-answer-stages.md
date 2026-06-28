@@ -44,9 +44,8 @@ insertion. Other bot messages keep their existing parse mode.
 - `<b>Суть:</b>` covers meaning.
 - `<b>Что проверить:</b>` covers the first installer and service checks.
 - `<b>Серия:</b>` repeats the selected series for quick scanning.
-- `<b>Важно:</b>` covers safety.
-- `<b>Ограничения:</b>` captures limits and non-actions when present.
-- `<b>Техническая заметка:</b>` retains a unique recommended action without a repetitive `Дальше:` block.
+- `<b>Важно:</b>` is one short combined safety block: do not diagnose a failed component from one code, do not bypass protections, and leave power-circuit or refrigerant-circuit work to qualified specialists.
+- Separate `<b>Ограничения:</b>`, `<b>Техническая заметка:</b>`, and `Дальше:` blocks are not shown in found Gree answers.
 
 Consumer Telegram answers use equivalent plain-language sections:
 

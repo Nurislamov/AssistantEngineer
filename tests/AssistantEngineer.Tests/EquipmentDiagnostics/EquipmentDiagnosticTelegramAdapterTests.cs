@@ -40,8 +40,11 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("<b>Суть:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Важно:</b>", response.Text, StringComparison.Ordinal);
-        Assert.Contains("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
-        Assert.Contains("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("только по одному коду", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Не обходите защиты", response.Text, StringComparison.Ordinal);
+        Assert.Contains("квалифицированные специалисты", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", response.Text, StringComparison.Ordinal);

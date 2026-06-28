@@ -10,6 +10,9 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 public sealed class EquipmentDiagnosticTelegramResponseFormatter
 {
     private const string RussianLocale = "ru";
+    private const string CompactGreeSafety =
+        "Не делайте вывод о неисправном компоненте только по одному коду. " +
+        "Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.";
     private readonly IErrorKnowledgeLocalizationSource _localizationSource;
 
     public EquipmentDiagnosticTelegramResponseFormatter(
@@ -103,19 +106,41 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             RussianDiagnosticTerminology.ImprovePhrase(text.Summary)));
         AppendHtmlApplicableContexts(builder, response);
         AppendHtmlSection(builder, "Возможные причины:", text.PossibleCauses, numbered: false, limit: 5);
-        AppendHtmlSection(builder, "Что проверить:", text.CheckSteps, numbered: false, limit: 3);
+        AppendHtmlSection(
+            builder,
+            "Что проверить:",
+            CompactChecks(response, text),
+            numbered: false,
+            limit: 3);
         builder.AppendLine();
         builder.AppendLine($"{TelegramHtml.Bold("Серия:")} {TelegramHtml.Escape(series)}");
         builder.AppendLine();
         builder.AppendLine(TelegramHtml.Bold("Важно:"));
-        builder.AppendLine(TelegramHtml.Escape(
-            RussianDiagnosticTerminology.ImprovePhrase(text.SafetyNote)));
-        AppendHtmlSection(builder, "Ограничения:", text.DoNotAdvise, numbered: false, limit: 5);
-        builder.AppendLine();
-        builder.AppendLine(TelegramHtml.Bold("Техническая заметка:"));
-        builder.AppendLine(TelegramHtml.Escape(RecommendedAction(response, text)));
+        builder.AppendLine(CompactGreeSafety);
 
         return builder.ToString().Trim();
+    }
+
+    private static IReadOnlyList<string> CompactChecks(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeTextV2 text)
+    {
+        var checks = text.CheckSteps.Take(3).ToList();
+        var recommendedAction = RecommendedAction(response, text);
+        if (!string.IsNullOrWhiteSpace(recommendedAction) &&
+            !checks.Contains(recommendedAction, StringComparer.OrdinalIgnoreCase))
+        {
+            if (checks.Count >= 3)
+            {
+                checks[^1] = recommendedAction;
+            }
+            else
+            {
+                checks.Add(recommendedAction);
+            }
+        }
+
+        return checks;
     }
 
     public string FormatHelp(int maxLength) =>

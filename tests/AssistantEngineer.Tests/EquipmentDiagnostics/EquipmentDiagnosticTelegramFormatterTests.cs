@@ -234,8 +234,9 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("Сводка &lt;summary&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Причина &lt;cause&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
-        Assert.Contains("Важно &lt;safety&gt; &amp;", html, StringComparison.Ordinal);
-        Assert.Contains("Ограничение &lt;limit&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Не обходите защиты", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Ограничения:</b>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Техническая заметка:</b>", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<summary>", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<check>", html, StringComparison.Ordinal);
     }
@@ -295,8 +296,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("<b>Суть:</b>", text, StringComparison.Ordinal);
         Assert.Contains("<b>Что проверить:</b>", text, StringComparison.Ordinal);
         Assert.Contains("<b>Важно:</b>", text, StringComparison.Ordinal);
-        Assert.Contains("<b>Ограничения:</b>", text, StringComparison.Ordinal);
-        Assert.Contains("<b>Техническая заметка:</b>", text, StringComparison.Ordinal);
+        Assert.Contains("one short combined safety block", text, StringComparison.OrdinalIgnoreCase);
     }
 
     public static IEnumerable<object[]> PolishedGmvDiagnosticRequests()

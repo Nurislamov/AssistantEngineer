@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24UX.4a - CLOSED / production PASS.
+ED-24UX.5 - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
 1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
-3. Discuss either ED-24UX.5 (shorten Gree diagnostic safety boilerplate) or ED-24SRC.1 (add a separate source reference action for diagnostics).
+3. Discuss ED-24SRC.1 (add a separate source reference action for diagnostics) or another small Gree UX/source stage.
 
 ## Current branch
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24UX.4a polished live-reviewed Gree Telegram answer UX with safe HTML formatting, clearer labels, and no runtime knowledge or routing changes.
+ED-24UX.5 shortened found Gree Telegram answers while preserving safe HTML formatting and a compact safety boundary.
 
-Commit: `e24ae712`.
+Commit message: `ED-24UX.5 Shorten Gree diagnostic safety boilerplate`.
 
 ## Current working point
 
@@ -27,6 +27,7 @@ Commit: `e24ae712`.
 - ED-24OPS.1 - CLOSED / pushed.
 - ED-24UX.4 - CLOSED / pushed.
 - ED-24UX.4a - CLOSED / production PASS.
+- ED-24UX.5 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -103,6 +104,18 @@ Latest validation after ED-24UX.4a:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest validation after ED-24UX.5:
+
+- Found Gree Telegram answers are shorter and retain at most three focused checks.
+- Separate `Техническая заметка:`, `Ограничения:`, and `Дальше:` blocks are absent.
+- A single short `Важно:` block preserves the one-code, protection-bypass, power-circuit, refrigerant-circuit, and qualified-specialist safety boundaries.
+- Safe escaped HTML and the existing narrow `ParseMode: HTML` scope are unchanged.
+- Local Gree diagnostics smoke: 9/9 passed.
+- EquipmentDiagnostics tests: 940/940 passed.
+- Full solution baseline: 4924/4924 passed.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -142,12 +155,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active production blocker after ED-24UX.4a.
+No active production blocker after ED-24UX.5.
 
 ## Next step
 
-Discuss one of:
-
-- ED-24UX.5 Shorten Gree diagnostic safety boilerplate.
-- ED-24SRC.1 Add separate source reference action for diagnostics.
+Discuss ED-24SRC.1 Add separate source reference action for diagnostics, or another agreed small follow-up.
 
