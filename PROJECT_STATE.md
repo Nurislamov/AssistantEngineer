@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.1 - CLOSED / pushed to origin/master.
+ED-24USR.2 - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
-1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
-3. Discuss ED-24UX.7 (rename or compact the Gree diagnostic cause/context block) or another agreed small follow-up.
+1. Deploy and verify Telegram `/admin_users` user-card callbacks on VPS.
+2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
 ## Current branch
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24SRC.1 added a role-gated `📄 Мануал` action for concrete found Gree diagnostics.
+ED-24USR.2 fixed Telegram admin callback actor resolution for `/admin_users` user-card callbacks.
 
-Commit: `afc3e325`.
+Commit: `85515a14`.
 
 ## Current working point
 
@@ -30,6 +30,7 @@ Commit: `afc3e325`.
 - ED-24UX.5 - CLOSED / pushed.
 - ED-24UX.6 - CLOSED / production PASS.
 - ED-24SRC.1 - CLOSED / pushed.
+- ED-24USR.2 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -163,6 +164,23 @@ Latest validation after ED-24SRC.1:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest validation after ED-24USR.2:
+
+- Telegram admin callback actor resolution now checks Telegram user id first, then safely falls back to the private chat stored user record when identity was not backfilled yet.
+- Private chat fallback backfills Telegram identity details through the existing user store path.
+- Owner/Admin user-card callbacks from `/admin_users`, including `Открыть: <user>`, should no longer fall into `Нет доступа` when the manager record was created by chat id/bootstrap with missing `TelegramUserId`.
+- Duplicate Telegram identity risk is covered: if `TelegramUserId` lookup finds a non-manager duplicate, a private-chat Owner/Admin record remains authoritative for that private callback.
+- Group callbacks do not inherit permissions from group chat id fallback.
+- ED-24SRC.1 manual access gating is preserved: focused `EquipmentDiagnosticTelegramManualLibraryTests` passed as part of validation.
+- Restore: PASS.
+- Build: PASS, 6 existing nullable warnings in unrelated architecture tests / 0 errors.
+- Focused Telegram admin/manual/adapter tests: 131/131 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4936/4936 passed.
+- `git diff --check`: PASS.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -177,6 +195,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+85515a14 ED-24USR.2 Fix Telegram admin user identity
 afc3e325 ED-24SRC.1 Add role-gated diagnostic manual action
 5d944e12 Update project state after ED-24UX.6
 d8fdc3d1 ED-24UX.6 Compact Gree diagnostic first-check bullets
