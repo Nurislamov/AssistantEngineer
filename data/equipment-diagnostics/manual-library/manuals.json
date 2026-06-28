@@ -2376,6 +2376,61 @@
         ],
         "reason": "A spreadsheet is not eligible until source, identity, and access purpose are reviewed."
       }
+    },
+    {
+      "manualId": "gree-gmv9-flex-service-manual-2025-12",
+      "fileName": "JF00305819, export T3R410AGMV9 Flex GMV Service Manual (Middle East energy-inefficient), B .2.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/JF00305819,_export_T3R410AGMV9_Flex_GMV_Service_Manual_Middle_East.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "VRF",
+      "equipmentType": "VRFSystem",
+      "series": "GMV9 Flex",
+      "modelScope": "GMV9 Flex VRF units from service manual GC202512-I.",
+      "documentTitle": "Gree GMV9 Flex GMV Service Manual",
+      "documentCode": "GC202512-I",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "Imported",
+      "coverageStatus": "DiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-gmv9-flex-indoor-fault-codes",
+        "gree-gmv9-flex-outdoor-fault-protection-codes",
+        "gree-gmv9-flex-debugging-codes",
+        "gree-gmv9-flex-status-codes"
+      ],
+      "entriesImported": 260,
+      "categoriesImported": [
+        "indoor",
+        "outdoor",
+        "debugging",
+        "status"
+      ],
+      "knownSmokeCodes": [
+        "E0",
+        "H5",
+        "C0",
+        "A0"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "NotImported",
+      "recommendedNext": false,
+      "notes": "Imported in ED-24GEC.15 from local service manual GC202512-I. Scope is GMV9 Flex only; do not mix with GMV6, GMV Mini, or GMV X.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Runtime diagnostic cards were imported; manual file delivery is a separate access-controlled workflow."
+      }
     }
   ]
 }

@@ -843,7 +843,8 @@ public sealed class TelegramDiagnosticConversationService
 
     private static bool IsStrictNoFallbackSeries(string series) =>
         string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase);
+        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase);
 
     private async Task<TelegramConversationSessionSnapshot> SaveAsync(
         long telegramUserId,

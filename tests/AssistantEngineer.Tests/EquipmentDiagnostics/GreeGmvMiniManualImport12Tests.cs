@@ -94,7 +94,7 @@ public sealed class GreeGmvMiniManualImport12Tests
                             string.Equals(entry.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        Assert.Equal(662, entries.Count);
+        Assert.Equal(922, entries.Count);
         Assert.Equal(136, miniEntries.Length);
 
         foreach (var (code, id) in new[]

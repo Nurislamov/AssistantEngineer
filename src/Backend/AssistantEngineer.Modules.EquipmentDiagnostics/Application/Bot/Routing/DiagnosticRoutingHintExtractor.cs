@@ -12,6 +12,16 @@ public static partial class DiagnosticRoutingHintExtractor
             return null;
         }
 
+        if (normalized.Contains("GMV9FLEX", StringComparison.Ordinal) ||
+            normalized.Contains("9SERIESFLEX", StringComparison.Ordinal) ||
+            normalized.Contains("9FLEX", StringComparison.Ordinal) ||
+            normalized.Contains("GMV9", StringComparison.Ordinal) ||
+            HasTokenPair(text, "GMV9", "FLEX") ||
+            HasTokenPair(text, "9", "FLEX"))
+        {
+            return "GMV9 Flex";
+        }
+
         if (normalized.Contains("GMVXPRO", StringComparison.Ordinal))
         {
             return "GMV X PRO";
@@ -52,10 +62,18 @@ public static partial class DiagnosticRoutingHintExtractor
         token.Equals("GMV", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV6", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("GMV9", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("9", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("SERIES", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("MINI", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("FLEX", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("SLIM", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("PRO", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("X", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("9-SERIES", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("9-FLEX", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("9-SERIES-FLEX", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("GMV9-FLEX", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("X-SERIES", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV-MINI", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5-MINI", StringComparison.OrdinalIgnoreCase) ||

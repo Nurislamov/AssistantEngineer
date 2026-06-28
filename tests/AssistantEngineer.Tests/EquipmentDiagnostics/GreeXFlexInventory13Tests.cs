@@ -101,16 +101,17 @@ public sealed class GreeXFlexInventory13Tests
     }
 
     [Fact]
-    public void RuntimeCountsReflectLaterGmvXImportAndFlexFoldersRemainAbsent()
+    public void RuntimeCountsReflectLaterGmvXAndGmv9FlexImportsAndAlternateFlexFoldersRemainAbsent()
     {
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-x"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(662, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(260, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv9-flex"), "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(922, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
-        foreach (var folder in new[] { "x-series", "gmv9-flex", "9-series-flex", "flex" })
+        foreach (var folder in new[] { "x-series", "9-series-flex", "flex" })
         {
-            Assert.False(Directory.Exists(Path.Combine(GreeRuntimeDirectory, folder)), $"GMV9 Flex or alternate X/Flex runtime folder must not exist: {folder}");
+            Assert.False(Directory.Exists(Path.Combine(GreeRuntimeDirectory, folder)), $"Alternate X/Flex runtime folder must not exist: {folder}");
         }
 
         var packageDirectory = Path.Combine(
@@ -126,7 +127,7 @@ public sealed class GreeXFlexInventory13Tests
             .ToArray();
 
         Assert.Contains(packageNames, name => name.Contains("gmv-x", StringComparison.OrdinalIgnoreCase));
-        Assert.DoesNotContain(packageNames, name => name.Contains("flex", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(packageNames, name => name.Contains("gmv9-flex", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]

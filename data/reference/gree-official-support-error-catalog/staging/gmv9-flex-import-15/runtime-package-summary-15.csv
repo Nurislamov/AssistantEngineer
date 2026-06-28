@@ -1,0 +1,5 @@
+packageId,category,entryCountExpected,runtimeDirectory
+gree-gmv9-flex-indoor-fault-codes,indoor,60,data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/indoor
+gree-gmv9-flex-outdoor-fault-protection-codes,outdoor,120,data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/outdoor
+gree-gmv9-flex-debugging-codes,debugging,37,data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/debugging
+gree-gmv9-flex-status-codes,status,43,data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/status

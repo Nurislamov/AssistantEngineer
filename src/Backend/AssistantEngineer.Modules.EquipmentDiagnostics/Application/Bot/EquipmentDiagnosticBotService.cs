@@ -514,8 +514,8 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             return candidates;
         }
 
-        var hasGmvX = candidates.Any(candidate => string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase));
-        if (!hasGmvX)
+        var hasNextGenerationGmv = candidates.Any(candidate => IsNextGenerationGmvSeries(candidate.SeriesName));
+        if (!hasNextGenerationGmv)
         {
             return candidates;
         }
@@ -534,7 +534,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
 
         candidates = candidates
             .Where(candidate =>
-                !string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase) ||
+                !IsNextGenerationGmvSeries(candidate.SeriesName) ||
                 !establishedCategories.Contains(candidate.Category))
             .ToArray();
 
@@ -559,10 +559,10 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
             return gmv6;
         }
 
-        var nonGmvX = candidates
-            .Where(candidate => !string.Equals(candidate.SeriesName, "GMV X", StringComparison.OrdinalIgnoreCase))
+        var nonNextGenerationGmv = candidates
+            .Where(candidate => !IsNextGenerationGmvSeries(candidate.SeriesName))
             .ToArray();
-        return nonGmvX.Length > 0 ? nonGmvX : candidates;
+        return nonNextGenerationGmv.Length > 0 ? nonNextGenerationGmv : candidates;
     }
 
     private static ErrorKnowledgeEntryV2[] ApplyUnqualifiedGmv6LocalizedPriority(
@@ -587,15 +587,19 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
     }
 
     private static bool HasEstablishedGmv6RuntimeFaultCollision(IReadOnlyList<ErrorKnowledgeEntryV2> candidates) =>
-        candidates.Any(candidate => string.Equals(candidate.Series, "GMV X", StringComparison.OrdinalIgnoreCase)) &&
+        candidates.Any(candidate => IsNextGenerationGmvSeries(candidate.Series)) &&
         candidates.Any(candidate =>
             string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase) &&
             IsRuntimeFaultSignal(candidate.SignalType) &&
             candidates.Any(other =>
-                string.Equals(other.Series, "GMV X", StringComparison.OrdinalIgnoreCase) &&
+                IsNextGenerationGmvSeries(other.Series) &&
                 other.EquipmentType == candidate.EquipmentType &&
                 other.DisplaySource == candidate.DisplaySource &&
                 IsRuntimeFaultSignal(other.SignalType)));
+
+    private static bool IsNextGenerationGmvSeries(string? series) =>
+        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsRuntimeFaultSignal(ErrorKnowledgeSignalType signalType) =>
         signalType is

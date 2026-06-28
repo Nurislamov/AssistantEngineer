@@ -1,0 +1,126 @@
+{
+  "id": "gree-gmv9-flex-outdoor-b7",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV9 Flex",
+  "models": [
+    "GMV9 Flex"
+  ],
+  "code": "b7",
+  "signalType": "Fault",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Sensor",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv9-flex-outdoor-fault-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV9 Flex GMV Service Manual",
+  "sourceMeaning": "Malfunction of exit tube temperature sensor of vapor liquid separator",
+  "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor b7 / PDF page 68 / manual page 66",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-28T00:00:00Z",
+  "updatedAt": "2026-06-28T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисному руководству GC202512-I."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-28T00:00:00Z",
+      "updatedAt": "2026-06-28T00:00:00Z",
+      "id": "gree-gmv9-flex-outdoor-b7-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV9 Flex b7 — неисправность датчика",
+      "summary": "Код b7 для Gree GMV9 Flex относится к событию: неисправность датчика. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
+      "safetyNote": "Не выполняйте работы внутри оборудования и не сбрасывайте защитные сообщения многократно без проверки причины.",
+      "checkSteps": [
+        "Подтвердите код b7, серию GMV9 Flex и место индикации.",
+        "Передайте код и модель оборудования специалисту сервиса Gree GMV9 Flex."
+      ],
+      "doNotAdvise": [
+        "Не выполняйте самостоятельный ремонт по одному коду.",
+        "Не меняйте компоненты без диагностики квалифицированным специалистом.",
+        "Не обходите защитные сообщения и не запускайте оборудование в обход защит."
+      ],
+      "recommendedAction": "Запишите код b7, модель и условия появления; обратитесь к квалифицированному специалисту по Gree GMV9 Flex.",
+      "sourceNote": "Основание: сервисное руководство GC202512-I, раздел индикации кодов Gree GMV9 Flex; формулировка относится к наружному блоку."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисному руководству GC202512-I."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-28T00:00:00Z",
+      "updatedAt": "2026-06-28T00:00:00Z",
+      "id": "gree-gmv9-flex-outdoor-b7-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV9 Flex b7 — неисправность датчика",
+      "summary": "Сервисное руководство GC202512-I относит код b7 для Gree GMV9 Flex к событию: неисправность датчика. Проверку выполняют в границах установленной модели и фактических условий работы.",
+      "safetyNote": "Проверки внутри оборудования выполняет квалифицированный специалист с соблюдением сервисной процедуры и мер электробезопасности.",
+      "checkSteps": [
+        "Подтвердите код b7, серию GMV9 Flex и место индикации.",
+        "Сверьте модель и условия появления кода с сервисным руководством GC202512-I.",
+        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
+      ],
+      "doNotAdvise": [
+        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
+        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
+        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
+      ],
+      "recommendedAction": "Используйте GC202512-I для проверки кода b7, модели GMV9 Flex, места индикации и сопутствующих сообщений.",
+      "sourceNote": "Основание: сервисное руководство GC202512-I, раздел индикации кодов Gree GMV9 Flex; формулировка относится к наружному блоку."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисному руководству GC202512-I."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-28T00:00:00Z",
+      "updatedAt": "2026-06-28T00:00:00Z",
+      "id": "gree-gmv9-flex-outdoor-b7-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV9 Flex b7 — неисправность датчика",
+      "summary": "Код b7 подтвержден по GC202512-I для Gree GMV9 Flex как событие: неисправность датчика. Диагностический вывод должен оставаться в пределах этой серии, места индикации и сервисного контекста.",
+      "safetyNote": "Работы с силовыми цепями, холодильным контуром и защитными устройствами выполняют только квалифицированные специалисты по процедуре производителя.",
+      "checkSteps": [
+        "Подтвердите код b7, серию GMV9 Flex и место индикации.",
+        "Сверьте модель и условия появления кода с сервисным руководством GC202512-I.",
+        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
+      ],
+      "doNotAdvise": [
+        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
+        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
+        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
+      ],
+      "recommendedAction": "Документируйте код b7, модель, место индикации и результаты проверки; дальнейшие действия выполняйте только в пределах процедуры GC202512-I.",
+      "sourceNote": "Основание: сервисное руководство GC202512-I, раздел индикации кодов Gree GMV9 Flex; формулировка относится к наружному блоку."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree GMV9 Flex GMV Service Manual",
+      "documentCode": "GC202512-I",
+      "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor b7 / PDF page 68 / manual page 66",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv9-flex-service-manual-2025-12",
+      "packageId": "gree-gmv9-flex-outdoor-fault-protection-codes",
+      "notes": "GMV9 Flex service manual source for ED-24GEC.15."
+    }
+  ]
+}

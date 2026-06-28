@@ -1,0 +1,30 @@
+{
+  "packageId": "gree-gmv9-flex-indoor-fault-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV9 Flex",
+  "title": "Gree GMV9 Flex indoor fault and controller codes",
+  "description": "Manual-bound Chapter 3 Error Indication catalog for GMV9 Flex indoor unit diagnostic codes.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV9 Flex GMV Service Manual",
+  "sourceReference": "Chapter 3 Faults / Error Indication",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Fault",
+    "Protection",
+    "Warning",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "IndoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "IndoorUnit"
+  ],
+  "entryCountExpected": 60,
+  "notes": "GMV9 Flex service manual GC202512-I import scope for ED-24GEC.15. Do not mix with GMV6, GMV Mini, or GMV X packages.",
+  "createdAt": "2026-06-28T00:00:00Z",
+  "updatedAt": "2026-06-28T00:00:00Z"
+}
