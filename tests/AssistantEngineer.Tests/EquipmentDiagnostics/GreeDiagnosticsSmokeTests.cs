@@ -135,6 +135,38 @@ public sealed class GreeDiagnosticsSmokeTests
         Assert.Contains("только по одному коду", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Не обходите защиты", response.Text, StringComparison.Ordinal);
         Assert.Contains("квалифицированные специалисты", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "Дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
+            response.Text,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            "место индикации и сопутствующие сообщения; дальнейшие действия",
+            response.Text,
+            StringComparison.OrdinalIgnoreCase);
+        if (query.EndsWith(" E0", StringComparison.OrdinalIgnoreCase))
+        {
+            Assert.Contains(
+                "Подтвердите код E0, серию GMV9 Flex и место индикации.",
+                response.Text,
+                StringComparison.Ordinal);
+            Assert.Contains(
+                "Сверьте модель, условия появления и сопутствующие коды.",
+                response.Text,
+                StringComparison.Ordinal);
+        }
+
+        if (query.EndsWith(" A9", StringComparison.OrdinalIgnoreCase))
+        {
+            Assert.Contains(
+                "Подтвердите код A9, категорию Статус и место отображения.",
+                response.Text,
+                StringComparison.Ordinal);
+            Assert.Contains(
+                "Сверьте модель, настройки и сопутствующие сообщения.",
+                response.Text,
+                StringComparison.Ordinal);
+        }
+
         Assert.DoesNotContain("<b>Ограничения:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("<b>Техническая заметка:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);

@@ -42,7 +42,9 @@ insertion. Other bot messages keep their existing parse mode.
 
 - `<b>Диагностика ...</b>` and `<b>Gree <series> — <code></b>` cover identification.
 - `<b>Суть:</b>` covers meaning.
-- `<b>Что проверить:</b>` covers the first installer and service checks.
+- `<b>Что проверить:</b>` uses three compact checks: confirm the code and series or
+  signal category, compare the model and occurrence context, then follow the
+  service procedure for the selected series.
 - `<b>Серия:</b>` repeats the selected series for quick scanning.
 - `<b>Важно:</b>` is one short combined safety block: do not diagnose a failed component from one code, do not bypass protections, and leave power-circuit or refrigerant-circuit work to qualified specialists.
 - Separate `<b>Ограничения:</b>`, `<b>Техническая заметка:</b>`, and `Дальше:` blocks are not shown in found Gree answers.

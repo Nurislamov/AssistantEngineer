@@ -258,9 +258,10 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain(" IDU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" ODU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" IDU", o1.Text, StringComparison.Ordinal);
-        Assert.Contains("внутреннего блока", c0.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("наружного блока", c0.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("шины внутреннего блока", o1.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Подтвердите код C0, серию GMV и место индикации.", c0.Text, StringComparison.Ordinal);
+        Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", c0.Text, StringComparison.Ordinal);
+        Assert.Contains("Подтвердите код o1", o1.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", o1.Text, StringComparison.Ordinal);
     }
 
     private static ServiceProvider CreateProvider(string? bindingPath = null)

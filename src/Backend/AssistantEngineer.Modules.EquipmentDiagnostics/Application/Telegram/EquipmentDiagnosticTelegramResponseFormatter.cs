@@ -109,7 +109,7 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         AppendHtmlSection(
             builder,
             "Что проверить:",
-            CompactChecks(response, text),
+            CompactChecks(response, entry, series),
             numbered: false,
             limit: 3);
         builder.AppendLine();
@@ -123,24 +123,34 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
 
     private static IReadOnlyList<string> CompactChecks(
         EquipmentDiagnosticBotResponse response,
-        ErrorKnowledgeTextV2 text)
+        ErrorKnowledgeEntryV2 entry,
+        string series)
     {
-        var checks = text.CheckSteps.Take(3).ToList();
-        var recommendedAction = RecommendedAction(response, text);
-        if (!string.IsNullOrWhiteSpace(recommendedAction) &&
-            !checks.Contains(recommendedAction, StringComparer.OrdinalIgnoreCase))
+        var serviceProcedure = IsGroupedAnswer(response)
+            ? "Дальнейшие действия выполняйте по сервисной процедуре руководства применимой серии."
+            : "Дальнейшие действия выполняйте по сервисной процедуре для этой серии.";
+
+        if (entry.SignalType is
+            ErrorKnowledgeSignalType.Status or
+            ErrorKnowledgeSignalType.Debug or
+            ErrorKnowledgeSignalType.Commissioning or
+            ErrorKnowledgeSignalType.Maintenance)
         {
-            if (checks.Count >= 3)
-            {
-                checks[^1] = recommendedAction;
-            }
-            else
-            {
-                checks.Add(recommendedAction);
-            }
+            return
+            [
+                $"Подтвердите код {response.NormalizedCode}, категорию " +
+                $"{RussianDiagnosticTerminology.SignalTypeLabel(entry.SignalType)} и место отображения.",
+                "Сверьте модель, настройки и сопутствующие сообщения.",
+                serviceProcedure
+            ];
         }
 
-        return checks;
+        return
+        [
+            $"Подтвердите код {response.NormalizedCode}, серию {series} и место индикации.",
+            "Сверьте модель, условия появления и сопутствующие коды.",
+            serviceProcedure
+        ];
     }
 
     public string FormatHelp(int maxLength) =>

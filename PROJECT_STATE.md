@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24UX.5 - CLOSED / pushed to origin/master.
+ED-24UX.6 - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24UX.5 shortened found Gree Telegram answers while preserving safe HTML formatting and a compact safety boundary.
+ED-24UX.6 compacted the first-check bullets in found Gree Telegram answers without changing runtime knowledge or routing.
 
-Commit: `a8137667`.
+Commit: recorded in the follow-up project-state update.
 
 ## Current working point
 
@@ -28,6 +28,7 @@ Commit: `a8137667`.
 - ED-24UX.4 - CLOSED / pushed.
 - ED-24UX.4a - CLOSED / production PASS.
 - ED-24UX.5 - CLOSED / pushed.
+- ED-24UX.6 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -116,6 +117,20 @@ Latest validation after ED-24UX.5:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest validation after ED-24UX.6:
+
+- Found Gree `Что проверить:` sections use three short, non-duplicating bullets.
+- Fault/protection-style answers confirm code, series, and indication location, then separate model and occurrence-context checks.
+- Status/service-function answers confirm code, signal category, and display location, then separate model, settings, and related-message checks.
+- Grouped answers retain a neutral reference to the service procedure in the applicable-series manual.
+- Separate `Техническая заметка:`, `Ограничения:`, and `Дальше:` blocks remain absent.
+- The compact `Важно:` safety block, safe HTML escaping, and narrow `ParseMode: HTML` scope are unchanged.
+- Local Gree diagnostics smoke: 9/9 passed.
+- EquipmentDiagnostics tests: 940/940 passed.
+- Full solution baseline: 4924/4924 passed.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -155,7 +170,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active production blocker after ED-24UX.5.
+No active production blocker after ED-24UX.6.
 
 ## Next step
 

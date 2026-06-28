@@ -233,12 +233,24 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("GMV &lt;X&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Сводка &lt;summary&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Причина &lt;cause&gt; &amp;", html, StringComparison.Ordinal);
-        Assert.Contains("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains(
+            "Подтвердите код C&lt;0, серию GMV &lt;X&gt; &amp; и место индикации.",
+            html,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Сверьте модель, условия появления и сопутствующие коды.",
+            html,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
+            html,
+            StringComparison.Ordinal);
         Assert.Contains("Не обходите защиты", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<b>Ограничения:</b>", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<b>Техническая заметка:</b>", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<summary>", html, StringComparison.Ordinal);
         Assert.DoesNotContain("<check>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
     }
 
     [Theory]
