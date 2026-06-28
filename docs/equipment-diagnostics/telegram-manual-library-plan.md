@@ -41,13 +41,24 @@ An allowed role is not enough by itself. The manual record must also be reviewed
 
 Supported request paths:
 
+- Contextual diagnostic action: `📄 Мануал`, shown only after a concrete found Gree series/code to Installer,
+  Engineer, Admin, and Owner roles.
 - Technical reply keyboard button: `📘 Руководства`.
 - Command: `/manuals`.
+
+Consumer users never see `📄 Мануал`. A manually submitted action or callback is denied before manual metadata is
+resolved and does not disclose titles, source references, document codes, file IDs, or storage identifiers. Ambiguous
+and not-found diagnostic responses do not show the contextual action.
 
 The request uses the last successful diagnostic from Telegram history. It resolves reviewed `manualId` values from the
 selected diagnostic answer and enforces the current user role. If one answer has multiple `sourceReferences[]`, manual
 delivery uses all relevant references rather than asking the user to choose a source. It must not generalize one manual
 across Gree series.
+
+The contextual action additionally requires the concrete series stored with the latest successful diagnostic. When a
+reviewed Telegram `file_id` binding exists, delivery uses `sendDocument`. When no binding exists, the technical user
+receives `Мануал пока не привязан` without source details or fabricated identifiers. Operational `copyMessage` may be
+added only when reviewed source chat/message metadata actually exists. `forwardMessage` is intentionally not used.
 
 Displayed and stored diagnostic codes use the canonical casing from the selected JSON/manual entry. Lookup may be
 case-insensitive, but exact code casing is preferred first. If multiple entries differ only by case and the user did not

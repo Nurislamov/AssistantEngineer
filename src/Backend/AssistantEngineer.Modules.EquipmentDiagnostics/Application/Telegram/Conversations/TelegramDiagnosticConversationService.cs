@@ -962,12 +962,13 @@ public sealed class TelegramDiagnosticConversationService
                 ? _formatter.FormatTechnicalHtml(diagnosis, access.Role)
                 : _formatter.FormatTechnical(diagnosis, access.Role);
             var parseMode = useHtml ? TelegramHtml.ParseMode : null;
+            var replyMarkup = DiagnosticResultKeyboard(access, diagnosis, _options.ManualLibrary.Enabled);
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,
                     ParseMode: parseMode,
                     DisableWebPagePreview: true,
-                    MainKeyboard(access)))
+                    replyMarkup))
                 .ToArray();
 
             return new TelegramDiagnosticConversationResult(
@@ -1297,6 +1298,28 @@ public sealed class TelegramDiagnosticConversationService
         }
 
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
+    }
+
+    public static EquipmentDiagnosticTelegramReplyMarkup DiagnosticResultKeyboard(
+        TelegramUserAccessResult access,
+        EquipmentDiagnosticBotResponse diagnosis,
+        bool manualLibraryEnabled)
+    {
+        var main = MainKeyboard(access);
+        if (!manualLibraryEnabled ||
+            !access.CanAccessDiagnosticManual ||
+            diagnosis.Status is not (EquipmentDiagnosticBotResponseStatus.Answer or EquipmentDiagnosticBotResponseStatus.ReferenceOnly) ||
+            !string.Equals(diagnosis.NormalizedManufacturer, "Gree", StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(diagnosis.EquipmentContext?.Series))
+        {
+            return main;
+        }
+
+        var rows = main.Keyboard?
+            .Select(row => (IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>)row.ToArray())
+            .ToList() ?? [];
+        rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.DiagnosticManualButton)]);
+        return main with { Keyboard = rows };
     }
 
     public static EquipmentDiagnosticTelegramReplyMarkup ServiceRequestCreatedKeyboard(

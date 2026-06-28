@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
@@ -9,6 +10,8 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Ma
 public sealed class TelegramManualLibraryService
 {
     public const string ManualLibraryButton = "📘 Руководства";
+    public const string DiagnosticManualButton = "📄 Мануал";
+    public const string DiagnosticManualCallbackData = "dm:open";
     private const string ManualRequestCommand = "/manuals";
     private const string ManualRegisterCommand = "/manual_register";
     private const string ManualUnregisterCommand = "/manual_unregister";
@@ -37,6 +40,12 @@ public sealed class TelegramManualLibraryService
     public static bool IsManualRequest(string? text) =>
         string.Equals(text?.Trim(), ManualRequestCommand, StringComparison.OrdinalIgnoreCase) ||
         string.Equals(text?.Trim(), ManualLibraryButton, StringComparison.Ordinal);
+
+    public static bool IsDiagnosticManualRequest(string? text) =>
+        string.Equals(text?.Trim(), DiagnosticManualButton, StringComparison.Ordinal);
+
+    public static bool IsDiagnosticManualCallback(string? callbackData) =>
+        string.Equals(callbackData, DiagnosticManualCallbackData, StringComparison.Ordinal);
 
     public static bool IsManualRegistration(string? text) =>
         text?.TrimStart().StartsWith(ManualRegisterCommand, StringComparison.OrdinalIgnoreCase) == true;
@@ -111,6 +120,88 @@ public sealed class TelegramManualLibraryService
             ];
 
         return new TelegramManualLibraryResult(text, [], outbound);
+    }
+
+    public async Task<TelegramManualLibraryResult> RequestDiagnosticManualAsync(
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!access.CanAccessDiagnosticManual)
+        {
+            return Html(
+                $"{TelegramHtml.Bold("Доступ ограничен")}\n\n" +
+                "Мануалы доступны только для технических ролей.",
+                callbackAnswerText: "Доступ ограничен");
+        }
+
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return ManualUnavailable("Библиотека мануалов сейчас выключена.");
+        }
+
+        if (access.User is null)
+        {
+            return MissingDiagnosticContext();
+        }
+
+        var last = await _historyStore.GetLastForTelegramUserAsync(access.User.Id, cancellationToken);
+        var series = last is null ? null : DiagnosticSeries(last);
+        if (last is null ||
+            last.Status != TelegramDiagnosticCaseStatus.Completed ||
+            string.IsNullOrWhiteSpace(last.Manufacturer) ||
+            !string.Equals(last.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(last.Code) ||
+            string.IsNullOrWhiteSpace(series))
+        {
+            return MissingDiagnosticContext();
+        }
+
+        var manuals = ResolveManuals(last, access.Role, series);
+        var boundManuals = new List<TelegramManualFileBinding>();
+        foreach (var manual in manuals.Take(Math.Clamp(_options.ManualLibrary.MaxFilesPerRequest, 1, 10)))
+        {
+            var binding = await _bindingStore.GetAsync(manual.ManualId, cancellationToken);
+            if (binding is not null)
+            {
+                boundManuals.Add(binding);
+            }
+        }
+
+        var equipment = $"{last.Manufacturer} {series}";
+        if (boundManuals.Count == 0)
+        {
+            return Html(
+                $"{TelegramHtml.Bold("Мануал пока не привязан")}\n\n" +
+                $"Для {TelegramHtml.Escape(equipment)} / {TelegramHtml.Escape(last.Code)} есть диагностическая карточка, " +
+                "но файл мануала ещё отсутствует.",
+                callbackAnswerText: "Мануал не привязан");
+        }
+
+        var heading =
+            $"{TelegramHtml.Bold("Мануал по диагностике")}\n\n" +
+            $"{TelegramHtml.Bold("Оборудование:")} {TelegramHtml.Escape(equipment)}\n" +
+            $"{TelegramHtml.Bold("Код:")} {TelegramHtml.Escape(last.Code)}\n\n" +
+            "Отправляю сохранённый мануал для этой серии.";
+        var messages = new List<EquipmentDiagnosticTelegramOutboundMessage>
+        {
+            new(
+                heading,
+                ParseMode: TelegramHtml.ParseMode,
+                ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access))
+        };
+        messages.AddRange(boundManuals.Select(binding =>
+            new EquipmentDiagnosticTelegramOutboundMessage(
+                "Сохранённый мануал по последней диагностике.",
+                ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access),
+                DocumentFileId: binding.TelegramFileId,
+                DocumentFileName: binding.OriginalFileName)));
+
+        return new TelegramManualLibraryResult(
+            heading,
+            [],
+            messages,
+            TelegramHtml.ParseMode,
+            "Отправляю мануал");
     }
 
     public async Task<TelegramManualLibraryResult> RegisterManualAsync(
@@ -261,7 +352,8 @@ public sealed class TelegramManualLibraryService
 
     private IReadOnlyList<TelegramManualRegistryEntry> ResolveManuals(
         TelegramDiagnosticCaseSnapshot diagnosticCase,
-        TelegramUserRole role)
+        TelegramUserRole role,
+        string? requiredSeries = null)
     {
         var manuals = _manualRegistry.GetManuals();
         var entries = _localizedKnowledge.GetEntries()
@@ -270,6 +362,13 @@ public sealed class TelegramManualLibraryService
                 (string.IsNullOrWhiteSpace(diagnosticCase.Manufacturer) ||
                  string.Equals(entry.Manufacturer, diagnosticCase.Manufacturer, StringComparison.OrdinalIgnoreCase)))
             .ToArray();
+
+        if (!string.IsNullOrWhiteSpace(requiredSeries))
+        {
+            entries = entries
+                .Where(entry => string.Equals(entry.Series, requiredSeries, StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+        }
 
         if (!string.IsNullOrWhiteSpace(diagnosticCase.EquipmentType))
         {
@@ -441,6 +540,43 @@ public sealed class TelegramManualLibraryService
             : value.Trim().Length > 128
                 ? value.Trim()[..128]
                 : value.Trim();
+
+    private static string? DiagnosticSeries(TelegramDiagnosticCaseSnapshot diagnosticCase)
+    {
+        if (string.IsNullOrWhiteSpace(diagnosticCase.NormalizedRequestJson))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(diagnosticCase.NormalizedRequestJson);
+            return document.RootElement.TryGetProperty("series", out var series) &&
+                series.ValueKind == JsonValueKind.String
+                    ? series.GetString()
+                    : null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static TelegramManualLibraryResult MissingDiagnosticContext() =>
+        Html(
+            $"{TelegramHtml.Bold("Мануал недоступен")}\n\n" +
+            $"Сначала выполните диагностику конкретного кода, затем нажмите {DiagnosticManualButton}.",
+            callbackAnswerText: "Сначала выполните диагностику");
+
+    private static TelegramManualLibraryResult ManualUnavailable(string text) =>
+        Html(
+            $"{TelegramHtml.Bold("Мануал недоступен")}\n\n{TelegramHtml.Escape(text)}",
+            callbackAnswerText: "Мануал недоступен");
+
+    private static TelegramManualLibraryResult Html(
+        string text,
+        string? callbackAnswerText = null) =>
+        new(text, [], ParseMode: TelegramHtml.ParseMode, CallbackAnswerText: callbackAnswerText);
 
     private static TelegramManualLibraryResult Text(string text) => new(text, []);
 

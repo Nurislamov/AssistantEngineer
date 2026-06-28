@@ -64,6 +64,32 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         if (!string.IsNullOrWhiteSpace(update.CallbackQueryId))
         {
+            if (TelegramManualLibraryService.IsDiagnosticManualCallback(update.CallbackData))
+            {
+                var callbackAccess = await _accessService.ResolveAccessAsync(update, cancellationToken);
+                if (!callbackAccess.IsAllowed)
+                {
+                    return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+                }
+
+                var manualResult = _manualLibraryService is null
+                    ? new TelegramManualLibraryResult(
+                        $"{TelegramHtml.Bold("Мануал недоступен")}\n\nСервис мануалов сейчас недоступен.",
+                        [],
+                        ParseMode: TelegramHtml.ParseMode,
+                        CallbackAnswerText: "Мануал недоступен")
+                    : await _manualLibraryService.RequestDiagnosticManualAsync(callbackAccess, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    manualResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    manualResult.Warnings,
+                    TelegramDiagnosticConversationService.MainKeyboard(callbackAccess),
+                    manualResult.Messages,
+                    callbackAnswerText: manualResult.CallbackAnswerText,
+                    parseMode: manualResult.ParseMode);
+            }
+
             if (update.CallbackData?.StartsWith("au:", StringComparison.Ordinal) == true)
             {
                 var adminResult = _adminUserManagementService is null
@@ -290,11 +316,15 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 ? _formatter.FormatTechnicalHtml(diagnosis, access.Role)
                 : _formatter.FormatTechnical(diagnosis, access.Role);
             var parseMode = useHtml ? TelegramHtml.ParseMode : null;
+            var replyMarkup = TelegramDiagnosticConversationService.DiagnosticResultKeyboard(
+                access,
+                diagnosis,
+                _options.ManualLibrary.Enabled);
             var messages = SplitTelegramMessage(technical)
                 .Select(chunk => new EquipmentDiagnosticTelegramOutboundMessage(
                     chunk,
                     ParseMode: parseMode,
-                    ReplyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access)))
+                    ReplyMarkup: replyMarkup))
                 .ToArray();
 
             return Response(
@@ -405,7 +435,11 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         }
 
         TelegramManualLibraryResult? result = null;
-        if (TelegramManualLibraryService.IsManualRegistration(update.Text))
+        if (TelegramManualLibraryService.IsDiagnosticManualRequest(update.Text))
+        {
+            result = await _manualLibraryService.RequestDiagnosticManualAsync(access, cancellationToken);
+        }
+        else if (TelegramManualLibraryService.IsManualRegistration(update.Text))
         {
             result = await _manualLibraryService.RegisterManualAsync(update, access, cancellationToken);
         }
@@ -430,7 +464,9 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 EquipmentDiagnosticTelegramResponseKind.Reply,
                 result.Warnings,
                 TelegramDiagnosticConversationService.MainKeyboard(access),
-                result.Messages);
+                result.Messages,
+                callbackAnswerText: result.CallbackAnswerText,
+                parseMode: result.ParseMode);
     }
 
     private async Task<EquipmentDiagnosticTelegramResponse> FormatHistoryAsync(

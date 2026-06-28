@@ -50,6 +50,7 @@ public sealed class TelegramDiagnosticHistoryService
                 BuildNormalizedRequestJson(
                     diagnosis.NormalizedCode,
                     manufacturer ?? diagnosis.NormalizedManufacturer,
+                    diagnosis.EquipmentContext?.Series,
                     equipmentType,
                     displayContext),
                 candidateCount),
@@ -72,7 +73,7 @@ public sealed class TelegramDiagnosticHistoryService
                 equipmentType: null,
                 displayContext: null,
                 resultSummary: null,
-                normalizedRequestJson: BuildNormalizedRequestJson(code, manufacturer, null, null),
+                normalizedRequestJson: BuildNormalizedRequestJson(code, manufacturer, null, null, null),
                 candidateCount),
             cancellationToken);
 
@@ -212,6 +213,7 @@ public sealed class TelegramDiagnosticHistoryService
     private static string? BuildNormalizedRequestJson(
         string? code,
         string? manufacturer,
+        string? series,
         string? equipmentType,
         string? displayContext)
     {
@@ -219,6 +221,7 @@ public sealed class TelegramDiagnosticHistoryService
         {
             code = SafeText(code, 64),
             manufacturer = SafeText(manufacturer, 128),
+            series = SafeText(series, 128),
             equipmentType = SafeText(equipmentType, 128),
             displayContext = SafeText(displayContext, 128)
         };

@@ -32,6 +32,9 @@ public static class TelegramUserRolePolicy
             TelegramUserRole.Engineer or
             TelegramUserRole.Installer;
 
+    public static bool CanAccessDiagnosticManual(TelegramUserRole role) =>
+        CanViewTechnicalDiagnostics(role);
+
     public static string DisplayName(TelegramUserRole role) =>
         role switch
         {

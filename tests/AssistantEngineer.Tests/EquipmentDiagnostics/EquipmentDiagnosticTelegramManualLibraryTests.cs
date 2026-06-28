@@ -9,6 +9,114 @@ namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 public sealed class EquipmentDiagnosticTelegramManualLibraryTests
 {
     [Fact]
+    public async Task ConsumerDoesNotSeeDiagnosticManualButtonAndCannotInvokeAction()
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var diagnosis = await adapter.HandleAsync(Update("Gree GMV6 H5"));
+        var action = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
+        var callback = await adapter.HandleAsync(ManualCallback());
+
+        Assert.False(HasButton(diagnosis, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.Equal("HTML", action.ParseMode);
+        Assert.Contains("<b>Доступ ограничен</b>", action.Text, StringComparison.Ordinal);
+        Assert.Contains("только для технических ролей", action.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("<b>Доступ ограничен</b>", callback.Text, StringComparison.Ordinal);
+        AssertNoDiagnosticSourceLeak(action);
+        AssertNoDiagnosticSourceLeak(callback);
+    }
+
+    [Theory]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    [InlineData(TelegramUserRole.Admin)]
+    [InlineData(TelegramUserRole.Owner)]
+    public async Task TechnicalRolesSeeDiagnosticManualButtonForConcreteFoundGreeAnswer(TelegramUserRole role)
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, role);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree GMV6 H5"));
+
+        Assert.True(HasButton(response, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.Contains("<b>Диагностика GREE H5</b>", response.Text, StringComparison.Ordinal);
+        AssertNoDiagnosticSourceLeak(response);
+    }
+
+    [Fact]
+    public async Task DiagnosticManualButtonIsAbsentForAmbiguityAndNotFound()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var ambiguity = await adapter.HandleAsync(Update("Gree n2"));
+        var notFound = await adapter.HandleAsync(Update("Gree GMV9 Flex n2"));
+
+        Assert.False(HasButton(ambiguity, TelegramManualLibraryService.DiagnosticManualButton));
+        Assert.False(HasButton(notFound, TelegramManualLibraryService.DiagnosticManualButton));
+    }
+
+    [Fact]
+    public async Task TechnicalDiagnosticManualActionUsesLastConcreteDiagnosticAndFallsBackWhenUnbound()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("Gree GMV9 Flex E0"));
+        var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
+
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Мануал пока не привязан</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV9 Flex / E0", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(response.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        AssertNoDiagnosticSourceLeak(response);
+    }
+
+    [Fact]
+    public async Task DiagnosticManualActionSendsExistingFileIdBindingWithoutForwarding()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(RegisterDocument(
+            "/manual_register gree-gmv6-service-manual-2020-09",
+            "telegram-file-id-gmv6",
+            "Service Manual for GMV6 v_2020.09.pdf"));
+        await adapter.HandleAsync(Update("Gree GMV6 d1"));
+        var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
+        var documents = response.OutboundMessages
+            .Where(message => !string.IsNullOrWhiteSpace(message.DocumentFileId))
+            .ToArray();
+
+        Assert.Contains("<b>Мануал по диагностике</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Оборудование:</b> Gree GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Код:</b> d1", response.Text, StringComparison.Ordinal);
+        Assert.Contains(documents, message => message.DocumentFileId == "telegram-file-id-gmv6");
+        Assert.DoesNotContain("forward", response.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNoDiagnosticSourceLeak(response);
+    }
+
+    [Fact]
+    public async Task DiagnosticManualActionWithoutLastConcreteDiagnosticExplainsRequiredContext()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
+
+        Assert.Equal("HTML", response.ParseMode);
+        Assert.Contains("<b>Мануал недоступен</b>", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Сначала выполните диагностику конкретного кода", response.Text, StringComparison.Ordinal);
+        AssertNoDiagnosticSourceLeak(response);
+    }
+
+    [Fact]
     public async Task ConsumerCannotRequestManuals()
     {
         using var provider = CreateProvider();
@@ -310,6 +418,39 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             DocumentFileId: fileId,
             DocumentFileName: fileName,
             DocumentMimeType: "application/pdf");
+
+    private static EquipmentDiagnosticTelegramUpdate ManualCallback() =>
+        new(
+            UpdateId: 3,
+            ChatId: 7,
+            Username: "operator",
+            Text: null,
+            UserId: 11,
+            CallbackQueryId: "callback-query-id",
+            CallbackData: TelegramManualLibraryService.DiagnosticManualCallbackData);
+
+    private static bool HasButton(
+        EquipmentDiagnosticTelegramResponse response,
+        string text) =>
+        response.OutboundMessages
+            .SelectMany(message => message.ReplyMarkup?.Keyboard ?? [])
+            .SelectMany(row => row)
+            .Any(button => string.Equals(button.Text, text, StringComparison.Ordinal));
+
+    private static void AssertNoDiagnosticSourceLeak(EquipmentDiagnosticTelegramResponse response)
+    {
+        foreach (var message in response.OutboundMessages)
+        {
+            AssertNoSensitiveManualLeak(message.Text);
+            Assert.DoesNotContain("GC202512-I", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("GC202209-I", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("GC202203-IV", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("sourceReferences", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("sourceMeaning", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("chat_id", message.Text, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("message_id", message.Text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 
     private static void AssertNoSensitiveManualLeak(string text)
     {

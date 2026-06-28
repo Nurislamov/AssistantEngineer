@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24UX.6 - CLOSED / production PASS.
+ED-24SRC.1 - CLOSED / pushed to origin/master.
 
 Next recommended steps:
 
 1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
-3. Discuss ED-24UX.7 (rename or compact the Gree diagnostic cause/context block) or ED-24SRC.1 (add a separate source reference action for diagnostics).
+3. Discuss ED-24UX.7 (rename or compact the Gree diagnostic cause/context block) or another agreed small follow-up.
 
 ## Current branch
 
@@ -16,11 +16,9 @@ master
 
 ## Last completed work
 
-ED-24UX.6 compacted the first-check bullets in found Gree Telegram answers and passed VPS deploy and Telegram live-review.
+ED-24SRC.1 added a role-gated `📄 Мануал` action for concrete found Gree diagnostics.
 
-Implementation commit: `d8fdc3d1`.
-
-Project-state hash update commit: `5d944e12`.
+Commit: recorded in the follow-up project-state update.
 
 ## Current working point
 
@@ -31,6 +29,7 @@ Project-state hash update commit: `5d944e12`.
 - ED-24UX.4a - CLOSED / production PASS.
 - ED-24UX.5 - CLOSED / pushed.
 - ED-24UX.6 - CLOSED / production PASS.
+- ED-24SRC.1 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -143,6 +142,26 @@ Latest validation after ED-24UX.6:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest validation after ED-24SRC.1:
+
+- Concrete found Gree diagnostics show `📄 Мануал` only to Installer, Engineer, Admin, and Owner roles.
+- Consumer users do not see the action; manually submitted text/callback actions are denied before manual metadata is resolved.
+- Not-found, ambiguity, non-Gree, and non-concrete diagnostic states do not expose the contextual manual action.
+- The action uses the existing latest completed diagnostic history and requires the same manufacturer, concrete series, and code.
+- Existing reviewed Telegram `file_id` bindings are delivered through `sendDocument`.
+- `copyMessage` remains reserved for future reviewed source chat/message metadata; no fake identifiers were added.
+- `forwardMessage` is intentionally not used.
+- Missing bindings return `Мануал пока не привязан` without titles, source references, document codes, file IDs, or storage identifiers.
+- Existing `/last`, history, service-request buttons, `📘 Руководства`, and manual registration flows remain intact.
+- Restore: PASS.
+- Build: PASS, 6 existing nullable warnings in unrelated architecture tests / 0 errors.
+- Focused manual-library tests: 28/28 passed.
+- EquipmentDiagnostics tests: 949/949 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4933/4933 passed.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
 Validated Gree scenarios after ED-24UX.4:
 
 Gree n2 -> ambiguity includes GMV Mini / GMV6 / GMV X
@@ -184,12 +203,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active production blocker after ED-24UX.6.
+No active blocker after ED-24SRC.1.
 
 ## Next step
 
-Discuss one of:
-
-- ED-24UX.7 Rename or compact Gree diagnostic cause/context block.
-- ED-24SRC.1 Add separate source reference action for diagnostics.
+Discuss ED-24UX.7 Rename or compact Gree diagnostic cause/context block, or another agreed small follow-up.
 

@@ -62,6 +62,7 @@ public sealed record TelegramUserAccessResult(
     public bool CanUseAdminCommands => TelegramUserRolePolicy.CanManageTelegramUsers(Role);
     public bool UsesTechnicalResponse => TelegramUserRolePolicy.CanViewTechnicalDiagnostics(Role);
     public bool CanUseServiceQueue => TelegramUserRolePolicy.CanUseServiceQueue(Role);
+    public bool CanAccessDiagnosticManual => TelegramUserRolePolicy.CanAccessDiagnosticManual(Role);
 }
 
 public sealed record TelegramUserCommandResult(
