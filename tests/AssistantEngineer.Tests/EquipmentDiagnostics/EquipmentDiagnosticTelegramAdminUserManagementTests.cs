@@ -271,6 +271,82 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
         Assert.Empty(harness.Outbound.Messages);
     }
 
+    [Fact]
+    public async Task PrivateAdminCallbackFallsBackToChatIdWhenActorIdentityWasNotBackfilledYet()
+    {
+        var harness = await CreateHarnessAsync();
+        const long adminChatId = 777;
+        const long adminTelegramUserId = 777000;
+        await harness.Users.AllowAsync(adminChatId, TelegramUserRole.Admin);
+
+        await harness.Service.HandleCallbackAsync(
+            Callback(
+                $"au:r:{harness.Consumer.Id}:e",
+                adminChatId,
+                adminTelegramUserId,
+                "chatadmin",
+                "Chat Admin",
+                "private"));
+
+        Assert.Equal(
+            TelegramUserRole.Engineer,
+            (await harness.Users.GetByIdAsync(harness.Consumer.Id))?.Role);
+        Assert.Single(harness.Outbound.Edits);
+        Assert.Equal(
+            adminTelegramUserId,
+            (await harness.Users.GetByChatIdAsync(adminChatId))?.TelegramUserId);
+    }
+
+    [Fact]
+    public async Task PrivateAdminCallbackUsesChatRoleWhenTelegramIdentityLookupFindsNonManagerDuplicate()
+    {
+        var harness = await CreateHarnessAsync();
+        const long adminChatId = 777;
+        const long adminTelegramUserId = 777000;
+        await harness.Users.AllowAsync(adminChatId, TelegramUserRole.Admin);
+        await harness.Users.GetOrCreateConsumerAsync(
+            UserUpdate(778, adminTelegramUserId, "duplicate", "Duplicate"));
+
+        await harness.Service.HandleCallbackAsync(
+            Callback(
+                $"au:r:{harness.Consumer.Id}:e",
+                adminChatId,
+                adminTelegramUserId,
+                "chatadmin",
+                "Chat Admin",
+                "private"));
+
+        Assert.Equal(
+            TelegramUserRole.Engineer,
+            (await harness.Users.GetByIdAsync(harness.Consumer.Id))?.Role);
+        Assert.Single(harness.Outbound.Edits);
+        Assert.Equal(
+            adminTelegramUserId,
+            (await harness.Users.GetByChatIdAsync(adminChatId))?.TelegramUserId);
+    }
+
+    [Fact]
+    public async Task GroupAdminCallbackDoesNotFallbackToChatIdForActorPermissions()
+    {
+        var harness = await CreateHarnessAsync();
+        const long groupChatId = -777;
+        await harness.Users.AllowAsync(groupChatId, TelegramUserRole.Admin);
+
+        await harness.Service.HandleCallbackAsync(
+            Callback(
+                $"au:r:{harness.Consumer.Id}:e",
+                groupChatId,
+                telegramUserId: 777000,
+                username: "chatadmin",
+                firstName: "Chat Admin",
+                chatType: "group"));
+
+        Assert.Equal(
+            TelegramUserRole.Consumer,
+            (await harness.Users.GetByIdAsync(harness.Consumer.Id))?.Role);
+        Assert.Empty(harness.Outbound.Edits);
+    }
+
     [Theory]
     [InlineData("au:")]
     [InlineData("au:bad")]
@@ -584,6 +660,26 @@ public sealed class EquipmentDiagnosticTelegramAdminUserManagementTests
             FirstName: actor.FirstName,
             LastName: actor.LastName,
             ChatType: "private",
+            CallbackQueryId: "callback-id",
+            CallbackData: data);
+
+    private static EquipmentDiagnosticTelegramUpdate Callback(
+        string data,
+        long chatId,
+        long telegramUserId,
+        string username,
+        string firstName,
+        string chatType) =>
+        new(
+            3,
+            chatId,
+            username,
+            Text: null,
+            MessageId: 77,
+            ReceivedAt: FixedNowUtc,
+            UserId: telegramUserId,
+            FirstName: firstName,
+            ChatType: chatType,
             CallbackQueryId: "callback-id",
             CallbackData: data);
 

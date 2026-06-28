@@ -73,9 +73,7 @@ public sealed class TelegramAdminUserManagementService
         EquipmentDiagnosticTelegramUpdate update,
         CancellationToken cancellationToken = default)
     {
-        var actor = update.UserId is null
-            ? null
-            : await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+        var actor = await ResolveCallbackActorAsync(update, cancellationToken);
         var parsed = TryParseCallback(update.CallbackData, out var action, out var targetId, out var role);
         if (!CanManage(actor))
         {
@@ -140,6 +138,46 @@ public sealed class TelegramAdminUserManagementService
         }
 
         return result with { SuppressOutbound = true };
+    }
+
+    private async Task<TelegramUserSnapshot?> ResolveCallbackActorAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        CancellationToken cancellationToken)
+    {
+        TelegramUserSnapshot? userByTelegramId = null;
+        if (update.UserId is not null)
+        {
+            userByTelegramId = await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+            if (CanManage(userByTelegramId))
+            {
+                return userByTelegramId;
+            }
+        }
+
+        if (!IsPrivateChat(update.ChatType))
+        {
+            return userByTelegramId;
+        }
+
+        var chatUser = await _userStore.GetByChatIdAsync(update.ChatId, cancellationToken);
+        if (chatUser is null)
+        {
+            return userByTelegramId;
+        }
+
+        if (update.UserId is null)
+        {
+            return chatUser;
+        }
+
+        if (userByTelegramId is null ||
+            userByTelegramId.Id == chatUser.Id ||
+            CanManage(chatUser) && !CanManage(userByTelegramId))
+        {
+            return await _userStore.GetOrCreateConsumerAsync(update, cancellationToken);
+        }
+
+        return userByTelegramId;
     }
 
     private async Task<TelegramAdminUserManagementResult> MutateAsync(
@@ -618,6 +656,10 @@ public sealed class TelegramAdminUserManagementService
     private static bool CanManage(TelegramUserSnapshot? user) =>
         user is { IsEnabled: true, IsBlocked: false } &&
         TelegramUserRolePolicy.CanManageTelegramUsers(user.Role);
+
+    private static bool IsPrivateChat(string? chatType) =>
+        string.IsNullOrWhiteSpace(chatType) ||
+        chatType.Equals("private", StringComparison.OrdinalIgnoreCase);
 
     private static string CallbackFor(AdminListKind kind) =>
         kind switch
