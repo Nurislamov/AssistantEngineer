@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24UX.4a - CLOSED / pushed to origin/master.
+ED-24UX.4a - CLOSED / production PASS.
 
 Next recommended steps:
 
 1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 2. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
-3. Discuss the next Gree diagnostics direction: GMV-W, Versati, chillers, fan coils, or another priority.
+3. Discuss either ED-24UX.5 (shorten Gree diagnostic safety boilerplate) or ED-24SRC.1 (add a separate source reference action for diagnostics).
 
 ## Current branch
 
@@ -17,6 +17,16 @@ master
 ## Last completed work
 
 ED-24UX.4a polished live-reviewed Gree Telegram answer UX with safe HTML formatting, clearer labels, and no runtime knowledge or routing changes.
+
+Commit: `e24ae712`.
+
+## Current working point
+
+- ED-24GEC.15.1 - CLOSED / production PASS.
+- ED-24QA.1 - CLOSED / pushed.
+- ED-24OPS.1 - CLOSED / pushed.
+- ED-24UX.4 - CLOSED / pushed.
+- ED-24UX.4a - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -79,11 +89,16 @@ Latest validation after ED-24UX.4:
 
 Latest validation after ED-24UX.4a:
 
+- Commit: `e24ae712`.
+- VPS deploy to `assistantengineer-beta-01`: PASS.
+- Telegram live-review: PASS.
+- Telegram polling logs: clean; updates 41767183-41767187 were processed successfully with no provided error, exception, failed, or polling-batch-failed entries.
 - Gree technical diagnostic answers, n2 ambiguity, and explicit-series not-found use safe escaped HTML with `ParseMode: HTML`.
 - The service-request button is `🛠 Оставить заявку`; the previous label remains accepted as a legacy input alias.
 - The repetitive `Дальше:` block is absent from found Gree Telegram answers.
 - `Ограничения вывода:` is replaced by `Ограничения:`.
 - Local Gree diagnostics smoke: 9/9 passed.
+- EquipmentDiagnostics tests: 940/940 passed.
 - Full solution baseline: 4924/4924 passed.
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
@@ -102,6 +117,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+e24ae712 ED-24UX.4a Polish live-reviewed Gree Telegram answer UX
 80947fdb ED-24UX.4 Polish Gree diagnostic answer structure
 96a9d62e ED-24OPS.1 Add repeatable Gree diagnostics smoke runner
 60f11980 ED-24QA.1 Lock existing Gree diagnostics quality baseline
@@ -130,5 +146,8 @@ No active production blocker after ED-24UX.4a.
 
 ## Next step
 
-Discuss and select the next Gree diagnostics stage.
+Discuss one of:
+
+- ED-24UX.5 Shorten Gree diagnostic safety boilerplate.
+- ED-24SRC.1 Add separate source reference action for diagnostics.
 
