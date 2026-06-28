@@ -18,7 +18,7 @@ master
 
 ED-24UX.6 compacted the first-check bullets in found Gree Telegram answers without changing runtime knowledge or routing.
 
-Commit: recorded in the follow-up project-state update.
+Commit: `d8fdc3d1`.
 
 ## Current working point
 
@@ -145,6 +145,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+d8fdc3d1 ED-24UX.6 Compact Gree diagnostic first-check bullets
 e24ae712 ED-24UX.4a Polish live-reviewed Gree Telegram answer UX
 80947fdb ED-24UX.4 Polish Gree diagnostic answer structure
 96a9d62e ED-24OPS.1 Add repeatable Gree diagnostics smoke runner
