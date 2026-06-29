@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24SRC.1a - CLOSED / pushed to origin/master.
+ED-24SRC.1a - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Deploy and verify Telegram diagnostic reply keyboard UX on VPS.
+1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, role/user persistence, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,7 +16,7 @@ master
 
 ## Last completed work
 
-ED-24SRC.1a fixed Telegram diagnostic manual keyboard UX.
+ED-24SRC.1a fixed Telegram diagnostic manual keyboard UX and passed production live-check on `assistantengineer-beta-01`.
 
 Commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
 
@@ -31,7 +31,7 @@ Commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
 - ED-24UX.6 - CLOSED / production PASS.
 - ED-24SRC.1 - CLOSED / pushed.
 - ED-24USR.2 - CLOSED / pushed.
-- ED-24SRC.1a - CLOSED / pushed.
+- ED-24SRC.1a - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -182,7 +182,27 @@ Latest validation after ED-24USR.2:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
-Latest validation after ED-24SRC.1a:
+Latest production validation after ED-24SRC.1a:
+
+- Implementation commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
+- Project-state commit before production pass: `17150363`.
+- VPS deploy to `assistantengineer-beta-01`: PASS.
+- Telegram live-review: PASS.
+- Consumer manual gate: PASS; after `Gree GMV9 Flex E0`, diagnostics are shown without `📄 Мануал` and without `📘 Руководства`.
+- Technical manual button: PASS; after `Gree GMV9 Flex E0`, diagnostics are shown with contextual `📄 Мануал` and without `📘 Руководства`.
+- Manual not-linked fallback keyboard retention: PASS; pressing `📄 Мануал` shows `Мануал пока не привязан`, includes `Gree GMV9 Flex / E0`, keeps contextual `📄 Мануал`, and does not restore `📘 Руководства`.
+- Telegram reply keyboard no longer exposes the global `📘 Руководства` button.
+- `📄 Мануал` remains the only contextual manual action.
+- Compact keyboard layout confirmed in production:
+  - Consumer rows: `🔎 Новый код` / `📋 История`, then `🛠 Оставить заявку` / `📄 Мои заявки`.
+  - Technical rows: `🔎 Новый код` / `📄 Мануал`, then `📋 История` / `🛠 Оставить заявку`, then `📄 Мои заявки`.
+- Polling logs: clean; container logs showed command menu sync, polling start, successful `deleteWebhook`, `Sending Telegram response`, processed updates, and `Status: Processed` with no `error`, `exception`, or `failed` entries.
+- ED-24SRC.1 manual access gating is preserved: consumers are still denied, technical roles retain contextual access only.
+- ED-24USR.2 production behavior was confirmed during the same live-check through role switching/admin UI.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
+Latest local validation after ED-24SRC.1a:
 
 - Implementation commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
 - Telegram reply keyboard no longer exposes the global `📘 Руководства` button.
@@ -198,6 +218,11 @@ Latest validation after ED-24SRC.1a:
 - `git diff --check`: PASS.
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
+Latest stable production point:
+
+- ED-24SRC.1a - production PASS.
+- ED-24USR.2 - production behavior confirmed by role switching/admin UI during the ED-24SRC.1a live-check.
 
 Validated Gree scenarios after ED-24UX.4:
 
@@ -247,5 +272,5 @@ No active blocker after ED-24SRC.1a.
 
 ## Next step
 
-Discuss ED-24UX.7 Rename or compact Gree diagnostic cause/context block, or another agreed small follow-up.
+Discuss one of the next possible small follow-ups: phone update button visibility / `✏️ Изменить номер`, manual binding/upload workflow, role/user persistence, or the next Gree diagnostics direction.
 
