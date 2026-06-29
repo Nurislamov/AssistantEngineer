@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24MAN.1 - CLOSED / pushed.
+ED-24MAN.1 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be phone update button visibility, protected manual binding production live-check, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+1. Discuss whether the next small follow-up should be phone update button visibility, ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,11 @@ master
 
 ## Last completed work
 
-ED-24MAN.1 binds protected Telegram manuals by series using persistent EF Core `TelegramManualBindings` records and protected `sendDocument(file_id)` delivery.
+ED-24MAN.1 binds protected Telegram manuals by series using persistent EF Core `TelegramManualBindings` records and protected `sendDocument(file_id)` delivery, and is production-confirmed.
 
 Implementation commit: `8a3edb6a`.
+
+Previous project-state commit: `6fbf2685`.
 
 ## Current working point
 
@@ -33,7 +35,7 @@ Implementation commit: `8a3edb6a`.
 - ED-24USR.2 - CLOSED / pushed.
 - ED-24SRC.1a - CLOSED / production PASS.
 - ED-24USR.3 - CLOSED / production PASS.
-- ED-24MAN.1 - CLOSED / pushed.
+- ED-24MAN.1 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -263,7 +265,7 @@ Latest production validation after ED-24USR.3:
 Latest validation after ED-24MAN.1:
 
 - Implementation commit: `8a3edb6a`.
-- ED-24MAN.1 status: CLOSED / pushed.
+- ED-24MAN.1 status: CLOSED / production PASS.
 - Admin/Owner `/manual_bind` flow added: choose Gree series, send PDF document to the bot, validate filename/series, confirm bind, and explicitly confirm replacement for an existing active series binding.
 - Supported production series bindings: Gree GMV6, Gree GMV Mini, Gree GMV X, and Gree GMV9 Flex.
 - Production manual bindings use existing EF Core persistence through `TelegramManualBindings` and migration `20260629042754_AddTelegramManualBindings`.
@@ -285,15 +287,43 @@ Latest validation after ED-24MAN.1:
 - `git diff --check`: PASS.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings data, and deploy scripts unchanged.
 
+Latest production validation after ED-24MAN.1:
+
+- Implementation commit: `8a3edb6a`.
+- Previous project-state commit: `6fbf2685`.
+- ED-24MAN.1 status: CLOSED / production PASS.
+- VPS deploy to `assistantengineer-beta-01`: PASS; ED-24MAN.1 was pulled on the VPS.
+- Initial production `/manual_bind` manual check failed because the new `TelegramManualBindings` table was missing in PostgreSQL.
+- Production migration apply: PASS; migration `20260629042754_AddTelegramManualBindings` was applied manually with SQL generated from the EF migration because `dotnet` / `dotnet ef` are not available on the VPS.
+- `__EFMigrationsHistory` contains `20260629042754_AddTelegramManualBindings`.
+- `TelegramManualBindings` table exists in production PostgreSQL.
+- Manual binding flow: PASS; `/manual_bind` worked in Telegram, Gree GMV9 Flex PDF was accepted, the `Привязать` confirmation worked, and the production DB binding was created.
+- Gree GMV9 Flex binding DB-confirmed: Brand `Gree`, Series `GMV9 Flex`, FileName `Gree GMV9 Flex Service Manual EN Rev B.pdf`, IsActive `true`.
+- Protected document delivery: PASS; after `Gree GMV9 Flex E0`, pressing `📄 Мануал` sent the stored PDF through Telegram document delivery.
+- Consumer gate: PASS; consumer live-check confirmed `📄 Мануал` is not shown.
+- Global guides action remained removed: `📘 Руководства` did not return.
+- Telegram logs after the fix showed processed updates and Telegram document sending without new blocking errors.
+- Current production manual bindings:
+  - Gree GMV9 Flex - confirmed DB / delivered.
+  - Gree GMV X - added through the live bind workflow per operator action.
+  - Gree GMV6 - added through the live bind workflow per operator action.
+  - Gree GMV Mini - pending / not bound.
+- Uploaded `product_paper_manual_130090867.pdf` is an Owner's Manual for the Gree GMV DC Inverter VRF G-X branch (`GMV-224WM/G-X` ... `GMV-2720WM/G-X`) and is kept only for future analysis; it is not bound in Telegram.
+- Owner/service split is not implemented.
+- `ManualKind` / `Audience` are not implemented.
+- Regional GMV6 EU H/H1 manual remains untouched and was not bound instead of the current G-X manual.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual binding logic, and deploy scripts unchanged.
+
 Latest stable production point:
 
-- ED-24MAN.1 - pushed; production deploy/live-check pending.
+- ED-24MAN.1 - production PASS.
 - ED-24USR.3 - production PASS.
 - ED-24SRC.1a - production PASS.
 
 Latest pushed local point:
 
-- ED-24MAN.1 - protected Telegram manual binding validated locally and pushed.
+- ED-24MAN.1 - protected Telegram manual binding validated locally, pushed, and production-confirmed.
 - ED-24USR.3 - persistent Telegram user roles validated locally and pushed.
 
 Validated Gree scenarios after ED-24UX.4:
@@ -311,6 +341,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 ## Important commits
 
 8a3edb6a ED-24MAN.1 Bind protected Telegram manuals
+6fbf2685 Update project state after ED-24MAN.1
 4231cb9d ED-24SRC.1a Fix diagnostic manual keyboard UX
 a33ea0ea ED-24USR.3 Persist Telegram user roles
 85515a14 ED-24USR.2 Fix Telegram admin user identity
@@ -340,11 +371,17 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 - Guard grammar: no 'к наружного блока', no 'к внутреннего блока', no 'к наладки системы'.
 - Do not give Codex prompts automatically before discussing the next stage.
 
+## Future candidates
+
+- ED-24MAN.2 - Manual taxonomy / owner vs service access levels.
+- ED-24MAN.3 - Manual variants by model family / exact model matching.
+- ED-24SRC.2 - Compare Mini manuals and decide Mini/Star/Slim handling.
+
 ## Current blocker
 
-No active blocker after ED-24MAN.1.
+No active blocker after ED-24MAN.1 production PASS.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: phone update button visibility / `✏️ Изменить номер`, ED-24MAN.1 production live-check, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: phone update button visibility, ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF warning hygiene for HourlySchedule.Factors, or the next Gree diagnostics direction.
 
