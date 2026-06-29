@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24SRC.1a - CLOSED / production PASS.
+ED-24USR.3 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, role/user persistence, or the next Gree diagnostics direction.
+1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24SRC.1a fixed Telegram diagnostic manual keyboard UX and passed production live-check on `assistantengineer-beta-01`.
+ED-24USR.3 persists Telegram user roles/access state in the existing EF Core database store and keeps ED-24USR.2 admin callback identity behavior intact.
 
-Commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
+Commit: `a33ea0ea`.
 
 ## Current working point
 
@@ -32,6 +32,7 @@ Commit: `4231cb9de4a9ed760e399f2defa696ec4342266f`.
 - ED-24SRC.1 - CLOSED / pushed.
 - ED-24USR.2 - CLOSED / pushed.
 - ED-24SRC.1a - CLOSED / production PASS.
+- ED-24USR.3 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -219,10 +220,35 @@ Latest local validation after ED-24SRC.1a:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
+Latest validation after ED-24USR.3:
+
+- Implementation commit: `a33ea0ea`.
+- Telegram user roles/access state now use the existing persistent EF Core `TelegramUsers` store in production/default infrastructure DI (`ITelegramUserStore` -> `EfTelegramUserStore`).
+- Existing migrations cover the persistent state: `20260617062738_AddTelegramUsers` and `20260617120000_AddTelegramUserPhoneSource`.
+- Persisted fields include role, enabled/blocked flags, Telegram identity fields, phone state/source, `LastSeenAt`, and `LastAccessDeniedAt`.
+- Bootstrap owner by chat id remains supported and `GetOrCreateConsumerAsync` does not downgrade existing Owner/Admin/Engineer/Installer records.
+- Duplicate Telegram identity handling is deterministic: active unblocked manager records are selected before consumer duplicates, preserving ED-24USR.2 admin callback actor resolution.
+- Private-chat Owner/Admin fallback remains authoritative when a Telegram user id lookup hits a non-manager duplicate; group callbacks still do not inherit chat-id fallback permissions.
+- ED-24SRC.1/ED-24SRC.1a manual access gating is preserved: consumers remain denied for `рџ“„ РњР°РЅСѓР°Р»`, technical roles retain the contextual manual action, and `рџ“ Р СѓРєРѕРІРѕРґСЃС‚РІР°` does not return.
+- Existing in-memory role assignments from older container lifetimes do not auto-migrate; any missing production roles need one-time admin assignment and then persist in the database.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Telegram/admin/manual/adapter tests: 442/442 passed.
+- Migration/DI validator slice: 28/28 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution baseline: 4948/4948 passed.
+- `git diff --check`: PASS.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deployment scripts unchanged.
+
 Latest stable production point:
 
 - ED-24SRC.1a - production PASS.
 - ED-24USR.2 - production behavior confirmed by role switching/admin UI during the ED-24SRC.1a live-check.
+
+Latest pushed local point:
+
+- ED-24USR.3 - persistent Telegram user roles validated locally and pushed.
 
 Validated Gree scenarios after ED-24UX.4:
 
@@ -239,6 +265,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 ## Important commits
 
 4231cb9d ED-24SRC.1a Fix diagnostic manual keyboard UX
+a33ea0ea ED-24USR.3 Persist Telegram user roles
 85515a14 ED-24USR.2 Fix Telegram admin user identity
 afc3e325 ED-24SRC.1 Add role-gated diagnostic manual action
 5d944e12 Update project state after ED-24UX.6
@@ -268,7 +295,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24SRC.1a.
+No active blocker after ED-24USR.3.
 
 ## Next step
 
