@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24USR.3 - CLOSED / pushed.
+ED-24USR.3 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, or the next Gree diagnostics direction.
+1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,7 +16,7 @@ master
 
 ## Last completed work
 
-ED-24USR.3 persists Telegram user roles/access state in the existing EF Core database store and keeps ED-24USR.2 admin callback identity behavior intact.
+ED-24USR.3 persists Telegram user roles/access state in the existing EF Core database store and passed production restart validation on `assistantengineer-beta-01`.
 
 Commit: `a33ea0ea`.
 
@@ -32,7 +32,7 @@ Commit: `a33ea0ea`.
 - ED-24SRC.1 - CLOSED / pushed.
 - ED-24USR.2 - CLOSED / pushed.
 - ED-24SRC.1a - CLOSED / production PASS.
-- ED-24USR.3 - CLOSED / pushed.
+- ED-24USR.3 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -223,6 +223,7 @@ Latest local validation after ED-24SRC.1a:
 Latest validation after ED-24USR.3:
 
 - Implementation commit: `a33ea0ea`.
+- Project-state commit before production pass: `4055d1ff`.
 - Telegram user roles/access state now use the existing persistent EF Core `TelegramUsers` store in production/default infrastructure DI (`ITelegramUserStore` -> `EfTelegramUserStore`).
 - Existing migrations cover the persistent state: `20260617062738_AddTelegramUsers` and `20260617120000_AddTelegramUserPhoneSource`.
 - Persisted fields include role, enabled/blocked flags, Telegram identity fields, phone state/source, `LastSeenAt`, and `LastAccessDeniedAt`.
@@ -241,10 +242,27 @@ Latest validation after ED-24USR.3:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deployment scripts unchanged.
 
+Latest production validation after ED-24USR.3:
+
+- Implementation commit: `a33ea0ea`.
+- Previous project-state commit: `4055d1ff`.
+- VPS deploy to `assistantengineer-beta-01`: PASS.
+- Service/container `assistantengineer-api`: PASS; container restarted and application started successfully.
+- PostgreSQL health: PASS.
+- Telegram polling startup: PASS.
+- Restart persistence check: PASS; technical role persisted after container restart/redeploy.
+- Roles persistence after restart: PASS; the technical role still sees the contextual manual action after `Gree GMV9 Flex E0`.
+- Manual gate after restart: PASS; consumers still do not see the contextual manual action, technical roles do, and the global guides action did not return.
+- Compact Telegram keyboard layout remained confirmed after restart.
+- Telegram polling logs: clean; observed `Telegram polling started`, `Application started`, `Telegram polling update processed`, and `Status: Processed` with no `error`, `exception`, or `failed` entries.
+- Existing EF warning `HourlySchedule.Factors ... value converter but with no value comparer` was observed; it is unrelated to Telegram user persistence and does not block ED-24USR.3.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deployment scripts unchanged.
+
 Latest stable production point:
 
+- ED-24USR.3 - production PASS.
 - ED-24SRC.1a - production PASS.
-- ED-24USR.2 - production behavior confirmed by role switching/admin UI during the ED-24SRC.1a live-check.
 
 Latest pushed local point:
 
