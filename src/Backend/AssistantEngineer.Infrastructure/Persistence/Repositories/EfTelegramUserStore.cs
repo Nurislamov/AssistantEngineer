@@ -94,9 +94,11 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
     {
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var user = await context.TelegramUsers
+        var query = context.TelegramUsers
             .AsNoTracking()
-            .FirstOrDefaultAsync(item => item.TelegramUserId == telegramUserId, cancellationToken);
+            .Where(item => item.TelegramUserId == telegramUserId);
+        var user = await OrderCanonicalTelegramIdentity(query)
+            .FirstOrDefaultAsync(cancellationToken);
         return user is null ? null : ToSnapshot(user);
     }
 
@@ -107,11 +109,11 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var normalized = username.Trim().TrimStart('@').ToLower();
-        var user = await context.TelegramUsers
+        var query = context.TelegramUsers
             .AsNoTracking()
-            .FirstOrDefaultAsync(
-                item => item.Username != null && item.Username.ToLower() == normalized,
-                cancellationToken);
+            .Where(item => item.Username != null && item.Username.ToLower() == normalized);
+        var user = await OrderCanonicalTelegramIdentity(query)
+            .FirstOrDefaultAsync(cancellationToken);
         return user is null ? null : ToSnapshot(user);
     }
 
@@ -307,6 +309,19 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static IOrderedQueryable<TelegramUserEntity> OrderCanonicalTelegramIdentity(
+        IQueryable<TelegramUserEntity> query) =>
+        query
+            .OrderBy(user => user.IsBlocked)
+            .ThenByDescending(user => user.IsEnabled)
+            .ThenBy(user =>
+                user.Role == TelegramUserRole.Owner ? 0 :
+                user.Role == TelegramUserRole.Admin ? 1 :
+                user.Role == TelegramUserRole.Engineer ? 2 :
+                user.Role == TelegramUserRole.Installer ? 3 :
+                4)
+            .ThenBy(user => user.Id);
 
     private static TelegramUserSnapshot ToSnapshot(TelegramUserEntity user) =>
         new(

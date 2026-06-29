@@ -2,12 +2,14 @@ using AssistantEngineer.Infrastructure;
 using AssistantEngineer.Infrastructure.Integrations.Benchmarks;
 using AssistantEngineer.Infrastructure.Integrations.Reports.Excel;
 using AssistantEngineer.Infrastructure.Persistence;
+using AssistantEngineer.Infrastructure.Persistence.Repositories;
 using AssistantEngineer.Modules.Benchmarks.Application.Abstractions;
 using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.SharedKernel.Abstractions;
 using Microsoft.Extensions.Configuration;
@@ -166,6 +168,8 @@ public class InfrastructureDependencyInjectionTests
         AssertServiceLifetime<IAnnualClimateDataRepository>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<ICalculationPreferencesRepository>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<IEquipmentCatalogRepository>(services, ServiceLifetime.Scoped);
+        AssertServiceLifetime<ITelegramUserStore>(services, ServiceLifetime.Singleton);
+        AssertServiceImplementation<ITelegramUserStore, EfTelegramUserStore>(services);
 
         AssertServiceLifetime<IAnnualClimateDataProvider>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<ICoolingEquipmentCatalogSizingProvider>(services, ServiceLifetime.Scoped);
@@ -187,5 +191,14 @@ public class InfrastructureDependencyInjectionTests
 
         Assert.NotNull(descriptor);
         Assert.Equal(expectedLifetime, descriptor.Lifetime);
+    }
+
+    private static void AssertServiceImplementation<TService, TImplementation>(
+        IServiceCollection services)
+    {
+        var descriptor = services.LastOrDefault(service => service.ServiceType == typeof(TService));
+
+        Assert.NotNull(descriptor);
+        Assert.Equal(typeof(TImplementation), descriptor.ImplementationType);
     }
 }
