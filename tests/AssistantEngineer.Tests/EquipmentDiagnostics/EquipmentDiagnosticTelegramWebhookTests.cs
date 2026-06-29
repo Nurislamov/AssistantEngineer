@@ -128,7 +128,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         {
             new EquipmentDiagnosticTelegramOutboundMessage(
                 "Руководство: Service Manual for GMV6 v_2020.09",
-                DocumentFileId: "telegram-file-id-gmv6")
+                DocumentFileId: "telegram-file-id-gmv6",
+                ProtectContent: true)
         };
         var adapter = new FakeAdapter(
             EquipmentDiagnosticTelegramResponseKind.Reply,
@@ -143,6 +144,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         Assert.Equal(0, outbound.CallCount);
         Assert.Equal(1, outbound.DocumentCallCount);
         Assert.Equal("telegram-file-id-gmv6", outbound.DocumentFileId);
+        Assert.True(outbound.DocumentProtectContent);
         Assert.DoesNotContain("telegram-file-id-gmv6", outbound.DocumentCaption, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -438,6 +440,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public int DocumentCallCount { get; private set; }
         public string? DocumentFileId { get; private set; }
         public string? DocumentCaption { get; private set; }
+        public bool DocumentProtectContent { get; private set; }
         public bool ThrowOnAnswer { get; set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
@@ -464,11 +467,13 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
             string telegramFileId,
             string? caption = null,
             EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
             CancellationToken cancellationToken = default)
         {
             DocumentCallCount++;
             DocumentFileId = telegramFileId;
             DocumentCaption = caption;
+            DocumentProtectContent = protectContent;
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Document sent."));
         }
 

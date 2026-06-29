@@ -47,12 +47,11 @@ configured. Rebuild the backend Docker image to pick up the GSSAPI runtime packa
 Telegram diagnostic `CreatedAt` values stay UTC in the database; only `/history` and `/last` rendering uses
 `TELEGRAM_DISPLAY_TIME_ZONE`.
 
-ED-24G.1 Telegram manual-library bindings use
-`AssistantEngineer:EquipmentDiagnostics:Telegram:ManualLibrary:FileBindingsPath`, defaulting to
-`artifacts/operations/equipment-diagnostics-manual-bindings.json`. The Docker Compose scaffold mounts
-`/opt/assistantengineer/artifacts/operations/` on the host to `/app/artifacts/operations/` in the API container, so no
-new required `.env` value is needed. Store real Telegram manual `file_id` values only in the ignored runtime binding
-file or register them through `/manual_register`; never commit file IDs or manual binaries.
+ED-24MAN.1 production Telegram manual bindings are stored in the existing application database through the
+`TelegramManualBindings` EF Core migration. No new required `.env` value is needed. Admin/Owner can bind protected
+series manuals through `/manual_bind`; store real Telegram manual `file_id` values only in the database and never commit
+file IDs or manual binaries. The older JSON `FileBindingsPath` remains a module-level fallback for non-production/manual
+test wiring, not the production source of truth.
 
 When `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` is empty, users can still create service requests and the application logs
 a sanitized warning. When configured, new requests are sent to that Telegram group without a full phone number,

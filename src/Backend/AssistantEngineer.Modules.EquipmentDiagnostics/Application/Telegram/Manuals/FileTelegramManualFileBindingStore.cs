@@ -26,7 +26,25 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         {
             var document = ReadDocument();
             return Task.FromResult(document.Bindings
+                .Where(binding => binding.IsActive)
                 .FirstOrDefault(binding => binding.ManualId.Equals(manualId, StringComparison.OrdinalIgnoreCase)));
+        }
+    }
+
+    public Task<TelegramManualFileBinding?> GetBySeriesAsync(
+        string brand,
+        string series,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var document = ReadDocument();
+            return Task.FromResult(document.Bindings
+                .Where(binding => binding.IsActive)
+                .FirstOrDefault(binding =>
+                    string.Equals(binding.Brand, brand, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase)));
         }
     }
 
@@ -38,6 +56,7 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         {
             return Task.FromResult<IReadOnlyList<TelegramManualFileBinding>>(
                 ReadDocument().Bindings
+                    .Where(binding => binding.IsActive)
                     .OrderBy(binding => binding.ManualId, StringComparer.OrdinalIgnoreCase)
                     .ToArray());
         }
@@ -58,6 +77,29 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
                 .ToArray();
             var updated = new TelegramManualFileBindingDocument(1, bindings);
             WriteDocument(updated);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task UpsertSeriesAsync(
+        TelegramManualFileBinding binding,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var document = ReadDocument();
+            var bindings = document.Bindings
+                .Where(existing =>
+                    !string.Equals(existing.Brand, binding.Brand, StringComparison.OrdinalIgnoreCase) ||
+                    !string.Equals(existing.Series, binding.Series, StringComparison.OrdinalIgnoreCase))
+                .Append(binding)
+                .OrderBy(value => value.Brand, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(value => value.Series, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(value => value.ManualId, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            WriteDocument(new TelegramManualFileBindingDocument(1, bindings));
         }
 
         return Task.CompletedTask;

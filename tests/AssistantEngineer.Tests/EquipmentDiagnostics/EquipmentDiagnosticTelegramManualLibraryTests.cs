@@ -143,11 +143,18 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         using var provider = CreateProvider(TempBindingPath());
         await AllowAsync(provider, TelegramUserRole.Admin);
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
 
-        await adapter.HandleAsync(RegisterDocument(
-            "/manual_register gree-gmv6-service-manual-2020-09",
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-service-manual",
             "telegram-file-id-gmv6",
-            "Service Manual for GMV6 v_2020.09.pdf"));
+            "Gree GMV6 Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Admin.ToString(),
+            Brand: "Gree",
+            Series: "GMV6"));
         await adapter.HandleAsync(Update("Gree GMV6 d1"));
         var response = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
         var documents = response.OutboundMessages
@@ -158,6 +165,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("<b>Оборудование:</b> Gree GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("<b>Код:</b> d1", response.Text, StringComparison.Ordinal);
         Assert.Contains(documents, message => message.DocumentFileId == "telegram-file-id-gmv6");
+        Assert.All(documents, message => Assert.True(message.ProtectContent));
         Assert.DoesNotContain("forward", response.Text, StringComparison.OrdinalIgnoreCase);
         AssertNoDiagnosticSourceLeak(response);
     }
@@ -382,6 +390,120 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         AssertNoSensitiveManualLeak(response.Text);
     }
 
+    [Theory]
+    [InlineData(TelegramUserRole.Consumer)]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    public async Task NonAdminRolesCannotStartManualBind(TelegramUserRole role)
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        if (role != TelegramUserRole.Consumer)
+        {
+            await AllowAsync(provider, role);
+        }
+
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("/manual_bind"));
+
+        Assert.Contains("администратору", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(response.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+    }
+
+    [Fact]
+    public async Task ManualBindWaitsForPdfRejectsBadNameAndKeepsFlowActive()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var start = await adapter.HandleAsync(Update("/manual_bind"));
+        var selected = await adapter.HandleAsync(ManualBindCallback("mb:s:gmv9-flex"));
+        var nonDocument = await adapter.HandleAsync(Update("hello"));
+        var badName = await adapter.HandleAsync(DocumentUpdate("telegram-file-id-bad", "Gree Manual.txt"));
+
+        Assert.Contains("Gree GMV9 Flex", InlineButtons(start), StringComparer.Ordinal);
+        Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", selected.Text, StringComparison.Ordinal);
+        Assert.Contains("Ожидаю PDF-файл мануала", nonDocument.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", badName.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("telegram-file-id-bad", badName.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Theory]
+    [InlineData(TelegramUserRole.Admin)]
+    [InlineData(TelegramUserRole.Owner)]
+    public async Task OwnerOrAdminCanBindSeriesManualAndDiagnosticActionSendsProtectedDocument(TelegramUserRole role)
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, role);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:s:gmv9-flex"));
+        var candidate = await adapter.HandleAsync(DocumentUpdate(
+            "telegram-file-id-gmv9-flex",
+            "Gree GMV9 Flex Service Manual EN Rev B.pdf",
+            "telegram-unique-gmv9-flex",
+            123_456));
+        var confirmed = await adapter.HandleAsync(ManualBindCallback("mb:c:bind"));
+        await adapter.HandleAsync(Update("Gree GMV9 Flex E0"));
+        var manual = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticManualButton));
+        var documents = manual.OutboundMessages
+            .Where(message => !string.IsNullOrWhiteSpace(message.DocumentFileId))
+            .ToArray();
+        var stored = await bindingStore.GetBySeriesAsync("Gree", "GMV9 Flex");
+
+        Assert.Contains("Подтвердите привязку", candidate.Text, StringComparison.Ordinal);
+        Assert.Contains("Мануал привязан", confirmed.Text, StringComparison.Ordinal);
+        Assert.NotNull(stored);
+        Assert.Equal("telegram-file-id-gmv9-flex", stored.TelegramFileId);
+        Assert.Equal("telegram-unique-gmv9-flex", stored.TelegramFileUniqueId);
+        Assert.Equal(123_456, stored.FileSize);
+        Assert.Equal("Gree GMV9 Flex", $"{stored.Brand} {stored.Series}");
+        Assert.Contains(documents, message =>
+            message.DocumentFileId == "telegram-file-id-gmv9-flex" &&
+            message.ProtectContent);
+        Assert.DoesNotContain("forward", manual.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("copy", manual.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNoDiagnosticSourceLeak(manual);
+    }
+
+    [Fact]
+    public async Task ManualBindReplaceRequiresConfirmationAndCancelKeepsExistingBinding()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-service-manual",
+            "telegram-file-id-old",
+            "Gree GMV6 Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "GMV6"));
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:s:gmv6"));
+        var replacePrompt = await adapter.HandleAsync(DocumentUpdate("telegram-file-id-new", "Gree GMV6 Service Manual EN Rev C.pdf"));
+        await adapter.HandleAsync(ManualBindCallback("mb:c:cancel"));
+        var afterCancel = await bindingStore.GetBySeriesAsync("Gree", "GMV6");
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:s:gmv6"));
+        await adapter.HandleAsync(DocumentUpdate("telegram-file-id-new", "Gree GMV6 Service Manual EN Rev C.pdf"));
+        await adapter.HandleAsync(ManualBindCallback("mb:c:replace"));
+        var afterReplace = await bindingStore.GetBySeriesAsync("Gree", "GMV6");
+
+        Assert.Contains("Заменить", replacePrompt.Text, StringComparison.Ordinal);
+        Assert.Equal("telegram-file-id-old", afterCancel?.TelegramFileId);
+        Assert.Equal("telegram-file-id-new", afterReplace?.TelegramFileId);
+    }
+
     [Fact]
     public async Task RegistrationRejectsUnknownManualId()
     {
@@ -480,6 +602,23 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             DocumentFileName: fileName,
             DocumentMimeType: "application/pdf");
 
+    private static EquipmentDiagnosticTelegramUpdate DocumentUpdate(
+        string fileId,
+        string fileName,
+        string? fileUniqueId = null,
+        long? fileSize = null) =>
+        new(
+            UpdateId: 4,
+            ChatId: 7,
+            Username: "operator",
+            Text: null,
+            UserId: 11,
+            DocumentFileId: fileId,
+            DocumentFileName: fileName,
+            DocumentMimeType: "application/pdf",
+            DocumentFileSize: fileSize,
+            DocumentFileUniqueId: fileUniqueId);
+
     private static EquipmentDiagnosticTelegramUpdate ManualCallback() =>
         new(
             UpdateId: 3,
@@ -489,6 +628,16 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             UserId: 11,
             CallbackQueryId: "callback-query-id",
             CallbackData: TelegramManualLibraryService.DiagnosticManualCallbackData);
+
+    private static EquipmentDiagnosticTelegramUpdate ManualBindCallback(string callbackData) =>
+        new(
+            UpdateId: 5,
+            ChatId: 7,
+            Username: "operator",
+            Text: null,
+            UserId: 11,
+            CallbackQueryId: "manual-bind-callback-query-id",
+            CallbackData: callbackData);
 
     private static bool HasButton(
         EquipmentDiagnosticTelegramResponse response,
@@ -507,6 +656,13 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         response.OutboundMessages
             .SelectMany(message => message.ReplyMarkup?.Keyboard ?? [])
             .Select(row => row.Select(button => button.Text).ToArray())
+            .ToArray();
+
+    private static string[] InlineButtons(EquipmentDiagnosticTelegramResponse response) =>
+        response.OutboundMessages
+            .SelectMany(message => message.ReplyMarkup?.InlineKeyboard ?? [])
+            .SelectMany(row => row)
+            .Select(button => button.Text)
             .ToArray();
 
     private static void AssertNoDiagnosticSourceLeak(EquipmentDiagnosticTelegramResponse response)

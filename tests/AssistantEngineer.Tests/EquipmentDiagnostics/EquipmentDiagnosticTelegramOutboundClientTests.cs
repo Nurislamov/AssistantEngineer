@@ -150,6 +150,24 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     }
 
     [Fact]
+    public async Task SendDocumentIncludesProtectContentOnlyWhenRequested()
+    {
+        var withoutProtect = new CapturingHandler(HttpStatusCode.OK);
+        var withProtect = new CapturingHandler(HttpStatusCode.OK);
+
+        await CreateClient(withoutProtect, EnabledOptions())
+            .SendDocumentAsync(42, "telegram-file-id", "manual");
+        await CreateClient(withProtect, EnabledOptions())
+            .SendDocumentAsync(42, "telegram-file-id", "manual", protectContent: true);
+
+        using var omittedPayload = JsonDocument.Parse(withoutProtect.Body!);
+        using var includedPayload = JsonDocument.Parse(withProtect.Body!);
+        Assert.Equal("telegram-file-id", omittedPayload.RootElement.GetProperty("document").GetString());
+        Assert.False(omittedPayload.RootElement.TryGetProperty("protect_content", out _));
+        Assert.True(includedPayload.RootElement.GetProperty("protect_content").GetBoolean());
+    }
+
+    [Fact]
     public async Task EditMessageTextUsesCurrentCardAndInlineKeyboard()
     {
         var handler = new CapturingHandler(

@@ -91,6 +91,7 @@ public sealed record TelegramWebhookContactDto(
 
 public sealed record TelegramWebhookDocumentDto(
     [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("file_name")] string? FileName = null,
     [property: JsonPropertyName("mime_type")] string? MimeType = null,
     [property: JsonPropertyName("file_size")] long? FileSize = null);

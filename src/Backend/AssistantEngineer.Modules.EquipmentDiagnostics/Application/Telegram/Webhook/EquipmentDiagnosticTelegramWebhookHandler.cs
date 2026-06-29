@@ -132,7 +132,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                     ReplyToDocumentFileId: update.Message.ReplyToMessage?.Document?.FileId,
                     ReplyToDocumentFileName: update.Message.ReplyToMessage?.Document?.FileName,
                     ReplyToDocumentMimeType: update.Message.ReplyToMessage?.Document?.MimeType,
-                    ReplyToDocumentFileSize: update.Message.ReplyToMessage?.Document?.FileSize),
+                    ReplyToDocumentFileSize: update.Message.ReplyToMessage?.Document?.FileSize,
+                    DocumentFileUniqueId: update.Message.Document?.FileUniqueId,
+                    ReplyToDocumentFileUniqueId: update.Message.ReplyToMessage?.Document?.FileUniqueId),
                 cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -385,7 +387,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 message.DocumentFileId,
                 message.Text,
                 message.ReplyMarkup,
-                cancellationToken);
+                protectContent: message.ProtectContent,
+                cancellationToken: cancellationToken);
 
     private static EquipmentDiagnosticTelegramWebhookResult Result(
         EquipmentDiagnosticTelegramWebhookStatus status,

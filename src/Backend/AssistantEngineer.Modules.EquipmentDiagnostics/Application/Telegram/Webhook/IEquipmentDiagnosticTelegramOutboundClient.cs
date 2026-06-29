@@ -21,6 +21,7 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
         string telegramFileId,
         string? caption = null,
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
         CancellationToken cancellationToken = default) =>
         Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
             false,

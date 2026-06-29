@@ -79,7 +79,9 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? ReplyToDocumentFileId = null,
     string? ReplyToDocumentFileName = null,
     string? ReplyToDocumentMimeType = null,
-    long? ReplyToDocumentFileSize = null);
+    long? ReplyToDocumentFileSize = null,
+    string? DocumentFileUniqueId = null,
+    string? ReplyToDocumentFileUniqueId = null);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,
@@ -118,7 +120,8 @@ public sealed record EquipmentDiagnosticTelegramOutboundMessage(
     bool DisableWebPagePreview = true,
     EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null,
     string? DocumentFileId = null,
-    string? DocumentFileName = null);
+    string? DocumentFileName = null,
+    bool ProtectContent = false);
 
 public sealed record EquipmentDiagnosticTelegramReplyMarkup(
     IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>? Keyboard = null,

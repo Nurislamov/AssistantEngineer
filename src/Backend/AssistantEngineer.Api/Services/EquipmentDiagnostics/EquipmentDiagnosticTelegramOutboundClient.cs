@@ -182,6 +182,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         string telegramFileId,
         string? caption = null,
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
         CancellationToken cancellationToken = default)
     {
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
@@ -199,6 +200,10 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
             ["chat_id"] = chatId,
             ["document"] = telegramFileId
         };
+        if (protectContent)
+        {
+            payload["protect_content"] = true;
+        }
         if (!string.IsNullOrWhiteSpace(caption))
         {
             payload["caption"] = caption;

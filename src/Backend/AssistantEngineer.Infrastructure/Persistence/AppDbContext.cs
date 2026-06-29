@@ -9,6 +9,7 @@ using AssistantEngineer.Modules.Buildings.Domain.ThermalZones;
 using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +67,8 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<TelegramConversationSessionEntity> TelegramConversationSessions { get; set; } = null!;
 
     public DbSet<TelegramDiagnosticCaseEntity> TelegramDiagnosticCases { get; set; } = null!;
+
+    public DbSet<TelegramManualBindingEntity> TelegramManualBindings { get; set; } = null!;
 
     public DbSet<TelegramServiceRequestEntity> TelegramServiceRequests { get; set; } = null!;
 

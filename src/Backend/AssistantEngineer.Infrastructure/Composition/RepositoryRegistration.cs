@@ -4,6 +4,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,8 @@ internal static class RepositoryRegistration
         services.AddSingleton<ITelegramServiceRequestEventStore, EfTelegramServiceRequestEventStore>();
         services.RemoveAll<ITelegramUserAuditEventStore>();
         services.AddSingleton<ITelegramUserAuditEventStore, EfTelegramUserAuditEventStore>();
+        services.RemoveAll<ITelegramManualFileBindingStore>();
+        services.AddSingleton<ITelegramManualFileBindingStore, EfTelegramManualFileBindingStore>();
 
         return services;
     }
