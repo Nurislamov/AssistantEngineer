@@ -1,114 +1,85 @@
-# Telegram manual library
+# Telegram file library
 
-Status: ED-24MAN.1 adds the protected production binding path for contextual diagnostic manuals. It supports
-role-gated manual requests after diagnostics, Admin/Owner `/manual_bind` upload by Gree series, persistent EF Core
-Telegram `file_id` bindings, and protected `sendDocument(file_id)` delivery. It does not add a Mini App, public manual
-search, OCR, external storage provider, local PDF archive, committed manual binaries, diagnostic codes, routing changes,
-or source-reference changes.
+Status: ED-24LIB.1 adds the protected Telegram file library foundation. It extends existing
+`TelegramManualBindings` instead of creating a parallel file-id system, adds persistent library access grants and
+requests, and changes diagnostic document delivery to Owner/User manuals only.
 
-## Intended model
+## Current rules
 
-Telegram `file_id` is the delivery handle. Telegram must not be the only source of truth: repository metadata remains in
-`data/equipment-diagnostics/manual-library/manuals.json`, while production runtime file bindings live in the existing
-application database through the `TelegramManualBindings` EF Core table.
+- Diagnostic code flow can deliver only `OwnerManual` or `UserGuide` files with `CanUseForDiagnostics = true`.
+- `ServiceManual`, `EngineeringManual`, debugging/internal/source documents, and error-code tables are library-only.
+- Existing production service manual bindings default to `DocumentType = ServiceManual`, `MinRole = Engineer`,
+  `IsLibraryVisible = true`, and `CanUseForDiagnostics = false`.
+- If no Owner/User manual is bound for a diagnostic series, the diagnostic button returns
+  `Руководство пока не добавлено` and never falls back to a service manual.
+- Files are sent with Telegram `sendDocument(file_id)` and `protect_content=true`.
+- `forwardMessage` and `copyMessage` are not used.
+- Raw `TelegramFileId`, `FileUniqueId`, DB ids, chat ids, local paths, package ids, and source references are not shown
+  to users.
 
-Production runtime file binding:
+## Library access
 
-- Table: `TelegramManualBindings`.
-- Migration: `AddTelegramManualBindings`.
-- Scope: brand + series, currently Gree GMV6, Gree GMV Mini, Gree GMV X, and Gree GMV9 Flex.
-- Stored metadata: Telegram `file_id`, optional `file_unique_id`, safe filename, content type, size, uploader Telegram
-  user/chat ids, role, source, timestamps, and active state.
-- Real `telegramFileId` values must not be committed.
-- If the binding file is missing or a manual has no binding, `/manuals` still works and says in Russian that the
-  manual is known but the file is not connected yet.
-- If some manuals are connected and others are missing, `/manuals` sends connected documents and lists the missing
-  manuals instead of failing the whole request.
+Library access is separate from Telegram role.
 
-User-facing messages and normal logs must never expose raw local paths, package IDs, JSON paths, Telegram chat IDs, user
-IDs, file IDs, tokens, or secrets.
+- `Owner` has implicit full library access and can grant/revoke access.
+- `Admin` does not manage the library automatically and does not receive library access by role alone.
+- `Admin`, `Engineer`, and `Installer` can use the library only when Owner has issued an active grant.
+- `Consumer`, disabled, blocked, and unknown users cannot open or fetch library files.
+- Every library command, callback, access request, grant/revoke action, and file-fetch callback re-checks role,
+  enabled/blocked state, and active grant.
+- Old callbacks after revoke fail safely.
 
-## Access policy
+The main keyboard shows `📚 Библиотека` only when:
 
-| Role | Manual delivery |
-|---|---|
-| Consumer / Client | Denied |
-| Installer / Монтажник | Allowed |
-| Engineer / Сервис-инженер | Allowed |
-| Admin | Allowed |
-| Owner | Allowed |
+- role is `Owner`; or
+- role is `Admin`, `Engineer`, or `Installer`, the user is enabled/unblocked, and an active grant exists.
 
-An allowed role is not enough by itself. The manual record must also be reviewed and marked `eligibleForTelegramLibrary`.
+The old global `📘 Руководства` button is not restored.
 
-## Manual request UX
+## Owner management
 
-Supported request paths:
+Owner can:
 
-- Contextual diagnostic action: `📄 Мануал`, shown only after a concrete found Gree series/code to Installer,
-  Engineer, Admin, and Owner roles.
-- Technical reply keyboard button: `📘 Руководства`.
-- Command: `/manuals`.
+- open `/library`;
+- review pending access requests;
+- approve or reject requests;
+- grant access with `/library_grant <chatId>`;
+- revoke access with `/library_revoke <chatId>`;
+- bind/rebind protected files through the existing `/manual_bind` workflow.
 
-Consumer users never see `📄 Мануал`. A manually submitted action or callback is denied before manual metadata is
-resolved and does not disclose titles, source references, document codes, file IDs, or storage identifiers. Ambiguous
-and not-found diagnostic responses do not show the contextual action.
+Admin cannot approve/reject requests, grant/revoke access, or bind/rebind files by default.
 
-The request uses the last successful diagnostic from Telegram history. It resolves reviewed `manualId` values from the
-selected diagnostic answer and enforces the current user role. If one answer has multiple `sourceReferences[]`, manual
-delivery uses all relevant references rather than asking the user to choose a source. It must not generalize one manual
-across Gree series.
+## File catalog
 
-The contextual action additionally requires the concrete series stored with the latest successful diagnostic. When a
-reviewed Telegram `file_id` binding exists, delivery uses `sendDocument` with `protect_content=true`. When no binding
-exists, the technical user receives `Мануал пока не привязан` without source details or fabricated identifiers.
-`copyMessage` and `forwardMessage` are intentionally not used.
+ED-24LIB.1 exposes a minimal protected catalog:
 
-Displayed and stored diagnostic codes use the canonical casing from the selected JSON/manual entry. Lookup may be
-case-insensitive, but exact code casing is preferred first. If multiple entries differ only by case and the user did not
-enter an exact match, the bot asks for the exact code shown on the equipment.
+- `Gree` section lists active `TelegramManualBindings` visible to the current role.
+- File visibility requires `IsLibraryVisible = true`.
+- File fetch requires active library access and `role >= MinRole`.
+- Owner sees all active visible files.
+- Engineer with grant can fetch `MinRole = Engineer` files.
+- Installer with grant cannot fetch `MinRole = Engineer` service manuals.
 
-For entries without `sourceReferences[].manualId`, the fallback match is intentionally narrow: exact `sourceName` to
-registry `documentTitle` or exact source name to registry file name without extension. No loose/fuzzy manual matching is
-allowed.
+Existing Gree service bindings for GMV9 Flex, GMV X, and GMV6 are service/library files. GMV Mini remains pending until a
+binding is added.
 
-## Registration and binding flow
+## Bind workflow
 
-Only Admin and Owner can register or bind a manual file.
+`/manual_bind` remains the protected upload path but is Owner-only in ED-24LIB.1.
 
-Supported flows:
+The current MVP keeps the existing series/PDF/confirmation workflow and stores the binding as:
 
-- Production contextual binding: `/manual_bind`, then choose series, send the PDF document to the bot, and confirm bind
-  or explicit replace.
-- Send a Telegram document to the bot with caption `/manual_register <manualId>`.
-- Reply to a Telegram document with `/manual_register <manualId>`.
-- Remove a binding with `/manual_unregister <manualId>`.
-- List safe binding state with `/manual_bindings`.
+- `DocumentType = ServiceManual`
+- `MinRole = Engineer`
+- `CanUseForDiagnostics = false`
+- `IsLibraryVisible = true`
 
-Constraints:
+Future work can add document-type selection for Owner/User, Installation, and Service manuals.
 
-- `<manualId>` must already exist in `manuals.json`.
-- The Telegram file identifier must come from the document payload, not from user text.
-- `/manual_bind` accepts only PDF documents whose filename contains both `Gree` and the selected series token. It shows a
-  recommended filename and keeps the pending in-memory flow active after non-document or invalid-file messages.
-- Rebinding an existing series requires explicit confirmation. Cancel leaves the active binding unchanged.
-- Consumer, Installer, and Engineer cannot register, unregister, or list bindings.
-- The file extension must match the registry format and allowed extension list (`.pdf`, `.doc`, `.docx`, `.xls`,
-  `.xlsx` by default).
-- Confirmation messages show a safe manual display name, not file IDs, chat IDs, user IDs, local paths, package IDs, or
-  JSON paths.
-- `/manual_bindings` shows only safe display name, document code when available, connection state, and safe original
-  filename. It must not show `file_id`, `chat_id`, `user_id`, token values, package IDs, or local paths.
+## Future work
 
-Private bot registration is the supported first path. If a storage group is used operationally, configure it as a
-trusted process outside the repo and keep real identifiers out of committed files.
-
-## Source-of-truth and safety rules
-
-- Keep manual identity and coverage metadata in the registry or a reviewed database.
-- Keep diagnostic JSON manual-bound.
-- Keep same-code/same-equipment/same-meaning cases as one diagnostic answer with multiple source references.
-- Do not derive diagnostic meaning from Telegram captions.
-- Do not expose storage chat identifiers in user-facing text or logs.
-- Do not send manuals to Consumer users.
-- Do not commit PDF, DOC, DOCX, XLS, or XLSX manual binaries.
-- Do not add diagnostic entries while registering manual delivery bindings.
+- Richer model matching and exact model-family variants.
+- Mini / Mini Star / Slim handling.
+- Remote controller categories.
+- Owner/service taxonomy polish and document-type selection in bind flow.
+- Optional file request workflow.

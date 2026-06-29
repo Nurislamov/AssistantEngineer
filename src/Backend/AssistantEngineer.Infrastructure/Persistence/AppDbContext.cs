@@ -70,6 +70,10 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     public DbSet<TelegramManualBindingEntity> TelegramManualBindings { get; set; } = null!;
 
+    public DbSet<TelegramLibraryAccessGrantEntity> TelegramLibraryAccessGrants { get; set; } = null!;
+
+    public DbSet<TelegramLibraryAccessRequestEntity> TelegramLibraryAccessRequests { get; set; } = null!;
+
     public DbSet<TelegramServiceRequestEntity> TelegramServiceRequests { get; set; } = null!;
 
     public DbSet<TelegramServiceRequestEventEntity> TelegramServiceRequestEvents { get; set; } = null!;

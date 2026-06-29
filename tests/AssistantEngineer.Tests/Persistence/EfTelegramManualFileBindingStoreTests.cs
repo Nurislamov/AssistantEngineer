@@ -1,6 +1,7 @@
 using AssistantEngineer.Infrastructure.Persistence;
 using AssistantEngineer.Infrastructure.Persistence.Repositories;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,7 +52,54 @@ public sealed class EfTelegramManualFileBindingStoreTests
             Assert.Equal(101, binding.UploadedByTelegramChatId);
             Assert.Equal("Owner", binding.RegisteredByRole);
             Assert.True(binding.IsActive);
+            Assert.Equal(TelegramLibraryDocumentType.ServiceManual, binding.DocumentType);
+            Assert.Equal(TelegramUserRole.Engineer, binding.MinRole);
+            Assert.True(binding.IsLibraryVisible);
+            Assert.False(binding.CanUseForDiagnostics);
         }
+    }
+
+    [Fact]
+    public async Task EfTelegramManualFileBindingStoreDiagnosticLookupOnlyReturnsOwnerOrUserGuideBindings()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await store.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-service-manual",
+            "telegram-file-id-service",
+            "Gree GMV6 Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            "Owner",
+            Brand: "Gree",
+            Series: "GMV6"));
+
+        Assert.Null(await store.GetDiagnosticBySeriesAsync("Gree", "GMV6"));
+
+        await store.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-owner-manual",
+            "telegram-file-id-owner",
+            "Gree GMV6 Owner Manual.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            "Owner",
+            Brand: "Gree",
+            Series: "GMV6",
+            DocumentType: TelegramLibraryDocumentType.OwnerManual,
+            MinRole: TelegramUserRole.Consumer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: true));
+
+        var diagnostic = await store.GetDiagnosticBySeriesAsync("gree", "gmv6");
+
+        Assert.NotNull(diagnostic);
+        Assert.Equal("telegram-file-id-owner", diagnostic.TelegramFileId);
+        Assert.Equal(TelegramLibraryDocumentType.OwnerManual, diagnostic.DocumentType);
+        Assert.True(diagnostic.CanUseForDiagnostics);
     }
 
     [Fact]
@@ -107,6 +155,11 @@ public sealed class EfTelegramManualFileBindingStoreTests
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.FileSize)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.UploadedByTelegramUserId)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.UploadedByTelegramChatId)));
+        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.Title)));
+        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.DocumentType)));
+        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.MinRole)));
+        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.IsLibraryVisible)));
+        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.CanUseForDiagnostics)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.IsActive)));
         Assert.Contains(
             entityType.GetIndexes(),
@@ -127,6 +180,9 @@ public sealed class EfTelegramManualFileBindingStoreTests
         Assert.Contains(
             Directory.EnumerateFiles(migrationsDirectory, "*AddTelegramManualBindings.cs"),
             path => path.EndsWith("AddTelegramManualBindings.cs", StringComparison.Ordinal));
+        Assert.Contains(
+            Directory.EnumerateFiles(migrationsDirectory, "*AddTelegramFileLibrary.cs"),
+            path => path.EndsWith("AddTelegramFileLibrary.cs", StringComparison.Ordinal));
     }
 
     private static async Task<SqliteConnection> OpenConnectionAsync()

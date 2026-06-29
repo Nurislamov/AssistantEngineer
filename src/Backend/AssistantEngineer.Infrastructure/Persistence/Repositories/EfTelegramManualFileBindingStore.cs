@@ -49,6 +49,31 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
         return binding is null ? null : ToBinding(binding);
     }
 
+    public async Task<TelegramManualFileBinding?> GetDiagnosticBySeriesAsync(
+        string brand,
+        string series,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var normalizedBrand = Normalize(brand);
+        var normalizedSeries = Normalize(series);
+        var binding = await context.TelegramManualBindings
+            .AsNoTracking()
+            .Where(item =>
+                item.IsActive &&
+                item.CanUseForDiagnostics &&
+                (item.DocumentType == TelegramLibraryDocumentType.OwnerManual ||
+                 item.DocumentType == TelegramLibraryDocumentType.UserGuide) &&
+                item.Brand != null &&
+                item.Series != null &&
+                item.Brand.ToLower() == normalizedBrand &&
+                item.Series.ToLower() == normalizedSeries)
+            .OrderByDescending(item => item.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        return binding is null ? null : ToBinding(binding);
+    }
+
     public async Task<IReadOnlyList<TelegramManualFileBinding>> ListAsync(
         CancellationToken cancellationToken = default)
     {
@@ -142,6 +167,11 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
         entity.UploadedByTelegramChatId = binding.UploadedByTelegramChatId;
         entity.RegisteredByRole = EmptyToNull(binding.RegisteredByRole);
         entity.Source = string.IsNullOrWhiteSpace(binding.Source) ? "TelegramManualBind" : binding.Source.Trim();
+        entity.Title = EmptyToNull(binding.Title);
+        entity.DocumentType = binding.DocumentType;
+        entity.MinRole = binding.MinRole;
+        entity.IsLibraryVisible = binding.IsLibraryVisible;
+        entity.CanUseForDiagnostics = binding.CanUseForDiagnostics;
         entity.IsActive = binding.IsActive;
         entity.UpdatedAt = now;
 
@@ -167,7 +197,12 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
             entity.UploadedByTelegramUserId,
             entity.UploadedByTelegramChatId,
             entity.IsActive,
-            entity.UpdatedAt);
+            entity.UpdatedAt,
+            entity.Title,
+            entity.DocumentType,
+            entity.MinRole,
+            entity.IsLibraryVisible,
+            entity.CanUseForDiagnostics);
 
     private static string Normalize(string? value) =>
         (value ?? string.Empty).Trim().ToLowerInvariant();

@@ -56,13 +56,18 @@ public sealed record TelegramUserAccessResult(
     bool IsAllowed,
     TelegramUserSnapshot? User,
     TelegramUserRole Role,
-    string? DenialReason = null)
+    string? DenialReason = null,
+    bool HasLibraryAccessGrant = false)
 {
     public bool IsConsumer => Role == TelegramUserRole.Consumer;
     public bool CanUseAdminCommands => TelegramUserRolePolicy.CanManageTelegramUsers(Role);
     public bool UsesTechnicalResponse => TelegramUserRolePolicy.CanViewTechnicalDiagnostics(Role);
     public bool CanUseServiceQueue => TelegramUserRolePolicy.CanUseServiceQueue(Role);
     public bool CanAccessDiagnosticManual => TelegramUserRolePolicy.CanAccessDiagnosticManual(Role);
+    public bool CanAccessLibrary =>
+        TelegramUserRolePolicy.CanAccessTelegramLibrary(Role, HasLibraryAccessGrant) &&
+        User?.IsEnabled == true &&
+        User.IsBlocked == false;
 }
 
 public sealed record TelegramUserCommandResult(

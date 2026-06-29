@@ -1276,6 +1276,10 @@ public sealed class TelegramDiagnosticConversationService
     public static EquipmentDiagnosticTelegramReplyMarkup MainKeyboard(TelegramUserAccessResult access)
     {
         var rows = CompactMainRows();
+        if (access.CanAccessLibrary)
+        {
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.LibraryButton)]);
+        }
 
         if (access.Role == TelegramUserRole.Consumer && access.User?.HasPhoneNumber != true)
         {
@@ -1322,7 +1326,7 @@ public sealed class TelegramDiagnosticConversationService
             [
                 [
                     new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton),
-                    new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.DiagnosticManualButton)
+                    new EquipmentDiagnosticTelegramKeyboardButton(TelegramManualLibraryService.DiagnosticGuideButton)
                 ],
                 [
                     new EquipmentDiagnosticTelegramKeyboardButton(HistoryButton),

@@ -48,6 +48,23 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         }
     }
 
+    public Task<TelegramManualFileBinding?> GetDiagnosticBySeriesAsync(
+        string brand,
+        string series,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var document = ReadDocument();
+            return Task.FromResult(document.Bindings
+                .Where(binding => binding.IsActive && binding.CanUseForDiagnostics && IsDiagnosticDocument(binding.DocumentType))
+                .FirstOrDefault(binding =>
+                    string.Equals(binding.Brand, brand, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase)));
+        }
+    }
+
     public Task<IReadOnlyList<TelegramManualFileBinding>> ListAsync(
         CancellationToken cancellationToken = default)
     {
@@ -163,4 +180,7 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
     private sealed record TelegramManualFileBindingDocument(
         int SchemaVersion,
         IReadOnlyList<TelegramManualFileBinding> Bindings);
+
+    private static bool IsDiagnosticDocument(TelegramLibraryDocumentType documentType) =>
+        documentType is TelegramLibraryDocumentType.OwnerManual or TelegramLibraryDocumentType.UserGuide;
 }

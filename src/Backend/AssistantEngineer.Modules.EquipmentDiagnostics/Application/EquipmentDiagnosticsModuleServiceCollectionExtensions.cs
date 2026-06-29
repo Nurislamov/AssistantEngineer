@@ -35,6 +35,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<ITelegramUserAuditEventStore, InMemoryTelegramUserAuditEventStore>();
         services.AddSingleton<ITelegramManualRegistrySource, TelegramManualRegistrySource>();
         services.AddSingleton<ITelegramManualFileBindingStore, FileTelegramManualFileBindingStore>();
+        services.AddSingleton<ITelegramLibraryAccessStore, InMemoryTelegramLibraryAccessStore>();
         services.AddSingleton<TelegramDisplayTimeFormatter>();
         services.AddSingleton<TelegramDiagnosticHistoryService>();
         services.AddSingleton<TelegramManualLibraryService>();

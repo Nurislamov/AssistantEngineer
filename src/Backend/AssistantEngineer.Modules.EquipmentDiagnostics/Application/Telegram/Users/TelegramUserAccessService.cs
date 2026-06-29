@@ -1,3 +1,5 @@
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
 public interface ITelegramUserAccessService
@@ -11,13 +13,16 @@ public sealed class TelegramUserAccessService : ITelegramUserAccessService
 {
     private readonly ITelegramUserStore _store;
     private readonly EquipmentDiagnosticTelegramOptions _options;
+    private readonly ITelegramLibraryAccessStore? _libraryAccessStore;
 
     public TelegramUserAccessService(
         ITelegramUserStore store,
-        EquipmentDiagnosticTelegramOptions options)
+        EquipmentDiagnosticTelegramOptions options,
+        ITelegramLibraryAccessStore? libraryAccessStore = null)
     {
         _store = store;
         _options = options;
+        _libraryAccessStore = libraryAccessStore;
     }
 
     public async Task<TelegramUserAccessResult> ResolveAccessAsync(
@@ -33,7 +38,7 @@ public sealed class TelegramUserAccessService : ITelegramUserAccessService
         if (ResolveBootstrapOwnerChatId() == update.ChatId)
         {
             var owner = await _store.EnsureBootstrapOwnerAsync(update, cancellationToken);
-            return Allowed(owner);
+            return await AllowedAsync(owner, cancellationToken);
         }
 
         var user = await _store.GetOrCreateConsumerAsync(update, cancellationToken);
@@ -49,7 +54,7 @@ public sealed class TelegramUserAccessService : ITelegramUserAccessService
             return Denied(user.Role, "Telegram user is disabled.", user);
         }
 
-        return Allowed(user);
+        return await AllowedAsync(user, cancellationToken);
     }
 
     private long? ResolveBootstrapOwnerChatId() =>
@@ -61,8 +66,16 @@ public sealed class TelegramUserAccessService : ITelegramUserAccessService
         update.Username is not null &&
         _options.DeniedUsernames.Contains(update.Username, StringComparer.OrdinalIgnoreCase);
 
-    private static TelegramUserAccessResult Allowed(TelegramUserSnapshot user) =>
-        new(true, user, user.Role);
+    private async Task<TelegramUserAccessResult> AllowedAsync(
+        TelegramUserSnapshot user,
+        CancellationToken cancellationToken)
+    {
+        var needsLibraryGrantLookup = user.Role is TelegramUserRole.Admin or TelegramUserRole.Engineer or TelegramUserRole.Installer;
+        var hasLibraryGrant = needsLibraryGrantLookup &&
+            _libraryAccessStore is not null &&
+            await _libraryAccessStore.HasActiveGrantAsync(user.Id, cancellationToken);
+        return new TelegramUserAccessResult(true, user, user.Role, HasLibraryAccessGrant: hasLibraryGrant);
+    }
 
     private static TelegramUserAccessResult Denied(
         TelegramUserRole role,

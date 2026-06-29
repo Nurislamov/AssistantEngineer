@@ -64,11 +64,13 @@ This checklist prepares a reviewed production deployment. It does not perform a 
 - Send one deterministic Telegram smoke message and verify the bounded response.
 - Verify canonical diagnostic casing in Telegram output and `/last`: `Gree D1` shows/stores `d1`, `Gree O1`
   shows/stores `o1`, `Gree l1` shows/stores `L1`, and `Gree 01` is not treated as `o1`.
-- After a completed technical diagnostic, verify `/manuals` sends connected manuals and lists any missing manuals.
-- From Owner/Admin, verify `/manual_register <manualId>` only accepts an attached or reply-to Telegram document,
-  `/manual_unregister <manualId>` removes a binding, and `/manual_bindings` lists only safe display names, document
-  codes, connection state, and safe original filenames.
-- Confirm Consumer/Installer/Engineer cannot register, unregister, or list manual bindings.
+- After a completed Gree diagnostic, verify `📘 Руководство` never sends a service manual; it sends only an
+  Owner/User manual when one is bound for diagnostics, otherwise it returns `Руководство пока не добавлено`.
+- From Owner, verify `/manual_bind` stores a protected service/library file by series and `/manual_bindings` lists only
+  safe display names, document codes, connection state, and safe original filenames.
+- Confirm Admin/Consumer/Installer/Engineer cannot register, bind, unregister, or list manual bindings by default.
+- From Owner, verify `/library`, `/library_grant <chatId>`, `/library_revoke <chatId>`, and access request
+  approve/reject; confirm `📚 Библиотека` is visible only to Owner or granted Admin/Engineer/Installer users.
 - From the bootstrap owner, verify `/admin users`, role promotion, block/unblock, disable/enable, and Consumer help
   hiding admin commands.
 - Confirm production logs do not print EF/Npgsql SQL command text at Information level and no

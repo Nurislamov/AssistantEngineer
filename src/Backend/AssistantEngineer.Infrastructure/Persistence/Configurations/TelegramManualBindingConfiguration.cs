@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -43,6 +44,29 @@ public sealed class TelegramManualBindingConfiguration : IEntityTypeConfiguratio
             .HasMaxLength(64)
             .IsRequired();
 
+        builder.Property(binding => binding.Title)
+            .HasMaxLength(256);
+
+        builder.Property(binding => binding.DocumentType)
+            .HasConversion<string>()
+            .HasMaxLength(32)
+            .HasDefaultValue(TelegramLibraryDocumentType.ServiceManual)
+            .IsRequired();
+
+        builder.Property(binding => binding.MinRole)
+            .HasConversion<string>()
+            .HasMaxLength(32)
+            .HasDefaultValue(TelegramUserRole.Engineer)
+            .IsRequired();
+
+        builder.Property(binding => binding.IsLibraryVisible)
+            .HasDefaultValue(true)
+            .IsRequired();
+
+        builder.Property(binding => binding.CanUseForDiagnostics)
+            .HasDefaultValue(false)
+            .IsRequired();
+
         builder.Property(binding => binding.IsActive)
             .HasDefaultValue(true)
             .IsRequired();
@@ -52,5 +76,6 @@ public sealed class TelegramManualBindingConfiguration : IEntityTypeConfiguratio
 
         builder.HasIndex(binding => binding.ManualId);
         builder.HasIndex(binding => new { binding.Brand, binding.Series, binding.IsActive });
+        builder.HasIndex(binding => new { binding.Brand, binding.Series, binding.DocumentType, binding.CanUseForDiagnostics, binding.IsActive });
     }
 }

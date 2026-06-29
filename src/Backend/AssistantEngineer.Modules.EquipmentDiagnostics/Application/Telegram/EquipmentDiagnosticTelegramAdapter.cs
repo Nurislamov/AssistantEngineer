@@ -78,7 +78,29 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                         [],
                         ParseMode: TelegramHtml.ParseMode,
                         CallbackAnswerText: "Мануал недоступен")
-                    : await _manualLibraryService.RequestDiagnosticManualAsync(callbackAccess, cancellationToken);
+                    : await _manualLibraryService.RequestDiagnosticGuideAsync(callbackAccess, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    manualResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    manualResult.Warnings,
+                    manualResult.ReplyMarkup ?? TelegramDiagnosticConversationService.MainKeyboard(callbackAccess),
+                    manualResult.Messages,
+                    callbackAnswerText: manualResult.CallbackAnswerText,
+                    parseMode: manualResult.ParseMode);
+            }
+
+            if (TelegramManualLibraryService.IsLibraryCallback(update.CallbackData))
+            {
+                var callbackAccess = await _accessService.ResolveAccessAsync(update, cancellationToken);
+                if (!callbackAccess.IsAllowed)
+                {
+                    return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+                }
+
+                var manualResult = _manualLibraryService is null
+                    ? new TelegramManualLibraryResult("Действие библиотеки недоступно или устарело.", [], CallbackAnswerText: "Недоступно")
+                    : await _manualLibraryService.HandleLibraryCallbackAsync(update, callbackAccess, cancellationToken);
                 return Response(
                     update.ChatId,
                     manualResult.Text,
@@ -463,7 +485,11 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         result = await _manualLibraryService.TryContinueManualBindAsync(update, access, cancellationToken);
         if (result is null && TelegramManualLibraryService.IsDiagnosticManualRequest(update.Text))
         {
-            result = await _manualLibraryService.RequestDiagnosticManualAsync(access, cancellationToken);
+            result = await _manualLibraryService.RequestDiagnosticGuideAsync(access, cancellationToken);
+        }
+        else if (result is null && TelegramManualLibraryService.IsLibraryRequest(update.Text))
+        {
+            result = await _manualLibraryService.OpenLibraryAsync(update, access, cancellationToken);
         }
         else if (result is null && TelegramManualLibraryService.IsManualBindCommand(update.Text))
         {

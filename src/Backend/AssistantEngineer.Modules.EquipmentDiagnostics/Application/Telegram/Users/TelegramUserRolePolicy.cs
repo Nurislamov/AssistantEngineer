@@ -33,7 +33,35 @@ public static class TelegramUserRolePolicy
             TelegramUserRole.Installer;
 
     public static bool CanAccessDiagnosticManual(TelegramUserRole role) =>
-        CanViewTechnicalDiagnostics(role);
+        true;
+
+    public static bool CanAccessTelegramLibrary(
+        TelegramUserRole role,
+        bool hasActiveGrant) =>
+        role == TelegramUserRole.Owner ||
+        hasActiveGrant && role is TelegramUserRole.Admin or TelegramUserRole.Engineer or TelegramUserRole.Installer;
+
+    public static bool CanRequestTelegramLibraryAccess(TelegramUserRole role) =>
+        role is TelegramUserRole.Admin or TelegramUserRole.Engineer or TelegramUserRole.Installer;
+
+    public static bool CanManageTelegramLibrary(TelegramUserRole role) =>
+        role == TelegramUserRole.Owner;
+
+    public static bool HasAtLeastRole(
+        TelegramUserRole actual,
+        TelegramUserRole required) =>
+        RoleRank(actual) <= RoleRank(required);
+
+    private static int RoleRank(TelegramUserRole role) =>
+        role switch
+        {
+            TelegramUserRole.Owner => 0,
+            TelegramUserRole.Admin => 1,
+            TelegramUserRole.Engineer => 2,
+            TelegramUserRole.Installer => 3,
+            TelegramUserRole.Consumer => 4,
+            _ => 5
+        };
 
     public static string DisplayName(TelegramUserRole role) =>
         role switch

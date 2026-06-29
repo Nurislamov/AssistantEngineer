@@ -13,6 +13,9 @@ public sealed class TelegramManualLibraryService
     public const string ManualLibraryButton = "📘 Руководства";
     public const string DiagnosticManualButton = "📄 Мануал";
     public const string DiagnosticManualCallbackData = "dm:open";
+    public const string LibraryButton = "📚 Библиотека";
+    public const string DiagnosticGuideButton = "📘 Руководство";
+    private const string LibraryCommand = "/library";
     private const string ManualRequestCommand = "/manuals";
     private const string ManualRegisterCommand = "/manual_register";
     private const string ManualUnregisterCommand = "/manual_unregister";
@@ -23,6 +26,15 @@ public sealed class TelegramManualLibraryService
     private const string ManualBindConfirm = "mb:c:bind";
     private const string ManualBindReplace = "mb:c:replace";
     private const string ManualBindCancel = "mb:c:cancel";
+    private const string LibraryCallbackPrefix = "lib:";
+    private const string LibraryGrantPrefix = "lib:g:";
+    private const string LibraryRevokePrefix = "lib:r:";
+    private const string LibraryApprovePrefix = "lib:approve:";
+    private const string LibraryRejectPrefix = "lib:reject:";
+    private const string LibraryRequestAccessCallback = "lib:req";
+    private const string LibraryOpenCallback = "lib:open";
+    private const string LibraryGreeCallback = "lib:brand:gree";
+    private const string LibraryRequestsCallback = "lib:reqs";
     private const string BrandGree = "Gree";
 
     private static readonly IReadOnlyList<ManualSeriesOption> SupportedSeries =
@@ -38,6 +50,8 @@ public sealed class TelegramManualLibraryService
     private readonly IErrorKnowledgeLocalizationSource _localizedKnowledge;
     private readonly ITelegramManualRegistrySource _manualRegistry;
     private readonly ITelegramManualFileBindingStore _bindingStore;
+    private readonly ITelegramUserStore _userStore;
+    private readonly ITelegramLibraryAccessStore _libraryAccessStore;
     private readonly ConcurrentDictionary<long, ManualBindSession> _manualBindSessions = new();
 
     public TelegramManualLibraryService(
@@ -45,20 +59,31 @@ public sealed class TelegramManualLibraryService
         ITelegramDiagnosticCaseStore historyStore,
         IErrorKnowledgeLocalizationSource localizedKnowledge,
         ITelegramManualRegistrySource manualRegistry,
-        ITelegramManualFileBindingStore bindingStore)
+        ITelegramManualFileBindingStore bindingStore,
+        ITelegramUserStore userStore,
+        ITelegramLibraryAccessStore libraryAccessStore)
     {
         _options = options;
         _historyStore = historyStore;
         _localizedKnowledge = localizedKnowledge;
         _manualRegistry = manualRegistry;
         _bindingStore = bindingStore;
+        _userStore = userStore;
+        _libraryAccessStore = libraryAccessStore;
     }
 
     public static bool IsManualRequest(string? text) =>
         string.Equals(text?.Trim(), ManualRequestCommand, StringComparison.OrdinalIgnoreCase) ||
         string.Equals(text?.Trim(), ManualLibraryButton, StringComparison.Ordinal);
 
+    public static bool IsLibraryRequest(string? text) =>
+        string.Equals(text?.Trim(), LibraryCommand, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(text?.Trim(), LibraryButton, StringComparison.Ordinal) ||
+        text?.TrimStart().StartsWith("/library_grant ", StringComparison.OrdinalIgnoreCase) == true ||
+        text?.TrimStart().StartsWith("/library_revoke ", StringComparison.OrdinalIgnoreCase) == true;
+
     public static bool IsDiagnosticManualRequest(string? text) =>
+        string.Equals(text?.Trim(), DiagnosticGuideButton, StringComparison.Ordinal) ||
         string.Equals(text?.Trim(), DiagnosticManualButton, StringComparison.Ordinal);
 
     public static bool IsDiagnosticManualCallback(string? callbackData) =>
@@ -78,6 +103,9 @@ public sealed class TelegramManualLibraryService
 
     public static bool IsManualBindCallback(string? callbackData) =>
         callbackData?.StartsWith(ManualBindCallbackPrefix, StringComparison.Ordinal) == true;
+
+    public static bool IsLibraryCallback(string? callbackData) =>
+        callbackData?.StartsWith(LibraryCallbackPrefix, StringComparison.Ordinal) == true;
 
     public async Task<TelegramManualLibraryResult> RequestManualsAsync(
         EquipmentDiagnosticTelegramUpdate update,
@@ -144,6 +172,78 @@ public sealed class TelegramManualLibraryService
             ];
 
         return new TelegramManualLibraryResult(text, [], outbound);
+    }
+
+    public async Task<TelegramManualLibraryResult> RequestDiagnosticGuideAsync(
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return ManualUnavailable("Библиотека руководств сейчас выключена.");
+        }
+
+        if (!IsActiveUser(access))
+        {
+            return ManualUnavailable("Доступ ограничен.");
+        }
+
+        if (access.User is null)
+        {
+            return MissingDiagnosticContext();
+        }
+
+        var last = await _historyStore.GetLastForTelegramUserAsync(access.User.Id, cancellationToken);
+        var series = last is null ? null : DiagnosticSeries(last);
+        if (last is null ||
+            last.Status != TelegramDiagnosticCaseStatus.Completed ||
+            string.IsNullOrWhiteSpace(last.Manufacturer) ||
+            !string.Equals(last.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(last.Code) ||
+            string.IsNullOrWhiteSpace(series))
+        {
+            return MissingDiagnosticContext();
+        }
+
+        var replyMarkup = TelegramDiagnosticConversationService.DiagnosticManualContextKeyboard(access);
+        var equipment = $"{last.Manufacturer} {series}";
+        var binding = await _bindingStore.GetDiagnosticBySeriesAsync(BrandGree, series, cancellationToken);
+        if (binding is null)
+        {
+            return Html(
+                $"{TelegramHtml.Bold("Руководство пока не добавлено")}\n\n" +
+                $"Для {TelegramHtml.Escape(equipment)} / {TelegramHtml.Escape(last.Code)} есть диагностическая карточка, " +
+                "но безопасное Owner/User руководство для диагностики пока не привязано.",
+                callbackAnswerText: "Руководство не добавлено",
+                replyMarkup: replyMarkup);
+        }
+
+        var heading =
+            $"{TelegramHtml.Bold("Руководство по диагностике")}\n\n" +
+            $"{TelegramHtml.Bold("Оборудование:")} {TelegramHtml.Escape(equipment)}\n" +
+            $"{TelegramHtml.Bold("Код:")} {TelegramHtml.Escape(last.Code)}\n\n" +
+            "Отправляю сохранённое Owner/User руководство для этой серии.";
+        var messages = new List<EquipmentDiagnosticTelegramOutboundMessage>
+        {
+            new(
+                heading,
+                ParseMode: TelegramHtml.ParseMode,
+                ReplyMarkup: replyMarkup),
+            new(
+                "Сохранённое руководство по последней диагностике.",
+                ReplyMarkup: replyMarkup,
+                DocumentFileId: binding.TelegramFileId,
+                DocumentFileName: binding.OriginalFileName,
+                ProtectContent: true)
+        };
+
+        return new TelegramManualLibraryResult(
+            heading,
+            [],
+            messages,
+            TelegramHtml.ParseMode,
+            "Отправляю руководство",
+            replyMarkup);
     }
 
     public async Task<TelegramManualLibraryResult> RequestDiagnosticManualAsync(
@@ -369,6 +469,112 @@ public sealed class TelegramManualLibraryService
         return Text(builder.ToString().Trim());
     }
 
+    public async Task<TelegramManualLibraryResult> OpenLibraryAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return Text("Библиотека файлов сейчас выключена.");
+        }
+
+        var text = update.Text?.Trim() ?? string.Empty;
+        if (text.StartsWith("/library_grant ", StringComparison.OrdinalIgnoreCase) ||
+            text.StartsWith("/library_revoke ", StringComparison.OrdinalIgnoreCase))
+        {
+            return await HandleLibraryAccessCommandAsync(text, access, cancellationToken);
+        }
+
+        if (!IsActiveUser(access))
+        {
+            return Text("Доступ ограничен.");
+        }
+
+        if (access.Role == TelegramUserRole.Consumer)
+        {
+            return Text("Раздел библиотеки недоступен для вашей роли.");
+        }
+
+        if (!access.CanAccessLibrary)
+        {
+            return BindText(
+                "Доступ к библиотеке файлов не выдан.\n\nВы можете отправить запрос владельцу.",
+                AccessRequestKeyboard());
+        }
+
+        return BuildLibraryHome(access);
+    }
+
+    public async Task<TelegramManualLibraryResult> HandleLibraryCallbackAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.ManualLibrary.Enabled)
+        {
+            return Text("Библиотека файлов сейчас выключена.");
+        }
+
+        if (!IsActiveUser(access))
+        {
+            return BindText("Доступ ограничен.", callbackAnswerText: "Доступ ограничен");
+        }
+
+        var callback = update.CallbackData ?? string.Empty;
+        if (string.Equals(callback, LibraryRequestAccessCallback, StringComparison.Ordinal))
+        {
+            if (!TelegramUserRolePolicy.CanRequestTelegramLibraryAccess(access.Role) || access.User is null)
+            {
+                return BindText("Раздел библиотеки недоступен для вашей роли.", callbackAnswerText: "Недоступно");
+            }
+
+            var request = await _libraryAccessStore.CreateOrGetPendingRequestAsync(access.User, cancellationToken: cancellationToken);
+            return BindText(
+                $"Запрос доступа к библиотеке отправлен владельцу. Номер запроса: {request.Id}.",
+                callbackAnswerText: "Запрос отправлен");
+        }
+
+        if (callback.StartsWith(LibraryApprovePrefix, StringComparison.Ordinal) ||
+            callback.StartsWith(LibraryRejectPrefix, StringComparison.Ordinal))
+        {
+            return await ResolveLibraryAccessRequestAsync(callback, access, cancellationToken);
+        }
+
+        if (callback.StartsWith(LibraryGrantPrefix, StringComparison.Ordinal) ||
+            callback.StartsWith(LibraryRevokePrefix, StringComparison.Ordinal))
+        {
+            return await HandleLibraryAccessCallbackAsync(callback, access, cancellationToken);
+        }
+
+        if (!access.CanAccessLibrary)
+        {
+            return BindText("Доступ к библиотеке файлов не выдан.", AccessRequestKeyboard(), "Нет доступа");
+        }
+
+        if (string.Equals(callback, LibraryOpenCallback, StringComparison.Ordinal))
+        {
+            return BuildLibraryHome(access);
+        }
+
+        if (string.Equals(callback, LibraryGreeCallback, StringComparison.Ordinal))
+        {
+            return await BuildGreeCatalogAsync(access, cancellationToken);
+        }
+
+        if (string.Equals(callback, LibraryRequestsCallback, StringComparison.Ordinal))
+        {
+            return await BuildAccessRequestsAsync(access, cancellationToken);
+        }
+
+        if (callback.StartsWith("lib:file:", StringComparison.Ordinal))
+        {
+            return await SendLibraryFileAsync(callback["lib:file:".Length..], access, cancellationToken);
+        }
+
+        return BindText("Действие библиотеки устарело.", callbackAnswerText: "Действие устарело");
+    }
+
     public Task<TelegramManualLibraryResult> StartManualBindAsync(
         TelegramUserAccessResult access,
         CancellationToken cancellationToken = default)
@@ -525,6 +731,301 @@ public sealed class TelegramManualLibraryService
             ConfirmKeyboard(existing is not null));
     }
 
+    private async Task<TelegramManualLibraryResult> HandleLibraryAccessCommandAsync(
+        string text,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (!CanManageLibrary(access.Role) || access.User is null)
+        {
+            return Text("Управление доступом к библиотеке доступно только владельцу.");
+        }
+
+        var parts = SplitCommand(text);
+        if (parts.Length != 2 || !long.TryParse(parts[1], out var chatId))
+        {
+            return Text("Команда ожидает chatId: /library_grant <chatId> или /library_revoke <chatId>.");
+        }
+
+        var user = await _userStore.GetByChatIdAsync(chatId, cancellationToken);
+        if (user is null)
+        {
+            return Text("Пользователь не найден.");
+        }
+
+        if (!CanGrantLibraryTo(user))
+        {
+            return Text("Доступ к библиотеке можно выдать только активному Admin/Engineer/Installer.");
+        }
+
+        if (text.StartsWith("/library_grant", StringComparison.OrdinalIgnoreCase))
+        {
+            await _libraryAccessStore.GrantAsync(user.Id, access.User.Id, "Owner grant", cancellationToken);
+            return Text($"Доступ к библиотеке выдан: {SafeUserLabel(user)}.");
+        }
+
+        var revoked = await _libraryAccessStore.RevokeAsync(user.Id, access.User.Id, cancellationToken);
+        return Text(revoked
+            ? $"Доступ к библиотеке отозван: {SafeUserLabel(user)}."
+            : $"Активный доступ к библиотеке не найден: {SafeUserLabel(user)}.");
+    }
+
+    private async Task<TelegramManualLibraryResult> HandleLibraryAccessCallbackAsync(
+        string callback,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (!CanManageLibrary(access.Role) || access.User is null)
+        {
+            return BindText("Управление доступом к библиотеке доступно только владельцу.", callbackAnswerText: "Нет доступа");
+        }
+
+        var grant = callback.StartsWith(LibraryGrantPrefix, StringComparison.Ordinal);
+        var prefix = grant ? LibraryGrantPrefix : LibraryRevokePrefix;
+        if (!long.TryParse(callback[prefix.Length..], out var userId))
+        {
+            return BindText("Пользователь не найден.", callbackAnswerText: "Ошибка");
+        }
+
+        var user = await _userStore.GetByIdAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            return BindText("Пользователь не найден.", callbackAnswerText: "Не найден");
+        }
+
+        if (grant)
+        {
+            if (!CanGrantLibraryTo(user))
+            {
+                return BindText("Доступ к библиотеке можно выдать только активному Admin/Engineer/Installer.", callbackAnswerText: "Нельзя выдать");
+            }
+
+            await _libraryAccessStore.GrantAsync(user.Id, access.User.Id, "Owner grant", cancellationToken);
+            return BindText($"Доступ к библиотеке выдан: {SafeUserLabel(user)}.", callbackAnswerText: "Доступ выдан");
+        }
+
+        var revoked = await _libraryAccessStore.RevokeAsync(user.Id, access.User.Id, cancellationToken);
+        return BindText(revoked ? "Доступ к библиотеке отозван." : "Активный доступ уже отсутствует.", callbackAnswerText: "Готово");
+    }
+
+    private async Task<TelegramManualLibraryResult> ResolveLibraryAccessRequestAsync(
+        string callback,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (!CanManageLibrary(access.Role) || access.User is null)
+        {
+            return BindText("Управление доступом к библиотеке доступно только владельцу.", callbackAnswerText: "Нет доступа");
+        }
+
+        var approve = callback.StartsWith(LibraryApprovePrefix, StringComparison.Ordinal);
+        var prefix = approve ? LibraryApprovePrefix : LibraryRejectPrefix;
+        if (!long.TryParse(callback[prefix.Length..], out var requestId))
+        {
+            return BindText("Запрос не найден.", callbackAnswerText: "Ошибка");
+        }
+
+        var request = await _libraryAccessStore.GetRequestAsync(requestId, cancellationToken);
+        if (request is null || request.Status != TelegramLibraryAccessRequestStatus.Pending)
+        {
+            return BindText("Запрос уже обработан или устарел.", callbackAnswerText: "Устарело");
+        }
+
+        var user = await _userStore.GetByIdAsync(request.TelegramUserId, cancellationToken);
+        if (user is null || !CanGrantLibraryTo(user))
+        {
+            await _libraryAccessStore.ResolveRequestAsync(
+                requestId,
+                TelegramLibraryAccessRequestStatus.Rejected,
+                access.User.Id,
+                cancellationToken);
+            return BindText("Запрос отклонён: пользователь не подходит для доступа к библиотеке.", callbackAnswerText: "Отклонено");
+        }
+
+        var status = approve
+            ? TelegramLibraryAccessRequestStatus.Approved
+            : TelegramLibraryAccessRequestStatus.Rejected;
+        await _libraryAccessStore.ResolveRequestAsync(requestId, status, access.User.Id, cancellationToken);
+        if (approve)
+        {
+            await _libraryAccessStore.GrantAsync(user.Id, access.User.Id, "Approved access request", cancellationToken);
+        }
+
+        return BindText(
+            approve
+                ? $"Запрос одобрен. Доступ выдан: {SafeUserLabel(user)}."
+                : $"Запрос отклонён: {SafeUserLabel(user)}.",
+            callbackAnswerText: approve ? "Одобрено" : "Отклонено");
+    }
+
+    private TelegramManualLibraryResult BuildLibraryHome(TelegramUserAccessResult access)
+    {
+        var rows = new List<IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>>();
+        rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Gree", LibraryGreeCallback)]);
+        rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Пульты", "lib:brand:remotes")]);
+
+        if (CanManageLibrary(access.Role))
+        {
+            rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Запросы доступа", LibraryRequestsCallback)]);
+            rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Управление доступом", "lib:access")]);
+        }
+
+        rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Отмена", "lib:cancel")]);
+        return BindText(
+            "📚 Библиотека файлов\n\nВыберите раздел:",
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            "Библиотека");
+    }
+
+    private async Task<TelegramManualLibraryResult> BuildGreeCatalogAsync(
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var bindings = (await _bindingStore.ListAsync(cancellationToken))
+            .Where(binding =>
+                binding.IsActive &&
+                binding.IsLibraryVisible &&
+                string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
+                CanAccessBinding(access, binding))
+            .OrderBy(binding => binding.Series, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(binding => binding.Title ?? binding.OriginalFileName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (bindings.Length == 0)
+        {
+            return BindText(
+                "В этом разделе пока нет доступных вам файлов.",
+                new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard:
+                [
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryOpenCallback)]
+                ]),
+                "Нет файлов");
+        }
+
+        var rows = bindings
+            .Select(binding => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton($"📄 {DisplayBindingTitle(binding)}", $"lib:file:{SeriesSlug(binding.Series)}")])
+            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryOpenCallback)])
+            .ToArray();
+
+        return BindText(
+            "Gree\n\nДоступные файлы:",
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            "Gree");
+    }
+
+    private async Task<TelegramManualLibraryResult> BuildAccessRequestsAsync(
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (!CanManageLibrary(access.Role))
+        {
+            return BindText("Управление доступом к библиотеке доступно только владельцу.", callbackAnswerText: "Нет доступа");
+        }
+
+        var requests = await _libraryAccessStore.ListPendingRequestsAsync(10, cancellationToken);
+        if (requests.Count == 0)
+        {
+            return BindText("Новых запросов доступа нет.", callbackAnswerText: "Запросов нет");
+        }
+
+        var rows = requests
+            .SelectMany(request => new[]
+            {
+                (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton($"Одобрить #{request.Id}", LibraryApprovePrefix + request.Id)],
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton($"Отклонить #{request.Id}", LibraryRejectPrefix + request.Id)]
+            })
+            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryOpenCallback)])
+            .ToArray();
+        var text = new StringBuilder("Запросы доступа");
+        foreach (var request in requests)
+        {
+            text.AppendLine();
+            text.AppendLine($"#{request.Id}: chat {request.TelegramChatId}, role {request.RequestedRole}");
+        }
+
+        return BindText(text.ToString().Trim(), new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows));
+    }
+
+    private async Task<TelegramManualLibraryResult> SendLibraryFileAsync(
+        string seriesSlug,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var series = SupportedSeries.FirstOrDefault(item => SeriesSlug(item.Series) == seriesSlug);
+        if (series is null)
+        {
+            return BindText("Файл не найден.", callbackAnswerText: "Не найден");
+        }
+
+        var binding = await _bindingStore.GetBySeriesAsync(BrandGree, series.Series, cancellationToken);
+        if (binding is null || !binding.IsActive || !binding.IsLibraryVisible || !CanAccessBinding(access, binding))
+        {
+            return BindText("Файл недоступен.", callbackAnswerText: "Нет доступа");
+        }
+
+        var replyMarkup = TelegramDiagnosticConversationService.MainKeyboard(access);
+        var text = $"Отправляю файл: {DisplayBindingTitle(binding)}";
+        return new TelegramManualLibraryResult(
+            text,
+            [],
+            [
+                new EquipmentDiagnosticTelegramOutboundMessage(text, ReplyMarkup: replyMarkup),
+                new EquipmentDiagnosticTelegramOutboundMessage(
+                    DisplayBindingTitle(binding),
+                    ReplyMarkup: replyMarkup,
+                    DocumentFileId: binding.TelegramFileId,
+                    DocumentFileName: binding.OriginalFileName,
+                    ProtectContent: true)
+            ],
+            CallbackAnswerText: "Отправляю файл",
+            ReplyMarkup: replyMarkup);
+    }
+
+    private static bool IsActiveUser(TelegramUserAccessResult access) =>
+        access.IsAllowed &&
+        access.User is { IsEnabled: true, IsBlocked: false };
+
+    private static bool CanManageLibrary(TelegramUserRole role) =>
+        TelegramUserRolePolicy.CanManageTelegramLibrary(role);
+
+    private static bool CanManageManuals(TelegramUserRole role) =>
+        role == TelegramUserRole.Owner;
+
+    private static bool CanGrantLibraryTo(TelegramUserSnapshot user) =>
+        user.IsEnabled &&
+        !user.IsBlocked &&
+        user.Role is TelegramUserRole.Admin or TelegramUserRole.Engineer or TelegramUserRole.Installer;
+
+    private static bool CanAccessBinding(
+        TelegramUserAccessResult access,
+        TelegramManualFileBinding binding) =>
+        access.User is { IsEnabled: true, IsBlocked: false } &&
+        access.CanAccessLibrary &&
+        TelegramUserRolePolicy.HasAtLeastRole(access.Role, binding.MinRole);
+
+    private static string SafeUserLabel(TelegramUserSnapshot user) =>
+        !string.IsNullOrWhiteSpace(user.Username)
+            ? $"@{user.Username}"
+            : $"chat {user.TelegramChatId}";
+
+    private static string DisplayBindingTitle(TelegramManualFileBinding binding) =>
+        string.IsNullOrWhiteSpace(binding.Title)
+            ? SafeFileName(binding.OriginalFileName) ?? "Telegram file"
+            : binding.Title.Trim();
+
+    private static string SeriesSlug(string? value) =>
+        NormalizeFileToken(value ?? string.Empty);
+
+    private static EquipmentDiagnosticTelegramReplyMarkup AccessRequestKeyboard() =>
+        new(
+            InlineKeyboard:
+            [
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton("🔐 Запросить доступ", LibraryRequestAccessCallback)],
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton("Отмена", "lib:cancel")]
+            ]);
+
     private IReadOnlyList<TelegramManualRegistryEntry> ResolveManuals(
         TelegramDiagnosticCaseSnapshot diagnosticCase,
         TelegramUserRole role,
@@ -627,10 +1128,7 @@ public sealed class TelegramManualLibraryService
         role is TelegramUserRole.Installer or TelegramUserRole.Engineer or TelegramUserRole.Admin or TelegramUserRole.Owner;
 
     private static bool CanRegisterManuals(TelegramUserRole role) =>
-        role is TelegramUserRole.Admin or TelegramUserRole.Owner;
-
-    private static bool CanManageManuals(TelegramUserRole role) =>
-        role is TelegramUserRole.Admin or TelegramUserRole.Owner;
+        role == TelegramUserRole.Owner;
 
     private static bool IsAllowedForRole(TelegramManualRegistryEntry manual, TelegramUserRole role) =>
         manual.EligibleForTelegramLibrary &&
@@ -798,7 +1296,12 @@ public sealed class TelegramManualLibraryService
             UploadedByTelegramUserId: candidate.UploadedByTelegramUserId,
             UploadedByTelegramChatId: candidate.UploadedByTelegramChatId,
             IsActive: true,
-            UpdatedAtUtc: now);
+            UpdatedAtUtc: now,
+            Title: candidate.FileName,
+            DocumentType: TelegramLibraryDocumentType.ServiceManual,
+            MinRole: TelegramUserRole.Engineer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false);
     }
 
     private static string SeriesManualId(ManualSeriesOption series) =>

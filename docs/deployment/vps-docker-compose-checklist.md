@@ -58,17 +58,17 @@
 - Before ED-24C.1 deployment, run `verify-published-error-knowledge.ps1`; rebuild the backend image so the repository
   error-knowledge JSON is copied into the Docker build and embedded in the published assembly. After deployment,
   verify a failed diagnostic sends the safe temporary-unavailable response and is not pre-marked as a duplicate.
-- After ED-24G.0 deployment, verify technical roles can open `/manuals` or the manual-library button after a completed
-  diagnostic, Consumer is denied, missing bindings show a safe not-connected message, and Admin/Owner can register a
-  Telegram document with `/manual_register <manualId>` from a private document message or reply. No migration or new
-  required environment value is needed.
+- After ED-24LIB.1 deployment, verify `📘 Руководство` after a completed Gree diagnostic sends only a diagnostic-enabled
+  Owner/User manual, returns `Руководство пока не добавлено` when none exists, and never falls back to a service manual.
+  No new required environment value is needed.
 - After ED-24G.1 deployment, keep `/opt/assistantengineer/artifacts/operations/` writable by the API container and
   mounted to `/app/artifacts/operations/`. The compose scaffold uses this host bind path for Telegram polling offset,
   processed-message idempotency files, and manual file bindings. The binding file may contain Telegram `file_id`
   values and must remain outside Git.
-- After ED-24G.1 deployment, verify Admin/Owner can use `/manual_unregister <manualId>` and `/manual_bindings`,
-  Consumer/Installer/Engineer cannot manage bindings, `/manuals` sends connected manuals while listing missing ones,
-  and code output/history/manual lookup preserves canonical JSON casing such as `d1`, `o1`, and `L1`.
+- After ED-24LIB.1 deployment, verify Owner can use `/manual_bind`, `/library`, `/library_grant <chatId>`, and
+  `/library_revoke <chatId>`; Admin/Consumer/Installer/Engineer cannot manage bindings by default; granted
+  Admin/Engineer/Installer users see `📚 Библиотека`; and code output/history/manual lookup preserves canonical JSON
+  casing such as `d1`, `o1`, and `L1`.
 
 ## Verification
 
