@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
@@ -113,6 +114,103 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Gree", InlineButtons(ownerLibrary), StringComparer.Ordinal);
         Assert.Contains("Доступ к библиотеке файлов не выдан", adminLibrary.Text, StringComparison.Ordinal);
         Assert.Contains("Запросить доступ", string.Join(" ", InlineButtons(adminLibrary)), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task FreshLibraryNavigationCallbacksDoNotReturnStaleAction()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var home = await adapter.HandleAsync(LibraryCallback("lib:open"));
+        var gree = await adapter.HandleAsync(LibraryCallback("lib:brand:gree"));
+        var remotes = await adapter.HandleAsync(LibraryCallback("lib:brand:remotes"));
+        var access = await adapter.HandleAsync(LibraryCallback("lib:access"));
+        var requests = await adapter.HandleAsync(LibraryCallback("lib:reqs"));
+        var cancel = await adapter.HandleAsync(LibraryCallback("lib:cancel"));
+
+        Assert.Contains("Gree", InlineButtons(home), StringComparer.Ordinal);
+        Assert.Contains("нет", gree.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Пульты", remotes.Text, StringComparison.Ordinal);
+        Assert.Contains("нет", remotes.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Управление доступом", access.Text, StringComparison.Ordinal);
+        Assert.Contains("Запросов нет", requests.CallbackAnswerText, StringComparison.Ordinal);
+        Assert.Contains("закрыта", cancel.Text, StringComparison.OrdinalIgnoreCase);
+        AssertNotStale(home);
+        AssertNotStale(gree);
+        AssertNotStale(remotes);
+        AssertNotStale(access);
+        AssertNotStale(requests);
+        AssertNotStale(cancel);
+    }
+
+    [Fact]
+    public async Task AccessRequestListShowsUserIdentityAndApproveNotifiesRequesterWithLibraryKeyboard()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound: outbound);
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        await CreateUserAsync(provider, 42, 420, "Ravilya_Nur", "Равиля", null, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(LibraryCallback("lib:req", chatId: 42, userId: 420, username: "Ravilya_Nur", firstName: "Равиля"));
+        var requests = await adapter.HandleAsync(LibraryCallback("lib:reqs"));
+        var approved = await adapter.HandleAsync(LibraryCallback("lib:approve:1"));
+        var requesterStart = await adapter.HandleAsync(Update("/start", chatId: 42, userId: 420, username: "Ravilya_Nur", firstName: "Равиля"));
+        var notification = Assert.Single(outbound.Messages);
+
+        Assert.Contains("Равиля", requests.Text, StringComparison.Ordinal);
+        Assert.Contains("@Ravilya_Nur", requests.Text, StringComparison.Ordinal);
+        Assert.Contains("Engineer", requests.Text, StringComparison.Ordinal);
+        Assert.Contains("chat: 42", requests.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("chat 42, role", requests.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("одобрен", approved.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(42, notification.ChatId);
+        Assert.True(
+            notification.Text.Contains("выдан", StringComparison.OrdinalIgnoreCase) ||
+            notification.Text.Contains("РІС‹РґР°РЅ", StringComparison.OrdinalIgnoreCase),
+            notification.Text);
+        Assert.Contains(TelegramManualLibraryService.LibraryButton, KeyboardButtons(notification.ReplyMarkup), StringComparer.Ordinal);
+        Assert.True(HasButton(requesterStart, TelegramManualLibraryService.LibraryButton));
+    }
+
+    [Fact]
+    public async Task RejectNotifiesRequesterWithoutLibraryKeyboard()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound: outbound);
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        await CreateUserAsync(provider, 43, 430, "installer_user", "Монтаж", null, TelegramUserRole.Installer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(LibraryCallback("lib:req", chatId: 43, userId: 430, username: "installer_user", firstName: "Монтаж"));
+        var rejected = await adapter.HandleAsync(LibraryCallback("lib:reject:1"));
+        var notification = Assert.Single(outbound.Messages);
+
+        Assert.Contains("отклон", rejected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(43, notification.ChatId);
+        Assert.True(
+            notification.Text.Contains("отклон", StringComparison.OrdinalIgnoreCase) ||
+            notification.Text.Contains("РѕС‚РєР»РѕРЅ", StringComparison.OrdinalIgnoreCase),
+            notification.Text);
+        Assert.DoesNotContain(TelegramManualLibraryService.LibraryButton, KeyboardButtons(notification.ReplyMarkup), StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public async Task AdminCannotApproveLibraryAccessRequest()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound: outbound);
+        await AllowAsync(provider, TelegramUserRole.Admin);
+        await CreateUserAsync(provider, 44, 440, "engineer_user", "Инженер", null, TelegramUserRole.Engineer);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(LibraryCallback("lib:req", chatId: 44, userId: 440, username: "engineer_user", firstName: "Инженер"));
+        var denied = await adapter.HandleAsync(LibraryCallback("lib:approve:1"));
+
+        Assert.Contains("владельцу", denied.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(outbound.Messages);
     }
 
     [Fact]
@@ -626,10 +724,17 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", o1.Text, StringComparison.Ordinal);
     }
 
-    private static ServiceProvider CreateProvider(string? bindingPath = null)
+    private static ServiceProvider CreateProvider(
+        string? bindingPath = null,
+        FakeOutbound? outbound = null)
     {
         var services = new ServiceCollection();
         services.AddEquipmentDiagnosticsModule();
+        if (outbound is not null)
+        {
+            services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient>(outbound);
+        }
+
         services.AddSingleton(Options(bindingPath));
         return services.BuildServiceProvider();
     }
@@ -640,6 +745,20 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     {
         var store = provider.GetRequiredService<ITelegramUserStore>();
         await store.AllowAsync(7, role);
+    }
+
+    private static async Task CreateUserAsync(
+        ServiceProvider provider,
+        long chatId,
+        long userId,
+        string? username,
+        string? firstName,
+        string? lastName,
+        TelegramUserRole role)
+    {
+        var store = provider.GetRequiredService<ITelegramUserStore>();
+        await store.GetOrCreateConsumerAsync(Update("/start", chatId, userId, username, firstName, lastName));
+        await store.SetRoleAsync(chatId, role);
     }
 
     private static EquipmentDiagnosticTelegramOptions Options(string? bindingPath) => new()
@@ -656,8 +775,14 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     private static string TempBindingPath() =>
         Path.Combine(Path.GetTempPath(), $"assistant-engineer-manual-bindings-{Guid.NewGuid():N}.json");
 
-    private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
-        new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text, UserId: 11);
+    private static EquipmentDiagnosticTelegramUpdate Update(
+        string text,
+        long chatId = 7,
+        long? userId = 11,
+        string? username = "operator",
+        string? firstName = null,
+        string? lastName = null) =>
+        new(UpdateId: 1, ChatId: chatId, Username: username, Text: text, UserId: userId, FirstName: firstName, LastName: lastName);
 
     private static EquipmentDiagnosticTelegramUpdate RegisterDocument(
         string caption,
@@ -710,13 +835,21 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             CallbackQueryId: "manual-bind-callback-query-id",
             CallbackData: callbackData);
 
-    private static EquipmentDiagnosticTelegramUpdate LibraryCallback(string callbackData) =>
+    private static EquipmentDiagnosticTelegramUpdate LibraryCallback(
+        string callbackData,
+        long chatId = 7,
+        long? userId = 11,
+        string? username = "operator",
+        string? firstName = null,
+        string? lastName = null) =>
         new(
             UpdateId: 6,
-            ChatId: 7,
-            Username: "operator",
+            ChatId: chatId,
+            Username: username,
             Text: null,
-            UserId: 11,
+            UserId: userId,
+            FirstName: firstName,
+            LastName: lastName,
             CallbackQueryId: "library-callback-query-id",
             CallbackData: callbackData);
 
@@ -746,6 +879,18 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .Select(button => button.Text)
             .ToArray();
 
+    private static string[] KeyboardButtons(EquipmentDiagnosticTelegramReplyMarkup? replyMarkup) =>
+        (replyMarkup?.Keyboard ?? [])
+            .SelectMany(row => row)
+            .Select(button => button.Text)
+            .ToArray();
+
+    private static void AssertNotStale(EquipmentDiagnosticTelegramResponse response)
+    {
+        Assert.DoesNotContain("Действие библиотеки устарело", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Действие устарело", response.CallbackAnswerText ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static void AssertNoDiagnosticSourceLeak(EquipmentDiagnosticTelegramResponse response)
     {
         foreach (var message in response.OutboundMessages)
@@ -770,5 +915,27 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain("D:\\", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("C:\\", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("artifacts/manual-intake", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private sealed class FakeOutbound : IEquipmentDiagnosticTelegramOutboundClient
+    {
+        public List<(long ChatId, string Text, EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup)> Messages { get; } = [];
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
+            long chatId,
+            string text,
+            string? parseMode,
+            bool disableWebPagePreview,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            CancellationToken cancellationToken = default)
+        {
+            Messages.Add((chatId, text, replyMarkup));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Sent."));
+        }
+
+        public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
+            IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Synced."));
     }
 }

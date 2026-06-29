@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24LIB.1 - CLOSED / pushed.
+ED-24LIB.1a - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+1. Discuss whether the next small follow-up should be ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24LIB.1 adds the protected Telegram file library foundation on top of existing manual bindings, with Owner-only library access management and grant-gated library delivery.
+ED-24LIB.1a fixes Telegram library callback freshness and access-management UX on top of the protected file library foundation, preserving Owner-only management and grant-gated delivery.
 
-Previous implementation commit: `8a3edb6a` (ED-24MAN.1).
+Previous implementation commit: `e7577c46` (ED-24LIB.1).
 
 Previous project-state commit: `2c842e6d`.
 
@@ -37,6 +37,7 @@ Previous project-state commit: `2c842e6d`.
 - ED-24USR.3 - CLOSED / production PASS.
 - ED-24MAN.1 - CLOSED / production PASS.
 - ED-24LIB.1 - CLOSED / pushed.
+- ED-24LIB.1a - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -291,6 +292,35 @@ Latest validation after ED-24LIB.1:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
+Latest validation after ED-24LIB.1a:
+
+- ED-24LIB.1a status: CLOSED / pushed.
+- Fixed fresh Telegram library callback stale handling for library navigation, Gree, remotes, access management, access requests, back/cancel, and repeated library opens.
+- Stable library navigation callbacks no longer depend on short-lived ephemeral state; the stale-action response is reserved for truly unknown or invalid callback payloads.
+- Access request lists now show requester display name, username when available, role, and chat id instead of only `chat <id>`.
+- Owner approve/reject actions notify the requester in private chat through bot `sendMessage`.
+- Approve sends a refreshed main reply keyboard with the Library entry when the requester still has valid role, enabled/unblocked state, and active grant.
+- Reject keeps the requester without the Library entry unless another active grant already allows access.
+- Revoke/grant management paths refresh the target user's keyboard when a notification can be delivered.
+- Owner-only approval is preserved; Admin cannot approve/reject or manage library access by default.
+- Library actions still re-check user existence, active/enabled state, blocked state, role, Owner implicit access, explicit non-owner grant, file `MinRole`, `IsActive`, and `IsLibraryVisible`.
+- Service manuals remain library-only.
+- Diagnostic context remains limited to `OwnerManual` / `UserGuide` documents marked for diagnostics.
+- Existing service manual bindings still do not bypass diagnostic policy.
+- Protected delivery through `sendDocument(file_id)` with protected content is preserved.
+- `forwardMessage` and `copyMessage` remain unused.
+- No migration was added for ED-24LIB.1a.
+- EF enum default/sentinel warnings for library/manual enum fields remain non-blocking known technical debt; revisit before OwnerManual upload/taxonomy flow.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused manual-library tests: PASS, 45/45 passed.
+- Focused Telegram manual/library/user/persistence tests: PASS, 756/756 passed.
+- Local Gree diagnostics smoke: PASS, 9/9 passed.
+- Full solution suite: PASS, 4970/4970 passed.
+- `git diff --check`: PASS.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
 Latest validation after ED-24MAN.1:
 
 - Implementation commit: `8a3edb6a`.
@@ -352,6 +382,7 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24LIB.1a - Telegram library callback freshness and access UX validated locally and pushed.
 - ED-24LIB.1 - protected Telegram file library foundation validated locally and pushed.
 - ED-24MAN.1 - protected Telegram manual binding validated locally, pushed, and production-confirmed.
 - ED-24USR.3 - persistent Telegram user roles validated locally and pushed.
@@ -370,6 +401,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+e7577c46 ED-24LIB.1 Add protected Telegram file library
 8a3edb6a ED-24MAN.1 Bind protected Telegram manuals
 6fbf2685 Update project state after ED-24MAN.1
 4231cb9d ED-24SRC.1a Fix diagnostic manual keyboard UX
@@ -409,9 +441,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24LIB.1 pushed.
+No active blocker after ED-24LIB.1a pushed.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF warning hygiene for HourlySchedule.Factors, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for HourlySchedule.Factors, or the next Gree diagnostics direction.
 

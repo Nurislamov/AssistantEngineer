@@ -1,6 +1,6 @@
 # Telegram file library
 
-Status: ED-24LIB.1 adds the protected Telegram file library foundation. It extends existing
+Status: ED-24LIB.1a has the protected Telegram file library foundation plus callback/UX fixes. It extends existing
 `TelegramManualBindings` instead of creating a parallel file-id system, adds persistent library access grants and
 requests, and changes diagnostic document delivery to Owner/User manuals only.
 
@@ -27,6 +27,8 @@ Library access is separate from Telegram role.
 - `Consumer`, disabled, blocked, and unknown users cannot open or fetch library files.
 - Every library command, callback, access request, grant/revoke action, and file-fetch callback re-checks role,
   enabled/blocked state, and active grant.
+- Normal library navigation uses stable callback routes for home, Gree, remotes, access requests, access management,
+  back, and cancel, so fresh inline buttons do not return the stale-action response.
 - Old callbacks after revoke fail safely.
 
 The main keyboard shows `📚 Библиотека` only when:
@@ -46,6 +48,11 @@ Owner can:
 - grant access with `/library_grant <chatId>`;
 - revoke access with `/library_revoke <chatId>`;
 - bind/rebind protected files through the existing `/manual_bind` workflow.
+
+Access request lists show the requester's display name, username when available, role, and chat id. Approve/reject
+actions notify the requester in private chat through bot `sendMessage`; approve includes a refreshed main keyboard with
+the library entry when access is valid, while reject keeps the library entry hidden unless another active grant allows it.
+Grant/revoke paths also refresh the target user's keyboard when the notification can be delivered.
 
 Admin cannot approve/reject requests, grant/revoke access, or bind/rebind files by default.
 
