@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24USR.3 - CLOSED / production PASS.
+ED-24MAN.1 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be phone update button visibility, manual binding/upload workflow, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+1. Discuss whether the next small follow-up should be phone update button visibility, protected manual binding production live-check, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24USR.3 persists Telegram user roles/access state in the existing EF Core database store and passed production restart validation on `assistantengineer-beta-01`.
+ED-24MAN.1 binds protected Telegram manuals by series using persistent EF Core `TelegramManualBindings` records and protected `sendDocument(file_id)` delivery.
 
-Commit: `a33ea0ea`.
+Implementation commit: `8a3edb6a`.
 
 ## Current working point
 
@@ -33,6 +33,7 @@ Commit: `a33ea0ea`.
 - ED-24USR.2 - CLOSED / pushed.
 - ED-24SRC.1a - CLOSED / production PASS.
 - ED-24USR.3 - CLOSED / production PASS.
+- ED-24MAN.1 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -259,13 +260,40 @@ Latest production validation after ED-24USR.3:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deployment scripts unchanged.
 
+Latest validation after ED-24MAN.1:
+
+- Implementation commit: `8a3edb6a`.
+- ED-24MAN.1 status: CLOSED / pushed.
+- Admin/Owner `/manual_bind` flow added: choose Gree series, send PDF document to the bot, validate filename/series, confirm bind, and explicitly confirm replacement for an existing active series binding.
+- Supported production series bindings: Gree GMV6, Gree GMV Mini, Gree GMV X, and Gree GMV9 Flex.
+- Production manual bindings use existing EF Core persistence through `TelegramManualBindings` and migration `20260629042754_AddTelegramManualBindings`.
+- Stored binding metadata includes Telegram `file_id`, optional `file_unique_id`, safe filename, content type, file size, uploader Telegram user/chat ids, registered role, source, timestamps, and active state.
+- No local PDF archive/storage was added; real manual binaries and real Telegram file ids remain out of source control.
+- Diagnostic `📄 Мануал` delivery now resolves the latest completed Gree diagnostic series and sends the bound document with `sendDocument(file_id)` and `protect_content=true`.
+- `forwardMessage` and `copyMessage` are not used.
+- Consumers remain denied; Installer/Engineer/Admin/Owner can receive contextual diagnostic manuals when a binding exists.
+- Missing binding fallback remains `Мануал пока не привязан` and preserves the contextual compact keyboard.
+- ED-24SRC.1/ED-24SRC.1a manual access gating is preserved.
+- ED-24USR.2/ED-24USR.3 Telegram admin identity and persistent role behavior are preserved.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused manual/Telegram/user tests: 679/679 passed.
+- Migration/DI persistence slice: 8/8 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Runtime count baseline: 922 confirmed.
+- Full solution baseline: 4959/4959 passed.
+- `git diff --check`: PASS.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings data, and deploy scripts unchanged.
+
 Latest stable production point:
 
+- ED-24MAN.1 - pushed; production deploy/live-check pending.
 - ED-24USR.3 - production PASS.
 - ED-24SRC.1a - production PASS.
 
 Latest pushed local point:
 
+- ED-24MAN.1 - protected Telegram manual binding validated locally and pushed.
 - ED-24USR.3 - persistent Telegram user roles validated locally and pushed.
 
 Validated Gree scenarios after ED-24UX.4:
@@ -282,6 +310,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+8a3edb6a ED-24MAN.1 Bind protected Telegram manuals
 4231cb9d ED-24SRC.1a Fix diagnostic manual keyboard UX
 a33ea0ea ED-24USR.3 Persist Telegram user roles
 85515a14 ED-24USR.2 Fix Telegram admin user identity
@@ -313,9 +342,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24USR.3.
+No active blocker after ED-24MAN.1.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: phone update button visibility / `✏️ Изменить номер`, manual binding/upload workflow, role/user persistence, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: phone update button visibility / `✏️ Изменить номер`, ED-24MAN.1 production live-check, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 
