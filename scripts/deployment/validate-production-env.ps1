@@ -65,6 +65,9 @@ $keys = @{
     TelegramAllowedChat = "TELEGRAM_ALLOWED_CHAT_ID"
     TelegramAllowedUsername = "TELEGRAM_ALLOWED_USERNAME"
     TelegramDeniedChat = "TELEGRAM_DENIED_CHAT_ID"
+    TelegramOperatorInboxEnabled = "TELEGRAM_OPERATOR_INBOX_ENABLED"
+    TelegramOperatorChatId = "TELEGRAM_OPERATOR_CHAT_ID"
+    TelegramOperatorLogDiagnostics = "TELEGRAM_OPERATOR_LOG_DIAGNOSTICS"
     BotToken = "AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken"
     WebhookSecret = "AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret"
     BootstrapOwner = "AssistantEngineer__EquipmentDiagnostics__Telegram__BootstrapOwnerChatId"
@@ -85,6 +88,8 @@ $telegramEnabled = Read-Boolean $values $keys.TelegramEnabled
 $discoveryEnabled = Read-Boolean $values $keys.DiscoveryEnabled
 $deleteWebhookOnStartup = Read-Boolean $values $keys.TelegramDeleteWebhookOnStartup
 $pollingEnabled = Read-Boolean $values $keys.TelegramPollingEnabled
+$operatorInboxEnabled = Read-Boolean $values $keys.TelegramOperatorInboxEnabled
+$operatorLogDiagnostics = Read-Boolean $values $keys.TelegramOperatorLogDiagnostics
 $inboundMode = $values[$keys.TelegramInboundMode]
 $allowedChatConfigured =
     -not [string]::IsNullOrWhiteSpace($values[$keys.TelegramAllowedChat]) -or
@@ -122,12 +127,18 @@ if ($AllowPlaceholders) {
     if ($discoveryEnabled) {
         throw "The placeholder environment example must keep chat ID discovery disabled."
     }
+    if ($operatorInboxEnabled) {
+        throw "The placeholder environment example must keep operator inbox disabled."
+    }
 } else {
     if ($values[$keys.Environment] -ne "Production") {
         throw "ASPNETCORE_ENVIRONMENT must be Production."
     }
     if ($discoveryEnabled) {
         Write-Warning "TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=true is only for temporary initial setup and keeps readiness unsafe."
+    }
+    if ($operatorInboxEnabled -and [string]::IsNullOrWhiteSpace($values[$keys.TelegramOperatorChatId])) {
+        throw "TELEGRAM_OPERATOR_INBOX_ENABLED=true requires TELEGRAM_OPERATOR_CHAT_ID."
     }
     if ($telegramEnabled) {
         if ([string]::IsNullOrWhiteSpace($values[$keys.BotToken])) {
@@ -157,6 +168,9 @@ Write-Host "Environment: $($values[$keys.Environment])"
 Write-Host "Telegram enabled: $telegramEnabled"
 Write-Host "Telegram inbound mode: $inboundMode"
 Write-Host "Telegram polling enabled: $pollingEnabled"
+Write-Host "Telegram operator inbox enabled: $operatorInboxEnabled"
+Write-Host "Telegram operator chat configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.TelegramOperatorChatId]))"
+Write-Host "Telegram operator diagnostics logging: $operatorLogDiagnostics"
 Write-Host "Telegram processed message store configured: $(-not [string]::IsNullOrWhiteSpace($values[$keys.TelegramProcessedMessageStorePath]))"
 Write-Host "Delete webhook on startup: $deleteWebhookOnStartup"
 Write-Host "Chat ID discovery enabled: $discoveryEnabled"

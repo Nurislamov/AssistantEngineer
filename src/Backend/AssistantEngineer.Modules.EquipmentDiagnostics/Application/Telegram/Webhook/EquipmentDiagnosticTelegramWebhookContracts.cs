@@ -23,6 +23,7 @@ public sealed record EquipmentDiagnosticTelegramWebhookOptions
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
     public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
     public TelegramManualLibraryOptions ManualLibrary { get; init; } = new();
+    public TelegramOperatorInboxOptions OperatorInbox { get; init; } = new();
     public int SendMessageTimeoutSeconds { get; init; } = 10;
     public string TelegramApiBaseUrl { get; init; } = "https://api.telegram.org";
     public bool DropPendingUpdatesOnSetWebhook { get; init; }
@@ -72,6 +73,9 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("contact")] TelegramWebhookContactDto? Contact = null,
     [property: JsonPropertyName("caption")] string? Caption = null,
     [property: JsonPropertyName("document")] TelegramWebhookDocumentDto? Document = null,
+    [property: JsonPropertyName("photo")] IReadOnlyList<TelegramWebhookPhotoSizeDto>? Photo = null,
+    [property: JsonPropertyName("video")] TelegramWebhookVideoDto? Video = null,
+    [property: JsonPropertyName("voice")] TelegramWebhookVoiceDto? Voice = null,
     [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null);
 
 public sealed record TelegramWebhookChatDto(
@@ -93,6 +97,26 @@ public sealed record TelegramWebhookDocumentDto(
     [property: JsonPropertyName("file_id")] string FileId,
     [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("file_name")] string? FileName = null,
+    [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookPhotoSizeDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
+    [property: JsonPropertyName("width")] int? Width = null,
+    [property: JsonPropertyName("height")] int? Height = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookVideoDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
+    [property: JsonPropertyName("file_name")] string? FileName = null,
+    [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookVoiceDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("mime_type")] string? MimeType = null,
     [property: JsonPropertyName("file_size")] long? FileSize = null);
 

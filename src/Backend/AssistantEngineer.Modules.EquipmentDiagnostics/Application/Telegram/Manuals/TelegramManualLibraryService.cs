@@ -981,7 +981,13 @@ public sealed class TelegramManualLibraryService
         var requests = await _libraryAccessStore.ListPendingRequestsAsync(10, cancellationToken);
         if (requests.Count == 0)
         {
-            return BindText("Новых запросов доступа нет.", callbackAnswerText: "Запросов нет");
+            return BindText(
+                "Новых запросов доступа нет.",
+                new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard:
+                [
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryOpenCallback)]
+                ]),
+                "Запросов нет");
         }
 
         var rows = requests

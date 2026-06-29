@@ -258,6 +258,73 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
     }
 
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> CopyMessageAsync(
+        long chatId,
+        long fromChatId,
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
+            !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
+            baseUri.Scheme != Uri.UriSchemeHttps)
+        {
+            return Failed();
+        }
+
+        var endpoint = new Uri(
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/copyMessage");
+        var payload = new Dictionary<string, object?>
+        {
+            ["chat_id"] = chatId,
+            ["from_chat_id"] = fromChatId,
+            ["message_id"] = messageId
+        };
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_correlation.CorrelationId))
+        {
+            request.Headers.TryAddWithoutValidation(
+                OperationalCorrelationOptions.DefaultHeaderName,
+                _correlation.CorrelationId);
+        }
+
+        try
+        {
+            using var scope = _logger.BeginScope(new Dictionary<string, object>
+            {
+                ["correlationId"] = _correlation.CorrelationId ?? "none",
+                ["copyMessage"] = true
+            });
+            _logger.LogInformation("Copying Telegram message.");
+            using var response = await _httpClient.SendAsync(request, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new EquipmentDiagnosticTelegramOutboundResult(
+                    true,
+                    "Telegram message copied.",
+                    await ReadMessageIdAsync(response, cancellationToken));
+            }
+
+            _logger.LogWarning("Telegram copyMessage failed with non-success status code.");
+            return Failed();
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning("Telegram copyMessage timed out.");
+            return Failed();
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                "Telegram copyMessage failed. ExceptionType: {ExceptionType}.",
+                exception.GetType().Name);
+            return Failed();
+        }
+    }
+
     public async Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
         string callbackQueryId,
         string? text = null,

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 
@@ -14,6 +15,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
     private readonly EquipmentDiagnosticTelegramWebhookSecurityPolicy _securityPolicy;
     private readonly IEquipmentDiagnosticTelegramAdapter _adapter;
     private readonly IEquipmentDiagnosticTelegramOutboundClient _outboundClient;
+    private readonly ITelegramOperatorInboxService? _operatorInboxService;
     private readonly EquipmentDiagnosticTelegramOperationalCounters _counters;
     private readonly ILogger<EquipmentDiagnosticTelegramWebhookHandler> _logger;
 
@@ -27,6 +29,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             securityPolicy,
             adapter,
             outboundClient,
+            null,
             new EquipmentDiagnosticTelegramOperationalCounters(),
             null)
     {
@@ -39,11 +42,24 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         IEquipmentDiagnosticTelegramOutboundClient outboundClient,
         EquipmentDiagnosticTelegramOperationalCounters counters,
         ILogger<EquipmentDiagnosticTelegramWebhookHandler>? logger = null)
+        : this(options, securityPolicy, adapter, outboundClient, null, counters, logger)
+    {
+    }
+
+    public EquipmentDiagnosticTelegramWebhookHandler(
+        EquipmentDiagnosticTelegramWebhookOptions options,
+        EquipmentDiagnosticTelegramWebhookSecurityPolicy securityPolicy,
+        IEquipmentDiagnosticTelegramAdapter adapter,
+        IEquipmentDiagnosticTelegramOutboundClient outboundClient,
+        ITelegramOperatorInboxService? operatorInboxService,
+        EquipmentDiagnosticTelegramOperationalCounters counters,
+        ILogger<EquipmentDiagnosticTelegramWebhookHandler>? logger = null)
     {
         _options = options;
         _securityPolicy = securityPolicy;
         _adapter = adapter;
         _outboundClient = outboundClient;
+        _operatorInboxService = operatorInboxService;
         _counters = counters;
         _logger = logger ?? NullLogger<EquipmentDiagnosticTelegramWebhookHandler>.Instance;
     }
@@ -99,43 +115,35 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             (string.IsNullOrWhiteSpace(update.Message.Text) &&
              string.IsNullOrWhiteSpace(update.Message.Caption) &&
              string.IsNullOrWhiteSpace(update.Message.Contact?.PhoneNumber) &&
-             update.Message.Document is null))
+             update.Message.Document is null &&
+             update.Message.Photo is not { Count: > 0 } &&
+             update.Message.Video is null &&
+             update.Message.Voice is null))
         {
             _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported message.");
+        }
+
+        var mappedUpdate = MapMessageUpdate(update);
+        if (_operatorInboxService is not null &&
+            (await _operatorInboxService.TryHandleOperatorCommandAsync(mappedUpdate, cancellationToken) ||
+             await _operatorInboxService.TryHandleOperatorReplyAsync(mappedUpdate, cancellationToken)))
+        {
+            _counters.RecordProcessed();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram operator inbox update processed.");
+        }
+
+        if (IsConfiguredOperatorChat(mappedUpdate))
+        {
+            _counters.RecordIgnored();
+            return Result(EquipmentDiagnosticTelegramWebhookStatus.Ignored, "Telegram operator group update ignored.");
         }
 
         var username = update.Message.From?.Username ?? update.Message.Chat.Username;
         EquipmentDiagnosticTelegramResponse adapterResponse;
         try
         {
-            adapterResponse = await _adapter.HandleAsync(
-                new EquipmentDiagnosticTelegramUpdate(
-                    update.UpdateId,
-                    update.Message.Chat.Id,
-                    username,
-                    update.Message.Text ?? update.Message.Caption,
-                    update.Message.MessageId,
-                    update.Message.Date is null
-                        ? null
-                        : DateTimeOffset.FromUnixTimeSeconds(update.Message.Date.Value),
-                    update.Message.From?.Id,
-                    update.Message.From?.FirstName,
-                    update.Message.From?.LastName,
-                    update.Message.Contact?.PhoneNumber,
-                    update.Message.Contact?.UserId,
-                    update.Message.Chat.Type,
-                    DocumentFileId: update.Message.Document?.FileId,
-                    DocumentFileName: update.Message.Document?.FileName,
-                    DocumentMimeType: update.Message.Document?.MimeType,
-                    DocumentFileSize: update.Message.Document?.FileSize,
-                    ReplyToDocumentFileId: update.Message.ReplyToMessage?.Document?.FileId,
-                    ReplyToDocumentFileName: update.Message.ReplyToMessage?.Document?.FileName,
-                    ReplyToDocumentMimeType: update.Message.ReplyToMessage?.Document?.MimeType,
-                    ReplyToDocumentFileSize: update.Message.ReplyToMessage?.Document?.FileSize,
-                    DocumentFileUniqueId: update.Message.Document?.FileUniqueId,
-                    ReplyToDocumentFileUniqueId: update.Message.ReplyToMessage?.Document?.FileUniqueId),
-                cancellationToken);
+            adapterResponse = await _adapter.HandleAsync(mappedUpdate, cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -200,6 +208,46 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         _counters.RecordProcessed();
         return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
     }
+
+    private EquipmentDiagnosticTelegramUpdate MapMessageUpdate(TelegramWebhookUpdateDto update)
+    {
+        var message = update.Message!;
+        var username = message.From?.Username ?? message.Chat?.Username;
+        return new EquipmentDiagnosticTelegramUpdate(
+            update.UpdateId,
+            message.Chat!.Id,
+            username,
+            message.Text ?? message.Caption,
+            message.MessageId,
+            message.Date is null
+                ? null
+                : DateTimeOffset.FromUnixTimeSeconds(message.Date.Value),
+            message.From?.Id,
+            message.From?.FirstName,
+            message.From?.LastName,
+            message.Contact?.PhoneNumber,
+            message.Contact?.UserId,
+            message.Chat.Type,
+            DocumentFileId: message.Document?.FileId,
+            DocumentFileName: message.Document?.FileName,
+            DocumentMimeType: message.Document?.MimeType,
+            DocumentFileSize: message.Document?.FileSize,
+            ReplyToDocumentFileId: message.ReplyToMessage?.Document?.FileId,
+            ReplyToDocumentFileName: message.ReplyToMessage?.Document?.FileName,
+            ReplyToDocumentMimeType: message.ReplyToMessage?.Document?.MimeType,
+            ReplyToDocumentFileSize: message.ReplyToMessage?.Document?.FileSize,
+            DocumentFileUniqueId: message.Document?.FileUniqueId,
+            ReplyToDocumentFileUniqueId: message.ReplyToMessage?.Document?.FileUniqueId,
+            ReplyToMessageId: message.ReplyToMessage?.MessageId,
+            HasPhoto: message.Photo is { Count: > 0 },
+            HasVideo: message.Video is not null,
+            HasVoice: message.Voice is not null);
+    }
+
+    private bool IsConfiguredOperatorChat(EquipmentDiagnosticTelegramUpdate update) =>
+        _options.OperatorInbox.ChatId == update.ChatId &&
+        (string.Equals(update.ChatType, "group", StringComparison.OrdinalIgnoreCase) ||
+         string.Equals(update.ChatType, "supergroup", StringComparison.OrdinalIgnoreCase));
 
     private async Task<EquipmentDiagnosticTelegramWebhookResult> ProcessCallbackAsync(
         TelegramWebhookUpdateDto update,

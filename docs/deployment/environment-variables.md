@@ -23,6 +23,9 @@ steps.
 | `TELEGRAM_INBOUND_MODE` | Telegram inbound transport | `Polling` |
 | `TELEGRAM_COMMANDS_SYNC_ON_STARTUP` | Sync the safe global Telegram command menu during startup when Telegram is enabled and token is configured | `true` |
 | `TELEGRAM_DISPLAY_TIME_ZONE` | Display time zone for Telegram `/history` and `/last`; invalid or empty values fall back to `Asia/Tashkent` | `Asia/Tashkent` |
+| `TELEGRAM_OPERATOR_INBOX_ENABLED` | Enable the closed Owner operator inbox bridge | `false` |
+| `TELEGRAM_OPERATOR_CHAT_ID` | Telegram group/supergroup chat id used for operator cards and Owner replies | empty placeholder |
+| `TELEGRAM_OPERATOR_LOG_DIAGNOSTICS` | Mirror short successful diagnostic events to the operator inbox; normal default avoids diagnostic noise | `false` |
 | `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` | Optional Telegram group chat for new service-request notifications | empty placeholder |
 | `TELEGRAM_SERVICE_REQUESTS_NOTIFY_ON_CREATE` | Send group notifications when the service-request chat is configured | `true` |
 | `TELEGRAM_POLLING_ENABLED` | Polling worker enable switch | `false` |
@@ -53,6 +56,15 @@ application database through the `TelegramManualBindings`, `TelegramLibraryAcces
 series files through `/manual_bind`; Admin does not manage the library automatically. Store real Telegram manual
 `file_id` values only in the database and never commit file IDs or manual binaries. The older JSON `FileBindingsPath`
 remains a module-level fallback for non-production/manual test wiring, not the production source of truth.
+
+ED-24OPS.2 operator inbox is off by default. To enable it, set `TELEGRAM_OPERATOR_INBOX_ENABLED=true` and
+`TELEGRAM_OPERATOR_CHAT_ID=<group-chat-id>`. Owner can get the group id by sending `/operator_chat_id` or `/chatid`
+inside the intended operator group; the command does not mutate environment settings. Owner replies in that group
+must be Telegram replies to an operator inbox card or copied mirrored message. The bot sends only text replies back
+to the original private user as `Ответ специалиста:` and records the thread/message history in
+`TelegramOperatorInboxThreads` and `TelegramOperatorInboxMessages` through migration `AddTelegramOperatorInbox`.
+Successful diagnostic answers, inline button clicks, manual/library file delivery, polling internals, `/start`,
+`/history`, `/last`, and active `/manual_bind` uploads are not mirrored by default.
 
 When `TELEGRAM_SERVICE_REQUESTS_CHAT_ID` is empty, users can still create service requests and the application logs
 a sanitized warning. When configured, new requests are sent to that Telegram group without a full phone number,

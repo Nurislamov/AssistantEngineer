@@ -146,6 +146,23 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task EmptyAccessRequestsScreenHasBackButtonAndBackEditsRoot()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var empty = await adapter.HandleAsync(LibraryCallback("lib:reqs", messageId: 7001));
+        var back = await adapter.HandleAsync(LibraryCallback("lib:open", messageId: 7001));
+
+        Assert.Contains("Запросов нет", empty.CallbackAnswerText, StringComparison.Ordinal);
+        Assert.Contains("Назад", InlineButtons(empty), StringComparer.Ordinal);
+        AssertSingleEdit(empty, 7001);
+        AssertSingleEdit(back, 7001);
+        Assert.Contains("Gree", InlineButtons(back), StringComparer.Ordinal);
+    }
+
+    [Fact]
     public async Task LibraryCallbackNavigationUsesEditMessageIdInsteadOfNewTextMessages()
     {
         using var provider = CreateProvider();

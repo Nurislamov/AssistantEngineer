@@ -40,6 +40,7 @@ public sealed record EquipmentDiagnosticTelegramOptions
     public string? DisplayTimeZone { get; init; } = "Asia/Tashkent";
     public TelegramServiceRequestOptions ServiceRequests { get; init; } = new();
     public TelegramManualLibraryOptions ManualLibrary { get; init; } = new();
+    public TelegramOperatorInboxOptions OperatorInbox { get; init; } = new();
 }
 
 public sealed record TelegramServiceRequestOptions
@@ -55,6 +56,13 @@ public sealed record TelegramManualLibraryOptions
     public int MaxFilesPerRequest { get; init; } = 5;
     public IReadOnlyCollection<string> AllowedExtensions { get; init; } = [".pdf", ".doc", ".docx", ".xls", ".xlsx"];
     public IReadOnlyCollection<long> TrustedStorageChatIds { get; init; } = [];
+}
+
+public sealed record TelegramOperatorInboxOptions
+{
+    public bool Enabled { get; init; }
+    public long? ChatId { get; init; }
+    public bool LogDiagnostics { get; init; }
 }
 
 public sealed record EquipmentDiagnosticTelegramUpdate(
@@ -81,7 +89,11 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? ReplyToDocumentMimeType = null,
     long? ReplyToDocumentFileSize = null,
     string? DocumentFileUniqueId = null,
-    string? ReplyToDocumentFileUniqueId = null);
+    string? ReplyToDocumentFileUniqueId = null,
+    long? ReplyToMessageId = null,
+    bool HasPhoto = false,
+    bool HasVideo = false,
+    bool HasVoice = false);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

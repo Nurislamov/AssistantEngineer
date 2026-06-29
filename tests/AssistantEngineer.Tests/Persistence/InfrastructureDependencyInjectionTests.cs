@@ -10,6 +10,7 @@ using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Sizing;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.Reporting.Application.Abstractions;
 using AssistantEngineer.SharedKernel.Abstractions;
@@ -173,6 +174,8 @@ public class InfrastructureDependencyInjectionTests
         AssertServiceImplementation<ITelegramUserStore, EfTelegramUserStore>(services);
         AssertServiceLifetime<ITelegramManualFileBindingStore>(services, ServiceLifetime.Singleton);
         AssertServiceImplementation<ITelegramManualFileBindingStore, EfTelegramManualFileBindingStore>(services);
+        AssertServiceLifetime<ITelegramOperatorInboxStore>(services, ServiceLifetime.Singleton);
+        AssertServiceImplementation<ITelegramOperatorInboxStore, EfTelegramOperatorInboxStore>(services);
 
         AssertServiceLifetime<IAnnualClimateDataProvider>(services, ServiceLifetime.Scoped);
         AssertServiceLifetime<ICoolingEquipmentCatalogSizingProvider>(services, ServiceLifetime.Scoped);

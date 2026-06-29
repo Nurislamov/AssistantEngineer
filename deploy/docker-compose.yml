@@ -16,6 +16,9 @@ services:
       AssistantEngineer__EquipmentDiagnostics__Telegram__DeleteWebhookOnStartup: ${TELEGRAM_DELETE_WEBHOOK_ON_STARTUP:-false}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Commands__SyncOnStartup: ${TELEGRAM_COMMANDS_SYNC_ON_STARTUP:-true}
       AssistantEngineer__EquipmentDiagnostics__Telegram__DisplayTimeZone: ${TELEGRAM_DISPLAY_TIME_ZONE:-Asia/Tashkent}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__OperatorInbox__Enabled: ${TELEGRAM_OPERATOR_INBOX_ENABLED:-false}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__OperatorInbox__ChatId: ${TELEGRAM_OPERATOR_CHAT_ID:-}
+      AssistantEngineer__EquipmentDiagnostics__Telegram__OperatorInbox__LogDiagnostics: ${TELEGRAM_OPERATOR_LOG_DIAGNOSTICS:-false}
       AssistantEngineer__EquipmentDiagnostics__Telegram__ServiceRequests__NotificationChatId: ${TELEGRAM_SERVICE_REQUESTS_CHAT_ID:-}
       AssistantEngineer__EquipmentDiagnostics__Telegram__ServiceRequests__NotifyOnCreate: ${TELEGRAM_SERVICE_REQUESTS_NOTIFY_ON_CREATE:-true}
       AssistantEngineer__EquipmentDiagnostics__Telegram__Polling__Enabled: ${TELEGRAM_POLLING_ENABLED:-false}

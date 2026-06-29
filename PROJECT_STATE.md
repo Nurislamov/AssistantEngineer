@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24LIB.1c - CLOSED / pushed.
+ED-24OPS.2 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+1. Deploy ED-24OPS.2 when ready and set `TELEGRAM_OPERATOR_INBOX_ENABLED=true` plus `TELEGRAM_OPERATOR_CHAT_ID` from `/operator_chat_id` in the owner group.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,11 +16,9 @@ master
 
 ## Last completed work
 
-ED-24LIB.1c reduces Telegram library chat noise by editing the current inline library message for normal callback navigation while preserving protected file delivery and Owner-only access management.
+ED-24OPS.2 adds the Telegram operator inbox and reply bridge for owner-operated support, with persisted inbox threads/messages, operator group chat id discovery, media copy mirroring, environment/deployment wiring, documentation, tests, and a small library Back button fix.
 
-Previous implementation commit: `593024cb` (ED-24LIB.1a).
-
-Previous project-state commit: `2c842e6d`.
+Previous implementation commit: `44060e65` (ED-24LIB.1c).
 
 ## Current working point
 
@@ -39,6 +37,7 @@ Previous project-state commit: `2c842e6d`.
 - ED-24LIB.1 - CLOSED / pushed.
 - ED-24LIB.1a - CLOSED / pushed.
 - ED-24LIB.1c - CLOSED / pushed.
+- ED-24OPS.2 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -90,6 +89,19 @@ ED-24OPS.1 smoke:
 Full baseline after ED-24OPS.1:
 
 4922/4922 passed
+
+Latest validation after ED-24OPS.2:
+
+- Telegram operator inbox added behind `TELEGRAM_OPERATOR_INBOX_ENABLED`, `TELEGRAM_OPERATOR_CHAT_ID`, and `TELEGRAM_OPERATOR_LOG_DIAGNOSTICS`; docker compose, `.env.example`, deployment validators, and environment docs are updated.
+- `/operator_chat_id` works only for the linked Owner in a Telegram group/supergroup and reports the chat id needed for `TELEGRAM_OPERATOR_CHAT_ID`.
+- User fallback/support messages are mirrored to the configured operator group as safe request cards; normal commands, default diagnostics, and manual/library protected content are not mirrored.
+- Media mirroring uses Telegram `copyMessage` only from the user chat to the configured operator group and does not expose `file_id`, `file_unique_id`, source references, or secrets in cards.
+- Owner reply bridge sends text replies only when the Owner replies to a mirrored request card/message in the configured operator group; non-owner replies, unknown reply targets, and non-text replies are blocked with safe messages.
+- EF migration `20260629193430_AddTelegramOperatorInbox` adds `TelegramOperatorInboxThreads` and `TelegramOperatorInboxMessages` with lookup indexes for operator/user reply routing.
+- Library access-request empty state now has a working Back button to the library root.
+- Validation: `dotnet restore .\AssistantEngineer.sln` passed; `dotnet build .\AssistantEngineer.sln` passed with 0 warnings/errors; focused Telegram/operator/library/persistence tests passed 787/787; operator-only tests passed 8/8; deployment scaffold validator passed; production-env placeholder validator passed; local Gree diagnostics smoke passed 9/9; full solution test suite passed 4982/4982; `git diff --check` passed.
+- Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
+- Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
 Latest validation after ED-24UX.4:
 

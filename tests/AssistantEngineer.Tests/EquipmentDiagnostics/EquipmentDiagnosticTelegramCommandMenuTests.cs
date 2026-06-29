@@ -16,7 +16,7 @@ public sealed class EquipmentDiagnosticTelegramCommandMenuTests
         await service.StartAsync(CancellationToken.None);
 
         Assert.Equal(1, outbound.SetCommandsCallCount);
-        Assert.Equal(["start", "new", "phone", "me", "help", "history", "last", "requests"], outbound.Commands.Select(command => command.Command).ToArray());
+        Assert.Equal(["start", "new", "phone", "me", "help", "history", "last", "requests", "operator_chat_id"], outbound.Commands.Select(command => command.Command).ToArray());
         Assert.DoesNotContain(outbound.Commands, command => command.Command == "request");
         Assert.DoesNotContain(outbound.Commands, command => command.Command is "queue" or "my_requests" or "take" or "assign" or "done" or "cancel_request" or "request_status" or "contact");
         Assert.DoesNotContain(outbound.Commands, command => command.Command.Contains(' ', StringComparison.Ordinal));

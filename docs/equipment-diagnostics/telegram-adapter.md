@@ -126,12 +126,16 @@ configured, and `AssistantEngineer:EquipmentDiagnostics:Telegram:Commands:SyncOn
 Telegram rejects or times out the `setMyCommands` request; logs stay sanitized and must not include token, chat ID,
 phone number, message text, or parameterized admin command text.
 
-The global menu contains only safe public commands: `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, and
-`/last`. It does not list `/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or any
+The global menu contains only safe public commands: `/start`, `/new`, `/phone`, `/me`, `/help`, `/history`, `/last`,
+`/requests`, and `/operator_chat_id`. It does not list `/admin_help`, `/admin users`, `/admin allow`, `/admin block`, `/admin role`, or any
 parameterized admin command. `/new` uses the same flow as `🔎 Новый код` and asks
 `Введите код ошибки, например: Gree H5.`. `/phone` opens the existing phone flow. `/admin_help` remains a hidden
 manual/admin help command: Owner/Admin can reach it directly or from `/help`; Consumer and Engineer receive
 `Команда недоступна.`.
+
+`/operator_chat_id` is a safe setup helper for the closed operator group. It responds only to Owner in a
+group/supergroup and does not enable chat-id discovery or mutate environment settings. See
+[telegram-operator-inbox.md](telegram-operator-inbox.md).
 
 This is a BotFather-style command menu only. It does not add a Telegram Mini App, web UI, CRM lead creation, AI,
 RAG, vector search, photo/OCR, or manual-PDF access.

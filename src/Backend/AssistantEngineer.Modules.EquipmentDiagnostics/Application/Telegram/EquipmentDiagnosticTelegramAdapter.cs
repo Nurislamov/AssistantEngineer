@@ -2,6 +2,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 
@@ -24,6 +25,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
     private readonly TelegramAdminUserManagementService? _adminUserManagementService;
     private readonly TelegramManualLibraryService? _manualLibraryService;
+    private readonly ITelegramOperatorInboxService? _operatorInboxService;
 
     public EquipmentDiagnosticTelegramAdapter(
         IEquipmentDiagnosticBotFacade botFacade,
@@ -37,7 +39,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramServiceRequestService? serviceRequestService = null,
         TelegramServiceRequestQueueService? serviceRequestQueueService = null,
         TelegramAdminUserManagementService? adminUserManagementService = null,
-        TelegramManualLibraryService? manualLibraryService = null)
+        TelegramManualLibraryService? manualLibraryService = null,
+        ITelegramOperatorInboxService? operatorInboxService = null)
     {
         _botFacade = botFacade;
         _parser = parser;
@@ -51,6 +54,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _serviceRequestQueueService = serviceRequestQueueService;
         _adminUserManagementService = adminUserManagementService;
         _manualLibraryService = manualLibraryService;
+        _operatorInboxService = operatorInboxService;
     }
 
     public async Task<EquipmentDiagnosticTelegramResponse> HandleAsync(
@@ -276,6 +280,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 return FromConversation(update.ChatId, conversation);
             }
 
+            await MirrorUnsupportedUserMessageAsync(update, access, cancellationToken);
             return Response(
                 update.ChatId,
                 _formatter.FormatValidation(parseResult.Errors, _options.MaxMessageLength),
@@ -335,11 +340,15 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 : new TelegramDiagnosticConversationResult(false, EquipmentDiagnosticTelegramResponseKind.Unsupported, string.Empty, []);
             return conversation.Handled
                 ? FromConversation(update.ChatId, conversation)
-                : Response(
-                    update.ChatId,
-                    _formatter.FormatUnsupported(_options.MaxMessageLength),
-                    EquipmentDiagnosticTelegramResponseKind.Unsupported,
-                    replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+                : await UnsupportedWithMirrorAsync(update, access, cancellationToken);
+        }
+
+        if (_options.OperatorInbox.LogDiagnostics && _operatorInboxService is not null)
+        {
+            await _operatorInboxService.MirrorUserMessageAsync(
+                update with { Text = $"Диагностический запрос: {parseResult.DiagnosticRequest.Manufacturer} {parseResult.DiagnosticRequest.Code}" },
+                access,
+                cancellationToken);
         }
 
         var conversationResponse = _conversationService is not null
@@ -392,6 +401,37 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 diagnosis,
                 _options.ManualLibrary.Enabled));
     }
+
+    private async Task<EquipmentDiagnosticTelegramResponse> UnsupportedWithMirrorAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        await MirrorUnsupportedUserMessageAsync(update, access, cancellationToken);
+        return Response(
+                    update.ChatId,
+                    _formatter.FormatUnsupported(_options.MaxMessageLength),
+                    EquipmentDiagnosticTelegramResponseKind.Unsupported,
+                    replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+    }
+
+    private async Task MirrorUnsupportedUserMessageAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (_operatorInboxService is null ||
+            access.User is null ||
+            IsCommandText(update.Text))
+        {
+            return;
+        }
+
+        await _operatorInboxService.MirrorUserMessageAsync(update, access, cancellationToken);
+    }
+
+    private static bool IsCommandText(string? text) =>
+        text?.TrimStart().StartsWith("/", StringComparison.Ordinal) == true;
 
     private bool TryHandleMe(
         EquipmentDiagnosticTelegramUpdate update,

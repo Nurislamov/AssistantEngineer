@@ -10,6 +10,7 @@ using AssistantEngineer.Modules.Buildings.Domain.Ventilation;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,10 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<TelegramServiceRequestEventEntity> TelegramServiceRequestEvents { get; set; } = null!;
 
     public DbSet<TelegramUserAuditEventEntity> TelegramUserAuditEvents { get; set; } = null!;
+
+    public DbSet<TelegramOperatorInboxThreadEntity> TelegramOperatorInboxThreads { get; set; } = null!;
+
+    public DbSet<TelegramOperatorInboxMessageEntity> TelegramOperatorInboxMessages { get; set; } = null!;
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)

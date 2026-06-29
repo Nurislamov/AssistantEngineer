@@ -27,6 +27,15 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
             false,
             "Telegram document transport is not configured."));
 
+    Task<EquipmentDiagnosticTelegramOutboundResult> CopyMessageAsync(
+        long chatId,
+        long fromChatId,
+        long messageId,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram copyMessage transport is not configured."));
+
     Task<EquipmentDiagnosticTelegramOutboundResult> AnswerCallbackQueryAsync(
         string callbackQueryId,
         string? text = null,

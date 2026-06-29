@@ -48,7 +48,8 @@ internal static class ApplicationModulesRegistration
             RequireExplicitManufacturer = telegramOptions.RequireExplicitManufacturer,
             DisplayTimeZone = telegramOptions.DisplayTimeZone,
             ServiceRequests = telegramOptions.ServiceRequests,
-            ManualLibrary = telegramOptions.ManualLibrary
+            ManualLibrary = telegramOptions.ManualLibrary,
+            OperatorInbox = telegramOptions.OperatorInbox
         });
         services.AddHttpClient<IEquipmentDiagnosticTelegramOutboundClient, EquipmentDiagnosticTelegramOutboundClient>(
                 client => client.Timeout = TimeSpan.FromSeconds(Math.Clamp(telegramOptions.SendMessageTimeoutSeconds, 1, 60)))
