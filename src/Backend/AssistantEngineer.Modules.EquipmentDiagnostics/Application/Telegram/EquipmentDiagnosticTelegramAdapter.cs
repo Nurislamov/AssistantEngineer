@@ -109,7 +109,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     manualResult.ReplyMarkup ?? TelegramDiagnosticConversationService.MainKeyboard(callbackAccess),
                     manualResult.Messages,
                     callbackAnswerText: manualResult.CallbackAnswerText,
-                    parseMode: manualResult.ParseMode);
+                    parseMode: manualResult.ParseMode,
+                    editMessageId: update.MessageId);
             }
 
             if (TelegramManualLibraryService.IsManualBindCallback(update.CallbackData))
@@ -692,7 +693,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages = null,
         string? callbackAnswerText = null,
         bool suppressOutbound = false,
-        string? parseMode = null) =>
+        string? parseMode = null,
+        long? editMessageId = null) =>
         new(
             chatId,
             text,
@@ -701,7 +703,8 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             DisableWebPagePreview: true,
             warnings ?? [],
             InternalDecisionTrace: null,
-            Messages: messages ??
+            Messages: ApplyEditMessageId(
+                messages ??
                 (replyMarkup is null
                     ? null
                     :
@@ -712,6 +715,33 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                             DisableWebPagePreview: true,
                             replyMarkup)
                     ]),
+                editMessageId),
             CallbackAnswerText: callbackAnswerText,
             SuppressOutbound: suppressOutbound);
+
+    private static IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? ApplyEditMessageId(
+        IReadOnlyList<EquipmentDiagnosticTelegramOutboundMessage>? messages,
+        long? editMessageId)
+    {
+        if (messages is null || editMessageId is null)
+        {
+            return messages;
+        }
+
+        var result = new List<EquipmentDiagnosticTelegramOutboundMessage>(messages.Count);
+        var applied = false;
+        foreach (var message in messages)
+        {
+            if (!applied && string.IsNullOrWhiteSpace(message.DocumentFileId))
+            {
+                result.Add(message with { EditMessageId = editMessageId });
+                applied = true;
+                continue;
+            }
+
+            result.Add(message);
+        }
+
+        return result;
+    }
 }

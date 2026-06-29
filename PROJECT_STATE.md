@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24LIB.1a - CLOSED / pushed.
+ED-24LIB.1c - CLOSED / pushed.
 
 Next recommended steps:
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24LIB.1a fixes Telegram library callback freshness and access-management UX on top of the protected file library foundation, preserving Owner-only management and grant-gated delivery.
+ED-24LIB.1c reduces Telegram library chat noise by editing the current inline library message for normal callback navigation while preserving protected file delivery and Owner-only access management.
 
-Previous implementation commit: `e7577c46` (ED-24LIB.1).
+Previous implementation commit: `593024cb` (ED-24LIB.1a).
 
 Previous project-state commit: `2c842e6d`.
 
@@ -38,6 +38,7 @@ Previous project-state commit: `2c842e6d`.
 - ED-24MAN.1 - CLOSED / production PASS.
 - ED-24LIB.1 - CLOSED / pushed.
 - ED-24LIB.1a - CLOSED / pushed.
+- ED-24LIB.1c - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -321,6 +322,31 @@ Latest validation after ED-24LIB.1a:
 - Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
+Latest validation after ED-24LIB.1c:
+
+- ED-24LIB.1c status: CLOSED / pushed.
+- Telegram library callback navigation now edits the current inline message instead of creating a new text message for normal navigation.
+- Initial library open from `/library` or the reply keyboard still sends one new message with the inline library menu.
+- Owner and granted Engineer navigation through Gree, remotes, access requests, access management, back, cancel, repeated callbacks, file list, and empty sections no longer creates extra navigation sendMessages.
+- File callbacks edit the current library message with a short sending status and then send the PDF/document separately through protected `sendDocument(file_id)`.
+- Access request approve/reject/grant/revoke notifications still use separate user notifications where needed.
+- Owner-only access management is preserved.
+- Admin still cannot manage library access by default.
+- Service manuals remain library-only.
+- Diagnostic Owner/User manual-only policy is preserved.
+- `forwardMessage` and `copyMessage` remain unused.
+- No migration was added for ED-24LIB.1c.
+- EF enum default/sentinel warnings remain non-blocking known debt.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Telegram manual/library/user/persistence tests: PASS, 759/759 passed.
+- Focused library/webhook edit-message tests: PASS, 87/87 passed.
+- Local Gree diagnostics smoke: PASS, 9/9 passed.
+- Full solution suite: PASS, 4973/4973 passed.
+- `git diff --check`: PASS.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
 Latest validation after ED-24MAN.1:
 
 - Implementation commit: `8a3edb6a`.
@@ -382,6 +408,7 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24LIB.1c - Telegram library callback navigation edits the current inline message, validated locally and pushed.
 - ED-24LIB.1a - Telegram library callback freshness and access UX validated locally and pushed.
 - ED-24LIB.1 - protected Telegram file library foundation validated locally and pushed.
 - ED-24MAN.1 - protected Telegram manual binding validated locally, pushed, and production-confirmed.
@@ -441,7 +468,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24LIB.1a pushed.
+No active blocker after ED-24LIB.1c pushed.
 
 ## Next step
 

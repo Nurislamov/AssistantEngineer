@@ -370,25 +370,50 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
         return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram update processed.");
     }
 
-    private Task<EquipmentDiagnosticTelegramOutboundResult> SendOutboundMessageAsync(
+    private async Task<EquipmentDiagnosticTelegramOutboundResult> SendOutboundMessageAsync(
         long chatId,
         EquipmentDiagnosticTelegramOutboundMessage message,
-        CancellationToken cancellationToken) =>
-        string.IsNullOrWhiteSpace(message.DocumentFileId)
-            ? _outboundClient.SendMessageAsync(
-                chatId,
-                message.Text,
-                message.ParseMode,
-                message.DisableWebPagePreview,
-                message.ReplyMarkup,
-                cancellationToken)
-            : _outboundClient.SendDocumentAsync(
+        CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(message.DocumentFileId))
+        {
+            return await _outboundClient.SendDocumentAsync(
                 chatId,
                 message.DocumentFileId,
                 message.Text,
                 message.ReplyMarkup,
                 protectContent: message.ProtectContent,
                 cancellationToken: cancellationToken);
+        }
+
+        if (message.EditMessageId is not null)
+        {
+            var edit = await _outboundClient.EditMessageTextAsync(
+                chatId,
+                message.EditMessageId.Value,
+                message.Text,
+                InlineOnly(message.ReplyMarkup),
+                cancellationToken);
+            if (edit.Succeeded)
+            {
+                return edit;
+            }
+        }
+
+        return await _outboundClient.SendMessageAsync(
+            chatId,
+            message.Text,
+            message.ParseMode,
+            message.DisableWebPagePreview,
+            message.ReplyMarkup,
+            cancellationToken);
+    }
+
+    private static EquipmentDiagnosticTelegramReplyMarkup? InlineOnly(
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup) =>
+        replyMarkup?.InlineKeyboard is { Count: > 0 }
+            ? new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: replyMarkup.InlineKeyboard)
+            : null;
 
     private static EquipmentDiagnosticTelegramWebhookResult Result(
         EquipmentDiagnosticTelegramWebhookStatus status,

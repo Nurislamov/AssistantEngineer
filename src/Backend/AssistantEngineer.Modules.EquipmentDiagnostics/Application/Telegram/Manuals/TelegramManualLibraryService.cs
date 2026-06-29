@@ -1072,7 +1072,7 @@ public sealed class TelegramManualLibraryService
             text,
             [],
             [
-                new EquipmentDiagnosticTelegramOutboundMessage(text, ReplyMarkup: replyMarkup),
+                new EquipmentDiagnosticTelegramOutboundMessage(text),
                 new EquipmentDiagnosticTelegramOutboundMessage(
                     DisplayBindingTitle(binding),
                     ReplyMarkup: replyMarkup,

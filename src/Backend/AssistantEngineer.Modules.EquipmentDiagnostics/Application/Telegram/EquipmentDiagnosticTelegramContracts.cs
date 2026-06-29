@@ -121,7 +121,8 @@ public sealed record EquipmentDiagnosticTelegramOutboundMessage(
     EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup = null,
     string? DocumentFileId = null,
     string? DocumentFileName = null,
-    bool ProtectContent = false);
+    bool ProtectContent = false,
+    long? EditMessageId = null);
 
 public sealed record EquipmentDiagnosticTelegramReplyMarkup(
     IReadOnlyList<IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>>? Keyboard = null,

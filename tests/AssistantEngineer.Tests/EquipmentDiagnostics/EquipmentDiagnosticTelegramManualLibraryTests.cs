@@ -146,6 +146,33 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task LibraryCallbackNavigationUsesEditMessageIdInsteadOfNewTextMessages()
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var initial = await adapter.HandleAsync(Update("/library"));
+        var navigation = new[]
+        {
+            await adapter.HandleAsync(LibraryCallback("lib:open", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:brand:gree", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:brand:remotes", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:reqs", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:access", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:cancel", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:brand:remotes", messageId: 7001))
+        };
+
+        Assert.Equal(1, TextSendCount(initial));
+        Assert.Equal(0, EditTextCount(initial));
+        Assert.All(navigation, response => AssertSingleEdit(response, 7001));
+        Assert.Equal(0, navigation.Sum(TextSendCount));
+        Assert.Equal(navigation.Length, navigation.Sum(EditTextCount));
+        Assert.All(navigation, AssertNotStale);
+    }
+
+    [Fact]
     public async Task AccessRequestListShowsUserIdentityAndApproveNotifiesRequesterWithLibraryKeyboard()
     {
         var outbound = new FakeOutbound();
@@ -630,6 +657,13 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("<b>Руководство пока не добавлено</b>", manual.Text, StringComparison.Ordinal);
 
         var libraryFile = await adapter.HandleAsync(LibraryCallback("lib:file:gmv9flex"));
+        var fileStatus = Assert.Single(libraryFile.OutboundMessages, message => string.IsNullOrWhiteSpace(message.DocumentFileId));
+        var fileDocument = Assert.Single(libraryFile.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+
+        Assert.Equal(99, fileStatus.EditMessageId);
+        Assert.Equal("telegram-file-id-gmv9-flex", fileDocument.DocumentFileId);
+        Assert.True(fileDocument.ProtectContent);
+        Assert.Null(fileDocument.EditMessageId);
         Assert.Contains(
             libraryFile.OutboundMessages,
             message => message.DocumentFileId == "telegram-file-id-gmv9-flex" && message.ProtectContent);
@@ -841,12 +875,14 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         long? userId = 11,
         string? username = "operator",
         string? firstName = null,
-        string? lastName = null) =>
+        string? lastName = null,
+        long? messageId = 99) =>
         new(
             UpdateId: 6,
             ChatId: chatId,
             Username: username,
             Text: null,
+            MessageId: messageId,
             UserId: userId,
             FirstName: firstName,
             LastName: lastName,
@@ -878,6 +914,25 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .SelectMany(row => row)
             .Select(button => button.Text)
             .ToArray();
+
+    private static int TextSendCount(EquipmentDiagnosticTelegramResponse response) =>
+        response.OutboundMessages.Count(message =>
+            string.IsNullOrWhiteSpace(message.DocumentFileId) &&
+            message.EditMessageId is null);
+
+    private static int EditTextCount(EquipmentDiagnosticTelegramResponse response) =>
+        response.OutboundMessages.Count(message =>
+            string.IsNullOrWhiteSpace(message.DocumentFileId) &&
+            message.EditMessageId is not null);
+
+    private static void AssertSingleEdit(
+        EquipmentDiagnosticTelegramResponse response,
+        long messageId)
+    {
+        var edit = Assert.Single(response.OutboundMessages);
+        Assert.Null(edit.DocumentFileId);
+        Assert.Equal(messageId, edit.EditMessageId);
+    }
 
     private static string[] KeyboardButtons(EquipmentDiagnosticTelegramReplyMarkup? replyMarkup) =>
         (replyMarkup?.Keyboard ?? [])

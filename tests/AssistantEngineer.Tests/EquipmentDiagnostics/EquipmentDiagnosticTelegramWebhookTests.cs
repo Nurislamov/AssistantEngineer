@@ -182,6 +182,62 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task CallbackOutboundMessageWithEditMessageIdEditsInsteadOfSendingText()
+    {
+        var messages = new[]
+        {
+            new EquipmentDiagnosticTelegramOutboundMessage(
+                "Updated library card",
+                ReplyMarkup: new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard:
+                [
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton("Back", "lib:open")]
+                ]),
+                EditMessageId: 10)
+        };
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Updated library card",
+            messages,
+            callbackAnswerText: "OK");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(CallbackUpdate("callback-edit", "lib:brand:gree"), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.AnswerCallbackCount);
+        Assert.Equal(1, outbound.EditCallCount);
+        Assert.Equal(0, outbound.CallCount);
+        Assert.Equal(-1001, outbound.EditChatId);
+        Assert.Equal(10, outbound.EditMessageId);
+        Assert.Equal("Updated library card", outbound.EditText);
+        Assert.NotNull(outbound.EditReplyMarkup?.InlineKeyboard);
+    }
+
+    [Fact]
+    public async Task CallbackEditFallsBackToSendMessageWhenTelegramEditFails()
+    {
+        var messages = new[]
+        {
+            new EquipmentDiagnosticTelegramOutboundMessage("Updated library card", EditMessageId: 10)
+        };
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Updated library card",
+            messages,
+            callbackAnswerText: "OK");
+        var outbound = new FakeOutbound { FailEdits = true };
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(CallbackUpdate("callback-edit-fallback", "lib:brand:gree"), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Equal(1, outbound.EditCallCount);
+        Assert.Equal(1, outbound.CallCount);
+        Assert.Equal("Updated library card", outbound.Text);
+    }
+
+    [Fact]
     public async Task CallbackWithoutMessageIsStillAnsweredAndRejectedSafely()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "unused");
@@ -442,6 +498,12 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public string? DocumentCaption { get; private set; }
         public bool DocumentProtectContent { get; private set; }
         public bool ThrowOnAnswer { get; set; }
+        public bool FailEdits { get; set; }
+        public int EditCallCount { get; private set; }
+        public long? EditChatId { get; private set; }
+        public long? EditMessageId { get; private set; }
+        public string? EditText { get; private set; }
+        public EquipmentDiagnosticTelegramReplyMarkup? EditReplyMarkup { get; private set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -491,6 +553,23 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
                 throw new InvalidOperationException("Telegram API unavailable.");
             }
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Answered."));
+        }
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> EditMessageTextAsync(
+            long chatId,
+            long messageId,
+            string text,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            CancellationToken cancellationToken = default)
+        {
+            EditCallCount++;
+            EditChatId = chatId;
+            EditMessageId = messageId;
+            EditText = text;
+            EditReplyMarkup = replyMarkup;
+            return Task.FromResult(FailEdits
+                ? new EquipmentDiagnosticTelegramOutboundResult(false, "Edit failed.")
+                : new EquipmentDiagnosticTelegramOutboundResult(true, "Edited.", messageId));
         }
     }
 
