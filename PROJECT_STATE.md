@@ -2,13 +2,12 @@
 
 ## Current stage
 
-ED-24EF.2 - CLOSED / pushed.
+ED-24EF.2 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Run production VPS deployment/live-check for ED-24EF.2 before marking production PASS.
-2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Consider ED-24OPS.3 for DataProtection key persistence, ED-24MAN.3 for exact model-family matching, and ED-24QA.2
+1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+2. Consider ED-24OPS.3 for DataProtection key persistence, ED-24MAN.3 for exact model-family matching, and ED-24QA.2
    for nullable warning cleanup.
 
 ## Current branch
@@ -17,10 +16,9 @@ master
 
 ## Last completed work
 
-ED-24EF.2 fixed the EF value comparer warning for `HourlySchedule.Factors`; the stage is CLOSED / pushed, with
-production live-check still pending.
+ED-24EF.2 fixed the EF value comparer warning for `HourlySchedule.Factors`; the stage is CLOSED / production PASS.
 
-Implementation commit: current commit (`ED-24EF.2 Fix HourlySchedule value comparer`).
+Implementation commit: `c775f936` (`ED-24EF.2 Fix HourlySchedule value comparer`).
 
 ED-24EF.2 implementation notes:
 
@@ -48,7 +46,23 @@ ED-24EF.2 implementation notes:
 - Local Gree diagnostics smoke: 14/14 passed.
 - Full solution suite: 5032/5032 passed.
 - `git diff --check`: PASS.
-- Production PASS is not marked for ED-24EF.2.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`.
+- `assistantengineer-api` rebuilt and restarted successfully.
+- Telegram polling started and the Telegram command menu synchronized.
+- Telegram updates were processed successfully; sending Telegram responses and documents was observed.
+- Production logs contain no `OutboundFailed`, `error`, `exception`, or `failed` entries.
+- The `HourlySchedule.Factors` value comparer warning is absent.
+- The ED-24EF.1 database-generated default sentinel warnings remain absent for `RequestedRole`, `DocumentType`, and
+  `MinRole`.
+- Runtime counts remain unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policy remains unchanged: ServiceManual and InstallationManual are library-only; diagnostic guide delivery
+  remains OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts are unchanged.
+- No migration was added and no PDF/generated artifacts were committed.
+- Remaining unrelated/non-blocking warning: DataProtection keys under `/home/app/.aspnet/DataProtection-Keys` may not
+  persist outside the container; this remains the ED-24OPS.3 operations/configuration cleanup candidate.
 
 ED-24EF.1 fixed the known Telegram EF enum sentinel warnings and added a focused technical debt register; the stage is
 CLOSED / production PASS.
@@ -102,7 +116,7 @@ ED-24EF.1 implementation notes:
 - Deploy scripts are unchanged.
 - No migration was added and no PDF/generated artifacts were committed.
 - Remaining unrelated/non-blocking warnings:
-  - `HourlySchedule.Factors` still needs an EF value comparer and remains the main technical debt.
+  - The then-known `HourlySchedule.Factors` comparer warning was later resolved in ED-24EF.2.
   - DataProtection keys are stored under `/home/app/.aspnet/DataProtection-Keys` and may not persist outside the
     container; track this as an operations/configuration cleanup candidate.
 
@@ -301,7 +315,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24E.3 - CLOSED / production PASS.
 - ED-24UX.7 - CLOSED / production PASS.
 - ED-24EF.1 - CLOSED / production PASS.
-- ED-24EF.2 - CLOSED / pushed.
+- ED-24EF.2 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -825,6 +839,7 @@ Latest production validation after ED-24MAN.1:
 
 Latest stable production point:
 
+- ED-24EF.2 - production PASS.
 - ED-24EF.1 - production PASS.
 - ED-24UX.7 - production PASS.
 - ED-24E.3 - production PASS.
@@ -837,7 +852,7 @@ Latest stable production point:
 
 Latest pushed local point:
 
-- ED-24EF.2 - HourlySchedule value comparer validated locally and pushed; production live-check is pending.
+- ED-24EF.2 - HourlySchedule value comparer validated locally, pushed, and production-confirmed.
 - ED-24EF.1 - Telegram EF enum sentinels validated locally, pushed, and production-confirmed.
 - ED-24UX.7 - Gree runtime-based series refinement and compact keyboard validated, pushed, and production-confirmed.
 - ED-24E.3 - GMV6 HR diagnostics validated, pushed, and production-confirmed.
@@ -864,6 +879,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+c775f936 ED-24EF.2 Fix HourlySchedule value comparer
 63547146 ED-24EF.1 Fix Telegram EF sentinel warnings
 d01cd488 ED-24UX.7 Fix Gree series refinement layout
 37a92ae3 ED-24E.3 Add Gree GMV6 HR diagnostics
@@ -911,10 +927,10 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after local ED-24EF.2 validation. Production PASS remains pending until VPS deploy/live-check.
+No active blocker after ED-24EF.2 production PASS.
 
 ## Next step
 
-Deploy and live-check ED-24EF.2 on the VPS. After that, discuss ED-24OPS.3 DataProtection key persistence, ED-24MAN.3
-manual variants by exact model family, ED-24QA.2 nullable warning cleanup, or the next Gree diagnostics direction.
+Discuss ED-24OPS.3 DataProtection key persistence, ED-24MAN.3 manual variants by exact model family, ED-24QA.2 nullable
+warning cleanup, or the next Gree diagnostics direction.
 
