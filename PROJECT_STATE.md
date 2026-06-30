@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24OPS.2a - CLOSED / production PASS.
+ED-24OPS.2b - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Discuss whether the next small follow-up should be ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+1. Deploy ED-24OPS.2b to VPS and run a production live-check for Owner text/link replies and media/contact/location/animation replies from the configured operator group.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,11 +16,11 @@ master
 
 ## Last completed work
 
-ED-24OPS.2a adds Telegram `video_note` / "circle" support to the operator inbox, including webhook parsing, `VideoNote` message kind persistence, safe `[Видео-кружок]` operator cards, internal `copyMessage` mirroring, and Owner text replies to both the card and copied media.
+ED-24OPS.2b extends the Telegram operator reply bridge so the configured Owner can reply from the configured operator group with text/links and common Telegram attachment replies: document, photo, video, video_note, voice, audio, contact, location, and animation.
 
-Previous implementation commit: `4cf00444` (ED-24OPS.2a).
+Previous implementation commit: `4cf00444` (ED-24OPS.2a). Current implementation commit message: `ED-24OPS.2b Support operator media replies`.
 
-Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`) are both production PASS; the configured operator group is active and Telegram `video_note` / "circle" messages mirror as safe `[Видео-кружок]` operator cards.
+Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`) are both production PASS; ED-24OPS.2b is local validation PASS and ready for VPS deploy/live-check.
 
 ## Current working point
 
@@ -41,6 +41,7 @@ Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`
 - ED-24LIB.1c - CLOSED / pushed.
 - ED-24OPS.2 - CLOSED / production PASS.
 - ED-24OPS.2a - CLOSED / production PASS.
+- ED-24OPS.2b - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -169,6 +170,31 @@ Latest production validation after ED-24OPS.2a:
 - Diagnostic Owner/User manual-only policy unchanged.
 - Logs clean except known non-blocking EF enum sentinel warnings.
 - Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
+Latest validation after ED-24OPS.2b:
+
+- Owner text/link replies still use `sendMessage` with the `Ответ специалиста:` prefix and preserve the URL text in the delivered user message.
+- Owner attachment replies are supported for `document`, `photo`, `video`, `video_note`, `voice`, `audio`, `contact`, `location`, and `animation`.
+- Attachment replies are delivered from the configured operator group to the original user with `copyMessage`; `forwardMessage` remains unused.
+- `copyMessage` remains limited to internal operator media mirroring and the Owner-to-user operator reply bridge; protected library/manual delivery still uses the existing protected `sendDocument` path.
+- Operator replies can target either the request card or copied operator media message.
+- Copy failures return `Не удалось отправить вложение пользователю.` to the operator group.
+- Unsupported reply types return `Этот тип ответа пока не поддерживается.`.
+- Only the configured operator group is accepted, only Owner can reply through the bridge, wrong groups are ignored, and Admin does not gain operator reply power by default.
+- `OperatorToUser` messages persist the correct `MessageKind` for text and media replies.
+- No migration was added or required because `MessageKind` is persisted as a string.
+- Webhook/polling mapping now accepts and flags `audio`, `location`, and `animation` updates in addition to the existing supported media kinds.
+- Service manuals remain library-only, and the diagnostic Owner/User manual-only policy is unchanged.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Telegram operator/webhook/persistence tests: 52/52 passed.
+- Focused Operator/Inbox/Webhook/Telegram/Library/Manual/Persistence tests: 859/859 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution suite: 5002/5002 passed.
+- `git diff --check`: PASS.
+- No migration added.
+- Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
 Latest validation after ED-24UX.4:

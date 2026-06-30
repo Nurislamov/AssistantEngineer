@@ -159,6 +159,7 @@ public sealed class EfTelegramOperatorInboxStore : ITelegramOperatorInboxStore
         long operatorChatId,
         long operatorMessageId,
         long operatorReplyToMessageId,
+        TelegramOperatorInboxMessageKind kind,
         string text,
         CancellationToken cancellationToken = default)
     {
@@ -179,7 +180,7 @@ public sealed class EfTelegramOperatorInboxStore : ITelegramOperatorInboxStore
             OperatorChatId = operatorChatId,
             OperatorMessageId = operatorMessageId,
             OperatorReplyToMessageId = operatorReplyToMessageId,
-            MessageKind = TelegramOperatorInboxMessageKind.Text,
+            MessageKind = kind,
             Text = Truncate(text, 4000),
             CreatedAt = now
         };

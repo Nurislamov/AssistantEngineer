@@ -435,6 +435,26 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         Assert.DoesNotContain("video-note-unique-id-secret", outbound.Text, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("audio")]
+    [InlineData("location")]
+    [InlineData("animation")]
+    public async Task CommonMediaUpdatesAreAcceptedAndMapped(string mediaKind)
+    {
+        var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "Safe deterministic reply");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(CommonMediaUpdate(mediaKind), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.NotNull(adapter.LastUpdate);
+        Assert.Null(adapter.LastUpdate.Text);
+        Assert.Equal(mediaKind == "audio", adapter.LastUpdate.HasAudio);
+        Assert.Equal(mediaKind == "location", adapter.LastUpdate.HasLocation);
+        Assert.Equal(mediaKind == "animation", adapter.LastUpdate.HasAnimation);
+    }
+
     [Fact]
     public async Task MissingTextIsInvalidAndDoesNotCallAdapter()
     {
@@ -472,6 +492,45 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
                     Duration: 4,
                     Length: 240,
                     FileSize: 1024)));
+
+    private static TelegramWebhookUpdateDto CommonMediaUpdate(string mediaKind)
+    {
+        var message = new TelegramWebhookMessageDto(
+            MessageId: 13,
+            Text: null,
+            Chat: new TelegramWebhookChatDto(3, "operator", "private"),
+            From: new TelegramWebhookUserDto(4, "operator"),
+            Date: 1_700_000_000);
+
+        message = mediaKind switch
+        {
+            "audio" => message with
+            {
+                Audio = new TelegramWebhookAudioDto(
+                    "audio-file-id-secret",
+                    "audio-unique-id-secret",
+                    Duration: 9,
+                    FileName: "reply.mp3")
+            },
+            "location" => message with
+            {
+                Location = new TelegramWebhookLocationDto(41.3111, 69.2797)
+            },
+            "animation" => message with
+            {
+                Animation = new TelegramWebhookAnimationDto(
+                    "animation-file-id-secret",
+                    "animation-unique-id-secret",
+                    FileName: "reply.gif",
+                    Duration: 2,
+                    Width: 320,
+                    Height: 240)
+            },
+            _ => message
+        };
+
+        return new TelegramWebhookUpdateDto(12, message);
+    }
 
     private static TelegramWebhookUpdateDto CallbackUpdate(string callbackId, string data) =>
         new(

@@ -77,6 +77,9 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("video")] TelegramWebhookVideoDto? Video = null,
     [property: JsonPropertyName("voice")] TelegramWebhookVoiceDto? Voice = null,
     [property: JsonPropertyName("video_note")] TelegramWebhookVideoNoteDto? VideoNote = null,
+    [property: JsonPropertyName("audio")] TelegramWebhookAudioDto? Audio = null,
+    [property: JsonPropertyName("location")] TelegramWebhookLocationDto? Location = null,
+    [property: JsonPropertyName("animation")] TelegramWebhookAnimationDto? Animation = null,
     [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null);
 
 public sealed record TelegramWebhookChatDto(
@@ -126,6 +129,30 @@ public sealed record TelegramWebhookVideoNoteDto(
     [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("duration")] int? Duration = null,
     [property: JsonPropertyName("length")] int? Length = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookAudioDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
+    [property: JsonPropertyName("duration")] int? Duration = null,
+    [property: JsonPropertyName("performer")] string? Performer = null,
+    [property: JsonPropertyName("title")] string? Title = null,
+    [property: JsonPropertyName("file_name")] string? FileName = null,
+    [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookLocationDto(
+    [property: JsonPropertyName("latitude")] double Latitude,
+    [property: JsonPropertyName("longitude")] double Longitude);
+
+public sealed record TelegramWebhookAnimationDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
+    [property: JsonPropertyName("file_name")] string? FileName = null,
+    [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("duration")] int? Duration = null,
+    [property: JsonPropertyName("width")] int? Width = null,
+    [property: JsonPropertyName("height")] int? Height = null,
     [property: JsonPropertyName("file_size")] long? FileSize = null);
 
 public sealed record TelegramWebhookCallbackQueryDto(

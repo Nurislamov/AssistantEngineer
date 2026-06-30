@@ -119,7 +119,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
              update.Message.Photo is not { Count: > 0 } &&
              update.Message.Video is null &&
              update.Message.Voice is null &&
-             update.Message.VideoNote is null))
+             update.Message.VideoNote is null &&
+             update.Message.Audio is null &&
+             update.Message.Location is null &&
+             update.Message.Animation is null))
         {
             _counters.RecordInvalidUpdate();
             return Result(EquipmentDiagnosticTelegramWebhookStatus.InvalidUpdate, "Telegram update does not contain a supported message.");
@@ -243,7 +246,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             HasPhoto: message.Photo is { Count: > 0 },
             HasVideo: message.Video is not null,
             HasVoice: message.Voice is not null,
-            HasVideoNote: message.VideoNote is not null);
+            HasVideoNote: message.VideoNote is not null,
+            HasAudio: message.Audio is not null,
+            HasLocation: message.Location is not null,
+            HasAnimation: message.Animation is not null);
     }
 
     private bool IsConfiguredOperatorChat(EquipmentDiagnosticTelegramUpdate update) =>

@@ -32,6 +32,7 @@ public sealed class EfTelegramOperatorInboxStoreTests
             operatorChatId: -100500,
             operatorMessageId: 702,
             operatorReplyToMessageId: 701,
+            kind: TelegramOperatorInboxMessageKind.Text,
             text: "Ответ");
         var thread = await store.GetThreadAsync(userMessage.Thread.Id);
 
@@ -61,6 +62,34 @@ public sealed class EfTelegramOperatorInboxStoreTests
 
         Assert.NotNull(linked);
         Assert.Equal(TelegramOperatorInboxMessageKind.VideoNote, linked.MessageKind);
+    }
+
+    [Fact]
+    public async Task EfTelegramOperatorInboxStorePersistsOperatorMediaReplyKindWithoutNewSchema()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramOperatorInboxStore>();
+
+        var userMessage = await store.AddUserMessageAsync(
+            Access(),
+            Update("Need a document reply"),
+            TelegramOperatorInboxMessageKind.Text,
+            "Need a document reply");
+        var mediaReply = await store.AddOperatorReplyAsync(
+            userMessage.Thread.Id,
+            userChatId: 20,
+            operatorChatId: -100500,
+            operatorMessageId: 704,
+            operatorReplyToMessageId: 701,
+            kind: TelegramOperatorInboxMessageKind.Document,
+            text: "Document");
+        var linked = await store.GetByOperatorMessageAsync(-100500, 704);
+
+        Assert.Equal(TelegramOperatorInboxMessageDirection.OperatorToUser, mediaReply.Direction);
+        Assert.Equal(TelegramOperatorInboxMessageKind.Document, mediaReply.MessageKind);
+        Assert.NotNull(linked);
+        Assert.Equal(TelegramOperatorInboxMessageKind.Document, linked.MessageKind);
     }
 
     [Fact]

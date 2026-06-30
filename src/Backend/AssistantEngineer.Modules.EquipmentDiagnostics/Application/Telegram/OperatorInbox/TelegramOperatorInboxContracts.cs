@@ -23,6 +23,10 @@ public enum TelegramOperatorInboxMessageKind
     VideoNote,
     Document,
     Voice,
+    Audio,
+    Contact,
+    Location,
+    Animation,
     Unknown
 }
 
@@ -126,6 +130,7 @@ public interface ITelegramOperatorInboxStore
         long operatorChatId,
         long operatorMessageId,
         long operatorReplyToMessageId,
+        TelegramOperatorInboxMessageKind kind,
         string text,
         CancellationToken cancellationToken = default);
 }

@@ -76,6 +76,12 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
             return true;
         }
 
+        var kind = MessageKind(update);
+        if (kind != TelegramOperatorInboxMessageKind.Text)
+        {
+            return await TryHandleOperatorCopiedReplyAsync(update, kind, cancellationToken);
+        }
+
         if (string.IsNullOrWhiteSpace(update.Text))
         {
             await SendAsync(update.ChatId, "Пока поддерживается только текстовый ответ.", cancellationToken);
@@ -124,7 +130,73 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
             update.ChatId,
             update.MessageId ?? 0,
             update.ReplyToMessageId.Value,
+            TelegramOperatorInboxMessageKind.Text,
             update.Text.Trim(),
+            cancellationToken);
+
+        await SendAsync(update.ChatId, "Ответ отправлен пользователю.", cancellationToken);
+        return true;
+    }
+
+    private async Task<bool> TryHandleOperatorCopiedReplyAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramOperatorInboxMessageKind kind,
+        CancellationToken cancellationToken)
+    {
+        var source = await _store.GetByOperatorMessageAsync(
+            update.ChatId,
+            update.ReplyToMessageId!.Value,
+            cancellationToken);
+        if (source is null)
+        {
+            await SendAsync(
+                update.ChatId,
+                "Не удалось определить получателя. Ответьте reply-сообщением на карточку обращения.",
+                cancellationToken);
+            return true;
+        }
+
+        var thread = await _store.GetThreadAsync(source.ThreadId, cancellationToken);
+        if (thread is null)
+        {
+            await SendAsync(
+                update.ChatId,
+                "Не удалось определить получателя. Ответьте reply-сообщением на карточку обращения.",
+                cancellationToken);
+            return true;
+        }
+
+        if (!IsCopyReplyKind(kind))
+        {
+            await SendAsync(update.ChatId, "Этот тип ответа пока не поддерживается.", cancellationToken);
+            return true;
+        }
+
+        if (update.MessageId is null)
+        {
+            await SendAsync(update.ChatId, "Не удалось отправить вложение пользователю.", cancellationToken);
+            return true;
+        }
+
+        var copied = await _outboundClient.CopyMessageAsync(
+            thread.TelegramChatId,
+            update.ChatId,
+            update.MessageId.Value,
+            cancellationToken);
+        if (!copied.Succeeded)
+        {
+            await SendAsync(update.ChatId, "Не удалось отправить вложение пользователю.", cancellationToken);
+            return true;
+        }
+
+        await _store.AddOperatorReplyAsync(
+            thread.Id,
+            thread.TelegramChatId,
+            update.ChatId,
+            update.MessageId.Value,
+            update.ReplyToMessageId.Value,
+            kind,
+            ReplyTextForStorage(update, kind),
             cancellationToken);
 
         await SendAsync(update.ChatId, "Ответ отправлен пользователю.", cancellationToken);
@@ -278,6 +350,26 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
             return TelegramOperatorInboxMessageKind.Voice;
         }
 
+        if (update.HasAudio)
+        {
+            return TelegramOperatorInboxMessageKind.Audio;
+        }
+
+        if (!string.IsNullOrWhiteSpace(update.ContactPhoneNumber))
+        {
+            return TelegramOperatorInboxMessageKind.Contact;
+        }
+
+        if (update.HasLocation)
+        {
+            return TelegramOperatorInboxMessageKind.Location;
+        }
+
+        if (update.HasAnimation)
+        {
+            return TelegramOperatorInboxMessageKind.Animation;
+        }
+
         if (!string.IsNullOrWhiteSpace(update.DocumentFileId))
         {
             return TelegramOperatorInboxMessageKind.Document;
@@ -292,6 +384,24 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
         kind == TelegramOperatorInboxMessageKind.VideoNote
             ? "Видео-кружок"
             : kind.ToString();
+
+    private static bool IsCopyReplyKind(TelegramOperatorInboxMessageKind kind) =>
+        kind is TelegramOperatorInboxMessageKind.Photo or
+            TelegramOperatorInboxMessageKind.Video or
+            TelegramOperatorInboxMessageKind.VideoNote or
+            TelegramOperatorInboxMessageKind.Voice or
+            TelegramOperatorInboxMessageKind.Audio or
+            TelegramOperatorInboxMessageKind.Document or
+            TelegramOperatorInboxMessageKind.Contact or
+            TelegramOperatorInboxMessageKind.Location or
+            TelegramOperatorInboxMessageKind.Animation;
+
+    private static string ReplyTextForStorage(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramOperatorInboxMessageKind kind) =>
+        string.IsNullOrWhiteSpace(update.Text)
+            ? kind.ToString()
+            : update.Text.Trim();
 
     private static bool IsOperatorChatIdCommand(string? text)
     {

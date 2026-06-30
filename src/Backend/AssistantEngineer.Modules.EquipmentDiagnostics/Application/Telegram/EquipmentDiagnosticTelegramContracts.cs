@@ -94,7 +94,10 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     bool HasPhoto = false,
     bool HasVideo = false,
     bool HasVoice = false,
-    bool HasVideoNote = false);
+    bool HasVideoNote = false,
+    bool HasAudio = false,
+    bool HasLocation = false,
+    bool HasAnimation = false);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

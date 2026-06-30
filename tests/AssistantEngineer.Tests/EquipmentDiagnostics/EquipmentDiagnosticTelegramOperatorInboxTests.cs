@@ -55,6 +55,97 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
     }
 
     [Fact]
+    public async Task OwnerTextReplyPreservesUrlAndPersistsTextKind()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound);
+        await CreateUserAsync(provider, chatId: 7, userId: 777, TelegramUserRole.Owner);
+        var access = await ResolveAccessAsync(provider, UserUpdate("Need help with a link"));
+        var service = provider.GetRequiredService<ITelegramOperatorInboxService>();
+
+        await service.MirrorUserMessageAsync(UserUpdate("Need help with a link"), access);
+        var handled = await service.TryHandleOperatorReplyAsync(
+            GroupUpdate("Open https://example.com/manual?id=42", userId: 777, messageId: 500, replyToMessageId: 101));
+        var storedReply = await provider.GetRequiredService<ITelegramOperatorInboxStore>()
+            .GetByOperatorMessageAsync(-100500, 500);
+
+        Assert.True(handled);
+        Assert.Contains("https://example.com/manual?id=42", outbound.Messages[1].Text, StringComparison.Ordinal);
+        Assert.NotNull(storedReply);
+        Assert.Equal(TelegramOperatorInboxMessageKind.Text, storedReply.MessageKind);
+    }
+
+    [Theory]
+    [InlineData(TelegramOperatorInboxMessageKind.Document)]
+    [InlineData(TelegramOperatorInboxMessageKind.Photo)]
+    [InlineData(TelegramOperatorInboxMessageKind.Video)]
+    [InlineData(TelegramOperatorInboxMessageKind.VideoNote)]
+    [InlineData(TelegramOperatorInboxMessageKind.Voice)]
+    [InlineData(TelegramOperatorInboxMessageKind.Audio)]
+    [InlineData(TelegramOperatorInboxMessageKind.Contact)]
+    [InlineData(TelegramOperatorInboxMessageKind.Location)]
+    [InlineData(TelegramOperatorInboxMessageKind.Animation)]
+    public async Task OwnerCopiedReplyKindsAreCopiedToUserAndPersisted(TelegramOperatorInboxMessageKind kind)
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound);
+        await CreateUserAsync(provider, chatId: 7, userId: 777, TelegramUserRole.Owner);
+        var access = await ResolveAccessAsync(provider, UserUpdate("Need media reply"));
+        var service = provider.GetRequiredService<ITelegramOperatorInboxService>();
+
+        await service.MirrorUserMessageAsync(UserUpdate("Need media reply"), access);
+        var handled = await service.TryHandleOperatorReplyAsync(
+            GroupMediaReply(kind, messageId: 600, replyToMessageId: 101));
+        var storedReply = await provider.GetRequiredService<ITelegramOperatorInboxStore>()
+            .GetByOperatorMessageAsync(-100500, 600);
+
+        Assert.True(handled);
+        Assert.Single(outbound.CopyMessages);
+        Assert.Equal((20, -100500, 600), outbound.CopyMessages[0]);
+        Assert.NotNull(storedReply);
+        Assert.Equal(kind, storedReply.MessageKind);
+        Assert.Equal(-100500, outbound.Messages[1].ChatId);
+        Assert.Contains("Ответ отправлен пользователю", outbound.Messages[1].Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task OwnerMediaReplyToCopiedUserMediaWorks()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound);
+        await CreateUserAsync(provider, chatId: 7, userId: 777, TelegramUserRole.Owner);
+        var access = await ResolveAccessAsync(provider, DocumentUpdate("telegram-file-id-secret"));
+        var service = provider.GetRequiredService<ITelegramOperatorInboxService>();
+
+        await service.MirrorUserMessageAsync(DocumentUpdate("telegram-file-id-secret"), access);
+        var handled = await service.TryHandleOperatorReplyAsync(
+            GroupMediaReply(TelegramOperatorInboxMessageKind.Photo, messageId: 700, replyToMessageId: 102));
+
+        Assert.True(handled);
+        Assert.Equal(2, outbound.CopyMessages.Count);
+        Assert.Equal((-100500, 20, 55), outbound.CopyMessages[0]);
+        Assert.Equal((20, -100500, 700), outbound.CopyMessages[1]);
+    }
+
+    [Fact]
+    public async Task OwnerMediaReplyCopyFailureGetsSafeMessage()
+    {
+        var outbound = new FakeOutbound { FailCopiesToUser = true };
+        using var provider = CreateProvider(outbound);
+        await CreateUserAsync(provider, chatId: 7, userId: 777, TelegramUserRole.Owner);
+        var access = await ResolveAccessAsync(provider, UserUpdate("Need media reply"));
+        var service = provider.GetRequiredService<ITelegramOperatorInboxService>();
+
+        await service.MirrorUserMessageAsync(UserUpdate("Need media reply"), access);
+        var handled = await service.TryHandleOperatorReplyAsync(
+            GroupMediaReply(TelegramOperatorInboxMessageKind.Document, messageId: 600, replyToMessageId: 101));
+
+        Assert.True(handled);
+        Assert.Single(outbound.CopyMessages);
+        Assert.Contains("Не удалось отправить вложение пользователю.", outbound.Messages[1].Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task MediaMirrorUsesCopyMessageOnlyToOperatorGroupAndKeepsFileIdOutOfCard()
     {
         var outbound = new FakeOutbound();
@@ -261,6 +352,43 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
             ChatType: "supergroup",
             ReplyToMessageId: replyToMessageId);
 
+    private static EquipmentDiagnosticTelegramUpdate GroupMediaReply(
+        TelegramOperatorInboxMessageKind kind,
+        long messageId,
+        long replyToMessageId)
+    {
+        var update = GroupUpdate(
+            text: "media caption",
+            userId: 777,
+            messageId: messageId,
+            replyToMessageId: replyToMessageId) with
+        {
+            Text = kind is TelegramOperatorInboxMessageKind.Document or
+                TelegramOperatorInboxMessageKind.Photo or
+                TelegramOperatorInboxMessageKind.Video or
+                TelegramOperatorInboxMessageKind.VideoNote or
+                TelegramOperatorInboxMessageKind.Voice or
+                TelegramOperatorInboxMessageKind.Audio or
+                TelegramOperatorInboxMessageKind.Animation
+                    ? null
+                    : "media caption"
+        };
+
+        return kind switch
+        {
+            TelegramOperatorInboxMessageKind.Document => update with { DocumentFileId = "operator-document-file-id" },
+            TelegramOperatorInboxMessageKind.Photo => update with { HasPhoto = true },
+            TelegramOperatorInboxMessageKind.Video => update with { HasVideo = true },
+            TelegramOperatorInboxMessageKind.VideoNote => update with { HasVideoNote = true },
+            TelegramOperatorInboxMessageKind.Voice => update with { HasVoice = true },
+            TelegramOperatorInboxMessageKind.Audio => update with { HasAudio = true },
+            TelegramOperatorInboxMessageKind.Contact => update with { ContactPhoneNumber = "+998901234567", ContactUserId = 777 },
+            TelegramOperatorInboxMessageKind.Location => update with { Text = null, HasLocation = true },
+            TelegramOperatorInboxMessageKind.Animation => update with { HasAnimation = true },
+            _ => update
+        };
+    }
+
     private static TelegramWebhookUpdateDto GroupWebhookUpdate(
         string text,
         long userId) =>
@@ -298,6 +426,7 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
 
         public List<(long ChatId, string Text)> Messages { get; } = [];
         public List<(long ChatId, long FromChatId, long MessageId)> CopyMessages { get; } = [];
+        public bool FailCopiesToUser { get; init; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -323,6 +452,11 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
             CancellationToken cancellationToken = default)
         {
             CopyMessages.Add((chatId, fromChatId, messageId));
+            if (FailCopiesToUser && chatId == 20)
+            {
+                return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(false, "Copy failed."));
+            }
+
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Copied.", ++_nextMessageId));
         }
     }
