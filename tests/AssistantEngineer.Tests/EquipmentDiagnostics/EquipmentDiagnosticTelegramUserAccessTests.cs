@@ -130,9 +130,13 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var help = await adapter.HandleAsync(Update("/help", chatId: 600));
         var diagnostic = await adapter.HandleAsync(Update("Gree H5", chatId: 600));
 
-        Assert.Contains("Диагностика оборудования", help.Text, StringComparison.Ordinal);
-        Assert.Contains("поделиться номером Telegram", help.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("ввести другой номер", help.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Как пользоваться AEngineer HVAC Service", help.Text, StringComparison.Ordinal);
+        Assert.Contains("📚 Библиотека файлов", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/history", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/last", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/start", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/manual_bind", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ваш номер уже сохран", help.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin", help.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("/admin_help", help.Text, StringComparison.Ordinal);
         Assert.Contains("Возможное значение", diagnostic.Text, StringComparison.Ordinal);
@@ -144,7 +148,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
-    public async Task OwnerAndAdminHelpMentionAdminHelpWithoutListingParameterizedAdminCommands()
+    public async Task OwnerAndAdminHelpDoNotListAdminCommands()
     {
         var store = new InMemoryTelegramUserStore();
         var adapter = CreateAdapter(store, Options() with { BootstrapOwnerChatId = 610 });
@@ -154,8 +158,10 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var ownerHelp = await adapter.HandleAsync(Update("/help", chatId: 610));
         var adminHelp = await adapter.HandleAsync(Update("/help", chatId: 612));
 
-        Assert.Contains("/admin_help", ownerHelp.Text, StringComparison.Ordinal);
-        Assert.Contains("/admin_help", adminHelp.Text, StringComparison.Ordinal);
+        Assert.Contains("Как пользоваться AEngineer HVAC Service", ownerHelp.Text, StringComparison.Ordinal);
+        Assert.Contains("Как пользоваться AEngineer HVAC Service", adminHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin_help", ownerHelp.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/admin_help", adminHelp.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin users", ownerHelp.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin role", ownerHelp.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin users", adminHelp.Text, StringComparison.Ordinal);
@@ -209,7 +215,7 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
     }
 
     [Fact]
-    public async Task InstallerReceivesTechnicalDiagnosticsAndRoleSpecificHelp()
+    public async Task InstallerReceivesTechnicalDiagnosticsAndPublicHelp()
     {
         var store = new InMemoryTelegramUserStore();
         await store.AllowAsync(701, TelegramUserRole.Installer);
@@ -227,10 +233,13 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         Assert.Contains("<b>Важно:</b>", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Уверенность:", diagnostic.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Источник:", diagnostic.Text, StringComparison.Ordinal);
-        Assert.Contains("Монтажник", help.Text, StringComparison.Ordinal);
-        Assert.Contains("технические объяснения", help.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Как пользоваться AEngineer HVAC Service", help.Text, StringComparison.Ordinal);
+        Assert.Contains("📚 Библиотека файлов", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/history", help.Text, StringComparison.Ordinal);
+        Assert.Contains("/last", help.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/queue", help.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("/admin", help.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/manual_bind", help.Text, StringComparison.Ordinal);
         Assert.Contains("Роль: Монтажник", me.Text, StringComparison.Ordinal);
         Assert.Contains("История пока пустая", history.Text, StringComparison.Ordinal);
         Assert.Contains("Отправьте код ошибки", last.Text, StringComparison.Ordinal);

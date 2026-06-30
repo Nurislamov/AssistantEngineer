@@ -11,6 +11,36 @@ namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
 public sealed class EquipmentDiagnosticTelegramAdapterTests
 {
+    private const string ExpectedStartText =
+        "AEngineer HVAC Service\n\n" +
+        "Помогу быстро проверить код ошибки HVAC/VRF оборудования, открыть руководство или отправить заявку специалисту.\n\n" +
+        "Напишите код ошибки, например:\n" +
+        "Gree H5\n" +
+        "Gree GMV6 HR U4\n" +
+        "GMV Mini n2\n\n" +
+        "Доступно:\n" +
+        "🔎 диагностика по коду ошибки\n" +
+        "📚 библиотека файлов\n" +
+        "🛠 заявка специалисту\n" +
+        "📋 история и мои заявки";
+
+    private const string ExpectedHelpText =
+        "Как пользоваться AEngineer HVAC Service\n\n" +
+        "Введите код ошибки или модель с кодом:\n" +
+        "Gree H5\n" +
+        "Gree GMV6 HR U4\n" +
+        "GMV Mini n2\n\n" +
+        "Если код найден в нескольких сериях, бот предложит выбрать нужную.\n\n" +
+        "После диагностики можно:\n" +
+        "📘 открыть руководство пользователя\n" +
+        "🛠 оставить заявку специалисту\n" +
+        "📋 посмотреть историю\n\n" +
+        "Также доступна 📚 Библиотека файлов — там можно открыть руководства по сериям, внутренним блокам, пультам и другим разделам.\n\n" +
+        "Команды:\n" +
+        "/history — история диагностик\n" +
+        "/last — последняя диагностика\n" +
+        "/start — главное меню";
+
     [Theory]
     [InlineData("/start")]
     [InlineData("/help")]
@@ -22,7 +52,15 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(text));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Диагностика оборудования", response.Text, StringComparison.Ordinal);
+        Assert.Equal(text == "/start" ? ExpectedStartText : ExpectedHelpText, response.Text);
+        Assert.Contains("AEngineer HVAC Service", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ваш номер уже сохран", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("/manual_bind", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Диагностика оборудования", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Assistant Engineer", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("AssistantEngineer:", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Assistant Engineer Inbox", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Assistant Engineer Service", response.Text, StringComparison.Ordinal);
         Assert.Equal(0, facade.CallCount);
     }
 

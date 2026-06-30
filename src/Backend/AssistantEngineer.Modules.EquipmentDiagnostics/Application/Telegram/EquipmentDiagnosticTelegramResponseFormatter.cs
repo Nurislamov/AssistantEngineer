@@ -153,57 +153,29 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         ];
     }
 
-    public string FormatHelp(int maxLength) =>
+    public string FormatStart(int maxLength) =>
         Truncate(
-            "Диагностика оборудования\n" +
-            "Напишите производителя и код ошибки, например: Gree H5.\n" +
-            "Можно добавить контекст: Gree C5 наружный блок; Gree C5 внутренний блок; /diagnose Gree H5.\n" +
-            "Подсказка основана на проверенном каталоге и требует сверки с точной моделью и сервисной документацией.",
+            "AEngineer HVAC Service\n\n" +
+            "Помогу быстро проверить код ошибки HVAC/VRF оборудования, открыть руководство или отправить заявку специалисту.\n\n" +
+            "Напишите код ошибки, например:\n" +
+            "Gree H5\n" +
+            "Gree GMV6 HR U4\n" +
+            "GMV Mini n2\n\n" +
+            "Доступно:\n" +
+            "🔎 диагностика по коду ошибки\n" +
+            "📚 библиотека файлов\n" +
+            "🛠 заявка специалисту\n" +
+            "📋 история и мои заявки",
             maxLength);
+
+    public string FormatHelp(int maxLength) =>
+        Truncate(HelpText(), maxLength);
 
     public string FormatHelp(
         TelegramUserRole role,
         bool hasPhoneNumber,
-        int maxLength)
-    {
-        if (role == TelegramUserRole.Consumer)
-        {
-            return Truncate(
-                "Диагностика оборудования\n\n" +
-                "Напишите код ошибки, например:\n" +
-                "Gree H5\n\n" +
-                "Я покажу простую и безопасную расшифровку, которую можно передать сервисному специалисту.\n\n" +
-                "История: /history, последняя диагностика: /last.\n\n" +
-                PhonePrompt(hasPhoneNumber),
-                maxLength);
-        }
-
-        if (role == TelegramUserRole.Installer)
-        {
-            return Truncate(
-                "Диагностика оборудования\n\n" +
-                "Напишите производителя и код ошибки, например: Gree H5.\n" +
-                "Доступны технические объяснения, история /history и последняя диагностика /last.\n" +
-                "Роль «Монтажник» не даёт доступа к сервисной очереди, контактам клиентов или админ-командам.\n" +
-                "Технический текст выводится по-русски; непереведённые записи показываются безопасным русским сообщением.",
-                maxLength);
-        }
-
-        var adminLine = TelegramUserRolePolicy.IsAdminRole(role)
-            ? "\n\nАдмин-команды: /admin_help"
-            : string.Empty;
-
-        return Truncate(
-            "Диагностика оборудования\n\n" +
-            "Напишите производителя и код ошибки, например: Gree H5.\n" +
-            "Можно добавить контекст: Gree C5 outdoor; Gree C5 indoor; /diagnose Gree H5.\n" +
-            "История: /history, последняя диагностика: /last.\n" +
-            "Сервисная очередь: /queue, мои назначенные заявки: /my_requests. " +
-            "Действия: /take, /done, /cancel_request, /contact.\n" +
-            "Техническая подсказка требует проверки по точной модели и сервисной документации." +
-            adminLine,
-            maxLength);
-    }
+        int maxLength) =>
+        Truncate(HelpText(), maxLength);
 
     public string FormatConsumer(
         EquipmentDiagnosticBotResponse response,
@@ -733,6 +705,23 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             : "Если хотите, оставьте номер телефона:\n" +
               "- можно поделиться номером Telegram\n" +
               "- или ввести другой номер для звонка.";
+
+    private static string HelpText() =>
+        "Как пользоваться AEngineer HVAC Service\n\n" +
+        "Введите код ошибки или модель с кодом:\n" +
+        "Gree H5\n" +
+        "Gree GMV6 HR U4\n" +
+        "GMV Mini n2\n\n" +
+        "Если код найден в нескольких сериях, бот предложит выбрать нужную.\n\n" +
+        "После диагностики можно:\n" +
+        "📘 открыть руководство пользователя\n" +
+        "🛠 оставить заявку специалисту\n" +
+        "📋 посмотреть историю\n\n" +
+        "Также доступна 📚 Библиотека файлов — там можно открыть руководства по сериям, внутренним блокам, пультам и другим разделам.\n\n" +
+        "Команды:\n" +
+        "/history — история диагностик\n" +
+        "/last — последняя диагностика\n" +
+        "/start — главное меню";
 
     private static string RoleName(TelegramUserRole role) =>
         TelegramUserRolePolicy.DisplayName(role);

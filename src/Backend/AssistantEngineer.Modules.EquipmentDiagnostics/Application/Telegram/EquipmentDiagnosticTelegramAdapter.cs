@@ -302,7 +302,16 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
         }
 
-        if (parseResult.Command is EquipmentDiagnosticTelegramCommand.Start or EquipmentDiagnosticTelegramCommand.Help)
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Start)
+        {
+            return Response(
+                update.ChatId,
+                _formatter.FormatStart(Math.Max(_options.MaxMessageLength, ConsumerMessageLength)),
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+        }
+
+        if (parseResult.Command == EquipmentDiagnosticTelegramCommand.Help)
         {
             var phoneSaved = access.User?.HasPhoneNumber == true;
             return Response(

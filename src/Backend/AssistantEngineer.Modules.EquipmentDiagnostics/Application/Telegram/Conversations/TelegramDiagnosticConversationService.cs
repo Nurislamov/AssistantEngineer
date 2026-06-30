@@ -16,10 +16,10 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Co
 public sealed class TelegramDiagnosticConversationService
 {
     public const string NewCodeButton = "🔎 Новый код";
-    public const string HistoryButton = "📋 История";
+    public const string HistoryButton = "🕘 История";
     public const string ServiceRequestButton = "🛠 Оставить заявку";
     public const string PreviousServiceRequestButton = "🛠 Нужен мастер";
-    public const string RequestsButton = "📄 Мои заявки";
+    public const string RequestsButton = "📋 Мои заявки";
     public const string SharePhoneButton = "📞 Поделиться номером Telegram";
     public const string ManualPhoneButton = "✏️ Ввести другой номер";
     public const string ChangePhoneButton = "✏️ Изменить номер";

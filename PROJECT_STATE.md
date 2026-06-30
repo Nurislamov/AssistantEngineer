@@ -2,20 +2,58 @@
 
 ## Current stage
 
-ED-24MAN.3a - CLOSED / pushed; production live-check is still pending.
+ED-24BRAND.1 - CLOSED / pushed; production live-check is still pending.
 
 Next recommended steps:
 
-1. Run the ED-24MAN.3a VPS deploy/live-check and verify the pending ED-24MAN.3 Gree Indoor service-manual metadata
+1. Run the ED-24BRAND.1 VPS deploy/live-check and verify the polished Telegram-facing branding in production.
+2. Run the ED-24MAN.3a VPS deploy/live-check and verify the pending ED-24MAN.3 Gree Indoor service-manual metadata
    correction SQL output.
-2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
-3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
+3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+4. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24BRAND.1 polishes visible Telegram-facing branding and help copy; the stage is CLOSED / pushed.
+Production PASS is not marked yet because the VPS live-check is still pending.
+
+ED-24BRAND.1 implementation notes:
+
+- `/start` copy now uses the visible bot brand `AEngineer HVAC Service`, includes examples `Gree H5`,
+  `Gree GMV6 HR U4`, and `GMV Mini n2`, and lists diagnostics, file library, service request, history, and requests
+  actions.
+- `/help` copy now starts with `Как пользоваться AEngineer HVAC Service`, explains multi-series selection, mentions the
+  `📚 Библиотека файлов`, and lists only public commands: `/history`, `/last`, and `/start`.
+- The saved-phone status text was removed from `/start`; `/start` does not claim that a phone number is already saved.
+- `/manual_bind` is absent from public `/help`; owner-only manual binding remains protected outside public help copy.
+- Telegram-facing branding is aligned with the manually configured names: bot `AEngineer HVAC Service`, username
+  `@AEngineerBot`, main group `AEngineer HVAC`, inbox group `AEngineer Inbox`.
+- Reply keyboard labels are aligned with the polished visible set: `🔎 Новый код`, `📚 Библиотека`,
+  `🛠 Оставить заявку`, `📋 Мои заявки`, `🕘 История`, and `✏️ Изменить номер`.
+- User-facing Telegram copy no longer uses old visible branding strings such as `Assistant Engineer`,
+  `AssistantEngineer:`, `Assistant Engineer Inbox`, or `Assistant Engineer Service`.
+- Manual policies are unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload menus,
+  diagnostic guide OwnerManual-only.
+- Manual labels are unchanged: OwnerManual remains `📘 Руководства пользователя`, ServiceManual remains
+  `📕 Сервисные мануалы`, and the diagnostic contextual button remains `📘 Руководство`.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts are unchanged; the only recent deploy script changes remain the ED-24OPS.3 Docker Compose/configuration
+  work.
+- No migration was added.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Restore: PASS.
+- Build: PASS, 0 errors; the known `TD-BUILD-001` nullable warnings in test architecture guard files remain
+  non-blocking.
+- Focused Telegram/manual-library/diagnostics/Gree tests: 1073/1073 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5045/5045 passed.
+- `git diff --check`: PASS.
+- Production PASS remains pending until the ED-24BRAND.1 VPS live-check is completed.
 
 ED-24MAN.3a localizes visible Telegram library document labels and hides InstallationManual from visible Telegram
 library/upload menus; the stage is CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check

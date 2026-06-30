@@ -61,7 +61,11 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         var help = formatter.FormatHelp(500);
         var validation = formatter.FormatValidation(["Manufacturer is required."], 500);
 
+        Assert.Contains("Как пользоваться AEngineer HVAC Service", help, StringComparison.Ordinal);
         Assert.Contains("Gree H5", help, StringComparison.Ordinal);
+        Assert.Contains("📚 Библиотека файлов", help, StringComparison.Ordinal);
+        Assert.DoesNotContain("/manual_bind", help, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ваш номер уже сохран", help, StringComparison.Ordinal);
         Assert.Contains("Укажите производителя", validation, StringComparison.Ordinal);
         Assert.True(help.Length <= 500);
         Assert.True(validation.Length <= 500);
