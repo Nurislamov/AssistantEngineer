@@ -2,19 +2,67 @@
 
 ## Current stage
 
-ED-24OPS.3 - CLOSED / production PASS.
+ED-24MAN.3 - CLOSED / pushed; production live-check and data-correction execution are still pending.
 
 Next recommended steps:
 
-1. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
-2. Consider ED-24MAN.3 for exact model-family matching and
-   ED-24QA.2 for nullable warning cleanup.
+1. Run the ED-24MAN.3 VPS deploy/live-check and execute/check the prepared Gree Indoor service-manual metadata
+   correction SQL.
+2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24MAN.3 fixes Telegram library generic file callbacks and adds typed Gree Indoor/Controllers categories; the stage is
+CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check and the prepared data-correction
+SQL still need to be executed and checked on production.
+
+ED-24MAN.3 implementation notes:
+
+- Root cause: generic Telegram library file-list buttons could build `callback_data` from long/manual-specific payloads,
+  creating `BUTTON_DATA_INVALID` risk for Indoor/Controllers file lists.
+- Generic library file buttons now use short persisted binding callbacks in the form `lib:f:<bindingId>`; legacy
+  `lib:file:` callbacks remain readable for older inline messages.
+- File callback handling resolves the current binding by persisted id and re-checks `IsActive`, `IsLibraryVisible`, user
+  role/access, and allowed library rules before protected `sendDocument(file_id)` delivery.
+- Full filenames remain visible in the numbered message body; inline file buttons use short readable labels and callback
+  payloads stay under Telegram's 64-byte limit without filename, Telegram `file_id`, `file_unique_id`,
+  `sourceReferences`, or long manual ids.
+- Gree Indoor now has explicit typed categories: `Настенные`, `Кассетные`, `Канальные`, and
+  `📕 Сервисные мануалы`.
+- Gree Controllers now has explicit typed categories: `Настенные` and `Беспроводные ИК`.
+- There is intentionally no `Прочее` bucket under Indoor or Controllers; unclassified future files require a new explicit
+  category rule before they become visible.
+- The visible ServiceManual label is now `📕 Сервисные мануалы`; the internal enum/database value remains
+  `ServiceManual`.
+- ServiceManual access remains restricted and library-only; InstallationManual remains library-only; diagnostic guide
+  delivery remains OwnerManual-only.
+- GMV Mini multi OwnerManual selection, GMV6 HR OwnerManual diagnostic delivery, and existing outdoor library menus remain
+  covered by regression tests.
+- Prepared idempotent production data-correction SQL:
+  `scripts/deployment/manual-library/fix-gree-indoor-service-manual-binding.sql`.
+- The SQL targets only the known Gree Indoor service manual row
+  `Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf`, sets `DocumentType = 'ServiceManual'`,
+  `MinRole = 'Engineer'`, `CanUseForDiagnostics = false`, and `IsLibraryVisible = true`, and includes select-before /
+  update / select-after checks.
+- The SQL does not delete rows and does not change `IsActive`; production correction is not marked PASS until the VPS
+  command is run and output is checked.
+- No migration was added.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Restore: PASS.
+- Build: PASS, 0 errors; the known `TD-BUILD-001` nullable warnings in test architecture guard files remain
+  non-blocking.
+- Focused Telegram/manual-library/diagnostics/Gree tests: 1070/1070 passed.
+- Focused manual-library quick slice: 56/56 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5042/5042 passed.
+- `git diff --check`: PASS.
 
 ED-24OPS.3 persists ASP.NET DataProtection keys outside the API container; the stage is CLOSED / production PASS.
 
@@ -911,6 +959,8 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24MAN.3 - Telegram library callback safety and typed Gree Indoor/Controllers categories validated locally and pushed;
+  production live-check plus the prepared data-correction SQL execution/check are still pending.
 - ED-24OPS.3 - DataProtection key persistence validated locally, pushed, and production-confirmed.
 - ED-24EF.2 - HourlySchedule value comparer validated locally, pushed, and production-confirmed.
 - ED-24EF.1 - Telegram EF enum sentinels validated locally, pushed, and production-confirmed.
@@ -982,18 +1032,20 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24MAN.3 - Manual variants by model family / exact model matching.
+- ED-24MAN.3 production follow-up - deploy/live-check and run/check the prepared Gree Indoor service-manual metadata
+  correction SQL.
+- ED-24MAN.4 - Manual variants by model family / exact model matching.
 - TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
   encryption at rest.
 - ED-24QA.2 - Clean nullable warnings in architecture guard tests.
 
 ## Current blocker
 
-No implementation blocker. ED-24OPS.3 is CLOSED / production PASS; remaining DataProtection hardening is optional
-`TD-OPS-002` encryption at rest with a production-owned PFX/certificate.
+No implementation blocker. ED-24MAN.3 is CLOSED / pushed, but production PASS is intentionally not marked until the VPS
+deploy/live-check and the prepared data-correction SQL output are checked.
 
 ## Next step
 
-Choose the next stage. Candidate follow-ups are `TD-OPS-002` optional DataProtection encryption at rest, ED-24MAN.3 exact
-model-family matching, or ED-24QA.2 nullable warning cleanup.
+Run the ED-24MAN.3 production follow-up, including the prepared SQL correction check, then choose between `TD-OPS-002`,
+ED-24MAN.4 exact model-family matching, or ED-24QA.2 nullable warning cleanup.
 

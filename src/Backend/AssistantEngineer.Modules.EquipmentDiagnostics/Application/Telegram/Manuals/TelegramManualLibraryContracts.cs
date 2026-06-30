@@ -105,7 +105,8 @@ public sealed record TelegramManualFileBinding(
     TelegramLibraryDocumentType DocumentType = TelegramLibraryDocumentType.ServiceManual,
     TelegramUserRole MinRole = TelegramUserRole.Engineer,
     bool IsLibraryVisible = true,
-    bool CanUseForDiagnostics = false);
+    bool CanUseForDiagnostics = false,
+    long? Id = null);
 
 public sealed record TelegramLibraryAccessGrant(
     long TelegramUserId,
@@ -142,6 +143,10 @@ public interface ITelegramManualRegistrySource
 
 public interface ITelegramManualFileBindingStore
 {
+    Task<TelegramManualFileBinding?> GetByIdAsync(
+        long id,
+        CancellationToken cancellationToken = default);
+
     Task<TelegramManualFileBinding?> GetAsync(
         string manualId,
         CancellationToken cancellationToken = default);

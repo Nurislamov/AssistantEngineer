@@ -1,8 +1,9 @@
 # Telegram file library
 
-Status: ED-24MAN.2a keeps the protected Telegram file library foundation and adds multiple active GMV Mini / Slim
-`OwnerManual` files. It extends existing `TelegramManualBindings` instead of creating a parallel file-id system, keeps
-persistent library access grants and requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
+Status: ED-24MAN.3 keeps the protected Telegram file library foundation, adds typed Gree Indoor and Controllers
+categories, and fixes generic library file-list callbacks by using short persisted binding-id tokens. It extends existing
+`TelegramManualBindings` instead of creating a parallel file-id system, keeps persistent library access grants and
+requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
 
 ## Current rules
 
@@ -18,8 +19,10 @@ persistent library access grants and requests, and allows diagnostic document de
   by title/filename and sends only the selected Owner manual.
 - Files are sent with Telegram `sendDocument(file_id)` and `protect_content=true`.
 - `forwardMessage` and `copyMessage` are not used for library/manual delivery.
-- Raw `TelegramFileId`, `FileUniqueId`, DB ids, chat ids, local paths, package ids, and source references are not shown
-  to users.
+- Raw `TelegramFileId`, `FileUniqueId`, chat ids, local paths, package ids, source references, full filenames, and long
+  manual ids are not placed into callback data.
+- Generic library file buttons use short callback data such as `lib:f:<bindingId>` and re-check current binding state
+  before sending a file.
 
 ## Library access
 
@@ -68,7 +71,7 @@ ED-24MAN.2 exposes the first structured Gree catalog:
 - `Gree` shows `Наружные`, `Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`, and `Назад`.
 - `Пульты / Controllers` moved under `Gree`.
 - `Gree -> Наружные` shows fixed product lines: `GMV6`, `GMV6 HR`, `GMV Mini / Slim`, `GMV X`, `GMV9 Flex`.
-- Each outdoor product line shows document buckets: `📕 Service Manual`, `📘 Owner Manual`,
+- Each outdoor product line shows document buckets: `📕 Сервисные мануалы`, `📘 Owner Manual`,
   `🛠 Installation Manual`.
 - Empty buckets show `Пока файлов нет.`
 - `Gree -> Наружные -> GMV Mini / Slim -> 📘 Owner Manual` supports multiple active files. This is needed because
@@ -77,8 +80,14 @@ ED-24MAN.2 exposes the first structured Gree catalog:
   library-only and may be empty.
 - GMV9 Flex OwnerManual is currently unavailable/pending; diagnostics keep returning `Руководство пока не добавлено`
   until an OwnerManual is explicitly bound.
-- Free sections (`Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`) list files directly as safe
-  title/filename buttons without a nested model tree and paginate when the list is long.
+- `Gree -> Внутренние` shows typed categories: `Настенные`, `Кассетные`, `Канальные`, and
+  `📕 Сервисные мануалы`.
+- `Gree -> Пульты / Controllers` shows typed categories: `Настенные` and `Беспроводные ИК`.
+- Indoor and Controllers intentionally do not have a generic `Прочее` bucket. Future unclassified equipment files must
+  add an explicit category rule before they become visible in a typed user category.
+- Category file lists show full numbered filenames in the message body and short numbered button labels with safe
+  `lib:f:<bindingId>` callbacks.
+- `Gree -> Аксессуары и прочее` remains a free section and paginates when the list is long.
 - File visibility requires `IsLibraryVisible = true`.
 - File fetch requires active library access and `role >= MinRole`.
 - Owner sees all active visible files.
@@ -86,7 +95,7 @@ ED-24MAN.2 exposes the first structured Gree catalog:
 - Installer with grant cannot fetch `MinRole = Engineer` service manuals.
 
 Existing Gree service bindings for GMV9 Flex, GMV X, GMV6, and GMV Mini remain visible under
-`Gree -> Наружные -> <product> -> 📕 Service Manual`.
+`Gree -> Наружные -> <product> -> 📕 Сервисные мануалы`.
 
 ## Bind workflow
 
@@ -117,7 +126,33 @@ Stored document policy:
 - `InstallationManual`: `MinRole = Installer`, library-only.
 - `ControllerGuide`: `MinRole = Installer`, library-only.
 
-No PDF binaries are committed to the repository for ED-24MAN.2a.
+The visible ServiceManual document-type label is `📕 Сервисные мануалы`; the internal enum/database value remains
+`ServiceManual`.
+
+No PDF binaries are committed to the repository for ED-24MAN.3.
+
+## ED-24MAN.3 data correction
+
+The known uploaded Gree Indoor service manual row was originally stored as `DocumentType = OwnerManual` and
+`MinRole = Consumer`. ED-24MAN.3 includes an idempotent VPS SQL repair script:
+
+`scripts/deployment/manual-library/fix-gree-indoor-service-manual-binding.sql`
+
+The script selects the exact row before and after update, then updates only:
+
+- `Brand = 'Gree'`
+- `Series = 'Indoor'`
+- `FileName = 'Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf'`
+
+Expected corrected metadata:
+
+- `DocumentType = 'ServiceManual'`
+- `MinRole = 'Engineer'`
+- `CanUseForDiagnostics = false`
+- `IsLibraryVisible = true`
+- `IsActive` remains unchanged
+
+Production correction is not complete until the script is executed on the VPS and its before/after output is checked.
 
 ## Future work
 

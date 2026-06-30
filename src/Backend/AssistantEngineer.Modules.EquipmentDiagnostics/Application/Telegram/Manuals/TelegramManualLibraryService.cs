@@ -49,6 +49,9 @@ public sealed class TelegramManualLibraryService
     private const string LibraryGreeProductPrefix = "lib:gree:outdoor:";
     private const string LibraryGreeSectionPrefix = "lib:gree:section:";
     private const string LibraryFilePrefix = "lib:file:";
+    private const string LibraryFileByIdPrefix = "lib:f:";
+    private const string LibraryIndoorCategoryPrefix = "lib:i:";
+    private const string LibraryControllerCategoryPrefix = "lib:c:";
     private const string LibraryRequestsCallback = "lib:reqs";
     private const string LibraryAccessCallback = "lib:access";
     private const string LibraryCancelCallback = "lib:cancel";
@@ -73,7 +76,7 @@ public sealed class TelegramManualLibraryService
         new(OutdoorSectionSlug, "Наружные", "Outdoor", true,
             [TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.InstallationManual]),
         new(IndoorSectionSlug, "Внутренние", "Indoor", false,
-            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.InstallationManual]),
+            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.InstallationManual]),
         new(ControllersSectionSlug, "Пульты / Controllers", "Controllers", false,
             [TelegramLibraryDocumentType.ControllerGuide]),
         new(AccessoriesSectionSlug, "Аксессуары и прочее", "Accessories", false,
@@ -82,10 +85,24 @@ public sealed class TelegramManualLibraryService
 
     private static readonly IReadOnlyList<ManualDocumentTypeOption> DocumentTypeOptions =
     [
-        new("service", TelegramLibraryDocumentType.ServiceManual, "📕 Service Manual"),
+        new("service", TelegramLibraryDocumentType.ServiceManual, "📕 Сервисные мануалы"),
         new("owner", TelegramLibraryDocumentType.OwnerManual, "📘 Owner Manual"),
         new("installation", TelegramLibraryDocumentType.InstallationManual, "🛠 Installation Manual"),
         new("controller", TelegramLibraryDocumentType.ControllerGuide, "🎛 Controller Guide")
+    ];
+
+    private static readonly IReadOnlyList<TypedLibraryCategoryOption> IndoorCategories =
+    [
+        new("wall", "Настенные"),
+        new("cas", "Кассетные"),
+        new("duc", "Канальные"),
+        new("svc", "📕 Сервисные мануалы")
+    ];
+
+    private static readonly IReadOnlyList<TypedLibraryCategoryOption> ControllerCategories =
+    [
+        new("wall", "Настенные"),
+        new("ir", "Беспроводные ИК")
     ];
 
     private readonly EquipmentDiagnosticTelegramOptions _options;
@@ -680,9 +697,46 @@ public sealed class TelegramManualLibraryService
             }
 
             var section = FindSection(sectionSlug);
-            return section is null || section.IsOutdoor
-                ? BindText("Раздел не найден.", callbackAnswerText: "Не найдено")
-                : await BuildFreeLibrarySectionAsync(section, access, page, cancellationToken);
+            if (section is null || section.IsOutdoor)
+            {
+                return BindText("Раздел не найден.", callbackAnswerText: "Не найдено");
+            }
+
+            if (section.Slug.Equals(IndoorSectionSlug, StringComparison.Ordinal))
+            {
+                return BuildIndoorCategoryRoot();
+            }
+
+            if (section.Slug.Equals(ControllersSectionSlug, StringComparison.Ordinal))
+            {
+                return BuildControllerCategoryRoot();
+            }
+
+            return await BuildFreeLibrarySectionAsync(section, access, page, cancellationToken);
+        }
+
+        if (callback.StartsWith(LibraryIndoorCategoryPrefix, StringComparison.Ordinal))
+        {
+            return await BuildTypedCategoryAsync(
+                callback[LibraryIndoorCategoryPrefix.Length..],
+                IndoorSectionSlug,
+                "Внутренние блоки Gree",
+                LibraryIndoorCategoryPrefix,
+                FreeSectionCallback(IndoorSectionSlug),
+                access,
+                cancellationToken);
+        }
+
+        if (callback.StartsWith(LibraryControllerCategoryPrefix, StringComparison.Ordinal))
+        {
+            return await BuildTypedCategoryAsync(
+                callback[LibraryControllerCategoryPrefix.Length..],
+                ControllersSectionSlug,
+                "Пульты / Controllers Gree",
+                LibraryControllerCategoryPrefix,
+                FreeSectionCallback(ControllersSectionSlug),
+                access,
+                cancellationToken);
         }
 
         if (string.Equals(callback, LibraryRequestsCallback, StringComparison.Ordinal))
@@ -701,6 +755,11 @@ public sealed class TelegramManualLibraryService
                 "Библиотека закрыта.",
                 TelegramDiagnosticConversationService.MainKeyboard(access),
                 "Закрыто");
+        }
+
+        if (callback.StartsWith(LibraryFileByIdPrefix, StringComparison.Ordinal))
+        {
+            return await SendLibraryFileByIdAsync(callback[LibraryFileByIdPrefix.Length..], access, cancellationToken);
         }
 
         if (callback.StartsWith(LibraryFilePrefix, StringComparison.Ordinal))
@@ -1175,6 +1234,79 @@ public sealed class TelegramManualLibraryService
             "Gree");
     }
 
+    private static TelegramManualLibraryResult BuildIndoorCategoryRoot()
+    {
+        var rows = IndoorCategories
+            .Select(category => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton(category.Label, LibraryIndoorCategoryPrefix + category.Slug)])
+            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryGreeCallback)])
+            .ToArray();
+
+        return BindText(
+            "Внутренние блоки Gree",
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            "Внутренние");
+    }
+
+    private static TelegramManualLibraryResult BuildControllerCategoryRoot()
+    {
+        var rows = ControllerCategories
+            .Select(category => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton(category.Label, LibraryControllerCategoryPrefix + category.Slug)])
+            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryGreeCallback)])
+            .ToArray();
+
+        return BindText(
+            "Пульты / Controllers Gree",
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            "Пульты");
+    }
+
+    private async Task<TelegramManualLibraryResult> BuildTypedCategoryAsync(
+        string callbackRemainder,
+        string sectionSlug,
+        string sectionTitle,
+        string callbackPrefix,
+        string backCallback,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        var categorySlug = callbackRemainder;
+        var page = 0;
+        var pageSeparator = callbackRemainder.IndexOf(":p:", StringComparison.Ordinal);
+        if (pageSeparator >= 0)
+        {
+            categorySlug = callbackRemainder[..pageSeparator];
+            _ = int.TryParse(callbackRemainder[(pageSeparator + 3)..], out page);
+            page = Math.Max(0, page);
+        }
+
+        var category = FindTypedCategory(sectionSlug, categorySlug);
+        if (category is null)
+        {
+            return BindText("Раздел не найден.", callbackAnswerText: "Не найдено");
+        }
+
+        var bindings = (await _bindingStore.ListAsync(cancellationToken))
+            .Where(binding =>
+                binding.IsActive &&
+                binding.IsLibraryVisible &&
+                string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(binding.Series, SectionStorageSeries(sectionSlug), StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(ClassifyTypedBinding(sectionSlug, binding), category.Slug, StringComparison.Ordinal) &&
+                CanAccessBinding(access, binding))
+            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        return BuildFileList(
+            $"{sectionTitle} — {category.Label}",
+            bindings,
+            page,
+            pageNumber => $"{callbackPrefix}{category.Slug}:p:{pageNumber}",
+            backCallback,
+            category.Label);
+    }
+
     private static TelegramManualLibraryResult BuildOutdoorProductLines()
     {
         var rows = SupportedSeries
@@ -1231,15 +1363,12 @@ public sealed class TelegramManualLibraryService
                 "Пока файлов нет");
         }
 
-        var rows = bindings
-            .Select(binding => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
-                [new EquipmentDiagnosticTelegramInlineKeyboardButton($"📄 {DisplayBindingTitle(binding)}", LibraryFilePrefix + binding.ManualId)])
-            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", $"{LibraryGreeProductPrefix}{series.Slug}")])
-            .ToArray();
-
-        return BindText(
-            $"Gree / Наружные / {series.DisplayName} / {documentType.Label}\n\nДоступные файлы:",
-            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+        return BuildFileList(
+            $"Gree / Наружные / {series.DisplayName} / {documentType.Label}",
+            bindings,
+            0,
+            _ => $"{LibraryGreeProductPrefix}{series.Slug}:{documentType.Slug}",
+            $"{LibraryGreeProductPrefix}{series.Slug}",
             documentType.Label);
     }
 
@@ -1266,8 +1395,8 @@ public sealed class TelegramManualLibraryService
             .ToArray();
 
         var rows = pageItems
-            .Select(binding => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
-                [new EquipmentDiagnosticTelegramInlineKeyboardButton($"📄 {DisplayBindingTitle(binding)}", LibraryFilePrefix + binding.ManualId)])
+            .Select((binding, index) => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton(LibraryFileButtonLabel(binding, page * FreeSectionPageSize + index + 1), LibraryFileCallbackData(binding))])
             .ToList();
         if (totalPages > 1)
         {
@@ -1296,6 +1425,72 @@ public sealed class TelegramManualLibraryService
             text,
             new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
             bindings.Length == 0 ? "Пока файлов нет" : section.DisplayName);
+    }
+
+    private static TelegramManualLibraryResult BuildFileList(
+        string heading,
+        IReadOnlyList<TelegramManualFileBinding> bindings,
+        int page,
+        Func<int, string> pageCallback,
+        string backCallback,
+        string callbackAnswerText)
+    {
+        var totalPages = Math.Max(1, (int)Math.Ceiling(bindings.Count / (double)FreeSectionPageSize));
+        page = Math.Clamp(page, 0, totalPages - 1);
+        var pageItems = bindings
+            .Skip(page * FreeSectionPageSize)
+            .Take(FreeSectionPageSize)
+            .ToArray();
+
+        var rows = pageItems
+            .Select((binding, index) => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton(LibraryFileButtonLabel(binding, page * FreeSectionPageSize + index + 1), LibraryFileCallbackData(binding))])
+            .ToList();
+
+        if (totalPages > 1)
+        {
+            var navigation = new List<EquipmentDiagnosticTelegramInlineKeyboardButton>();
+            if (page > 0)
+            {
+                navigation.Add(new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", pageCallback(page - 1)));
+            }
+
+            if (page + 1 < totalPages)
+            {
+                navigation.Add(new EquipmentDiagnosticTelegramInlineKeyboardButton("Далее", pageCallback(page + 1)));
+            }
+
+            if (navigation.Count > 0)
+            {
+                rows.Add(navigation);
+            }
+        }
+
+        rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", backCallback)]);
+
+        var text = new StringBuilder(heading);
+        if (bindings.Count == 0)
+        {
+            text.AppendLine();
+            text.AppendLine();
+            text.Append("Пока файлов нет.");
+        }
+        else
+        {
+            text.AppendLine();
+            text.AppendLine();
+            for (var i = 0; i < bindings.Count; i++)
+            {
+                text.Append(i + 1);
+                text.Append(". ");
+                text.AppendLine(SafeFileName(bindings[i].OriginalFileName) ?? DisplayBindingTitle(bindings[i]));
+            }
+        }
+
+        return BindText(
+            text.ToString().Trim(),
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            bindings.Count == 0 ? "Пока файлов нет" : callbackAnswerText);
     }
 
     private async Task<TelegramManualLibraryResult> BuildAccessRequestsAsync(
@@ -1407,11 +1602,37 @@ public sealed class TelegramManualLibraryService
                     .FirstOrDefault();
         }
 
-        if (binding is null || !binding.IsActive || !binding.IsLibraryVisible || !CanAccessBinding(access, binding))
+        if (binding is null || !CanSendLibraryBinding(binding, access))
         {
-            return BindText("Файл недоступен.", callbackAnswerText: "Нет доступа");
+            return BindText("Файл недоступен или был заменён.", callbackAnswerText: "Нет доступа");
         }
 
+        return BuildLibraryFileDelivery(binding, access);
+    }
+
+    private async Task<TelegramManualLibraryResult> SendLibraryFileByIdAsync(
+        string idText,
+        TelegramUserAccessResult access,
+        CancellationToken cancellationToken)
+    {
+        if (!long.TryParse(idText, out var id) || id <= 0)
+        {
+            return BindText("Файл недоступен или был заменён.", callbackAnswerText: "Файл недоступен");
+        }
+
+        var binding = await _bindingStore.GetByIdAsync(id, cancellationToken);
+        if (binding is null || !CanSendLibraryBinding(binding, access))
+        {
+            return BindText("Файл недоступен или был заменён.", callbackAnswerText: "Нет доступа");
+        }
+
+        return BuildLibraryFileDelivery(binding, access);
+    }
+
+    private static TelegramManualLibraryResult BuildLibraryFileDelivery(
+        TelegramManualFileBinding binding,
+        TelegramUserAccessResult access)
+    {
         var replyMarkup = TelegramDiagnosticConversationService.MainKeyboard(access);
         var text = $"Отправляю файл: {DisplayBindingTitle(binding)}";
         return new TelegramManualLibraryResult(
@@ -1800,6 +2021,135 @@ public sealed class TelegramManualLibraryService
         access.CanAccessLibrary &&
         TelegramUserRolePolicy.HasAtLeastRole(access.Role, binding.MinRole);
 
+    private static bool CanSendLibraryBinding(
+        TelegramManualFileBinding? binding,
+        TelegramUserAccessResult access) =>
+        binding is not null &&
+        binding.IsActive &&
+        binding.IsLibraryVisible &&
+        CanAccessBinding(access, binding) &&
+        IsAllowedLibraryBinding(binding);
+
+    private static bool IsAllowedLibraryBinding(TelegramManualFileBinding binding)
+    {
+        if (!string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (string.Equals(binding.Series, "Indoor", StringComparison.OrdinalIgnoreCase))
+        {
+            return ClassifyIndoorBinding(binding) is not null;
+        }
+
+        if (string.Equals(binding.Series, "Controllers", StringComparison.OrdinalIgnoreCase))
+        {
+            return ClassifyControllerBinding(binding) is not null;
+        }
+
+        if (string.Equals(binding.Series, "Accessories", StringComparison.OrdinalIgnoreCase))
+        {
+            return binding.DocumentType is TelegramLibraryDocumentType.OwnerManual or
+                TelegramLibraryDocumentType.InstallationManual or
+                TelegramLibraryDocumentType.ControllerGuide;
+        }
+
+        return SupportedSeries.Any(series =>
+            string.Equals(series.Series, binding.Series, StringComparison.OrdinalIgnoreCase) &&
+            binding.DocumentType is TelegramLibraryDocumentType.ServiceManual or
+                TelegramLibraryDocumentType.OwnerManual or
+                TelegramLibraryDocumentType.InstallationManual);
+    }
+
+    private static string? ClassifyTypedBinding(
+        string sectionSlug,
+        TelegramManualFileBinding binding) =>
+        sectionSlug switch
+        {
+            IndoorSectionSlug => ClassifyIndoorBinding(binding),
+            ControllersSectionSlug => ClassifyControllerBinding(binding),
+            _ => null
+        };
+
+    private static string? ClassifyIndoorBinding(TelegramManualFileBinding binding)
+    {
+        var text = BindingSearchText(binding);
+        if (binding.DocumentType == TelegramLibraryDocumentType.ServiceManual ||
+            ContainsAny(text, "Service Manual"))
+        {
+            return "svc";
+        }
+
+        if (!IsOwnerLikeDocument(binding.DocumentType))
+        {
+            return null;
+        }
+
+        if (ContainsAny(text, "Wall Mounted", "Wall"))
+        {
+            return "wall";
+        }
+
+        if (ContainsAny(text, "One-way Cassette", "Cassette", "TD_A", "TD-A", "TD B", "TD_B", "TD-B", "T_C", "T-C", "T_D1", "T-D1"))
+        {
+            return "cas";
+        }
+
+        if (ContainsAny(text, "Ducted", "Duct", "Static", "Low Static", "Middle Static", "High Static", "Super High Static", "PL", "PLS", "PMS", "PHS"))
+        {
+            return "duc";
+        }
+
+        return null;
+    }
+
+    private static string? ClassifyControllerBinding(TelegramManualFileBinding binding)
+    {
+        var text = BindingSearchText(binding);
+        if (ContainsAny(text, "Remote Controller", "Wireless", " YAP", " YV"))
+        {
+            return "ir";
+        }
+
+        if (binding.DocumentType == TelegramLibraryDocumentType.ControllerGuide &&
+            ContainsAny(text, "Wired Controller", "XK", "XE7A"))
+        {
+            return "wall";
+        }
+
+        return null;
+    }
+
+    private static bool IsOwnerLikeDocument(TelegramLibraryDocumentType documentType) =>
+        documentType is TelegramLibraryDocumentType.OwnerManual or TelegramLibraryDocumentType.UserGuide;
+
+    private static bool ContainsAny(string value, params string[] tokens) =>
+        tokens.Any(token => value.Contains(token, StringComparison.OrdinalIgnoreCase));
+
+    private static string BindingSearchText(TelegramManualFileBinding binding) =>
+        string.Join(
+            ' ',
+            new[] { binding.OriginalFileName, binding.Title }
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .SelectMany(value => new[] { value!, value!.Replace('_', ' ') }));
+
+    private static string SectionStorageSeries(string sectionSlug) =>
+        FindSection(sectionSlug)?.StorageSeries ?? string.Empty;
+
+    private static TypedLibraryCategoryOption? FindTypedCategory(
+        string sectionSlug,
+        string categorySlug) =>
+        TypedCategories(sectionSlug)
+            .FirstOrDefault(category => category.Slug.Equals(categorySlug, StringComparison.Ordinal));
+
+    private static IReadOnlyList<TypedLibraryCategoryOption> TypedCategories(string sectionSlug) =>
+        sectionSlug switch
+        {
+            IndoorSectionSlug => IndoorCategories,
+            ControllersSectionSlug => ControllerCategories,
+            _ => Array.Empty<TypedLibraryCategoryOption>()
+        };
+
     private static string AccessRequestUserLine(
         TelegramUserSnapshot? user,
         TelegramLibraryAccessRequest request) =>
@@ -1847,6 +2197,67 @@ public sealed class TelegramManualLibraryService
         string.IsNullOrWhiteSpace(binding.Title)
             ? SafeFileName(binding.OriginalFileName) ?? "Telegram file"
             : binding.Title.Trim();
+
+    private static string LibraryFileCallbackData(TelegramManualFileBinding binding)
+    {
+        if (binding.Id is not > 0)
+        {
+            throw new InvalidOperationException("Library file callbacks require a persisted binding id.");
+        }
+
+        var callbackData = LibraryFileByIdPrefix + binding.Id.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        return Encoding.UTF8.GetByteCount(callbackData) <= TelegramCallbackDataMaxBytes
+            ? callbackData
+            : throw new InvalidOperationException("Library file callback_data exceeds Telegram limit.");
+    }
+
+    private static string LibraryFileButtonLabel(
+        TelegramManualFileBinding binding,
+        int number) =>
+        TrimUtf8($"{number}) {ShortLibraryFileTitle(binding)}", TelegramInlineButtonTextMaxBytes);
+
+    private static string ShortLibraryFileTitle(TelegramManualFileBinding binding)
+    {
+        var title = Path.GetFileNameWithoutExtension(DisplayBindingTitle(binding)).Trim();
+        if (title.Length == 0)
+        {
+            return "Файл";
+        }
+
+        var replacements = new[]
+        {
+            "Gree GMV ",
+            "Gree_GMV_",
+            "Gree ",
+            "Indoor Unit ",
+            "Indoor Units ",
+            "Owner Manual EN ",
+            "Service Manual EN ",
+            "Wired Controller ",
+            "Remote Controller "
+        };
+
+        foreach (var replacement in replacements)
+        {
+            title = title.Replace(replacement, string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        title = title
+            .Replace('_', ' ')
+            .Replace("One way", "One-way", StringComparison.OrdinalIgnoreCase)
+            .Replace("XE7A 23H XE7A 23HC", "XE7A-23H/23HC", StringComparison.OrdinalIgnoreCase)
+            .Replace("XE7A 24H XE7A 24HC", "XE7A-24H/24HC", StringComparison.OrdinalIgnoreCase)
+            .Replace("YAP1F YV1L1", "YAP1F/YV1L1", StringComparison.OrdinalIgnoreCase)
+            .Replace("GC202603 I", "GC202603-I", StringComparison.OrdinalIgnoreCase)
+            .Trim();
+
+        while (title.Contains("  ", StringComparison.Ordinal))
+        {
+            title = title.Replace("  ", " ", StringComparison.Ordinal);
+        }
+
+        return string.IsNullOrWhiteSpace(title) ? "Файл" : title;
+    }
 
     private static string SeriesSlug(string? value) =>
         NormalizeFileToken(value ?? string.Empty);
@@ -2383,6 +2794,10 @@ public sealed class TelegramManualLibraryService
     private sealed record ManualDocumentTypeOption(
         string Slug,
         TelegramLibraryDocumentType DocumentType,
+        string Label);
+
+    private sealed record TypedLibraryCategoryOption(
+        string Slug,
         string Label);
 
     private sealed record ManualBindSession(

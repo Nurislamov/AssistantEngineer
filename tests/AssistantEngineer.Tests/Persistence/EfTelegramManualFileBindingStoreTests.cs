@@ -103,6 +103,34 @@ public sealed class EfTelegramManualFileBindingStoreTests
     }
 
     [Fact]
+    public async Task EfTelegramManualFileBindingStoreCanResolveActiveBindingByPersistedId()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await store.UpsertAsync(new TelegramManualFileBinding(
+            "gree-indoor-wall-owner",
+            "telegram-file-id-wall",
+            "Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_B6B_B4B_C4B_C2B.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            "Owner",
+            Brand: "Gree",
+            Series: "Indoor",
+            DocumentType: TelegramLibraryDocumentType.OwnerManual,
+            MinRole: TelegramUserRole.Consumer));
+        var listed = Assert.Single(await store.ListAsync());
+
+        var resolved = await store.GetByIdAsync(listed.Id!.Value);
+
+        Assert.NotNull(resolved);
+        Assert.Equal("telegram-file-id-wall", resolved.TelegramFileId);
+        Assert.Equal(listed.Id, resolved.Id);
+    }
+
+    [Fact]
     public async Task EfTelegramManualFileBindingStoreKeepsSeriesDocumentTypesIndependent()
     {
         await using var connection = await OpenConnectionAsync();

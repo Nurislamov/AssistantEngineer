@@ -17,6 +17,20 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         _options = options;
     }
 
+    public Task<TelegramManualFileBinding?> GetByIdAsync(
+        long id,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var document = ReadDocument();
+            return Task.FromResult(document.Bindings
+                .Where(binding => binding.IsActive)
+                .FirstOrDefault(binding => binding.Id == id));
+        }
+    }
+
     public Task<TelegramManualFileBinding?> GetAsync(
         string manualId,
         CancellationToken cancellationToken = default)
@@ -87,9 +101,10 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         lock (_sync)
         {
             var document = ReadDocument();
+            var persisted = WithPersistentId(document, binding);
             var bindings = document.Bindings
                 .Where(existing => !existing.ManualId.Equals(binding.ManualId, StringComparison.OrdinalIgnoreCase))
-                .Append(binding)
+                .Append(persisted)
                 .OrderBy(value => value.ManualId, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
             var updated = new TelegramManualFileBindingDocument(1, bindings);
@@ -107,12 +122,18 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         lock (_sync)
         {
             var document = ReadDocument();
+            var persisted = WithPersistentId(
+                document,
+                binding,
+                existing => string.Equals(existing.Brand, binding.Brand, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(existing.Series, binding.Series, StringComparison.OrdinalIgnoreCase) &&
+                    existing.DocumentType == binding.DocumentType);
             var bindings = document.Bindings
                 .Where(existing =>
                     !string.Equals(existing.Brand, binding.Brand, StringComparison.OrdinalIgnoreCase) ||
                     !string.Equals(existing.Series, binding.Series, StringComparison.OrdinalIgnoreCase) ||
                     existing.DocumentType != binding.DocumentType)
-                .Append(binding)
+                .Append(persisted)
                 .OrderBy(value => value.Brand, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(value => value.Series, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(value => value.DocumentType)
@@ -177,6 +198,24 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         }
 
         File.WriteAllText(path, JsonSerializer.Serialize(document, JsonOptions));
+    }
+
+    private static TelegramManualFileBinding WithPersistentId(
+        TelegramManualFileBindingDocument document,
+        TelegramManualFileBinding binding,
+        Func<TelegramManualFileBinding, bool>? match = null)
+    {
+        if (binding.Id is > 0)
+        {
+            return binding;
+        }
+
+        var existing = document.Bindings.FirstOrDefault(match ?? (item =>
+            item.ManualId.Equals(binding.ManualId, StringComparison.OrdinalIgnoreCase)));
+        var id = existing?.Id is > 0
+            ? existing.Id
+            : document.Bindings.Select(item => item.Id ?? 0).DefaultIfEmpty(0).Max() + 1;
+        return binding with { Id = id };
     }
 
     private sealed record TelegramManualFileBindingDocument(

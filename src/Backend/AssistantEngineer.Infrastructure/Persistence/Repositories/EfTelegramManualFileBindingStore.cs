@@ -13,6 +13,19 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
         _scopeFactory = scopeFactory;
     }
 
+    public async Task<TelegramManualFileBinding?> GetByIdAsync(
+        long id,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var binding = await context.TelegramManualBindings
+            .AsNoTracking()
+            .Where(item => item.IsActive && item.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+        return binding is null ? null : ToBinding(binding);
+    }
+
     public async Task<TelegramManualFileBinding?> GetAsync(
         string manualId,
         CancellationToken cancellationToken = default)
@@ -202,7 +215,8 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
             entity.DocumentType,
             entity.MinRole,
             entity.IsLibraryVisible,
-            entity.CanUseForDiagnostics);
+            entity.CanUseForDiagnostics,
+            entity.Id);
 
     private static string Normalize(string? value) =>
         (value ?? string.Empty).Trim().ToLowerInvariant();

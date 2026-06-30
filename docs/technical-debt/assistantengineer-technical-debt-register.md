@@ -2,13 +2,13 @@
 
 ## Last updated
 
-ED-24OPS.3
+ED-24MAN.3
 
 ## Current stable point
 
-- Production baseline: `4da7abd6` with ED-24EF.2 production PASS.
-- ED-24OPS.3 is locally validated only until a VPS deploy/live-check confirms key persistence across container
-  recreation.
+- Production baseline: `44f5a0a4` with ED-24OPS.3 production PASS.
+- ED-24MAN.3 fixes generic manual-library callbacks and typed Indoor/Controllers categories locally; production
+  data-correction SQL still requires VPS execution/check before production PASS.
 - Runtime counts: Gree 1184; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260.
 - Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
 
@@ -49,7 +49,7 @@ No active P1 item was found.
 - Current evidence: GMV9 Flex OwnerManual remains unavailable/pending; InstallationManual coverage is incomplete; GMV Mini /
   Slim uses a multi-file bucket rather than exact model-family matching.
 - Risk: an eligible user may see no guide or must choose among broad family documents.
-- Suggested next stage: ED-24MAN.3
+- Suggested next stage: ED-24MAN.4 / exact-family matching follow-up
 - Notes: keep ServiceManual and InstallationManual library-only and diagnostics OwnerManual-only.
 
 ### TD-DOC-001 - Manual coverage documents lag production binding state

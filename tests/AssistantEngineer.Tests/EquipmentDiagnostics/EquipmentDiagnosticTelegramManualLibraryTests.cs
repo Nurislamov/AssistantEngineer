@@ -134,7 +134,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Gree", InlineButtons(home), StringComparer.Ordinal);
         Assert.Contains("Наружные", InlineButtons(gree), StringComparer.Ordinal);
         Assert.Contains("Пульты / Controllers", remotes.Text, StringComparison.Ordinal);
-        Assert.Contains("нет", remotes.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Настенные", InlineButtons(remotes), StringComparer.Ordinal);
+        Assert.Contains("Беспроводные ИК", InlineButtons(remotes), StringComparer.Ordinal);
         Assert.Contains("Управление доступом", access.Text, StringComparison.Ordinal);
         Assert.Contains("Запросов нет", requests.CallbackAnswerText, StringComparison.Ordinal);
         Assert.Contains("закрыта", cancel.Text, StringComparison.OrdinalIgnoreCase);
@@ -639,7 +640,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Gree", InlineButtons(start), StringComparer.Ordinal);
         Assert.Contains("Наружные", InlineButtons(brand), StringComparer.Ordinal);
         Assert.Contains("GMV9 Flex", InlineButtons(section), StringComparer.Ordinal);
-        Assert.Contains("Service Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
+        Assert.Contains("📕 Сервисные мануалы", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
+        Assert.DoesNotContain("📕 Service Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", selected.Text, StringComparison.Ordinal);
         Assert.Contains("Ожидаю PDF-файл", nonDocument.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", badName.Text, StringComparison.Ordinal);
@@ -720,13 +722,155 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         await adapter.HandleAsync(ManualBindCallback("mb:c:bind"));
 
         var section = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
-        var file = await adapter.HandleAsync(LibraryCallback("lib:file:gree-controllers-controller-guide-greewiredcontrollerguide"));
+        var wall = await adapter.HandleAsync(LibraryCallback("lib:c:wall"));
+        var fileButton = Assert.Single(InlineButtonsWithCallbacks(wall), button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal));
+        var file = await adapter.HandleAsync(LibraryCallback(fileButton.CallbackData));
         var fileDocument = Assert.Single(file.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
 
-        Assert.Contains(InlineButtons(section), button => button.Contains("Gree wired controller guide.pdf", StringComparison.Ordinal));
+        Assert.Contains("Настенные", InlineButtons(section), StringComparer.Ordinal);
+        Assert.Contains("Gree wired controller guide.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(InlineButtons(wall), button => button.Contains("Gree wired controller guide.pdf", StringComparison.Ordinal));
+        Assert.True(Encoding.UTF8.GetByteCount(fileButton.CallbackData) <= 64, fileButton.CallbackData);
         Assert.DoesNotContain("GMV6", InlineButtons(section), StringComparer.Ordinal);
         Assert.Equal("telegram-file-id-controller", fileDocument.DocumentFileId);
         Assert.True(fileDocument.ProtectContent);
+    }
+
+    [Fact]
+    public async Task GreeIndoorRootUsesTypedCategoriesAndRussianServiceManualLabel()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var indoor = await adapter.HandleAsync(LibraryCallback("lib:gree:section:indoor"));
+
+        Assert.Contains("Внутренние блоки Gree", indoor.Text, StringComparison.Ordinal);
+        Assert.Equal(
+            ["Настенные", "Кассетные", "Канальные", "📕 Сервисные мануалы", "Назад"],
+            InlineButtons(indoor));
+        Assert.DoesNotContain("Прочее", InlineButtons(indoor), StringComparer.Ordinal);
+        Assert.DoesNotContain("📕 Service Manual", string.Join(" ", InlineButtons(indoor)), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task GreeIndoorTypedCategoriesListOnlyClassifiedFilesWithShortSafeCallbacks()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await SeedIndoorBindingAsync(bindingStore, "wall", "telegram-file-id-wall", "Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_B6B_B4B_C4B_C2B.pdf");
+        await SeedIndoorBindingAsync(bindingStore, "cassette-td-a", "telegram-file-id-td-a", "Gree_GMV_One_way_Cassette_Indoor_Unit_Owner_Manual_EN_TD_A_22_56.pdf");
+        await SeedIndoorBindingAsync(bindingStore, "cassette-t-c", "telegram-file-id-t-c", "Gree GMV Cassette Indoor Unit Owner Manual EN T-C 22-160.pdf");
+        await SeedIndoorBindingAsync(bindingStore, "duct", "telegram-file-id-duct", "Gree_GMV_High_Static_Ducted_Indoor_Unit_Owner_Manual_EN_PHS_D_22.pdf");
+        await SeedIndoorBindingAsync(
+            bindingStore,
+            "service",
+            "telegram-file-id-service",
+            "Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf",
+            documentType: TelegramLibraryDocumentType.OwnerManual);
+        await SeedIndoorBindingAsync(bindingStore, "unknown", "telegram-file-id-unknown", "Gree_GMV_Indoor_Unit_Owner_Manual_EN_Experimental.pdf");
+
+        var wall = await adapter.HandleAsync(LibraryCallback("lib:i:wall"));
+        var cassette = await adapter.HandleAsync(LibraryCallback("lib:i:cas"));
+        var duct = await adapter.HandleAsync(LibraryCallback("lib:i:duc"));
+        var service = await adapter.HandleAsync(LibraryCallback("lib:i:svc"));
+
+        Assert.Contains("Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_B6B_B4B_C4B_C2B.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.Contains("TD_A_22_56.pdf", cassette.Text, StringComparison.Ordinal);
+        Assert.Contains("T-C 22-160.pdf", cassette.Text, StringComparison.Ordinal);
+        Assert.Contains("PHS_D_22.pdf", duct.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf", service.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Experimental", wall.Text + cassette.Text + duct.Text + service.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Service_Manual", duct.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Service_Manual", cassette.Text, StringComparison.OrdinalIgnoreCase);
+        AssertSafeLibraryFileButtons(wall);
+        AssertSafeLibraryFileButtons(cassette);
+        AssertSafeLibraryFileButtons(duct);
+        AssertSafeLibraryFileButtons(service);
+    }
+
+    [Fact]
+    public async Task GreeControllerTypedCategoriesListOnlyClassifiedFilesWithShortSafeCallbacks()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await SeedControllerBindingAsync(bindingStore, "xk46", "telegram-file-id-xk46", "Gree Wired Controller XK46 Owner Manual EN.pdf");
+        await SeedControllerBindingAsync(bindingStore, "xe7a-23", "telegram-file-id-xe7a-23", "Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf");
+        await SeedControllerBindingAsync(bindingStore, "xe7a-24", "telegram-file-id-xe7a-24", "Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf");
+        await SeedControllerBindingAsync(bindingStore, "yap", "telegram-file-id-yap", "Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf");
+        await SeedControllerBindingAsync(bindingStore, "unknown", "telegram-file-id-unknown-controller", "Gree Controller Unknown Owner Manual EN.pdf");
+
+        var root = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
+        var wall = await adapter.HandleAsync(LibraryCallback("lib:c:wall"));
+        var ir = await adapter.HandleAsync(LibraryCallback("lib:c:ir"));
+
+        Assert.Equal(["Настенные", "Беспроводные ИК", "Назад"], InlineButtons(root));
+        Assert.DoesNotContain("Прочее", InlineButtons(root), StringComparer.Ordinal);
+        Assert.Contains("Gree Wired Controller XK46 Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf", ir.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Unknown", wall.Text + ir.Text, StringComparison.OrdinalIgnoreCase);
+        AssertSafeLibraryFileButtons(wall);
+        AssertSafeLibraryFileButtons(ir);
+    }
+
+    [Fact]
+    public async Task TypedLibraryFileDeliveryRechecksActiveVisibleAndRoleBeforeSend()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await SeedIndoorBindingAsync(bindingStore, "owner", "telegram-file-id-owner", "Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_B6B_B4B_C4B_C2B.pdf");
+        await SeedIndoorBindingAsync(
+            bindingStore,
+            "service",
+            "telegram-file-id-service",
+            "Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf",
+            TelegramLibraryDocumentType.ServiceManual,
+            TelegramUserRole.Engineer);
+        await SeedControllerBindingAsync(bindingStore, "xk46", "telegram-file-id-controller", "Gree Wired Controller XK46 Owner Manual EN.pdf");
+        await SeedIndoorBindingAsync(
+            bindingStore,
+            "inactive",
+            "telegram-file-id-inactive",
+            "Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_Inactive.pdf",
+            isActive: false);
+        await SeedIndoorBindingAsync(
+            bindingStore,
+            "hidden",
+            "telegram-file-id-hidden",
+            "Gree_GMV_Wall_Mounted_Indoor_Unit_Owner_Manual_EN_Hidden.pdf",
+            isLibraryVisible: false);
+
+        var ownerList = await adapter.HandleAsync(LibraryCallback("lib:i:wall"));
+        var serviceList = await adapter.HandleAsync(LibraryCallback("lib:i:svc"));
+        var controllerList = await adapter.HandleAsync(LibraryCallback("lib:c:wall"));
+        var ownerFileCallback = Assert.Single(InlineButtonsWithCallbacks(ownerList), button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal)).CallbackData;
+        var serviceFileCallback = Assert.Single(InlineButtonsWithCallbacks(serviceList), button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal)).CallbackData;
+        var controllerFileCallback = Assert.Single(InlineButtonsWithCallbacks(controllerList), button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal)).CallbackData;
+
+        var ownerSent = await adapter.HandleAsync(LibraryCallback(ownerFileCallback));
+        await SetRoleAndGrantLibraryAsync(provider, TelegramUserRole.Installer);
+        var serviceDeniedForInstaller = await adapter.HandleAsync(LibraryCallback(serviceFileCallback));
+        var controllerSentForInstaller = await adapter.HandleAsync(LibraryCallback(controllerFileCallback));
+        await SetRoleAndGrantLibraryAsync(provider, TelegramUserRole.Engineer);
+        var serviceSentForEngineer = await adapter.HandleAsync(LibraryCallback(serviceFileCallback));
+        await SetRoleAndGrantLibraryAsync(provider, TelegramUserRole.Consumer);
+        var ownerDeniedForConsumer = await adapter.HandleAsync(LibraryCallback(ownerFileCallback));
+
+        Assert.Contains("telegram-file-id-owner", ownerSent.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
+        Assert.DoesNotContain("Inactive.pdf", ownerList.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Hidden.pdf", ownerList.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(serviceDeniedForInstaller.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Contains("telegram-file-id-controller", controllerSentForInstaller.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
+        Assert.Contains("telegram-file-id-service", serviceSentForEngineer.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
+        Assert.DoesNotContain(ownerDeniedForConsumer.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
     }
 
     [Fact]
@@ -1051,6 +1195,58 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         .OrderBy(binding => binding.OriginalFileName, StringComparer.OrdinalIgnoreCase)
         .ToArray();
 
+    private static Task SeedIndoorBindingAsync(
+        ITelegramManualFileBindingStore bindingStore,
+        string key,
+        string fileId,
+        string fileName,
+        TelegramLibraryDocumentType documentType = TelegramLibraryDocumentType.OwnerManual,
+        TelegramUserRole minRole = TelegramUserRole.Consumer,
+        bool isActive = true,
+        bool isLibraryVisible = true) =>
+        bindingStore.UpsertAsync(new TelegramManualFileBinding(
+            $"gree-indoor-{key}",
+            fileId,
+            fileName,
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "Indoor",
+            IsActive: isActive,
+            Title: fileName,
+            DocumentType: documentType,
+            MinRole: minRole,
+            IsLibraryVisible: isLibraryVisible,
+            CanUseForDiagnostics: false));
+
+    private static Task SeedControllerBindingAsync(
+        ITelegramManualFileBindingStore bindingStore,
+        string key,
+        string fileId,
+        string fileName,
+        TelegramLibraryDocumentType documentType = TelegramLibraryDocumentType.ControllerGuide,
+        TelegramUserRole minRole = TelegramUserRole.Installer,
+        bool isActive = true,
+        bool isLibraryVisible = true) =>
+        bindingStore.UpsertAsync(new TelegramManualFileBinding(
+            $"gree-controllers-{key}",
+            fileId,
+            fileName,
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "Controllers",
+            IsActive: isActive,
+            Title: fileName,
+            DocumentType: documentType,
+            MinRole: minRole,
+            IsLibraryVisible: isLibraryVisible,
+            CanUseForDiagnostics: false));
+
     private static ServiceProvider CreateProvider(
         string? bindingPath = null,
         FakeOutbound? outbound = null)
@@ -1072,6 +1268,18 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     {
         var store = provider.GetRequiredService<ITelegramUserStore>();
         await store.AllowAsync(7, role);
+    }
+
+    private static async Task SetRoleAndGrantLibraryAsync(
+        ServiceProvider provider,
+        TelegramUserRole role)
+    {
+        var store = provider.GetRequiredService<ITelegramUserStore>();
+        var accessStore = provider.GetRequiredService<ITelegramLibraryAccessStore>();
+        await store.SetRoleAsync(7, role);
+        var user = await store.GetByChatIdAsync(7);
+        Assert.NotNull(user);
+        await accessStore.GrantAsync(user.Id, user.Id);
     }
 
     private static async Task CreateUserAsync(
@@ -1224,6 +1432,24 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .SelectMany(row => row)
             .Select(button => (button.Text, button.CallbackData))
             .ToArray();
+
+    private static void AssertSafeLibraryFileButtons(EquipmentDiagnosticTelegramResponse response)
+    {
+        var fileButtons = InlineButtonsWithCallbacks(response)
+            .Where(button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal))
+            .ToArray();
+        Assert.NotEmpty(fileButtons);
+        Assert.All(fileButtons, button =>
+        {
+            Assert.True(Encoding.UTF8.GetByteCount(button.CallbackData) <= 64, button.CallbackData);
+            Assert.True(Encoding.UTF8.GetByteCount(button.Text) <= 64, button.Text);
+            Assert.DoesNotContain(".pdf", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("telegram-file-id", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("file_unique_id", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("sourceReferences", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("Gree", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+        });
+    }
 
     private static int TextSendCount(EquipmentDiagnosticTelegramResponse response) =>
         response.OutboundMessages.Count(message =>
