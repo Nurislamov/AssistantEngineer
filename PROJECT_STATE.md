@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24OPS.2b - CLOSED / pushed.
+ED-24OPS.2b - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Deploy ED-24OPS.2b to VPS and run a production live-check for Owner text/link replies and media/contact/location/animation replies from the configured operator group.
+1. Consider ED-24EF.1 to clean up unrelated EF enum default/sentinel warnings for Telegram library/manual entities.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -18,9 +18,9 @@ master
 
 ED-24OPS.2b extends the Telegram operator reply bridge so the configured Owner can reply from the configured operator group with text/links and common Telegram attachment replies: document, photo, video, video_note, voice, audio, contact, location, and animation.
 
-Previous implementation commit: `4cf00444` (ED-24OPS.2a). Current implementation commit message: `ED-24OPS.2b Support operator media replies`.
+Implementation commit: `c44eb2db` (`ED-24OPS.2b Support operator media replies`).
 
-Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`) are both production PASS; ED-24OPS.2b is local validation PASS and ready for VPS deploy/live-check.
+Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS; the configured operator group can deliver Owner text/link and supported media replies to users.
 
 ## Current working point
 
@@ -41,7 +41,7 @@ Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`
 - ED-24LIB.1c - CLOSED / pushed.
 - ED-24OPS.2 - CLOSED / production PASS.
 - ED-24OPS.2a - CLOSED / production PASS.
-- ED-24OPS.2b - CLOSED / pushed.
+- ED-24OPS.2b - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -196,6 +196,27 @@ Latest validation after ED-24OPS.2b:
 - No migration added.
 - Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
+Latest production validation after ED-24OPS.2b:
+
+- Implementation commit: `c44eb2db` (`ED-24OPS.2b Support operator media replies`).
+- VPS host `assistantengineer-beta-01`, repo `/opt/assistantengineer`, deploy dir `/opt/assistantengineer/deploy`, service `assistantengineer-api`.
+- Production live-check: PASS.
+- Operator text replies: PASS; delivered to the user as `Ответ специалиста:` followed by the Owner text.
+- Operator document/PDF replies: PASS.
+- Operator photo replies: PASS.
+- Operator `video_note` replies: PASS.
+- Operator group confirmation: PASS; bot replies `Ответ отправлен пользователю.`.
+- Media replies use the `copyMessage` path: PASS.
+- `forwardMessage` is absent from logs and remains unused: PASS.
+- Protected library/manual `sendDocument` delivery is unchanged.
+- Telegram polling started; private and group updates were processed.
+- UpdateId range 41767382-41767385 processed with `Status: Processed`.
+- Production logs are clean for this live-check: no error, exception, or failed entries were found.
+- No migration was added for ED-24OPS.2b.
+- Runtime total remains 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deploy scripts unchanged.
+- EF enum default/sentinel warnings were observed for `TelegramLibraryAccessRequestEntity.RequestedRole`, `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole`; these are unrelated/non-blocking for ED-24OPS.2b and tracked as future cleanup candidate ED-24EF.1.
 
 Latest validation after ED-24UX.4:
 
