@@ -50,6 +50,21 @@ public sealed class EfTelegramLibraryAccessStoreTests
     }
 
     [Fact]
+    public async Task EfTelegramLibraryAccessStorePersistsExplicitOwnerRequestedRole()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var user = await SeedUserAsync(provider, 701, TelegramUserRole.Owner);
+        var store = provider.GetRequiredService<ITelegramLibraryAccessStore>();
+
+        var request = await store.CreateOrGetPendingRequestAsync(user);
+        var persisted = await store.GetRequestAsync(request.Id);
+
+        Assert.Equal(TelegramUserRole.Owner, request.RequestedRole);
+        Assert.Equal(TelegramUserRole.Owner, persisted?.RequestedRole);
+    }
+
+    [Fact]
     public async Task EfTelegramLibraryAccessModelAndMigrationContainPersistentState()
     {
         await using var connection = await OpenConnectionAsync();
@@ -68,6 +83,9 @@ public sealed class EfTelegramLibraryAccessStoreTests
 
         Assert.NotNull(requestType);
         Assert.Equal("TelegramLibraryAccessRequests", requestType.GetTableName());
+        var requestedRoleProperty = requestType.FindProperty(nameof(TelegramLibraryAccessRequestEntity.RequestedRole));
+        Assert.NotNull(requestedRoleProperty);
+        Assert.Equal((TelegramUserRole)(-1), requestedRoleProperty.Sentinel);
         Assert.NotNull(requestType.FindProperty(nameof(TelegramLibraryAccessRequestEntity.Status)));
         Assert.NotNull(requestType.FindProperty(nameof(TelegramLibraryAccessRequestEntity.ResolvedByTelegramUserId)));
 

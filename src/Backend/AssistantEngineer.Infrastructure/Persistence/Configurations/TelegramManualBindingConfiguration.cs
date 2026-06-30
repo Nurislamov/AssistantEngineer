@@ -51,12 +51,14 @@ public sealed class TelegramManualBindingConfiguration : IEntityTypeConfiguratio
             .HasConversion<string>()
             .HasMaxLength(32)
             .HasDefaultValue(TelegramLibraryDocumentType.ServiceManual)
+            .HasSentinel((TelegramLibraryDocumentType)(-1))
             .IsRequired();
 
         builder.Property(binding => binding.MinRole)
             .HasConversion<string>()
             .HasMaxLength(32)
             .HasDefaultValue(TelegramUserRole.Engineer)
+            .HasSentinel((TelegramUserRole)(-1))
             .IsRequired();
 
         builder.Property(binding => binding.IsLibraryVisible)

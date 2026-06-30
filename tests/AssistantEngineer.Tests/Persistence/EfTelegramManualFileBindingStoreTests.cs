@@ -143,6 +143,46 @@ public sealed class EfTelegramManualFileBindingStoreTests
     }
 
     [Fact]
+    public async Task EfTelegramManualFileBindingStorePersistsExplicitDocumentTypesAndMinimumRoles()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        var expected = new[]
+        {
+            (TelegramLibraryDocumentType.ServiceManual, TelegramUserRole.Owner),
+            (TelegramLibraryDocumentType.OwnerManual, TelegramUserRole.Consumer),
+            (TelegramLibraryDocumentType.InstallationManual, TelegramUserRole.Installer),
+            (TelegramLibraryDocumentType.ControllerGuide, TelegramUserRole.Admin)
+        };
+
+        foreach (var (documentType, minRole) in expected)
+        {
+            await store.UpsertSeriesAsync(new TelegramManualFileBinding(
+                $"gree-gmv6-{documentType}",
+                $"telegram-file-id-{documentType}",
+                $"Gree GMV6 {documentType}.pdf",
+                "application/pdf",
+                DateTimeOffset.UtcNow,
+                "TelegramManualBind",
+                "Owner",
+                Brand: "Gree",
+                Series: $"GMV6 {documentType}",
+                DocumentType: documentType,
+                MinRole: minRole));
+        }
+
+        var actual = await store.ListAsync();
+
+        foreach (var (documentType, minRole) in expected)
+        {
+            Assert.Contains(
+                actual,
+                binding => binding.DocumentType == documentType && binding.MinRole == minRole);
+        }
+    }
+
+    [Fact]
     public async Task EfTelegramManualFileBindingStoreReplacesActiveSeriesBinding()
     {
         await using var connection = await OpenConnectionAsync();
@@ -196,8 +236,12 @@ public sealed class EfTelegramManualFileBindingStoreTests
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.UploadedByTelegramUserId)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.UploadedByTelegramChatId)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.Title)));
-        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.DocumentType)));
-        Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.MinRole)));
+        var documentTypeProperty = entityType.FindProperty(nameof(TelegramManualBindingEntity.DocumentType));
+        var minRoleProperty = entityType.FindProperty(nameof(TelegramManualBindingEntity.MinRole));
+        Assert.NotNull(documentTypeProperty);
+        Assert.Equal((TelegramLibraryDocumentType)(-1), documentTypeProperty.Sentinel);
+        Assert.NotNull(minRoleProperty);
+        Assert.Equal((TelegramUserRole)(-1), minRoleProperty.Sentinel);
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.IsLibraryVisible)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.CanUseForDiagnostics)));
         Assert.NotNull(entityType.FindProperty(nameof(TelegramManualBindingEntity.IsActive)));

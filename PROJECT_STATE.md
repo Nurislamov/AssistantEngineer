@@ -2,12 +2,14 @@
 
 ## Current stage
 
-ED-24UX.7 - CLOSED / production PASS.
+ED-24EF.1 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-2. Keep ED-24MAN.3 exact model-family matching and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
+1. Run production VPS deployment/live-check for ED-24EF.1 before marking production PASS.
+2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+3. Consider ED-24EF.2 for `HourlySchedule.Factors`, ED-24MAN.3 for exact model-family matching, and ED-24QA.2 for
+   nullable warning cleanup.
 
 ## Current branch
 
@@ -15,9 +17,43 @@ master
 
 ## Last completed work
 
-ED-24UX.7 fixed Gree series refinement coverage and keyboard layout; the stage is CLOSED / production PASS.
+ED-24EF.1 fixed the known Telegram EF enum sentinel warnings and added a focused technical debt register; the stage is
+CLOSED / pushed, with production live-check still pending.
 
-Implementation commit: `d01cd488` (`ED-24UX.7 Fix Gree series refinement layout`).
+Implementation commit: current commit (`ED-24EF.1 Fix Telegram EF sentinel warnings`).
+
+ED-24EF.1 implementation notes:
+
+- Root cause: `RequestedRole`, `DocumentType`, and `MinRole` had database-generated defaults without an explicit
+  out-of-domain sentinel, so valid CLR-zero enum values such as `Owner` and `Unknown` could be treated as "not set".
+- `TelegramLibraryAccessRequestEntity.RequestedRole` now uses `(TelegramUserRole)(-1)` as its EF sentinel.
+- `TelegramManualBindingEntity.DocumentType` now uses `(TelegramLibraryDocumentType)(-1)` as its EF sentinel.
+- `TelegramManualBindingEntity.MinRole` now uses `(TelegramUserRole)(-1)` as its EF sentinel.
+- Existing database defaults remain unchanged; all valid enum values are now written explicitly by EF.
+- No migration is required: `dotnet ef migrations has-pending-model-changes` reports no pending model changes.
+- Existing production rows and model snapshot remain compatible.
+- Model metadata tests assert all three explicit sentinel values.
+- Persistence round-trip tests cover `RequestedRole = Owner`, ServiceManual, OwnerManual, InstallationManual,
+  ControllerGuide, and multiple minimum roles including Owner.
+- ServiceManual and InstallationManual remain library-only; diagnostic guide delivery remains OwnerManual-only.
+- Mini multiple OwnerManual selection, GMV6 HR OwnerManual delivery, user/admin role behavior, and access requests remain
+  covered by the focused regression suite.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Telegram visible UX and manual binding/access policy are unchanged.
+- Deploy scripts are unchanged.
+- No PDF or generated artifacts were committed.
+- Technical debt register created:
+  `docs/technical-debt/assistantengineer-technical-debt-register.md`.
+- Highest-priority remaining debt: add an EF value comparer for `HourlySchedule.Factors`; planned follow-ups also cover
+  test nullable warnings, Telegram identity duplicate cleanup, manual coverage/exact-family matching, and stale manual docs.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused persistence/Telegram/manual/diagnostics/Gree tests: 1108/1108 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5030/5030 passed.
+- `git diff --check`: PASS.
+- Production PASS is not marked for ED-24EF.1.
 
 ED-24UX.7 local implementation notes:
 
@@ -127,7 +163,8 @@ ED-24MAN.2b local implementation notes:
 Production validation shared constraints after ED-24MAN.2b, ED-24E.3, and ED-24UX.7:
 
 - Latest VPS log check is clean: no `error`, `exception`, `failed`, or `OutboundFailed`.
-- Known EF sentinel warnings remain unrelated and non-blocking; cleanup stays in future stage ED-24EF.1.
+- The then-known EF sentinel warnings were unrelated/non-blocking for this production point and were later fixed locally
+  in ED-24EF.1.
 - No migrations were added.
 - No PDF files were committed.
 - Deploy scripts are unchanged.
@@ -181,7 +218,9 @@ ED-24MAN.2 production live-check notes:
 - Diagnostic OwnerManual-only policy PASS: GMV Mini n2 showed `📘 Руководство`; clicking it did not send ServiceManual and returned `Руководство пока не добавлено`.
 - ServiceManual library-only behavior PASS; existing ServiceManual bindings preserved.
 - Production logs PASS: Telegram polling active; updates `41767405`-`41767437` processed; sending Telegram response and editing Telegram message observed; no error / exception / failed found.
-- Known EF sentinel warnings for `TelegramLibraryAccessRequestEntity.RequestedRole`, `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole` are unrelated/non-blocking and remain future cleanup candidate ED-24EF.1.
+- The EF sentinel warnings for `TelegramLibraryAccessRequestEntity.RequestedRole`,
+  `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole` were unrelated/non-blocking for
+  this production point and were later fixed locally in ED-24EF.1.
 - No migration was added; no PDF files committed; JSON/cards/codes/sourceReferences/routing and deploy scripts unchanged.
 
 ## Current working point
@@ -210,6 +249,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24MAN.2b - CLOSED / production PASS.
 - ED-24E.3 - CLOSED / production PASS.
 - ED-24UX.7 - CLOSED / production PASS.
+- ED-24EF.1 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -392,7 +432,9 @@ Latest production validation after ED-24OPS.2b:
 - No migration was added for ED-24OPS.2b.
 - Runtime total remains 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deploy scripts unchanged.
-- EF enum default/sentinel warnings were observed for `TelegramLibraryAccessRequestEntity.RequestedRole`, `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole`; these are unrelated/non-blocking for ED-24OPS.2b and tracked as future cleanup candidate ED-24EF.1.
+- EF enum default/sentinel warnings were observed for `TelegramLibraryAccessRequestEntity.RequestedRole`,
+  `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole`; they were unrelated/non-blocking
+  for ED-24OPS.2b and were later fixed locally in ED-24EF.1.
 
 Latest validation after ED-24SRC.2:
 
@@ -808,15 +850,16 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- ED-24EF.1 - Fix remaining EF enum default/sentinel warnings for Telegram library/manual entities.
+- ED-24EF.2 - Add an EF value comparer for `HourlySchedule.Factors`.
+- ED-24QA.2 - Clean nullable warnings in architecture guard tests.
 
 ## Current blocker
 
-No active blocker after ED-24MAN.2b, ED-24E.3, and ED-24UX.7 production PASS.
+No active blocker after local ED-24EF.1 validation. Production PASS remains pending until VPS deploy/live-check.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: ED-24MAN.3 manual variants by model family / exact model matching,
-ED-24EF.1 remaining EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next
-Gree diagnostics direction.
+Deploy and live-check ED-24EF.1 on the VPS. After that, discuss ED-24EF.2 `HourlySchedule.Factors` comparer hygiene,
+ED-24MAN.3 manual variants by exact model family, ED-24QA.2 nullable warning cleanup, or the next Gree diagnostics
+direction.
 

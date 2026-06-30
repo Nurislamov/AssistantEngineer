@@ -19,6 +19,7 @@ public sealed class TelegramLibraryAccessRequestConfiguration : IEntityTypeConfi
             .HasConversion<string>()
             .HasMaxLength(32)
             .HasDefaultValue(TelegramUserRole.Installer)
+            .HasSentinel((TelegramUserRole)(-1))
             .IsRequired();
 
         builder.Property(request => request.Status)
