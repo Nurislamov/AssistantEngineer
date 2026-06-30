@@ -2,12 +2,12 @@
 
 ## Last updated
 
-ED-24EF.1
+ED-24EF.2
 
 ## Current stable point
 
-- Production baseline: `5076341e` with ED-24MAN.2b, ED-24E.3, and ED-24UX.7 production PASS.
-- ED-24EF.1 is locally validated only until a VPS deploy/live-check is completed.
+- Production baseline: `8ab72517` with ED-24EF.1 production PASS.
+- ED-24EF.2 is locally validated only until a VPS deploy/live-check is completed.
 - Runtime counts: Gree 1184; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260.
 - Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
 
@@ -17,15 +17,7 @@ No current blocker was found.
 
 ## P1 / should fix soon
 
-### TD-EF-002 - HourlySchedule Factors needs a value comparer
-
-- Area: EF/persistence
-- Severity: P1
-- Current evidence: production-state notes record the EF warning for the converted `HourlySchedule.Factors` array;
-  `HourlyScheduleConfiguration` defines a JSON conversion without a value comparer.
-- Risk: in-place array changes may not be detected or compared correctly by EF change tracking.
-- Suggested next stage: ED-24EF.2
-- Notes: unrelated to Telegram and intentionally not changed in ED-24EF.1.
+No active P1 item was found.
 
 ## P2 / planned cleanup
 
@@ -69,6 +61,16 @@ No current blocker was found.
 - Suggested next stage: ED-24DOC.1
 - Notes: not corrected in ED-24EF.1 because this stage changes only sentinel behavior and its required state/debt records.
 
+### TD-OPS-001 - DataProtection keys are stored inside the application container
+
+- Area: operations/configuration
+- Severity: P2
+- Current evidence: production logs warn that keys under `/home/app/.aspnet/DataProtection-Keys` may not persist outside
+  the container.
+- Risk: container replacement can invalidate protected payloads that depend on the ephemeral key ring.
+- Suggested next stage: ED-24OPS.3
+- Notes: intentionally not changed in ED-24EF.2.
+
 ## P3 / backlog
 
 ### TD-TOOL-001 - EF CLI patch version trails runtime
@@ -78,7 +80,20 @@ No current blocker was found.
 - Current evidence: local `dotnet ef` is 10.0.5 while the EF runtime packages are 10.0.6.
 - Risk: minor tooling diagnostics or scaffolding behavior may differ from the runtime patch.
 - Suggested next stage: ED-24TOOL.1
-- Notes: `migrations has-pending-model-changes` still completed successfully for ED-24EF.1.
+- Notes: `migrations has-pending-model-changes` still completed successfully for ED-24EF.1 and ED-24EF.2.
+
+## Resolved in ED-24EF.2
+
+### TD-EF-002 - HourlySchedule Factors had no value comparer
+
+- Area: EF/persistence
+- Severity: resolved
+- Current evidence: the JSON-converted `HourlySchedule.Factors` sequence previously used reference-based tracking and
+  produced an EF model warning.
+- Resolution: a typed comparer now uses ordered sequence equality, element-based hashing, and a cloned array snapshot.
+- Validation: model metadata, SQLite round-trip, equivalent replacement, in-place element mutation, and persisted update
+  are covered by focused tests.
+- Migration: no migration required; EF reports no pending model changes because database schema is unchanged.
 
 ## Resolved in ED-24EF.1
 

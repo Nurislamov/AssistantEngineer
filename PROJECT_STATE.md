@@ -2,19 +2,53 @@
 
 ## Current stage
 
-ED-24EF.1 - CLOSED / production PASS.
+ED-24EF.2 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-2. Consider ED-24EF.2 for `HourlySchedule.Factors`, ED-24OPS.3 for DataProtection key persistence, ED-24MAN.3 for exact
-   model-family matching, and ED-24QA.2 for nullable warning cleanup.
+1. Run production VPS deployment/live-check for ED-24EF.2 before marking production PASS.
+2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+3. Consider ED-24OPS.3 for DataProtection key persistence, ED-24MAN.3 for exact model-family matching, and ED-24QA.2
+   for nullable warning cleanup.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24EF.2 fixed the EF value comparer warning for `HourlySchedule.Factors`; the stage is CLOSED / pushed, with
+production live-check still pending.
+
+Implementation commit: current commit (`ED-24EF.2 Fix HourlySchedule value comparer`).
+
+ED-24EF.2 implementation notes:
+
+- `HourlySchedule.Factors` remains the existing required `IReadOnlyList<double>` property persisted as JSON.
+- A typed `ValueComparer<IReadOnlyList<double>>` now uses ordered sequence equality, element-based hashing, and a cloned
+  `double[]` snapshot.
+- Null-aware equality is explicit for EF metadata calls; the domain property itself remains non-nullable.
+- Equivalent replacement sequences are not marked modified, while an in-place element change is detected and persisted.
+- Model metadata, snapshot independence, hash/equality, SQLite round-trip, equivalent replacement, and element mutation
+  are covered by two focused persistence tests.
+- No migration is required; `dotnet ef migrations has-pending-model-changes` reports no pending model changes.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policy is unchanged: ServiceManual and InstallationManual remain library-only; diagnostic guide delivery remains
+  OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Telegram UX, manual bindings, and manual library access policy are unchanged.
+- Deploy scripts are unchanged.
+- No PDF or generated artifacts were committed.
+- Technical debt register updated: `HourlySchedule.Factors` moved to `Resolved in ED-24EF.2`.
+- Remaining top debt: DataProtection key-ring persistence under `/home/app/.aspnet/DataProtection-Keys` remains a separate
+  operations/configuration candidate ED-24OPS.3.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused persistence/schedule/calculation-preferences/diagnostics/Gree tests: 1118/1118 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5032/5032 passed.
+- `git diff --check`: PASS.
+- Production PASS is not marked for ED-24EF.2.
 
 ED-24EF.1 fixed the known Telegram EF enum sentinel warnings and added a focused technical debt register; the stage is
 CLOSED / production PASS.
@@ -267,6 +301,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24E.3 - CLOSED / production PASS.
 - ED-24UX.7 - CLOSED / production PASS.
 - ED-24EF.1 - CLOSED / production PASS.
+- ED-24EF.2 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -802,6 +837,7 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24EF.2 - HourlySchedule value comparer validated locally and pushed; production live-check is pending.
 - ED-24EF.1 - Telegram EF enum sentinels validated locally, pushed, and production-confirmed.
 - ED-24UX.7 - Gree runtime-based series refinement and compact keyboard validated, pushed, and production-confirmed.
 - ED-24E.3 - GMV6 HR diagnostics validated, pushed, and production-confirmed.
@@ -870,16 +906,15 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- ED-24EF.2 - Add an EF value comparer for `HourlySchedule.Factors`.
 - ED-24OPS.3 - Persist DataProtection keys outside the application container.
 - ED-24QA.2 - Clean nullable warnings in architecture guard tests.
 
 ## Current blocker
 
-No active blocker after ED-24EF.1 production PASS.
+No active blocker after local ED-24EF.2 validation. Production PASS remains pending until VPS deploy/live-check.
 
 ## Next step
 
-Discuss ED-24EF.2 `HourlySchedule.Factors` comparer hygiene, ED-24OPS.3 DataProtection key persistence, ED-24MAN.3 manual
-variants by exact model family, ED-24QA.2 nullable warning cleanup, or the next Gree diagnostics direction.
+Deploy and live-check ED-24EF.2 on the VPS. After that, discuss ED-24OPS.3 DataProtection key persistence, ED-24MAN.3
+manual variants by exact model family, ED-24QA.2 nullable warning cleanup, or the next Gree diagnostics direction.
 
