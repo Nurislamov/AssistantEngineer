@@ -110,10 +110,12 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
             var bindings = document.Bindings
                 .Where(existing =>
                     !string.Equals(existing.Brand, binding.Brand, StringComparison.OrdinalIgnoreCase) ||
-                    !string.Equals(existing.Series, binding.Series, StringComparison.OrdinalIgnoreCase))
+                    !string.Equals(existing.Series, binding.Series, StringComparison.OrdinalIgnoreCase) ||
+                    existing.DocumentType != binding.DocumentType)
                 .Append(binding)
                 .OrderBy(value => value.Brand, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(value => value.Series, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(value => value.DocumentType)
                 .ThenBy(value => value.ManualId, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
             WriteDocument(new TelegramManualFileBindingDocument(1, bindings));

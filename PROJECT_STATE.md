@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24MAN.2 - CLOSED / production PASS.
+ED-24MAN.2a - CLOSED / pushed.
 
 Next recommended steps:
 
-1. If desired, run a future production `/manual_bind` for `Gree GMV Mini` using the audited Mini/Slim broad side-outlet manual.
+1. Run production VPS deployment/live-check for ED-24MAN.2a when ready, including three GMV Mini / Slim OwnerManual files if approved PDFs are available outside Git.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Keep ED-24MAN.3 manual variants by model family / exact model matching and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
+3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
 ## Current branch
 
@@ -16,7 +16,25 @@ master
 
 ## Last completed work
 
-ED-24MAN.2 added the structured Telegram manual library tree and minimum manual taxonomy for Gree; the stage is production PASS after VPS live-check on `assistantengineer-beta-01`.
+ED-24MAN.2a added multiple active GMV Mini / Slim OwnerManual support in the Telegram manual library; the stage is local validation PASS and pushed, with production live-check still pending.
+
+Implementation commit: current commit (`ED-24MAN.2a Support multiple GMV Mini owner manuals`).
+
+ED-24MAN.2a local implementation notes:
+
+- `Gree -> Наружные -> GMV Mini / Slim -> 📘 Owner Manual` now supports multiple active PDF bindings by safe title/filename-derived `ManualId`.
+- Adding a new GMV Mini / Slim OwnerManual does not deactivate existing GMV Mini / Slim OwnerManual files or the GMV Mini ServiceManual binding.
+- Re-uploading the same OwnerManual title/filename asks for replace confirmation; cancel preserves the old file, and confirm replaces only the matching title/filename key.
+- Library buckets list all active GMV Mini / Slim OwnerManual files by safe display title/filename; empty buckets still show `Пока файлов нет.`
+- Diagnostic `📘 Руководство` remains OwnerManual-only: zero files returns `Руководство пока не добавлено`, one file sends immediately, and multiple files show a safe selection list before protected `sendDocument`.
+- ServiceManual, InstallationManual, and ControllerGuide remain library-only and are not sent by diagnostics.
+- GMV9 Flex OwnerManual is still unavailable/pending and not required; Flex diagnostics still return `Руководство пока не добавлено` until an OwnerManual is bound.
+- Existing `TelegramManualBindings` storage is reused; no parallel storage system and no migration were added.
+- Runtime Gree diagnostics remains 922; GMV Mini runtime remains 136.
+- JSON/cards/codes/sourceReferences/routing/manual bindings/deploy scripts are unchanged.
+- No PDF files were committed.
+
+Previous baseline: ED-24MAN.2 added the structured Telegram manual library tree and minimum manual taxonomy for Gree; the stage is production PASS after VPS live-check on `assistantengineer-beta-01`.
 
 Implementation commit: `7de9c663` (`ED-24MAN.2 Add library tree and manual taxonomy`).
 
@@ -70,6 +88,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24OPS.2b - CLOSED / production PASS.
 - ED-24SRC.2 - CLOSED / pushed.
 - ED-24MAN.2 - CLOSED / production PASS.
+- ED-24MAN.2a - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 

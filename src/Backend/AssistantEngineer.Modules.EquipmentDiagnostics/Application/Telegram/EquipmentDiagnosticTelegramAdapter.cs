@@ -82,7 +82,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                         [],
                         ParseMode: TelegramHtml.ParseMode,
                         CallbackAnswerText: "Мануал недоступен")
-                    : await _manualLibraryService.RequestDiagnosticGuideAsync(callbackAccess, cancellationToken);
+                    : await _manualLibraryService.RequestDiagnosticGuideAsync(update, callbackAccess, cancellationToken);
                 return Response(
                     update.ChatId,
                     manualResult.Text,

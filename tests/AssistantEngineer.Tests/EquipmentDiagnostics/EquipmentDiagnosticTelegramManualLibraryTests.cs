@@ -770,6 +770,180 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task OwnerCanBindMultipleGmvMiniOwnerManualsWithoutDeactivatingServiceManual()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv-mini-service-manual",
+            "telegram-file-id-service",
+            "Gree GMV Mini Slim Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "GMV Mini",
+            DocumentType: TelegramLibraryDocumentType.ServiceManual,
+            MinRole: TelegramUserRole.Engineer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-a", "Gree GMV Mini Slim Owner Manual EN 8-16kW A-T C-T C-X.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-b", "Gree GMV Mini Slim Owner Manual EN 12-18kW C1-S.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-c", "Gree GMV Mini Slim Owner Manual EN 22-35kW H C-X C1-X.pdf");
+
+        var bindings = await bindingStore.ListAsync();
+        var owners = bindings
+            .Where(binding =>
+                binding.IsActive &&
+                binding.DocumentType == TelegramLibraryDocumentType.OwnerManual &&
+                string.Equals(binding.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(binding => binding.OriginalFileName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var service = Assert.Single(bindings, binding =>
+            binding.IsActive &&
+            binding.DocumentType == TelegramLibraryDocumentType.ServiceManual &&
+            string.Equals(binding.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase));
+
+        Assert.Equal(3, owners.Length);
+        Assert.All(owners, binding =>
+        {
+            Assert.StartsWith("gree-gmv-mini-owner-manual-", binding.ManualId, StringComparison.Ordinal);
+            Assert.True(binding.CanUseForDiagnostics);
+            Assert.Equal(TelegramUserRole.Consumer, binding.MinRole);
+        });
+        Assert.Equal("telegram-file-id-service", service.TelegramFileId);
+        Assert.Equal(4, bindings.Count(binding => string.Equals(binding.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase)));
+    }
+
+    [Fact]
+    public async Task GmvMiniOwnerManualReplaceTargetsSameFileNameOnly()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        const string fileA = "Gree GMV Mini Slim Owner Manual EN 8-16kW A-T C-T C-X.pdf";
+        const string fileB = "Gree GMV Mini Slim Owner Manual EN 12-18kW C1-S.pdf";
+        const string fileC = "Gree GMV Mini Slim Owner Manual EN 22-35kW H C-X C1-X.pdf";
+
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-a-old", fileA);
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-b", fileB);
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-c", fileC);
+
+        var replacePrompt = await StartGmvMiniOwnerManualUploadAsync(adapter, "telegram-file-id-owner-a-new", fileA);
+        await adapter.HandleAsync(ManualBindCallback("mb:c:cancel"));
+        var afterCancel = await GmvMiniOwnerManualsAsync(bindingStore);
+
+        await StartGmvMiniOwnerManualUploadAsync(adapter, "telegram-file-id-owner-a-new", fileA);
+        await adapter.HandleAsync(ManualBindCallback("mb:c:replace"));
+        var afterReplace = await GmvMiniOwnerManualsAsync(bindingStore);
+
+        Assert.Contains("Заменить", replacePrompt.Text, StringComparison.Ordinal);
+        Assert.Equal("telegram-file-id-owner-a-old", Assert.Single(afterCancel, binding => binding.OriginalFileName == fileA).TelegramFileId);
+        Assert.Equal("telegram-file-id-owner-a-new", Assert.Single(afterReplace, binding => binding.OriginalFileName == fileA).TelegramFileId);
+        Assert.Equal("telegram-file-id-owner-b", Assert.Single(afterReplace, binding => binding.OriginalFileName == fileB).TelegramFileId);
+        Assert.Equal("telegram-file-id-owner-c", Assert.Single(afterReplace, binding => binding.OriginalFileName == fileC).TelegramFileId);
+        Assert.Equal(3, afterReplace.Length);
+    }
+
+    [Fact]
+    public async Task GmvMiniOwnerManualLibraryBucketListsAllFilesAndFlexEmptyState()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-a", "Gree GMV Mini Slim Owner Manual EN 8-16kW A-T C-T C-X.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-b", "Gree GMV Mini Slim Owner Manual EN 12-18kW C1-S.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-c", "Gree GMV Mini Slim Owner Manual EN 22-35kW H C-X C1-X.pdf");
+
+        var bucket = await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor:gmv-mini:owner"));
+        var flexEmpty = await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor:gmv9-flex:owner"));
+        var buttons = InlineButtons(bucket);
+
+        Assert.Contains(buttons, button => button.Contains("8-16kW", StringComparison.Ordinal));
+        Assert.Contains(buttons, button => button.Contains("12-18kW", StringComparison.Ordinal));
+        Assert.Contains(buttons, button => button.Contains("22-35kW", StringComparison.Ordinal));
+        Assert.Contains("Пока файлов нет", flexEmpty.Text, StringComparison.Ordinal);
+        AssertNoDiagnosticSourceLeak(bucket);
+        AssertNoDiagnosticSourceLeak(flexEmpty);
+    }
+
+    [Fact]
+    public async Task DiagnosticGuideSelectsAmongMultipleGmvMiniOwnerManualsOnly()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv-mini-service-manual",
+            "telegram-file-id-service",
+            "Gree GMV Mini Slim Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "GMV Mini",
+            DocumentType: TelegramLibraryDocumentType.ServiceManual,
+            MinRole: TelegramUserRole.Engineer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv-mini-installation-manual",
+            "telegram-file-id-installation",
+            "Gree GMV Mini Slim Installation Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "GMV Mini",
+            DocumentType: TelegramLibraryDocumentType.InstallationManual,
+            MinRole: TelegramUserRole.Installer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+
+        await adapter.HandleAsync(Update("Gree GMV Mini n2"));
+        var serviceOnly = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-a", "Gree GMV Mini Slim Owner Manual EN 8-16kW A-T C-T C-X.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-b", "Gree GMV Mini Slim Owner Manual EN 12-18kW C1-S.pdf");
+        await UploadGmvMiniOwnerManualAsync(adapter, "telegram-file-id-owner-c", "Gree GMV Mini Slim Owner Manual EN 22-35kW H C-X C1-X.pdf");
+        var owners = await GmvMiniOwnerManualsAsync(bindingStore);
+        var selected = Assert.Single(owners, binding => binding.OriginalFileName?.Contains("12-18kW", StringComparison.Ordinal) == true);
+
+        await adapter.HandleAsync(Update("Gree GMV Mini n2"));
+        var selection = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+        var sent = await adapter.HandleAsync(DiagnosticManualFileCallback("dm:file:" + selected.ManualId));
+        var flexMissing = await adapter.HandleAsync(Update("Gree GMV9 Flex E0"));
+        flexMissing = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+
+        Assert.Contains("<b>Руководство пока не добавлено</b>", serviceOnly.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(serviceOnly.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Contains("<b>Выберите руководство</b>", selection.Text, StringComparison.Ordinal);
+        Assert.Contains(InlineButtons(selection), button => button.Contains("8-16kW", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(selection), button => button.Contains("12-18kW", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(selection), button => button.Contains("22-35kW", StringComparison.Ordinal));
+        Assert.DoesNotContain(InlineButtons(selection), button => button.Contains("Service Manual", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(InlineButtons(selection), button => button.Contains("Installation Manual", StringComparison.OrdinalIgnoreCase));
+        Assert.DoesNotContain(selection.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        var document = Assert.Single(sent.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Equal("telegram-file-id-owner-b", document.DocumentFileId);
+        Assert.True(document.ProtectContent);
+        Assert.Contains("<b>Руководство пока не добавлено</b>", flexMissing.Text, StringComparison.Ordinal);
+        AssertNoDiagnosticSourceLeak(selection);
+        AssertNoDiagnosticSourceLeak(sent);
+    }
+
+    [Fact]
     public async Task RegistrationRejectsUnknownManualId()
     {
         using var provider = CreateProvider(TempBindingPath());
@@ -819,6 +993,39 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Подтвердите код o1", o1.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", o1.Text, StringComparison.Ordinal);
     }
+
+    private static async Task UploadGmvMiniOwnerManualAsync(
+        IEquipmentDiagnosticTelegramAdapter adapter,
+        string fileId,
+        string fileName)
+    {
+        await StartGmvMiniOwnerManualUploadAsync(adapter, fileId, fileName);
+        await adapter.HandleAsync(ManualBindCallback("mb:c:bind"));
+    }
+
+    private static async Task<EquipmentDiagnosticTelegramResponse> StartGmvMiniOwnerManualUploadAsync(
+        IEquipmentDiagnosticTelegramAdapter adapter,
+        string fileId,
+        string fileName)
+    {
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
+        await adapter.HandleAsync(ManualBindCallback("mb:s:gmv-mini"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:owner"));
+        return await adapter.HandleAsync(DocumentUpdate(fileId, fileName));
+    }
+
+    private static async Task<TelegramManualFileBinding[]> GmvMiniOwnerManualsAsync(
+        ITelegramManualFileBindingStore bindingStore) =>
+        (await bindingStore.ListAsync())
+        .Where(binding =>
+            binding.IsActive &&
+            binding.DocumentType == TelegramLibraryDocumentType.OwnerManual &&
+            string.Equals(binding.Brand, "Gree", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(binding.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+        .OrderBy(binding => binding.OriginalFileName, StringComparer.OrdinalIgnoreCase)
+        .ToArray();
 
     private static ServiceProvider CreateProvider(
         string? bindingPath = null,
@@ -920,6 +1127,16 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             UserId: 11,
             CallbackQueryId: "callback-query-id",
             CallbackData: TelegramManualLibraryService.DiagnosticManualCallbackData);
+
+    private static EquipmentDiagnosticTelegramUpdate DiagnosticManualFileCallback(string callbackData) =>
+        new(
+            UpdateId: 33,
+            ChatId: 7,
+            Username: "operator",
+            Text: null,
+            UserId: 11,
+            CallbackQueryId: "diagnostic-manual-file-callback-query-id",
+            CallbackData: callbackData);
 
     private static EquipmentDiagnosticTelegramUpdate ManualBindCallback(string callbackData) =>
         new(

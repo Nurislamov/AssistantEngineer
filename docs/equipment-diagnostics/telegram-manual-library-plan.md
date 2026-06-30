@@ -1,8 +1,8 @@
 # Telegram file library
 
-Status: ED-24MAN.2 has the protected Telegram file library foundation, callback/UX fixes, and the first Gree manual
-taxonomy. It extends existing `TelegramManualBindings` instead of creating a parallel file-id system, keeps persistent
-library access grants and requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
+Status: ED-24MAN.2a keeps the protected Telegram file library foundation and adds multiple active GMV Mini / Slim
+`OwnerManual` files. It extends existing `TelegramManualBindings` instead of creating a parallel file-id system, keeps
+persistent library access grants and requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
 
 ## Current rules
 
@@ -13,6 +13,9 @@ library access grants and requests, and allows diagnostic document delivery only
   `IsLibraryVisible = true`, and `CanUseForDiagnostics = false`.
 - If no Owner manual is bound for a diagnostic series, the diagnostic button returns
   `Руководство пока не добавлено` and never falls back to a service manual.
+- If exactly one Owner manual is bound for the diagnostic series, the diagnostic button sends it immediately.
+- If multiple Owner manuals are bound for the diagnostic series, the diagnostic button shows a safe file selection list
+  by title/filename and sends only the selected Owner manual.
 - Files are sent with Telegram `sendDocument(file_id)` and `protect_content=true`.
 - `forwardMessage` and `copyMessage` are not used for library/manual delivery.
 - Raw `TelegramFileId`, `FileUniqueId`, DB ids, chat ids, local paths, package ids, and source references are not shown
@@ -68,6 +71,12 @@ ED-24MAN.2 exposes the first structured Gree catalog:
 - Each outdoor product line shows document buckets: `📕 Service Manual`, `📘 Owner Manual`,
   `🛠 Installation Manual`.
 - Empty buckets show `Пока файлов нет.`
+- `Gree -> Наружные -> GMV Mini / Slim -> 📘 Owner Manual` supports multiple active files. This is needed because
+  GMV Mini / Slim owner manuals are split by model/capacity groups, for example 8-16kW, 12-18kW, and 22-35kW groups.
+- GMV Mini / Slim `📘 Owner Manual` lists all active files by safe title/filename. `🛠 Installation Manual` remains
+  library-only and may be empty.
+- GMV9 Flex OwnerManual is currently unavailable/pending; diagnostics keep returning `Руководство пока не добавлено`
+  until an OwnerManual is explicitly bound.
 - Free sections (`Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`) list files directly as safe
   title/filename buttons without a nested model tree and paginate when the list is long.
 - File visibility requires `IsLibraryVisible = true`.
@@ -90,8 +99,11 @@ The flow is:
 - Outdoor: choose product line, then `ServiceManual`, `OwnerManual`, or `InstallationManual`.
 - Free sections: choose the section-appropriate document type, send a PDF document, confirm, and save into the flat
   section list.
-- Re-uploading the same outdoor `Brand + ProductLine + DocumentType` or the same free-section key asks for replacement
-  confirmation.
+- Re-uploading the same outdoor service/installation `Brand + ProductLine + DocumentType` or the same free-section key
+  asks for replacement confirmation.
+- Re-uploading an outdoor `OwnerManual` with the same generated title/filename key asks for replacement confirmation
+  and replaces only that matching file. Uploading a different GMV Mini / Slim OwnerManual adds another active file and
+  does not deactivate other GMV Mini / Slim OwnerManual files or ServiceManual files.
 - Cancel preserves the old binding.
 
 PDF validation requires a Telegram document, `.pdf`, `file_id`, non-empty safe filename, and a PDF-compatible content
@@ -105,10 +117,13 @@ Stored document policy:
 - `InstallationManual`: `MinRole = Installer`, library-only.
 - `ControllerGuide`: `MinRole = Installer`, library-only.
 
+No PDF binaries are committed to the repository for ED-24MAN.2a.
+
 ## Future work
 
 - Richer model matching and exact model-family variants.
-- Mini / Mini Star / Slim handling.
+- Mini / Mini Star / Slim exact model-family handling beyond the current multi-file OwnerManual bucket.
+- GMV9 Flex OwnerManual acquisition/binding when an approved source becomes available.
 - Optional file request workflow.
 - EF enum default/sentinel cleanup can continue under ED-24EF.1 for remaining warnings outside the fixed
   `TelegramLibraryDocumentType.OwnerManual` storage path.
