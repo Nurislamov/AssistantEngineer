@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24OPS.2b - CLOSED / production PASS.
+ED-24SRC.2 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Consider ED-24EF.1 to clean up unrelated EF enum default/sentinel warnings for Telegram library/manual entities.
+1. If desired, run a future production `/manual_bind` for `Gree GMV Mini` using the audited Mini/Slim broad side-outlet manual.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
+3. Keep ED-24MAN.3 manual variants by model family / exact model matching and ED-24EF.1 EF enum sentinel warning cleanup as future candidates.
 
 ## Current branch
 
@@ -16,11 +16,11 @@ master
 
 ## Last completed work
 
-ED-24OPS.2b extends the Telegram operator reply bridge so the configured Owner can reply from the configured operator group with text/links and common Telegram attachment replies: document, photo, video, video_note, voice, audio, contact, location, and animation.
+ED-24SRC.2 audited the local Gree GMV Mini/Slim side-outlet service manual PDF against the current GMV Mini runtime diagnostics and produced a coverage report.
 
-Implementation commit: `c44eb2db` (`ED-24OPS.2b Support operator media replies`).
+Latest implementation commit before this audit: `c44eb2db` (`ED-24OPS.2b Support operator media replies`).
 
-Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS; the configured operator group can deliver Owner text/link and supported media replies to users.
+Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS. ED-24SRC.2 is a local audit-only stage; no production action or `/manual_bind` was performed.
 
 ## Current working point
 
@@ -42,6 +42,7 @@ Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), 
 - ED-24OPS.2 - CLOSED / production PASS.
 - ED-24OPS.2a - CLOSED / production PASS.
 - ED-24OPS.2b - CLOSED / production PASS.
+- ED-24SRC.2 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -217,6 +218,32 @@ Latest production validation after ED-24OPS.2b:
 - Runtime total remains 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, routing, manual bindings, and deploy scripts unchanged.
 - EF enum default/sentinel warnings were observed for `TelegramLibraryAccessRequestEntity.RequestedRole`, `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole`; these are unrelated/non-blocking for ED-24OPS.2b and tracked as future cleanup candidate ED-24EF.1.
+
+Latest validation after ED-24SRC.2:
+
+- Audited local source PDF: `artifacts/manual-intake/sources/gree/Gree GMV Mini Slim Side Outlet Service Manual EN Rev S.pdf`.
+- PDF SHA256: `E42C5BE4BAE5D74ECE380BB7C1D83FAD16639171918B153E7B8ADCA5602DAAF1`.
+- PDF size: 51,164,839 bytes; page count: 176.
+- PDF is a local source artifact and was not added to git.
+- Report path: `docs/equipment-diagnostics/gree-gmv-mini-slim-manual-coverage.md`.
+- Decision: `PASS WITH NOTES`.
+- Manual selected as a broad source candidate for `Gree GMV Mini/Slim`, not as an exact model-family split.
+- Manual identity: `DC INVERTER VRF SYSTEM (R410A)`, document code `GC202510-XIX`, local filename suffix `Rev S`.
+- Manual model coverage: 32 product rows, 29 unique model names, 8.0-33.5 kW title-page capacity range.
+- Manual-derived audit extraction: 202 context occurrences, 159 unique normalized codes.
+- Current GMV Mini runtime: 136 cards / 136 unique codes.
+- Runtime breakdown: 27 indoor/controller, 62 outdoor/protection, 47 status/debug/function cards.
+- Primary display-table misses in runtime: 0.
+- Extra runtime codes not found in this PDF: 0.
+- Manual-only context/function/debug values not represented as runtime cards: 23 (`00`, `09`, `10`, `12`, `15`, `16`, `17`, `AC`, `n3`, `n5`, `nL`, `nU`, `OC`, `OF`, `PA`, `q7`, `q8`, `q9`, `qd`, `qF`, `qL`, `qn`, `qU`).
+- Blocking conflicts: 0.
+- Non-blocking duplicate/context notes: `C0`, `AJ`, `db`, `n2`, `nH`, `nC`, `nA`, and `nF` appear in more than one manual context.
+- Key checks `n2`, `C0`, `AJ`, `db`, `L0-L9`, `d1-dE` where present, `E0-E4`, `A0`, `A9`, `nH`, `nC`, `nA`, and `Ed` were covered honestly in the report.
+- Telegram binding was not performed in this stage.
+- Gree GMV Mini production binding remains pending / not bound unless an operator binds it manually later.
+- No diagnostic JSON/cards/routing/sourceReferences/manual bindings/deploy scripts changed.
+- Runtime total remains 922.
+- GMV Mini runtime remains 136 cards.
 
 Latest validation after ED-24UX.4:
 
@@ -595,15 +622,16 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Future candidates
 
+- ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
 - ED-24MAN.2 - Manual taxonomy / owner vs service access levels.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- ED-24SRC.2 - Compare Mini manuals and decide Mini/Star/Slim handling.
+- ED-24EF.1 - Fix EF enum default/sentinel warnings for Telegram library/manual entities.
 
 ## Current blocker
 
-No active blocker after ED-24OPS.2a production PASS.
+No active blocker after ED-24SRC.2 local audit PASS WITH NOTES.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: bind the audited Gree GMV Mini/Slim broad manual in production, ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24EF.1 EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 
