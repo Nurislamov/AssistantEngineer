@@ -24,6 +24,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramServiceRequestService? _serviceRequestService;
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
     private readonly TelegramAdminUserManagementService? _adminUserManagementService;
+    private readonly TelegramUserOverviewService? _userOverviewService;
     private readonly TelegramManualLibraryService? _manualLibraryService;
     private readonly ITelegramOperatorInboxService? _operatorInboxService;
 
@@ -39,6 +40,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramServiceRequestService? serviceRequestService = null,
         TelegramServiceRequestQueueService? serviceRequestQueueService = null,
         TelegramAdminUserManagementService? adminUserManagementService = null,
+        TelegramUserOverviewService? userOverviewService = null,
         TelegramManualLibraryService? manualLibraryService = null,
         ITelegramOperatorInboxService? operatorInboxService = null)
     {
@@ -53,6 +55,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _serviceRequestService = serviceRequestService;
         _serviceRequestQueueService = serviceRequestQueueService;
         _adminUserManagementService = adminUserManagementService;
+        _userOverviewService = userOverviewService;
         _manualLibraryService = manualLibraryService;
         _operatorInboxService = operatorInboxService;
     }
@@ -154,6 +157,26 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     replyMarkup: adminResult.ReplyMarkup,
                     callbackAnswerText: adminResult.CallbackAnswerText,
                     suppressOutbound: adminResult.SuppressOutbound);
+            }
+
+            if (TelegramUserOverviewService.IsCallback(update.CallbackData))
+            {
+                var callbackAccess = await _accessService.ResolveAccessAsync(update, cancellationToken);
+                if (!callbackAccess.IsAllowed)
+                {
+                    return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+                }
+
+                var userOverviewResult = _userOverviewService is null
+                    ? new TelegramUserOverviewResult("Раздел пользователей сейчас недоступен.", CallbackAnswerText: "Недоступно")
+                    : await _userOverviewService.HandleCallbackAsync(update, callbackAccess, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    userOverviewResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    replyMarkup: userOverviewResult.ReplyMarkup,
+                    callbackAnswerText: userOverviewResult.CallbackAnswerText,
+                    editMessageId: update.MessageId);
             }
 
             var result = _serviceRequestQueueService is null

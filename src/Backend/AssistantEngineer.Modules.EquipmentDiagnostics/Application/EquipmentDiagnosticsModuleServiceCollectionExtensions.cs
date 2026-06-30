@@ -48,6 +48,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<TelegramServiceRequestEventService>();
         services.AddSingleton<TelegramUserAuditEventService>();
         services.AddSingleton<TelegramAdminUserManagementService>();
+        services.AddSingleton<TelegramUserOverviewService>();
         services.AddSingleton<ITelegramUserAccessService, TelegramUserAccessService>();
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();
         services.AddSingleton<EquipmentDiagnosticTelegramResponseFormatter>();

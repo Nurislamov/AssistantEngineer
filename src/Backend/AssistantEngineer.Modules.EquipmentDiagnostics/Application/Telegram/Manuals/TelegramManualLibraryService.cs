@@ -1224,6 +1224,7 @@ public sealed class TelegramManualLibraryService
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("➕ Добавить файл", ManualBindStart)]);
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Запросы доступа", LibraryRequestsCallback)]);
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Управление доступом", LibraryAccessCallback)]);
+            rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton(TelegramUserOverviewService.UsersButton, TelegramUserOverviewService.UsersOverviewCallback)]);
         }
 
         rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Отмена", LibraryCancelCallback)]);

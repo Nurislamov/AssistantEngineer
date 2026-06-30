@@ -102,6 +102,46 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
         return Task.FromResult<IReadOnlyList<TelegramUserSnapshot>>(users);
     }
 
+    public Task<TelegramUserOverview> GetUserOverviewAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var snapshots = _users.Values.Select(ToSnapshot).ToArray();
+        var counts = Enum.GetValues<TelegramUserRole>()
+            .ToDictionary(role => role, role => snapshots.Count(user => user.Role == role));
+        var reachable = snapshots.Count(IsReachableForPrivateMessage);
+        return Task.FromResult(new TelegramUserOverview(
+            snapshots.Length,
+            snapshots.Count(user => user.IsEnabled && !user.IsBlocked),
+            reachable,
+            snapshots.Length - reachable,
+            counts));
+    }
+
+    public Task<TelegramUserListPage> GetUsersByRoleAsync(
+        TelegramUserRole role,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        pageSize = Math.Clamp(pageSize, 1, 50);
+        var roleUsers = _users.Values
+            .Where(user => user.Role == role)
+            .OrderBy(user => user.IsBlocked)
+            .ThenByDescending(user => user.IsEnabled)
+            .ThenByDescending(user => user.LastSeenAt ?? user.CreatedAt)
+            .ThenBy(user => user.Id)
+            .Select(ToSnapshot)
+            .ToArray();
+        var totalPages = Math.Max(1, (int)Math.Ceiling(roleUsers.Length / (double)pageSize));
+        page = Math.Clamp(page, 0, totalPages - 1);
+        var users = roleUsers
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(ToListItem)
+            .ToArray();
+        return Task.FromResult(new TelegramUserListPage(role, page, pageSize, roleUsers.Length, users));
+    }
+
     public Task MarkAccessDeniedAsync(
         long chatId,
         CancellationToken cancellationToken = default)
@@ -254,4 +294,26 @@ public sealed class InMemoryTelegramUserStore : ITelegramUserStore
             user.CreatedAt,
             user.LastSeenAt,
             user.LastAccessDeniedAt);
+
+    private static TelegramUserListItem ToListItem(TelegramUserSnapshot user) =>
+        new(
+            user.Id,
+            user.TelegramChatId,
+            user.TelegramUserId,
+            user.Username,
+            user.FirstName,
+            user.LastName,
+            user.Role,
+            HasPrivateChat(user),
+            user.IsEnabled,
+            user.IsBlocked,
+            IsReachableForPrivateMessage(user),
+            user.CreatedAt,
+            user.LastSeenAt);
+
+    private static bool HasPrivateChat(TelegramUserSnapshot user) =>
+        user.TelegramChatId > 0;
+
+    private static bool IsReachableForPrivateMessage(TelegramUserSnapshot user) =>
+        HasPrivateChat(user) && user.IsEnabled && !user.IsBlocked;
 }

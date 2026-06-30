@@ -2,20 +2,48 @@
 
 ## Current stage
 
-ED-24BRAND.1 - CLOSED / production PASS.
+ED-24USR.4 - CLOSED / pushed; production live-check is still pending.
 
 Next recommended steps:
 
-1. Start ED-24USR.4 Owner user overview.
-2. Continue with ED-24BCAST.1 Owner text broadcast foundation after the user overview is in place.
-3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
-4. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
+1. Continue with ED-24BCAST.1 Owner text broadcast foundation.
+2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24USR.4 adds an Owner-only Telegram user overview; the stage is CLOSED / pushed. Production PASS is not marked yet
+because the VPS live-check is still pending.
+
+ED-24USR.4 implementation notes:
+
+- Owner-only `👥 Пользователи` was added to the Telegram file-library/admin home menu.
+- The overview shows total users, active users, users reachable for future private broadcasts, users unavailable for
+  private messages, and counts by role: Owner, Admin, Engineer, Installer, Consumer.
+- Role lists are available for Owner/Admin/Engineer/Installer/Consumer with 10-user pagination.
+- User list rows show display name, username, TelegramId, private-chat availability, and future-broadcast reachability.
+- Phone numbers and contact values are not rendered in the overview or role lists.
+- Access is Owner-only: Admin, Engineer, Installer, and Consumer cannot see the `👥 Пользователи` button and stale
+  callbacks return a compact denial without leaking user data.
+- Callback payloads use short `usr:*` values and do not include names, usernames, phone numbers, TelegramIds, or chat ids.
+- Reachability uses existing Telegram user fields only: positive `TelegramChatId` as private chat id, `IsEnabled = true`,
+  and `IsBlocked = false`. There is no separate Bot API reachability probe in this stage.
+- Broadcast sending is not implemented in ED-24USR.4; the overview is the foundation for ED-24BCAST.1.
+- No migration was added.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policies are unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload menus,
+  diagnostic guide OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts are unchanged.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Focused UserOverview tests: 5/5 passed.
+- Focused TelegramUser/UserOverview/UserAccess/Telegram tests: 589/589 passed.
+- Production PASS remains pending until the ED-24USR.4 VPS live-check is completed.
+- Next planned stage: ED-24BCAST.1 Owner text broadcast foundation.
 
 ED-24BRAND.1 polishes visible Telegram-facing branding and help copy; the stage is CLOSED / production PASS.
 

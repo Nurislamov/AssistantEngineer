@@ -79,6 +79,38 @@ public sealed record TelegramUserPrivateContact(
     long PrivateChatId,
     string PhoneNumber);
 
+public sealed record TelegramUserOverview(
+    int TotalCount,
+    int ActiveCount,
+    int BroadcastReachableCount,
+    int BroadcastUnavailableCount,
+    IReadOnlyDictionary<TelegramUserRole, int> CountsByRole);
+
+public sealed record TelegramUserListItem(
+    long TelegramUserId,
+    long TelegramChatId,
+    long? TelegramAccountId,
+    string? Username,
+    string? FirstName,
+    string? LastName,
+    TelegramUserRole Role,
+    bool HasPrivateChat,
+    bool IsEnabled,
+    bool IsBlocked,
+    bool IsReachableForPrivateMessage,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? LastSeenAt);
+
+public sealed record TelegramUserListPage(
+    TelegramUserRole Role,
+    int Page,
+    int PageSize,
+    int TotalCount,
+    IReadOnlyList<TelegramUserListItem> Users)
+{
+    public int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)Math.Max(1, PageSize)));
+}
+
 public interface ITelegramUserStore
 {
     Task<TelegramUserSnapshot> EnsureBootstrapOwnerAsync(
@@ -111,6 +143,15 @@ public interface ITelegramUserStore
 
     Task<IReadOnlyList<TelegramUserSnapshot>> ListUsersAsync(
         int limit,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserOverview> GetUserOverviewAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramUserListPage> GetUsersByRoleAsync(
+        TelegramUserRole role,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default);
 
     Task MarkAccessDeniedAsync(

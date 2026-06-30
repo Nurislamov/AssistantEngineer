@@ -146,6 +146,73 @@ public sealed class EfTelegramUserStore : ITelegramUserStore
         return users.Select(ToSnapshot).ToArray();
     }
 
+    public async Task<TelegramUserOverview> GetUserOverviewAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var users = await context.TelegramUsers
+            .AsNoTracking()
+            .Select(user => new
+            {
+                user.TelegramChatId,
+                user.Role,
+                user.IsEnabled,
+                user.IsBlocked
+            })
+            .ToArrayAsync(cancellationToken);
+        var counts = Enum.GetValues<TelegramUserRole>()
+            .ToDictionary(role => role, role => users.Count(user => user.Role == role));
+        var reachable = users.Count(user => user.TelegramChatId > 0 && user.IsEnabled && !user.IsBlocked);
+        return new TelegramUserOverview(
+            users.Length,
+            users.Count(user => user.IsEnabled && !user.IsBlocked),
+            reachable,
+            users.Length - reachable,
+            counts);
+    }
+
+    public async Task<TelegramUserListPage> GetUsersByRoleAsync(
+        TelegramUserRole role,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        pageSize = Math.Clamp(pageSize, 1, 50);
+        var query = context.TelegramUsers
+            .AsNoTracking()
+            .Where(user => user.Role == role);
+        var total = await query.CountAsync(cancellationToken);
+        var totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)pageSize));
+        page = Math.Clamp(page, 0, totalPages - 1);
+        var users = await query
+            .OrderBy(user => user.IsBlocked)
+            .ThenByDescending(user => user.IsEnabled)
+            .ThenByDescending(user => user.LastSeenAt ?? user.CreatedAt)
+            .ThenBy(user => user.Id)
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Select(user => new TelegramUserListItem(
+                user.Id,
+                user.TelegramChatId,
+                user.TelegramUserId,
+                user.Username,
+                user.FirstName,
+                user.LastName,
+                user.Role,
+                user.TelegramChatId > 0,
+                user.IsEnabled,
+                user.IsBlocked,
+                user.TelegramChatId > 0 && user.IsEnabled && !user.IsBlocked,
+                user.CreatedAt,
+                user.LastSeenAt))
+            .ToArrayAsync(cancellationToken);
+
+        return new TelegramUserListPage(role, page, pageSize, total, users);
+    }
+
     public async Task MarkAccessDeniedAsync(
         long chatId,
         CancellationToken cancellationToken = default)
