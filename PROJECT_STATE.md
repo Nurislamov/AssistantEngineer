@@ -2,12 +2,12 @@
 
 ## Current stage
 
-ED-24OPS.3 - CLOSED / pushed. Production deploy/live-check pending.
+ED-24OPS.3 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Deploy ED-24OPS.3 to the VPS and verify that DataProtection key files survive API container recreation.
-2. Consider certificate-backed DataProtection key encryption at rest, ED-24MAN.3 for exact model-family matching, and
+1. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+2. Consider ED-24MAN.3 for exact model-family matching and
    ED-24QA.2 for nullable warning cleanup.
 
 ## Current branch
@@ -16,8 +16,9 @@ master
 
 ## Last completed work
 
-ED-24OPS.3 persists ASP.NET DataProtection keys outside the API container; the stage is CLOSED / pushed, with
-production deploy/live-check still pending.
+ED-24OPS.3 persists ASP.NET DataProtection keys outside the API container; the stage is CLOSED / production PASS.
+
+Implementation commit: `1e46ab85` (`ED-24OPS.3 Persist DataProtection keys`).
 
 ED-24OPS.3 implementation notes:
 
@@ -30,8 +31,8 @@ ED-24OPS.3 implementation notes:
 - Optional certificate-backed key encryption is supported through
   `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PATH` and
   `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PASSWORD`; no certificate, password, or secret is committed or logged.
-- Missing certificate configuration does not block startup. Without a production-mounted certificate, the remaining
-  encryption-at-rest warning is expected and tracked as lower-priority `TD-OPS-002`.
+- Missing certificate configuration does not block startup. Optional encryption at rest remains tracked as
+  `TD-OPS-002` and is not claimed complete without a production-mounted PFX/certificate.
 - Focused tests cover the configured path, directory creation, stable application discriminator, persisted XML key
   generation, optional PFX encryption, and password-free persisted/error output.
 - Deployment tests cover the named volume, writable image path, and secret-free environment placeholders.
@@ -44,7 +45,8 @@ ED-24OPS.3 implementation notes:
   OwnerManual-only.
 - Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
 - Telegram UX and manual bindings are unchanged.
-- Deploy scripts are unchanged; only the Dockerfile, Compose scaffold, and environment template changed.
+- Deploy scripts changed only as part of the ED-24OPS.3 Docker Compose/configuration work: Dockerfile, Compose scaffold,
+  and environment template.
 - No PDF, generated artifact, certificate, password, or secret was committed.
 - Restore: PASS.
 - Build: PASS, 0 warnings / 0 errors.
@@ -53,8 +55,23 @@ ED-24OPS.3 implementation notes:
 - Full solution suite: 5037/5037 passed.
 - Docker Compose configuration validation: PASS.
 - `git diff --check`: PASS.
-- Production deploy/live-check: not run in this stage. Do not claim production PASS until the VPS confirms that the
-  key-ring files remain across API container recreation and the container-persistence warning is absent.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`.
+- `assistantengineer-api` rebuilt and restarted successfully.
+- DataProtection keys are persisted in Docker volume `assistantengineer_dataprotection_keys`.
+- DataProtection key path: `/home/app/.aspnet/DataProtection-Keys`.
+- Telegram polling started and the Telegram command menu synchronized.
+- Telegram updates were processed successfully; sending Telegram responses and documents was observed.
+- Production logs contain no `OutboundFailed`, `error`, `exception`, or `failed` entries in the checked window.
+- The DataProtection container-persistence warning no longer appears in the checked production logs.
+- The earlier `Telegram polling stopped` line was from container restart and is expected.
+- Runtime counts remain unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policy remains unchanged: ServiceManual and InstallationManual are library-only; diagnostic guide delivery
+  remains OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts changed only as part of the ED-24OPS.3 Docker Compose/configuration work.
+- No migration was added and no PDF/generated artifact/certificate/password/secret was committed.
+- Remaining debt: `TD-OPS-002` optional DataProtection key encryption at rest with a production-owned PFX/certificate.
 
 ED-24EF.2 fixed the EF value comparer warning for `HourlySchedule.Factors`; the stage is CLOSED / production PASS.
 
@@ -356,6 +373,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24UX.7 - CLOSED / production PASS.
 - ED-24EF.1 - CLOSED / production PASS.
 - ED-24EF.2 - CLOSED / production PASS.
+- ED-24OPS.3 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -879,6 +897,7 @@ Latest production validation after ED-24MAN.1:
 
 Latest stable production point:
 
+- ED-24OPS.3 - production PASS.
 - ED-24EF.2 - production PASS.
 - ED-24EF.1 - production PASS.
 - ED-24UX.7 - production PASS.
@@ -892,6 +911,7 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24OPS.3 - DataProtection key persistence validated locally, pushed, and production-confirmed.
 - ED-24EF.2 - HourlySchedule value comparer validated locally, pushed, and production-confirmed.
 - ED-24EF.1 - Telegram EF enum sentinels validated locally, pushed, and production-confirmed.
 - ED-24UX.7 - Gree runtime-based series refinement and compact keyboard validated, pushed, and production-confirmed.
@@ -919,6 +939,7 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+1e46ab85 ED-24OPS.3 Persist DataProtection keys
 c775f936 ED-24EF.2 Fix HourlySchedule value comparer
 63547146 ED-24EF.1 Fix Telegram EF sentinel warnings
 d01cd488 ED-24UX.7 Fix Gree series refinement layout
@@ -962,16 +983,17 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- DataProtection certificate hardening - mount and rotate a production-owned PFX/secret for key encryption at rest.
+- TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
+  encryption at rest.
 - ED-24QA.2 - Clean nullable warnings in architecture guard tests.
 
 ## Current blocker
 
-No implementation blocker. ED-24OPS.3 production PASS remains gated on VPS deploy/live-check and key persistence across
-API container recreation.
+No implementation blocker. ED-24OPS.3 is CLOSED / production PASS; remaining DataProtection hardening is optional
+`TD-OPS-002` encryption at rest with a production-owned PFX/certificate.
 
 ## Next step
 
-Deploy ED-24OPS.3 to the VPS, confirm persistent DataProtection key filenames before and after API container recreation,
-and review logs for the container-persistence warning without exposing key contents or secrets.
+Choose the next stage. Candidate follow-ups are `TD-OPS-002` optional DataProtection encryption at rest, ED-24MAN.3 exact
+model-family matching, or ED-24QA.2 nullable warning cleanup.
 
