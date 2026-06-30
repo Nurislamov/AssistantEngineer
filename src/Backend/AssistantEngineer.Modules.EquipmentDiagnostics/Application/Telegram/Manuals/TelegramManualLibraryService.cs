@@ -71,22 +71,30 @@ public sealed class TelegramManualLibraryService
         new("gmv9-flex", "GMV9 Flex", "GMV9 Flex", "Gree GMV9 Flex Service Manual EN Rev B.pdf")
     ];
 
+    private static readonly IReadOnlySet<TelegramLibraryDocumentType> VisibleLibraryDocumentTypes =
+        new HashSet<TelegramLibraryDocumentType>
+        {
+            TelegramLibraryDocumentType.ServiceManual,
+            TelegramLibraryDocumentType.OwnerManual,
+            TelegramLibraryDocumentType.ControllerGuide
+        };
+
     private static readonly IReadOnlyList<ManualLibrarySectionOption> LibrarySections =
     [
         new(OutdoorSectionSlug, "Наружные", "Outdoor", true,
-            [TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.InstallationManual]),
+            [TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.OwnerManual]),
         new(IndoorSectionSlug, "Внутренние", "Indoor", false,
-            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.InstallationManual]),
+            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ServiceManual]),
         new(ControllersSectionSlug, "Пульты / Controllers", "Controllers", false,
             [TelegramLibraryDocumentType.ControllerGuide]),
         new(AccessoriesSectionSlug, "Аксессуары и прочее", "Accessories", false,
-            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.InstallationManual, TelegramLibraryDocumentType.ControllerGuide])
+            [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ControllerGuide])
     ];
 
     private static readonly IReadOnlyList<ManualDocumentTypeOption> DocumentTypeOptions =
     [
         new("service", TelegramLibraryDocumentType.ServiceManual, "📕 Сервисные мануалы"),
-        new("owner", TelegramLibraryDocumentType.OwnerManual, "📘 Owner Manual"),
+        new("owner", TelegramLibraryDocumentType.OwnerManual, "📘 Руководства пользователя"),
         new("installation", TelegramLibraryDocumentType.InstallationManual, "🛠 Installation Manual"),
         new("controller", TelegramLibraryDocumentType.ControllerGuide, "🎛 Controller Guide")
     ];
@@ -678,9 +686,17 @@ public sealed class TelegramManualLibraryService
             }
 
             var documentType = FindDocumentType(productRemainder[(separator + 1)..]);
-            return documentType is null
-                ? BindText("Тип документа не найден.", callbackAnswerText: "Не найдено")
-                : await BuildOutdoorBucketAsync(series, documentType, access, cancellationToken);
+            if (documentType is null)
+            {
+                return BindText("Тип документа не найден.", callbackAnswerText: "Не найдено");
+            }
+
+            if (!IsVisibleLibraryDocumentType(documentType.DocumentType))
+            {
+                return BuildOutdoorDocumentBuckets(series);
+            }
+
+            return await BuildOutdoorBucketAsync(series, documentType, access, cancellationToken);
         }
 
         if (callback.StartsWith(LibraryGreeSectionPrefix, StringComparison.Ordinal))
@@ -1384,6 +1400,8 @@ public sealed class TelegramManualLibraryService
                 binding.IsLibraryVisible &&
                 string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(binding.Series, section.StorageSeries, StringComparison.OrdinalIgnoreCase) &&
+                IsVisibleLibraryDocumentType(binding.DocumentType) &&
+                IsAllowedLibraryBinding(binding) &&
                 CanAccessBinding(access, binding))
             .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
             .ToArray();
@@ -2050,15 +2068,13 @@ public sealed class TelegramManualLibraryService
         if (string.Equals(binding.Series, "Accessories", StringComparison.OrdinalIgnoreCase))
         {
             return binding.DocumentType is TelegramLibraryDocumentType.OwnerManual or
-                TelegramLibraryDocumentType.InstallationManual or
                 TelegramLibraryDocumentType.ControllerGuide;
         }
 
         return SupportedSeries.Any(series =>
             string.Equals(series.Series, binding.Series, StringComparison.OrdinalIgnoreCase) &&
             binding.DocumentType is TelegramLibraryDocumentType.ServiceManual or
-                TelegramLibraryDocumentType.OwnerManual or
-                TelegramLibraryDocumentType.InstallationManual);
+                TelegramLibraryDocumentType.OwnerManual);
     }
 
     private static string? ClassifyTypedBinding(
@@ -2484,8 +2500,10 @@ public sealed class TelegramManualLibraryService
     private static IEnumerable<ManualDocumentTypeOption> OutdoorDocumentTypes() =>
         DocumentTypeOptions.Where(item =>
             item.DocumentType is TelegramLibraryDocumentType.ServiceManual or
-                TelegramLibraryDocumentType.OwnerManual or
-                TelegramLibraryDocumentType.InstallationManual);
+                TelegramLibraryDocumentType.OwnerManual);
+
+    private static bool IsVisibleLibraryDocumentType(TelegramLibraryDocumentType documentType) =>
+        VisibleLibraryDocumentTypes.Contains(documentType);
 
     private static EquipmentDiagnosticTelegramReplyMarkup BrandKeyboard() =>
         new(

@@ -1,15 +1,16 @@
 # Telegram file library
 
-Status: ED-24MAN.3 keeps the protected Telegram file library foundation, adds typed Gree Indoor and Controllers
-categories, and fixes generic library file-list callbacks by using short persisted binding-id tokens. It extends existing
-`TelegramManualBindings` instead of creating a parallel file-id system, keeps persistent library access grants and
-requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
+Status: ED-24MAN.3a keeps the protected Telegram file library foundation and ED-24MAN.3 short callback/category work,
+localizes visible OwnerManual labels, and hides InstallationManual from visible Telegram library/upload menus for now. It
+extends existing `TelegramManualBindings` instead of creating a parallel file-id system, keeps persistent library access
+grants and requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
 
 ## Current rules
 
 - Diagnostic code flow can deliver only `OwnerManual` files with `CanUseForDiagnostics = true`.
-- `ServiceManual`, `InstallationManual`, `ControllerGuide`, debugging/internal/source documents, and error-code tables
-  are library-only.
+- `ServiceManual`, `ControllerGuide`, debugging/internal/source documents, and error-code tables are library-only.
+- `InstallationManual` remains an internal library-only document type, but it is hidden from visible Telegram
+  library/upload menus for now and is not delivered by diagnostic guide actions.
 - Existing production service manual bindings default to `DocumentType = ServiceManual`, `MinRole = Engineer`,
   `IsLibraryVisible = true`, and `CanUseForDiagnostics = false`.
 - If no Owner manual is bound for a diagnostic series, the diagnostic button returns
@@ -71,13 +72,14 @@ ED-24MAN.2 exposes the first structured Gree catalog:
 - `Gree` shows `Наружные`, `Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`, and `Назад`.
 - `Пульты / Controllers` moved under `Gree`.
 - `Gree -> Наружные` shows fixed product lines: `GMV6`, `GMV6 HR`, `GMV Mini / Slim`, `GMV X`, `GMV9 Flex`.
-- Each outdoor product line shows document buckets: `📕 Сервисные мануалы`, `📘 Owner Manual`,
-  `🛠 Installation Manual`.
+- Each outdoor product line shows document buckets: `📕 Сервисные мануалы` and
+  `📘 Руководства пользователя`.
 - Empty buckets show `Пока файлов нет.`
-- `Gree -> Наружные -> GMV Mini / Slim -> 📘 Owner Manual` supports multiple active files. This is needed because
+- `Gree -> Наружные -> GMV Mini / Slim -> 📘 Руководства пользователя` supports multiple active files. This is needed because
   GMV Mini / Slim owner manuals are split by model/capacity groups, for example 8-16kW, 12-18kW, and 22-35kW groups.
-- GMV Mini / Slim `📘 Owner Manual` lists all active files by safe title/filename. `🛠 Installation Manual` remains
-  library-only and may be empty.
+- GMV Mini / Slim `📘 Руководства пользователя` lists all active files by safe title/filename.
+- `🛠 Installation Manual` is not shown in visible library buckets; stale callbacks fail safely or return the nearest
+  current menu and do not send files.
 - GMV9 Flex OwnerManual is currently unavailable/pending; diagnostics keep returning `Руководство пока не добавлено`
   until an OwnerManual is explicitly bound.
 - `Gree -> Внутренние` shows typed categories: `Настенные`, `Кассетные`, `Канальные`, and
@@ -105,11 +107,11 @@ The flow is:
 
 - Brand: `Gree`.
 - Section: `Outdoor`, `Indoor`, `Controllers`, or `Accessories`.
-- Outdoor: choose product line, then `ServiceManual`, `OwnerManual`, or `InstallationManual`.
+- Outdoor: choose product line, then visible `ServiceManual` or `OwnerManual`.
 - Free sections: choose the section-appropriate document type, send a PDF document, confirm, and save into the flat
   section list.
-- Re-uploading the same outdoor service/installation `Brand + ProductLine + DocumentType` or the same free-section key
-  asks for replacement confirmation.
+- Re-uploading the same outdoor service `Brand + ProductLine + DocumentType` or the same free-section key asks for
+  replacement confirmation.
 - Re-uploading an outdoor `OwnerManual` with the same generated title/filename key asks for replacement confirmation
   and replaces only that matching file. Uploading a different GMV Mini / Slim OwnerManual adds another active file and
   does not deactivate other GMV Mini / Slim OwnerManual files or ServiceManual files.
@@ -123,13 +125,16 @@ Stored document policy:
 
 - `ServiceManual`: `MinRole = Engineer`, library-only, `CanUseForDiagnostics = false`.
 - `OwnerManual`: `MinRole = Consumer`, can be used by diagnostics only for outdoor product lines.
-- `InstallationManual`: `MinRole = Installer`, library-only.
+- `InstallationManual`: `MinRole = Installer`, internal/library-only, hidden from visible Telegram library/upload menus.
 - `ControllerGuide`: `MinRole = Installer`, library-only.
 
-The visible ServiceManual document-type label is `📕 Сервисные мануалы`; the internal enum/database value remains
-`ServiceManual`.
+Visible document-type labels:
 
-No PDF binaries are committed to the repository for ED-24MAN.3.
+- `ServiceManual`: `📕 Сервисные мануалы`; internal enum/database value remains `ServiceManual`.
+- `OwnerManual`: `📘 Руководства пользователя`; internal enum/database value remains `OwnerManual`.
+- The diagnostic contextual button remains the shorter `📘 Руководство`.
+
+No PDF binaries are committed to the repository for ED-24MAN.3a.
 
 ## ED-24MAN.3 data correction
 

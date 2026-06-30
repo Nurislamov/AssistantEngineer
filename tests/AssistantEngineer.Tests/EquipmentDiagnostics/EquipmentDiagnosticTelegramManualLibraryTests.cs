@@ -641,11 +641,107 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Наружные", InlineButtons(brand), StringComparer.Ordinal);
         Assert.Contains("GMV9 Flex", InlineButtons(section), StringComparer.Ordinal);
         Assert.Contains("📕 Сервисные мануалы", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
+        Assert.Contains("📘 Руководства пользователя", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
         Assert.DoesNotContain("📕 Service Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
+        Assert.DoesNotContain("📘 Owner Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
+        Assert.DoesNotContain("Installation Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", selected.Text, StringComparison.Ordinal);
         Assert.Contains("Ожидаю PDF-файл", nonDocument.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", badName.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("telegram-file-id-bad", badName.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task OutdoorDocumentTypeMenusLocalizeOwnerManualAndHideInstallationManual()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var productCallbacks = new[]
+        {
+            "lib:gree:outdoor:gmv6",
+            "lib:gree:outdoor:gmv6-hr",
+            "lib:gree:outdoor:gmv-mini",
+            "lib:gree:outdoor:gmv-x",
+            "lib:gree:outdoor:gmv9-flex"
+        };
+
+        foreach (var callback in productCallbacks)
+        {
+            var menu = await adapter.HandleAsync(LibraryCallback(callback));
+
+            Assert.Equal(
+                ["📕 Сервисные мануалы", "📘 Руководства пользователя", "Назад"],
+                InlineButtons(menu));
+            Assert.DoesNotContain("📘 Owner Manual", string.Join(" ", InlineButtons(menu)), StringComparison.Ordinal);
+            Assert.DoesNotContain("🛠 Installation Manual", string.Join(" ", InlineButtons(menu)), StringComparison.Ordinal);
+            Assert.DoesNotContain("Installation Manual", menu.Text, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public async Task ManualBindDocumentTypeSelectorsHideInstallationManual()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        var outdoorSection = await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
+        var outdoorTypes = await adapter.HandleAsync(ManualBindCallback("mb:s:gmv6"));
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        var indoorTypes = await adapter.HandleAsync(ManualBindCallback("mb:sec:indoor"));
+        var combinedTypeButtons = InlineButtons(outdoorTypes).Concat(InlineButtons(indoorTypes)).ToArray();
+
+        Assert.Contains("GMV6", InlineButtons(outdoorSection), StringComparer.Ordinal);
+        Assert.Equal(
+            ["📕 Сервисные мануалы", "📘 Руководства пользователя", "Отмена"],
+            InlineButtons(outdoorTypes));
+        Assert.Equal(
+            ["📕 Сервисные мануалы", "📘 Руководства пользователя", "Отмена"],
+            InlineButtons(indoorTypes));
+        Assert.DoesNotContain("📘 Owner Manual", string.Join(" ", combinedTypeButtons), StringComparison.Ordinal);
+        Assert.DoesNotContain("Installation Manual", string.Join(" ", combinedTypeButtons), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task StaleInstallationManualCallbacksAreHandledWithoutSendingDocuments()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await bindingStore.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv-mini-installation-manual",
+            "telegram-file-id-installation",
+            "Gree GMV Mini Slim Installation Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "GMV Mini",
+            DocumentType: TelegramLibraryDocumentType.InstallationManual,
+            MinRole: TelegramUserRole.Installer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+        var installation = Assert.Single(
+            await bindingStore.ListAsync(),
+            binding => binding.DocumentType == TelegramLibraryDocumentType.InstallationManual);
+
+        var staleBucket = await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor:gmv-mini:installation"));
+        var directFile = await adapter.HandleAsync(LibraryCallback($"lib:f:{installation.Id}"));
+
+        Assert.Equal(
+            ["📕 Сервисные мануалы", "📘 Руководства пользователя", "Назад"],
+            InlineButtons(staleBucket));
+        Assert.DoesNotContain("Installation Manual", string.Join(" ", InlineButtons(staleBucket)), StringComparison.Ordinal);
+        Assert.DoesNotContain(staleBucket.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.DoesNotContain(directFile.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Contains("недоступен", directFile.Text, StringComparison.OrdinalIgnoreCase);
     }
 
     [Theory]

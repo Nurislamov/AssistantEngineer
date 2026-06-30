@@ -2,12 +2,12 @@
 
 ## Current stage
 
-ED-24MAN.3 - CLOSED / pushed; production live-check and data-correction execution are still pending.
+ED-24MAN.3a - CLOSED / pushed; production live-check is still pending.
 
 Next recommended steps:
 
-1. Run the ED-24MAN.3 VPS deploy/live-check and execute/check the prepared Gree Indoor service-manual metadata
-   correction SQL.
+1. Run the ED-24MAN.3a VPS deploy/live-check and verify the pending ED-24MAN.3 Gree Indoor service-manual metadata
+   correction SQL output.
 2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
@@ -16,6 +16,41 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24MAN.3a localizes visible Telegram library document labels and hides InstallationManual from visible Telegram
+library/upload menus; the stage is CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check
+is still pending.
+
+ED-24MAN.3a implementation notes:
+
+- Production UX finding after ED-24MAN.3: outdoor document-type menus still showed `📘 Owner Manual` and
+  `🛠 Installation Manual`.
+- Visible OwnerManual document-type labels now show `📘 Руководства пользователя` in library and `/manual_bind` menus.
+- The diagnostic contextual button remains the shorter `📘 Руководство`.
+- Visible ServiceManual labels remain `📕 Сервисные мануалы`; the internal enum/database value remains `ServiceManual`.
+- Internal enum/database values `OwnerManual` and `InstallationManual` are unchanged.
+- Existing manual bindings are unchanged.
+- InstallationManual remains an internal/library-only document type, but it is hidden from visible Telegram
+  library/upload menus for now.
+- Stale InstallationManual callbacks are handled safely: they return the current menu or deny file delivery without
+  sending documents.
+- Protected `sendDocument(file_id)` delivery is unchanged; `forwardMessage` and `copyMessage` remain unused.
+- Manual policies are unchanged: ServiceManual library-only, InstallationManual hidden/library-only, diagnostic guide
+  OwnerManual-only, ControllerGuide remains a library category.
+- No migration was added.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts and the ED-24MAN.3 SQL correction script are unchanged.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Restore: PASS.
+- Build: PASS, 0 errors; the known `TD-BUILD-001` nullable warnings in test architecture guard files remain
+  non-blocking.
+- Focused Telegram/manual-library/diagnostics/Gree tests: 1073/1073 passed.
+- Focused manual-library quick slice: 59/59 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5045/5045 passed.
+- `git diff --check`: PASS.
+- ED-24MAN.3 production PASS remains pending until ED-24MAN.3a deploy/live-check and SQL correction verification.
 
 ED-24MAN.3 fixes Telegram library generic file callbacks and adds typed Gree Indoor/Controllers categories; the stage is
 CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check and the prepared data-correction
@@ -959,6 +994,8 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24MAN.3a - Telegram library OwnerManual label localization and InstallationManual hiding validated locally and
+  pushed; production live-check is still pending.
 - ED-24MAN.3 - Telegram library callback safety and typed Gree Indoor/Controllers categories validated locally and pushed;
   production live-check plus the prepared data-correction SQL execution/check are still pending.
 - ED-24OPS.3 - DataProtection key persistence validated locally, pushed, and production-confirmed.
@@ -1032,8 +1069,8 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24MAN.3 production follow-up - deploy/live-check and run/check the prepared Gree Indoor service-manual metadata
-  correction SQL.
+- ED-24MAN.3a production follow-up - deploy/live-check and run/check the pending ED-24MAN.3 Gree Indoor service-manual
+  metadata correction SQL.
 - ED-24MAN.4 - Manual variants by model family / exact model matching.
 - TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
   encryption at rest.
@@ -1041,11 +1078,11 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No implementation blocker. ED-24MAN.3 is CLOSED / pushed, but production PASS is intentionally not marked until the VPS
-deploy/live-check and the prepared data-correction SQL output are checked.
+No implementation blocker. ED-24MAN.3a is CLOSED / pushed, but production PASS is intentionally not marked until the VPS
+deploy/live-check and the pending ED-24MAN.3 data-correction SQL output are checked.
 
 ## Next step
 
-Run the ED-24MAN.3 production follow-up, including the prepared SQL correction check, then choose between `TD-OPS-002`,
+Run the ED-24MAN.3a production follow-up, including the pending SQL correction check, then choose between `TD-OPS-002`,
 ED-24MAN.4 exact model-family matching, or ED-24QA.2 nullable warning cleanup.
 
