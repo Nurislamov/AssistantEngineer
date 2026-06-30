@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24MAN.2 - CLOSED / pushed.
+ED-24MAN.2 - CLOSED / production PASS.
 
 Next recommended steps:
 
@@ -16,11 +16,11 @@ master
 
 ## Last completed work
 
-ED-24MAN.2 added the structured Telegram manual library tree and minimum manual taxonomy for Gree.
+ED-24MAN.2 added the structured Telegram manual library tree and minimum manual taxonomy for Gree; the stage is production PASS after VPS live-check on `assistantengineer-beta-01`.
 
-Implementation commit: `ED-24MAN.2 Add library tree and manual taxonomy` (this commit).
+Implementation commit: `7de9c663` (`ED-24MAN.2 Add library tree and manual taxonomy`).
 
-Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS. ED-24MAN.2 is local validation only at this point; do not mark production PASS until a VPS live-check is performed.
+Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), ED-24OPS.2b (`c44eb2db`), and ED-24MAN.2 (`7de9c663`) are production PASS.
 
 ED-24MAN.2 local implementation notes:
 
@@ -36,6 +36,17 @@ ED-24MAN.2 local implementation notes:
 - Protected library `sendDocument` delivery, access re-checks, `protect_content`, no `forwardMessage`, JSON/cards/codes/sourceReferences/routing/manual bindings, and deploy scripts remain unchanged.
 - No migration was added for ED-24MAN.2.
 - Runtime Gree diagnostics remains 922; GMV Mini runtime remains 136.
+
+ED-24MAN.2 production live-check notes:
+
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`; service: `assistantengineer-api`.
+- Library root visual check PASS: `Gree`, `➕ Добавить файл`, `Запросы доступа`, `Управление доступом`, `Отмена`.
+- Owner-only `➕ Добавить файл` visibility PASS.
+- Diagnostic OwnerManual-only policy PASS: GMV Mini n2 showed `📘 Руководство`; clicking it did not send ServiceManual and returned `Руководство пока не добавлено`.
+- ServiceManual library-only behavior PASS; existing ServiceManual bindings preserved.
+- Production logs PASS: Telegram polling active; updates `41767405`-`41767437` processed; sending Telegram response and editing Telegram message observed; no error / exception / failed found.
+- Known EF sentinel warnings for `TelegramLibraryAccessRequestEntity.RequestedRole`, `TelegramManualBindingEntity.DocumentType`, and `TelegramManualBindingEntity.MinRole` are unrelated/non-blocking and remain future cleanup candidate ED-24EF.1.
+- No migration was added; no PDF files committed; JSON/cards/codes/sourceReferences/routing and deploy scripts unchanged.
 
 ## Current working point
 
@@ -58,7 +69,7 @@ ED-24MAN.2 local implementation notes:
 - ED-24OPS.2a - CLOSED / production PASS.
 - ED-24OPS.2b - CLOSED / production PASS.
 - ED-24SRC.2 - CLOSED / pushed.
-- ED-24MAN.2 - CLOSED / pushed.
+- ED-24MAN.2 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -644,7 +655,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24MAN.2 local validation.
+No active blocker after ED-24MAN.2 production PASS.
 
 ## Next step
 
