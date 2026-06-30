@@ -2,13 +2,12 @@
 
 ## Current stage
 
-ED-24UX.7 - CLOSED / pushed.
+ED-24UX.7 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Run production VPS deployment/live-check for ED-24UX.7 when ready; do not mark production PASS until the live-check is done.
-2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex/GMV6 HR OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
+1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
+2. Keep ED-24MAN.3 exact model-family matching and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
 ## Current branch
 
@@ -16,10 +15,9 @@ master
 
 ## Last completed work
 
-ED-24UX.7 fixed Gree series refinement coverage and keyboard layout; the stage is local validation PASS and pushed,
-with production live-check still pending.
+ED-24UX.7 fixed Gree series refinement coverage and keyboard layout; the stage is CLOSED / production PASS.
 
-Implementation commit: current commit (`ED-24UX.7 Fix Gree series refinement layout`).
+Implementation commit: `d01cd488` (`ED-24UX.7 Fix Gree series refinement layout`).
 
 ED-24UX.7 local implementation notes:
 
@@ -47,11 +45,19 @@ ED-24UX.7 local implementation notes:
 - Local Gree diagnostics smoke: 14/14 passed.
 - Full solution suite: 5028/5028 passed.
 - `git diff --check`: PASS.
-- Production PASS is not marked for ED-24UX.7.
+- Production live-check: PASS.
+- Generic `n2` refinement includes GMV6 HR.
+- Series buttons are compact and use at most two series buttons per row:
+  - `GMV6 HR | GMV6`
+  - `GMV Mini | GMV X`
+  - `Не знаю`
+- `Gree GMV6 HR n2` opens the HR-specific card directly.
+- Refinement is built from actual runtime candidates.
+- ED-24UX.7 made no card/runtime changes; runtime remains 1184.
 
-ED-24E.3 added GMV6 HR diagnostic runtime coverage from local GMV6 HR Service/Owner manuals; the stage is local validation PASS and pushed, with production live-check still pending.
+ED-24E.3 added GMV6 HR diagnostic runtime coverage from local GMV6 HR Service/Owner manuals; the stage is CLOSED / production PASS.
 
-Implementation commit: current commit (`ED-24E.3 Add Gree GMV6 HR diagnostics`).
+Implementation commit: `37a92ae371cd607bc60e4c692bf1f813dd2890c2` (`ED-24E.3 Add Gree GMV6 HR diagnostics`).
 
 ED-24E.3 local implementation notes:
 
@@ -68,18 +74,23 @@ ED-24E.3 local implementation notes:
 - `docs/equipment-diagnostics/gree-gmv6-hr-manual-coverage.md` records source hashes, section/page coverage, extraction counts, comparison, runtime import summary, key checks, and decision.
 - ServiceManual remains library-only and is not diagnostic-visible.
 - Diagnostic guide policy remains OwnerManual-only.
-- GMV6 HR OwnerManual binding is pending unless production DB already has one; no Telegram upload or `/manual_bind` was performed.
+- GMV6 HR OwnerManual source was audited locally.
 - No migration was added.
 - JSON/cards/sourceReferences changed only for the new HR runtime series plus HR manual registry metadata.
 - Routing changed only to recognize explicit `GMV6 HR` hints and preserve GMV6/HR separation.
 - Deploy scripts are unchanged.
 - No PDF files were committed.
 - Restore/build/focused validation/smoke/full suite/diff-check: PASS locally for ED-24E.3; full solution suite 5027/5027 passed.
-- Production PASS is not marked for ED-24E.3.
+- Production live-check: PASS.
+- `Gree GMV6 HR E0`, `Gree GMV6 HR U4`, and `Gree GMV6 HR n2` open GMV6 HR cards.
+- GMV6 HR OwnerManual is delivered through `📘 Руководство`.
+- ServiceManual is not delivered through diagnostics.
+- Production runtime after import: Gree 1184; GMV6 HR 262.
+- Existing series counts remain unchanged: GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
 
-ED-24MAN.2b fixed diagnostic multi OwnerManual selection for GMV Mini / Slim so long OwnerManual filenames no longer break Telegram inline keyboard payload limits; the stage is local validation PASS and pushed, with production live-check still pending.
+ED-24MAN.2b fixed diagnostic multi OwnerManual selection for GMV Mini / Slim so long OwnerManual filenames no longer break Telegram inline keyboard payload limits; the stage is CLOSED / production PASS.
 
-Implementation commit: current commit (`ED-24MAN.2b Fix OwnerManual selection buttons`).
+Implementation commit: `96cf065e` (`ED-24MAN.2b Fix OwnerManual selection buttons`).
 
 ED-24MAN.2b local implementation notes:
 
@@ -104,6 +115,24 @@ ED-24MAN.2b local implementation notes:
 - Local Gree diagnostics smoke: 9/9 passed.
 - Full solution suite: 5009/5009 passed.
 - `git diff --check`: PASS.
+- Production live-check: PASS.
+- `Gree GMV Mini n2` followed by `📘 Руководство` shows a choice of three OwnerManual files.
+- The selection message contains the full list of files.
+- Buttons are short and readable: `1) 8-16kW A-T C-T C-X`, `2) 12-18kW C1-S`, and
+  `3) 22-35kW H C-X C1-X`.
+- All three selected OwnerManual files are delivered correctly.
+- `OutboundFailed` is no longer reproducible; the callback payload fix is confirmed by production behavior.
+- ServiceManual remains library-only; the diagnostic guide remains OwnerManual-only.
+
+Production validation shared constraints after ED-24MAN.2b, ED-24E.3, and ED-24UX.7:
+
+- Latest VPS log check is clean: no `error`, `exception`, `failed`, or `OutboundFailed`.
+- Known EF sentinel warnings remain unrelated and non-blocking; cleanup stays in future stage ED-24EF.1.
+- No migrations were added.
+- No PDF files were committed.
+- Deploy scripts are unchanged.
+- Access/manual policy is unchanged: ServiceManual and InstallationManual remain library-only; the diagnostic guide
+  remains OwnerManual-only.
 
 ED-24MAN.2a added multiple active GMV Mini / Slim OwnerManual support in the Telegram manual library; the stage is local validation PASS and pushed, with production live-check still pending.
 
@@ -178,8 +207,9 @@ ED-24MAN.2 production live-check notes:
 - ED-24SRC.2 - CLOSED / pushed.
 - ED-24MAN.2 - CLOSED / production PASS.
 - ED-24MAN.2a - CLOSED / pushed.
-- ED-24MAN.2b - CLOSED / pushed.
-- ED-24E.3 - CLOSED / pushed.
+- ED-24MAN.2b - CLOSED / production PASS.
+- ED-24E.3 - CLOSED / production PASS.
+- ED-24UX.7 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -193,8 +223,8 @@ ED-24MAN.2 production live-check notes:
 
 - Runtime: 262 cards.
 - Imported from local GMV6 HR service manual in ED-24E.3.
-- OwnerManual source audited; diagnostic OwnerManual binding remains pending unless present in production DB.
-- Production smoke not marked PASS for ED-24E.3.
+- OwnerManual source audited and production delivery confirmed through `📘 Руководство`.
+- Production smoke passed.
 
 ### GMV Mini
 
@@ -701,6 +731,9 @@ Latest production validation after ED-24MAN.1:
 
 Latest stable production point:
 
+- ED-24UX.7 - production PASS.
+- ED-24E.3 - production PASS.
+- ED-24MAN.2b - production PASS.
 - ED-24OPS.2a - production PASS.
 - ED-24OPS.2 - production PASS.
 - ED-24MAN.1 - production PASS.
@@ -709,6 +742,9 @@ Latest stable production point:
 
 Latest pushed local point:
 
+- ED-24UX.7 - Gree runtime-based series refinement and compact keyboard validated, pushed, and production-confirmed.
+- ED-24E.3 - GMV6 HR diagnostics validated, pushed, and production-confirmed.
+- ED-24MAN.2b - OwnerManual selection callbacks validated, pushed, and production-confirmed.
 - ED-24OPS.2a - Telegram video notes in operator inbox validated locally, pushed, and production-confirmed.
 - ED-24OPS.2 - Telegram operator inbox validated locally, pushed, and production-confirmed.
 - ED-24LIB.1c - Telegram library callback navigation edits the current inline message, validated locally and pushed.
@@ -731,6 +767,9 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+d01cd488 ED-24UX.7 Fix Gree series refinement layout
+37a92ae3 ED-24E.3 Add Gree GMV6 HR diagnostics
+96cf065e ED-24MAN.2b Fix OwnerManual selection buttons
 4cf00444 ED-24OPS.2a Support Telegram video notes
 ec553a8a ED-24OPS.2 Add Telegram operator inbox
 e7577c46 ED-24LIB.1 Add protected Telegram file library
@@ -759,7 +798,7 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 - Keep document/manual references only in metadata/sourceReferences.
 - Later manuals should be delivered by a separate button/action, not by embedding document codes in every answer.
 - Explicit series query must not fallback to other series.
-- General Gree n2 must show only real series where n2 exists: GMV Mini, GMV6, GMV X.
+- General Gree n2 must show only real series where n2 exists: GMV6 HR, GMV6, GMV Mini, GMV X.
 - GMV9 Flex n2 must not be added unless runtime/manual confirms it.
 - Keep visible answers readable Russian: no mixed translation, no question-mark placeholders.
 - Guard grammar: no 'к наружного блока', no 'к внутреннего блока', no 'к наладки системы'.
@@ -773,9 +812,11 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24MAN.2 production PASS.
+No active blocker after ED-24MAN.2b, ED-24E.3, and ED-24UX.7 production PASS.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: bind the audited Gree GMV Mini/Slim broad manual in production, ED-24MAN.3 manual variants by model family / exact model matching, ED-24EF.1 remaining EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: ED-24MAN.3 manual variants by model family / exact model matching,
+ED-24EF.1 remaining EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next
+Gree diagnostics direction.
 
