@@ -25,6 +25,11 @@ public class ProgramCompositionRootTests
             StringComparison.Ordinal);
 
         Assert.Contains(
+            "builder.ConfigureDataProtection()",
+            programText,
+            StringComparison.Ordinal);
+
+        Assert.Contains(
             "builder.Services.AddApiPresentation()",
             programText,
             StringComparison.Ordinal);
@@ -76,6 +81,7 @@ public class ProgramCompositionRootTests
             "AddRequestTimeouts(",
             "AddRateLimiter(",
             "AddCors(",
+            "AddDataProtection(",
             "AddHealthChecks(",
             "ConfigureKestrel(",
             "AddBuildingsModule(",
@@ -163,6 +169,7 @@ public class ProgramCompositionRootTests
             "builder.Configuration.AddApiConfiguration();",
             "builder.ConfigureRequestLimits();",
             "builder.ConfigureApiHardening();",
+            "builder.ConfigureDataProtection();",
             "builder.Services.AddApiPresentation();",
             "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);",
             "builder.Services.AddApiVersioningSupport();",

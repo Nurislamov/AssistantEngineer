@@ -19,6 +19,9 @@ steps.
 | `HTTP_PORT` / `HTTPS_PORT` | Reverse proxy ports | `80` / `443` |
 | `VITE_API_BASE_URL` | Existing frontend build-time API base URL | `http://localhost/` |
 | `VITE_API_VERSION` | API version used by frontend routes | `1` |
+| `ASSISTANTENGINEER_DATAPROTECTION_KEYS_PATH` | Persistent ASP.NET DataProtection key-ring directory | `/home/app/.aspnet/DataProtection-Keys` |
+| `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PATH` | Optional PFX path used to encrypt DataProtection keys at rest | empty placeholder |
+| `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PASSWORD` | Optional PFX password; required only by the selected certificate | empty placeholder |
 | `TELEGRAM_IS_ENABLED` | Explicit transport enable switch | `false` |
 | `TELEGRAM_INBOUND_MODE` | Telegram inbound transport | `Polling` |
 | `TELEGRAM_COMMANDS_SYNC_ON_STARTUP` | Sync the safe global Telegram command menu during startup when Telegram is enabled and token is configured | `true` |
@@ -33,6 +36,36 @@ steps.
 | `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID` | Emergency owner bootstrap chat ID | empty placeholder |
 | `TELEGRAM_ALLOWED_CHAT_ID` | Docker Compose shortcut for one closed-beta chat allowlist entry | empty placeholder |
 | `TELEGRAM_ALLOWED_USERNAME` | Optional Docker Compose shortcut for one username allowlist entry | empty placeholder |
+
+## DataProtection Key Persistence
+
+ED-24OPS.3 configures the API with the stable DataProtection application name `AssistantEngineer`. Docker Compose
+mounts the named volume `assistantengineer_dataprotection_keys` at
+`/home/app/.aspnet/DataProtection-Keys`, and the backend image prepares that directory for the non-root application
+user. Container rebuilds and replacements therefore retain the key ring as long as the named volume is preserved.
+
+`ASSISTANTENGINEER_DATAPROTECTION_KEYS_PATH` can override the key directory for direct or non-Compose deployments.
+The API creates the configured directory during startup and fails startup if the path cannot be prepared. Keep that
+path on persistent storage and writable by the API process.
+
+Key encryption at rest is optional. To enable it, mount a PFX outside source control and set
+`ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PATH` plus
+`ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PASSWORD` when the PFX requires a password. Never commit the PFX or
+password, and do not paste resolved Compose configuration into logs or tickets. Leaving both certificate variables
+empty keeps startup valid but stores the persistent XML key ring without certificate encryption.
+
+After deployment, verify persistence without printing key contents or secrets:
+
+```bash
+docker compose exec assistantengineer-api sh -lc 'ls -la /home/app/.aspnet/DataProtection-Keys || true'
+docker compose exec assistantengineer-api sh -lc \
+  'test -d /home/app/.aspnet/DataProtection-Keys && find /home/app/.aspnet/DataProtection-Keys -maxdepth 1 -name "key-*.xml" -print'
+docker compose logs --since=10m assistantengineer-api \
+  | grep -Ei "DataProtection|warning|error|exception|failed"
+```
+
+Recreate the API container and repeat the filename-only check. Existing key filenames should remain present. Do not
+remove `assistantengineer_dataprotection_keys` during routine deploy or rollback operations.
 
 Telegram `BotToken`, `WebhookSecret`, `BootstrapOwnerChatId`, `AllowedChatIds`, `AllowedUsernames`, and `DeniedChatIds` use the nested
 ASP.NET environment variable names shown in `.env.example`. They intentionally have empty committed values. For

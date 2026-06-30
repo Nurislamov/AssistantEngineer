@@ -56,6 +56,12 @@ public sealed class ProductionDeploymentHardeningTests
         Assert.Contains("TELEGRAM_ENABLE_CHAT_ID_DISCOVERY=false", example, StringComparison.Ordinal);
         Assert.Contains("AssistantEngineer__EquipmentDiagnostics__Telegram__BotToken=", example, StringComparison.Ordinal);
         Assert.Contains("AssistantEngineer__EquipmentDiagnostics__Telegram__WebhookSecret=", example, StringComparison.Ordinal);
+        Assert.Contains(
+            "ASSISTANTENGINEER_DATAPROTECTION_KEYS_PATH=/home/app/.aspnet/DataProtection-Keys",
+            example,
+            StringComparison.Ordinal);
+        Assert.Contains("ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PATH=", example, StringComparison.Ordinal);
+        Assert.Contains("ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PASSWORD=", example, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", example);
     }
 
@@ -70,9 +76,25 @@ public sealed class ProductionDeploymentHardeningTests
         }
 
         Assert.Contains("../artifacts/operations:/app/artifacts/operations", compose, StringComparison.Ordinal);
+        Assert.Contains(
+            "assistantengineer_dataprotection_keys:/home/app/.aspnet/DataProtection-Keys",
+            compose,
+            StringComparison.Ordinal);
+        Assert.Contains("assistantengineer_dataprotection_keys:", compose, StringComparison.Ordinal);
         Assert.DoesNotContain("api_operations:", compose, StringComparison.Ordinal);
         Assert.DoesNotMatch(@"\b\d{8,10}:[A-Za-z0-9_-]{30,}\b", compose);
         Assert.DoesNotMatch(@"(?im)^\s*(postgres|mysql|mariadb|sqlserver|mssql|mongodb|redis|database|db)\s*:", compose);
+    }
+
+    [Fact]
+    public void BackendImagePreparesWritableDataProtectionVolumeMount()
+    {
+        var dockerfile = ReadDeploy("docker", "backend", "Dockerfile");
+
+        Assert.Contains("mkdir -p /app/artifacts/operations", dockerfile, StringComparison.Ordinal);
+        Assert.Contains("/home/app/.aspnet/DataProtection-Keys", dockerfile, StringComparison.Ordinal);
+        Assert.Contains("chown -R $APP_UID:$APP_UID /app/artifacts /home/app/.aspnet", dockerfile, StringComparison.Ordinal);
+        Assert.Contains("USER $APP_UID", dockerfile, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -20,6 +20,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/publish ./
-RUN mkdir -p /app/artifacts/operations && chown -R $APP_UID:$APP_UID /app/artifacts
+RUN mkdir -p /app/artifacts/operations /home/app/.aspnet/DataProtection-Keys \
+    && chown -R $APP_UID:$APP_UID /app/artifacts /home/app/.aspnet
 USER $APP_UID
 ENTRYPOINT ["dotnet", "AssistantEngineer.Api.dll"]

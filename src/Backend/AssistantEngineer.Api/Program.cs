@@ -6,6 +6,7 @@ builder.Configuration.AddApiConfiguration();
 
 builder.ConfigureRequestLimits();
 builder.ConfigureApiHardening();
+builder.ConfigureDataProtection();
 
 builder.Services.AddApiPresentation();
 builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);

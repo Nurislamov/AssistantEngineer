@@ -2,19 +2,59 @@
 
 ## Current stage
 
-ED-24EF.2 - CLOSED / production PASS.
+ED-24OPS.3 - CLOSED / pushed. Production deploy/live-check pending.
 
 Next recommended steps:
 
-1. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-2. Consider ED-24OPS.3 for DataProtection key persistence, ED-24MAN.3 for exact model-family matching, and ED-24QA.2
-   for nullable warning cleanup.
+1. Deploy ED-24OPS.3 to the VPS and verify that DataProtection key files survive API container recreation.
+2. Consider certificate-backed DataProtection key encryption at rest, ED-24MAN.3 for exact model-family matching, and
+   ED-24QA.2 for nullable warning cleanup.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24OPS.3 persists ASP.NET DataProtection keys outside the API container; the stage is CLOSED / pushed, with
+production deploy/live-check still pending.
+
+ED-24OPS.3 implementation notes:
+
+- API startup now explicitly configures DataProtection with the stable application name `AssistantEngineer`.
+- `ASSISTANTENGINEER_DATAPROTECTION_KEYS_PATH` selects the key-ring directory; startup creates the directory when it is
+  absent.
+- Docker Compose uses `/home/app/.aspnet/DataProtection-Keys` and mounts the persistent named volume
+  `assistantengineer_dataprotection_keys` there.
+- The backend image prepares the mount path with ownership for the non-root `$APP_UID` runtime user.
+- Optional certificate-backed key encryption is supported through
+  `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PATH` and
+  `ASSISTANTENGINEER_DATAPROTECTION_CERTIFICATE_PASSWORD`; no certificate, password, or secret is committed or logged.
+- Missing certificate configuration does not block startup. Without a production-mounted certificate, the remaining
+  encryption-at-rest warning is expected and tracked as lower-priority `TD-OPS-002`.
+- Focused tests cover the configured path, directory creation, stable application discriminator, persisted XML key
+  generation, optional PFX encryption, and password-free persisted/error output.
+- Deployment tests cover the named volume, writable image path, and secret-free environment placeholders.
+- Deployment environment documentation includes the path, volume, optional certificate variables, and VPS verification
+  commands.
+- Technical debt `TD-OPS-001` moved to `Resolved in ED-24OPS.3`; optional certificate hardening remains `TD-OPS-002`.
+- No migration was added.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policy is unchanged: ServiceManual and InstallationManual remain library-only; diagnostic guide delivery remains
+  OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Telegram UX and manual bindings are unchanged.
+- Deploy scripts are unchanged; only the Dockerfile, Compose scaffold, and environment template changed.
+- No PDF, generated artifact, certificate, password, or secret was committed.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused DataProtection/deployment/configuration/persistence/diagnostics/Gree/Telegram manual tests: 1155/1155 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5037/5037 passed.
+- Docker Compose configuration validation: PASS.
+- `git diff --check`: PASS.
+- Production deploy/live-check: not run in this stage. Do not claim production PASS until the VPS confirms that the
+  key-ring files remain across API container recreation and the container-persistence warning is absent.
 
 ED-24EF.2 fixed the EF value comparer warning for `HourlySchedule.Factors`; the stage is CLOSED / production PASS.
 
@@ -922,15 +962,16 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- ED-24OPS.3 - Persist DataProtection keys outside the application container.
+- DataProtection certificate hardening - mount and rotate a production-owned PFX/secret for key encryption at rest.
 - ED-24QA.2 - Clean nullable warnings in architecture guard tests.
 
 ## Current blocker
 
-No active blocker after ED-24EF.2 production PASS.
+No implementation blocker. ED-24OPS.3 production PASS remains gated on VPS deploy/live-check and key persistence across
+API container recreation.
 
 ## Next step
 
-Discuss ED-24OPS.3 DataProtection key persistence, ED-24MAN.3 manual variants by exact model family, ED-24QA.2 nullable
-warning cleanup, or the next Gree diagnostics direction.
+Deploy ED-24OPS.3 to the VPS, confirm persistent DataProtection key filenames before and after API container recreation,
+and review logs for the container-persistence warning without exposing key contents or secrets.
 

@@ -2,12 +2,13 @@
 
 ## Last updated
 
-ED-24EF.2
+ED-24OPS.3
 
 ## Current stable point
 
-- Production baseline: `8ab72517` with ED-24EF.1 production PASS.
-- ED-24EF.2 is locally validated only until a VPS deploy/live-check is completed.
+- Production baseline: `4da7abd6` with ED-24EF.2 production PASS.
+- ED-24OPS.3 is locally validated only until a VPS deploy/live-check confirms key persistence across container
+  recreation.
 - Runtime counts: Gree 1184; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260.
 - Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
 
@@ -61,17 +62,18 @@ No active P1 item was found.
 - Suggested next stage: ED-24DOC.1
 - Notes: not corrected in ED-24EF.1 because this stage changes only sentinel behavior and its required state/debt records.
 
-### TD-OPS-001 - DataProtection keys are stored inside the application container
+## P3 / backlog
+
+### TD-OPS-002 - DataProtection key-ring encryption at rest is optional
 
 - Area: operations/configuration
-- Severity: P2
-- Current evidence: production logs warn that keys under `/home/app/.aspnet/DataProtection-Keys` may not persist outside
-  the container.
-- Risk: container replacement can invalidate protected payloads that depend on the ephemeral key ring.
-- Suggested next stage: ED-24OPS.3
-- Notes: intentionally not changed in ED-24EF.2.
-
-## P3 / backlog
+- Severity: P3
+- Current evidence: ED-24OPS.3 supports certificate-backed key encryption, but the committed deployment scaffold
+  intentionally leaves certificate path and password empty.
+- Risk: a persistent volume compromise can expose unencrypted DataProtection key XML when production does not mount a
+  PFX.
+- Suggested next stage: production ops/configuration follow-up
+- Notes: provision and rotate a production-owned certificate outside Git; never commit or log the PFX/password.
 
 ### TD-TOOL-001 - EF CLI patch version trails runtime
 
@@ -81,6 +83,20 @@ No active P1 item was found.
 - Risk: minor tooling diagnostics or scaffolding behavior may differ from the runtime patch.
 - Suggested next stage: ED-24TOOL.1
 - Notes: `migrations has-pending-model-changes` still completed successfully for ED-24EF.1 and ED-24EF.2.
+
+## Resolved in ED-24OPS.3
+
+### TD-OPS-001 - DataProtection keys were stored inside the application container
+
+- Area: operations/configuration
+- Severity: resolved
+- Previous evidence: production logs warned that keys under `/home/app/.aspnet/DataProtection-Keys` might not persist
+  outside the container.
+- Resolution: the API now explicitly persists its `AssistantEngineer` key ring to a configurable directory, while the
+  production Compose scaffold mounts the `assistantengineer_dataprotection_keys` named volume at the default path.
+- Validation: focused tests cover directory creation, stable application name, persisted key generation, optional
+  certificate protection, and secret-free failure behavior. A VPS deploy/live-check is still required before claiming
+  production PASS.
 
 ## Resolved in ED-24EF.2
 
