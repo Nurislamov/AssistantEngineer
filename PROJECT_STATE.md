@@ -2,13 +2,12 @@
 
 ## Current stage
 
-ED-24BRAND.1 - CLOSED / pushed; production live-check is still pending.
+ED-24BRAND.1 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Run the ED-24BRAND.1 VPS deploy/live-check and verify the polished Telegram-facing branding in production.
-2. Run the ED-24MAN.3a VPS deploy/live-check and verify the pending ED-24MAN.3 Gree Indoor service-manual metadata
-   correction SQL output.
+1. Start ED-24USR.4 Owner user overview.
+2. Continue with ED-24BCAST.1 Owner text broadcast foundation after the user overview is in place.
 3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 4. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
@@ -18,8 +17,7 @@ master
 
 ## Last completed work
 
-ED-24BRAND.1 polishes visible Telegram-facing branding and help copy; the stage is CLOSED / pushed.
-Production PASS is not marked yet because the VPS live-check is still pending.
+ED-24BRAND.1 polishes visible Telegram-facing branding and help copy; the stage is CLOSED / production PASS.
 
 ED-24BRAND.1 implementation notes:
 
@@ -53,11 +51,21 @@ ED-24BRAND.1 implementation notes:
 - Local Gree diagnostics smoke: 14/14 passed.
 - Full solution suite: 5045/5045 passed.
 - `git diff --check`: PASS.
-- Production PASS remains pending until the ED-24BRAND.1 VPS live-check is completed.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`.
+- `/start` shows `AEngineer HVAC Service`, the HVAC/VRF error-code / manuals / service-request copy, examples
+  `Gree H5`, `Gree GMV6 HR U4`, `GMV Mini n2`, and the diagnostics, file-library, service-request, history/request
+  capabilities.
+- `/start` does not show `Ваш номер уже сохранён`.
+- `/help` shows `Как пользоваться AEngineer HVAC Service`, mentions `📚 Библиотека файлов`, lists only public commands
+  `/history`, `/last`, and `/start`, and does not show `/manual_bind`.
+- Telegram polling started; Telegram updates were processed with `Status: Processed`; sending Telegram responses was
+  observed.
+- Production logs contain no `OutboundFailed`, `BUTTON_DATA_INVALID`, `error`, `exception`, or `failed` entries in the
+  checked window.
 
 ED-24MAN.3a localizes visible Telegram library document labels and hides InstallationManual from visible Telegram
-library/upload menus; the stage is CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check
-is still pending.
+library/upload menus; the stage is CLOSED / production PASS.
 
 ED-24MAN.3a implementation notes:
 
@@ -88,11 +96,21 @@ ED-24MAN.3a implementation notes:
 - Local Gree diagnostics smoke: 14/14 passed.
 - Full solution suite: 5045/5045 passed.
 - `git diff --check`: PASS.
-- ED-24MAN.3 production PASS remains pending until ED-24MAN.3a deploy/live-check and SQL correction verification.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`.
+- Gree -> Наружные -> GMV6 shows `📕 Сервисные мануалы`, `📘 Руководства пользователя`, and `Назад`; it no longer
+  shows `📘 Owner Manual` or `🛠 Installation Manual`.
+- Manual policies remain unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload
+  menus, diagnostic guide OwnerManual-only.
+- Protected `sendDocument(file_id)` delivery remains unchanged; `forwardMessage` and `copyMessage` are not used for
+  protected library/manual delivery.
+- Telegram polling started; Telegram updates were processed with `Status: Processed`; sending Telegram responses,
+  editing Telegram messages, and sending Telegram documents were observed.
+- Production logs contain no `BUTTON_DATA_INVALID`, `OutboundFailed`, `error`, `exception`, or `failed` entries in the
+  checked window.
 
 ED-24MAN.3 fixes Telegram library generic file callbacks and adds typed Gree Indoor/Controllers categories; the stage is
-CLOSED / pushed locally. Production PASS is not marked yet because the VPS live-check and the prepared data-correction
-SQL still need to be executed and checked on production.
+CLOSED / production PASS.
 
 ED-24MAN.3 implementation notes:
 
@@ -122,8 +140,10 @@ ED-24MAN.3 implementation notes:
   `Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf`, sets `DocumentType = 'ServiceManual'`,
   `MinRole = 'Engineer'`, `CanUseForDiagnostics = false`, and `IsLibraryVisible = true`, and includes select-before /
   update / select-after checks.
-- The SQL does not delete rows and does not change `IsActive`; production correction is not marked PASS until the VPS
-  command is run and output is checked.
+- The SQL correction was executed and verified on production. Final row state: `Id = 14`, `Brand = Gree`,
+  `Series = Indoor`, `FileName = Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf`,
+  `DocumentType = ServiceManual`, `MinRole = Engineer`, `CanUseForDiagnostics = false`, `IsLibraryVisible = true`,
+  `IsActive = true`.
 - No migration was added.
 - Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
 - Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
@@ -136,6 +156,17 @@ ED-24MAN.3 implementation notes:
 - Local Gree diagnostics smoke: 14/14 passed.
 - Full solution suite: 5042/5042 passed.
 - `git diff --check`: PASS.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; deploy dir: `/opt/assistantengineer/deploy`.
+- Gree -> Внутренние shows `Настенные`, `Кассетные`, `Канальные`, `📕 Сервисные мануалы`, and `Назад`; no `Прочее`
+  bucket was added.
+- Gree -> Внутренние -> `📕 Сервисные мануалы` shows the Gree Indoor Units Service Manual, the file button works, and
+  no callback error was observed.
+- Gree -> Пульты / Controllers shows `Настенные`, `Беспроводные ИК`, and `Назад`; no `Прочее` bucket was added.
+- Telegram polling started; Telegram updates were processed with `Status: Processed`; sending Telegram responses,
+  editing Telegram messages, and sending Telegram documents were observed.
+- Production logs contain no `BUTTON_DATA_INVALID`, `OutboundFailed`, `error`, `exception`, or `failed` entries in the
+  checked window.
 
 ED-24OPS.3 persists ASP.NET DataProtection keys outside the API container; the stage is CLOSED / production PASS.
 
@@ -495,6 +526,9 @@ ED-24MAN.2 production live-check notes:
 - ED-24EF.1 - CLOSED / production PASS.
 - ED-24EF.2 - CLOSED / production PASS.
 - ED-24OPS.3 - CLOSED / production PASS.
+- ED-24MAN.3 - CLOSED / production PASS.
+- ED-24MAN.3a - CLOSED / production PASS.
+- ED-24BRAND.1 - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -1018,6 +1052,9 @@ Latest production validation after ED-24MAN.1:
 
 Latest stable production point:
 
+- ED-24BRAND.1 - production PASS.
+- ED-24MAN.3a - production PASS.
+- ED-24MAN.3 - production PASS.
 - ED-24OPS.3 - production PASS.
 - ED-24EF.2 - production PASS.
 - ED-24EF.1 - production PASS.
@@ -1032,10 +1069,11 @@ Latest stable production point:
 
 Latest pushed local point:
 
-- ED-24MAN.3a - Telegram library OwnerManual label localization and InstallationManual hiding validated locally and
-  pushed; production live-check is still pending.
-- ED-24MAN.3 - Telegram library callback safety and typed Gree Indoor/Controllers categories validated locally and pushed;
-  production live-check plus the prepared data-correction SQL execution/check are still pending.
+- ED-24BRAND.1 - Telegram-facing branding and help copy validated locally, pushed, and production-confirmed.
+- ED-24MAN.3a - Telegram library OwnerManual label localization and InstallationManual hiding validated locally, pushed,
+  and production-confirmed.
+- ED-24MAN.3 - Telegram library callback safety, typed Gree Indoor/Controllers categories, and the Gree Indoor
+  ServiceManual metadata correction validated locally, pushed, and production-confirmed.
 - ED-24OPS.3 - DataProtection key persistence validated locally, pushed, and production-confirmed.
 - ED-24EF.2 - HourlySchedule value comparer validated locally, pushed, and production-confirmed.
 - ED-24EF.1 - Telegram EF enum sentinels validated locally, pushed, and production-confirmed.
@@ -1064,6 +1102,10 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+38e7b48d ED-24BRAND.1 Polish Telegram branding copy
+40f90aea ED-24MAN.3a Polish library document labels
+2b59abd0 ED-24MAN.3 Fix library categories and callbacks
+44f5a0a4 Update project state after ED-24OPS.3 production pass
 1e46ab85 ED-24OPS.3 Persist DataProtection keys
 c775f936 ED-24EF.2 Fix HourlySchedule value comparer
 63547146 ED-24EF.1 Fix Telegram EF sentinel warnings
@@ -1107,8 +1149,8 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24MAN.3a production follow-up - deploy/live-check and run/check the pending ED-24MAN.3 Gree Indoor service-manual
-  metadata correction SQL.
+- ED-24USR.4 - Owner user overview.
+- ED-24BCAST.1 - Owner text broadcast foundation.
 - ED-24MAN.4 - Manual variants by model family / exact model matching.
 - TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
   encryption at rest.
@@ -1116,11 +1158,10 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No implementation blocker. ED-24MAN.3a is CLOSED / pushed, but production PASS is intentionally not marked until the VPS
-deploy/live-check and the pending ED-24MAN.3 data-correction SQL output are checked.
+No implementation blocker. The Telegram library and branding production state is stable and ready for ED-24USR.4 and
+ED-24BCAST.1.
 
 ## Next step
 
-Run the ED-24MAN.3a production follow-up, including the pending SQL correction check, then choose between `TD-OPS-002`,
-ED-24MAN.4 exact model-family matching, or ED-24QA.2 nullable warning cleanup.
+Start ED-24USR.4 Owner user overview, then ED-24BCAST.1 Owner text broadcast foundation.
 
